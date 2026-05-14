@@ -5,6 +5,7 @@
  * [JWT] All data via hooks + new storage key
  */
 import { useState, useMemo, useCallback } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Landmark, Download, Zap, CheckCircle, Save } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -75,8 +76,8 @@ export function BankReconciliationPanel({ entityCode }: BankReconciliationPanelP
         id: `stmt-${i}-${Date.now()}`,
         date: parts[0] ?? '',
         description: parts[1] ?? '',
-        debit: parseFloat(parts[2] ?? '0') || 0,
-        credit: parseFloat(parts[3] ?? '0') || 0,
+        debit: roundTo(parseFloat(parts[2] ?? '0') || 0, resolveMoneyPrecision(null, null)),
+        credit: roundTo(parseFloat(parts[3] ?? '0') || 0, resolveMoneyPrecision(null, null)),
       };
     });
     setStatementLines(parsed);

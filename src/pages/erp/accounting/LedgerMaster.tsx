@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -4555,7 +4556,7 @@ export function LedgerMasterPanel() {
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground text-sm">₹</span>
                   <Input {...amountInputProps} className="flex-1" value={cashForm.openingBalance || ''} placeholder="0"
-                    onChange={(e) => setCashForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))}
+                    onChange={(e) => setCashForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value.replace(/,/g, '')) || 0, resolveMoneyPrecision(null, null)) }))}
                     onKeyDown={onEnterNext} />
                 </div>
               </div>
@@ -4680,7 +4681,7 @@ export function LedgerMasterPanel() {
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground text-sm">₹</span>
                   <Input {...amountInputProps} className="flex-1" value={bankForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
-                    onChange={(e) => setBankForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
+                    onChange={(e) => setBankForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value.replace(/,/g, '')) || 0, resolveMoneyPrecision(null, null)) }))} />
                   <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
                     <button type="button" onClick={() => setBankForm(f => ({ ...f, openingBalanceType: 'Dr' }))}
                       className={`px-3 py-1.5 transition-colors ${bankForm.openingBalanceType === 'Dr' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Dr</button>
@@ -4735,7 +4736,7 @@ export function LedgerMasterPanel() {
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground text-sm">₹</span>
                 <Input {...amountInputProps} className="flex-1" value={liabilityForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
-                  onChange={(e) => setLiabilityForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
+                  onChange={(e) => setLiabilityForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value.replace(/,/g, '')) || 0, resolveMoneyPrecision(null, null)) }))} />
                 <div className="flex rounded-md border border-input overflow-hidden text-xs font-medium">
                   <button type="button" onClick={() => setLiabilityForm(f => ({ ...f, openingBalanceType: 'Dr' }))}
                     className={`px-3 py-1.5 transition-colors ${liabilityForm.openingBalanceType === 'Dr' ? 'bg-blue-500/15 text-blue-700' : 'text-muted-foreground'}`}>Dr</button>
@@ -4866,7 +4867,7 @@ export function LedgerMasterPanel() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1"><Label className="text-xs">Loan Amount</Label>
                   <Input {...amountInputProps} value={loanRecForm.loanAmount || ''} onKeyDown={onEnterNext}
-                    onChange={(e) => setLoanRecForm(f => ({ ...f, loanAmount: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} /></div>
+                    onChange={(e) => setLoanRecForm(f => ({ ...f, loanAmount: roundTo(parseFloat(e.target.value.replace(/,/g, '')) || 0, resolveMoneyPrecision(null, null)) }))} /></div>
                 <div className="space-y-1"><Label className="text-xs">Interest Rate %</Label>
                   <Input {...amountInputProps} value={loanRecForm.interestRate || ''} onKeyDown={onEnterNext}
                     onChange={(e) => setLoanRecForm(f => ({ ...f, interestRate: parseFloat(e.target.value) || 0 }))} /></div>
@@ -4925,7 +4926,7 @@ export function LedgerMasterPanel() {
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1"><Label className="text-xs">Loan Amount</Label>
                   <Input {...amountInputProps} value={borrowingForm.loanAmount || ''} onKeyDown={onEnterNext}
-                    onChange={(e) => setBorrowingForm(f => ({ ...f, loanAmount: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} /></div>
+                    onChange={(e) => setBorrowingForm(f => ({ ...f, loanAmount: roundTo(parseFloat(e.target.value.replace(/,/g, '')) || 0, resolveMoneyPrecision(null, null)) }))} /></div>
                 <div className="space-y-1"><Label className="text-xs">Interest Rate %</Label>
                   <Input {...amountInputProps} value={borrowingForm.interestRate || ''} onKeyDown={onEnterNext}
                     onChange={(e) => setBorrowingForm(f => ({ ...f, interestRate: parseFloat(e.target.value) || 0 }))} /></div>
@@ -5244,7 +5245,7 @@ export function LedgerMasterPanel() {
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Paid Amount</Label>
               <Input {...amountInputProps} value={markPaidForm.paidAmount || ''} onKeyDown={onEnterNext}
-                onChange={(e) => setMarkPaidForm(f => ({ ...f, paidAmount: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
+                onChange={(e) => setMarkPaidForm(f => ({ ...f, paidAmount: roundTo(parseFloat(e.target.value.replace(/,/g, '')) || 0, resolveMoneyPrecision(null, null)) }))} />
             </div>
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Paid Date</Label>
@@ -5406,7 +5407,7 @@ export function LedgerMasterPanel() {
               <div className="flex items-center gap-2">
                 <span className="text-muted-foreground text-sm">₹</span>
                 <Input {...amountInputProps} value={dutiesTaxForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
-                  onChange={(e) => setDutiesTaxForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g,'')) || 0 }))} />
+                  onChange={(e) => setDutiesTaxForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value.replace(/,/g,'')) || 0, resolveMoneyPrecision(null, null)) }))} />
                 <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">Cr</Badge>
               </div>
             </div>
@@ -5488,7 +5489,7 @@ export function LedgerMasterPanel() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Gross Block (Original Cost)</Label>
-                <Input {...amountInputProps} value={assetForm.grossBlock || ''} onChange={e => setAssetForm(f => ({ ...f, grossBlock: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                <Input {...amountInputProps} value={assetForm.grossBlock || ''} onChange={e => setAssetForm(f => ({ ...f, grossBlock: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))} onKeyDown={onEnterNext} />
               </div>
             </div>
             {/* Depreciation */}
@@ -5558,7 +5559,7 @@ export function LedgerMasterPanel() {
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium">Opening Balance (Net Book Value)</Label>
-                <Input {...amountInputProps} value={assetForm.openingBalance || ''} onChange={e => setAssetForm(f => ({ ...f, openingBalance: parseFloat(e.target.value) || 0 }))} onKeyDown={onEnterNext} />
+                <Input {...amountInputProps} value={assetForm.openingBalance || ''} onChange={e => setAssetForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))} onKeyDown={onEnterNext} />
               </div>
             </div>
             {/* Scope */}
@@ -5680,7 +5681,7 @@ export function LedgerMasterPanel() {
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground text-sm">₹</span>
                   <Input {...amountInputProps} value={payrollForm.openingBalance || ''} placeholder="0" onKeyDown={onEnterNext}
-                    onChange={(e) => setPayrollForm(f => ({ ...f, openingBalance: parseFloat(e.target.value.replace(/,/g,'')) || 0 }))} />
+                    onChange={(e) => setPayrollForm(f => ({ ...f, openingBalance: roundTo(parseFloat(e.target.value.replace(/,/g,'')) || 0, resolveMoneyPrecision(null, null)) }))} />
                   <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">Cr</Badge>
                 </div>
               </div>
@@ -5724,7 +5725,7 @@ export function LedgerMasterPanel() {
             <div className="space-y-1.5">
               <Label className="text-sm font-medium">Cash Balance at Handover (₹)</Label>
               <Input {...amountInputProps} value={custodianForm.cashBalanceAtHandover || ''} placeholder="0" onKeyDown={onEnterNext}
-                onChange={(e) => setCustodianForm(f => ({ ...f, cashBalanceAtHandover: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
+                onChange={(e) => setCustodianForm(f => ({ ...f, cashBalanceAtHandover: roundTo(parseFloat(e.target.value.replace(/,/g, '')) || 0, resolveMoneyPrecision(null, null)) }))} />
             </div>
             {custodianHistory.length > 0 && (
               <div className="border-t border-border pt-3">
@@ -5830,7 +5831,7 @@ export function LedgerMasterPanel() {
               <div className="flex items-center gap-1">
                 <span className="text-muted-foreground text-sm">₹</span>
                 <Input {...amountInputProps} value={chequeIssueForm.amount || ''} onKeyDown={onEnterNext}
-                  onChange={(e) => setChequeIssueForm(f => ({ ...f, amount: parseFloat(e.target.value.replace(/,/g, '')) || 0 }))} />
+                  onChange={(e) => setChequeIssueForm(f => ({ ...f, amount: roundTo(parseFloat(e.target.value.replace(/,/g, '')) || 0, resolveMoneyPrecision(null, null)) }))} />
               </div>
               {chequeIssueForm.amount > 0 && (
                 <p className="text-[10px] text-muted-foreground italic">{amountToWords(chequeIssueForm.amount)}</p>

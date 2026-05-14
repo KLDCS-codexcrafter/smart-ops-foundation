@@ -5,6 +5,7 @@
  * [JWT] All data via hooks + new storage key
  */
 import { useState, useMemo, useCallback } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { IndianRupee, Download, Plus, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -88,7 +89,7 @@ export function TDSAdvancePanel({ entityCode }: TDSAdvancePanelProps) {
       challanNo: challanForm.challanNo,
       bsrCode: challanForm.bsrCode,
       date: challanForm.date,
-      amount: parseFloat(challanForm.amount) || 0,
+      amount: roundTo(parseFloat(challanForm.amount) || 0, resolveMoneyPrecision(null, null)),
       period: `${dateFrom} to ${dateTo}`,
     };
     const updated = [...challans, entry];

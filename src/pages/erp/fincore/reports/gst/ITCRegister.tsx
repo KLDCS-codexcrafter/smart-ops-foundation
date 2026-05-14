@@ -4,6 +4,7 @@
  * [JWT] All data from useGSTRegister
  */
 import { useState, useMemo, useCallback } from 'react';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { Calculator, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -199,7 +200,7 @@ export function ITCRegisterPanel({ entityCode }: ITCRegisterPanelProps) {
             <div>
               <Label className="text-xs">Amount to Reverse</Label>
               <Input type="number" className="h-8 text-xs font-mono" value={reversalAmount}
-                onChange={e => setReversalAmount(parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} />
+                onChange={e => setReversalAmount(roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} />
             </div>
           </div>
           <DialogFooter>
