@@ -479,7 +479,7 @@ export function OpeningStockPanel() {
               const batchQtyByGodown: Record<string, number> = {};
               if (item.batch_tracking && row?.batches) {
                 row.batches.forEach(b => {
-                  batchQtyByGodown[b.godown_id] = (batchQtyByGodown[b.godown_id] || 0) + (parseFloat(b.qty) || 0);
+                  batchQtyByGodown[b.godown_id] = dAdd(batchQtyByGodown[b.godown_id] || 0, roundTo(parseFloat(b.qty) || 0, resolveQtyPrecision(undefined)));
                 });
               }
               const serialCountByGodown: Record<string, number> = {};
