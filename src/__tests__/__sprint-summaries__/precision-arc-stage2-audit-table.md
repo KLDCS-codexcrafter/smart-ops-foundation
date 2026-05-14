@@ -1,9 +1,11 @@
-# Precision Arc · Stage 2 · Audit Table
+# Precision Arc · Stage 2 · Audit Table  (T1 Re-Sweep applied · predecessor f6b5eb2)
 
-Predecessor HEAD: 2f38e89  ·  Total sites scanned: 1101
-Pattern counts: toFixed=359 · parseFloat=281 · Math.round=461
+Total sites scanned (post-T1): **1310**  (1101 original + 209 floor/ceil additions)
+Pattern counts (post-T1): toFixed=334 · parseFloat=267 · Math.round=461 · Math.floor=169 · Math.ceil=40
 
-Class counts: A=9 · B=420 · C=287 · D=385
+Class counts (post-T1): **A=9 · B=469 · C=365 · D=467**
+
+> The original Stage 2 header (Total=1101 · A=9·B=420·C=287·D=385) is preserved in the per-class sections below for traceability. The T1 Re-Sweep section at the bottom of this file is the source of truth for the corrected roll-up.
 
 Rubric:
 - **A** already-correct (calls round2/Decimal helpers in same expression)
