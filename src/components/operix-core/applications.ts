@@ -379,7 +379,7 @@ export const applications: AppDefinition[] = [
     category: 'Support Hub',
     route: '/erp/servicedesk',
     icon: 'Headphones',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'taskflow',
