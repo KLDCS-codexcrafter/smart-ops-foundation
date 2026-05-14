@@ -114,7 +114,7 @@ export function useAssetMaster() {
     // [JWT] POST /api/pay-hub/assets/:id/assign
 
     // ── Sync to employee equipmentIssued[] ───────────────────────
-    const allEmps = loadEmployees();
+    const allEmps = loadEmployees(entityCode);
     const updatedEmps = allEmps.map(e => {
       if (e.id !== employeeId) return e;
       const newEquipment = {
@@ -128,7 +128,7 @@ export function useAssetMaster() {
       };
       return { ...e, equipmentIssued: [...e.equipmentIssued, newEquipment], updated_at: new Date().toISOString() };
     });
-    saveEmployees(updatedEmps);
+    saveEmployees(entityCode, updatedEmps);
     // [JWT] PATCH /api/pay-hub/employees/:id/equipment
 
     toast.success(`${asset.name} assigned to ${employeeName}`);
@@ -161,7 +161,7 @@ export function useAssetMaster() {
     // [JWT] POST /api/pay-hub/assets/:id/return
 
     // ── Sync return to employee equipmentIssued[] ───────────────
-    const allEmps = loadEmployees();
+    const allEmps = loadEmployees(entityCode);
     const empId = asset.currentAssigneeId;
     const updatedEmps = allEmps.map(e => {
       if (e.id !== empId) return e;
@@ -172,7 +172,7 @@ export function useAssetMaster() {
       );
       return { ...e, equipmentIssued: updatedEquip, updated_at: new Date().toISOString() };
     });
-    saveEmployees(updatedEmps);
+    saveEmployees(entityCode, updatedEmps);
     // [JWT] PATCH /api/pay-hub/employees/:id/equipment
 
     toast.success(`${asset.name} returned and marked available`);
