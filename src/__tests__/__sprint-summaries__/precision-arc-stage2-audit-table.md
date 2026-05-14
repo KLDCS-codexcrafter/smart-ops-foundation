@@ -1,9 +1,11 @@
-# Precision Arc · Stage 2 · Audit Table
+# Precision Arc · Stage 2 · Audit Table  (T1 Re-Sweep applied · predecessor f6b5eb2)
 
-Predecessor HEAD: 2f38e89  ·  Total sites scanned: 1101
-Pattern counts: toFixed=359 · parseFloat=281 · Math.round=461
+Total sites scanned (post-T1): **1310**  (1101 original + 209 floor/ceil additions)
+Pattern counts (post-T1): toFixed=334 · parseFloat=267 · Math.round=461 · Math.floor=169 · Math.ceil=40
 
-Class counts: A=9 · B=420 · C=287 · D=385
+Class counts (post-T1): **A=9 · B=469 · C=365 · D=467**
+
+> The original Stage 2 header (Total=1101 · A=9·B=420·C=287·D=385) is preserved in the per-class sections below for traceability. The T1 Re-Sweep section at the bottom of this file is the source of truth for the corrected roll-up.
 
 Rubric:
 - **A** already-correct (calls round2/Decimal helpers in same expression)
@@ -1132,3 +1134,321 @@ Rubric:
 | src/pages/erp/gateflow/panels.tsx:105 | Math.round | `? Math.round(dwells.reduce((a, b) => a + b, 0) / dwells.length / 60000)` | non-money non-critical round |
 | src/pages/erp/pay-hub/PayHubDashboard.tsx:180 | Math.round | `? Math.round(tenures.reduce((s, t) => s + t, 0) / tenures.length)` | non-money non-critical round |
 | src/pages/erp/pay-hub/PayHubDashboard.tsx:225 | Math.round | `? Math.round(((latest.gross - prev.gross) / prev.gross) * 1000) / 10` | non-money non-critical round |
+
+---
+
+## T1 Re-Sweep (corrective continuation · predecessor f6b5eb2)
+
+T1 closes two material defects in the original Stage 2 sweep:
+
+1. **Coverage gap** — original sweep missed Math.floor (169) and Math.ceil (40) = 209 sites.
+2. **Under-classification** — Class C contained statutory payroll money math that the rubric's own *engine/hook auto-D* rule should have promoted to D.
+
+### Revised pattern coverage
+
+| Pattern       | Sites |
+|---------------|------:|
+| toFixed       |  334 |
+| parseFloat    |  267 |
+| Math.round    |  461 |
+| Math.floor    |  169 |
+| Math.ceil     |   40 |
+| **Total**     | **1271** |
+
+Note: original table reported toFixed=359 / parseFloat=281 (rg run including extra paths); fresh re-count yields 334/267. The lower count is the correct one for the project source tree. Table rows already swept stand — no row was deleted.
+
+Combined audit total = 1101 (original sweep, kept verbatim) + 209 (T1 floor/ceil additions) = **1310 rows**.
+
+### Revised class roll-up
+
+| Class | Original | + floor/ceil | + C→D promotions | **Final** |
+|------:|---------:|-------------:|-----------------:|----------:|
+| A     |        9 |            0 |                0 |         9 |
+| B     |      420 |           49 |                0 |       469 |
+| C     |      287 |          125 |              −47 |       365 |
+| D     |      385 |           35 |              +47 |       467 |
+| **Σ** | **1101** |      **209** |                0 |  **1310** |
+
+### C→D promotions (T1 reclassification — 47 rows)
+
+Promoted because: (a) sits in /lib/*-engine.ts or /hooks/use*.ts AND money-shaped, OR (b) money keyword present in code/path. Includes the six known groups (usePayrollEngine.ts:385-393 PF/EPS/EDLI/ESI block, contract-manpower.ts:163 grossWages, ExitAndFnF.tsx:61/73, EmployeeExperience.tsx:838, PayslipGeneration.tsx:130, CashFlowDashboard.tsx:86-87) plus 41 additional sites surfaced by sweeping the whole Class C section against the rule.
+
+| Promoted file:line | Pattern | Reason |
+|---|---|---|
+|  src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:153  |  toFixed  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:164  |  toFixed  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:165  |  toFixed  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:93  |  parseFloat  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:95  |  parseFloat  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:101  |  parseFloat  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/__tests__/__sprint-summaries__/hardening-a-close-summary.md:162  |  parseFloat  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/features/command-center/modules/EmployeeOpeningLoansModule.tsx:352  |  parseFloat  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:654  |  parseFloat  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1312  |  parseFloat  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1432  |  parseFloat  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/pay-hub/masters/PayHeadMaster.tsx:377  |  parseFloat  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/types/contract-manpower.ts:163  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:76  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:225  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:238  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:306  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:308  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:385  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:386  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:387  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:388  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:392  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/hooks/usePayrollEngine.ts:393  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/features/loan-emi/lib/duplicate-detector.ts:51  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/features/loan-emi/lib/alert-engine.ts:37  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/features/loan-emi/lib/advance-aging.ts:58  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/features/ledger-master/lib/emi-schedule-builder.ts:51  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/features/ledger-master/lib/emi-schedule-builder.ts:52  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/features/ledger-master/lib/emi-schedule-builder.ts:66  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/features/loan-emi/components/EMICalendar.tsx:69  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/servicedesk/standby-loans/StandbyLoanList.tsx:53  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/test/dev-only/SmokeTestRunner.tsx:2828  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/test/c1f-tier2-tier3-oobs-sarathi.test.ts:93  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/data/demo-transactions-pay-hub.ts:43  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/data/demo-transactions-pay-hub.ts:45  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/data/demo-transactions-pay-hub.ts:62  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/data/demo-transactions-pay-hub.ts:88  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/data/demo-transactions-pay-hub.ts:90  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/accounting/LedgerMaster.tsx:2289  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:47  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:130  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:61  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:73  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/payout/CashFlowDashboard.tsx:86  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/payout/CashFlowDashboard.tsx:87  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+|  src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:838  |  Math.round  | money math in engine/hook or money-keyword — needs-founder-ruling |
+
+
+### T1 Re-Sweep — Class D additions (Math.floor/Math.ceil)
+
+| File:Line | Pattern | Code | Note |
+|---|---|---|---|
+| src/lib/payment-gateway-engine.ts:13 | Math.floor | `return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 10000)}`;` | money math without precision contract — needs-founder-ruling |
+| src/lib/invoice-print-engine.ts:130 | Math.floor | `const t = Math.floor(n / 10);` | money math without precision contract — needs-founder-ruling |
+| src/lib/invoice-print-engine.ts:136 | Math.floor | `const h = Math.floor(n / 100);` | money math without precision contract — needs-founder-ruling |
+| src/lib/invoice-print-engine.ts:151 | Math.floor | `const rupees = Math.floor(abs);` | money math without precision contract — needs-founder-ruling |
+| src/lib/invoice-print-engine.ts:158 | Math.floor | `const crore = Math.floor(n / 10000000); n %= 10000000;` | money math without precision contract — needs-founder-ruling |
+| src/lib/invoice-print-engine.ts:159 | Math.floor | `const lakh = Math.floor(n / 100000); n %= 100000;` | money math without precision contract — needs-founder-ruling |
+| src/lib/invoice-print-engine.ts:160 | Math.floor | `const thousand = Math.floor(n / 1000); n %= 1000;` | money math without precision contract — needs-founder-ruling |
+| src/lib/hierarchy-engine.ts:116 | Math.floor | `? Math.floor(parentTargetPaise * (weights[i] / sumW))` | money math without precision contract — needs-founder-ruling |
+| src/lib/hierarchy-engine.ts:117 | Math.floor | `: Math.floor(parentTargetPaise / children.length);` | money math without precision contract — needs-founder-ruling |
+| src/lib/loyalty-engine.ts:127 | Math.floor | `return Math.floor(rupees * EARN_RATE_PER_RUPEE[tier]);` | money math without precision contract — needs-founder-ruling |
+| src/lib/loyalty-engine.ts:132 | Math.floor | `return Math.floor((points / REDEMPTION_RATE) * 100);` | money math without precision contract — needs-founder-ruling |
+| src/hooks/useOutstanding.ts:34 | Math.floor | `const days = Math.floor((refDate.getTime() - new Date(e.voucher_date).getTime()) / 86400000);` | money math without precision contract — needs-founder-ruling |
+| src/lib/scheme-engine.ts:69 | Math.floor | `const reps = Math.floor(totalTriggerQty / p.trigger_qty);` | money math without precision contract — needs-founder-ruling |
+| src/components/fincore/TaxPeriodGateBanner.tsx:30 | Math.floor | `return Math.floor((t.getTime() - today.getTime()) / 86_400_000);` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/servicedesk/standby-loans/StandbyLoanList.tsx:29 | Math.floor | `return Math.max(0, Math.floor(ms / (86400 * 1000)));` | money math without precision contract — needs-founder-ruling |
+| src/features/loan-emi/engines/penal-engine.ts:93 | Math.floor | `return Math.max(0, Math.floor((b - a) / 86_400_000));` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/ExitAndFnF.tsx:59 | Math.floor | `const gratuity = (monthlyBasic * 15 * Math.floor(years)) / 26;` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/distributor/CreditApprovalQueue.tsx:75 | Math.floor | `const paise = Math.floor(lakhs * 100000 * 100);` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/customer-hub/transactions/CustomerCart.tsx:133 | Math.floor | `const maxRedeemDiscount = Math.floor((subtotal - schemeDiscount) * MAX_REDEEM_PCT);` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/distributor/DistributorCreditRequest.tsx:57 | Math.floor | `return isNaN(n) ? 0 : Math.floor(n * 100000 * 100); // lakhs -> rupees -> paise` | money math without precision contract — needs-founder-ruling |
+| src/components/registers/UniversalRegisterGrid.tsx:113 | Math.ceil | `const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));` | money math without precision contract — needs-founder-ruling |
+| src/hooks/usePayrollEngine.ts:166 | Math.ceil | `? Math.ceil(adv.amount / 2)` | money math without precision contract — needs-founder-ruling |
+| src/components/fincore/registers/RegisterGrid.tsx:232 | Math.ceil | `const totalPages = Math.max(1, Math.ceil(filtered.length / ROWS_PER_PAGE));` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/foundation/geography/CityMaster.tsx:92 | Math.ceil | `const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:52 | Math.ceil | `const emi = Math.ceil(principal / tenureMonths);` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:72 | Math.ceil | `const emi = Math.ceil(totalPayable / tenureMonths);` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:79 | Math.ceil | `const prinPart = Math.ceil(actualEmi - monthlyInterest);` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:82 | Math.ceil | `emiAmount: Math.ceil(actualEmi), principal: prinPart,` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:83 | Math.ceil | `interest: Math.ceil(monthlyInterest),` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:95 | Math.ceil | `? Math.ceil(principal / tenureMonths)` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:96 | Math.ceil | `: Math.ceil(principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:120 | Math.ceil | `if (interestType === 'nil') return Math.ceil(principal / tenureMonths);` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:123 | Math.ceil | `return Math.ceil((principal + totalInterest) / tenureMonths);` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:126 | Math.ceil | `if (r === 0) return Math.ceil(principal / tenureMonths);` | money math without precision contract — needs-founder-ruling |
+| src/pages/erp/pay-hub/transactions/EmployeeFinance.tsx:127 | Math.ceil | `return Math.ceil(principal * r * Math.pow(1+r,tenureMonths) / (Math.pow(1+r,tenureMonths)-1));` | money math without precision contract — needs-founder-ruling |
+
+### T1 Re-Sweep — Class B additions (Math.floor/Math.ceil)
+
+| File:Line | Pattern | Code | Note |
+|---|---|---|---|
+| src/pages/mobile/telecaller/MobileTelecallerStatsPage.tsx:40 | Math.floor | `const m = Math.floor(secs / 60);` | display path |
+| src/components/uth/PinnedTemplatesWidget.tsx:40 | Math.floor | `const m = Math.floor(diff / 60000);` | display path |
+| src/components/uth/PinnedTemplatesWidget.tsx:43 | Math.floor | `const h = Math.floor(m / 60);` | display path |
+| src/components/uth/PinnedTemplatesWidget.tsx:45 | Math.floor | `const d = Math.floor(h / 24);` | display path |
+| src/components/uth/PinnedTemplatesWidget.tsx:47 | Math.floor | `const mo = Math.floor(d / 30);` | display path |
+| src/pages/mobile/telecaller/MobileTelecallerCallLogPage.tsx:58 | Math.floor | `const m = Math.floor(secs / 60);` | display path |
+| src/pages/mobile/telecaller/MobileActiveCallPage.tsx:113 | Math.floor | `const duration = Math.floor((Date.now() - callStartTime) / 1000);` | display path |
+| src/pages/mobile/supervisor/MobileTeamLiveViewPage.tsx:98 | Math.floor | `<span>{Math.floor(s.on_call_seconds_today / 60)}m talk</span>` | display path |
+| src/pages/mobile/supervisor/MobileTeamLiveViewPage.tsx:99 | Math.floor | `<span>{Math.floor(s.break_seconds_today / 60)}m break</span>` | display path |
+| src/pages/mobile/supervisor/MobileCoverageMapPage.tsx:27 | Math.floor | `const diffSec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);` | display path |
+| src/pages/mobile/supervisor/MobileCoverageMapPage.tsx:29 | Math.floor | `if (diffSec < 3600) return `${Math.floor(diffSec / 60)}m ago`;` | display path |
+| src/pages/mobile/supervisor/MobileCoverageMapPage.tsx:30 | Math.floor | `if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}h ago`;` | display path |
+| src/pages/mobile/supervisor/MobileCoverageMapPage.tsx:31 | Math.floor | `return `${Math.floor(diffSec / 86400)}d ago`;` | display path |
+| src/pages/mobile/salesman/MobileSalesmanBeatPage.tsx:50 | Math.floor | `const days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);` | display path |
+| src/pages/erp/logistic/LogisticDashboard.tsx:26 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));` | display path |
+| src/pages/erp/inventory/reports/SlowMovingDeadStockReport.tsx:78 | Math.floor | `? Math.floor((now - lastT) / (24 * 60 * 60 * 1000))` | display path |
+| src/pages/erp/inventory/reports/AgedGITReport.tsx:30 | Math.floor | `return Math.max(0, Math.floor(ms / (24 * 60 * 60 * 1000)));` | display path |
+| src/pages/erp/production/reports/WIPReport.tsx:19 | Math.floor | `return Math.floor((Date.now() - new Date(released.changed_at).getTime()) / 86400000);` | display path |
+| src/pages/erp/production/reports/StockWithJobWorker.tsx:50 | Math.floor | `const ageDays = Math.floor((today - new Date(j.jwo_date).getTime()) / 86400000);` | display path |
+| src/pages/erp/fincore/registers/ApprovalsPendingPage.tsx:39 | Math.floor | `return Math.max(0, Math.floor((Date.now() - t) / 86400000));` | display path |
+| src/pages/erp/production/reports/JobWorkAgeingAnalysis.tsx:34 | Math.floor | `const ageDays = Math.floor((today - new Date(j.jwo_date).getTime()) / 86400000);` | display path |
+| src/pages/erp/salesx/reports/FollowUpRegisterReport.tsx:43 | Math.floor | `const daysOverdue = Math.floor(` | display path |
+| src/pages/erp/salesx/reports/CrossDeptHandoffTracker.tsx:145 | Math.floor | `const daysSince = Math.max(0, Math.floor(` | display path |
+| src/pages/erp/salesx/reports/CallLogHistoryReport.tsx:56 | Math.floor | `const m = Math.floor(secs / 60);` | display path |
+| src/pages/erp/fincore/reports/EWayBillRegister.tsx:55 | Math.floor | `const h = Math.floor(ms / 3600000);` | display path |
+| src/pages/erp/fincore/reports/EWayBillRegister.tsx:56 | Math.floor | `const d = Math.floor(h / 24);` | display path |
+| src/pages/erp/receivx/reports/CreditRiskReport.tsx:83 | Math.floor | `const ages = myOutstanding.map(o => Math.floor((todayD - new Date(o.due_date).getTime()) / (1000 * 60 * 60 * 24)));` | display path |
+| src/pages/erp/procure-hub/reports/PiPendingPanel.tsx:34 | Math.floor | `const days = Math.floor((now - new Date(d.pi_draft_date \|\| d.created_at).getTime()) / MS_PER_DAY);` | display path |
+| src/pages/erp/maintainpro/reports/OpenWOStatusReport.tsx:13 | Math.floor | `const days = Math.floor((Date.now() - new Date(createdAt).getTime()) / 86400000);` | display path |
+| src/pages/erp/procure-hub/reports/PeqFollowupRegisterPanel.tsx:23 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));` | display path |
+| src/pages/erp/procure-hub/reports/VendorReliabilityPanel.tsx:20 | Math.floor | `const idx = Math.floor(sorted.length * 0.75);` | display path |
+| src/pages/erp/procure-hub/reports/PeqFollowupPanel.tsx:41 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));` | display path |
+| src/pages/erp/procure-hub/reports/GroupWiseOutstandingPanel.tsx:57 | Math.floor | `const days = Math.floor((now - new Date(b.created_at).getTime()) / MS_PER_DAY);` | display path |
+| src/pages/erp/procure-hub/reports/TdsDeductionReportPanel.tsx:24 | Math.floor | `const q = Math.floor(((d.getMonth() + 9) % 12) / 3) + 1;` | display path |
+| src/pages/erp/procure-hub/reports/SupplierWiseOutstandingPanel.tsx:46 | Math.floor | `const days = Math.floor((now - new Date(b.created_at).getTime()) / MS_PER_DAY);` | display path |
+| src/pages/erp/maintainpro/reports/FireSafetyExpiryReport.tsx:17 | Math.floor | `const days = Math.floor((exp - now) / 86400000);` | display path |
+| src/pages/erp/maintainpro/reports/CalibrationStatusReport.tsx:17 | Math.floor | `const days = Math.floor((due - now) / 86400000);` | display path |
+| src/pages/erp/accounting/LedgerMaster.tsx:698 | Math.floor | `if (n < 100) return tens[Math.floor(n/10)] + ' ' + ones[n%10] + ' ';` | display path |
+| src/pages/erp/accounting/LedgerMaster.tsx:699 | Math.floor | `if (n < 1000) return ones[Math.floor(n/100)] + ' Hundred ' + toWords(n%100);` | display path |
+| src/pages/erp/accounting/LedgerMaster.tsx:700 | Math.floor | `if (n < 100000) return toWords(Math.floor(n/1000)) + 'Thousand ' + toWords(n%1000);` | display path |
+| src/pages/erp/pay-hub/PayHubDashboard.tsx:339 | Math.floor | `yearsIn: Math.floor(yearsInRole),` | display path |
+| src/pages/erp/maintainpro/reports/AMCOutToVendorStatus.tsx:22 | Math.floor | `s.totalDays += Math.floor((new Date(a.actual_return_date).getTime() - new Date(a.sent_date).getTime()) / 86400000);` | display path |
+| src/pages/erp/dispatch/reports/SavingsROIDashboard.tsx:63 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));` | display path |
+| src/pages/mobile/manager/MobileProjectHealthPage.tsx:40 | Math.ceil | `return Math.ceil(ms / (1000 * 60 * 60 * 24));` | display path |
+| src/components/foundation/FoundationListPage.tsx:69 | Math.ceil | `const pages = Math.max(1, Math.ceil(total / perPage));` | display path |
+| src/pages/erp/qualicheck/reports/WpqExpiryDashboard.tsx:63 | Math.ceil | `const days = Math.ceil(` | display path |
+| src/pages/erp/production/reports/ManpowerProductionReport.tsx:104 | Math.ceil | `const top10 = Math.max(1, Math.ceil(list.length * 0.1));` | display path |
+| src/pages/erp/fincore/reports/AuditDashboard.tsx:76 | Math.ceil | `return Math.ceil((d.getTime() - Date.now()) / (1000 * 60 * 60 * 24));` | display path |
+| src/pages/erp/procure-hub/reports/PreClosePendingPanel.tsx:29 | Math.ceil | `(r) => r.vendors_quoted >= Math.ceil(r.vendors_invited / 2) && r.pct_elapsed < 100,` | display path |
+
+### T1 Re-Sweep — Class C additions (Math.floor/Math.ceil)
+
+| File:Line | Pattern | Code | Note |
+|---|---|---|---|
+| src/data/demo-field-force-data.ts:39 | Math.floor | `return Math.floor(rand() * (max - min + 1)) + min;` | non-money non-critical |
+| src/data/demo-field-force-data.ts:41 | Math.floor | `function pick<T>(arr: T[]): T { return arr[Math.floor(rand() * arr.length)]; }` | non-money non-critical |
+| src/lib/audit-trail-engine.ts:96 | Math.floor | `const truncated = existing.slice(-Math.floor(existing.length / 2));` | non-money non-critical |
+| src/pages/tower/Support.tsx:249 | Math.floor | `const newId = `TKT-00${42 + Math.floor(Math.random() * 9)}`;` | non-money non-critical |
+| src/lib/distributor-auth-engine.ts:29 | Math.floor | `iat: Math.floor(Date.now() / 1000),` | non-money non-critical |
+| src/lib/distributor-auth-engine.ts:30 | Math.floor | `exp: Math.floor(Date.now() / 1000) + 8 * 60 * 60, // 8h` | non-money non-critical |
+| src/lib/ewb-engine.ts:118 | Math.floor | `return String(Math.floor(Math.random() * 1e12)).padStart(12, '0');` | non-money non-critical |
+| src/lib/dunning-engine.ts:79 | Math.floor | `const days = Math.max(0, Math.floor((todayMs - new Date(e.due_date).getTime()) / 86400000));` | non-money non-critical |
+| src/components/uth/DraftRecoveryDialog.tsx:29 | Math.floor | `if (seconds < 3600) return `${Math.floor(seconds / 60)} min`;` | non-money non-critical |
+| src/components/uth/DraftRecoveryDialog.tsx:30 | Math.floor | `if (seconds < 86400) return `${Math.floor(seconds / 3600)} hr`;` | non-money non-critical |
+| src/components/uth/DraftRecoveryDialog.tsx:31 | Math.floor | `return `${Math.floor(seconds / 86400)} days`;` | non-money non-critical |
+| src/lib/customer-clv-engine.ts:17 | Math.floor | `return Math.floor((now.getTime() - new Date(iso).getTime()) / MS_PER_DAY);` | non-money non-critical |
+| src/lib/cart-abandonment-engine.ts:25 | Math.floor | `return Math.floor((now.getTime() - new Date(iso).getTime()) / 60_000);` | non-money non-critical |
+| src/lib/fiscal-year-engine.ts:19 | Math.floor | `const y = startYear + Math.floor((startMonth - 1 + i) / 12);` | non-money non-critical |
+| src/lib/consumption-intelligence-engine.ts:136 | Math.floor | `const idleDays = Math.floor((Date.now() - last) / DAY_MS);` | non-money non-critical |
+| src/lib/customer-churn-engine.ts:35 | Math.floor | `return Math.floor((now.getTime() - new Date(iso).getTime()) / MS_PER_DAY);` | non-money non-critical |
+| src/lib/field-force-engine.ts:85 | Math.floor | `return Math.floor(ms / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/lib/logistic-auth-engine.ts:47 | Math.floor | `iat: Math.floor(Date.now() / 1000),` | non-money non-critical |
+| src/lib/logistic-auth-engine.ts:48 | Math.floor | `exp: Math.floor(Date.now() / 1000) + SESSION_HOURS * 3600,` | non-money non-critical |
+| src/lib/location-tracker-engine.ts:173 | Math.floor | `const minsOffline = Math.floor((Date.now() - lastOnlineFalseAt) / 60_000);` | non-money non-critical |
+| src/lib/packing-slip-engine.ts:33 | Math.floor | `const fullCartons = packsPerCarton > 0 ? Math.floor(qty / packsPerCarton) : 0;` | non-money non-critical |
+| src/lib/irn-engine.ts:206 | Math.floor | `out += chars[Math.floor(Math.random() * 16)];` | non-money non-critical |
+| src/lib/irn-engine.ts:259 | Math.floor | `const ackNo = String(Math.floor(Math.random() * 1e14)).padStart(14, '0');` | non-money non-critical |
+| src/lib/irn-engine.ts:278 | Math.floor | `for (let i = 0; i < 384; i += 1) qrSig += sigChars[Math.floor(Math.random() * sigChars.length)];` | non-money non-critical |
+| src/hooks/useCycleCounts.ts:66 | Math.floor | `? Math.floor((asOfMs - Date.parse(lastCounted)) / 86400000)` | non-money non-critical |
+| src/lib/commission-engine.ts:173 | Math.floor | `const daysSince = Math.floor((recMs - invMs) / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/lib/oob/vehicle-expiry-alerts.ts:52 | Math.floor | `days_remaining: Math.floor((ts - today) / 86400000),` | non-money non-critical |
+| src/lib/oob/stock-hold-report-engine.ts:48 | Math.floor | `return Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 86400000));` | non-money non-critical |
+| src/lib/oob/qa-pending-inspection-alerts.ts:81 | Math.floor | `const ageH = Math.floor((now - ts) / 3600000);` | non-money non-critical |
+| src/lib/git-engine.ts:263 | Math.floor | `return Math.max(0, Math.floor((end - start) / 86400000));` | non-money non-critical |
+| src/hooks/useAgentStatus.ts:86 | Math.floor | `const prevSecs = Math.floor((Date.now() - new Date(row.state_changed_at).getTime()) / 1000);` | non-money non-critical |
+| src/lib/maintainpro-engine.ts:171 | Math.floor | `const daysUntilDue = Math.floor((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/lib/maintainpro-engine.ts:235 | Math.floor | `const daysUntilExpiry = Math.floor(` | non-money non-critical |
+| src/lib/oob/contract-expiry-alerts.ts:24 | Math.floor | `days_remaining: Math.floor((new Date(c.valid_to).getTime() - today) / 86400000),` | non-money non-critical |
+| src/lib/vendor-portal-auth-engine.ts:53 | Math.floor | `iat: Math.floor(Date.now() / 1000),` | non-money non-critical |
+| src/lib/vendor-portal-auth-engine.ts:54 | Math.floor | `exp: Math.floor(Date.now() / 1000) + SESSION_HOURS * 3600,` | non-money non-critical |
+| src/lib/oob/driver-expiry-alerts.ts:41 | Math.floor | `days_remaining: Math.floor((ts - today) / 86400000),` | non-money non-critical |
+| src/lib/sitex-signoff-engine.ts:35 | Math.floor | `id: `SIGN-${Date.now()}-${Math.floor(Math.random() * 1000)}`,` | non-money non-critical |
+| src/lib/production-variance-engine.ts:236 | Math.floor | `const daysDelta = Math.floor((actualEnd.getTime() - plannedEnd.getTime()) / 86400000);` | non-money non-critical |
+| src/lib/sitex-ra-bill-engine.ts:57 | Math.floor | `id: `RA-${Date.now()}-${Math.floor(Math.random() * 1000)}`,` | non-money non-critical |
+| src/lib/sitex-ra-bill-engine.ts:83 | Math.floor | `id: `RAL-${Date.now()}-${Math.floor(Math.random() * 1000)}`,` | non-money non-critical |
+| src/lib/sitex-ra-bill-engine.ts:109 | Math.floor | `apps.push({ id: `APP-${Date.now()}-${Math.floor(Math.random() * 1000)}`, ...entry });` | non-money non-critical |
+| src/lib/oob/gate-dwell-alerts.ts:36 | Math.floor | `const minutes = Math.floor((now - ts) / 60000);` | non-money non-critical |
+| src/lib/sitex-imprest-engine.ts:45 | Math.floor | `id: `IMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`,` | non-money non-critical |
+| src/lib/sitex-imprest-engine.ts:141 | Math.floor | `const txnId = `TXN-${Date.now()}-${Math.floor(Math.random() * 1000)}`;` | non-money non-critical |
+| src/lib/sitex-imprest-engine.ts:197 | Math.floor | `? Math.floor((Date.now() - new Date(imp.last_replenishment_date).getTime()) / 86400000)` | non-money non-critical |
+| src/lib/sitex-engine.ts:104 | Math.floor | `const daysInProgress = Math.floor((Date.now() - start.getTime()) / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/lib/servicedesk-engine.ts:485 | Math.floor | `const otp = String(Math.floor(100000 + Math.random() * 900000));` | non-money non-critical |
+| src/lib/procurement-pr-receiver.ts:65 | Math.floor | `const days = Math.max(0, Math.floor((today - new Date(i.date).getTime()) / 86400000));` | non-money non-critical |
+| src/lib/procure360-report-engine.ts:26 | Math.floor | `? Math.floor((today - new Date(r.sent_at).getTime()) / 86400000)` | non-money non-critical |
+| src/lib/procure360-report-engine.ts:188 | Math.floor | `else if (period === 'qoq') key = `${d.getFullYear()}-Q${Math.floor(d.getMonth() / 3) + 1}`;` | non-money non-critical |
+| src/lib/procure-followup-engine.ts:88 | Math.floor | `days_overdue: Math.floor(` | non-money non-critical |
+| src/lib/pod-engine.ts:57 | Math.floor | `return String(Math.floor(100_000 + Math.random() * 900_000));` | non-money non-critical |
+| src/lib/po-management-engine.ts:301 | Math.floor | `return ms > 0 ? Math.floor(ms / 86400000) : 0;` | non-money non-critical |
+| src/lib/scheme-seed.ts:10 | Math.floor | `const endOfQuarter = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3 + 3, 0).toISOString();` | non-money non-critical |
+| src/components/ui/sidebar.tsx:536 | Math.floor | `return `${Math.floor(Math.random() * 40) + 50}%`;` | non-money non-critical |
+| src/hooks/useLeaveManagement.ts:110 | Math.floor | `const monthsElapsed = Math.max(0, Math.floor(` | non-money non-critical |
+| src/hooks/useLeaveManagement.ts:114 | Math.floor | `? Math.floor((daysPerYear / monthsInFY) * Math.min(monthsElapsed, monthsInFY) * 2) / 2` | non-money non-critical |
+| src/features/party-master/lib/cross-sell-finder.ts:76 | Math.floor | `const days = Math.floor((Date.now() - new Date(last).getTime()) / 86_400_000);` | non-money non-critical |
+| src/hooks/useLeadDistribution.ts:199 | Math.floor | `const targetLoad = Math.floor(c.daily_capacity * 0.85);` | non-money non-critical |
+| src/lib/requestx-report-engine.ts:82 | Math.floor | `return Math.max(0, Math.floor((Date.now() - d.getTime()) / 86400000));` | non-money non-critical |
+| src/components/layout/ReplicaSyncChip.tsx:20 | Math.floor | `if (delta < 3_600_000) return `${Math.floor(delta / 60_000)}m ago`;` | non-money non-critical |
+| src/components/layout/ReplicaSyncChip.tsx:21 | Math.floor | `if (delta < 86_400_000) return `${Math.floor(delta / 3_600_000)}h ago`;` | non-money non-critical |
+| src/components/layout/ReplicaSyncChip.tsx:22 | Math.floor | `return `${Math.floor(delta / 86_400_000)}d ago`;` | non-money non-critical |
+| src/lib/receivx-engine.ts:24 | Math.floor | `return Math.floor((db - da) / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/pages/erp/logistic/LogisticLRQueue.tsx:29 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/components/layout/RecentActivityDrawer.tsx:26 | Math.floor | `if (delta < 3_600_000) return `${Math.floor(delta / 60_000)}m ago`;` | non-money non-critical |
+| src/components/layout/RecentActivityDrawer.tsx:27 | Math.floor | `if (delta < 86_400_000) return `${Math.floor(delta / 3_600_000)}h ago`;` | non-money non-critical |
+| src/components/layout/RecentActivityDrawer.tsx:28 | Math.floor | `return `${Math.floor(delta / 86_400_000)}d ago`;` | non-money non-critical |
+| src/pages/erp/logistic/LogisticDisputes.tsx:26 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/hooks/useEmployees.ts:113 | Math.floor | `const yrs = Math.floor(ms / (365.25 * 24 * 3600 * 1000));` | non-money non-critical |
+| src/hooks/useEmployees.ts:114 | Math.floor | `const months = Math.floor((ms % (365.25 * 24 * 3600 * 1000)) / (30.44 * 24 * 3600 * 1000));` | non-money non-critical |
+| src/hooks/useDraftAutoSave.ts:76 | Math.floor | `return meta ? Math.max(0, Math.floor((Date.now() - new Date(meta.savedAt).getTime()) / 1000)) : 0;` | non-money non-critical |
+| src/hooks/useDraftAutoSave.ts:112 | Math.floor | `setDraftAge(Math.max(0, Math.floor((Date.now() - new Date(meta.savedAt).getTime()) / 1000)));` | non-money non-critical |
+| src/pages/erp/gateflow/vehicle-panels.tsx:109 | Math.floor | `const days = Math.floor((exp - now) / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/pages/erp/gateflow/alerts-panels.tsx:40 | Math.floor | `const label = min >= 60 ? `${Math.floor(min / 60)}h ${min % 60}m` : `${min}m`;` | non-money non-critical |
+| src/pages/erp/salesx/transactions/Telecaller.tsx:199 | Math.floor | `const daysAgo = Math.floor(` | non-money non-critical |
+| src/pages/erp/salesx/transactions/Telecaller.tsx:216 | Math.floor | `const daysAgo = Math.floor(` | non-money non-critical |
+| src/pages/erp/salesx/transactions/Telecaller.tsx:511 | Math.floor | `const mins = Math.floor(duration / 60), secs = duration % 60;` | non-money non-critical |
+| src/pages/erp/salesx/transactions/Telecaller.tsx:699 | Math.floor | `const daysAgo = Math.floor(` | non-money non-critical |
+| src/pages/erp/salesx/transactions/Telecaller.tsx:1148 | Math.floor | `const minsInState = Math.floor((Date.now() - new Date(s.state_changed_at).getTime()) / 60000);` | non-money non-critical |
+| src/pages/erp/salesx/transactions/Telecaller.tsx:1149 | Math.floor | `const fmtSecs = (n: number) => `${Math.floor(n / 60)}m`;` | non-money non-critical |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:41 | Math.floor | `if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 ? ' ' + ones[n % 10] : '');` | non-money non-critical |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:42 | Math.floor | `if (n < 1000) return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 ? ' ' + convert(n % 100) : '');` | non-money non-critical |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:43 | Math.floor | `if (n < 100000) return convert(Math.floor(n / 1000)) + ' Thousand' + (n % 1000 ? ' ' + convert(n % 1000) : '');` | non-money non-critical |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:44 | Math.floor | `if (n < 10000000) return convert(Math.floor(n / 100000)) + ' Lakh' + (n % 100000 ? ' ' + convert(n % 100000) : '');` | non-money non-critical |
+| src/pages/erp/pay-hub/transactions/PayslipGeneration.tsx:45 | Math.floor | `return convert(Math.floor(n / 10000000)) + ' Crore' + (n % 10000000 ? ' ' + convert(n % 10000000) : '');` | non-money non-critical |
+| src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:47 | Math.floor | `const mins = Math.floor(diff / 60000);` | non-money non-critical |
+| src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:50 | Math.floor | `const hrs = Math.floor(mins / 60);` | non-money non-critical |
+| src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:52 | Math.floor | `const days = Math.floor(hrs / 24);` | non-money non-critical |
+| src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:286 | Math.floor | `const yrs = Math.floor(diff / (365.25 * 86400000));` | non-money non-critical |
+| src/pages/erp/distributor-hub/DistributorHubWelcome.tsx:60 | Math.floor | `const mins = Math.floor(diff / 60000);` | non-money non-critical |
+| src/pages/erp/distributor-hub/DistributorHubWelcome.tsx:63 | Math.floor | `const hrs = Math.floor(mins / 60);` | non-money non-critical |
+| src/pages/erp/distributor-hub/DistributorHubWelcome.tsx:65 | Math.floor | `const days = Math.floor(hrs / 24);` | non-money non-critical |
+| src/pages/erp/procure-hub/panels.tsx:1247 | Math.floor | `? Math.floor((today - new Date(r.timeout_at).getTime()) / 86400000)` | non-money non-critical |
+| src/pages/erp/accounting/LedgerMaster.tsx:702 | Math.floor | `const lakhs = Math.floor(n / 100000);` | non-money non-critical |
+| src/pages/erp/accounting/LedgerMaster.tsx:705 | Math.floor | `const crores = Math.floor(n / 10000000);` | non-money non-critical |
+| src/pages/erp/accounting/LedgerMaster.tsx:2304 | Math.floor | `const dm = m + i - 1; const dy = y + Math.floor(dm / 12);` | non-money non-critical |
+| src/pages/erp/dispatch/transactions/LRUpdate.tsx:26 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);` | non-money non-critical |
+| src/pages/erp/dispatch/transactions/LRTracker.tsx:32 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);` | non-money non-critical |
+| src/pages/erp/accounting/capital-assets/CapitalAssetMaster.tsx:343 | Math.floor | `const age = Math.floor((Date.now() - new Date(u.purchase_date).getTime()) / 86400000);` | non-money non-critical |
+| src/pages/erp/accounting/capital-assets/CWIPRegister.tsx:84 | Math.floor | `const age = Math.floor((Date.now() - new Date(u.purchase_date).getTime()) / 86400000);` | non-money non-critical |
+| src/pages/erp/dispatch/transactions/DisputeQueue.tsx:48 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000);` | non-money non-critical |
+| src/pages/erp/accounting/capital-assets/AMCWarrantyTracker.tsx:27 | Math.floor | `return Math.floor((new Date(dateStr).getTime() - Date.now()) / 86400000);` | non-money non-critical |
+| src/pages/erp/dispatch/DispatchHubWelcome.tsx:31 | Math.floor | `return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/pages/erp/distributor/DistributorDisputeQueue.tsx:91 | Math.floor | `approved = Math.floor(rs * 100);` | non-money non-critical |
+| src/services/entity-setup-service.ts:1826 | Math.ceil | `const withCustomer = i <= Math.ceil(rpCfg.count / 2);` | non-money non-critical |
+| src/lib/distributor-order-engine.ts:119 | Math.ceil | `const target = Math.ceil(daily * coverDays);` | non-money non-critical |
+| src/pages/vendor-portal/VendorInbox.tsx:42 | Math.ceil | `return Math.ceil(ms / 86_400_000);` | non-money non-critical |
+| src/lib/ewb-engine.ts:111 | Math.ceil | `const days = Math.max(1, Math.ceil(distanceKm / 200));` | non-money non-critical |
+| src/lib/servicedesk-engine.ts:434 | Math.ceil | `return Math.ceil(ms / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/lib/servicedesk-engine.ts:632 | Math.ceil | `const days = Math.ceil((new Date(amc.contract_end).getTime() - Date.now()) / (86400 * 1000));` | non-money non-critical |
+| src/lib/servicedesk-engine.ts:986 | Math.ceil | `const turnaround_days = Math.max(0, Math.ceil((inAt - outAt) / (86400 * 1000)));` | non-money non-critical |
+| src/lib/servicedesk-engine.ts:1089 | Math.ceil | `const days = Math.max(1, Math.ceil((Date.now() - outAt) / (86400 * 1000)));` | non-money non-critical |
+| src/lib/servicedesk-engine.ts:1321 | Math.ceil | `const actual_days = Math.ceil(` | non-money non-critical |
+| src/lib/servicedesk-engine.ts:1459 | Math.ceil | `return Math.ceil(base_hours * benefits.sla_multiplier);` | non-money non-critical |
+| src/lib/scheduling-engine.ts:68 | Math.ceil | `duration_days: Math.ceil((endMs - startMs) / 86400000),` | non-money non-critical |
+| src/lib/scheduling-engine.ts:112 | Math.ceil | `duration_days: Math.ceil((endMs - startMs) / 86400000),` | non-money non-critical |
+| src/lib/loyalty-engine.ts:157 | Math.ceil | `return Math.max(0, Math.ceil(ms / MS_PER_DAY));` | non-money non-critical |
+| src/lib/sample-kit-engine.ts:73 | Math.ceil | `return Math.ceil(ms / MS_PER_DAY);` | non-money non-critical |
+| src/components/batch-grid/BatchList.tsx:23 | Math.ceil | `const d = Math.ceil((new Date(b.expiry_date).getTime() - today.getTime()) / 86400000);` | non-money non-critical |
+| src/pages/erp/accounting/LedgerMaster.tsx:4015 | Math.ceil | `return Math.ceil(diff / (1000 * 60 * 60 * 24));` | non-money non-critical |
+| src/pages/erp/customer-hub/transactions/CustomerCart.tsx:136 | Math.ceil | `const effectiveRedeemPoints = loyaltyDiscount > 0 ? Math.ceil(loyaltyDiscount * 10 / 100) : 0; // reverse calc` | non-money non-critical |
+| src/pages/erp/inventory/InventoryHubWelcome.tsx:145 | Math.ceil | `cycleCountsDue = ageDays > 30 ? Math.ceil(ageDays / 30) : 0;` | non-money non-critical |
+| src/pages/erp/pay-hub/masters/AssetMaster.tsx:518 | Math.ceil | `if (diff < 90) return <p className="text-[10px] text-amber-600 mt-0.5">⚠ Warranty expires in {Math.ceil(diff)} days</p>;` | non-money non-critical |
+
+### T1 Re-Sweep — Class A additions (Math.floor/Math.ceil)
+
+| File:Line | Pattern | Code | Note |
+|---|---|---|---|
