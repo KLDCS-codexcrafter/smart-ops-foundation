@@ -56,6 +56,10 @@ import { IoTReadyFoundation } from './phase2-preview/IoTReadyFoundation';
 import { ServicePerformanceBenchmark } from './phase2-preview/ServicePerformanceBenchmark';
 import { EngineerReputationRating } from './phase2-preview/EngineerReputationRating';
 import { FutureTaskRegisterViewer } from './future-task-register/FutureTaskRegisterViewer';
+import { CommissionRatesSettings } from './settings/CommissionRatesSettings';
+import { EmailTemplatesSettings } from './settings/EmailTemplatesSettings';
+import { TellicallerTriggersSettings } from './settings/TellicallerTriggersSettings';
+import { CallTypeMasterSettings } from './settings/CallTypeMasterSettings';
 
 export default function ServiceDeskPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<ServiceDeskModule>('welcome');
@@ -227,6 +231,14 @@ export default function ServiceDeskPage(): JSX.Element {
         return <EngineerReputationRating />;
       case 'future-task-register':
         return <FutureTaskRegisterViewer />;
+      case 'commission-settings':
+        return <CommissionRatesSettings />;
+      case 'email-templates':
+        return <EmailTemplatesSettings />;
+      case 'tellicaller-triggers':
+        return <TellicallerTriggersSettings />;
+      case 'call-type-master':
+        return <CallTypeMasterSettings />;
       default:
         return <ServiceDeskWelcome onNavigate={setActiveModule} />;
     }
