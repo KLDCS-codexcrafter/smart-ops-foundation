@@ -37,6 +37,7 @@ export function CustomerOutDialog({ open, onClose, ticket, onCreated }: Props): 
   const [paid, setPaid] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
   const [deliveredTo, setDeliveredTo] = useState('');
+  const [trainingAck, setTrainingAck] = useState(false); // S33 Customer Training Ack
 
   const next = (): void => setStep((s) => Math.min(5, s + 1));
   const prev = (): void => setStep((s) => Math.max(1, s - 1));
@@ -57,7 +58,7 @@ export function CustomerOutDialog({ open, onClose, ticket, onCreated }: Props): 
       payment_method: paid ? paymentMethod : null,
       delivered_to: deliveredTo,
       delivered_at: new Date().toISOString(),
-      acknowledgement_signed: false,
+      acknowledgement_signed: trainingAck,
       acknowledgement_signature_url: null,
       created_by: ACTOR,
     });
@@ -137,6 +138,17 @@ export function CustomerOutDialog({ open, onClose, ticket, onCreated }: Props): 
           {step === 5 && (
             <div className="space-y-2">
               <div><Label>Delivered To</Label><Input value={deliveredTo} onChange={(e) => setDeliveredTo(e.target.value)} /></div>
+              <div className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/30 p-3">
+                <input
+                  type="checkbox"
+                  id="training-ack"
+                  checked={trainingAck}
+                  onChange={(e) => setTrainingAck(e.target.checked)}
+                />
+                <Label htmlFor="training-ack" className="text-sm">
+                  Customer trained on operation &amp; care · acknowledgement captured (S33)
+                </Label>
+              </div>
               <p className="text-xs text-muted-foreground">{/* [JWT] signature pad Phase 2 */}Signature capture wired in Phase 2.</p>
             </div>
           )}

@@ -6,7 +6,11 @@
  */
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck, ShieldAlert } from 'lucide-react';
 import { listAllSparesIssues } from '@/lib/servicedesk-engine';
+
+// S34 Spare QR Authenticity · derive from spare_id prefix (OEM- = genuine, others = unverified)
+const isGenuineSpare = (spareId: string): boolean => /^OEM-/i.test(spareId);
 
 export function SparesIssuedFromField(): JSX.Element {
   const spares = listAllSparesIssues();
@@ -31,6 +35,7 @@ export function SparesIssuedFromField(): JSX.Element {
                 <th className="p-3 font-medium">Cost ₹</th>
                 <th className="p-3 font-medium">Engineer</th>
                 <th className="p-3 font-medium">Billable</th>
+                <th className="p-3 font-medium">QR Authenticity</th>
                 <th className="p-3 font-medium">Issued</th>
               </tr>
             </thead>
@@ -46,6 +51,17 @@ export function SparesIssuedFromField(): JSX.Element {
                     <Badge variant={s.billable_to_customer ? 'default' : 'outline'}>
                       {s.billable_to_customer ? 'Yes' : 'No'}
                     </Badge>
+                  </td>
+                  <td className="p-3">
+                    {isGenuineSpare(s.spare_id) ? (
+                      <Badge variant="default" className="gap-1">
+                        <ShieldCheck className="h-3 w-3" /> Genuine
+                      </Badge>
+                    ) : (
+                      <Badge variant="outline" className="gap-1 text-warning">
+                        <ShieldAlert className="h-3 w-3" /> Unverified
+                      </Badge>
+                    )}
                   </td>
                   <td className="p-3 font-mono text-xs">{s.issued_at.slice(0, 16).replace('T', ' ')}</td>
                 </tr>
