@@ -40,7 +40,7 @@
 | 17 | `…/SalaryStructureMaster.tsx:409` | `previewCTC` (preview computation input) | **MIGRATE** | 2 |
 | 18 | `src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1408` | `principalAmount` (loan) | **MIGRATE** | 2 |
 | 19 | `…/EmployeeMaster.tsx:1409` | `emiAmount` (loan) | **MIGRATE** | 2 |
-| 20 | `…/EmployeeMaster.tsx:1444` | `elOpeningBalance` (carry-forward money) | **MIGRATE** | 2 |
+| 20 | `…/EmployeeMaster.tsx:1444` | `elOpeningBalance` (leave-days quantity — uses `resolveQtyPrecision`) | **MIGRATE** | 2 |
 | 21 | `…/EmployeeMaster.tsx:1462` | `prevEmp.grossSalary` | **MIGRATE** | 2 |
 | 22 | `…/EmployeeMaster.tsx:1463` | `prevEmp.tdsDeducted` | **MIGRATE** | 2 |
 | 23 | `…/EmployeeMaster.tsx:1494` | `hourly_rate_production` (₹/hr) | **MIGRATE** | 2 |
