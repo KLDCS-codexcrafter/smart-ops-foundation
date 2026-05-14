@@ -77,7 +77,7 @@ describe('A.17 · MaintainPro status flip · Q-LOCK-1', () => {
   });
 
   it('migration if condition includes all 6 historical status-flip cards', () => {
-    // Match the if condition with all 6 conditions present
-    expect(useCardEntitlementSource).toMatch(/if \(gfProd \|\| procure360 \|\| qualicheck \|\| engineeringx \|\| sitex \|\| maintainpro\)/);
+    // Match the if condition with all 6 historical conditions present (servicedesk appended at C.2.T2)
+    expect(useCardEntitlementSource).toMatch(/if \(gfProd \|\| procure360 \|\| qualicheck \|\| engineeringx \|\| sitex \|\| maintainpro/);
   });
 });
