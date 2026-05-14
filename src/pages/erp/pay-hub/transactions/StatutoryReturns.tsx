@@ -33,6 +33,7 @@ import { EMPLOYEES_KEY } from '@/types/employee';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 void PAYROLL_RUNS_KEY;
 
 // ── Helper: next Form 24Q due date ───────────────────────────────
@@ -991,7 +992,7 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
               <div className="space-y-1">
                 <Label className="text-xs">Total Amount (₹)</Label>
                 <Input className="h-8 text-xs" value={challanForm.totalAmount || ''}
-                  onChange={e => cf('totalAmount', parseFloat(e.target.value) || 0)}
+                  onChange={e => cf('totalAmount', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                   onKeyDown={onEnterNext} {...amountInputProps} />
               </div>
             </div>

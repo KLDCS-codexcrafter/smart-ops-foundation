@@ -27,6 +27,7 @@ import { indianStates, getDistrictsByState, getCitiesByDistrict } from '@/data/i
 import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/keyboard';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 type EmployeeView = 'list' | 'profile' | 'create' | 'edit';
 
@@ -1405,8 +1406,8 @@ export function EmployeeMasterPanel() {
             {form.loanDetails.map(ln => (
               <div key={ln.id} className="grid grid-cols-6 gap-2 mb-2 items-end">
                 <div><Label className="text-[10px]">Loan Type</Label><Input value={ln.loanTypeName} onChange={e => updateLoan(ln.id, { loanTypeName: e.target.value })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
-                <div><Label className="text-[10px]">Principal (₹)</Label><Input type="number" value={ln.principalAmount || ''} onChange={e => updateLoan(ln.id, { principalAmount: parseFloat(e.target.value) || 0 })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
-                <div><Label className="text-[10px]">EMI (₹)</Label><Input type="number" value={ln.emiAmount || ''} onChange={e => updateLoan(ln.id, { emiAmount: parseFloat(e.target.value) || 0 })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
+                <div><Label className="text-[10px]">Principal (₹)</Label><Input type="number" value={ln.principalAmount || ''} onChange={e => updateLoan(ln.id, { principalAmount: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
+                <div><Label className="text-[10px]">EMI (₹)</Label><Input type="number" value={ln.emiAmount || ''} onChange={e => updateLoan(ln.id, { emiAmount: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
                 <div><Label className="text-[10px]">Start Date</Label><SmartDateInput value={ln.startDate} onChange={v => updateLoan(ln.id, { startDate: v })} className="h-8 text-xs" /></div>
                 <div><Label className="text-[10px]">Status</Label>
                   <Select value={ln.status} onValueChange={v => updateLoan(ln.id, { status: v as LoanDetail['status'] })}>
@@ -1441,7 +1442,7 @@ export function EmployeeMasterPanel() {
           <div className="grid grid-cols-3 gap-3">
             <div>
               <Label className="text-xs">EL Opening Balance (days)</Label>
-              <Input type="number" value={form.elOpeningBalance || ''} onChange={e => uf('elOpeningBalance', parseFloat(e.target.value) || 0)} onKeyDown={onEnterNext} />
+              <Input type="number" value={form.elOpeningBalance || ''} onChange={e => uf('elOpeningBalance', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))} onKeyDown={onEnterNext} />
             </div>
             <div>
               <Label className="text-xs">Medical Reimb Cap (₹/year)</Label>
@@ -1459,8 +1460,8 @@ export function EmployeeMasterPanel() {
               <div key={pe.id} className="grid grid-cols-5 gap-2 mb-2 items-end">
                 <div><Label className="text-[10px]">Employer Name</Label><Input value={pe.employerName} onChange={e => updatePrevEmp(pe.id, { employerName: e.target.value })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
                 <div><Label className="text-[10px]">TAN</Label><Input value={pe.employerTAN} onChange={e => updatePrevEmp(pe.id, { employerTAN: e.target.value.toUpperCase() })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
-                <div><Label className="text-[10px]">Gross Salary (₹)</Label><Input type="number" value={pe.grossSalary || ''} onChange={e => updatePrevEmp(pe.id, { grossSalary: parseFloat(e.target.value) || 0 })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
-                <div><Label className="text-[10px]">TDS Deducted (₹)</Label><Input type="number" value={pe.tdsDeducted || ''} onChange={e => updatePrevEmp(pe.id, { tdsDeducted: parseFloat(e.target.value) || 0 })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
+                <div><Label className="text-[10px]">Gross Salary (₹)</Label><Input type="number" value={pe.grossSalary || ''} onChange={e => updatePrevEmp(pe.id, { grossSalary: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
+                <div><Label className="text-[10px]">TDS Deducted (₹)</Label><Input type="number" value={pe.tdsDeducted || ''} onChange={e => updatePrevEmp(pe.id, { tdsDeducted: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
                 <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => removePrevEmp(pe.id)}><Trash2 className="h-3 w-3 text-red-500" /></Button>
               </div>
             ))}
@@ -1491,7 +1492,7 @@ export function EmployeeMasterPanel() {
                     min="0"
                     step="0.01"
                     value={form.hourly_rate_production ?? 0}
-                    onChange={e => uf('hourly_rate_production', parseFloat(e.target.value) || 0)}
+                    onChange={e => uf('hourly_rate_production', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                     disabled={!form.is_production_operator}
                   />
                   <p className="text-[10px] text-muted-foreground mt-1">Used for Job Card labour cost compute</p>
