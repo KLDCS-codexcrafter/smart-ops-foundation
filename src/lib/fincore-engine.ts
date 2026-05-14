@@ -32,6 +32,8 @@ import { logAudit } from './audit-trail-engine';
 import { checkWriteAllowed } from './storage-quota-engine';
 // Sprint T-Phase-2.7-c · Q2-d · IRN 24h lock enforcement (D-127 voucher .tsx unchanged)
 import { rejectSaveDueToIRNLock } from './irn-lock-engine';
+// Precision Arc · Stage 3 · Block 1 — taxable_amount_paise on contract (integer by D-228).
+import { dMul, roundTo } from './decimal-helpers';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
@@ -567,7 +569,7 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
         const detectionLines: DetectionLine[] = (voucher.inventory_lines ?? []).map((l) => ({
           id: l.id,
           hsn_sac_code: l.hsn_sac_code ?? null,
-          taxable_amount_paise: Math.round((l.taxable_value ?? 0) * 100),
+          taxable_amount_paise: roundTo(dMul(l.taxable_value ?? 0, 100), 0),
           is_rcm: undefined,
           rcm_section: null,
         }));

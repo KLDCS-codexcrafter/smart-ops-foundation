@@ -3,6 +3,8 @@
  */
 
 import type { RatingEntry, CompositeScore } from '@/types/distributor-rating';
+// Precision Arc · Stage 3 · Block 1 — paise math (integer by D-228).
+import { dMul, roundTo } from './decimal-helpers';
 
 function avg(nums: number[]): number {
   if (nums.length === 0) return 0;
@@ -45,5 +47,5 @@ export function recommendedCreditLimit(score: CompositeScore, baseLimitPaise: nu
     score.credit_grade === 'A'  ? 1.5 :
     score.credit_grade === 'B'  ? 1.0 :
     score.credit_grade === 'C'  ? 0.5 : 0.25;
-  return Math.round(baseLimitPaise * multiplier);
+  return roundTo(dMul(baseLimitPaise, multiplier), 0);
 }

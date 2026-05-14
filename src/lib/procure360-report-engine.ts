@@ -6,6 +6,9 @@ import { listRfqs } from './rfq-engine';
 import { listQuotations, compareQuotations } from './vendor-quotation-engine';
 import { listEnquiries } from './procurement-enquiry-engine';
 import type { RFQ } from '@/types/rfq';
+// Precision Arc · Stage 3 · Block 1 — total_spend rupees on contract.
+import { dSum, roundTo, resolveMoneyPrecision } from './decimal-helpers';
+const MP = (): number => resolveMoneyPrecision(null, null);
 
 export interface RfqRegisterRow {
   rfq_no: string;
@@ -83,7 +86,7 @@ export function computeVendorPerformance(entityCode: string): VendorPerfRow[] {
       rfq_count: vRfqs.length,
       quoted_count: vQuotes.length,
       awarded_count: awards.length,
-      total_spend: Math.round(awards.reduce((s, q) => s + q.total_after_tax, 0) * 100) / 100,
+      total_spend: roundTo(dSum(awards, q => q.total_after_tax), MP()),
       response_rate: vRfqs.length > 0 ? Math.round((responded.length / vRfqs.length) * 100) : 0,
     };
   });

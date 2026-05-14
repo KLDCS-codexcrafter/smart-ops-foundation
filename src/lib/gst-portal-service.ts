@@ -5,6 +5,9 @@
  */
 import type { GSTEntry } from '@/types/voucher';
 import { mapUOMtoUQC } from './uqcMap';
+// Precision Arc · Stage 3 · Block 1 — Pattern 2: parseFloat external data, normalise at storage boundary.
+import { roundTo, resolveMoneyPrecision } from './decimal-helpers';
+const MP = (): number => resolveMoneyPrecision(null, null);
 
 // ── GSTN JSON Types (portal-compliant) ────────────────────────────────
 export interface GSTR1ItemDet {
@@ -361,14 +364,14 @@ export function parse26ASTextFile(text: string): TRACES26ASRow[] {
     if (!inPartA) continue;
     const f = trimmed.split("^");
     if (f.length < 7) continue;
-    const amtPaid = parseFloat(f[5] || "0") || 0;
-    const taxDed = parseFloat(f[6] || "0") || 0;
+    const amtPaid = roundTo(parseFloat(f[5] || "0") || 0, MP());
+    const taxDed = roundTo(parseFloat(f[6] || "0") || 0, MP());
     if (taxDed === 0) continue;
     rows.push({
       sr_no: f[0], deductor_name: f[1], deductor_tan: f[2],
       section_code: f[3], payment_date: f[4],
       amount_paid: amtPaid, tax_deducted: taxDed,
-      tds_deposited: parseFloat(f[7] || "0") || 0,
+      tds_deposited: roundTo(parseFloat(f[7] || "0") || 0, MP()),
       status: (f[8] || "") as TRACES26ASRow['status'],
       booking_date: f[9] || "", remarks: f[10] || "",
     });

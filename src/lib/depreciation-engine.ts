@@ -9,18 +9,23 @@ import type {
   ITActReportRow, CompaniesActRow,
 } from '@/types/fixed-asset';
 import { IT_ACT_RATES } from '@/types/fixed-asset';
+// Precision Arc · Stage 3 · Block 1 — engine arithmetic on contract.
+import { dAdd, dSub, dMul, dPct, roundTo, resolveMoneyPrecision } from './decimal-helpers';
+
+// Engine has no entity context in scope → contract default (S3-Q4).
+const MP = (): number => resolveMoneyPrecision(null, null);
 
 // ── Single-period WDV depreciation ───────────────────────────────
 export function computeWDV(openingWDV: number, rate: number, isHalfRate: boolean): number {
-  const depr = openingWDV * (rate / 100);
-  return Math.round((isHalfRate ? depr * 0.5 : depr) * 100) / 100;
+  const depr = dPct(openingWDV, rate);
+  return roundTo(isHalfRate ? dMul(depr, 0.5) : depr, MP());
 }
 
 // ── Single-period SLM depreciation ───────────────────────────────
 export function computeSLM(cost: number, salvage: number, usefulLifeYears: number, isHalfRate: boolean): number {
   if (usefulLifeYears <= 0) return 0;
-  const depr = (cost - salvage) / usefulLifeYears;
-  return Math.round((isHalfRate ? depr * 0.5 : depr) * 100) / 100;
+  const depr = dSub(cost, salvage) / usefulLifeYears;
+  return roundTo(isHalfRate ? dMul(depr, 0.5) : depr, MP());
 }
 
 // ── 180-day rule ─────────────────────────────────────────────────
@@ -79,7 +84,7 @@ export function computeDepreciationForUnits(
       rate_applied: halfRate ? rate * 0.5 : rate,
       is_half_rate: halfRate,
       depreciation_amount: deprAmount,
-      closing_wdv: Math.round((unit.opening_wdv - deprAmount) * 100) / 100,
+      closing_wdv: roundTo(dSub(unit.opening_wdv, deprAmount), MP()),
       status: 'computed',
       created_at: now,
     });
@@ -117,9 +122,9 @@ export function computeITActReport(units: AssetUnitRecord[], fy: string): ITActR
 
     const wdvPlusGt180 = openingWDV + additionsGt180;
     const total = wdvPlusGt180 + additionsLt180;
-    const deprFull = Math.round(wdvPlusGt180 * rate / 100 * 100) / 100;
-    const deprHalf = Math.round(additionsLt180 * rate / 100 * 0.5 * 100) / 100;
-    const totalDepr = deprFull + deprHalf;
+    const deprFull = roundTo(dPct(wdvPlusGt180, rate), MP());
+    const deprHalf = roundTo(dMul(dPct(additionsLt180, rate), 0.5), MP());
+    const totalDepr = dAdd(deprFull, deprHalf);
 
     rows.push({
       block, rate, opening_wdv: openingWDV,
@@ -127,7 +132,7 @@ export function computeITActReport(units: AssetUnitRecord[], fy: string): ITActR
       wdv_plus_gt180: wdvPlusGt180, total,
       depr_full_rate: deprFull, depr_half_rate: deprHalf,
       total_depreciation: totalDepr,
-      closing_wdv: Math.round((total - totalDepr) * 100) / 100,
+      closing_wdv: roundTo(dSub(total, totalDepr), MP()),
     });
   }
 
@@ -166,7 +171,7 @@ export function computeCompaniesActReport(units: AssetUnitRecord[], fy: string):
       .filter(u => u.status === 'active')
       .reduce((s, u) => {
         const rate = u.it_act_depr_rate || 10;
-        return s + Math.round(u.opening_wdv * rate / 100 * 100) / 100;
+        return dAdd(s, roundTo(dPct(u.opening_wdv, rate), MP()));
       }, 0);
     const accumClosing = accumOpening + currentDepr;
     const netBlock = grossClosing - accumClosing;

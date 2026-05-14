@@ -12,6 +12,8 @@ import type {
   DistributorOrderStatus,
 } from '@/types/distributor-order';
 import type { Distributor } from '@/types/distributor';
+// Precision Arc · Stage 3 · Block 1 — paise math on contract (paise = integer by D-228).
+import { dMul, dPct, roundTo } from './decimal-helpers';
 
 /**
  * resolveTierPrice — given the partner's price list and an item, return the
@@ -32,7 +34,7 @@ export function resolveTierPrice(
     return { rate_paise: listFallbackPaise, min_qty: 1, discount_percent: 0, on_list: false };
   }
   return {
-    rate_paise: Math.round(row.price * 100),  // PriceListItem.price is rupees → paise
+    rate_paise: roundTo(dMul(row.price, 100), 0),  // PriceListItem.price is rupees → paise (integer storage)
     min_qty: row.min_qty ?? 1,
     discount_percent: row.discount_percent ?? 0,
     on_list: true,
@@ -50,10 +52,10 @@ export function calcLineTotals(
   gstRate: number,
   interstate: boolean,
 ): Pick<DistributorOrderLine, 'taxable_paise' | 'cgst_paise' | 'sgst_paise' | 'igst_paise' | 'total_paise'> {
-  const gross = qty * ratePaise;
-  const discount = Math.round(gross * (discountPercent / 100));
+  const gross = dMul(qty, ratePaise);
+  const discount = roundTo(dPct(gross, discountPercent), 0);
   const taxable = gross - discount;
-  const taxTotal = Math.round(taxable * (gstRate / 100));
+  const taxTotal = roundTo(dPct(taxable, gstRate), 0);
   if (interstate) {
     return {
       taxable_paise: taxable,
@@ -63,7 +65,7 @@ export function calcLineTotals(
       total_paise: taxable + taxTotal,
     };
   }
-  const halfTax = Math.round(taxTotal / 2);
+  const halfTax = roundTo(taxTotal / 2, 0);
   return {
     taxable_paise: taxable,
     cgst_paise: halfTax,

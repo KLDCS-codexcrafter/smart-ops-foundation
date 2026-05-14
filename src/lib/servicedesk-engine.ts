@@ -12,6 +12,9 @@
  * @[JWT]       Phase 2 wires real backend
  */
 
+// Precision Arc · Stage 3 · Block 1 — suggested_charge_paise on contract (integer by D-228).
+import { dMul, roundTo } from './decimal-helpers';
+
 import type {
   AMCRecord,
   AMCStatus,
@@ -1903,7 +1906,7 @@ export function suggestServiceQuote(
     severity,
     suggested_response_hours: cell?.response_hours ?? 24,
     suggested_resolution_hours: cell?.resolution_hours ?? 72,
-    suggested_charge_paise: Math.round(500 * 100 * severityMultiplier[severity]),
+    suggested_charge_paise: roundTo(dMul(dMul(500, 100), severityMultiplier[severity]), 0),
     confidence: cell ? 'high' : 'low',
   };
 }

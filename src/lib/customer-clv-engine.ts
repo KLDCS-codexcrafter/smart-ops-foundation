@@ -8,6 +8,8 @@ import type { CLVInputs, CLVResult } from '@/types/customer-clv';
 import {
   DEFAULT_GROSS_MARGIN, CHURN_DAYS_THRESHOLD, CLV_TIER_THRESHOLDS,
 } from '@/types/customer-clv';
+// Precision Arc · Stage 3 · Block 1 — projected CLV in paise (integer by D-228).
+import { dMul, roundTo } from './decimal-helpers';
 
 const MS_PER_DAY = 86_400_000;
 const TRAILING_12M_MS = 365 * MS_PER_DAY;
@@ -56,7 +58,7 @@ export function computeCLV(
 
   const retention = retentionProb(last_order_at, has_churned);
 
-  const projected = Math.round(aov * frequency * retention * DEFAULT_GROSS_MARGIN);
+  const projected = roundTo(dMul(dMul(dMul(aov, frequency), retention), DEFAULT_GROSS_MARGIN), 0);
 
   const tier: CLVResult['clv_rank_tier'] =
     has_churned ? 'churned' :

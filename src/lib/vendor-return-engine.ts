@@ -23,6 +23,9 @@ import { vendorReturnsKey } from '@/types/vendor-return';
 import type { Voucher, VoucherLedgerLine } from '@/types/voucher';
 import { generateDocNo, postVoucher } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+// Precision Arc · Stage 3 · Block 1 — line_total money math on contract.
+import { dMul, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+const MP = (): number => resolveMoneyPrecision(null, null);
 
 // ─── Types ──────────────────────────────────────────────────────────
 
@@ -99,7 +102,7 @@ function write(e: string, list: VendorReturn[]): void {
 }
 
 function buildLine(input: CreateVendorReturnLineInput): VendorReturnLine {
-  const lineTotal = Math.round(input.return_qty * input.unit_rate * 100) / 100;
+  const lineTotal = roundTo(dMul(input.return_qty, input.unit_rate), MP());
   return {
     id: newId('vrl'),
     item_id: input.item_id,
