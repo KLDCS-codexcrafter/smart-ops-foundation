@@ -21,6 +21,8 @@ import { toast } from 'sonner';
 import { getLogisticSession, recordLogisticActivity } from '@/lib/logistic-auth-engine';
 import { disputesKey, type Dispute } from '@/types/freight-reconciliation';
 import { applyTransition } from '@/lib/dispute-workflow-engine';
+// Precision Arc · Stage 3B · Block 4c — Pattern 2 (form parseFloat for resolution money).
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 function ageDays(iso: string): number {
   return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));
@@ -83,7 +85,8 @@ export default function LogisticDisputes() {
       notes: responseNotes,
       response_text: responseText.trim(),
       response_from: session.party_name,
-      resolution_amount: counterAmount ? parseFloat(counterAmount) : undefined,
+      // Precision Arc · Stage 3B · Block 4c — Pattern 2 form parseFloat (resolution money).
+      resolution_amount: counterAmount ? roundTo(parseFloat(counterAmount), resolveMoneyPrecision(null, null)) : undefined,
     });
     if (result.ok === false) {
       toast.error(result.reason);

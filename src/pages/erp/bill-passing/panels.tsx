@@ -47,6 +47,8 @@ import {
 } from '@/components/ui/tooltip';
 import type { BillPassingRecord, LineMatchStatus } from '@/types/bill-passing';
 import type { BillPassingModule } from './BillPassingSidebar.types';
+// Precision Arc · Stage 3B · Block 4c — Pattern 2 (form parseFloat → resolver-backed roundTo).
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 // ----------------------------------------------------------------------------
 // Helpers
@@ -190,8 +192,11 @@ function NewBillDialog({ open, onOpenChange, entityCode, onCreated }: NewBillDia
       const li = linesInput[pl.id];
       if (!li) continue;
       const qty = parseFloat(li.qty);
-      const rate = parseFloat(li.rate);
-      const tax = parseFloat(li.tax);
+      // Precision Arc · Stage 3B · Block 4c — Pattern 2 form parseFloat (rate=money, tax=%).
+      const rateRaw = parseFloat(li.rate);
+      const taxRaw = parseFloat(li.tax);
+      const rate = Number.isFinite(rateRaw) ? roundTo(rateRaw, resolveMoneyPrecision(null, null)) : rateRaw;
+      const tax = Number.isFinite(taxRaw) ? roundTo(taxRaw, resolveMoneyPrecision(null, null)) : taxRaw;
       if (!Number.isFinite(qty) || !Number.isFinite(rate)) continue;
       lines.push({
         po_line_id: pl.id,

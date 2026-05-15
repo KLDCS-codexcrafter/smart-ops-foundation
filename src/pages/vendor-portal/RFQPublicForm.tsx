@@ -37,6 +37,8 @@ import {
   recordVendorActivity,
 } from '@/lib/vendor-portal-auth-engine';
 import { markFirstQuoteSubmitted } from '@/lib/vendor-onboarding-engine';
+// Precision Arc · Stage 3B · Block 4c — Pattern 1 (RFQ tax/total money math).
+import { roundTo, resolveMoneyPrecision, dMul, dSub } from '@/lib/decimal-helpers';
 
 interface LineDraft {
   enquiry_line_id: string;
@@ -74,9 +76,10 @@ function loadEnquiry(enquiryId: string, entityCode: string): ProcurementEnquiry 
 }
 
 function lineAfterTax(l: Pick<LineDraft, 'qty_quoted' | 'rate' | 'discount_percent' | 'tax_percent'>): number {
-  const gross = l.qty_quoted * l.rate;
-  const afterDisc = gross * (1 - l.discount_percent / 100);
-  return Math.round(afterDisc * (1 + l.tax_percent / 100) * 100) / 100;
+  // Precision Arc · Stage 3B · Block 4c — Pattern 1 (RFQ tax/total math, contract-money precision).
+  const gross = dMul(l.qty_quoted, l.rate);
+  const afterDisc = dMul(gross, dSub(1, l.discount_percent / 100));
+  return roundTo(dMul(afterDisc, 1 + l.tax_percent / 100), resolveMoneyPrecision(null, null));
 }
 
 function formatINR(n: number): string {
@@ -145,9 +148,10 @@ export default function RFQPublicForm(): JSX.Element {
     const totalValue = supplied.reduce((s, l) => s + l.qty_quoted * l.rate, 0);
     const totalAfterTax = supplied.reduce((s, l) => s + lineAfterTax(l), 0);
     return {
-      total_value: Math.round(totalValue * 100) / 100,
-      total_tax: Math.round((totalAfterTax - totalValue) * 100) / 100,
-      total_after_tax: Math.round(totalAfterTax * 100) / 100,
+      // Precision Arc · Stage 3B · Block 4c — Pattern 1 (RFQ totals, contract-money precision).
+      total_value: roundTo(totalValue, resolveMoneyPrecision(null, null)),
+      total_tax: roundTo(dSub(totalAfterTax, totalValue), resolveMoneyPrecision(null, null)),
+      total_after_tax: roundTo(totalAfterTax, resolveMoneyPrecision(null, null)),
     };
   }, [lines]);
 

@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+// Precision Arc · Stage 3B · Block 4c — paise integer-domain conversion (rupees->paise).
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import {
   listRepairRoutes,
   markRouteInRepair,
@@ -54,7 +56,7 @@ export function RepairRouteList(): JSX.Element {
   };
   const handleReturn = (): void => {
     if (!returnId) return;
-    markReturnedFromRepair(returnId, ACTOR, Math.round(Number(returnCost) * 100));
+    markReturnedFromRepair(returnId, ACTOR, roundTo(dMul(Number(returnCost), 100), 0));
     setReturnOpen(false); setReturnId(null); setReturnCost('0'); toast.success('Marked returned'); bump();
   };
   const handleReject = (): void => {

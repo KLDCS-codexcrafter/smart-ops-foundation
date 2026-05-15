@@ -15,6 +15,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, Wrench, PackageOpen, ShieldCheck, Send, Plus } from 'lucide-react';
 import { toast } from 'sonner';
+// Precision Arc · Stage 3B · Block 4c — paise integer-domain conversion (rupees->paise).
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import {
   getServiceTicket,
   acknowledgeTicket,
@@ -139,7 +141,7 @@ export function ServiceTicketDetail({ ticketId, onBack, autoOpenOTP }: Props): J
       partner_name: routePartner.trim(),
       repair_out_at: new Date().toISOString(),
       expected_return_at: null,
-      cost_paise: Math.round(Number(routeCost) * 100),
+      cost_paise: roundTo(dMul(Number(routeCost), 100), 0),
       rejection_reason: '',
       notes: '',
       created_by: ACTOR,
@@ -168,7 +170,7 @@ export function ServiceTicketDetail({ ticketId, onBack, autoOpenOTP }: Props): J
       loaner_model: standbyModel.trim(),
       loaned_out_at: new Date().toISOString(),
       expected_return_date: standbyExp,
-      daily_cost_paise: Math.round(Number(standbyDaily) * 100),
+      daily_cost_paise: roundTo(dMul(Number(standbyDaily), 100), 0),
       notes: '',
       created_by: ACTOR,
     });
@@ -179,7 +181,7 @@ export function ServiceTicketDetail({ ticketId, onBack, autoOpenOTP }: Props): J
   const handleAddSpare = (): void => {
     if (!spareName.trim()) { toast.error('Spare name required'); return; }
     const qty = Number(spareQty);
-    const unit = Math.round(Number(spareCost) * 100);
+    const unit = roundTo(dMul(Number(spareCost), 100), 0);
     const issue = createSparesIssue({
       entity_id: ticket.entity_id,
       ticket_id: ticket.id,

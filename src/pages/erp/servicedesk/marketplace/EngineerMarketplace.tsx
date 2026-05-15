@@ -15,6 +15,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
 import { toast } from 'sonner';
+// Precision Arc · Stage 3B · Block 4c — paise integer-domain conversion (rupees->paise).
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import {
   registerEngineerMarketplaceProfile,
   listEngineerMarketplaceProfiles,
@@ -63,7 +65,7 @@ export function EngineerMarketplace({ defaultTab = 'all', showCapacityOnly = fal
       certification_links: [],
       payment_terms: form.payment_terms,
       invoicing_method: 'gst_invoice',
-      hourly_rate_paise: Math.round(Number(form.rate) * 100),
+      hourly_rate_paise: roundTo(dMul(Number(form.rate), 100), 0),
       is_available: true,
       notes: '',
     });

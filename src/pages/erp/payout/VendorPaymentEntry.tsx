@@ -9,7 +9,7 @@
  * Lives in src/pages/erp/payout/ (NEW directory · NOT in vouchers/).
  */
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, dPct } from '@/lib/decimal-helpers';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -410,7 +410,8 @@ export default function VendorPaymentEntry() {
                 <Input type="number" value={tdsRate || ''} onChange={e => {
                   const r = roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null));
                   setTdsRate(r);
-                  setTdsAmount(Math.round(amount * r / 100));
+                  // Precision Arc · Stage 3B · Block 4c · TDS amount — integer-rupee per India Sec 194 rules.
+                  setTdsAmount(roundTo(dPct(amount, r), 0));
                 }} className="text-xs" />
               </div>
               <div>

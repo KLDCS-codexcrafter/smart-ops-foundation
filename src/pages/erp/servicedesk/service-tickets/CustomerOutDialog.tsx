@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { toast } from 'sonner';
+// Precision Arc · Stage 3B · Block 4c — paise integer-domain conversion (rupees->paise).
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import { createCustomerOutVoucher } from '@/lib/servicedesk-engine';
 import { emitFinalInvoiceToFinCore } from '@/lib/servicedesk-bridges';
 import type { ServiceTicket } from '@/types/service-ticket';
@@ -43,7 +45,7 @@ export function CustomerOutDialog({ open, onClose, ticket, onCreated }: Props): 
   const prev = (): void => setStep((s) => Math.max(1, s - 1));
 
   const submit = (): void => {
-    const charges_paise = Math.round(Number(chargesRupees) * 100);
+    const charges_paise = roundTo(dMul(Number(chargesRupees), 100), 0);
     const voucher = createCustomerOutVoucher({
       entity_id: ticket.entity_id,
       branch_id: ticket.branch_id,

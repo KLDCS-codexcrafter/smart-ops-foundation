@@ -14,6 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
+// Precision Arc · Stage 3B · Block 4c — paise integer-domain conversion (rupees->paise).
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import {
   listStandbyLoans,
   listOverdueStandbyLoans,
@@ -50,7 +52,7 @@ export function StandbyLoanList(): JSX.Element {
 
   const handleReturn = (): void => {
     if (!returnId) return;
-    returnStandbyLoan(returnId, ACTOR, damage, Math.round(Number(damageCharge) * 100));
+    returnStandbyLoan(returnId, ACTOR, damage, roundTo(dMul(Number(damageCharge), 100), 0));
     setReturnOpen(false); setReturnId(null); setDamage(false); setDamageCharge('0');
     toast.success('Loan returned'); setRefresh((r) => r + 1);
   };
