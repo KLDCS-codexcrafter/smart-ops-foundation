@@ -1,4 +1,5 @@
 /** contract-manpower.ts — Sprint 21 Contract Labour Management */
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 
 export type ContractTab = 'agencies' | 'workers' | 'orders' | 'compliance';
 
@@ -160,13 +161,13 @@ export const CONTRACT_ER_ESI_RATE  = 0.0325;
 
 // Compute PF and ESIC for a contract worker given monthly wage
 export function computeContractStatutory(dailyWage: number, daysPresent: number) {
-  const grossWages   = Math.round(dailyWage * daysPresent);
+  const grossWages   = roundTo(dMul(dailyWage, daysPresent), 0);
   const pfWage       = Math.min(grossWages, CONTRACT_PF_CEILING);
   const esicWage     = grossWages <= CONTRACT_ESIC_CEILING ? grossWages : 0;
-  const empPF        = Math.round(pfWage * CONTRACT_EMP_PF_RATE);
-  const erPF         = Math.round(pfWage * CONTRACT_ER_PF_RATE);
-  const empESIC      = Math.round(esicWage * CONTRACT_EMP_ESI_RATE);
-  const erESIC       = Math.round(esicWage * CONTRACT_ER_ESI_RATE);
+  const empPF        = roundTo(dMul(pfWage, CONTRACT_EMP_PF_RATE), 0);
+  const erPF         = roundTo(dMul(pfWage, CONTRACT_ER_PF_RATE), 0);
+  const empESIC      = roundTo(dMul(esicWage, CONTRACT_EMP_ESI_RATE), 0);
+  const erESIC       = roundTo(dMul(esicWage, CONTRACT_ER_ESI_RATE), 0);
   return { grossWages, pfWage, esicWage, empPF, erPF, empESIC, erESIC };
 }
 
