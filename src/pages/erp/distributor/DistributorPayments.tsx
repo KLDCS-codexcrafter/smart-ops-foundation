@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { getDistributorSession, loadDistributors, hasRolePermission } from '@/lib/distributor-auth-engine';
 import { formatINR } from '@/lib/india-validations';
+import { dMul, roundTo } from '@/lib/decimal-helpers';
 import {
   distributorIntimationsKey,
   type IntimationMode, type IntimationStatus, type DistributorPaymentIntimation,
