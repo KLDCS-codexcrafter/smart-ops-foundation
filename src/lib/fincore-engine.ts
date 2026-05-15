@@ -360,12 +360,12 @@ export function resolveVoucherType(
   for (const key of Object.keys(vt) as Array<keyof VoucherType>) {
     if (NEVER_INHERIT_KEYS.includes(key)) {
       // Always use child's value for identity/sequence/hierarchy fields
-      (merged as Record<string, unknown>)[key] = vt[key];
+      (merged as unknown as Record<string, unknown>)[key] = vt[key];
       continue;
     }
     // For other keys: child overrides parent IF child has a defined value
     if (vt[key] !== undefined) {
-      (merged as Record<string, unknown>)[key] = vt[key];
+      (merged as unknown as Record<string, unknown>)[key] = vt[key];
     }
   }
   return merged;
