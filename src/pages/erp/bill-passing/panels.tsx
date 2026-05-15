@@ -48,7 +48,7 @@ import {
 import type { BillPassingRecord, LineMatchStatus } from '@/types/bill-passing';
 import type { BillPassingModule } from './BillPassingSidebar.types';
 // Precision Arc · Stage 3B · Block 4c — Pattern 2 (form parseFloat → resolver-backed roundTo).
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 // ----------------------------------------------------------------------------
 // Helpers
