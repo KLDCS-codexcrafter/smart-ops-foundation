@@ -43,9 +43,12 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { CustomerMasterPanel } from '@/pages/erp/masters/CustomerMaster';
 import { VendorMasterPanel } from '@/pages/erp/masters/VendorMaster';
 import { LogisticMasterPanel } from '@/pages/erp/masters/LogisticMaster';
-import { ModeOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/ModeOfPaymentMaster';
-import { TermsOfPaymentMasterPanel } from '@/pages/erp/masters/supporting/TermsOfPaymentMaster';
-import { TermsOfDeliveryMasterPanel } from '@/pages/erp/masters/supporting/TermsOfDeliveryMaster';
+// Sprint Hardening-B Block 2C-i · S-1 · Transaction Defaults de-embed
+// (Mode/Terms-of-Payment/Terms-of-Delivery panels removed from LedgerMaster;
+// they remain accessible via the canonical sidebar entries).
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { voucherTypesKey } from '@/hooks/useVoucherTypes';
+import { modeOfPaymentKey, termsOfPaymentKey, termsOfDeliveryKey } from '@/types/cc-masters';
 import { BusinessUnitMasterPanel } from '@/pages/erp/masters/BusinessUnitMaster';
 // T-H1.5-C-S6.5a — Balance Sheet ledger panels (full party-master pattern)
 import { CashLedgerPanel } from '@/pages/erp/masters/ledger-panels/CashLedgerPanel';
@@ -1830,9 +1833,6 @@ const TYPE_BUTTONS = [
   { label: 'Vendor', icon: Users, row: 'Operational Parties', active: true },
   { label: 'Logistic', icon: Truck, row: 'Operational Parties', active: true },
   { label: 'Branch & Division', icon: GitBranch, row: 'Operational Parties', active: true },
-  { label: 'Mode of Payment', icon: FileText, row: 'Transaction Defaults', active: true },
-  { label: 'Terms of Payment', icon: FileText, row: 'Transaction Defaults', active: true },
-  { label: 'Terms of Delivery', icon: FileText, row: 'Transaction Defaults', active: true },
 ];
 
 const LABEL_TO_SUBTAB: Record<string, string> = {
@@ -1851,9 +1851,6 @@ const LABEL_TO_SUBTAB: Record<string, string> = {
   'Vendor': 'vendor',
   'Logistic': 'logistic',
   'Branch & Division': 'branch_division',
-  'Mode of Payment': 'mode_payment',
-  'Terms of Payment': 'terms_payment',
-  'Terms of Delivery': 'terms_delivery',
 };
 
 // ─── Default Forms ────────────────────────────────────────────────────
@@ -1995,7 +1992,9 @@ export function LedgerMasterPanel() {
   const [expenseDefs, setExpenseDefs] = useState<ExpenseLedgerDefinition[]>(() => loadExpenseDefs());
   const [assetDefs, setAssetDefs] = useState<AssetLedgerDefinition[]>(() => loadAssetDefs());
   const [activeTab, setActiveTab] = useState<'definitions' | 'opening_balances' | 'chart_of_accounts'>('definitions');
-  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'asset'|'capital'|'loans'|'borrowing'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'|'mode_payment'|'terms_payment'|'terms_delivery'>('cash');
+  const [defSubTab, setDefSubTab] = useState<'cash'|'bank'|'asset'|'capital'|'loans'|'borrowing'|'income'|'expenses'|'liabilities'|'duties_tax'|'payroll'|'customer'|'vendor'|'logistic'|'branch_division'>('cash');
+  // Sprint Hardening-B Block 2C-i · Q3.1+Q3.2 entity-scoped reads
+  const { entityCode: _ledgerEntityCode } = useEntityCode();
   const [selEntityId, setSelEntityId] = useState(() => loadEntities()[0]?.id ?? '');
   const [instances, setInstances] = useState<EntityLedgerInstance[]>(
     () => loadInstances(loadEntities()[0]?.id ?? '')
@@ -2371,14 +2370,23 @@ export function LedgerMasterPanel() {
           // [JWT] GET /api/accounting/ledgers
           return JSON.parse(localStorage.getItem('erp_group_business_unit_master') || '[]').length;
         case 'Mode of Payment':
-          // [JWT] GET /api/accounting/ledgers
-          return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]').length;
+          // [JWT] GET /api/accounting/ledgers · Sprint Hardening-B Block 2C-i Q3.2 scoped-first
+          return JSON.parse(
+            (localStorage.getItem(modeOfPaymentKey(_ledgerEntityCode))
+              ?? localStorage.getItem('erp_group_mode_of_payment')) || '[]'
+          ).length;
         case 'Terms of Payment':
-          // [JWT] GET /api/accounting/ledgers
-          return JSON.parse(localStorage.getItem('erp_group_terms_of_payment') || '[]').length;
+          // [JWT] GET /api/accounting/ledgers · Sprint Hardening-B Block 2C-i Q3.2 scoped-first
+          return JSON.parse(
+            (localStorage.getItem(termsOfPaymentKey(_ledgerEntityCode))
+              ?? localStorage.getItem('erp_group_terms_of_payment')) || '[]'
+          ).length;
         case 'Terms of Delivery':
-          // [JWT] GET /api/accounting/ledgers
-          return JSON.parse(localStorage.getItem('erp_group_terms_of_delivery') || '[]').length;
+          // [JWT] GET /api/accounting/ledgers · Sprint Hardening-B Block 2C-i Q3.2 scoped-first
+          return JSON.parse(
+            (localStorage.getItem(termsOfDeliveryKey(_ledgerEntityCode))
+              ?? localStorage.getItem('erp_group_terms_of_delivery')) || '[]'
+          ).length;
         default: return 0;
       }
     } catch { return 0; }
@@ -2914,17 +2922,13 @@ export function LedgerMasterPanel() {
 
 
   const handleTypeButtonClick = (label: string) => {
-    const panelTypes = ['Customer','Vendor','Logistic','Branch & Division',
-      'Mode of Payment','Terms of Payment','Terms of Delivery','Payroll Statutory'];
+    const panelTypes = ['Customer','Vendor','Logistic','Branch & Division','Payroll Statutory'];
     if (panelTypes.includes(label)) {
       if (label === 'Payroll Statutory') { setActiveTab('definitions'); setDefSubTab('payroll'); }
       else if (label === 'Customer') { setActiveTab('definitions'); setDefSubTab('customer'); }
       else if (label === 'Vendor') { setActiveTab('definitions'); setDefSubTab('vendor'); }
       else if (label === 'Logistic') { setActiveTab('definitions'); setDefSubTab('logistic'); }
       else if (label === 'Branch & Division') { setActiveTab('definitions'); setDefSubTab('branch_division'); }
-      else if (label === 'Mode of Payment') { setActiveTab('definitions'); setDefSubTab('mode_payment'); }
-      else if (label === 'Terms of Payment') { setActiveTab('definitions'); setDefSubTab('terms_payment'); }
-      else if (label === 'Terms of Delivery') { setActiveTab('definitions'); setDefSubTab('terms_delivery'); }
       return;
     }
     const defsForLabel: AnyLedgerDefinition[] = (
@@ -4306,14 +4310,8 @@ export function LedgerMasterPanel() {
           {/* Branch & Division */}
           {defSubTab === 'branch_division' && <BusinessUnitMasterPanel />}
 
-          {/* Mode of Payment */}
-          {defSubTab === 'mode_payment' && <ModeOfPaymentMasterPanel />}
-
-          {/* Terms of Payment */}
-          {defSubTab === 'terms_payment' && <TermsOfPaymentMasterPanel />}
-
-          {/* Terms of Delivery */}
-          {defSubTab === 'terms_delivery' && <TermsOfDeliveryMasterPanel />}
+          {/* Sprint Hardening-B Block 2C-i · S-1 · Mode/Terms-of-Payment/Terms-of-Delivery
+              panels de-embedded; canonical access via sidebar entries. */}
         </TabsContent>
 
         {/* Tab 2 — Opening Balances */}
@@ -4574,7 +4572,10 @@ export function LedgerMasterPanel() {
                     // [JWT] GET /api/accounting/voucher-types
                     try {
                       // [JWT] GET /api/accounting/ledgers
-                      const allVt = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]') as { id: string; name: string; base_voucher_type: string; is_active: boolean }[];
+                      const allVt = JSON.parse(
+                        (localStorage.getItem(voucherTypesKey(_ledgerEntityCode))
+                          ?? localStorage.getItem('erp_voucher_types')) || '[]'
+                      ) as { id: string; name: string; base_voucher_type: string; is_active: boolean }[];
                       return allVt.filter(vt => vt.base_voucher_type === 'Receipt' && vt.is_active).map(vt => (
                         <SelectItem key={vt.id} value={vt.id}>{vt.name}</SelectItem>
                       ));
