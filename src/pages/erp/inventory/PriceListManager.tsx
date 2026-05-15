@@ -274,7 +274,7 @@ export function PriceListsPanel() {
     if (editPLItem) {
       const u = listItems.map(x => x.id === editPLItem.id ? {
         ...x, price,
-        min_qty: itemForm.min_qty ? parseFloat(itemForm.min_qty) : null,
+        min_qty: itemForm.min_qty ? roundTo(parseFloat(itemForm.min_qty), resolveQtyPrecision(undefined)) : null,
         discount_percent: itemForm.discount_percent ? parseFloat(itemForm.discount_percent) : null,
         is_tax_inclusive: itemForm.is_tax_inclusive, updated_at: now,
       } : x);
