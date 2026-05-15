@@ -142,7 +142,8 @@ export default function DistributorInvoices() {
     try {
       const billed = disputeLine.qty;
       const shortQty = Math.max(0, billed - recvQty);
-      const disputed = Math.round(shortQty * disputeLine.rate * 100); // paise
+      // Precision Arc 3B 4b: rupees → integer paise; decimal-safe mults, integer rounding.
+      const disputed = roundTo(dMul(dMul(shortQty, disputeLine.rate), 100), 0); // paise
       const list = ls<InvoiceDispute>(disputesKey(session.entity_code));
       const yr = new Date().getFullYear();
       const yrCount = list.filter(d => d.dispute_no.includes(`/${yr}/`)).length + 1;
