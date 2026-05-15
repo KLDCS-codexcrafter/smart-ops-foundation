@@ -192,8 +192,9 @@ function NewBillDialog({ open, onOpenChange, entityCode, onCreated }: NewBillDia
       const li = linesInput[pl.id];
       if (!li) continue;
       const qty = parseFloat(li.qty);
-      const rate = parseFloat(li.rate);
-      const tax = parseFloat(li.tax);
+      // Precision Arc · Stage 3B · Block 4c — Pattern 2 form parseFloat (rate=money, tax=%).
+      const rate = roundTo(parseFloat(li.rate) || 0, resolveMoneyPrecision(null, null));
+      const tax = roundTo(parseFloat(li.tax) || 0, resolveMoneyPrecision(null, null));
       if (!Number.isFinite(qty) || !Number.isFinite(rate)) continue;
       lines.push({
         po_line_id: pl.id,
