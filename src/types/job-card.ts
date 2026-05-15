@@ -39,6 +39,9 @@ export interface JobCardStatusEvent {
 export interface JobCard {
   id: string;
   entity_id: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from scheduled_start + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   doc_no: string;
 
   factory_id: string;

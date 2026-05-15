@@ -34,6 +34,9 @@ export interface Order {
   order_no: string; // e.g. PO/25-26/0001 or SO/25-26/0001
   base_voucher_type: 'Sales Order' | 'Purchase Order';
   entity_id: string; date: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from date + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   valid_till?: string; // order lapses if today > valid_till
   party_id: string; party_name: string; party_gstin?: string;
   place_of_supply?: string; is_inter_state?: boolean;

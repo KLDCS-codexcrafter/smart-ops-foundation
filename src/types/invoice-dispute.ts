@@ -22,6 +22,9 @@ export type DisputeStatus =
 export interface InvoiceDispute {
   id: string;
   entity_id: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from dispute_date + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   dispute_no: string;              // DSP/YYYY/0001
   dispute_date: string;
   distributor_id: string;

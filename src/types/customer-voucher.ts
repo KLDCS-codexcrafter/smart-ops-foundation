@@ -22,6 +22,9 @@ export interface CustomerInVoucher {
   id: string;
   voucher_no: string;
   entity_id: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from received_at + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   branch_id: string;
   ticket_id: string;
   serial: string;
@@ -49,6 +52,9 @@ export interface CustomerOutVoucher {
   id: string;
   voucher_no: string;
   entity_id: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from delivered_at + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   branch_id: string;
   ticket_id: string;
   resolution_summary: string;
