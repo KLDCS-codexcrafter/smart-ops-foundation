@@ -40,6 +40,7 @@ import { commissionRegisterKey } from '@/types/commission-register';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 import { comply360SAMKey, type SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import { roundTo, dPct } from '@/lib/decimal-helpers';
 
 interface TDSLineRow {
   id: string;
@@ -129,7 +130,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       if (l.id !== id) return l;
       const updated = { ...l, [field]: value };
       if (field === 'gross_amount' || field === 'tds_rate') {
-        updated.tds_amount = Math.round(updated.gross_amount * updated.tds_rate / 100);
+        updated.tds_amount = roundTo(dPct(updated.gross_amount, updated.tds_rate), 0);
         updated.net_received = updated.gross_amount - updated.tds_amount;
       }
       if (field === 'tds_amount') {
@@ -137,7 +138,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       }
       if (field === 'tds_section') {
         const sec = TDS_SECTIONS.find(s => s.sectionCode === value);
-        if (sec) { updated.tds_rate = sec.rateIndividual; updated.tds_amount = Math.round(updated.gross_amount * sec.rateIndividual / 100); updated.net_received = updated.gross_amount - updated.tds_amount; }
+        if (sec) { updated.tds_rate = sec.rateIndividual; updated.tds_amount = roundTo(dPct(updated.gross_amount, sec.rateIndividual), 0); updated.net_received = updated.gross_amount - updated.tds_amount; }
       }
       return updated;
     }));
