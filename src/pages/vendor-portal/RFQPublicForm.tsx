@@ -74,9 +74,10 @@ function loadEnquiry(enquiryId: string, entityCode: string): ProcurementEnquiry 
 }
 
 function lineAfterTax(l: Pick<LineDraft, 'qty_quoted' | 'rate' | 'discount_percent' | 'tax_percent'>): number {
-  const gross = l.qty_quoted * l.rate;
-  const afterDisc = gross * (1 - l.discount_percent / 100);
-  return Math.round(afterDisc * (1 + l.tax_percent / 100) * 100) / 100;
+  // Precision Arc · Stage 3B · Block 4c — Pattern 1 (RFQ tax/total math, contract-money precision).
+  const gross = dMul(l.qty_quoted, l.rate);
+  const afterDisc = dMul(gross, dSub(1, l.discount_percent / 100));
+  return roundTo(dMul(afterDisc, 1 + l.tax_percent / 100), resolveMoneyPrecision(null, null));
 }
 
 function formatINR(n: number): string {
