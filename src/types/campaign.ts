@@ -5,6 +5,7 @@
  * 20 campaign types · communication channels · target filters ·
  * budget breakdown · follow-up rules · outcome tracking · performance metrics
  */
+import { roundTo } from '@/lib/decimal-helpers';
 
 export type CampaignType =
   | 'CALL' | 'SMS' | 'WA' | 'EMAIL' | 'VISIT' | 'MEET' | 'WEB' | 'EXPO'
@@ -134,8 +135,8 @@ export function computeMetrics(b: CampaignBudget, o: OutcomeTracking): Performan
     response_rate:           safe(o.responses, o.actual_reach),
     enquiry_conversion_rate: safe(o.enquiries_generated, o.responses || o.actual_reach),
     order_conversion_rate:   safe(o.orders_converted, o.enquiries_generated),
-    cost_per_enquiry:        o.enquiries_generated > 0 ? Math.round(spent / o.enquiries_generated) : 0,
-    cost_per_order:          o.orders_converted > 0 ? Math.round(spent / o.orders_converted) : 0,
+    cost_per_enquiry:        o.enquiries_generated > 0 ? roundTo(spent / o.enquiries_generated, 0) : 0,
+    cost_per_order:          o.orders_converted > 0 ? roundTo(spent / o.orders_converted, 0) : 0,
     roi_pct:                 spent > 0 ? Math.round(((o.revenue_attributed - spent) / spent) * 1000) / 10 : 0,
   };
 }
