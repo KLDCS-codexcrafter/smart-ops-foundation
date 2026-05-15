@@ -30,6 +30,7 @@ import {
   type TransporterRateCard,
 } from '@/types/transporter-rate';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { modeOfPaymentKey, termsOfPaymentKey } from '@/types/cc-masters';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import {
   INDUSTRY_SECTORS, getActivitiesForSector,
@@ -382,14 +383,15 @@ export function LogisticMasterPanel() {
   const [showPortal, setShowPortal] = useState(false);
   const [tempPassword, setTempPassword] = useState('');
 
+  // Sprint Hardening-B Block 2C-i · Q3.2 scoped-first reads with legacy fallback
   const loadModeOptions = () => {
     // [JWT] GET /api/masters/logistics
-    try { return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]'); }
+    try { return JSON.parse((localStorage.getItem(modeOfPaymentKey(entityCode)) ?? localStorage.getItem('erp_group_mode_of_payment')) || '[]'); }
     catch { return []; }
   };
   const loadTermsOptions = () => {
     // [JWT] GET /api/masters/logistics
-    try { return JSON.parse(localStorage.getItem('erp_group_terms_of_payment') || '[]'); }
+    try { return JSON.parse((localStorage.getItem(termsOfPaymentKey(entityCode)) ?? localStorage.getItem('erp_group_terms_of_payment')) || '[]'); }
     catch { return []; }
   };
 

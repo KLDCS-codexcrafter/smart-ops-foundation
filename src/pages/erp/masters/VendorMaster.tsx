@@ -47,6 +47,7 @@ import type { ImportSchema } from '@/lib/master-import-engine';
 // [Hardening-A · Block A] Entity-scoped key helpers for divisions/departments.
 import { divisionsKey, departmentsKey } from '@/types/org-structure';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { modeOfPaymentKey, termsOfPaymentKey, termsOfDeliveryKey } from '@/types/cc-masters';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -339,19 +340,20 @@ export function VendorMasterPanel() {
   const [billWiseModal, setBillWiseModal] = useState(false);
 
   // ─── Dropdown helpers ────────────────────────────────────────
+  // Sprint Hardening-B Block 2C-i · Q3.2 scoped-first reads with legacy fallback
   const loadModeOptions = () => {
     // [JWT] GET /api/masters/vendors
-    try { return JSON.parse(localStorage.getItem('erp_group_mode_of_payment') || '[]'); }
+    try { return JSON.parse((localStorage.getItem(modeOfPaymentKey(entityCode)) ?? localStorage.getItem('erp_group_mode_of_payment')) || '[]'); }
     catch { return []; }
   };
   const loadTermsOptions = () => {
     // [JWT] GET /api/masters/vendors
-    try { return JSON.parse(localStorage.getItem('erp_group_terms_of_payment') || '[]'); }
+    try { return JSON.parse((localStorage.getItem(termsOfPaymentKey(entityCode)) ?? localStorage.getItem('erp_group_terms_of_payment')) || '[]'); }
     catch { return []; }
   };
   const loadDeliveryOptions = () => {
     // [JWT] GET /api/masters/vendors
-    try { return JSON.parse(localStorage.getItem('erp_group_terms_of_delivery') || '[]'); }
+    try { return JSON.parse((localStorage.getItem(termsOfDeliveryKey(entityCode)) ?? localStorage.getItem('erp_group_terms_of_delivery')) || '[]'); }
     catch { return []; }
   };
   const loadTransporterOptions = () => {
