@@ -2176,3 +2176,15 @@ This appendix annotates Stage 3B Block 1 dispositions against the rows above. Pe
 | src/components/mobile/MobileSiteDPRCapture.tsx:71 | RECLASSIFY-B (Stage 3B Block 1, C3) — metres in toast, non-money |
 | src/components/mobile/MobilePODCapture.tsx:60 | RECLASSIFY-B (Stage 3B Block 1, C3) — metres in toast, non-money |
 
+
+---
+
+## Appendix — Stage 3B Block 2 reconciliation (C6 TDS voucher cluster)
+
+The 3 sites below were MIGRATED in Stage 3B Block 2 (predecessor HEAD `42b3656`). Pattern: `Math.round(money * tds_rate / 100)` → `roundTo(dPct(base, rate), 0)`. Same fix as the founder-approved `Payment.tsx:537` surgical fix banked at `7250cf9`. All 3 sit in `useCallback` field-update handlers — 0-diff to voucher-posting/save path.
+
+| Site (at HEAD 42b3656) | Disposition |
+|---|---|
+| src/pages/erp/accounting/vouchers/Payment.tsx:174 | MIGRATED (Stage 3B Block 2, C6) — lower-deduction-cert path. NOTE: this is the parked `:173` from Stage 2, shifted to `:174` by the `Payment.tsx:537` surgical fix at `7250cf9` (which added one import line). |
+| src/pages/erp/accounting/vouchers/Receipt.tsx:132 | MIGRATED (Stage 3B Block 2, C6) — `updateTdsLine` gross/rate handler. |
+| src/pages/erp/accounting/vouchers/Receipt.tsx:140 | MIGRATED (Stage 3B Block 2, C6) — `updateTdsLine` section-change handler. Compound statement; only the `updated.tds_amount` sub-expression changed. |
