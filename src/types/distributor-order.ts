@@ -126,6 +126,9 @@ export type BroadcastAudience =
 export interface BroadcastMessage {
   id: string;
   entity_code: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from paid_on + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   title: string;
   body: string;
   channels: BroadcastChannel[];
