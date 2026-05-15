@@ -140,6 +140,32 @@ export interface ForexSettlementConfig {
   auto_reversal_on_next_period: boolean;
 }
 
+// ── Sprint T-Phase-1.Hardening-B.2B-pre · Forward-declared placeholder interfaces ──
+// These are stubs to reserve field names for future arcs. Populating them does NOT
+// require re-touching this protected zone. Each will be filled by its respective arc:
+//   RegisterConfig         → Block 2C-i (Register canonical pattern data shape)
+//   PrintTemplateBinding   → UPRA (Universal Print & Register Arc)
+//   AuditTrailConfig       → ATELC (Audit-Trail & Edit-Log Compliance Arc, Rule 11(g))
+// All three are intentionally minimal — implementation lives in their arcs.
+
+/** Stub — populated by Block 2C-i (Register canonical pattern). */
+export interface RegisterConfig {
+  /** Reserved for 2C-i. */
+  _reserved?: never;
+}
+
+/** Stub — populated by UPRA (Universal Print & Register Arc). */
+export interface PrintTemplateBinding {
+  /** Reserved for UPRA. */
+  _reserved?: never;
+}
+
+/** Stub — populated by ATELC (Audit-Trail & Edit-Log Compliance Arc, Rule 11(g)). */
+export interface AuditTrailConfig {
+  /** Reserved for ATELC. */
+  _reserved?: never;
+}
+
 export interface BehaviourRule {
   id: string;
   rule_type: BehaviourRuleType;
@@ -147,6 +173,64 @@ export interface BehaviourRule {
   is_active: boolean;
   sequence: number;
   config: AutoPostConfig | ValidationConfig | SettlementConfig | TaxTriggerConfig | ApprovalGateConfig | AutoReversalConfig | NarrationTemplateConfig | ForexCaptureConfig | ForexSettlementConfig;
+}
+
+/**
+ * VoucherClass — Tally-Prime voucher-class concept + SAP number-range pattern.
+ * Sprint T-Phase-1.Hardening-B.2B-pre.
+ *
+ * A class is a NAMED SUB-VARIANT of a parent VoucherType. It has its own
+ * numbering sequence (so 'JV-ACCR' counts independently of 'JV-PNL' even
+ * though both are Journal-base entries). Inherits all behaviour from parent
+ * VoucherType unless explicitly overridden via the override fields.
+ *
+ * Used by:
+ *   - Numbering engine: prefix → resolves to VoucherClass → reads class's
+ *     own numbering_* config + class's own current_sequence (Block 2B main).
+ *   - Register: voucher-class filter built from this list (Block 2C-i).
+ *   - Edit log (ATELC): change records tag the class so audit drill-down
+ *     can scope queries per-class.
+ *
+ * Pattern: every voucher class produces voucher numbers as
+ *   {prefix}/{fy}/{seq:width}
+ * but each class owns its own counter — distinct sequences per class.
+ *
+ * Founder rulings (locked in Step 1 alignment):
+ *   - behaviour_rules_override: FULL REPLACE (not partial merge)
+ *   - fy_scoped: default TRUE (GST Rule 46)
+ *   - Classes MUST NOT override parent's accounting_impact or inventory_impact —
+ *     if those characteristics differ, it should be a separate VoucherType
+ */
+export interface VoucherClass {
+  /** Stable identifier — e.g. 'jv-accrual', 'sj-adjustment'. */
+  class_id: string;
+  /** Human-readable name shown in UI + Register subtotals. */
+  class_name: string;
+  /** Operator-passed prefix the engine matches against. e.g. 'JV-ACCR'. */
+  abbreviation_prefix: string;
+  /** Optional historical aliases — literal string match in lookup. */
+  abbreviation_aliases?: string[];
+
+  /** SAP number-range model — each class has its own counter row. */
+  numbering_width: number;
+  numbering_prefill_zeros: boolean;
+  numbering_start: number;
+  current_sequence: number;
+  numbering_suffix?: string;
+  /** Whether sequence resets at FY boundary. Default TRUE per founder ruling. */
+  fy_scoped: boolean;
+  /** Optional behaviour-rule override. FULL REPLACE semantics:
+   *  if present, parent's behaviour_rules are completely replaced for this
+   *  class. If absent, parent's rules apply. (Per founder ruling Q-LOCK-CLASS-A.) */
+  behaviour_rules_override?: BehaviourRule[];
+
+  /** Scope marker — which business module this class belongs to. */
+  feature_namespace?: string;
+
+  is_active: boolean;
+  is_system: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface VoucherType {
@@ -193,6 +277,29 @@ export interface VoucherType {
   entity_id: string | null;
   created_at: string;
   updated_at: string;
+
+  // ── Sprint T-Phase-1.Hardening-B.2B-pre · NEW additive fields ──
+  /** Tally display-abbreviation aliases. Used by numbering engine to resolve a
+   *  caller-passed prefix to the correct VT row when caller's prefix differs from
+   *  registry's canonical abbreviation. Literal string match (per Q-LOCK-ALIAS-B).
+   *  e.g. Contra row carries abbreviation='CTR' and abbreviation_aliases=['CT'].
+   *  Existing voucher data under the old abbreviation continues to resolve via
+   *  this fallback. Zero data-migration risk. */
+  abbreviation_aliases?: string[];
+
+  /** Voucher classes attached to this VT (Tally voucher-class concept).
+   *  See VoucherClass interface. Most VT rows have zero classes (parent's own
+   *  numbering is the only sequence). Some (Journal, Stock Journal) carry
+   *  multiple classes. */
+  voucher_classes?: VoucherClass[];
+
+  // ── Forward-declared placeholder fields (Q-LOCK-ALIAS-A: declare now) ──
+  /** Populated by Block 2C-i. */
+  register_config?: RegisterConfig;
+  /** Populated by UPRA. */
+  print_template_id?: string;
+  /** Populated by ATELC (Rule 11(g)). */
+  audit_trail_config?: AuditTrailConfig;
 }
 
 // ── Constraint maps from VoucherType_Field_Map sheet ──────────────────────
