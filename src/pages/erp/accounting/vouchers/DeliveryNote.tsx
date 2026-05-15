@@ -6,7 +6,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Send, ChevronDown, Printer } from 'lucide-react';
 import { toast } from 'sonner';
