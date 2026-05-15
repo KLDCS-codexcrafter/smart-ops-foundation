@@ -13,7 +13,7 @@ import type { AttendanceRecord } from '@/types/attendance-entry';
 import type { LoanApplication, SalaryAdvance } from '@/types/employee-finance';
 import { LOAN_APPLICATIONS_KEY, SALARY_ADVANCES_KEY } from '@/types/employee-finance';
 import type { AttendanceType } from '@/types/payroll-masters';
-import { roundTo, dMul, dSub } from '@/lib/decimal-helpers';
+
 import { ATTENDANCE_TYPES_KEY } from '@/types/payroll-masters';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { SALARY_STRUCTURES_KEY, PAY_HEADS_KEY } from '@/types/pay-hub';
@@ -22,7 +22,7 @@ import { PROFESSIONAL_TAX_SLABS, IT_SLABS_NEW_REGIME, IT_SLABS_OLD_REGIME, SURCH
   from '@/data/payroll-statutory-seed-data';
 import { journalKey } from '@/lib/fincore-engine';
 import type { JournalEntry } from '@/types/voucher';
-import { dSub, dPct, dAdd, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { dSub, dPct, dAdd, dMul, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 // PAYROLL_RUNS_KEY / SALARY_HOLDS_KEY kept for backward-compat with files that
 // have not yet migrated to the entity-scoped helpers. New reads/writes use
