@@ -10,6 +10,7 @@
  */
 
 import type { AdvanceEntry } from '@/types/compliance';
+import { roundTo, dSum, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 export type AgeBucket = '0-30d' | '31-60d' | '61-90d' | '91-180d' | '180+d';
 
@@ -90,17 +91,14 @@ export function computeAgingReport(
     s.totalAmount += aa.advance.balance_amount;
   }
   for (const s of bucketMap.values()) {
-    s.totalAmount = Math.round(s.totalAmount * 100) / 100;
+    s.totalAmount = roundTo(s.totalAmount, resolveMoneyPrecision(null, null));
   }
 
-  const totalOpenAmount = aged.reduce(
-    (sum, a) => sum + a.advance.balance_amount,
-    0,
-  );
+  const totalOpenAmount = dSum(aged, a => a.advance.balance_amount);
 
   return {
     totalOpenCount: aged.length,
-    totalOpenAmount: Math.round(totalOpenAmount * 100) / 100,
+    totalOpenAmount: roundTo(totalOpenAmount, resolveMoneyPrecision(null, null)),
     byBucket: BUCKET_KEYS.map(k => bucketMap.get(k) as AgingBucketSummary),
     aged,
   };
