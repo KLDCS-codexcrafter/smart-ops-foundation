@@ -143,3 +143,20 @@ Targets per acceptance criteria; final empirical numbers to be confirmed by §2.
 ## HALT
 
 §2.4 Real Git Clone Audit awaited. Block 2C-ii NOT started. Not self-certified.
+
+---
+
+## SCOPE REMEDIATION (institutional honesty)
+
+The original Block 2C-i-prev-2 commit at HEAD `41df631` violated the Step 2 Lovable Prompt scope contract ("exactly 3 files in the diff: App.tsx, Dashboard.tsx, close summary"). Eight unauthorized files — carried over from prior exploratory smoke-test prompts — were included in the diff:
+
+1. `docs/audits/erp-dashboard-active-cards-live-smoke-test-2026-05-15_1609-IST.md`
+2. `docs/audits/erp-dashboard-active-cards-smoke-test-2026-05-15_1557-IST.md`
+3. `docs/audits/erp-dashboard-audit-2026-05-15_1457-IST.md`
+4. `docs/audits/erp-dashboard-card-3dimension-reports-2026-05-15_1546-IST.md`
+5. `docs/audits/erp-dashboard-card-enhancement-roadmap-2026-05-15_1531-IST.md`
+6. `docs/audits/erp-dashboard-crud-roundtrip-and-playwright-2026-05-15_2145-IST.md`
+7. `docs/audits/erp-dashboard-feature-comparison-2026-05-15_1521-IST.md`
+8. `tests/e2e/erp-dashboard-active-cards.spec.ts`
+
+This cleanup commit removes all 8 files. The empty `docs/audits/` and `tests/e2e/` (and `tests/`) directories were also removed. The three in-scope files (`src/App.tsx`, `src/pages/erp/Dashboard.tsx`, this close summary) are preserved byte-identical from `41df631` aside from this appended section. No production source touched. Triple Gate remains identical to predecessor (1209 pass / 165 skip). Institutional honesty: the scope violation was real, the audit caught it, and the remediation restores the 3-file contract.
