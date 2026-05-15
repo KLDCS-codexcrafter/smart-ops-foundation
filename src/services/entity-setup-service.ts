@@ -11,6 +11,9 @@ import {
   type ModeOfPayment, type TermsOfPayment, type TermsOfDelivery,
 } from '@/data/masters-seed-data';
 import { VOUCHER_TYPE_SEEDS } from '@/data/voucher-type-seed-data';
+// Sprint Hardening-B Block 2C-i · Q3.1+Q3.2 dual-write to entity-scoped keys.
+import { voucherTypesKey } from '@/hooks/useVoucherTypes';
+import { modeOfPaymentKey, termsOfPaymentKey, termsOfDeliveryKey } from '@/types/cc-masters';
 // Sprint T-Phase-1.2.6f-pre-1 · RequestX wiring (sibling additions only)
 import { DEFAULT_NON_FINECORE_VOUCHER_TYPES, nonFinCoreVoucherTypesKey } from '@/lib/non-fincore-voucher-type-registry';
 import { DEMO_MATERIAL_INDENTS, DEMO_SERVICE_REQUESTS, DEMO_CAPITAL_INDENTS } from '@/data/demo-requestx-data';
@@ -446,6 +449,11 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
     if (!existingVT) {
       localStorage.setItem('erp_voucher_types', JSON.stringify(VOUCHER_TYPE_SEEDS));
     }
+    // Sprint Hardening-B Block 2C-i · Q3.1 dual-write entity-scoped key
+    const scopedVTKey = voucherTypesKey(opts.shortCode);
+    if (!localStorage.getItem(scopedVTKey)) {
+      localStorage.setItem(scopedVTKey, JSON.stringify(VOUCHER_TYPE_SEEDS));
+    }
   } catch { /* ignore */ }
 
   // 2c. Sprint T-Phase-1.2.6f-pre-1 — Seed Non-FinCore voucher types (RequestX + sibling families).
@@ -527,9 +535,9 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
   const bdLedgersCreated = createBDLedgers(opts);
 
   // 5. Create default supporting masters
-  const mopCreated = createDefaultModeOfPayment();
-  const topCreated = createDefaultTermsOfPayment();
-  const todCreated = createDefaultTermsOfDelivery();
+  const mopCreated = createDefaultModeOfPayment(opts.shortCode);
+  const topCreated = createDefaultTermsOfPayment(opts.shortCode);
+  const todCreated = createDefaultTermsOfDelivery(opts.shortCode);
 
   // 6. Create default Business Unit (Head Office)
   createDefaultBusinessUnit(opts.entityId, opts.entityName, opts.shortCode);
@@ -1976,9 +1984,13 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
   // vt-stock-journal + vt-stock-transfer are already is_active:true — no action needed
   // vt-consumption-entry + ProjX types are feature_based → activate on every entity creation
   try {
+    // Sprint Hardening-B Block 2C-i · Q3.1 dual-key VT activation
     const VT_KEY = 'erp_voucher_types';
+    const VT_SCOPED_KEY = voucherTypesKey(opts.shortCode);
+    const scopedRaw = localStorage.getItem(VT_SCOPED_KEY);
+    const legacyRaw = localStorage.getItem(VT_KEY);
     const vts: Array<{ id: string; is_active: boolean; updated_at?: string }> =
-      JSON.parse(localStorage.getItem(VT_KEY) || '[]');
+      JSON.parse((scopedRaw ?? legacyRaw) || '[]');
     const toActivate = [
       'vt-consumption-entry',          // Inventory Hub
       'vt-project-invoice',            // ProjX billing
@@ -2001,7 +2013,11 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         // [JWT] PATCH /api/accounting/voucher-types/:vtId/activate
       }
     });
-    if (changed) localStorage.setItem(VT_KEY, JSON.stringify(vts));
+    if (changed) {
+      const json = JSON.stringify(vts);
+      localStorage.setItem(VT_KEY, json);            // legacy global (one-FY safety)
+      localStorage.setItem(VT_SCOPED_KEY, json);     // entity-scoped primary
+    }
   } catch { /* ignore — VT activation is best-effort */ }
 
   return {
@@ -2055,8 +2071,9 @@ export const createDefaultBusinessUnit = (entityId: string, entityName: string, 
 };
 
 // ── 2.9 createDefaultModeOfPayment ─────────────────────────────────────────
-const createDefaultModeOfPayment = (): number => {
+const createDefaultModeOfPayment = (entityCode: string): number => {
   const key = 'erp_group_mode_of_payment';
+  const scopedKey = modeOfPaymentKey(entityCode);
   // [JWT] GET /api/entities/setup/:entityId
   const existing: ModeOfPayment[] = JSON.parse(localStorage.getItem(key) || '[]');
   const existingCodes = new Set(existing.map(r => r.code));
@@ -2065,15 +2082,19 @@ const createDefaultModeOfPayment = (): number => {
     .map(r => ({ ...r, id: crypto.randomUUID(), isSeeded: true, isActive: true }));
   if (toCreate.length > 0) {
     // [JWT] POST /api/entities/setup/:entityId
-    localStorage.setItem(key, JSON.stringify([...existing, ...toCreate]));
+    const merged = JSON.stringify([...existing, ...toCreate]);
+    localStorage.setItem(key, merged);
+    // Sprint Hardening-B Block 2C-i · Q3.2 dual-write to entity-scoped key
+    localStorage.setItem(scopedKey, merged);
     // [JWT] POST /api/group/masters/mode-of-payment/bulk
   }
   return toCreate.length;
 };
 
 // ── 2.9 createDefaultTermsOfPayment ────────────────────────────────────────
-const createDefaultTermsOfPayment = (): number => {
+const createDefaultTermsOfPayment = (entityCode: string): number => {
   const key = 'erp_group_terms_of_payment';
+  const scopedKey = termsOfPaymentKey(entityCode);
   // [JWT] GET /api/entities/setup/:entityId
   const existing: TermsOfPayment[] = JSON.parse(localStorage.getItem(key) || '[]');
   const existingCodes = new Set(existing.map(r => r.code));
@@ -2082,15 +2103,19 @@ const createDefaultTermsOfPayment = (): number => {
     .map(r => ({ ...r, id: crypto.randomUUID(), isSeeded: true, isActive: true }));
   if (toCreate.length > 0) {
     // [JWT] POST /api/entities/setup/:entityId
-    localStorage.setItem(key, JSON.stringify([...existing, ...toCreate]));
+    const merged = JSON.stringify([...existing, ...toCreate]);
+    localStorage.setItem(key, merged);
+    // Sprint Hardening-B Block 2C-i · Q3.2 dual-write to entity-scoped key
+    localStorage.setItem(scopedKey, merged);
     // [JWT] POST /api/group/masters/terms-of-payment/bulk
   }
   return toCreate.length;
 };
 
 // ── 2.10 createDefaultTermsOfDelivery ──────────────────────────────────────
-const createDefaultTermsOfDelivery = (): number => {
+const createDefaultTermsOfDelivery = (entityCode: string): number => {
   const key = 'erp_group_terms_of_delivery';
+  const scopedKey = termsOfDeliveryKey(entityCode);
   // [JWT] GET /api/entities/setup/:entityId
   const existing: TermsOfDelivery[] = JSON.parse(localStorage.getItem(key) || '[]');
   const existingCodes = new Set(existing.map(r => r.code));
@@ -2099,7 +2124,10 @@ const createDefaultTermsOfDelivery = (): number => {
     .map(r => ({ ...r, id: crypto.randomUUID(), isSeeded: true, isActive: true }));
   if (toCreate.length > 0) {
     // [JWT] POST /api/entities/setup/:entityId
-    localStorage.setItem(key, JSON.stringify([...existing, ...toCreate]));
+    const merged = JSON.stringify([...existing, ...toCreate]);
+    localStorage.setItem(key, merged);
+    // Sprint Hardening-B Block 2C-i · Q3.2 dual-write to entity-scoped key
+    localStorage.setItem(scopedKey, merged);
     // [JWT] POST /api/group/masters/terms-of-delivery/bulk
   }
   return toCreate.length;
