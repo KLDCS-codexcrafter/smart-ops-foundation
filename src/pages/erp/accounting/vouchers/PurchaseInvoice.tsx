@@ -21,6 +21,7 @@ import { InvoiceModeToggle } from '@/components/fincore/InvoiceModeToggle';
 import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
 import { LedgerLineGrid } from '@/components/fincore/LedgerLineGrid';
 import { GSTComputationPanel } from '@/components/fincore/GSTComputationPanel';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { TDSDeductionPanel } from '@/components/fincore/TDSDeductionPanel';
 import { resolveVars, generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
