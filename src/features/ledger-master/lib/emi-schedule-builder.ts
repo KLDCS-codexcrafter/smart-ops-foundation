@@ -4,7 +4,12 @@
  *           Read-only preview in S6.5b · H1.5-D makes it actionable.
  * @sprint   T-H1.5-C-S6.5b
  * @finding  CC-059 / CC-061
+ *
+ * Precision Arc · Stage 3B Block 3 (SP-1): Math.round(_*100)/100 idiom
+ * replaced with roundTo(_, resolveMoneyPrecision(null,null)). RBI banker's
+ * rounding (D-142) preserved.
  */
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 export interface EMIScheduleRow {
   emiNumber: number;
@@ -48,9 +53,9 @@ export function buildEMISchedule(input: BuildScheduleInput): EMIScheduleRow[] {
     rows.push({
       emiNumber: i,
       dueDate: dueDate.toISOString().slice(0, 10),
-      principal: Math.round(principalPortion * 100) / 100,
-      interest: Math.round(interest * 100) / 100,
-      runningBalance: Math.round(balance * 100) / 100,
+      principal: roundTo(principalPortion, resolveMoneyPrecision(null, null)),
+      interest: roundTo(interest, resolveMoneyPrecision(null, null)),
+      runningBalance: roundTo(balance, resolveMoneyPrecision(null, null)),
       status: 'scheduled',
     });
   }
@@ -60,8 +65,8 @@ export function buildEMISchedule(input: BuildScheduleInput): EMIScheduleRow[] {
 export function calculateEMIAmount(principal: number, annualRatePercent: number, tenureMonths: number): number {
   if (principal <= 0 || tenureMonths <= 0 || annualRatePercent < 0) return 0;
   const monthlyRate = annualRatePercent / 12 / 100;
-  if (monthlyRate === 0) return Math.round((principal / tenureMonths) * 100) / 100;
+  if (monthlyRate === 0) return roundTo(principal / tenureMonths, resolveMoneyPrecision(null, null));
   const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)) /
     (Math.pow(1 + monthlyRate, tenureMonths) - 1);
-  return Math.round(emi * 100) / 100;
+  return roundTo(emi, resolveMoneyPrecision(null, null));
 }
