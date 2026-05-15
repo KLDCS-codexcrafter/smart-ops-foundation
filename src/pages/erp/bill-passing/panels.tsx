@@ -196,7 +196,7 @@ function NewBillDialog({ open, onOpenChange, entityCode, onCreated }: NewBillDia
       const rateRaw = parseFloat(li.rate);
       const taxRaw = parseFloat(li.tax);
       const rate = Number.isFinite(rateRaw) ? roundTo(rateRaw, resolveMoneyPrecision(null, null)) : rateRaw;
-      const tax = Number.isFinite(taxRaw) ? roundTo(taxRaw, resolveMoneyPrecision(null, null)) : taxRaw;
+      const tax = Number.isFinite(taxRaw) ? roundTo(taxRaw, resolveQtyPrecision(undefined)) : taxRaw;
       if (!Number.isFinite(qty) || !Number.isFinite(rate)) continue;
       lines.push({
         po_line_id: pl.id,
