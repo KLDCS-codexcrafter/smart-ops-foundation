@@ -1,8 +1,11 @@
 /**
  * price-benchmark-stub.ts — OOB-52 · per FR-26 stub now · Phase 1.4 ML
  * Sprint T-Phase-1.2.6f-a
+ * Precision Arc · Stage 3B Block 3: industry_avg → SP-1 MIGRATE money;
+ * delta_percent → SP-3 RECLASSIFY-C (display percentage, no code change).
  */
 import { computeBestPriceAnalysis } from '../procure360-report-engine';
+import { roundTo, resolveMoneyPrecision } from '../decimal-helpers';
 
 export interface BenchmarkHint {
   item_id: string;
@@ -28,7 +31,7 @@ export function getBenchmarkHint(
   return {
     item_id: itemId,
     your_rate: yourRate,
-    industry_avg: Math.round(avg * 100) / 100,
+    industry_avg: roundTo(avg, resolveMoneyPrecision(null, null)),
     delta_percent: Math.round(delta * 100) / 100,
     signal,
   };
