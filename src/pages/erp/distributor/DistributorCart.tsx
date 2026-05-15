@@ -39,6 +39,7 @@ import type { InventoryItem } from '@/types/inventory-item';
 import { applySchemes, totalSchemeDiscountPaise, describeUnlockGap, type SchemeCart } from '@/lib/scheme-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
 import { logAudit } from '@/lib/card-audit-engine';
+import { dMul, roundTo } from '@/lib/decimal-helpers';
 
 const INDIGO = 'hsl(231 48% 58%)';
 // Sprint 10: portal currently runs as 'owner' role — extend session in Sprint 11.
