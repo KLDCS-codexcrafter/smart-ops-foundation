@@ -188,7 +188,8 @@ export function PriceListsPanel() {
       if (isNaN(pct)) { toast.error('Enter a valid percentage'); return; }
       filteredItems.forEach(item => {
         if (!item.std_selling_rate) return;
-        const nv = Math.round(item.std_selling_rate * (pct / 100) * 100) / 100;
+        // Precision Arc 3B 4b: Pattern 1 — std_selling_rate × pct/100; computed money.
+        const nv = roundTo(dPct(item.std_selling_rate, pct), resolveMoneyPrecision(null, null));
         const key = `${fillListId}|${item.id}`;
         newPending[key] = { listId: fillListId, itemId: item.id, item, oldPrice: getEffectivePrice(fillListId, item.id), newPrice: nv, uom: item.primary_uom_symbol || 'pcs' };
         staged++;
