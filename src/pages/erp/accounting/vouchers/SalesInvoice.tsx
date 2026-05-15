@@ -29,6 +29,7 @@ import { InvoiceModeToggle } from '@/components/fincore/InvoiceModeToggle';
 import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
 import { LedgerLineGrid } from '@/components/fincore/LedgerLineGrid';
 import { GSTComputationPanel } from '@/components/fincore/GSTComputationPanel';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { resolveVars, generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
 import type { AdvanceEntry } from '@/types/compliance';
@@ -752,21 +753,18 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   return (
     <>
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">Sales Invoice</h2>
-          <p className="text-xs text-muted-foreground">Create a new sales invoice</p>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">{voucherNo}</Badge>
-      </div>
+      <TallyVoucherHeader
+        voucherTypeName="Sales Invoice"
+        baseVoucherType="Sales"
+        voucherFamily="Accounting"
+        voucherNo={voucherNo}
+        voucherDate={date} onVoucherDateChange={setDate}
+        status="draft"
+      />
 
       <Card>
         <CardContent className="pt-5 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-xs">Date</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} onKeyDown={onEnterNext} />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-xs">Party (Customer)</Label>
               <Select value={customerId ?? '__none__'} onValueChange={v => {

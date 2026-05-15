@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+
 import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -21,6 +21,7 @@ import { InvoiceModeToggle } from '@/components/fincore/InvoiceModeToggle';
 import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
 import { LedgerLineGrid } from '@/components/fincore/LedgerLineGrid';
 import { GSTComputationPanel } from '@/components/fincore/GSTComputationPanel';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { TDSDeductionPanel } from '@/components/fincore/TDSDeductionPanel';
 import { resolveVars, generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine, VoucherLedgerLine } from '@/types/voucher';
@@ -208,37 +209,26 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
     <>
     {GuardDialog}
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">Purchase Invoice</h2>
-          <p className="text-xs text-muted-foreground">Record vendor purchase</p>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">{voucherNo}</Badge>
-      </div>
+      <TallyVoucherHeader
+        voucherTypeName="Purchase Invoice"
+        baseVoucherType="Purchase"
+        voucherFamily="Accounting"
+        voucherNo={voucherNo}
+        refNo={vendorBillNo} onRefNoChange={setVendorBillNo}
+        refDate={vendorBillDate} onRefDateChange={setVendorBillDate}
+        voucherDate={date} onVoucherDateChange={setDate}
+        status="draft"
+      />
 
       <Card>
         <CardContent className="pt-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-xs">Date</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} onKeyDown={onEnterNext} />
-            </div>
             <div>
               <Label className="text-xs">Party (Vendor)</Label>
               <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Vendor name" />
             </div>
             <div className="flex items-end">
               <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-xs">Vendor Bill No</Label>
-              <Input value={vendorBillNo} onChange={e => setVendorBillNo(e.target.value)} onKeyDown={onEnterNext} placeholder="Bill number (mandatory)" />
-            </div>
-            <div>
-              <Label className="text-xs">Vendor Bill Date</Label>
-              <Input type="date" value={vendorBillDate} onChange={e => setVendorBillDate(e.target.value)} onKeyDown={onEnterNext} />
             </div>
             <div>
               <Label className="text-xs">Against PO No</Label>
