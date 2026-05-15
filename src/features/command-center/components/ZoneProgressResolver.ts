@@ -75,15 +75,54 @@ export const ZONE_DEFINITIONS: ZoneDefinition[] = [
   },
 ];
 
-export function isConfigured(key: string): boolean {
+// Sprint Hardening-B Block 2C-i · Q3.1+Q3.2+Q3.3 SSOT migration:
+// scoped-first read with legacy global fallback. For each base key we also
+// scan localStorage for any `${baseKey}_<entityCode>` scoped variant so that
+// per-entity stores count toward zone progress without requiring entity ctx.
+const SCOPED_FAMILIES = new Set<string>([
+  'erp_statutory_registrations',
+  'erp_gst_entity_config',
+  'erp_comply360_config',
+  'erp_voucher_types',
+  'erp_group_mode_of_payment',
+  'erp_group_terms_of_payment',
+  'erp_group_terms_of_delivery',
+  'erp_mode_of_payment',
+  'erp_terms_of_payment',
+  'erp_terms_of_delivery',
+]);
+
+function hasContent(raw: string | null, key: string): boolean {
+  if (!raw) return false;
+  if (key === 'erp_parent_company_saved') return raw === 'true';
   try {
-    // [JWT] GET /api/masters/:key/exists
-    const raw = localStorage.getItem(key);
-    if (!raw) return false;
-    if (key === 'erp_parent_company_saved') return raw === 'true';
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) return parsed.length > 0;
     if (typeof parsed === 'object' && parsed !== null) return Object.keys(parsed).length > 0;
+    return false;
+  } catch { return false; }
+}
+
+export function isConfigured(key: string): boolean {
+  try {
+    // [JWT] GET /api/masters/:key/exists
+    const direct = localStorage.getItem(key);
+    if (hasContent(direct, key)) return true;
+    if (SCOPED_FAMILIES.has(key)) {
+      // Scoped fallback — any per-entity variant counts
+      const prefix = `${key}_`;
+      // For Q3.2 mode/terms — also check the new short helper key shape
+      const altPrefix = key.startsWith('erp_group_')
+        ? `${key.replace('erp_group_', 'erp_')}_`
+        : null;
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k) continue;
+        if (k.startsWith(prefix) || (altPrefix && k.startsWith(altPrefix))) {
+          if (hasContent(localStorage.getItem(k), k)) return true;
+        }
+      }
+    }
     return false;
   } catch {
     return false;

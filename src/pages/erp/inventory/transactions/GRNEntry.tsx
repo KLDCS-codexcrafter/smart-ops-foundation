@@ -42,6 +42,7 @@ import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 import { generateDocNo } from '@/lib/fincore-engine';
+import { voucherTypesKey } from '@/hooks/useVoucherTypes';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, dSub, round2, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
@@ -249,10 +250,13 @@ export function GRNEntryPanel() {
   const grnVoucherTypes = useMemo<VoucherType[]>(() => {
     try {
       // [JWT] GET /api/accounting/voucher-types?base=Receipt+Note&active=true
-      const all: VoucherType[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+      // Sprint Hardening-B Block 2C-i · Q3.1 scoped-first read with legacy fallback.
+      const scopedRaw = localStorage.getItem(voucherTypesKey(safeEntity));
+      const legacyRaw = localStorage.getItem('erp_voucher_types');
+      const all: VoucherType[] = JSON.parse((scopedRaw ?? legacyRaw) || '[]');
       return all.filter(vt => vt.is_active && vt.base_voucher_type === 'Receipt Note');
     } catch { return []; }
-  }, []);
+  }, [safeEntity]);
 
   // Sprint T-Phase-1.2.4 · Resolve system GIT godown for two-stage receipts.
   const gitGodown = useMemo<Godown | null>(() => {
