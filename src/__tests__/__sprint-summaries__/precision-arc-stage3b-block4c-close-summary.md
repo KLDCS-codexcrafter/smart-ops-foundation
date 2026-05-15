@@ -48,9 +48,9 @@ When this block banks, the entire Precision & Calculation Integrity Arc is compl
 Sites: `RFQPublicForm.tsx:79, :151, :152, :153` (RFQ tax/total math).
 Idiom: replaced `Math.round(_ * 100) / 100` with `roundTo(_, resolveMoneyPrecision(null, null))`. Inner arithmetic upgraded to `dMul`/`dSub` to remove float drift before the precision boundary.
 
-### Pattern 2 — `parseFloat` form input → resolver-backed money
+### Pattern 2 — `parseFloat` form input → resolver-backed money/qty
 Sites: `panels.tsx:193 (rate)`, `:194 (tax%)`, `LogisticDisputes.tsx:86 (resolution_amount)`.
-Idiom: kept `parseFloat` + finite-guard, wrapped the result with `roundTo(_, resolveMoneyPrecision(null, null))`. `panels.tsx` preserves the existing `Number.isFinite` short-circuit so an invalid line still skips.
+Idiom: kept `parseFloat` + finite-guard, wrapped the result with `roundTo(_, resolveMoneyPrecision(null, null))` for money fields and `roundTo(_, resolveQtyPrecision(undefined))` for the `tax%` rate field (writes into `invoice_tax_pct` — a percentage, not money; corrected post-audit via T1, see below). `panels.tsx` preserves the existing `Number.isFinite` short-circuit so an invalid line still skips.
 
 ### C4 — integer-domain (paise / redeem cap), preserved `Math.floor` / kept `Math.round` semantics for paise
 - **rupees → paise integer (servicedesk cluster, 8 sites):** `Math.round(Number(form.x) * 100)` → `roundTo(dMul(Number(form.x), 100), 0)`. Result is an integer paise value by contract; the test floor asserts integerness.
