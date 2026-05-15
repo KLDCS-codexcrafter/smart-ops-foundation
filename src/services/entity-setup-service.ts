@@ -38,6 +38,7 @@ import { billPassingKey, type BillPassingRecord, type BillPassingLine } from '@/
 // Sprint T-Phase-1.2.6f-pre-2 · Block K · Org structure auto-seed
 import { ORG_PRESETS, resolvePreset } from '@/data/org-presets';
 import { DIVISIONS_KEY, DEPARTMENTS_KEY, type Division, type Department } from '@/types/org-structure';
+import { roundTo, dMul, dAdd, dPct, dSum, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -651,9 +652,9 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         const now = new Date().toISOString();
         const expected = new Date(Date.now() + poSpec.expected_delivery_days_offset * 86400000).toISOString();
         const lines: PurchaseOrderLine[] = awarded.lines.map((l, idx) => {
-          const basic = Math.round(l.qty_quoted * l.rate * 100) / 100;
-          const taxValue = Math.round((basic * l.tax_percent) / 100 * 100) / 100;
-          const afterTax = Math.round((basic + taxValue) * 100) / 100;
+          const basic = roundTo(dMul(l.qty_quoted, l.rate), resolveMoneyPrecision(null, null));
+          const taxValue = roundTo(dPct(basic, l.tax_percent), resolveMoneyPrecision(null, null));
+          const afterTax = roundTo(dAdd(basic, taxValue), resolveMoneyPrecision(null, null));
           const fullyReceived = poSpec.status === 'fully_received';
           return {
             id: `pol-seed-${bpKey}-${idx}`,
@@ -670,9 +671,9 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
             qty_received: fullyReceived ? l.qty_quoted : (poSpec.status === 'partially_received' ? l.qty_quoted / 2 : 0),
           };
         });
-        const totalBasic = Math.round(lines.reduce((s, l) => s + l.basic_value, 0) * 100) / 100;
-        const totalTax = Math.round(lines.reduce((s, l) => s + l.tax_value, 0) * 100) / 100;
-        const totalAfter = Math.round(lines.reduce((s, l) => s + l.amount_after_tax, 0) * 100) / 100;
+        const totalBasic = roundTo(dSum(lines, l => l.basic_value), resolveMoneyPrecision(null, null));
+        const totalTax = roundTo(dSum(lines, l => l.tax_value), resolveMoneyPrecision(null, null));
+        const totalAfter = roundTo(dSum(lines, l => l.amount_after_tax), resolveMoneyPrecision(null, null));
         createdPo = {
           id: `po-seed-${bpKey}`,
           po_no: `PO/SEED/${poSpec.short_code}/0001`,
@@ -769,9 +770,9 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
             const grnQty = gl ? gl.qty_accepted : pl.qty;
             const invQty = grnQty;
             const invRate = pl.rate;
-            const invValue = Math.round(invQty * invRate * 100) / 100;
-            const invTax = Math.round((invValue * pl.tax_pct) / 100 * 100) / 100;
-            const invTotal = Math.round((invValue + invTax) * 100) / 100;
+            const invValue = roundTo(dMul(invQty, invRate), resolveMoneyPrecision(null, null));
+            const invTax = roundTo(dPct(invValue, pl.tax_pct), resolveMoneyPrecision(null, null));
+            const invTotal = roundTo(dAdd(invValue, invTax), resolveMoneyPrecision(null, null));
             return {
               id: `bpl-seed-${bpKey}-${idx}`,
               line_no: idx + 1,
@@ -798,9 +799,9 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
               qa_passed: null,
             } satisfies BillPassingLine;
           });
-          const totalInv = Math.round(lines.reduce((s, l) => s + l.invoice_total, 0) * 100) / 100;
-          const totalPo  = Math.round(lines.reduce((s, l) => s + l.po_value, 0) * 100) / 100;
-          const totalGrn = Math.round(lines.reduce((s, l) => s + l.grn_qty * l.po_rate, 0) * 100) / 100;
+          const totalInv = roundTo(dSum(lines, l => l.invoice_total), resolveMoneyPrecision(null, null));
+          const totalPo  = roundTo(dSum(lines, l => l.po_value), resolveMoneyPrecision(null, null));
+          const totalGrn = roundTo(dSum(lines, l => dMul(l.grn_qty, l.po_rate)), resolveMoneyPrecision(null, null));
           const bill: BillPassingRecord = {
             id: `bp-seed-${bpKey}`,
             bill_no: `BILL/SEED/${opts.shortCode}/0001`,
@@ -914,13 +915,13 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
             hsn_sac: '',
             uom: 'NOS',
             agreed_rate: pl.rate,
-            ceiling_rate: Math.round(pl.rate * 1.05 * 100) / 100,
+            ceiling_rate: roundTo(dMul(pl.rate, 1.05), resolveMoneyPrecision(null, null)),
             min_qty: 1,
             max_qty: pl.qty * 4,
             tax_pct: pl.tax_pct,
             notes: '',
           }));
-          const totalValue = lines.reduce((s, l) => s + l.agreed_rate * l.max_qty, 0);
+          const totalValue = dSum(lines, l => dMul(l.agreed_rate, l.max_qty));
           const today = now.slice(0, 10);
           const validTo = new Date(Date.now() + 365 * 86400000).toISOString().slice(0, 10);
           const rc = {
@@ -936,7 +937,7 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
             payment_terms: 'NET30',
             delivery_terms: 'FOR Destination',
             lines,
-            total_value: Math.round(totalValue * 100) / 100,
+            total_value: roundTo(totalValue, resolveMoneyPrecision(null, null)),
             status: 'active' as const,
             notes: 'Demo seed rate contract — Sprint 3-c-3 Block H.',
             created_by: 'mock-user',
@@ -1921,7 +1922,7 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         total_lines: lines.length,
         variance_lines: lines.filter(l => l.variance_qty !== 0).length,
         total_variance_qty_abs: Math.abs(lines.reduce((s, l) => s + l.variance_qty, 0)),
-        total_variance_value: Math.round(totalVarValue * 100) / 100,
+        total_variance_value: roundTo(totalVarValue, resolveMoneyPrecision(null, null)),
         net_shrinkage_pct: 0,
         notes: 'Demo seed cycle count',
         created_at: nowIso26, updated_at: nowIso26,
@@ -1937,7 +1938,7 @@ export const runEntitySetup = (opts: SetupOptions): SetupResult => {
         const b = balRows[0];
         const qty = 50;
         const rate = b.weighted_avg_rate || 100;
-        const lineTotal = Math.round(qty * rate * 100) / 100;
+        const lineTotal = roundTo(dMul(qty, rate), resolveMoneyPrecision(null, null));
         const rtv = {
           id: `rtv-seed-${opts.shortCode}`,
           entity_id: opts.shortCode,
