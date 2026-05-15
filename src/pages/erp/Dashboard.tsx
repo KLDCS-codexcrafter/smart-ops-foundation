@@ -389,8 +389,11 @@ export default function ErpDashboard() {
       </main>
 
       {/* Stage 3b — global overlays */}
-      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-      <CrossCardSearch open={searchOpen} onOpenChange={setSearchOpen} />
+      {/* Stage 3b — global overlays · lazy-mounted only when opened */}
+      <Suspense fallback={null}>
+        {paletteOpen && <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />}
+        {searchOpen && <CrossCardSearch open={searchOpen} onOpenChange={setSearchOpen} />}
+      </Suspense>
     </div>
   );
 }
