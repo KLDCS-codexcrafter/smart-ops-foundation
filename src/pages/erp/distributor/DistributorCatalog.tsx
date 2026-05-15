@@ -169,7 +169,8 @@ export default function DistributorCatalog() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredItems.map(item => {
-              const fallback = Math.round((item.std_selling_rate ?? item.mrp ?? 0) * 100);
+              // Precision Arc 3B 4b: rupees → integer paise; decimal-safe mult, integer rounding.
+              const fallback = roundTo(dMul(item.std_selling_rate ?? item.mrp ?? 0, 100), 0);
               const tier = resolveTierPrice(item.id, activeListId, priceItems, fallback);
               const reorder = suggestReorderQty(item.id, recentVouchers, distributor.customer_id, 0, 30);
               const qty = qtyMap[item.id] ?? Math.max(tier.min_qty, reorder.suggested || 1);
