@@ -40,6 +40,7 @@ import { commissionRegisterKey } from '@/types/commission-register';
 import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 import { comply360SAMKey, type SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import { roundTo, dPct } from '@/lib/decimal-helpers';
 
 interface TDSLineRow {
   id: string;
