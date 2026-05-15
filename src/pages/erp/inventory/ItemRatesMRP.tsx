@@ -143,7 +143,8 @@ export function ItemRatesPanel() {
       return;
     }
 
-    const newVal = parseFloat(trimmed);
+    // Precision Arc 3B 4b: Pattern 2 — wrap parseFloat money input with money precision.
+    const newVal = roundTo(parseFloat(trimmed), resolveMoneyPrecision(null, null));
     if (isNaN(newVal) || newVal < 0) {
       setPending(p => { const n = { ...p }; delete n[key]; return n; });
       return;
