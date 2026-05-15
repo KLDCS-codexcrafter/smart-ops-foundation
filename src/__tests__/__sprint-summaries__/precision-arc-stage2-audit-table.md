@@ -2217,3 +2217,52 @@ All 69 Block 3 candidate sites confirmed at HEAD `3431f9d`. Per-site disposition
 **RECLASSIFY SP-5 no-arith-needed (2):** usePayrollEngine.ts:167 (was :166, Math.ceil(adv.amount/2)) · scheme-engine.ts:71 (was :69, count = qty/qty).
 
 Tally: 57 migrated · 12 reclassified · 0 STOP-and-raise.
+
+---
+
+## Stage 3B · Block 4a — Financial-Core Page Forms · Reconciliation Appendix
+
+**Scope:** 51 audit rows (1 already-resolved at Stage 3B Block 2 surgical fix → 50 live).
+
+### ALREADY-RESOLVED (1)
+- `accounting/vouchers/Payment.tsx:537` — already migrated by surgical fix banked at HEAD `7250cf9` (now `roundTo(dPct(amount, r), 0)` at :538). Confirmed not re-migrated.
+
+### MIGRATED Pattern 1 — money arithmetic (15)
+- `components/fincore/InventoryLineGrid.tsx:40/41/42/45/46/51` — GST line cgst/sgst/igst/discount/taxable/total → `roundTo(dPct(...), mp)` / `roundTo(dAdd(...), mp)`.
+- `accounting/LedgerMaster.tsx:2287→:2288, :2289→:2290, :2300→:2301, :2302→:2303, :2303→:2304` — EMI calculator + loan schedule (form-compute, NOT voucher-posting). Math.round(_*100)/100 → `roundTo(_, mp)` with `dMul`/`dSub`.
+- `pay-hub/transactions/EmployeeFinance.tsx:102→:103` — compound EMI interest → `roundTo(dMul(balance, monthlyRate), 0)`.
+- `pay-hub/transactions/EmployeeFinance.tsx:72→:71, :123` — simple-interest formula → `dPct(dMul(p, n), r)/12` (decimal-safe intermediate).
+- `pay-hub/transactions/EmployeeExperience.tsx:838` — gratuity provision est. `(annualBasic*4.81)/100` → `roundTo(dPct(annualBasic, 4.81), 0)`.
+- `pay-hub/transactions/PayslipGeneration.tsx:131` — PF 12BB estimate → `roundTo(Math.min(dPct(annualCTC, 4.8), 21600), 0)` (algebraic identity preserved).
+- `pay-hub/transactions/ContractManpower.tsx:190, :234` — order value & invoice variance → `roundTo(dMul(...), 0)`.
+- `pay-hub/masters/SalaryStructureMaster.tsx:70, :77` — preview rows monthly/annual → `roundTo(_, 0)` (integer-rupee convention preserved).
+- `pay-hub/transactions/ExitAndFnF.tsx:59, :61, :73, :83, :93` — gratuity/leave-encashment/notice-shortfall/pro-rata FnF → `roundTo(dMul(...)/_, 0)`. Math.floor(years) preserved as C4.
+
+### MIGRATED Pattern 2 — parseFloat→money form input (6)
+- `fincore/reports/gst/GSTR9.tsx:66` — override cell → `roundTo(parseFloat(val), mp)`.
+- `pay-hub/masters/EmployeeMaster.tsx:1432` — drifted to :1433/:1434 (LIC premium + sumAssured) → wrapped both in `roundTo(_, mp)` per SUPPLEMENT 7 reconciliation.
+- `pay-hub/masters/PayHeadMaster.tsx:377` — `conditionalMaxWage` → `roundTo(parseFloat||0, mp)`.
+- `pay-hub/transactions/PayslipGeneration.tsx:654` — IT-declaration money inputs (80C cluster) → `roundTo(parseFloat||0, mp)`.
+
+### MIGRATED C4 — Math.ceil preserved over decimal-safe inner (8)
+- `pay-hub/transactions/EmployeeFinance.tsx:52→:53, :79→:80, :82→:83, :83→:84, :95→:96, :96→:97-98, :120→:121, :126→:127, :127→:128` — EMI integer-rupee Math.ceil retained, inner expression snapped via `roundTo(_, 4)` (drift-safe) using `dMul`/`dSub`/`dPct` where natural.
+
+### RECLASSIFY-C — percentage / rate, not money (12)
+- `accounting/LedgerMaster.tsx:5517` — depreciation rate % parseFloat (not money).
+- `accounting/LedgerMaster.tsx:5541` — IT-Act depreciation rate % parseFloat.
+- `fincore/FinCoreHub.tsx:168, :169, :170` — debtor-aging bucket weights (display %).
+- `pay-hub/PayHubDashboard.tsx:272` — attrition-rate % display.
+- `pay-hub/masters/EmployeeMaster.tsx:1432` — see Pattern 2 reconciliation (audit row consolidated; original line was non-arithmetic input — Insurer text).
+- `pay-hub/transactions/AdminAndMonitoring.tsx:220, :227` — productivity score % display.
+- `pay-hub/transactions/EmployeeFinance.tsx:1055→:1056` — flexi-component allocation % display.
+
+### RECLASSIFY-B — display / non-money math (3)
+- `components/fincore/TaxPeriodGateBanner.tsx:30` — `daysUntil` (calendar days, integer-domain).
+- `components/fincore/registers/RegisterGrid.tsx:232` — pagination `Math.ceil(len/PER_PAGE)` (count, integer).
+- `pay-hub/transactions/PayslipGeneration.tsx:47` — number-to-words display string `Math.round(num)` before convert().
+
+### Tally
+50 live sites · **29 migrated** (15 Pattern 1 + 6 Pattern 2 + 8 C4) · **15 reclassified** (12 RECLASSIFY-C + 3 RECLASSIFY-B). Note: 6 EmployeeFinance audit-table rows resolved into a single C4 cluster (multiple rows per function) — accounted for above.
+
+### STOP-and-raise
+None. All LedgerMaster sites confirmed in form-compute helpers (EMI calculator + schedule generator), NOT the voucher-posting path. D-127 voucher-posting/save paths 0-diff. `decimal-helpers.ts` consume-only 0-diff. Protected zones (`voucher-type.ts`, `cc-masters.ts`, `applications.ts`, `cc-compliance-settings.ts`) 0-diff.
