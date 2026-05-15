@@ -17,6 +17,7 @@ import { DollarSign, Search, AlertTriangle, TrendingUp, CheckCircle2 } from 'luc
 import { toast } from 'sonner';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { ItemRateHistory, RateType } from '@/types/item-rate-history';
+import { dMul, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 const IKEY = 'erp_inventory_items';
 const RHKEY = 'erp_item_rate_history';
@@ -142,7 +143,8 @@ export function ItemRatesPanel() {
       return;
     }
 
-    const newVal = parseFloat(trimmed);
+    // Precision Arc 3B 4b: Pattern 2 — wrap parseFloat money input with money precision.
+    const newVal = roundTo(parseFloat(trimmed), resolveMoneyPrecision(null, null));
     if (isNaN(newVal) || newVal < 0) {
       setPending(p => { const n = { ...p }; delete n[key]; return n; });
       return;
@@ -206,8 +208,9 @@ export function ItemRatesPanel() {
     scope.forEach(item => {
       const old = getField(item, qaField);
       if (old == null || old === 0) return;
-      const nv = qaDirection === 'increase' ? old * (1 + pct / 100) : old * (1 - pct / 100);
-      const rounded = Math.round(nv * 100) / 100;
+      // Precision Arc 3B 4b: Pattern 1 — decimal-safe percent application; money rounding.
+      const nv = qaDirection === 'increase' ? dMul(old, 1 + pct / 100) : dMul(old, 1 - pct / 100);
+      const rounded = roundTo(nv, resolveMoneyPrecision(null, null));
       if (rounded === old) return;
       const key = `${item.id}|${qaField}`;
       newPending[key] = { item, field: qaField, oldVal: old, newVal: rounded };
@@ -234,8 +237,9 @@ export function ItemRatesPanel() {
       newItems.forEach((item, idx) => {
         const old = getField(item, bulkField);
         if (old == null) return;
-        const nv = bulkDirection === 'increase' ? old * (1 + pct / 100) : old * (1 - pct / 100);
-        const rounded = Math.round(nv * 100) / 100;
+        // Precision Arc 3B 4b: Pattern 1 — decimal-safe percent application; money rounding.
+        const nv = bulkDirection === 'increase' ? dMul(old, 1 + pct / 100) : dMul(old, 1 - pct / 100);
+        const rounded = roundTo(nv, resolveMoneyPrecision(null, null));
         newItems[idx] = setField(item, bulkField, rounded);
         newHist.unshift({
           id: `rh-${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -275,7 +279,8 @@ export function ItemRatesPanel() {
         if (idx < 0) return;
         const item = newItems[idx];
         if (mrpVal) {
-          const n = parseFloat(mrpVal);
+          // Precision Arc 3B 4b: Pattern 2 — wrap CSV money input.
+          const n = roundTo(parseFloat(mrpVal), resolveMoneyPrecision(null, null));
           if (!isNaN(n)) {
             const old = item.mrp ?? null;
             newItems[idx] = { ...newItems[idx], mrp: n };
@@ -291,7 +296,8 @@ export function ItemRatesPanel() {
           }
         }
         if (stdPurchase) {
-          const n = parseFloat(stdPurchase);
+          // Precision Arc 3B 4b: Pattern 2 — wrap CSV money input.
+          const n = roundTo(parseFloat(stdPurchase), resolveMoneyPrecision(null, null));
           if (!isNaN(n)) {
             const old = newItems[idx].std_purchase_rate ?? null;
             newItems[idx] = { ...newItems[idx], std_purchase_rate: n };
@@ -306,7 +312,8 @@ export function ItemRatesPanel() {
           }
         }
         if (stdSelling) {
-          const n = parseFloat(stdSelling);
+          // Precision Arc 3B 4b: Pattern 2 — wrap CSV money input.
+          const n = roundTo(parseFloat(stdSelling), resolveMoneyPrecision(null, null));
           if (!isNaN(n)) {
             const old = newItems[idx].std_selling_rate ?? null;
             newItems[idx] = { ...newItems[idx], std_selling_rate: n };

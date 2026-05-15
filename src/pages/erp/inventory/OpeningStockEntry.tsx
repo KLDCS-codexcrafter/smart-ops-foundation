@@ -244,8 +244,8 @@ export function OpeningStockPanel() {
             mfg_date: b.mfg_date || null,
             expiry_date: b.expiry_date || null,
             quantity: qty, rate, value: roundTo(dMul(qty, rate), mp),
-            mrp: row.mrp ? parseFloat(row.mrp) : null,
-            std_purchase_rate: row.stdPO ? parseFloat(row.stdPO) : null,
+            mrp: row.mrp ? roundTo(parseFloat(row.mrp), mp) : null,
+            std_purchase_rate: row.stdPO ? roundTo(parseFloat(row.stdPO), mp) : null,
             status: 'posted', created_at: now, updated_at: now,
           });
         });
@@ -262,8 +262,8 @@ export function OpeningStockPanel() {
             mfg_date: s.mfg_date || null,
             expiry_date: s.expiry_date || null,
             quantity: 1, rate, value: rate,
-            mrp: row.mrp ? parseFloat(row.mrp) : null,
-            std_purchase_rate: row.stdPO ? parseFloat(row.stdPO) : null,
+            mrp: row.mrp ? roundTo(parseFloat(row.mrp), mp) : null,
+            std_purchase_rate: row.stdPO ? roundTo(parseFloat(row.stdPO), mp) : null,
             status: 'posted', created_at: now, updated_at: now,
           });
         });
@@ -278,8 +278,8 @@ export function OpeningStockPanel() {
             item_id: itemId, item_code: item.code, item_name: item.name,
             godown_id: col.id, godown_name: col.name,
             quantity: qty, rate, value: roundTo(dMul(qty, rate), mp),
-            mrp: row.mrp ? parseFloat(row.mrp) : null,
-            std_purchase_rate: row.stdPO ? parseFloat(row.stdPO) : null,
+            mrp: row.mrp ? roundTo(parseFloat(row.mrp), mp) : null,
+            std_purchase_rate: row.stdPO ? roundTo(parseFloat(row.stdPO), mp) : null,
             status: 'posted', created_at: now, updated_at: now,
           });
         });
@@ -287,8 +287,8 @@ export function OpeningStockPanel() {
 
       const idx = allItems.findIndex(i => i.id === itemId);
       if (idx >= 0) {
-        if (row.mrp) { allItems[idx].mrp = parseFloat(row.mrp); mrpUpdates++; }
-        if (row.stdPO) { allItems[idx].std_purchase_rate = parseFloat(row.stdPO); }
+        if (row.mrp) { allItems[idx].mrp = roundTo(parseFloat(row.mrp), mp); mrpUpdates++; }
+        if (row.stdPO) { allItems[idx].std_purchase_rate = roundTo(parseFloat(row.stdPO), mp); }
       }
     });
 

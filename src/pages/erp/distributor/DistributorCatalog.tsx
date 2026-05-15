@@ -21,6 +21,7 @@ import type { PriceList, PriceListItem } from '@/types/price-list';
 import type { Voucher } from '@/types/voucher';
 import type { DistributorOrderLine } from '@/types/distributor-order';
 import { isLineVisibleToTier, type PriceListLine } from '@/types/item-price-list';
+import { dMul, roundTo } from '@/lib/decimal-helpers';
 
 const INDIGO = 'hsl(231 48% 58%)';
 const INDIGO_BG = 'hsl(231 48% 48% / 0.12)';
@@ -103,7 +104,8 @@ export default function DistributorCatalog() {
   const handleAdd = async (item: InventoryItem) => {
     setBusyItem(item.id);
     try {
-      const fallback = Math.round((item.std_selling_rate ?? item.mrp ?? 0) * 100);
+      // Precision Arc 3B 4b: rupees → integer paise; decimal-safe mult, integer rounding.
+      const fallback = roundTo(dMul(item.std_selling_rate ?? item.mrp ?? 0, 100), 0);
       const tier = resolveTierPrice(item.id, activeListId, priceItems, fallback);
       const qty = Math.max(tier.min_qty, qtyMap[item.id] ?? 1);
       // Interstate detection: distributor state vs entity state — defaults intra-state.
@@ -167,7 +169,8 @@ export default function DistributorCatalog() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredItems.map(item => {
-              const fallback = Math.round((item.std_selling_rate ?? item.mrp ?? 0) * 100);
+              // Precision Arc 3B 4b: rupees → integer paise; decimal-safe mult, integer rounding.
+              const fallback = roundTo(dMul(item.std_selling_rate ?? item.mrp ?? 0, 100), 0);
               const tier = resolveTierPrice(item.id, activeListId, priceItems, fallback);
               const reorder = suggestReorderQty(item.id, recentVouchers, distributor.customer_id, 0, 30);
               const qty = qtyMap[item.id] ?? Math.max(tier.min_qty, reorder.suggested || 1);

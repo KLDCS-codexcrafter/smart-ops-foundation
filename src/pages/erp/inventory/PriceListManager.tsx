@@ -15,6 +15,7 @@ import { TrendingDown, Plus, Search, Edit2, Trash2, ChevronRight, CheckCircle2, 
 import { toast } from 'sonner';
 import type { PriceList, PriceListItem, PriceListType } from '@/types/price-list';
 import type { InventoryItem } from '@/types/inventory-item';
+import { dPct, dSub, roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
 
 const PLKEY = 'erp_price_lists';
 const PLIKEY = 'erp_price_list_items';
@@ -132,7 +133,8 @@ export function PriceListsPanel() {
 
   const handleMatrixCell = useCallback((list: PriceList, item: InventoryItem, rawVal: string) => {
     const key: PriceKey = `${list.id}|${item.id}`;
-    const newPrice = parseFloat(rawVal);
+    // Precision Arc 3B 4b: Pattern 2 — wrap parseFloat money input.
+    const newPrice = roundTo(parseFloat(rawVal), resolveMoneyPrecision(null, null));
     if (!rawVal.trim() || isNaN(newPrice) || newPrice < 0) {
       setPendingPrices(p => { const n = { ...p }; delete n[key]; return n; });
       return;
@@ -186,7 +188,8 @@ export function PriceListsPanel() {
       if (isNaN(pct)) { toast.error('Enter a valid percentage'); return; }
       filteredItems.forEach(item => {
         if (!item.std_selling_rate) return;
-        const nv = Math.round(item.std_selling_rate * (pct / 100) * 100) / 100;
+        // Precision Arc 3B 4b: Pattern 1 — std_selling_rate × pct/100; computed money.
+        const nv = roundTo(dPct(item.std_selling_rate, pct), resolveMoneyPrecision(null, null));
         const key = `${fillListId}|${item.id}`;
         newPending[key] = { listId: fillListId, itemId: item.id, item, oldPrice: getEffectivePrice(fillListId, item.id), newPrice: nv, uom: item.primary_uom_symbol || 'pcs' };
         staged++;
@@ -197,7 +200,8 @@ export function PriceListsPanel() {
       if (isNaN(disc)) { toast.error('Enter a valid discount %'); return; }
       filteredItems.forEach(item => {
         if (!item.std_selling_rate) return;
-        const nv = Math.round(item.std_selling_rate * (1 - disc / 100) * 100) / 100;
+        // Precision Arc 3B 4b: Pattern 1 — std_selling_rate × (1 - disc/100); computed money.
+        const nv = roundTo(dSub(item.std_selling_rate, dPct(item.std_selling_rate, disc)), resolveMoneyPrecision(null, null));
         const key = `${fillListId}|${item.id}`;
         newPending[key] = { listId: fillListId, itemId: item.id, item, oldPrice: getEffectivePrice(fillListId, item.id), newPrice: nv, uom: item.primary_uom_symbol || 'pcs' };
         staged++;
@@ -263,13 +267,14 @@ export function PriceListsPanel() {
 
   const addItemToList = () => {
     if (!activeList || !selItem) { toast.error('Select an item'); return; }
-    const price = parseFloat(itemForm.price);
+    // Precision Arc 3B 4b: Pattern 2 — wrap parseFloat money input.
+    const price = roundTo(parseFloat(itemForm.price), resolveMoneyPrecision(null, null));
     if (isNaN(price) || price <= 0) { toast.error('Price is required'); return; }
     const now = new Date().toISOString();
     if (editPLItem) {
       const u = listItems.map(x => x.id === editPLItem.id ? {
         ...x, price,
-        min_qty: itemForm.min_qty ? parseFloat(itemForm.min_qty) : null,
+        min_qty: itemForm.min_qty ? roundTo(parseFloat(itemForm.min_qty), resolveQtyPrecision(undefined)) : null,
         discount_percent: itemForm.discount_percent ? parseFloat(itemForm.discount_percent) : null,
         is_tax_inclusive: itemForm.is_tax_inclusive, updated_at: now,
       } : x);
@@ -282,7 +287,7 @@ export function PriceListsPanel() {
         id: `pli-${Date.now()}`, price_list_id: activeList.id,
         item_id: selItem.id, item_code: selItem.code, item_name: selItem.name,
         uom_symbol: selItem.primary_uom_symbol || 'pcs', price,
-        min_qty: itemForm.min_qty ? parseFloat(itemForm.min_qty) : null,
+        min_qty: itemForm.min_qty ? roundTo(parseFloat(itemForm.min_qty), resolveQtyPrecision(undefined)) : null,
         discount_percent: itemForm.discount_percent ? parseFloat(itemForm.discount_percent) : null,
         is_tax_inclusive: itemForm.is_tax_inclusive, created_at: now, updated_at: now,
       };
