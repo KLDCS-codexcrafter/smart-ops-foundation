@@ -157,6 +157,8 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
               <InvoiceModeToggle mode={invoiceMode} onToggle={setInvoiceMode} hasLines={inventoryLines.length > 0 || ledgerLines.length > 0} />
             </div>
           </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
               <Label className="text-xs">Against Bill No</Label>
               <Input value={againstBill} onChange={e => setAgainstBill(e.target.value)} onKeyDown={onEnterNext} placeholder="Original bill number (mandatory)" />
             </div>
