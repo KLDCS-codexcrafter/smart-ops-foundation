@@ -13,6 +13,7 @@ import { Send, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { StockJournalLineGrid } from '@/components/fincore/StockJournalLineGrid';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/fincore/DraftTray';
