@@ -2266,3 +2266,42 @@ Tally: 57 migrated · 12 reclassified · 0 STOP-and-raise.
 
 ### STOP-and-raise
 None. All LedgerMaster sites confirmed in form-compute helpers (EMI calculator + schedule generator), NOT the voucher-posting path. D-127 voucher-posting/save paths 0-diff. `decimal-helpers.ts` consume-only 0-diff. Protected zones (`voucher-type.ts`, `cc-masters.ts`, `applications.ts`, `cc-compliance-settings.ts`) 0-diff.
+
+---
+
+## Stage 3B · Block 4b Appendix (trade/stock page forms — 38 sites)
+
+**Predecessor:** Block 4a banked HEAD. **Outcome:** 27 MIGRATED + 8 OpeningStockEntry residuals brought onto contract; 4 RECLASSIFY-C (predicate/display); 0 STOP-and-raise.
+
+| Site | Disposition | Pattern | Note |
+|---|---|---|---|
+| CreditApprovalQueue.tsx:73 | MIGRATED | Pattern 2 | parseFloat(lakhs) wrapped, mp |
+| CreditApprovalQueue.tsx:75 | MIGRATED | C4 paise | dMul inner, Math.floor preserved |
+| DistributorCart.tsx:148-152 | MIGRATED | paise cluster | roundTo(dMul(_paise, ratio), 0) ×5 |
+| DistributorCatalog.tsx:106 | MIGRATED | integer paise | roundTo(dMul(rupees, 100), 0) |
+| DistributorCatalog.tsx:170 | MIGRATED | integer paise | grid-map duplicate |
+| DistributorCreditRequest.tsx:56 | MIGRATED | Pattern 2 | parseFloat(lakhs) wrapped |
+| DistributorCreditRequest.tsx:57 | MIGRATED | C4 paise | dMul inner, Math.floor preserved |
+| DistributorDashboard.tsx:53 | RECLASSIFY-C | display | credit-used % capped at 100 |
+| DistributorDashboard.tsx:56 | RECLASSIFY-C | display | target % capped at 100 |
+| DistributorDisputeQueue.tsx:89 | MIGRATED | Pattern 2 + C4 | parseFloat(₹) wrapped, dMul on *100 |
+| DistributorInvoices.tsx:144 | MIGRATED | integer paise | roundTo(dMul(dMul(qty,rate),100),0) |
+| DistributorPayments.tsx:111 | MIGRATED | integer paise | amount_paise |
+| ItemRatesMRP.tsx:145 | MIGRATED | Pattern 2 | cell-edit money |
+| ItemRatesMRP.tsx:210 | MIGRATED | Pattern 1 | dMul(old, 1±pct/100), roundTo mp |
+| ItemRatesMRP.tsx:238 (now 240) | MIGRATED | Pattern 1 | bulk percent (line +2) |
+| ItemRatesMRP.tsx:278 (now 282) | MIGRATED | Pattern 2 | CSV mrp (line +4) |
+| ItemRatesMRP.tsx:294 (now 298) | MIGRATED | Pattern 2 | CSV std-purchase (line +4) |
+| ItemRatesMRP.tsx:309 (now 313) | MIGRATED | Pattern 2 | CSV std-selling (line +4) |
+| OpeningStockEntry.tsx:78 | RECLASSIFY-C | predicate | parseFloat(b.qty) > 0 boolean |
+| OpeningStockEntry.tsx:80 | RECLASSIFY-C | predicate | parseFloat(v) > 0 boolean |
+| OpeningStockEntry.tsx:242,243,260,261,276,277,285,286 | MIGRATED (residual) | Pattern 2 | object-prop lines drifted; residual stored-money parseFloats at 247/248, 265/266, 281/282, 290/291 wrapped with mp |
+| PriceListManager.tsx:135 | MIGRATED | Pattern 2 | matrix-cell |
+| PriceListManager.tsx:189 | MIGRATED | Pattern 1 | dPct(std, pct) |
+| PriceListManager.tsx:200 | MIGRATED | Pattern 1 | dSub(std, dPct(std, disc)) |
+| PriceListManager.tsx:266 (now 270) | MIGRATED | Pattern 2 | itemForm.price (line +4) |
+| PriceListManager.tsx:272 (now 277) | MIGRATED | Pattern 2 (qty) | min_qty → resolveQtyPrecision (line +5) |
+| PriceListManager.tsx:285 (now 290) | MIGRATED | Pattern 2 (qty) | min_qty → resolveQtyPrecision (line +5) |
+
+### STOP-and-raise
+None. No adjacent non-scope site disturbed. `decimal-helpers.ts` 0-diff. Protected zones 0-diff. Voucher-posting paths 0-diff.
