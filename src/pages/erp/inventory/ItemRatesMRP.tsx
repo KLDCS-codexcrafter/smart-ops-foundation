@@ -296,7 +296,8 @@ export function ItemRatesPanel() {
           }
         }
         if (stdPurchase) {
-          const n = parseFloat(stdPurchase);
+          // Precision Arc 3B 4b: Pattern 2 — wrap CSV money input.
+          const n = roundTo(parseFloat(stdPurchase), resolveMoneyPrecision(null, null));
           if (!isNaN(n)) {
             const old = newItems[idx].std_purchase_rate ?? null;
             newItems[idx] = { ...newItems[idx], std_purchase_rate: n };
