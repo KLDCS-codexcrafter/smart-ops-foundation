@@ -28,10 +28,10 @@ const ConditionalDishani = () => {
   const hideOn = ['/auth/login'];
   if (hideOn.some(path => location.pathname.startsWith(path))) return null;
   return (
-    <>
+    <Suspense fallback={null}>
       <DishaniFloatingButton />
       <DishaniPanel />
-    </>
+    </Suspense>
   );
 };
 
