@@ -13,32 +13,42 @@ import { toast } from 'sonner';
 import { Plus, Search, Lock, Pencil, Trash2, Shield, CreditCard, Check } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { MODE_OF_PAYMENT_SEED, type ModeOfPayment } from '@/data/masters-seed-data';
+// Sprint Hardening-B Block 2C-i · Q3.2 scoped-first read + dual-write (one-FY safety)
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { modeOfPaymentKey } from '@/types/cc-masters';
 
 const STORAGE_KEY = 'erp_group_mode_of_payment';
 
-const loadModes = (): ModeOfPayment[] => {
+const loadModes = (entityCode: string): ModeOfPayment[] => {
   try {
     // [JWT] GET /api/masters/mode-of-payment
-    const r = localStorage.getItem(STORAGE_KEY);
+    const scoped = localStorage.getItem(modeOfPaymentKey(entityCode));
+    const legacy = localStorage.getItem(STORAGE_KEY);
+    const r = scoped ?? legacy;
     if (r) return JSON.parse(r);
   } catch { /* ignore */ }
   const seeded = MODE_OF_PAYMENT_SEED.map(s => ({
     ...s, id: crypto.randomUUID(), isSeeded: true, isActive: true,
   }));
+  const json = JSON.stringify(seeded);
   // [JWT] POST /api/masters/mode-of-payment
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+  localStorage.setItem(STORAGE_KEY, json);
+  localStorage.setItem(modeOfPaymentKey(entityCode), json);
   // [JWT] GET /api/group/masters/mode-of-payment
   return seeded;
 };
 
-const saveModes = (modes: ModeOfPayment[]) => {
+const saveModes = (entityCode: string, modes: ModeOfPayment[]) => {
+  const json = JSON.stringify(modes);
   // [JWT] POST /api/masters/mode-of-payment
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(modes));
+  localStorage.setItem(STORAGE_KEY, json);
+  localStorage.setItem(modeOfPaymentKey(entityCode), json);
   // [JWT] PUT /api/group/masters/mode-of-payment
 };
 
 export function ModeOfPaymentMasterPanel() {
-  const [modes, setModes] = useState<ModeOfPayment[]>(() => loadModes());
+  const { entityCode } = useEntityCode();
+  const [modes, setModes] = useState<ModeOfPayment[]>(() => loadModes(entityCode));
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<ModeOfPayment | null>(null);
   const [form, setForm] = useState({ name: '', remarks: '' });
@@ -51,12 +61,12 @@ export function ModeOfPaymentMasterPanel() {
 
   const handleSave = () => {
     if (!form.name.trim()) return toast.error('Name is required');
-    const allModes = loadModes();
+    const allModes = loadModes(entityCode);
     if (editTarget) {
       const updated = allModes.map(m =>
         m.id === editTarget.id ? { ...m, name: editTarget.isSeeded ? m.name : form.name.trim(), remarks: form.remarks.trim() } : m
       );
-      saveModes(updated); setModes(updated);
+      saveModes(entityCode, updated); setModes(updated);
       toast.success(`${form.name} updated`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);
@@ -70,7 +80,7 @@ export function ModeOfPaymentMasterPanel() {
         isActive: true,
       };
       const updated = [...allModes, newMode];
-      saveModes(updated); setModes(updated);
+      saveModes(entityCode, updated); setModes(updated);
       toast.success(`${newMode.name} added`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);
@@ -79,17 +89,17 @@ export function ModeOfPaymentMasterPanel() {
   };
 
   const handleDelete = (id: string) => {
-    const allModes = loadModes();
+    const allModes = loadModes(entityCode);
     const target = allModes.find(m => m.id === id);
     if (!target || target.isSeeded) return;
     const updated = allModes.filter(m => m.id !== id);
-    saveModes(updated); setModes(updated);
+    saveModes(entityCode, updated); setModes(updated);
     toast.success('Payment mode removed');
   };
 
   const handleToggleActive = (id: string) => {
-    const updated = loadModes().map(m => m.id === id ? { ...m, isActive: !m.isActive } : m);
-    saveModes(updated); setModes(updated);
+    const updated = loadModes(entityCode).map(m => m.id === id ? { ...m, isActive: !m.isActive } : m);
+    saveModes(entityCode, updated); setModes(updated);
   };
 
   const openEdit = (m: ModeOfPayment) => {
