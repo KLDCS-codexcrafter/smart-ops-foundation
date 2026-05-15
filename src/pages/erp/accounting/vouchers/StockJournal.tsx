@@ -151,21 +151,19 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
     <>
     {GuardDialog}
     <div data-keyboard-form className="p-5 max-w-5xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">Stock Journal</h2>
-          <p className="text-xs text-muted-foreground">Consumption to Production (internal stock movement)</p>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">{voucherNo}</Badge>
-      </div>
+      <TallyVoucherHeader
+        voucherTypeName="Stock Journal"
+        baseVoucherType="Stock Journal"
+        voucherFamily="Inventory"
+        voucherNo={voucherNo}
+        refNo={referenceNo} onRefNoChange={setReferenceNo}
+        voucherDate={date} onVoucherDateChange={setDate}
+        status="draft"
+      />
 
       <Card>
         <CardContent className="pt-5 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <Label className="text-xs">Date</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} onKeyDown={onEnterNext} />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-xs">Purpose</Label>
               <Select value={purpose} onValueChange={setPurpose}>
@@ -178,10 +176,6 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
             <div>
               <Label className="text-xs">Department</Label>
               <Input value={department} onChange={e => setDepartment(e.target.value)} onKeyDown={onEnterNext} placeholder="Department" />
-            </div>
-            <div>
-              <Label className="text-xs">Reference No</Label>
-              <Input value={referenceNo} onChange={e => setReferenceNo(e.target.value)} onKeyDown={onEnterNext} placeholder={purpose === 'Other' ? 'Mandatory' : 'Optional'} />
             </div>
           </div>
         </CardContent>
