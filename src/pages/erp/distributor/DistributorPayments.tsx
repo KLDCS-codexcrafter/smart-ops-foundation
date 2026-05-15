@@ -109,7 +109,8 @@ export default function DistributorPayments() {
         partner_code: distributor.partner_code,
         partner_name: distributor.legal_name,
         entity_code: session.entity_code,
-        amount_paise: Math.round(v.amount_rupees * 100),
+        // Precision Arc 3B 4b: rupees → integer paise; decimal-safe mult, integer rounding.
+        amount_paise: roundTo(dMul(v.amount_rupees, 100), 0),
         mode: v.mode as IntimationMode,
         utr_no: v.utr_no || null,
         cheque_no: v.cheque_no || null,
