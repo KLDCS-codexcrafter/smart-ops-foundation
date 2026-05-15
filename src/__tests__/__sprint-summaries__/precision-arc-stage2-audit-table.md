@@ -2305,3 +2305,60 @@ None. All LedgerMaster sites confirmed in form-compute helpers (EMI calculator +
 
 ### STOP-and-raise
 None. No adjacent non-scope site disturbed. `decimal-helpers.ts` 0-diff. Protected zones 0-diff. Voucher-posting paths 0-diff.
+
+---
+
+## Stage 3B Block 4c Appendix — The Long Tail (43 sites)
+
+Predecessor HEAD: Block 4b banked.
+Touched files: 11. Migrated rows: 18. Already-migrated: 1 (VendorPaymentEntry.tsx:411). Reclassified: 24.
+
+| Site | Verdict | Pattern | Notes |
+| --- | --- | --- | --- |
+| MobilePODCapture.tsx:60 | RECLASSIFY-C | display | distance toast (m) — also Block 1 C3 |
+| MobileSiteDPRCapture.tsx:71 | RECLASSIFY-C | display | distance toast (m) — also Block 1 C3 |
+| UniversalRegisterGrid.tsx:113 | RECLASSIFY-C | count | pagination Math.ceil |
+| ReconciliationWorkbench.tsx:199 | RECLASSIFY-C | display | match-rate % |
+| SyncMonitor.tsx:537 | RECLASSIFY-C | display | progress % — also Block 1 C3 |
+| panels.tsx:193 | MIGRATED | Pattern 2 | parseFloat(rate) → roundTo(_, mp) |
+| panels.tsx:194 | MIGRATED | Pattern 2 | parseFloat(tax%) → roundTo(_, mp) |
+| CustomerHubWelcome.tsx:156 | RECLASSIFY-C | metric | KPI avg CLV display, not stored |
+| CustomerCart.tsx:133 | MIGRATED | C4 integer-paise | Math.floor preserved; dSub/dMul inner |
+| EngineeringXReports.tsx:50 | RECLASSIFY-C | display | bom-rate % |
+| EngineeringXReports.tsx:51 | RECLASSIFY-C | display | approval-rate % |
+| CityMaster.tsx:92 | RECLASSIFY-C | count | pagination Math.ceil |
+| LogisticDisputes.tsx:86 | MIGRATED | Pattern 2 | parseFloat(counterAmount) → roundTo(_, mp) |
+| CashFlowDashboard.tsx:78 | RECLASSIFY-C | display | chart datapoint (closing) |
+| CashFlowDashboard.tsx:79 | RECLASSIFY-C | display | chart datapoint (receivables) |
+| CashFlowDashboard.tsx:80 | RECLASSIFY-C | display | chart datapoint (committed) |
+| CashFlowDashboard.tsx:85 | RECLASSIFY-C | display | forecast chart (receivables) |
+| CashFlowDashboard.tsx:86 | RECLASSIFY-C | display | forecast chart (committed) |
+| CashFlowDashboard.tsx:87 | RECLASSIFY-C | display | forecast chart (net) |
+| VendorPaymentEntry.tsx:411 | ALREADY-MIGRATED | Pattern 2 | rate input; banked previously |
+| VendorPaymentEntry.tsx:413 (now 414) | MIGRATED | TDS integer-rupee | roundTo(dPct(amount, r), 0) per Sec 194 |
+| MilestoneTracker.tsx:96 | RECLASSIFY-C | display | progress % |
+| QualiCheckDashboard.tsx:43 | RECLASSIFY-C | display | pass-rate % (1dp) |
+| ReceivXHub.tsx:43 | RECLASSIFY-C | days | DSO days metric |
+| RequestXWelcome.tsx:75 | RECLASSIFY-C | metric | health score (0–100) |
+| IndentApprovalInbox.tsx:75 | RECLASSIFY-C | display | approval-rate % |
+| SalesXAnalytics.tsx:115 | RECLASSIFY-C | metric | conversion ratio (1dp) |
+| CallQualityHub.tsx:278 | RECLASSIFY-C | metric | avg score |
+| Telecaller.tsx:887 | RECLASSIFY-C | display | success % — also Block 1 C3 |
+| EngineerMarketplace.tsx:66 | MIGRATED | integer paise | roundTo(dMul(Number(rate), 100), 0) |
+| RefurbishedUnitLifecycle.tsx:67 | MIGRATED | integer paise | refurb_cost_paise |
+| RefurbishedUnitLifecycle.tsx:68 | MIGRATED | integer paise | resale_price_paise |
+| RepairRouteList.tsx:57 | MIGRATED | integer paise | returnCost paise |
+| CustomerOutDialog.tsx:46 | MIGRATED | integer paise | charges_paise |
+| ServiceTicketDetail.tsx:142 | MIGRATED | integer paise | route cost_paise |
+| ServiceTicketDetail.tsx:171 | MIGRATED | integer paise | standby daily_cost_paise |
+| ServiceTicketDetail.tsx:182 | MIGRATED | integer paise | spare unit cost paise |
+| StandbyLoanList.tsx:29 | RECLASSIFY-C | days | overdue-day count Math.floor |
+| StandbyLoanList.tsx:53 | MIGRATED | integer paise | damageCharge paise |
+| Notifications.tsx:123 | RECLASSIFY-C | display | avg open-rate % |
+| RFQPublicForm.tsx:79 | MIGRATED | Pattern 1 | lineAfterTax money |
+| RFQPublicForm.tsx:148 (now 151) | MIGRATED | Pattern 1 | total_value (line +3 after import) |
+| RFQPublicForm.tsx:149 (now 152) | MIGRATED | Pattern 1 | total_tax via dSub |
+| RFQPublicForm.tsx:150 (now 153) | MIGRATED | Pattern 1 | total_after_tax |
+
+### STOP-and-raise
+None. No voucher-posting path touched. `decimal-helpers.ts` 0-diff. Protected zones 0-diff.
