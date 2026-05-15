@@ -25,6 +25,7 @@ import {
   type CreditIncreaseRequest, type CreditRequestUrgency,
 } from '@/types/credit-increase-request';
 import type { Voucher } from '@/types/voucher';
+import { dMul, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 function ls<T>(k: string): T[] {
   try {
