@@ -511,7 +511,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     name: 'Capital Sale', abbreviation: 'CS', base_voucher_type: 'Capital Sale', family: 'Accounting',
     is_active: true, activation_type: 'active',
     accounting_impact: true, inventory_impact: false,
-    numbering_prefix: 'CS-', numbering_width: 4, current_sequence: 1,
+    numbering_prefix: 'CS', numbering_width: 4, current_sequence: 1,
     print_title: 'Capital Sale Voucher', default_jurisdiction: 'IN',
   }),
   seed('vt-depreciation', {
