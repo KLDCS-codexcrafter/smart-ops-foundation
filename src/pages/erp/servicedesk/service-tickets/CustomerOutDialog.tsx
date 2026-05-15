@@ -43,7 +43,7 @@ export function CustomerOutDialog({ open, onClose, ticket, onCreated }: Props): 
   const prev = (): void => setStep((s) => Math.max(1, s - 1));
 
   const submit = (): void => {
-    const charges_paise = Math.round(Number(chargesRupees) * 100);
+    const charges_paise = roundTo(dMul(Number(chargesRupees), 100), 0);
     const voucher = createCustomerOutVoucher({
       entity_id: ticket.entity_id,
       branch_id: ticket.branch_id,

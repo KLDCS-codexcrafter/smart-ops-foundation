@@ -63,7 +63,7 @@ export function EngineerMarketplace({ defaultTab = 'all', showCapacityOnly = fal
       certification_links: [],
       payment_terms: form.payment_terms,
       invoicing_method: 'gst_invoice',
-      hourly_rate_paise: Math.round(Number(form.rate) * 100),
+      hourly_rate_paise: roundTo(dMul(Number(form.rate), 100), 0),
       is_available: true,
       notes: '',
     });

@@ -64,8 +64,8 @@ export function RefurbishedUnitLifecycle(): JSX.Element {
       refurb_grade: form.grade,
       acquired_via: form.acquired_via,
       acquired_at: new Date().toISOString(),
-      refurb_cost_paise: Math.round(Number(form.refurb_cost) * 100),
-      resale_price_paise: Math.round(Number(form.resale_price) * 100),
+      refurb_cost_paise: roundTo(dMul(Number(form.refurb_cost), 100), 0),
+      resale_price_paise: roundTo(dMul(Number(form.resale_price), 100), 0),
       notes: '',
     });
     toast.success(`Refurb unit ${form.serial} created`);
