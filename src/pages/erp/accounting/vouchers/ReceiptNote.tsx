@@ -117,21 +117,20 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
     <>
     {GuardDialog}
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">Receipt Note (GRN)</h2>
-          <p className="text-xs text-muted-foreground">Record goods received from vendor</p>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">{voucherNo}</Badge>
-      </div>
+      <TallyVoucherHeader
+        voucherTypeName="Receipt Note (GRN)"
+        baseVoucherType="Receipt Note"
+        voucherFamily="Inventory"
+        voucherNo={voucherNo}
+        refNo={vendorChallanNo} onRefNoChange={setVendorChallanNo}
+        refDate={vendorChallanDate} onRefDateChange={setVendorChallanDate}
+        voucherDate={date} onVoucherDateChange={setDate}
+        status="draft"
+      />
 
       <Card>
         <CardContent className="pt-5 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-xs">Date</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} onKeyDown={onEnterNext} />
-            </div>
             <div>
               <Label className="text-xs">Party (Vendor)</Label>
               <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Vendor name" />
@@ -139,16 +138,6 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
             <div>
               <Label className="text-xs">Receive to Godown</Label>
               <Input value={receiveGodown} onChange={e => setReceiveGodown(e.target.value)} onKeyDown={onEnterNext} placeholder="Target godown" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-xs">Vendor Challan No</Label>
-              <Input value={vendorChallanNo} onChange={e => setVendorChallanNo(e.target.value)} onKeyDown={onEnterNext} placeholder="Challan number (mandatory)" />
-            </div>
-            <div>
-              <Label className="text-xs">Vendor Challan Date</Label>
-              <Input type="date" value={vendorChallanDate} onChange={e => setVendorChallanDate(e.target.value)} onKeyDown={onEnterNext} />
             </div>
             <div>
               <Tooltip>
