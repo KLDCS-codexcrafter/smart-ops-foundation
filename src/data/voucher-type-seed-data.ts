@@ -504,14 +504,14 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     name: 'Capital Purchase', abbreviation: 'CP', base_voucher_type: 'Capital Purchase', family: 'Accounting',
     is_active: true, activation_type: 'active',
     accounting_impact: true, inventory_impact: false,
-    numbering_prefix: 'CP-', numbering_width: 4, current_sequence: 1,
+    numbering_prefix: 'CP', numbering_width: 4, current_sequence: 1,
     print_title: 'Capital Purchase Voucher', default_jurisdiction: 'IN',
   }),
   seed('vt-capital-sale', {
     name: 'Capital Sale', abbreviation: 'CS', base_voucher_type: 'Capital Sale', family: 'Accounting',
     is_active: true, activation_type: 'active',
     accounting_impact: true, inventory_impact: false,
-    numbering_prefix: 'CS-', numbering_width: 4, current_sequence: 1,
+    numbering_prefix: 'CS', numbering_width: 4, current_sequence: 1,
     print_title: 'Capital Sale Voucher', default_jurisdiction: 'IN',
   }),
   seed('vt-depreciation', {
@@ -519,14 +519,14 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     is_active: true, activation_type: 'active',
     accounting_impact: true, inventory_impact: false,
     use_effective_date: true,
-    numbering_prefix: 'DEP-', numbering_width: 4, current_sequence: 1,
+    numbering_prefix: 'DEP', numbering_width: 4, current_sequence: 1,
     print_title: 'Depreciation Voucher', default_jurisdiction: 'IN',
   }),
   seed('vt-asset-write-off', {
     name: 'Asset Write Off', abbreviation: 'WO', base_voucher_type: 'Asset Write Off', family: 'Accounting',
     is_active: true, activation_type: 'active',
     accounting_impact: true, inventory_impact: false,
-    numbering_prefix: 'WO-', numbering_width: 4, current_sequence: 1,
+    numbering_prefix: 'WO', numbering_width: 4, current_sequence: 1,
     print_title: 'Asset Write-Off Voucher', default_jurisdiction: 'IN',
   }),
 ];
