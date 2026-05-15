@@ -104,7 +104,8 @@ export default function DistributorCatalog() {
   const handleAdd = async (item: InventoryItem) => {
     setBusyItem(item.id);
     try {
-      const fallback = Math.round((item.std_selling_rate ?? item.mrp ?? 0) * 100);
+      // Precision Arc 3B 4b: rupees → integer paise; decimal-safe mult, integer rounding.
+      const fallback = roundTo(dMul(item.std_selling_rate ?? item.mrp ?? 0, 100), 0);
       const tier = resolveTierPrice(item.id, activeListId, priceItems, fallback);
       const qty = Math.max(tier.min_qty, qtyMap[item.id] ?? 1);
       // Interstate detection: distributor state vs entity state — defaults intra-state.
