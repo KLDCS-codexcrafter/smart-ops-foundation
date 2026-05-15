@@ -68,14 +68,15 @@ function computeBreakdown(components: SalaryStructureComponent[], annualCTC: num
     if (c.maxValueMonthly > 0 && val > c.maxValueMonthly) val = c.maxValueMonthly;
 
     if (c.payHeadType === 'earning') totalEarnings += val;
-    results.push({ name: c.payHeadName, type: c.payHeadType, monthly: Math.round(val), annual: Math.round(val * 12) });
+    // Pattern 1 · Block 4a — integer-rupee preview retained per pay-hub convention.
+    results.push({ name: c.payHeadName, type: c.payHeadType, monthly: roundTo(val, 0), annual: roundTo(val * 12, 0) });
   });
 
   // Fill balancing component
   const balIdx = results.findIndex((_, i) => components[i]?.calculationType === 'balancing');
   if (balIdx >= 0) {
     const remaining = targetGross - totalEarnings;
-    results[balIdx].monthly = Math.max(0, Math.round(remaining));
+    results[balIdx].monthly = Math.max(0, roundTo(remaining, 0));
     results[balIdx].annual = results[balIdx].monthly * 12;
   }
 
