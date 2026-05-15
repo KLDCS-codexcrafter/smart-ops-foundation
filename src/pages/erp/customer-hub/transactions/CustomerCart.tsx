@@ -132,7 +132,8 @@ export function CustomerCartPanel() {
   // Loyalty calc
   const tier = loyaltyState?.current_tier ?? 'bronze';
   const balance = loyaltyState?.points_balance ?? 0;
-  const maxRedeemDiscount = Math.floor((subtotal - schemeDiscount) * MAX_REDEEM_PCT);
+  // Precision Arc · Stage 3B · Block 4c · C4 — integer-paise redeem cap; preserve Math.floor, decimal-safe inner arithmetic.
+  const maxRedeemDiscount = Math.floor(dMul(dSub(subtotal, schemeDiscount), MAX_REDEEM_PCT));
   const requestedDiscount = pointsToDiscountPaise(redeemPoints);
   const loyaltyDiscount = Math.min(requestedDiscount, maxRedeemDiscount);
   const effectiveRedeemPoints = loyaltyDiscount > 0 ? Math.ceil(loyaltyDiscount * 10 / 100) : 0; // reverse calc
