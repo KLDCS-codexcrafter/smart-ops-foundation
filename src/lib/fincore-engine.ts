@@ -156,10 +156,41 @@ export function validateAllocations(voucher: Partial<Voucher>): ValidationResult
 // ── Voucher Number Generation ────────────────────────────────────────
 
 export function generateVoucherNo(prefix: string, entityCode: string): string {
-  // Sprint T-Phase-1.Hardening-B.2A · FY-scoped sequence per GST Rule 46.
-  // Storage key: erp_voucher_seq_{prefix}_{entityCode}_{fy}
-  // Auto-migrates legacy non-FY key into current-FY key on first call (mirrors generateDocNo · T-Phase-1.2.5h-a).
+  // Sprint T-Phase-1.Hardening-B.2B · Registry-driven numbering (β deliverable).
+  // Resolves prefix via resolvePrefix; reads width/prefill/sequence from VT row
+  // or voucher class. Dual-writes sequence to registry (SSOT) + flat key (one-FY
+  // safety, mirrors generateDocNo precedent). Falls back to Block 2A behaviour
+  // for unresolved prefixes (caller-internal synthetics not yet in registry).
   const fy = getFY(entityCode);
+  const resolved = resolvePrefix(prefix, entityCode);
+
+  if (resolved) {
+    // Registry path — read sequence config from class (if non-null) or VT directly.
+    // Per Q-LOCK-Q2: resolveVoucherType is NOT consulted for numbering;
+    // the 10 never-inherit keys (current_sequence, numbering_prefix, etc.)
+    // are always the child's own values.
+    const cls = resolved.voucherClass;
+    const vt = resolved.vt;
+
+    const width = cls?.numbering_width ?? vt.numbering_width ?? 4;
+    const prefillZeros = cls?.numbering_prefill_zeros ?? vt.numbering_prefill_zeros ?? true;
+    const startVal = cls?.numbering_start ?? vt.numbering_start ?? 1;
+    const currentSeq = cls?.current_sequence ?? vt.current_sequence ?? (startVal - 1);
+    const nextSeq = Math.max(currentSeq + 1, startVal);
+
+    // Dual-write per Q-LOCK-Q3: registry SSOT + flat-key one-FY safety.
+    persistSequenceToRegistry(resolved, nextSeq, entityCode);
+    const flatKey = `erp_voucher_seq_${prefix}_${entityCode}_${fy}`;
+    // [JWT] PATCH /api/accounting/voucher-types/:id/sequence
+    localStorage.setItem(flatKey, String(nextSeq));
+
+    const formatted = prefillZeros ? String(nextSeq).padStart(width, '0') : String(nextSeq);
+    return `${prefix}/${fy}/${formatted}`;
+  }
+
+  // Fallback path — prefix not in registry. Preserves Block 2A behaviour verbatim.
+  // Reached only for caller-internal synthetics not yet brought into the registry.
+  // Per Q-LOCK-Q4 silent fallback; Q3.5 standing rule enforces long-term discipline.
   const newKey = `erp_voucher_seq_${prefix}_${entityCode}_${fy}`;
   const legacyKey = `erp_voucher_seq_${prefix}_${entityCode}`;
   // [JWT] GET /api/accounting/voucher-types/:id/next-number
@@ -170,13 +201,57 @@ export function generateVoucherNo(prefix: string, entityCode: string): string {
       // [JWT] One-time migration · legacy non-FY → current FY
       localStorage.setItem(newKey, legacyRaw);
       raw = legacyRaw;
-      // Keep legacyKey for one FY (safety) — future block will purge.
     }
   }
   const seq = raw ? parseInt(raw, 10) + 1 : 1;
   // [JWT] PATCH /api/accounting/voucher-types/:id/sequence
   localStorage.setItem(newKey, String(seq));
   return `${prefix}/${fy}/${String(seq).padStart(4, '0')}`;
+}
+
+/**
+ * Sprint T-Phase-1.Hardening-B.2B · Internal helper — persist incremented sequence
+ * to the entity-scoped VoucherType registry (SSOT). Updates current_sequence on
+ * the matched VT row OR on the matched voucher class within the VT.
+ *
+ * Defensive: silently no-ops if the registry storage doesn't exist or is corrupted
+ * (the flat-key dual-write in generateVoucherNo will still preserve the sequence).
+ *
+ * NOT exported — caller is generateVoucherNo only.
+ *
+ * Per Q-LOCK-Q3 dual-write: this is the SSOT path; flat-key is the safety backup.
+ */
+function persistSequenceToRegistry(
+  resolved: { vt: VoucherType; voucherClass: VoucherClass | null },
+  nextSeq: number,
+  entityCode: string,
+): void {
+  const key = `erp_voucher_types_${entityCode}`;
+  const raw = localStorage.getItem(key);
+  if (!raw) return;  // No entity registry — flat-key write in caller still preserves sequence
+  try {
+    const vts: VoucherType[] = JSON.parse(raw);
+    const targetVT = vts.find(v => v.id === resolved.vt.id);
+    if (!targetVT) return;
+    const nowIso = new Date().toISOString();
+    if (resolved.voucherClass) {
+      const targetClass = targetVT.voucher_classes?.find(
+        c => c.class_id === resolved.voucherClass!.class_id
+      );
+      if (targetClass) {
+        targetClass.current_sequence = nextSeq;
+        targetClass.updated_at = nowIso;
+      }
+    } else {
+      targetVT.current_sequence = nextSeq;
+      targetVT.updated_at = nowIso;
+    }
+    // [JWT] PATCH /api/accounting/voucher-types/:id { current_sequence, updated_at }
+    localStorage.setItem(key, JSON.stringify(vts));
+  } catch {
+    // Registry corrupted — silently skip; flat-key write preserves sequence.
+    // ATELC (later arc) will surface registry-corruption events.
+  }
 }
 
 function getFY(entityCode?: string): string {
