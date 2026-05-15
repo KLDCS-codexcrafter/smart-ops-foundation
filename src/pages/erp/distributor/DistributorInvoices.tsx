@@ -26,6 +26,7 @@ import { getDistributorSession, scopeQueryToDistributor } from '@/lib/distributo
 import { formatINR } from '@/lib/india-validations';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { InventoryItem } from '@/types/inventory-item';
+import { dMul, roundTo } from '@/lib/decimal-helpers';
 import {
   disputesKey, DISPUTE_REASON_LABELS,
   type DisputeReason, type InvoiceDispute,
