@@ -146,11 +146,12 @@ export default function DistributorCartPage() {
       return {
         ...l,
         qty: newQty,
-        taxable_paise: Math.round(l.taxable_paise * ratio),
-        cgst_paise: Math.round(l.cgst_paise * ratio),
-        sgst_paise: Math.round(l.sgst_paise * ratio),
-        igst_paise: Math.round(l.igst_paise * ratio),
-        total_paise: Math.round(l.total_paise * ratio),
+        // Precision Arc 3B 4b: paise-allocation cluster. Decimal-safe mult via dMul; result is integer paise → roundTo(_, 0).
+        taxable_paise: roundTo(dMul(l.taxable_paise, ratio), 0),
+        cgst_paise: roundTo(dMul(l.cgst_paise, ratio), 0),
+        sgst_paise: roundTo(dMul(l.sgst_paise, ratio), 0),
+        igst_paise: roundTo(dMul(l.igst_paise, ratio), 0),
+        total_paise: roundTo(dMul(l.total_paise, ratio), 0),
       };
     })};
     await setCart(next);
