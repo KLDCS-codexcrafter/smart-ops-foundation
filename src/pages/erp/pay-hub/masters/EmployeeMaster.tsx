@@ -1430,8 +1430,8 @@ export function EmployeeMasterPanel() {
               <div key={lp.id} className="grid grid-cols-6 gap-2 mb-2 items-end">
                 <div><Label className="text-[10px]">Policy No</Label><Input value={lp.policyNo} onChange={e => updateLIC(lp.id, { policyNo: e.target.value })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
                 <div><Label className="text-[10px]">Insurer</Label><Input value={lp.insurer} onChange={e => updateLIC(lp.id, { insurer: e.target.value })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
-                <div><Label className="text-[10px]">Premium (₹)</Label><Input type="number" value={lp.premiumAnnual || ''} onChange={e => updateLIC(lp.id, { premiumAnnual: parseFloat(e.target.value) || 0 })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
-                <div><Label className="text-[10px]">Sum Assured (₹)</Label><Input type="number" value={lp.sumAssured || ''} onChange={e => updateLIC(lp.id, { sumAssured: parseFloat(e.target.value) || 0 })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
+                <div><Label className="text-[10px]">Premium (₹)</Label><Input type="number" value={lp.premiumAnnual || ''} onChange={e => updateLIC(lp.id, { premiumAnnual: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
+                <div><Label className="text-[10px]">Sum Assured (₹)</Label><Input type="number" value={lp.sumAssured || ''} onChange={e => updateLIC(lp.id, { sumAssured: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
                 <div><Label className="text-[10px]">Due Date</Label><SmartDateInput value={lp.dueDate} onChange={v => updateLIC(lp.id, { dueDate: v })} className="h-8 text-xs" /></div>
                 <Button size="icon" variant="ghost" className="h-8 w-8" onClick={() => removeLIC(lp.id)}><Trash2 className="h-3 w-3 text-red-500" /></Button>
               </div>

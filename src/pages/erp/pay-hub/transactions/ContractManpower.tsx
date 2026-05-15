@@ -24,6 +24,7 @@ import { LABOUR_CONTRACTORS_KEY, CONTRACT_WORKERS_KEY, WORK_ORDERS_KEY,
   WORKER_SKILL_LABELS, INVOICE_STATUS_COLORS, WORK_ORDER_STATUS_COLORS,
   computeContractStatutory, CONTRACT_PF_CEILING, CONTRACT_ESIC_CEILING } from '@/types/contract-manpower';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 
 interface ContractManpowerPanelProps { defaultTab?: ContractTab; }
 
@@ -187,7 +188,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
     const days = Math.max(0, differenceInDays(
       parseISO(orderForm.toDate), parseISO(orderForm.fromDate)
     ));
-    return Math.round(orderForm.ratePerDay * orderForm.approvedHeadcount * days);
+    return roundTo(dMul(dMul(orderForm.ratePerDay, orderForm.approvedHeadcount), days), 0);
   }, [orderForm.ratePerDay, orderForm.approvedHeadcount, orderForm.fromDate, orderForm.toDate]);
 
   const handleOrderSave = useCallback(() => {
@@ -231,7 +232,7 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
       - (invoiceForm.verifiedManDays * (orders.find(o => o.id === invoiceForm.workOrderId)?.ratePerDay ?? 0));
     const now = new Date().toISOString();
     const code = `INV-CL-${String(invoices.length + 1).padStart(6, '0')}`;
-    saveInvoices([...invoices, { ...invoiceForm, varianceAmount: Math.round(variance),
+    saveInvoices([...invoices, { ...invoiceForm, varianceAmount: roundTo(variance, 0),
       id: `inv-${Date.now()}`, invoiceCode: code, created_at: now, updated_at: now } as ContractInvoice]);
     toast.success('Invoice recorded');
     setInvoiceSheetOpen(false); setInvoiceForm(BLANK_INVOICE);

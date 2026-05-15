@@ -11,6 +11,7 @@ import { Plus, Trash2, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import type { VoucherInventoryLine } from '@/types/voucher';
+import { roundTo, resolveMoneyPrecision, dPct, dSub, dAdd } from '@/lib/decimal-helpers';
 
 interface InventoryLineGridProps {
   lines: VoucherInventoryLine[];
@@ -37,18 +38,19 @@ function recalcLine(line: VoucherInventoryLine, isInterState: boolean): VoucherI
   const discAmt = gross * (line.discount_percent / 100);
   const taxable = gross - discAmt;
   const halfRate = line.gst_rate / 2;
-  const cgst = isInterState ? 0 : Math.round(taxable * halfRate / 100 * 100) / 100;
-  const sgst = isInterState ? 0 : Math.round(taxable * halfRate / 100 * 100) / 100;
-  const igst = isInterState ? Math.round(taxable * line.gst_rate / 100 * 100) / 100 : 0;
+  const mp = resolveMoneyPrecision(null, null);
+  const cgst = isInterState ? 0 : roundTo(dPct(taxable, halfRate), mp);
+  const sgst = isInterState ? 0 : roundTo(dPct(taxable, halfRate), mp);
+  const igst = isInterState ? roundTo(dPct(taxable, line.gst_rate), mp) : 0;
   return {
     ...line,
-    discount_amount: Math.round(discAmt * 100) / 100,
-    taxable_value: Math.round(taxable * 100) / 100,
+    discount_amount: roundTo(discAmt, mp),
+    taxable_value: roundTo(taxable, mp),
     cgst_rate: isInterState ? 0 : halfRate,
     sgst_rate: isInterState ? 0 : halfRate,
     igst_rate: isInterState ? line.gst_rate : 0,
     cgst_amount: cgst, sgst_amount: sgst, igst_amount: igst,
-    total: Math.round((taxable + cgst + sgst + igst + line.cess_amount) * 100) / 100,
+    total: roundTo(dAdd(dAdd(dAdd(dAdd(taxable, cgst), sgst), igst), line.cess_amount), mp),
   };
 }
 

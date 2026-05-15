@@ -128,7 +128,7 @@ export function PayslipGenerationPanel() {
       employeeId: emp.id, employeeCode: emp.empCode, employeeName: emp.displayName,
       financialYear: getCurrentFY(),
       regime: emp.taxRegime || 'new',
-      pf: emp.annualCTC ? Math.round(Math.min((emp.annualCTC * 0.4 / 12) * 0.12 * 12, 21600)) : 0,
+      pf: emp.annualCTC ? roundTo(Math.min(dPct(emp.annualCTC, 4.8), 21600), 0) : 0,
       vpf: 0, elss: 0, ppf: 0,
       licPremium: licTotal,
       tuitionFees: 0, homeLoanPrincipal: 0, nscPurchase: 0, otherSection80C: 0,
@@ -652,7 +652,7 @@ export function PayslipGenerationPanel() {
                           {...amountInputProps}
                           value={declForm[key] as number || ''}
                           readOnly={readOnly}
-                          onChange={e => duf(key, parseFloat(e.target.value) || 0)}
+                          onChange={e => duf(key, roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                           onKeyDown={onEnterNext}
                           className="h-8 text-xs max-w-40"
                         />

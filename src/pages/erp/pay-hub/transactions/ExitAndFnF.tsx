@@ -31,6 +31,7 @@ import { LOAN_APPLICATIONS_KEY } from '@/types/employee-finance';
 import { GRATUITY_NPS_KEY, DEFAULT_GRATUITY_NPS } from '@/types/payroll-masters';
 import type { GratuityNPSSettings } from '@/types/payroll-masters';
 import { toIndianFormat, useCtrlS } from '@/lib/keyboard';
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 
 // ── loadGratuityConfig ───────────────────────────────────────────
 function loadGratuityConfig(): GratuityNPSSettings['gratuity'] {
@@ -56,9 +57,10 @@ function computeGratuity(
     const lwd = new Date(lwdStr);
     const years = (lwd.getTime() - doj.getTime()) / (365.25 * 24 * 3600 * 1000);
     if (years < 5) return 0;
-    const gratuity = (monthlyBasic * 15 * Math.floor(years)) / 26;
+    // C4 · Block 4a — Math.floor preserved (years is integer-domain), money math is decimal-safe.
+    const gratuity = dMul(dMul(monthlyBasic, 15), Math.floor(years)) / 26;
     const cap = maxGratuity ?? loadGratuityConfig().maxGratuityAmount ?? 2000000;
-    return Math.min(Math.round(gratuity), cap);
+    return Math.min(roundTo(gratuity, 0), cap);
   } catch { return 0; }
 }
 
@@ -70,7 +72,7 @@ function computeLeaveEncashment(
 ): number {
   if (elBalance <= 0 || monthlyBasic <= 0) return 0;
   const encashableDays = Math.min(elBalance, maxEncashmentDays);
-  return Math.round(encashableDays * (monthlyBasic / 26));
+  return roundTo(dMul(encashableDays, monthlyBasic) / 26, 0);
 }
 
 // ── computeNoticePeriodShortfall ──────────────────────────────────
@@ -80,7 +82,7 @@ function computeNoticePeriodShortfall(
   dailyRate: number
 ): number {
   const shortfall = Math.max(0, noticeRequired - noticeServed);
-  return Math.round(shortfall * dailyRate);
+  return roundTo(dMul(shortfall, dailyRate), 0);
 }
 
 // ── computeProRataSalary ──────────────────────────────────────────
@@ -90,7 +92,7 @@ function computeProRataSalary(
   totalDaysInMonth: number
 ): number {
   if (monthlyGross <= 0 || totalDaysInMonth <= 0) return 0;
-  return Math.round((monthlyGross / totalDaysInMonth) * daysWorked);
+  return roundTo(dMul(monthlyGross, daysWorked) / totalDaysInMonth, 0);
 }
 
 const amountInputProps = { type: 'number' as const, min: 0, step: 1, className: 'text-right' };

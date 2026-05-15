@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, dMul, dSub, dPct } from '@/lib/decimal-helpers';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';
@@ -2285,9 +2285,10 @@ export function LedgerMasterPanel() {
   // EMI calculator
   const calculateEMI = (principal: number, annualRate: number, months: number): number => {
     if (months <= 0) return 0;
-    if (annualRate === 0) return Math.round((principal / months) * 100) / 100;
+    const mp = resolveMoneyPrecision(null, null);
+    if (annualRate === 0) return roundTo(principal / months, mp);
     const r = annualRate / 100 / 12;
-    return Math.round(principal * r * Math.pow(1+r,months) / (Math.pow(1+r,months)-1) * 100) / 100;
+    return roundTo(principal * r * Math.pow(1+r,months) / (Math.pow(1+r,months)-1), mp);
   };
 
   // Loan schedule generator
@@ -2298,10 +2299,11 @@ export function LedgerMasterPanel() {
     let balance = def.loanAmount;
     const [y, m, d] = def.firstEmiDate.split('-').map(Number);
     return Array.from({ length: def.tenureMonths }, (_, i) => {
-      const interest = Math.round(balance * (def.interestRate/100/12) * 100) / 100;
+      const mp = resolveMoneyPrecision(null, null);
+      const interest = roundTo(dMul(balance, def.interestRate/100/12), mp);
       const isLast = i === def.tenureMonths - 1;
-      const principal = isLast ? balance : Math.round((emi - interest) * 100) / 100;
-      const closing = isLast ? 0 : Math.round((balance - principal) * 100) / 100;
+      const principal = isLast ? balance : roundTo(dSub(emi, interest), mp);
+      const closing = isLast ? 0 : roundTo(dSub(balance, principal), mp);
       const dm = m + i - 1; const dy = y + Math.floor(dm / 12);
       const dueM = ((dm % 12) + 12) % 12 + 1;
       const dueDate = `${dy}-${String(dueM).padStart(2,'0')}-${String(d).padStart(2,'0')}`;

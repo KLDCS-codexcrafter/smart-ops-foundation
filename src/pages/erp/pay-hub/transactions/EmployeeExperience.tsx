@@ -28,6 +28,7 @@ import { PAYROLL_RUNS_KEY, payrollRunsKey } from '@/types/payroll-run';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { toIndianFormat, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { roundTo, dPct } from '@/lib/decimal-helpers';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 void PAYROLL_RUNS_KEY;
 
@@ -835,7 +836,7 @@ export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeEx
                       {(() => {
                         const basicLine = trPayslip.lines.find(l => l.headCode === 'BASIC');
                         const annualBasic = basicLine ? basicLine.annual : 0;
-                        const gratuity = Math.round((annualBasic * 4.81) / 100);
+                        const gratuity = roundTo(dPct(annualBasic, 4.81), 0);
                         return (
                           <TableRow>
                             <TableCell className="text-xs">Gratuity Provision (est.)</TableCell>

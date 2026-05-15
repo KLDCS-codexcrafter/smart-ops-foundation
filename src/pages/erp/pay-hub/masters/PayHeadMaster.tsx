@@ -21,6 +21,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
 import type { PayHead, PayHeadType, PayHeadCalcType } from '@/types/pay-hub';
 import { PAY_HEAD_TYPE_LABELS, CALC_TYPE_LABELS } from '@/types/pay-hub';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 const TYPE_COLORS: Record<PayHeadType, string> = {
   earning: 'bg-green-500/10 text-green-700 border-green-500/30',
@@ -374,7 +375,7 @@ export function PayHeadMasterPanel() {
             <div>
               <Label className="text-xs">Conditional Max Wage</Label>
               <Input type="number" value={form.conditionalMaxWage || ''}
-                onChange={e => updateField('conditionalMaxWage', parseFloat(e.target.value) || 0)}
+                onChange={e => updateField('conditionalMaxWage', roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)))}
                 onKeyDown={onEnterNext} className="text-xs" placeholder="0 = always apply. e.g. ESI: 21000" />
             </div>
 

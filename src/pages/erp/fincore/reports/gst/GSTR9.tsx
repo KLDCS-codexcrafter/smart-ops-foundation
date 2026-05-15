@@ -15,6 +15,7 @@ import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { inr } from '../reportUtils';
 import { buildGSTR9Payload } from '@/lib/gst-portal-service';
 import { onEnterNext } from '@/lib/keyboard';
+import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 interface GSTR9PanelProps { entityCode: string; }
 
@@ -64,7 +65,7 @@ export function GSTR9Panel({ entityCode }: GSTR9PanelProps) {
   const getVal = (key: string, computed: number) => overrides[key] ?? computed;
   const setVal = (key: string, val: string) => {
     const n = parseFloat(val);
-    if (!isNaN(n)) setOverrides(prev => ({ ...prev, [key]: n }));
+    if (!isNaN(n)) setOverrides(prev => ({ ...prev, [key]: roundTo(n, resolveMoneyPrecision(null, null)) }));
   };
 
   const handleDownload = () => {
