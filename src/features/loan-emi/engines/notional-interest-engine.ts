@@ -28,6 +28,7 @@ import {
   getLedgerGroupCode as resolveLedgerGroupCode,
 } from '../lib/ledger-resolver';
 import { computeAgingReport } from '../lib/advance-aging';
+import { roundTo, dPct, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import {
   loadLog,
   saveLog,
@@ -76,7 +77,7 @@ function periodKeyFor(asOfDate: string): string {
 }
 
 function monthlyInterestFor(balance: number): number {
-  return Math.round(((balance * (ANNUAL_RATE_PERCENT / 100)) / 12) * 100) / 100;
+  return roundTo(dPct(balance, ANNUAL_RATE_PERCENT) / 12, resolveMoneyPrecision(null, null));
 }
 
 /**

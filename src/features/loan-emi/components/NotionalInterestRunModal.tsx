@@ -24,6 +24,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { roundTo, dSum, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import {
   planMonthlyNotional, commitMonthlyNotional,
   NOTIONAL_AGING_THRESHOLD_DAYS, NOTIONAL_ANNUAL_RATE_PERCENT,
@@ -54,11 +55,11 @@ export function NotionalInterestRunModal({ open, onClose, onPosted }: Props) {
 
   const summary = useMemo(() => {
     const toPost = plan.filter(p => !p.alreadyPosted);
-    const total = toPost.reduce((s, p) => s + p.interestAmount, 0);
+    const total = dSum(toPost, p => p.interestAmount);
     return {
       toPostCount: toPost.length,
       alreadyCount: plan.length - toPost.length,
-      totalInterest: Math.round(total * 100) / 100,
+      totalInterest: roundTo(total, resolveMoneyPrecision(null, null)),
     };
   }, [plan]);
 
