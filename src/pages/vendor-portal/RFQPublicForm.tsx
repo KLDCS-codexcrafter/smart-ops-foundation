@@ -148,9 +148,10 @@ export default function RFQPublicForm(): JSX.Element {
     const totalValue = supplied.reduce((s, l) => s + l.qty_quoted * l.rate, 0);
     const totalAfterTax = supplied.reduce((s, l) => s + lineAfterTax(l), 0);
     return {
-      total_value: Math.round(totalValue * 100) / 100,
-      total_tax: Math.round((totalAfterTax - totalValue) * 100) / 100,
-      total_after_tax: Math.round(totalAfterTax * 100) / 100,
+      // Precision Arc · Stage 3B · Block 4c — Pattern 1 (RFQ totals, contract-money precision).
+      total_value: roundTo(totalValue, resolveMoneyPrecision(null, null)),
+      total_tax: roundTo(dSub(totalAfterTax, totalValue), resolveMoneyPrecision(null, null)),
+      total_after_tax: roundTo(totalAfterTax, resolveMoneyPrecision(null, null)),
     };
   }, [lines]);
 
