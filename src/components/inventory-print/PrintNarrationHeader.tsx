@@ -10,6 +10,8 @@
  */
 import { useMemo } from 'react';
 import type { VoucherType, NarrationTemplateConfig } from '@/types/voucher-type';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { voucherTypesKey } from '@/hooks/useVoucherTypes';
 
 export interface PrintNarrationHeaderProps {
   voucherTypeId?: string | null;
@@ -19,7 +21,7 @@ export interface PrintNarrationHeaderProps {
   fallbackTitle?: string;
 }
 
-function resolveNarration(props: PrintNarrationHeaderProps): string {
+function resolveNarration(props: PrintNarrationHeaderProps, entityCode: string): string {
   const join = (parts: Array<string | undefined | null>) =>
     parts.filter(Boolean).join(' > ');
 
@@ -30,7 +32,10 @@ function resolveNarration(props: PrintNarrationHeaderProps): string {
   }
   try {
     // [JWT] GET /api/accounting/voucher-types
-    const allVTs: VoucherType[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+    // Sprint Hardening-B Block 2C-i · Q3.1 scoped-first read with legacy fallback.
+    const scopedRaw = localStorage.getItem(voucherTypesKey(entityCode));
+    const legacyRaw = localStorage.getItem('erp_voucher_types');
+    const allVTs: VoucherType[] = JSON.parse((scopedRaw ?? legacyRaw) || '[]');
     const vt = allVTs.find(v => v.id === props.voucherTypeId);
     if (!vt) {
       return join([props.baseVoucherType, props.voucherTypeName, props.voucherNo])
@@ -52,7 +57,8 @@ function resolveNarration(props: PrintNarrationHeaderProps): string {
 }
 
 export function PrintNarrationHeader(props: PrintNarrationHeaderProps) {
-  const narration = useMemo(() => resolveNarration(props), [props]);
+  const { entityCode } = useEntityCode();
+  const narration = useMemo(() => resolveNarration(props, entityCode), [props, entityCode]);
   return (
     <div className="print-narration-header text-center text-xs font-medium border-b border-black/30 pb-2 mb-3 print:mb-2 text-black/80">
       {narration}
