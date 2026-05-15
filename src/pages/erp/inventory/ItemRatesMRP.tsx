@@ -208,8 +208,9 @@ export function ItemRatesPanel() {
     scope.forEach(item => {
       const old = getField(item, qaField);
       if (old == null || old === 0) return;
-      const nv = qaDirection === 'increase' ? old * (1 + pct / 100) : old * (1 - pct / 100);
-      const rounded = Math.round(nv * 100) / 100;
+      // Precision Arc 3B 4b: Pattern 1 — decimal-safe percent application; money rounding.
+      const nv = qaDirection === 'increase' ? dMul(old, 1 + pct / 100) : dMul(old, 1 - pct / 100);
+      const rounded = roundTo(nv, resolveMoneyPrecision(null, null));
       if (rounded === old) return;
       const key = `${item.id}|${qaField}`;
       newPending[key] = { item, field: qaField, oldVal: old, newVal: rounded };
