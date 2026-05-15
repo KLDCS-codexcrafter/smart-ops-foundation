@@ -287,7 +287,7 @@ export function PriceListsPanel() {
         id: `pli-${Date.now()}`, price_list_id: activeList.id,
         item_id: selItem.id, item_code: selItem.code, item_name: selItem.name,
         uom_symbol: selItem.primary_uom_symbol || 'pcs', price,
-        min_qty: itemForm.min_qty ? parseFloat(itemForm.min_qty) : null,
+        min_qty: itemForm.min_qty ? roundTo(parseFloat(itemForm.min_qty), resolveQtyPrecision(undefined)) : null,
         discount_percent: itemForm.discount_percent ? parseFloat(itemForm.discount_percent) : null,
         is_tax_inclusive: itemForm.is_tax_inclusive, created_at: now, updated_at: now,
       };
