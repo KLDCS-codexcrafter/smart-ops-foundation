@@ -366,6 +366,8 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
 
   // 1. Write voucher header
   const vouchers = ls<Voucher>(vouchersKey(entityCode));
+  // Sprint T-Phase-1.Hardening-B.2A · stamp fiscal_year_id from voucher date + entity (GST Rule 46 traceability).
+  voucher.fiscal_year_id = `FY-20${fyForDate(voucher.date, voucher.entity_id)}`;
   vouchers.push({ ...voucher, status: 'posted', posted_at: now, updated_at: now });
   ss(vouchersKey(entityCode), vouchers);
 
