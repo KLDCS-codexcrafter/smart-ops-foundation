@@ -350,7 +350,7 @@ function EmployeeOpeningLoansInner({ entityCode }: { entityCode: string }) {
                       <TableRow key={l.id}>
                         <TableCell><Input className="h-8 w-44" defaultValue={l.person_name} onKeyDown={onEnterNext} onBlur={(e) => updateLoan(l.id, 'person_name', e.target.value)} /></TableCell>
                         <TableCell><Input {...amountInputProps} className="h-8 w-32 text-right font-mono" defaultValue={l.original_amount || ''} onKeyDown={onEnterNext} onBlur={(e) => {
-                          const v = parseFloat(e.target.value) || 0;
+                          const v = roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null));
                           ob.upsertLoan({ ...l, original_amount: v, outstanding_amount: v });
                         }} /></TableCell>
                         <TableCell><SmartDateInput value={l.disbursement_date} onChange={(v) => updateLoan(l.id, 'disbursement_date', v)} className="w-32" /></TableCell>
