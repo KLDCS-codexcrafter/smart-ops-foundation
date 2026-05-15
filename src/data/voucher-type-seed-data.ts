@@ -1,6 +1,6 @@
 /**
  * voucher-type-seed-data.ts
- * 24 Tally default voucher types — SSOT: Tally_VoucherType_Mapping_ERP_Claude_Ready.xlsx
+ * 39 FinCore voucher types — extended from original 24 Tally defaults with capital-asset, GST-RCM, loan-EMI synthetics
  * Sheet: Tally_Default_Vouchers (24 rows) + ERP_Neutral_Behavior_Map + Behavior_Logic_Notes
  * [JWT] Replace seed load with GET /api/accounting/voucher-types when backend is ready
  */

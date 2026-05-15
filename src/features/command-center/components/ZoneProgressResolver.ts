@@ -48,6 +48,8 @@ export const ZONE_DEFINITIONS: ZoneDefinition[] = [
       'erp_hsn_sac_codes',
       'erp_epf_esi_lwf',
       'erp_income_tax',
+      // Sprint Hardening-B Block 2C-i · Q3.1+Q3.2+Q3.3 entity-scoped
+      // primary keys; legacy globals retained as fallbacks via isConfigured.
       'erp_statutory_registrations',
       'erp_gst_entity_config',
       'erp_comply360_config',

@@ -3,6 +3,8 @@ import { Calculator, Shield, BookOpen, Users, Settings, ArrowRight, FolderTree, 
 import { Badge } from '@/components/ui/badge';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { fiscalYearStorageKey } from '@/types/fiscal-year';
+import { voucherTypesKey } from '@/hooks/useVoucherTypes';
+import { modeOfPaymentKey, termsOfPaymentKey, termsOfDeliveryKey } from '@/types/cc-masters';
 import { CancellationDashboardWidget } from './CancellationDashboardWidget';
 import { PinnedTemplatesWidget } from '@/components/uth/PinnedTemplatesWidget';
 import type { CommandCenterModule } from '../pages/CommandCenterPage';
@@ -52,20 +54,20 @@ export function FinCoreMastersModule({ onNavigate }: FinCoreMastersModuleProps) 
     { title: 'Payroll Statutory', desc: 'EPF, ESI, LWF, Professional Tax — contribution rates', icon: Users, module: 'fincore-epf-esi-lwf', storageKey: 'erp_epf_esi_lwf', section: 'statutory' },
     { title: 'Income Tax Reference', desc: 'IT slabs, deductions, gratuity — FY 2024-25', icon: Receipt, module: 'fincore-income-tax', storageKey: 'erp_income_tax', section: 'statutory' },
     // Entity Configuration
-    { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN per entity', icon: FileText, module: 'fincore-statutory-reg', storageKey: 'erp_statutory_registrations', section: 'entity-config' },
-    { title: 'GST Entity Config', desc: 'Registration type, e-Invoice, QRMP', icon: Settings, module: 'fincore-gst-config', storageKey: 'erp_gst_entity_config', section: 'entity-config' },
-    { title: 'Compliance Settings & Automation', desc: 'Compliance feature flags, ledger mappings, and automation rules', icon: Shield, module: 'fincore-compliance-settings', storageKey: 'erp_comply360_config', section: 'entity-config' },
+    { title: 'Statutory Registrations', desc: 'GSTIN, TAN, PAN per entity', icon: FileText, module: 'fincore-statutory-reg', storageKey: `erp_statutory_registrations_${entityCode}`, section: 'entity-config' },
+    { title: 'GST Entity Config', desc: 'Registration type, e-Invoice, QRMP', icon: Settings, module: 'fincore-gst-config', storageKey: `erp_gst_entity_config_${entityCode}`, section: 'entity-config' },
+    { title: 'Compliance Settings & Automation', desc: 'Compliance feature flags, ledger mappings, and automation rules', icon: Shield, module: 'fincore-compliance-settings', storageKey: `erp_comply360_config_${entityCode}`, section: 'entity-config' },
     // Account Structure
     { title: 'Currency Master', desc: 'Foreign currencies + date-wise rates of exchange (selling / buying / standard)', icon: Coins, module: 'fincore-currency', storageKey: 'erp_currencies', section: 'account-structure' },
     { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — L4 user-created', icon: FolderTree, module: 'fincore-finframe', storageKey: 'erp_finframe_groups', section: 'account-structure' },
     { title: 'Ledger Master', desc: 'Cash, Bank and all financial accounts per entity', icon: Wallet, module: 'fincore-ledgers', storageKey: 'erp_ledgers', section: 'account-structure' },
-    { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, module: 'fincore-voucher-types', storageKey: 'erp_voucher_types', section: 'account-structure' },
-    { title: 'Voucher Class Master', desc: 'Per-voucher-type defaults · approval thresholds · mandatory field rules (non-FinCore)', icon: FileSpreadsheet, module: 'fincore-voucher-class', storageKey: 'erp_non_fc_voucher_types_default', section: 'account-structure' },
+    { title: 'Voucher Types', desc: 'Behaviour matrix — 39 FinCore voucher types extended from Tally defaults', icon: FileSpreadsheet, module: 'fincore-voucher-types', storageKey: voucherTypesKey(entityCode), section: 'account-structure' },
+    { title: 'Non-FinCore Voucher Types', desc: 'Per-voucher-type defaults · approval thresholds · mandatory field rules (non-FinCore)', icon: FileSpreadsheet, module: 'fincore-voucher-class', storageKey: 'erp_non_fc_voucher_types_default', section: 'account-structure' },
     // Transaction Defaults
     { title: 'Transaction Templates', desc: 'Standard narrations, T&C and payment enforcement — 26 ready templates', icon: Zap, module: 'fincore-transaction-templates', storageKey: 'erp_transaction_templates', section: 'transaction-defaults' },
-    { title: 'Mode of Payment', desc: '10 seeded modes — Cash, Cheque, NEFT, RTGS, UPI, IMPS, DD, LC, Bank Transfer, Advance Online', icon: Coins, module: 'fincore-mode-of-payment', storageKey: 'erp_group_mode_of_payment', section: 'transaction-defaults' },
-    { title: 'Terms of Payment', desc: '10 seeded terms — Immediate, Net 7/15/30/45/60/90, 50% Adv, 100% Adv, LC', icon: Calculator, module: 'fincore-terms-of-payment', storageKey: 'erp_group_terms_of_payment', section: 'transaction-defaults' },
-    { title: 'Terms of Delivery', desc: 'Incoterms + delivery-location standards', icon: FileText, module: 'fincore-terms-of-delivery', storageKey: 'erp_group_terms_of_delivery', section: 'transaction-defaults' },
+    { title: 'Mode of Payment', desc: '10 seeded modes — Cash, Cheque, NEFT, RTGS, UPI, IMPS, DD, LC, Bank Transfer, Advance Online', icon: Coins, module: 'fincore-mode-of-payment', storageKey: modeOfPaymentKey(entityCode), section: 'transaction-defaults' },
+    { title: 'Terms of Payment', desc: '10 seeded terms — Immediate, Net 7/15/30/45/60/90, 50% Adv, 100% Adv, LC', icon: Calculator, module: 'fincore-terms-of-payment', storageKey: termsOfPaymentKey(entityCode), section: 'transaction-defaults' },
+    { title: 'Terms of Delivery', desc: 'Incoterms + delivery-location standards', icon: FileText, module: 'fincore-terms-of-delivery', storageKey: termsOfDeliveryKey(entityCode), section: 'transaction-defaults' },
     { title: 'Fiscal Year Calendar', desc: '12-period FY calendar with lock-period + close-FY governance', icon: Calendar, module: 'fincore-fiscal-year', storageKey: fiscalYearStorageKey(entityCode), section: 'transaction-defaults' },
   ], [entityCode]);
 
