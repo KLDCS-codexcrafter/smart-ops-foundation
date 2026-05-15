@@ -289,6 +289,88 @@ function loadVoucherTypesForResolve(entityCode: string): VoucherType[] {
   return VOUCHER_TYPE_SEEDS;
 }
 
+/**
+ * Sprint T-Phase-1.Hardening-B.2B-pre-2 · Resolve a VoucherType's effective config.
+ *
+ * If the VT has parent_voucher_type_id set, fetches the parent VT and merges:
+ *   - Parent fields apply as defaults
+ *   - Child fields (where present) override parent fields (full-merge per-field)
+ *   - Identity/sequence-namespace fields are NEVER inherited (child's own value used)
+ *
+ * Tally-style strict 1-level enforcement (founder ruling α):
+ *   - Parent's parent_voucher_type_id MUST be null/undefined (no grandparents).
+ *   - Parent VT MUST have is_system=true (Tally rule: only system VTs can be parents).
+ *   - Throws on any violation (data-integrity errors surface, never silent fallback).
+ *
+ * Returns the VT itself (no merge) when parent_voucher_type_id is null/undefined.
+ *
+ * Used by:
+ *   - Block 2B main: generateVoucherNo will call resolveVoucherType to read effective numbering config
+ *   - Block 2C-i: Register filter logic will use effective base_voucher_type for grouping
+ *   - Block 2C-ii: form-page rendering will use effective print_title, declaration_text
+ *
+ * NOTE: 2B-pre-2 exposes this helper but does NOT yet call it from generateVoucherNo.
+ *       The wiring is Block 2B main, exactly like resolvePrefix in 2B-pre.
+ */
+export function resolveVoucherType(
+  vtId: string,
+  entityCode: string,
+): VoucherType {
+  const vts = loadVoucherTypesForResolve(entityCode);
+  const vt = vts.find(v => v.id === vtId);
+  if (!vt) {
+    throw new Error(`[resolveVoucherType] VoucherType not found: ${vtId}`);
+  }
+
+  // No parent — return self
+  if (!vt.parent_voucher_type_id) return vt;
+
+  const parent = vts.find(v => v.id === vt.parent_voucher_type_id);
+  if (!parent) {
+    throw new Error(
+      `[resolveVoucherType] Parent VT not found: ${vt.parent_voucher_type_id} (for child ${vtId})`
+    );
+  }
+
+  // Tally-style strict 1-level enforcement
+  if (parent.parent_voucher_type_id) {
+    throw new Error(
+      `[resolveVoucherType] Voucher-type hierarchy exceeds 1 level. ` +
+      `Tally-style requires parents to be top-level ` +
+      `(parent VT '${parent.id}' has its own parent '${parent.parent_voucher_type_id}').`
+    );
+  }
+  if (!parent.is_system) {
+    throw new Error(
+      `[resolveVoucherType] Parent VT must have is_system=true (Tally rule). ` +
+      `Child VT '${vtId}' has non-system parent '${parent.id}'.`
+    );
+  }
+
+  // Identity / sequence-namespace / hierarchy fields NEVER inherit (child's own value preserved)
+  // Founder ruling Q3 — exact list of 10 keys:
+  const NEVER_INHERIT_KEYS: ReadonlyArray<keyof VoucherType> = [
+    'id', 'name', 'abbreviation', 'numbering_prefix', 'current_sequence',
+    'voucher_classes', 'parent_voucher_type_id', 'entity_id',
+    'created_at', 'updated_at',
+  ];
+
+  // Full-merge per-field: parent provides defaults, child overrides where defined
+  const merged: VoucherType = { ...parent };
+  for (const key of Object.keys(vt) as Array<keyof VoucherType>) {
+    if (NEVER_INHERIT_KEYS.includes(key)) {
+      // Always use child's value for identity/sequence/hierarchy fields
+      (merged as unknown as Record<string, unknown>)[key] = vt[key];
+      continue;
+    }
+    // For other keys: child overrides parent IF child has a defined value
+    if (vt[key] !== undefined) {
+      (merged as unknown as Record<string, unknown>)[key] = vt[key];
+    }
+  }
+  return merged;
+}
+
 // ── Document Number Generation (ADVP, ADVR, etc.) ────────────────────
 /**
  * Centralized doc-number generator. Format: `PREFIX/FY/NNNN` (e.g. `SO/24-25/0001`).

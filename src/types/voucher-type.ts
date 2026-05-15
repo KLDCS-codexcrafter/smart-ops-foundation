@@ -293,6 +293,27 @@ export interface VoucherType {
    *  multiple classes. */
   voucher_classes?: VoucherClass[];
 
+  /** Sprint T-Phase-1.Hardening-B.2B-pre-2 · Parent voucher type for inheritance (Tally style).
+   *  When set, this VT inherits all behaviour from its parent unless explicitly overridden
+   *  on this row. The numbering sequence remains INDEPENDENT (child has its own current_sequence).
+   *
+   *  Tally model: 1 level deep. Parent VT MUST have is_system=true (parents are the
+   *  pre-defined system VTs; children are user-defined). Child VTs CANNOT themselves
+   *  be parents — the resolver throws if it encounters a chain longer than 1.
+   *
+   *  Per founder ruling (α) — strict Tally fidelity. Voucher classes remain FLAT
+   *  (no parent_class_id field on VoucherClass; "refer Tally style" honoured).
+   *
+   *  null/undefined = top-level VT (system VT or user VT without inheritance).
+   *
+   *  Used by:
+   *    - resolveVoucherType (this block): walks parent chain, merges effective config
+   *    - generateVoucherNo (Block 2B main): consumes resolved effective numbering config
+   *    - Register filter (Block 2C-i): can filter by base type via parent traversal
+   *    - VoucherTypesMaster UI (post-Hardening-B): renders parent selector restricted to is_system=true
+   */
+  parent_voucher_type_id?: string;
+
   // ── Forward-declared placeholder fields (Q-LOCK-ALIAS-A: declare now) ──
   /** Populated by Block 2C-i. */
   register_config?: RegisterConfig;
