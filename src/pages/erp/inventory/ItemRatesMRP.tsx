@@ -17,6 +17,7 @@ import { DollarSign, Search, AlertTriangle, TrendingUp, CheckCircle2 } from 'luc
 import { toast } from 'sonner';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { ItemRateHistory, RateType } from '@/types/item-rate-history';
+import { dMul, dPct, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 const IKEY = 'erp_inventory_items';
 const RHKEY = 'erp_item_rate_history';
