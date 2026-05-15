@@ -71,9 +71,11 @@ export function CreditApprovalQueuePanel({ entityCode = DEFAULT_ENTITY_SHORTCODE
       let rejection: string | null = null;
       if (mode === 'approve_full') approved = reviewing.requested_limit_paise;
       if (mode === 'approve_partial') {
-        const lakhs = parseFloat(partialAmount);
+        // Precision Arc 3B 4b: Pattern 2 — wrap parseFloat money input with money precision.
+        const lakhs = roundTo(parseFloat(partialAmount), resolveMoneyPrecision(null, null));
         if (isNaN(lakhs) || lakhs <= 0) { toast.error('Enter partial amount in lakhs'); setBusy(false); return; }
-        const paise = Math.floor(lakhs * 100000 * 100);
+        // Precision Arc 3B 4b: C4 integer-paise — preserve Math.floor; route inner mult through dMul.
+        const paise = Math.floor(dMul(dMul(lakhs, 100000), 100));
         if (paise <= reviewing.current_limit_paise || paise > reviewing.requested_limit_paise) {
           toast.error('Partial must be > current and ≤ requested'); setBusy(false); return;
         }
