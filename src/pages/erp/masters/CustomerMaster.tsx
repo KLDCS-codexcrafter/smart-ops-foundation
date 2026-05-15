@@ -437,6 +437,7 @@ export function CustomerMasterPanel() {
     try {
       // [JWT] GET /api/payhub/employees?entityCode={entityCode}
       // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
+      // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy fallback during Hardening-A scoped-key migration window; template-literal scoped read leads, legacy follows via ??
       const raw = localStorage.getItem(`erp_employees_${entityCode}`) ?? localStorage.getItem('erp_employees');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }

@@ -101,6 +101,7 @@ export function EmployeeMasterPanel() {
     try {
       // [JWT] GET /api/foundation/departments?entityCode={entityCode}
       // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
+      // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy fallback during Hardening-A scoped-key migration window; departmentsKey scoped read leads, legacy follows via ??
       const raw = localStorage.getItem(departmentsKey(entityCode)) ?? localStorage.getItem("erp_departments");
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
@@ -110,6 +111,7 @@ export function EmployeeMasterPanel() {
     try {
       // [JWT] GET /api/foundation/divisions?entityCode={entityCode}
       // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
+      // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy fallback during Hardening-A scoped-key migration window; divisionsKey scoped read leads, legacy follows via ??
       const raw = localStorage.getItem(divisionsKey(entityCode)) ?? localStorage.getItem("erp_divisions");
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }

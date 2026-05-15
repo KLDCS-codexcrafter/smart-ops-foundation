@@ -184,6 +184,7 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
       // [JWT] GET /api/payhub/employees?entityCode={entityCode}
       // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
       const scopedRaw = localStorage.getItem(`erp_employees_${entityCode}`);
+      // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy fallback during Hardening-A scoped-key migration window; template-literal scoped read on line 186 leads via ??
       const raw = scopedRaw ?? localStorage.getItem('erp_employees') ?? '[]';
       const emps: EmployeeLite[] = JSON.parse(raw);
       return emps.find(e => e.status === 'active') ?? null;

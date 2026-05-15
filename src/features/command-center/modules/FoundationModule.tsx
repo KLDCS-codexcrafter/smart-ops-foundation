@@ -84,6 +84,7 @@ export function FoundationModule() {
     // [JWT] GET /api/foundation/org-structure/divisions?entityCode={e}
     const scoped = JSON.parse(localStorage.getItem(divisionsKey(entityCode)) || '[]').length;
     if (scoped > 0 || !entityCode) return scoped;
+    // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy total fallback during Hardening-A scoped-key migration window; scoped count computed above (line 85)
     return JSON.parse(localStorage.getItem('erp_divisions') || '[]').length;
   } catch { return 0; } })();
 
@@ -91,6 +92,7 @@ export function FoundationModule() {
     // [JWT] GET /api/foundation/org-structure/departments?entityCode={e}
     const scoped = JSON.parse(localStorage.getItem(departmentsKey(entityCode)) || '[]').length;
     if (scoped > 0 || !entityCode) return scoped;
+    // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy total fallback during Hardening-A scoped-key migration window; scoped count computed above (line 92)
     return JSON.parse(localStorage.getItem('erp_departments') || '[]').length;
   } catch { return 0; } })();
 
