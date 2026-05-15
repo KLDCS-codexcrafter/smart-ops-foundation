@@ -519,7 +519,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     is_active: true, activation_type: 'active',
     accounting_impact: true, inventory_impact: false,
     use_effective_date: true,
-    numbering_prefix: 'DEP-', numbering_width: 4, current_sequence: 1,
+    numbering_prefix: 'DEP', numbering_width: 4, current_sequence: 1,
     print_title: 'Depreciation Voucher', default_jurisdiction: 'IN',
   }),
   seed('vt-asset-write-off', {
