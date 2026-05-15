@@ -6,6 +6,7 @@
 
 import type { HierarchyNode, HierarchyRole } from '@/types/distributor-hierarchy';
 import { HIERARCHY_VALID_PARENTS } from '@/types/distributor-hierarchy';
+import { dMul } from './decimal-helpers';
 
 /** Recompute node.path from root to here. Used after parent change. */
 export function computeNodePath(nodeId: string, allNodes: HierarchyNode[]): string {
@@ -113,7 +114,7 @@ export function cascadeTarget(
   const sumW = weights.reduce((s, w) => s + w, 0);
   children.forEach((child, i) => {
     const share = sumW > 0
-      ? Math.floor(parentTargetPaise * (weights[i] / sumW))
+      ? Math.floor(dMul(parentTargetPaise, weights[i]) / sumW)
       : Math.floor(parentTargetPaise / children.length);
     out.set(child.customer_id, share);
   });
