@@ -137,6 +137,8 @@ export async function createGitStage1FromPo(
     updated_at: now,
   };
 
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  record.fiscal_year_id = `FY-20${fyForDate(record.receipt_date, record.entity_id)}`;
   list.push(record);
   writeGit(entityCode, list);
 
