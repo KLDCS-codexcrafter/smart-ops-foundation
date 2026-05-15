@@ -33,6 +33,8 @@ import {
 import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// Precision Arc · Stage 3B · Block 4c — C4 integer-paise (redeem cap; floor preserved, inner arithmetic decimal-safe).
+import { dSub, dMul } from '@/lib/decimal-helpers';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 const MAX_REDEEM_PCT = 0.3;   // anti-abuse: cap loyalty discount at 30% of subtotal
