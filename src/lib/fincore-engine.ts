@@ -223,6 +223,72 @@ export function fyForDate(dateISO: string, entityCode?: string): string {
   return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
 }
 
+/**
+ * Sprint T-Phase-1.Hardening-B.2B-pre · Resolve a caller-passed prefix
+ * (e.g. 'PV', 'JV-ACCR', 'CP') to its registry source — either a top-level
+ * VoucherType (via abbreviation or alias) OR a voucher class (via
+ * abbreviation_prefix on some VT's voucher_classes).
+ *
+ * IMPORTANT: 2B-pre exposes this helper but does NOT yet use it in
+ * generateVoucherNo. The actual wiring (engine consumes resolved metadata
+ * for width/prefill/sequence) is Block 2B main. This helper landing in
+ * 2B-pre allows Block 2B main to be a pure wiring change.
+ *
+ * Lookup order:
+ *   1. VoucherType row where row.abbreviation === prefix
+ *   2. VoucherType row where row.abbreviation_aliases includes prefix
+ *   3. VoucherClass under any VT where class.abbreviation_prefix === prefix
+ *   4. VoucherClass under any VT where class.abbreviation_aliases includes prefix
+ *   5. null (caller-internal prefix not in registry — engine falls back to defaults)
+ *
+ * Storage pattern matches useVoucherTypes:
+ *   entity-scoped (`erp_voucher_types_${entityCode}`) → template
+ *   (`erp_voucher_types_template`) → VOUCHER_TYPE_SEEDS const.
+ */
+export function resolvePrefix(
+  prefix: string,
+  entityCode: string,
+): { vt: VoucherType; voucherClass: VoucherClass | null } | null {
+  const vts = loadVoucherTypesForResolve(entityCode);
+
+  // 1 + 2: top-level VoucherType match
+  for (const vt of vts) {
+    if (vt.abbreviation === prefix) return { vt, voucherClass: null };
+    if (vt.abbreviation_aliases?.includes(prefix)) return { vt, voucherClass: null };
+  }
+
+  // 3 + 4: VoucherClass match under any VT
+  for (const vt of vts) {
+    if (!vt.voucher_classes) continue;
+    for (const cls of vt.voucher_classes) {
+      if (cls.abbreviation_prefix === prefix) return { vt, voucherClass: cls };
+      if (cls.abbreviation_aliases?.includes(prefix)) return { vt, voucherClass: cls };
+    }
+  }
+
+  // 5: not in registry
+  return null;
+}
+
+function loadVoucherTypesForResolve(entityCode: string): VoucherType[] {
+  try {
+    // [JWT] GET /api/accounting/voucher-types?entityCode={e}
+    const entityRaw = localStorage.getItem(`erp_voucher_types_${entityCode}`);
+    if (entityRaw) {
+      const stored = JSON.parse(entityRaw) as VoucherType[];
+      if (stored.length > 0) return stored;
+    }
+    const templateRaw = localStorage.getItem('erp_voucher_types_template');
+    if (templateRaw) {
+      const stored = JSON.parse(templateRaw) as VoucherType[];
+      if (stored.length > 0) return stored;
+    }
+  } catch {
+    /* fall through to seeds */
+  }
+  return VOUCHER_TYPE_SEEDS;
+}
+
 // ── Document Number Generation (ADVP, ADVR, etc.) ────────────────────
 /**
  * Centralized doc-number generator. Format: `PREFIX/FY/NNNN` (e.g. `SO/24-25/0001`).
