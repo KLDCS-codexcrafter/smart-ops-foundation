@@ -37,6 +37,8 @@ import {
   recordVendorActivity,
 } from '@/lib/vendor-portal-auth-engine';
 import { markFirstQuoteSubmitted } from '@/lib/vendor-onboarding-engine';
+// Precision Arc · Stage 3B · Block 4c — Pattern 1 (RFQ tax/total money math).
+import { roundTo, resolveMoneyPrecision, dMul, dSub } from '@/lib/decimal-helpers';
 
 interface LineDraft {
   enquiry_line_id: string;
