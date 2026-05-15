@@ -36,7 +36,7 @@ import { EMPLOYEES_KEY } from '@/types/employee';
 import { LOAN_TYPES_KEY } from '@/types/payroll-masters';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useT } from '@/lib/i18n-engine';
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, dMul, dSub, dPct } from '@/lib/decimal-helpers';
 
 /* ── generateEMISchedule — pure function, no library ─────────────── */
 function generateEMISchedule(
@@ -50,7 +50,8 @@ function generateEMISchedule(
   const rows: EMIScheduleRow[] = [];
 
   if (interestType === 'nil') {
-    const emi = Math.ceil(principal / tenureMonths);
+    // C4 · Block 4a — Math.ceil preserved (integer-rupee EMI), inner snapped to remove float drift.
+    const emi = Math.ceil(roundTo(principal / tenureMonths, 4));
     let balance = principal;
     for (let i = 0; i < tenureMonths; i++) {
       const due = addMonths(parseISO(startDate), i);
@@ -68,20 +69,21 @@ function generateEMISchedule(
   }
 
   if (interestType === 'simple') {
-    const totalInterest = (principal * annualRatePct * tenureMonths) / (100 * 12);
+    // Pattern 1 · Block 4a — decimal-safe interest calc; downstream Math.ceil preserved (C4).
+    const totalInterest = dPct(dMul(principal, tenureMonths), annualRatePct) / 12;
     const totalPayable = principal + totalInterest;
-    const emi = Math.ceil(totalPayable / tenureMonths);
+    const emi = Math.ceil(roundTo(totalPayable / tenureMonths, 4));
     const monthlyInterest = totalInterest / tenureMonths;
     let balance = principal;
     for (let i = 0; i < tenureMonths; i++) {
       const due = addMonths(parseISO(startDate), i);
       const dueStr = format(due, 'yyyy-MM-dd');
       const actualEmi = i < tenureMonths - 1 ? emi : balance + monthlyInterest;
-      const prinPart = Math.ceil(actualEmi - monthlyInterest);
+      const prinPart = Math.ceil(roundTo(dSub(actualEmi, monthlyInterest), 4));
       rows.push({
         installment: i + 1, dueDate: dueStr, openingBalance: balance,
-        emiAmount: Math.ceil(actualEmi), principal: prinPart,
-        interest: Math.ceil(monthlyInterest),
+        emiAmount: Math.ceil(roundTo(actualEmi, 4)), principal: prinPart,
+        interest: Math.ceil(roundTo(monthlyInterest, 4)),
         closingBalance: Math.max(0, balance - prinPart),
         status: new Date(dueStr) < new Date() ? 'paid' : 'upcoming',
       });
@@ -93,14 +95,15 @@ function generateEMISchedule(
   // Compound (reducing balance)
   const monthlyRate = annualRatePct / (12 * 100);
   const emi = monthlyRate === 0
-    ? Math.ceil(principal / tenureMonths)
-    : Math.ceil(principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)
-        / (Math.pow(1 + monthlyRate, tenureMonths) - 1));
+    ? Math.ceil(roundTo(principal / tenureMonths, 4))
+    : Math.ceil(roundTo(principal * monthlyRate * Math.pow(1 + monthlyRate, tenureMonths)
+        / (Math.pow(1 + monthlyRate, tenureMonths) - 1), 4));
   let balance = principal;
   for (let i = 0; i < tenureMonths; i++) {
     const due = addMonths(parseISO(startDate), i);
     const dueStr = format(due, 'yyyy-MM-dd');
-    const interest = Math.round(balance * monthlyRate);
+    // Pattern 1 · Block 4a — integer-rupee interest via decimal-safe roundTo (RBI banker).
+    const interest = roundTo(dMul(balance, monthlyRate), 0);
     const prinPart = Math.min(emi - interest, balance);
     rows.push({
       installment: i + 1, dueDate: dueStr, openingBalance: balance,
@@ -118,14 +121,14 @@ function generateEMISchedule(
 function computeEMI(principal: number, tenureMonths: number, annualRatePct: number,
   interestType: 'simple' | 'compound' | 'nil'): number {
   if (!principal || !tenureMonths) return 0;
-  if (interestType === 'nil') return Math.ceil(principal / tenureMonths);
+  if (interestType === 'nil') return Math.ceil(roundTo(principal / tenureMonths, 4));
   if (interestType === 'simple') {
-    const totalInterest = (principal * annualRatePct * tenureMonths) / (100 * 12);
-    return Math.ceil((principal + totalInterest) / tenureMonths);
+    const totalInterest = dPct(dMul(principal, tenureMonths), annualRatePct) / 12;
+    return Math.ceil(roundTo((principal + totalInterest) / tenureMonths, 4));
   }
   const r = annualRatePct / (12 * 100);
-  if (r === 0) return Math.ceil(principal / tenureMonths);
-  return Math.ceil(principal * r * Math.pow(1+r,tenureMonths) / (Math.pow(1+r,tenureMonths)-1));
+  if (r === 0) return Math.ceil(roundTo(principal / tenureMonths, 4));
+  return Math.ceil(roundTo(principal * r * Math.pow(1+r,tenureMonths) / (Math.pow(1+r,tenureMonths)-1), 4));
 }
 
 /* ══════════════════════════════════════════════════════════════════ */
