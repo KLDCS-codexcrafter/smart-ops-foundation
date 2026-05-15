@@ -13,6 +13,7 @@ import { gitStage1Key } from '@/types/git';
 import type { PurchaseOrderRecord } from '@/types/po';
 import { listPurchaseOrders, getPurchaseOrder, updatePoLineReceivedQty } from './po-management-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
+import { fyForDate } from './fincore-engine';
 
 const newId = (p: string): string =>
   `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
