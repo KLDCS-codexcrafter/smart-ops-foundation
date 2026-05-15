@@ -266,21 +266,18 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
     <>
     {GuardDialog}
     <div data-keyboard-form className="p-5 max-w-4xl mx-auto space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-foreground">Credit Note</h2>
-          <p className="text-xs text-muted-foreground">Issue credit note against sales invoice</p>
-        </div>
-        <Badge variant="outline" className="font-mono text-xs">{voucherNo}</Badge>
-      </div>
+      <TallyVoucherHeader
+        voucherTypeName="Credit Note"
+        baseVoucherType="Credit Note"
+        voucherFamily="Accounting"
+        voucherNo={voucherNo}
+        voucherDate={date} onVoucherDateChange={setDate}
+        status="draft"
+      />
 
       <Card>
         <CardContent className="pt-5 space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label className="text-xs">Date</Label>
-              <Input type="date" value={date} onChange={e => setDate(e.target.value)} onKeyDown={onEnterNext} />
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label className="text-xs">Party</Label>
               <Input value={partyName} onChange={e => setPartyName(e.target.value)} onKeyDown={onEnterNext} placeholder="Customer name" />
