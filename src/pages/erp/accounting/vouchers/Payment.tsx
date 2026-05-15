@@ -171,7 +171,7 @@ export function PaymentPanel({ onSaveDraft }: PaymentPanelProps) {
     const today = new Date().toISOString().split('T')[0];
     if (selectedVendor?.lower_deduction_cert && selectedVendor.lower_deduction_expiry > today) {
       setTdsRate(selectedVendor.lower_deduction_rate);
-      setTdsAmount(Math.round(amount * selectedVendor.lower_deduction_rate / 100));
+      setTdsAmount(roundTo(dPct(amount, selectedVendor.lower_deduction_rate), 0));
       return;
     }
     const result = computeTDS(amount, tdsSection, deducteeType === 'huf' ? 'individual' : deducteeType, selectedVendor?.id ?? '', entityCode);
