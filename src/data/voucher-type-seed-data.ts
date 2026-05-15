@@ -504,7 +504,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     name: 'Capital Purchase', abbreviation: 'CP', base_voucher_type: 'Capital Purchase', family: 'Accounting',
     is_active: true, activation_type: 'active',
     accounting_impact: true, inventory_impact: false,
-    numbering_prefix: 'CP-', numbering_width: 4, current_sequence: 1,
+    numbering_prefix: 'CP', numbering_width: 4, current_sequence: 1,
     print_title: 'Capital Purchase Voucher', default_jurisdiction: 'IN',
   }),
   seed('vt-capital-sale', {
