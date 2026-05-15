@@ -13,6 +13,7 @@ import type { AttendanceRecord } from '@/types/attendance-entry';
 import type { LoanApplication, SalaryAdvance } from '@/types/employee-finance';
 import { LOAN_APPLICATIONS_KEY, SALARY_ADVANCES_KEY } from '@/types/employee-finance';
 import type { AttendanceType } from '@/types/payroll-masters';
+import { roundTo, dMul, dSub } from '@/lib/decimal-helpers';
 import { ATTENDANCE_TYPES_KEY } from '@/types/payroll-masters';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { SALARY_STRUCTURES_KEY, PAY_HEADS_KEY } from '@/types/pay-hub';
@@ -74,7 +75,7 @@ export function computeCTCBreakdown(
     if (comp.maxValueMonthly > 0 && val > comp.maxValueMonthly) val = comp.maxValueMonthly;
     if (ph.conditionalMaxWage > 0 && gross > ph.conditionalMaxWage) val = 0;
 
-    val = Math.round(val);
+    val = roundTo(val, 0);
     if (ph.type === 'earning') { totalEarnings += val; gross += val; }
 
     lines.push({
@@ -236,7 +237,7 @@ export function applyLOP(
   const deductFactor = lopDays / workingDays;
   return lines.map(l => {
     if (l.type !== 'earning') return l;
-    const reduced = Math.round(l.monthly * (1 - deductFactor));
+    const reduced = roundTo(dMul(l.monthly, dSub(1, deductFactor)), 0);
     return { ...l, monthly: reduced, annual: reduced * 12 };
   });
 }
@@ -384,15 +385,15 @@ export function computeEmployeePayslip(
   const daLine = lines.find(l => l.headCode === 'DA');
   const basicPlusDA = (basicLine?.monthly || 0) + (daLine?.monthly || 0);
   const pfWage = Math.min(basicPlusDA, pfCeiling);
-  const empPF = employee.pfApplicable ? Math.round(pfWage * 0.12) : 0;
-  const erEPF = employee.pfApplicable ? Math.round(pfWage * 0.0367) : 0;
-  const erEPS = employee.pfApplicable ? Math.min(Math.round(pfWage * 0.0833), 1250) : 0;
-  const erEDLI = employee.pfApplicable ? Math.min(Math.round(pfWage * 0.005), 75) : 0;
+  const empPF = employee.pfApplicable ? roundTo(dMul(pfWage, 0.12), 0) : 0;
+  const erEPF = employee.pfApplicable ? roundTo(dMul(pfWage, 0.0367), 0) : 0;
+  const erEPS = employee.pfApplicable ? Math.min(roundTo(dMul(pfWage, 0.0833), 0), 1250) : 0;
+  const erEDLI = employee.pfApplicable ? Math.min(roundTo(dMul(pfWage, 0.005), 0), 75) : 0;
 
   // 5. ESI
   const esiWage = (employee.esiApplicable && grossEarnings <= 21000) ? grossEarnings : 0;
-  const empESI = esiWage > 0 ? Math.round(esiWage * 0.0075) : 0;
-  const erESI = esiWage > 0 ? Math.round(esiWage * 0.0325) : 0;
+  const empESI = esiWage > 0 ? roundTo(dMul(esiWage, 0.0075), 0) : 0;
+  const erESI = esiWage > 0 ? roundTo(dMul(esiWage, 0.0325), 0) : 0;
 
   // 6. TDS
   const taxableAnnual = lines
