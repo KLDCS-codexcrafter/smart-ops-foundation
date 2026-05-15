@@ -267,7 +267,8 @@ export function PriceListsPanel() {
 
   const addItemToList = () => {
     if (!activeList || !selItem) { toast.error('Select an item'); return; }
-    const price = parseFloat(itemForm.price);
+    // Precision Arc 3B 4b: Pattern 2 — wrap parseFloat money input.
+    const price = roundTo(parseFloat(itemForm.price), resolveMoneyPrecision(null, null));
     if (isNaN(price) || price <= 0) { toast.error('Price is required'); return; }
     const now = new Date().toISOString();
     if (editPLItem) {
