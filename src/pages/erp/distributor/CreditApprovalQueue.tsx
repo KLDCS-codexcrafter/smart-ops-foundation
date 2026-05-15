@@ -20,6 +20,7 @@ import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { formatINR } from '@/lib/india-validations';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { dMul, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import {
   creditRequestsKey, CREDIT_REQUEST_STATUS_COLOURS,
   type CreditIncreaseRequest,
