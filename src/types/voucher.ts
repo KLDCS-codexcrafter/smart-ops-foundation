@@ -126,6 +126,9 @@ export interface Voucher {
   voucher_type_name: string;
   base_voucher_type: VoucherBaseType;
   entity_id: string;
+  /** Sprint T-Phase-1.Hardening-B.2A · FY tag computed at save time from voucher.date + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   date: string;
   invoice_mode?: 'item' | 'accounting';
   contra_mode?: 'bank_transfer' | 'cash_transfer';
