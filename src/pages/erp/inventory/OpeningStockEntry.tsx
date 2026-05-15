@@ -262,8 +262,8 @@ export function OpeningStockPanel() {
             mfg_date: s.mfg_date || null,
             expiry_date: s.expiry_date || null,
             quantity: 1, rate, value: rate,
-            mrp: row.mrp ? parseFloat(row.mrp) : null,
-            std_purchase_rate: row.stdPO ? parseFloat(row.stdPO) : null,
+            mrp: row.mrp ? roundTo(parseFloat(row.mrp), mp) : null,
+            std_purchase_rate: row.stdPO ? roundTo(parseFloat(row.stdPO), mp) : null,
             status: 'posted', created_at: now, updated_at: now,
           });
         });
