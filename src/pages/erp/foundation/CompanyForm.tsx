@@ -379,7 +379,12 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
           // [JWT] POST /api/foundation/entities
           localStorage.setItem('erp_ledger_definitions', JSON.stringify(ledgerDefs));
           // [JWT] POST /api/accounting/voucher-types (forex adjustment journal)
-          const vtypes: Record<string, unknown>[] = JSON.parse(localStorage.getItem('erp_voucher_types') || '[]');
+          // Q3.1 dual-write: legacy + scoped template VT key
+          // [JWT] GET /api/accounting/voucher-types
+          const VT_TEMPLATE_KEY = 'erp_voucher_types_template';
+          const vtypes: Record<string, unknown>[] = JSON.parse(
+            localStorage.getItem(VT_TEMPLATE_KEY) ?? localStorage.getItem('erp_voucher_types') ?? '[]'
+          );
           if (!vtypes.find(v => v.abbreviation === 'FXADJ')) {
             vtypes.push({
               id: `vt-fxadj-${Date.now()}`, name: 'Forex Adjustment',
@@ -403,8 +408,10 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
               default_bank_ledger_id: null, default_jurisdiction: '', declaration_text: '',
               entity_id: null, created_at: now, updated_at: now,
             });
-            // [JWT] POST /api/foundation/entities
-            localStorage.setItem('erp_voucher_types', JSON.stringify(vtypes));
+            // [JWT] POST /api/foundation/entities — Q3.1 dual-write
+            const json = JSON.stringify(vtypes);
+            localStorage.setItem('erp_voucher_types', json);
+            localStorage.setItem(VT_TEMPLATE_KEY, json);
           }
         } catch { /* non-fatal — forex setup can be retried */ }
       }
