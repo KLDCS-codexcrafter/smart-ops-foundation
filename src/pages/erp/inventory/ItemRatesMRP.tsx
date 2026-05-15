@@ -279,7 +279,8 @@ export function ItemRatesPanel() {
         if (idx < 0) return;
         const item = newItems[idx];
         if (mrpVal) {
-          const n = parseFloat(mrpVal);
+          // Precision Arc 3B 4b: Pattern 2 — wrap CSV money input.
+          const n = roundTo(parseFloat(mrpVal), resolveMoneyPrecision(null, null));
           if (!isNaN(n)) {
             const old = item.mrp ?? null;
             newItems[idx] = { ...newItems[idx], mrp: n };
