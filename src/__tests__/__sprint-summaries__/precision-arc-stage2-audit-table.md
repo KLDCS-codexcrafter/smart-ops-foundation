@@ -2188,3 +2188,32 @@ The 3 sites below were MIGRATED in Stage 3B Block 2 (predecessor HEAD `42b3656`)
 | src/pages/erp/accounting/vouchers/Payment.tsx:174 | MIGRATED (Stage 3B Block 2, C6) — lower-deduction-cert path. NOTE: this is the parked `:173` from Stage 2, shifted to `:174` by the `Payment.tsx:537` surgical fix at `7250cf9` (which added one import line). |
 | src/pages/erp/accounting/vouchers/Receipt.tsx:132 | MIGRATED (Stage 3B Block 2, C6) — `updateTdsLine` gross/rate handler. |
 | src/pages/erp/accounting/vouchers/Receipt.tsx:140 | MIGRATED (Stage 3B Block 2, C6) — `updateTdsLine` section-change handler. Compound statement; only the `updated.tds_amount` sub-expression changed. |
+
+---
+
+## Stage 3B Block 3 reconciliation appendix (69 engine sites)
+
+All 69 Block 3 candidate sites confirmed at HEAD `3431f9d`. Per-site disposition + line-number drift reconciliation in
+`precision-arc-stage3b-block3-close-summary.md`. Row-by-row:
+
+**MIGRATED SP-1 (34):** emi-schedule-builder.ts:51/52/53/63/66 · NotionalInterestRunModal.tsx:61 · notional-interest-engine.ts:79 · penal-engine.ts:104/121/166/253 · advance-aging.ts:93/103 · price-benchmark-stub.ts:31 · procure-fincore-po-bridge.ts:76/160/161/174 · entity-setup-service.ts:654/655/656/673/674/675/772/773/774/801/802/803/917/939/1924/1940.
+
+**MIGRATED SP-5 (4):** hierarchy-engine.ts:116/117 · loyalty-engine.ts:127/132 (Math.floor preserved).
+
+**MIGRATED SP-6 statutory (13):** usePayrollEngine.ts:77 (was :76), :239 (was :238), :387/:388/:389/:390 (was :385/:386/:387/:388), :394/:395 (was :392/:393) · contract-manpower.ts:163/166/167/168/169.
+
+**MIGRATED SP-6 cost-per-unit (2):** campaign.ts:137/138.
+
+**MIGRATED SP-8 parseFloat in (3):** pdf-invoice-extractor.ts:152 · :160 (was :159) · :173 (was :172, qty resolver).
+
+**MIGRATED Pattern 2 form (1):** EmployeeOpeningLoansModule.tsx:352-355.
+
+**RECLASSIFY-C SP-2 day-count (7):** EMICalendar.tsx:69 · penal-engine.ts:93 · advance-aging.ts:58 · alert-engine.ts:37 · duplicate-detector.ts:51 · useOutstanding.ts:34 · usePayrollEngine.ts:226 (was :225, half-day LOP).
+
+**RECLASSIFY-C SP-3 display % (2):** ZoneProgressResolver.ts:106 · price-benchmark-stub.ts:32.
+
+**RECLASSIFY-B SP-4 ID-gen (1):** payment-gateway-engine.ts:13.
+
+**RECLASSIFY SP-5 no-arith-needed (2):** usePayrollEngine.ts:167 (was :166, Math.ceil(adv.amount/2)) · scheme-engine.ts:71 (was :69, count = qty/qty).
+
+Tally: 57 migrated · 12 reclassified · 0 STOP-and-raise.
