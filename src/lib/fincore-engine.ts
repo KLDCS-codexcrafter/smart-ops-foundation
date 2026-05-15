@@ -36,6 +36,9 @@ import { rejectSaveDueToIRNLock } from './irn-lock-engine';
 import { dMul, roundTo } from './decimal-helpers';
 // Sprint T-Phase-1.Hardening-B.2A · per-entity FY start-month resolution (Q2 = YES).
 import { fiscalYearStorageKey, type FiscalYear } from '@/types/fiscal-year';
+// Sprint T-Phase-1.Hardening-B.2B-pre · resolvePrefix helper (exposed, not yet wired).
+import { VOUCHER_TYPE_SEEDS } from '@/data/voucher-type-seed-data';
+import type { VoucherType, VoucherClass } from '@/types/voucher-type';
 
 // ── Storage key helpers ──────────────────────────────────────────────
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
