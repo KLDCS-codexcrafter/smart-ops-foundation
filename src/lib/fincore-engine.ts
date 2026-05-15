@@ -153,27 +153,72 @@ export function validateAllocations(voucher: Partial<Voucher>): ValidationResult
 // ── Voucher Number Generation ────────────────────────────────────────
 
 export function generateVoucherNo(prefix: string, entityCode: string): string {
-  const key = `erp_voucher_seq_${prefix}_${entityCode}`;
+  // Sprint T-Phase-1.Hardening-B.2A · FY-scoped sequence per GST Rule 46.
+  // Storage key: erp_voucher_seq_{prefix}_{entityCode}_{fy}
+  // Auto-migrates legacy non-FY key into current-FY key on first call (mirrors generateDocNo · T-Phase-1.2.5h-a).
+  const fy = getFY(entityCode);
+  const newKey = `erp_voucher_seq_${prefix}_${entityCode}_${fy}`;
+  const legacyKey = `erp_voucher_seq_${prefix}_${entityCode}`;
   // [JWT] GET /api/accounting/voucher-types/:id/next-number
-  const raw = localStorage.getItem(key);
+  let raw = localStorage.getItem(newKey);
+  if (!raw) {
+    const legacyRaw = localStorage.getItem(legacyKey);
+    if (legacyRaw) {
+      // [JWT] One-time migration · legacy non-FY → current FY
+      localStorage.setItem(newKey, legacyRaw);
+      raw = legacyRaw;
+      // Keep legacyKey for one FY (safety) — future block will purge.
+    }
+  }
   const seq = raw ? parseInt(raw, 10) + 1 : 1;
   // [JWT] PATCH /api/accounting/voucher-types/:id/sequence
-  localStorage.setItem(key, String(seq));
-  const fy = getFY();
+  localStorage.setItem(newKey, String(seq));
   return `${prefix}/${fy}/${String(seq).padStart(4, '0')}`;
 }
 
-function getFY(): string {
+function getFY(entityCode?: string): string {
   const now = new Date();
-  const y = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+  const startMonth = resolveStartMonth(entityCode);
+  const monthIdx = now.getMonth() + 1;
+  const y = monthIdx >= startMonth ? now.getFullYear() : now.getFullYear() - 1;
   return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
+}
+
+function resolveStartMonth(entityCode?: string): number {
+  if (!entityCode) return 4;
+  try {
+    // [JWT] GET /api/fiscal-years?entity=:entityCode
+    const raw = localStorage.getItem(fiscalYearStorageKey(entityCode));
+    if (!raw) return 4;
+    const fyList: FiscalYear[] = JSON.parse(raw);
+    const active = fyList.find(fy => !fy.closed) ?? fyList[0];
+    return (active?.startMonth && active.startMonth >= 1 && active.startMonth <= 12) ? active.startMonth : 4;
+  } catch {
+    return 4;
+  }
 }
 
 /**
  * Sprint T-Phase-1.2.5h-a · Public FY accessor for tests + entity cleanup utilities.
- * Indian fiscal-year window: Apr 1 - Mar 31.
+ * Sprint T-Phase-1.Hardening-B.2A · entityCode optional for per-entity FY start-month.
+ * Indian fiscal-year window default: Apr 1 - Mar 31 (when no entity FY master found).
  */
-export function getCurrentFY(): string { return getFY(); }
+export function getCurrentFY(entityCode?: string): string { return getFY(entityCode); }
+
+/**
+ * Sprint T-Phase-1.Hardening-B.2A · Compute FY string for an arbitrary date.
+ * Used by postVoucher to compute Voucher.fiscal_year_id for the voucher's
+ * date (which may be backdated/post-dated, not today). Robust to empty/invalid input.
+ */
+export function fyForDate(dateISO: string, entityCode?: string): string {
+  if (!dateISO) return getFY(entityCode);
+  const d = new Date(dateISO);
+  if (isNaN(d.getTime())) return getFY(entityCode);
+  const startMonth = resolveStartMonth(entityCode);
+  const monthIdx = d.getMonth() + 1;
+  const y = monthIdx >= startMonth ? d.getFullYear() : d.getFullYear() - 1;
+  return `${String(y).slice(2)}-${String(y + 1).slice(2)}`;
+}
 
 // ── Document Number Generation (ADVP, ADVR, etc.) ────────────────────
 /**
