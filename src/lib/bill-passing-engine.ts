@@ -22,7 +22,7 @@ import { getGitStage1 } from './git-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { dSub, dSum, dMul, dAdd, round2 } from './decimal-helpers';
 import { emitLeakEvent } from './leak-register-engine';
-import { generateDocNo } from './fincore-engine';
+import { generateDocNo, fyForDate } from './fincore-engine';
 import { deriveAllTaxes } from './bill-passing-tax-derivation';
 import { notifyQaHandoff } from './bill-passing-qa-bridge';
 
@@ -309,6 +309,8 @@ export async function createBillPassing(
   };
 
   const list = read(entityCode);
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  bill.fiscal_year_id = `FY-20${fyForDate(bill.bill_date, bill.entity_id)}`;
   list.push(bill);
   write(entityCode, list);
 

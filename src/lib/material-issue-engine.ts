@@ -17,7 +17,7 @@ import type {
 import { materialIssueNotesKey } from '@/types/material-issue-note';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { releaseProductionOrderReservations } from '@/lib/stock-reservation-engine';
 
 export interface CreateMaterialIssueInput {
@@ -213,6 +213,8 @@ export function listMaterialIssues(entityCode: string): MaterialIssueNote[] {
 // ─── Private helpers ─────────────────────────────────────────────────
 
 function persistMIN(entityCode: string, min: MaterialIssueNote): void {
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  min.fiscal_year_id = `FY-20${fyForDate(min.issue_date, min.entity_id)}`;
   const all = listMaterialIssues(entityCode);
   const idx = all.findIndex(m => m.id === min.id);
   if (idx >= 0) all[idx] = min;

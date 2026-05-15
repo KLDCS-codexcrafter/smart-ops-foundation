@@ -8,7 +8,7 @@ import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import type { Order } from '@/types/order';
 import { ordersKey } from '@/types/order';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 
 function ls<T>(key: string): T[] {
   try {
@@ -64,6 +64,8 @@ export function useOrders(entityCode: string) {
     };
     // [JWT] POST /api/orders
     const all = ls<Order>(key);
+    // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+    order.fiscal_year_id = `FY-20${fyForDate(order.date, order.entity_id)}`;
     all.push(order);
     ss(key, all);
     setOrders(all);
