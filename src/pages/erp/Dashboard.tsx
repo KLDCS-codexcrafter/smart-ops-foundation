@@ -20,8 +20,14 @@ import {
 } from "@/components/operix-core/applications";
 import { CardTile } from "@/components/operix-core/CardTile";
 import { SuspendedSessionBanner } from "@/components/layout/SuspendedSessionBanner";
-import { CommandPalette } from "@/components/layout/CommandPalette";
-import { CrossCardSearch } from "@/components/layout/CrossCardSearch";
+// Block 2C-i-prev-2 · Q-LOCK-2 · CommandPalette + CrossCardSearch lazy-loaded;
+// only mounted when their open flag is true to trim Dashboard chunk.
+const CommandPalette = lazy(() =>
+  import("@/components/layout/CommandPalette").then(m => ({ default: m.CommandPalette }))
+);
+const CrossCardSearch = lazy(() =>
+  import("@/components/layout/CrossCardSearch").then(m => ({ default: m.CrossCardSearch }))
+);
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useCardEntitlement } from "@/hooks/useCardEntitlement";
 import { topCardsForUser } from "@/lib/card-frequency-tracker";
