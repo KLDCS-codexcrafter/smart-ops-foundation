@@ -2100,3 +2100,79 @@ All 458 Class D rows. Authoritative Stage 3 migration input.
 | src/pages/erp/payout/CashFlowDashboard.tsx:86 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/pages/erp/payout/CashFlowDashboard.tsx:87 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
 | src/pages/erp/pay-hub/transactions/EmployeeExperience.tsx:838 | Math.round | money math in engine/hook or money-keyword — needs-founder-ruling |
+
+---
+
+## STAGE 3B · BLOCK 1 RECONCILIATION (predecessor HEAD `7250cf9`)
+
+This appendix annotates Stage 3B Block 1 dispositions against the rows above. Per the close-summary rule, no rows are deleted; this section is the historical reclassification record.
+
+### Surgical Fix — RESOLVED
+
+| Site | Disposition |
+|---|---|
+| src/pages/erp/accounting/vouchers/Payment.tsx:537 | **RESOLVED — Stage 3B precursor surgical fix, HEAD `7250cf9`** (every duplicate row above for `Payment.tsx:537` is hereby marked RESOLVED) |
+
+### C1 · Percentages mislabelled as money — RECLASSIFY-C (Stage 3B Block 1, C1)
+
+| Site | Disposition |
+|---|---|
+| src/pages/erp/inventory/PriceListManager.tsx:185 | RECLASSIFY-C (Stage 3B Block 1, C1) — `parseFloat(fillPct)` is a percentage |
+| src/pages/erp/inventory/PriceListManager.tsx:196 | RECLASSIFY-C (Stage 3B Block 1, C1) — `parseFloat(fillPct)` is a percentage |
+| src/pages/erp/inventory/PriceListManager.tsx:273 | RECLASSIFY-C (Stage 3B Block 1, C1) — `discount_percent` is a percentage |
+| src/pages/erp/inventory/PriceListManager.tsx:286 | RECLASSIFY-C (Stage 3B Block 1, C1) — `discount_percent` is a percentage |
+| src/pages/erp/inventory/ItemRatesMRP.tsx:200 | RECLASSIFY-C (Stage 3B Block 1, C1) — `qaPercent` is a percentage |
+| src/pages/erp/inventory/ItemRatesMRP.tsx:232 | RECLASSIFY-C (Stage 3B Block 1, C1) — `bulkPercent` is a percentage |
+| src/pages/erp/inventory/StockMatrix.tsx:280 | RECLASSIFY-C (Stage 3B Block 1, C1) — `cess_rate` is a percentage |
+| src/pages/erp/pay-hub/masters/EmployeeMaster.tsx:1312 | RECLASSIFY-C (Stage 3B Block 1, C1) — `pfNomineePct` is a percentage |
+
+### C2 · Demo / seed / fixture data — RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope)
+
+| Site | Disposition |
+|---|---|
+| src/data/demo-transactions-pay-hub.ts:43 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-pay-hub.ts:45 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-pay-hub.ts:62 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-pay-hub.ts:64 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-pay-hub.ts:65 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-pay-hub.ts:88 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-pay-hub.ts:90 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-pay-hub.ts:92 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-pay-hub.ts:112 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-procurement-data.ts:182 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-procurement-data.ts:271 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-procurement-data.ts:275 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-procurement-data.ts:302 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-procurement-data.ts:303 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-procurement-data.ts:304 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-salesx-data.ts:336 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-salesx-data.ts:436 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-salesx-data.ts:493 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-salesx.ts:84 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-salesx.ts:137 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-transactions-salesx.ts:216 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-field-force-data.ts:423 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-field-force-data.ts:426 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-field-force-data.ts:443 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/fixtures/manifest.ts:87 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/fixtures/manifest.ts:88 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/fixtures/manifest.ts:89 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+| src/data/demo-projects.ts:158 | RECLASSIFY-C (Stage 3B Block 1, C2 — demo data, founder out-of-scope) |
+
+### C3 · Print / display engines + display-string sites — RECLASSIFY-B (Stage 3B Block 1, C3)
+
+| Site | Disposition |
+|---|---|
+| src/lib/invoice-print-engine.ts:130 | RECLASSIFY-B (Stage 3B Block 1, C3) — number-to-words digit extraction |
+| src/lib/invoice-print-engine.ts:136 | RECLASSIFY-B (Stage 3B Block 1, C3) — number-to-words digit extraction |
+| src/lib/invoice-print-engine.ts:151 | RECLASSIFY-B (Stage 3B Block 1, C3) — number-to-words digit extraction |
+| src/lib/invoice-print-engine.ts:158 | RECLASSIFY-B (Stage 3B Block 1, C3) — number-to-words digit extraction |
+| src/lib/invoice-print-engine.ts:159 | RECLASSIFY-B (Stage 3B Block 1, C3) — number-to-words digit extraction |
+| src/lib/invoice-print-engine.ts:160 | RECLASSIFY-B (Stage 3B Block 1, C3) — number-to-words digit extraction |
+| src/lib/voucher-print-shared.ts:113 | RECLASSIFY-B (Stage 3B Block 1, C3) — `formatINR` display formatter |
+| src/lib/insight-generators.ts:85 | RECLASSIFY-B (Stage 3B Block 1, C3) — display-only insight % string |
+| src/pages/bridge/SyncMonitor.tsx:537 | RECLASSIFY-B (Stage 3B Block 1, C3) — progress % display string |
+| src/pages/erp/salesx/transactions/Telecaller.tsx:887 | RECLASSIFY-B (Stage 3B Block 1, C3) — % success display string |
+| src/components/mobile/MobileSiteDPRCapture.tsx:71 | RECLASSIFY-B (Stage 3B Block 1, C3) — metres in toast, non-money |
+| src/components/mobile/MobilePODCapture.tsx:60 | RECLASSIFY-B (Stage 3B Block 1, C3) — metres in toast, non-money |
+
