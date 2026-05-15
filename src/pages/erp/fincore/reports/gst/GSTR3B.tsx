@@ -26,8 +26,8 @@ export function GSTR3BPanel({ entityCode }: GSTR3BPanelProps) {
   const { entries } = useGSTRegister(entityCode);
   const active = useMemo(() => entries.filter(e => !e.is_cancelled && e.date.startsWith(period)), [entries, period]);
 
-  // [JWT] GET /api/accounting/gst-entity-config
-  const gstEntityConfig = (() => { try { return JSON.parse(localStorage.getItem('erp_gst_entity_config') || '{}'); } catch { return {}; } })();
+  // [JWT] GET /api/accounting/gst-entity-config — Q3.3 scoped-first
+  const gstEntityConfig = (() => { try { return JSON.parse(localStorage.getItem(`erp_gst_entity_config_${entityCode}`) ?? localStorage.getItem('erp_gst_entity_config') ?? '{}'); } catch { return {}; } })();
   const gstin: string = gstEntityConfig.gstin || '';
   const qrmpEnrolled: boolean = gstEntityConfig.qrmpEnrolled || false;
 

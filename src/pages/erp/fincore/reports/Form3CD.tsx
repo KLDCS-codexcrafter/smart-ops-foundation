@@ -134,14 +134,16 @@ export function Form3CDPanel({ entityCode }: Form3CDPanelProps) {
     setDraft(prev => ({ ...prev, [key]: value }));
   }, []);
 
-  // Load entity config
+  // Load entity config — Q3.3 scoped-first
   const entityConfig = useMemo(() => {
     try {
       // [JWT] GET /api/accounting/gst-entity-config
-      const configs = JSON.parse(localStorage.getItem('erp_gst_entity_config') || '[]');
-      return configs[0] || {};
+      const raw = localStorage.getItem(`erp_gst_entity_config_${entityCode}`) ?? localStorage.getItem('erp_gst_entity_config') ?? '[]';
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed[0] || {};
+      return parsed || {};
     } catch { return {}; }
-  }, []);
+  }, [entityCode]);
 
   // Computed clauses
   const cl9 = useMemo(() => computeClause9(entityCode, from, to), [entityCode, from, to]);

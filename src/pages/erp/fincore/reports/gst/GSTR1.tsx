@@ -28,8 +28,8 @@ export function GSTR1Panel({ entityCode }: GSTR1PanelProps) {
   const { entries, getGSTR1Data } = useGSTRegister(entityCode);
   const data = useMemo(() => getGSTR1Data(period), [getGSTR1Data, period]);
 
-  // [JWT] GET /api/accounting/gst-entity-config
-  const gstin = (() => { try { const c = JSON.parse(localStorage.getItem('erp_gst_entity_config') || '{}'); return c.gstin || ''; } catch { return ''; } })();
+  // [JWT] GET /api/accounting/gst-entity-config — Q3.3 scoped-first
+  const gstin = (() => { try { const c = JSON.parse(localStorage.getItem(`erp_gst_entity_config_${entityCode}`) ?? localStorage.getItem('erp_gst_entity_config') ?? '{}'); return c.gstin || ''; } catch { return ''; } })();
 
   const b2b = data.filter(e => e.supply_type === 'B2B' && e.base_voucher_type === 'Sales');
   const b2cl = data.filter(e => e.supply_type === 'B2C' && e.is_inter_state && e.invoice_value > 250000);
