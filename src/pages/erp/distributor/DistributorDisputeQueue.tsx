@@ -87,9 +87,10 @@ export function DistributorDisputeQueuePanel({ entityCode = DEFAULT_ENTITY_SHORT
         approved = reviewing.disputed_amount_paise;
         resolution = 'credit_note';
       } else if (mode === 'approve_partial') {
-        const rs = parseFloat(partialAmount);
+        // Precision Arc 3B 4b: Pattern 2 — wrap parseFloat money input; preserve C4 paise via Math.floor.
+        const rs = roundTo(parseFloat(partialAmount), resolveMoneyPrecision(null, null));
         if (isNaN(rs) || rs <= 0) { toast.error('Enter partial amount in ₹'); setBusy(false); return; }
-        approved = Math.floor(rs * 100);
+        approved = Math.floor(dMul(rs, 100));
         if (approved >= reviewing.disputed_amount_paise) {
           toast.error('Partial must be < disputed amount'); setBusy(false); return;
         }
