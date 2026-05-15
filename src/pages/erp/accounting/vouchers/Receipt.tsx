@@ -130,7 +130,7 @@ export function ReceiptPanel({ onSaveDraft }: ReceiptPanelProps) {
       if (l.id !== id) return l;
       const updated = { ...l, [field]: value };
       if (field === 'gross_amount' || field === 'tds_rate') {
-        updated.tds_amount = Math.round(updated.gross_amount * updated.tds_rate / 100);
+        updated.tds_amount = roundTo(dPct(updated.gross_amount, updated.tds_rate), 0);
         updated.net_received = updated.gross_amount - updated.tds_amount;
       }
       if (field === 'tds_amount') {
