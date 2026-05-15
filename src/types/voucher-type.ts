@@ -277,6 +277,29 @@ export interface VoucherType {
   entity_id: string | null;
   created_at: string;
   updated_at: string;
+
+  // ── Sprint T-Phase-1.Hardening-B.2B-pre · NEW additive fields ──
+  /** Tally display-abbreviation aliases. Used by numbering engine to resolve a
+   *  caller-passed prefix to the correct VT row when caller's prefix differs from
+   *  registry's canonical abbreviation. Literal string match (per Q-LOCK-ALIAS-B).
+   *  e.g. Contra row carries abbreviation='CTR' and abbreviation_aliases=['CT'].
+   *  Existing voucher data under the old abbreviation continues to resolve via
+   *  this fallback. Zero data-migration risk. */
+  abbreviation_aliases?: string[];
+
+  /** Voucher classes attached to this VT (Tally voucher-class concept).
+   *  See VoucherClass interface. Most VT rows have zero classes (parent's own
+   *  numbering is the only sequence). Some (Journal, Stock Journal) carry
+   *  multiple classes. */
+  voucher_classes?: VoucherClass[];
+
+  // ── Forward-declared placeholder fields (Q-LOCK-ALIAS-A: declare now) ──
+  /** Populated by Block 2C-i. */
+  register_config?: RegisterConfig;
+  /** Populated by UPRA. */
+  print_template_id?: string;
+  /** Populated by ATELC (Rule 11(g)). */
+  audit_trail_config?: AuditTrailConfig;
 }
 
 // ── Constraint maps from VoucherType_Field_Map sheet ──────────────────────
