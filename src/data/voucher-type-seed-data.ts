@@ -320,6 +320,18 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
     accounting_impact: false, inventory_impact: true,
     allow_line_narration: false,
     numbering_prefix: 'SJ-', numbering_width: 4, current_sequence: 1,
+    voucher_classes: [
+      {
+        class_id: 'sj-adjustment',
+        class_name: 'Stock Adjustment',
+        abbreviation_prefix: 'SA',
+        numbering_width: 4, numbering_prefill_zeros: true, numbering_start: 1, current_sequence: 1,
+        fy_scoped: true,
+        feature_namespace: 'inventory',
+        is_active: true, is_system: true,
+        created_at: now, updated_at: now,
+      },
+    ],
   }),
   seed('vt-manufacturing-journal', {
     name: 'Manufacturing Journal', abbreviation: 'MJ', base_voucher_type: 'Manufacturing Journal', family: 'Inventory',
