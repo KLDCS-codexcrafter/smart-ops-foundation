@@ -147,6 +147,7 @@ export function TransactionTemplatesPanel() {
       // [JWT] GET /api/foundation/departments?entityCode={entityCode}
       // [Hardening-A · Block A] Entity-scoped · falls back to legacy global key.
       const scopedRaw = localStorage.getItem(departmentsKey(entityCode));
+      // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy fallback during Hardening-A scoped-key migration window; scopedRaw (line 149) takes precedence
       const raw = scopedRaw ?? localStorage.getItem('erp_departments');
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }

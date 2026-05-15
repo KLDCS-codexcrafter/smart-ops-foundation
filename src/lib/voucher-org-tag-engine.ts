@@ -112,6 +112,7 @@ export function getOperatorContext(
     try {
       // [JWT] GET /api/foundation/departments?entityCode={entityId}
       const scopedRaw = localStorage.getItem(departmentsKey(entityId));
+      // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy fallback during Hardening-A scoped-key migration window; scopedRaw (line 114) takes precedence
       const legacyRaw = scopedRaw ?? localStorage.getItem('erp_departments');
       const depts: Array<{ id: string; division_id?: string | null }> =
         JSON.parse(legacyRaw ?? '[]');

@@ -1178,6 +1178,7 @@ export function VendorMasterPanel() {
                       const scoped: { id: string; name: string; status: string }[] = JSON.parse(localStorage.getItem(divisionsKey(entityCode)) || '[]');
                       const divs = scoped.length > 0 || !entityCode
                         ? scoped
+                        // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy fallback during Hardening-A scoped-key migration window; scoped read on line 1178 takes precedence
                         : JSON.parse(localStorage.getItem('erp_divisions') || '[]') as { id: string; name: string; status: string }[];
                       return divs.filter(d => d.status === 'active').map(d => (
                         <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>
@@ -1199,6 +1200,7 @@ export function VendorMasterPanel() {
                       const scopedD: { id: string; name: string; division_id: string | null; status: string }[] = JSON.parse(localStorage.getItem(departmentsKey(entityCode)) || '[]');
                       const depts = scopedD.length > 0 || !entityCode
                         ? scopedD
+                        // eslint-disable-next-line hardening-a/no-hardcoded-scoped-key -- legacy fallback during Hardening-A scoped-key migration window; scoped read on line 1199 takes precedence
                         : JSON.parse(localStorage.getItem('erp_departments') || '[]') as { id: string; name: string; division_id: string | null; status: string }[];
                       return depts
                         .filter(d => d.status === 'active' && (!form.primary_division_id || d.division_id === form.primary_division_id))
