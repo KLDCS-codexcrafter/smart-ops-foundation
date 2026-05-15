@@ -285,7 +285,8 @@ export function generateDocNo(
   // Sprint T-Phase-1.2.5h-a · FY-scoped sequence per GST Rule 46.
   // Storage key: erp_doc_seq_{prefix}_{entityCode}_{fy}
   // Auto-migrates legacy non-FY key into current-FY key on first call (Q3-b).
-  const fy = getFY();
+  // Sprint T-Phase-1.Hardening-B.2A · honor per-entity FY start-month.
+  const fy = getFY(entityCode);
   const newKey = `erp_doc_seq_${prefix}_${entityCode}_${fy}`;
   const legacyKey = `erp_doc_seq_${prefix}_${entityCode}`;
   // [JWT] GET /api/procurement/sequences/:prefix/:entityCode/:fy
