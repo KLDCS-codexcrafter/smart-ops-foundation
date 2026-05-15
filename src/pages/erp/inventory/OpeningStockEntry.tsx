@@ -287,8 +287,8 @@ export function OpeningStockPanel() {
 
       const idx = allItems.findIndex(i => i.id === itemId);
       if (idx >= 0) {
-        if (row.mrp) { allItems[idx].mrp = parseFloat(row.mrp); mrpUpdates++; }
-        if (row.stdPO) { allItems[idx].std_purchase_rate = parseFloat(row.stdPO); }
+        if (row.mrp) { allItems[idx].mrp = roundTo(parseFloat(row.mrp), mp); mrpUpdates++; }
+        if (row.stdPO) { allItems[idx].std_purchase_rate = roundTo(parseFloat(row.stdPO), mp); }
       }
     });
 
