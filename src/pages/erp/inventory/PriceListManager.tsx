@@ -133,7 +133,8 @@ export function PriceListsPanel() {
 
   const handleMatrixCell = useCallback((list: PriceList, item: InventoryItem, rawVal: string) => {
     const key: PriceKey = `${list.id}|${item.id}`;
-    const newPrice = parseFloat(rawVal);
+    // Precision Arc 3B 4b: Pattern 2 — wrap parseFloat money input.
+    const newPrice = roundTo(parseFloat(rawVal), resolveMoneyPrecision(null, null));
     if (!rawVal.trim() || isNaN(newPrice) || newPrice < 0) {
       setPendingPrices(p => { const n = { ...p }; delete n[key]; return n; });
       return;
