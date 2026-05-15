@@ -13,32 +13,42 @@ import { toast } from 'sonner';
 import { Plus, Search, Lock, Pencil, Trash2, Shield, AlertTriangle, Clock, Check } from 'lucide-react';
 import { onEnterNext, amountInputProps } from '@/lib/keyboard';
 import { TERMS_OF_PAYMENT_SEED, type TermsOfPayment } from '@/data/masters-seed-data';
+// Sprint Hardening-B Block 2C-i · Q3.2 scoped-first read + dual-write
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { termsOfPaymentKey } from '@/types/cc-masters';
 
 const STORAGE_KEY = 'erp_group_terms_of_payment';
 
-const loadTerms = (): TermsOfPayment[] => {
+const loadTerms = (entityCode: string): TermsOfPayment[] => {
   try {
     // [JWT] GET /api/masters/terms-of-payment
-    const r = localStorage.getItem(STORAGE_KEY);
+    const scoped = localStorage.getItem(termsOfPaymentKey(entityCode));
+    const legacy = localStorage.getItem(STORAGE_KEY);
+    const r = scoped ?? legacy;
     if (r) return JSON.parse(r);
   } catch { /* ignore */ }
   const seeded = TERMS_OF_PAYMENT_SEED.map(s => ({
     ...s, id: crypto.randomUUID(), isSeeded: true, isActive: true,
   }));
+  const json = JSON.stringify(seeded);
   // [JWT] POST /api/masters/terms-of-payment
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+  localStorage.setItem(STORAGE_KEY, json);
+  localStorage.setItem(termsOfPaymentKey(entityCode), json);
   // [JWT] GET /api/group/masters/terms-of-payment
   return seeded;
 };
 
-const saveTerms = (terms: TermsOfPayment[]) => {
+const saveTerms = (entityCode: string, terms: TermsOfPayment[]) => {
+  const json = JSON.stringify(terms);
   // [JWT] POST /api/masters/terms-of-payment
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(terms));
+  localStorage.setItem(STORAGE_KEY, json);
+  localStorage.setItem(termsOfPaymentKey(entityCode), json);
   // [JWT] PUT /api/group/masters/terms-of-payment
 };
 
 export function TermsOfPaymentMasterPanel() {
-  const [terms, setTerms] = useState<TermsOfPayment[]>(() => loadTerms());
+  const { entityCode } = useEntityCode();
+  const [terms, setTerms] = useState<TermsOfPayment[]>(() => loadTerms(entityCode));
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<TermsOfPayment | null>(null);
   const [form, setForm] = useState({ name: '', creditDays: 0, advancePercent: 0, notes: '' });
@@ -53,7 +63,7 @@ export function TermsOfPaymentMasterPanel() {
     if (!form.name.trim()) return toast.error('Name is required');
     if (form.creditDays < 0) return toast.error('Credit days cannot be negative');
     if (form.advancePercent < 0 || form.advancePercent > 100) return toast.error('Advance % must be 0–100');
-    const allTerms = loadTerms();
+    const allTerms = loadTerms(entityCode);
     if (editTarget) {
       const updated = allTerms.map(t =>
         t.id === editTarget.id ? {
@@ -64,7 +74,7 @@ export function TermsOfPaymentMasterPanel() {
           notes: form.notes.trim(),
         } : t
       );
-      saveTerms(updated); setTerms(updated);
+      saveTerms(entityCode, updated); setTerms(updated);
       toast.success(`${form.name} updated`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);
@@ -80,7 +90,7 @@ export function TermsOfPaymentMasterPanel() {
         isActive: true,
       };
       const updated = [...allTerms, newTerm];
-      saveTerms(updated); setTerms(updated);
+      saveTerms(entityCode, updated); setTerms(updated);
       toast.success(`${newTerm.name} added`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);
@@ -89,17 +99,17 @@ export function TermsOfPaymentMasterPanel() {
   };
 
   const handleDelete = (id: string) => {
-    const allTerms = loadTerms();
+    const allTerms = loadTerms(entityCode);
     const target = allTerms.find(t => t.id === id);
     if (!target || target.isSeeded) return;
     const updated = allTerms.filter(t => t.id !== id);
-    saveTerms(updated); setTerms(updated);
+    saveTerms(entityCode, updated); setTerms(updated);
     toast.success('Payment term removed');
   };
 
   const handleToggleActive = (id: string) => {
-    const updated = loadTerms().map(t => t.id === id ? { ...t, isActive: !t.isActive } : t);
-    saveTerms(updated); setTerms(updated);
+    const updated = loadTerms(entityCode).map(t => t.id === id ? { ...t, isActive: !t.isActive } : t);
+    saveTerms(entityCode, updated); setTerms(updated);
   };
 
   const openEdit = (t: TermsOfPayment) => {

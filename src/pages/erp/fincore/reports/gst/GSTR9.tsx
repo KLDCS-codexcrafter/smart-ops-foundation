@@ -34,8 +34,8 @@ export function GSTR9Panel({ entityCode }: GSTR9PanelProps) {
 
   const { entries } = useGSTRegister(entityCode);
 
-  // [JWT] GET /api/accounting/gst-entity-config
-  const gstin = (() => { try { const c = JSON.parse(localStorage.getItem('erp_gst_entity_config') || '{}'); return c.gstin || ''; } catch { return ''; } })();
+  // [JWT] GET /api/accounting/gst-entity-config — Q3.3 scoped-first
+  const gstin = (() => { try { const c = JSON.parse(localStorage.getItem(`erp_gst_entity_config_${entityCode}`) ?? localStorage.getItem('erp_gst_entity_config') ?? '{}'); return c.gstin || ''; } catch { return ''; } })();
 
   const [startYear] = fy.split('-').map(s => parseInt(s.length === 2 ? `20${s}` : s));
   const fyStart = `${startYear}-04-01`;

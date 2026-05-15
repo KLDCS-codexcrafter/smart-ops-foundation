@@ -14,27 +14,36 @@ import { toast } from 'sonner';
 import { Plus, Search, Lock, Pencil, Trash2, Shield, Info, Truck, Check } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { TERMS_OF_DELIVERY_SEED, type TermsOfDelivery } from '@/data/masters-seed-data';
+// Sprint Hardening-B Block 2C-i · Q3.2 scoped-first read + dual-write
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { termsOfDeliveryKey } from '@/types/cc-masters';
 
 const STORAGE_KEY = 'erp_group_terms_of_delivery';
 
-const loadTerms = (): TermsOfDelivery[] => {
+const loadTerms = (entityCode: string): TermsOfDelivery[] => {
   try {
     // [JWT] GET /api/masters/terms-of-delivery
-    const r = localStorage.getItem(STORAGE_KEY);
+    const scoped = localStorage.getItem(termsOfDeliveryKey(entityCode));
+    const legacy = localStorage.getItem(STORAGE_KEY);
+    const r = scoped ?? legacy;
     if (r) return JSON.parse(r);
   } catch { /* ignore */ }
   const seeded = TERMS_OF_DELIVERY_SEED.map(s => ({
     ...s, id: crypto.randomUUID(), isSeeded: true, isActive: true,
   }));
+  const json = JSON.stringify(seeded);
   // [JWT] POST /api/masters/terms-of-delivery
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(seeded));
+  localStorage.setItem(STORAGE_KEY, json);
+  localStorage.setItem(termsOfDeliveryKey(entityCode), json);
   // [JWT] GET /api/group/masters/terms-of-delivery
   return seeded;
 };
 
-const saveTerms = (terms: TermsOfDelivery[]) => {
+const saveTerms = (entityCode: string, terms: TermsOfDelivery[]) => {
+  const json = JSON.stringify(terms);
   // [JWT] POST /api/masters/terms-of-delivery
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(terms));
+  localStorage.setItem(STORAGE_KEY, json);
+  localStorage.setItem(termsOfDeliveryKey(entityCode), json);
   // [JWT] PUT /api/group/masters/terms-of-delivery
 };
 
@@ -45,7 +54,8 @@ const freightBadge = (fr: string) => {
 };
 
 export function TermsOfDeliveryMasterPanel() {
-  const [terms, setTerms] = useState<TermsOfDelivery[]>(() => loadTerms());
+  const { entityCode } = useEntityCode();
+  const [terms, setTerms] = useState<TermsOfDelivery[]>(() => loadTerms(entityCode));
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<TermsOfDelivery | null>(null);
   const [form, setForm] = useState({ name: '', freightResponsibility: 'Seller' as string, description: '' });
@@ -58,7 +68,7 @@ export function TermsOfDeliveryMasterPanel() {
 
   const handleSave = () => {
     if (!form.name.trim()) return toast.error('Name is required');
-    const allTerms = loadTerms();
+    const allTerms = loadTerms(entityCode);
     if (editTarget) {
       const updated = allTerms.map(t =>
         t.id === editTarget.id ? {
@@ -68,7 +78,7 @@ export function TermsOfDeliveryMasterPanel() {
           description: form.description.trim(),
         } : t
       );
-      saveTerms(updated); setTerms(updated);
+      saveTerms(entityCode, updated); setTerms(updated);
       toast.success(`${form.name} updated`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);
@@ -83,7 +93,7 @@ export function TermsOfDeliveryMasterPanel() {
         isActive: true,
       };
       const updated = [...allTerms, newTerm];
-      saveTerms(updated); setTerms(updated);
+      saveTerms(entityCode, updated); setTerms(updated);
       toast.success(`${newTerm.name} added`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);
@@ -92,17 +102,17 @@ export function TermsOfDeliveryMasterPanel() {
   };
 
   const handleDelete = (id: string) => {
-    const allTerms = loadTerms();
+    const allTerms = loadTerms(entityCode);
     const target = allTerms.find(t => t.id === id);
     if (!target || target.isSeeded) return;
     const updated = allTerms.filter(t => t.id !== id);
-    saveTerms(updated); setTerms(updated);
+    saveTerms(entityCode, updated); setTerms(updated);
     toast.success('Delivery term removed');
   };
 
   const handleToggleActive = (id: string) => {
-    const updated = loadTerms().map(t => t.id === id ? { ...t, isActive: !t.isActive } : t);
-    saveTerms(updated); setTerms(updated);
+    const updated = loadTerms(entityCode).map(t => t.id === id ? { ...t, isActive: !t.isActive } : t);
+    saveTerms(entityCode, updated); setTerms(updated);
   };
 
   const openEdit = (t: TermsOfDelivery) => {

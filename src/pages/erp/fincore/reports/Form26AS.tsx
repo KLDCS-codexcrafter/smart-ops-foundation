@@ -77,8 +77,8 @@ export function Form26ASPanel({ entityCode }: Props) {
   const [letterOpen, setLetterOpen] = useState(false);
   const [letterType, setLetterType] = useState<'A' | 'B'>('A');
 
-  // [JWT] GET /api/accounting/gst-entity-config
-  const gstConfig = useMemo(() => { try { return JSON.parse(localStorage.getItem('erp_gst_entity_config') || '{}'); } catch { return {}; } }, []);
+  // [JWT] GET /api/accounting/gst-entity-config — Q3.3 scoped-first
+  const gstConfig = useMemo(() => { try { return JSON.parse(localStorage.getItem(`erp_gst_entity_config_${entityCode}`) ?? localStorage.getItem('erp_gst_entity_config') ?? '{}'); } catch { return {}; } }, [entityCode]);
   // [JWT] GET /api/compliance/comply360/tds-receivable
   const tdsrConfig = useMemo(() => { try { return JSON.parse(localStorage.getItem(`erp_comply360_tdsr_${entityCode}`) || '{}'); } catch { return {}; } }, [entityCode]);
 
