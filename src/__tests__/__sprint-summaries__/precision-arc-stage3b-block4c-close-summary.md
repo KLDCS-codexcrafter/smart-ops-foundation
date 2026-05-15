@@ -48,9 +48,9 @@ When this block banks, the entire Precision & Calculation Integrity Arc is compl
 Sites: `RFQPublicForm.tsx:79, :151, :152, :153` (RFQ tax/total math).
 Idiom: replaced `Math.round(_ * 100) / 100` with `roundTo(_, resolveMoneyPrecision(null, null))`. Inner arithmetic upgraded to `dMul`/`dSub` to remove float drift before the precision boundary.
 
-### Pattern 2 — `parseFloat` form input → resolver-backed money
+### Pattern 2 — `parseFloat` form input → resolver-backed money/qty
 Sites: `panels.tsx:193 (rate)`, `:194 (tax%)`, `LogisticDisputes.tsx:86 (resolution_amount)`.
-Idiom: kept `parseFloat` + finite-guard, wrapped the result with `roundTo(_, resolveMoneyPrecision(null, null))`. `panels.tsx` preserves the existing `Number.isFinite` short-circuit so an invalid line still skips.
+Idiom: kept `parseFloat` + finite-guard, wrapped the result with `roundTo(_, resolveMoneyPrecision(null, null))` for money fields and `roundTo(_, resolveQtyPrecision(undefined))` for the `tax%` rate field (writes into `invoice_tax_pct` — a percentage, not money; corrected post-audit via T1, see below). `panels.tsx` preserves the existing `Number.isFinite` short-circuit so an invalid line still skips.
 
 ### C4 — integer-domain (paise / redeem cap), preserved `Math.floor` / kept `Math.round` semantics for paise
 - **rupees → paise integer (servicedesk cluster, 8 sites):** `Math.round(Number(form.x) * 100)` → `roundTo(dMul(Number(form.x), 100), 0)`. Result is an integer paise value by contract; the test floor asserts integerness.
@@ -114,3 +114,19 @@ Appendix appended to `src/__tests__/__sprint-summaries__/precision-arc-stage2-au
 ## HALT for §2.4 audit
 
 Block 4c migrations applied. Stage 3B and the Precision Arc are functionally complete; awaiting §2.4 sign-off. Not self-certified.
+
+---
+
+## T1 — Semantic Correction (post-audit)
+
+The §2.4 audit of Block 4c flagged one semantic mis-verdict on `panels.tsx`. Same shape as the `elOpeningBalance` T1 from Stage 3 Block 3.
+
+**Resolver swap (money → qty):**
+- File: `src/pages/erp/bill-passing/panels.tsx`
+- Line: `const tax = ... roundTo(taxRaw, resolveMoneyPrecision(null, null)) ...` → `roundTo(taxRaw, resolveQtyPrecision(undefined))`.
+- Reason: `li.tax` writes into `invoice_tax_pct` (a percentage, per `src/types/bill-passing.ts:51` and consumed as `dMul(invoice_value, invoice_tax_pct) / 100` in `bill-passing-engine.ts:128`). It is a rate, not money — `resolveQtyPrecision` is the correct intent label.
+- Runtime impact: **zero**. Both `resolveMoneyPrecision(null, null)` and `resolveQtyPrecision(undefined)` return `2` at the contract default; tax-rate values like `18` round to `18`.
+- Import line updated to add `resolveQtyPrecision` alongside `resolveMoneyPrecision` (still used by the `rate` line).
+- Diff stat: 2 files (panels.tsx + this close summary). Triple Gate identical to ece597b baseline.
+
+**Milestone arithmetic acknowledgement:** the §Milestone tally line "Stage 3 (Blocks 1–7, prior) | 211" plus the Stage 3B block rows (48 + 3 + 69 + 51 + 38 + 43 = 252) sums to 463, not 458. The over-count is from carryover/ratified sites double-counted across blocks during reconciliation. The substantive disposition of all 458 Class-D sites is unchanged and complete; the arithmetic label only is inflated.
