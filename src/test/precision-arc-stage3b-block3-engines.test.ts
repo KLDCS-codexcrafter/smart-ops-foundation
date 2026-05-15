@@ -171,10 +171,8 @@ describe('Precision Arc · Stage 3B Block 3 · C5 engines', () => {
   it('SP-6 · campaign cost_per_enquiry/cost_per_order = integer rupees', () => {
     const m = computeMetrics(
       {
-        planned_total: 0, actual_spent: 100000,
-        breakdown: { call_cost: 0, sms_cost: 0, wa_cost: 0, email_cost: 0, manpower_cost: 0,
-          travel_cost: 0, materials_cost: 0, ad_spend: 0, venue_cost: 0, other_cost: 0,
-          gst_amount: 0 },
+        total: 0, creative: 0, media: 0, events: 0, incentives: 0,
+        staff: 0, technology: 0, misc: 0, actual_spent: 100000,
       },
       {
         target_reach: 0, actual_reach: 1000, responses: 200,
