@@ -54,8 +54,9 @@ export default function DistributorCreditRequest() {
 
   const currentLimit = distributor?.credit_limit_paise ?? 0;
   const requestedPaise = useMemo(() => {
-    const n = parseFloat(requestedLakhs);
-    return isNaN(n) ? 0 : Math.floor(n * 100000 * 100); // lakhs -> rupees -> paise
+    // Precision Arc 3B 4b: Pattern 2 — wrap parseFloat money input; preserve C4 paise via Math.floor.
+    const n = roundTo(parseFloat(requestedLakhs), resolveMoneyPrecision(null, null));
+    return isNaN(n) ? 0 : Math.floor(dMul(dMul(n, 100000), 100)); // lakhs -> rupees -> paise
   }, [requestedLakhs]);
 
   const snapshot = useMemo(() => {
