@@ -200,7 +200,8 @@ export function PriceListsPanel() {
       if (isNaN(disc)) { toast.error('Enter a valid discount %'); return; }
       filteredItems.forEach(item => {
         if (!item.std_selling_rate) return;
-        const nv = Math.round(item.std_selling_rate * (1 - disc / 100) * 100) / 100;
+        // Precision Arc 3B 4b: Pattern 1 — std_selling_rate × (1 - disc/100); computed money.
+        const nv = roundTo(dSub(item.std_selling_rate, dPct(item.std_selling_rate, disc)), resolveMoneyPrecision(null, null));
         const key = `${fillListId}|${item.id}`;
         newPending[key] = { listId: fillListId, itemId: item.id, item, oldPrice: getEffectivePrice(fillListId, item.id), newPrice: nv, uom: item.primary_uom_symbol || 'pcs' };
         staged++;
