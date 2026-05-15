@@ -9,7 +9,7 @@
  * Lives in src/pages/erp/payout/ (NEW directory · NOT in vouchers/).
  */
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, dPct } from '@/lib/decimal-helpers';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
