@@ -23,7 +23,7 @@ import type {
 import { stockReceiptAcksKey } from '@/types/stock-receipt-ack';
 import type { InwardReceipt } from '@/types/inward-receipt';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
-import { generateDocNo, postVoucher } from '@/lib/fincore-engine';
+import { generateDocNo, postVoucher, fyForDate } from '@/lib/fincore-engine';
 import { listInwardReceipts } from '@/lib/inward-receipt-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 
@@ -135,6 +135,8 @@ export async function createReceiptAck(
   };
 
   const list = read(entityCode);
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  ack.fiscal_year_id = `FY-20${fyForDate(ack.ack_date, ack.entity_id)}`;
   list.push(ack);
   write(entityCode, list);
 

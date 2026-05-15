@@ -10,7 +10,7 @@ import type { ProductionOrder } from '@/types/production-order';
 import type { Employee } from '@/types/employee';
 import type { Machine } from '@/types/machine';
 import type { Shift } from '@/types/payroll-masters';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import { rollupDWREntry } from '@/lib/dwr-aggregation-engine';
 
@@ -245,6 +245,8 @@ export function listJobCards(entityCode: string): JobCard[] {
 }
 
 function persistJobCard(entityCode: string, jc: JobCard): void {
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  jc.fiscal_year_id = `FY-20${fyForDate(jc.scheduled_start, jc.entity_id)}`;
   const all = listJobCards(entityCode);
   const idx = all.findIndex(j => j.id === jc.id);
   if (idx >= 0) all[idx] = jc; else all.push(jc);

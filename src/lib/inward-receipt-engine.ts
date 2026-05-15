@@ -17,7 +17,7 @@ import type {
   InwardRoutingDecision,
 } from '@/types/inward-receipt';
 import { inwardReceiptsKey } from '@/types/inward-receipt';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 import {
   comply360QCKey, DEFAULT_QC_CONFIG, type QualiCheckConfig,
@@ -202,6 +202,8 @@ export async function createInwardReceipt(
   };
 
   const list = read(entityCode);
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  ir.fiscal_year_id = `FY-20${fyForDate(ir.arrival_date, ir.entity_id)}`;
   list.push(ir);
   write(entityCode, list);
 

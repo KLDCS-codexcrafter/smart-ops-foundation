@@ -17,7 +17,7 @@ import type {
   JobWorkOutOrderStatus,
 } from '@/types/job-work-out-order';
 import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import type { QualiCheckConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 
 export interface CreateJobWorkReceiptInput {
@@ -226,6 +226,8 @@ export function listJobWorkReceipts(entityCode: string): JobWorkReceipt[] {
 // ─── Private helpers ─────────────────────────────────────────────────
 
 function persist(entityCode: string, jwr: JobWorkReceipt): void {
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  jwr.fiscal_year_id = `FY-20${fyForDate(jwr.receipt_date, jwr.entity_id)}`;
   const all = listJobWorkReceipts(entityCode);
   const idx = all.findIndex(x => x.id === jwr.id);
   if (idx >= 0) all[idx] = jwr;

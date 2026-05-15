@@ -16,7 +16,7 @@
 import type { StockIssue, StockIssueLine, StockIssueStatus } from '@/types/stock-issue';
 import { stockIssuesKey } from '@/types/stock-issue';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
-import { generateDocNo, postVoucher } from '@/lib/fincore-engine';
+import { generateDocNo, postVoucher, fyForDate } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 
 // ============================================================
@@ -119,6 +119,8 @@ export async function createStockIssue(
   };
 
   const list = read(entityCode);
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  si.fiscal_year_id = `FY-20${fyForDate(si.issue_date, si.entity_id)}`;
   list.push(si);
   write(entityCode, list);
 

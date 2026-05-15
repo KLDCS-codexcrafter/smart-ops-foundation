@@ -39,6 +39,9 @@ export interface CustomerOrder {
   customer_id: string;
   customer_name: string;
   entity_code: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from placed_at + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   status: CustomerOrderStatus;
   lines: CustomerCartLine[];
   subtotal_paise: number;

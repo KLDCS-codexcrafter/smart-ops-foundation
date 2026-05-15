@@ -13,6 +13,7 @@ import { gitStage1Key } from '@/types/git';
 import type { PurchaseOrderRecord } from '@/types/po';
 import { listPurchaseOrders, getPurchaseOrder, updatePoLineReceivedQty } from './po-management-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
+import { fyForDate } from './fincore-engine';
 
 const newId = (p: string): string =>
   `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -136,6 +137,8 @@ export async function createGitStage1FromPo(
     updated_at: now,
   };
 
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  record.fiscal_year_id = `FY-20${fyForDate(record.receipt_date, record.entity_id)}`;
   list.push(record);
   writeGit(entityCode, list);
 

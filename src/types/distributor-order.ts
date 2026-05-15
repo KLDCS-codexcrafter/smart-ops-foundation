@@ -56,6 +56,9 @@ export interface DistributorOrder {
   partner_code: string;
   partner_name: string;
   entity_code: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from submitted_at + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   status: DistributorOrderStatus;
   lines: DistributorOrderLine[];
   total_taxable_paise: number;
@@ -94,6 +97,9 @@ export interface DistributorPaymentIntimation {
   partner_code: string;
   partner_name: string;
   entity_code: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from paid_on + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   amount_paise: number;
   mode: IntimationMode;
   utr_no: string | null;

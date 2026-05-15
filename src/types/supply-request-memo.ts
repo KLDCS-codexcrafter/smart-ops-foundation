@@ -29,6 +29,9 @@ export interface SRMItem {
 export interface SupplyRequestMemo {
   id: string;
   entity_id: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from memo_date + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   memo_no: string;
   memo_date: string;
   sales_order_id: string | null;

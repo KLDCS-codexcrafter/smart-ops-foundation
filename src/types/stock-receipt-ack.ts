@@ -37,6 +37,9 @@ export interface StockReceiptAckLine {
 export interface StockReceiptAck {
   id: string;
   entity_id: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from ack_date + entity.
+   *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
+  fiscal_year_id?: string;
   ack_no: string;                    // SRA/YY-YY/NNNN
 
   status: StockReceiptAckStatus;

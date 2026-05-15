@@ -14,7 +14,7 @@ import type {
 import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 
 export interface CreateJobWorkOutOrderInput {
   entity_id: string;
@@ -256,6 +256,8 @@ export function listJobWorkOutOrders(entityCode: string): JobWorkOutOrder[] {
 // ─── Private helpers ─────────────────────────────────────────────────
 
 function persist(entityCode: string, jwo: JobWorkOutOrder): void {
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  jwo.fiscal_year_id = `FY-20${fyForDate(jwo.jwo_date, jwo.entity_id)}`;
   const all = listJobWorkOutOrders(entityCode);
   const idx = all.findIndex(x => x.id === jwo.id);
   if (idx >= 0) all[idx] = jwo;

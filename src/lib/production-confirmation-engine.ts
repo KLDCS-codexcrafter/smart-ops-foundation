@@ -16,7 +16,7 @@ import type {
 import { productionConfirmationsKey } from '@/types/production-confirmation';
 import type { ProductionOrder, ProductionOrderStatusEvent } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import type { QualiCheckConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { resolveFGOutputGodown } from '@/lib/production-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
@@ -222,6 +222,8 @@ export function listProductionConfirmations(entityCode: string): ProductionConfi
 // ─── Private helpers ─────────────────────────────────────────────────
 
 function persist(entityCode: string, pc: ProductionConfirmation): void {
+  // Sprint T-Phase-1.Hardening-B.2C-ii-a · stamp fiscal_year_id from record date + entity (GST Rule 46 traceability).
+  pc.fiscal_year_id = `FY-20${fyForDate(pc.confirmation_date, pc.entity_id)}`;
   const all = listProductionConfirmations(entityCode);
   const idx = all.findIndex(x => x.id === pc.id);
   if (idx >= 0) all[idx] = pc;
