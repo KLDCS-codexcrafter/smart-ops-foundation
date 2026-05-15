@@ -26,7 +26,7 @@ import { DEDUCTION_LIMITS } from '@/data/payroll-statutory-seed-data';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, dPct } from '@/lib/decimal-helpers';
 void PAYROLL_RUNS_KEY;
 
 // ── numberToWords helper (inline, no library) ──────────────────

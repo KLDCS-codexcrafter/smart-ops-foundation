@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { roundTo, resolveMoneyPrecision, dMul, dSub, dPct } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, dMul, dSub } from '@/lib/decimal-helpers';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Badge } from '@/components/ui/badge';

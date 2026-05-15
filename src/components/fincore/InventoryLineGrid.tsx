@@ -11,7 +11,7 @@ import { Plus, Trash2, Layers } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import type { VoucherInventoryLine } from '@/types/voucher';
-import { roundTo, resolveMoneyPrecision, dPct, dSub, dAdd } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, dPct, dAdd } from '@/lib/decimal-helpers';
 
 interface InventoryLineGridProps {
   lines: VoucherInventoryLine[];
