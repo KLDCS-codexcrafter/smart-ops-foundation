@@ -53,7 +53,6 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-tooltip',
           ],
           'vendor-charts': ['recharts'],
-          'vendor-icons': ['lucide-react'],
           'vendor-dates': ['date-fns', 'react-day-picker'],
           'vendor-overlays': ['embla-carousel-react', 'cmdk', 'sonner', 'vaul'],
           'vendor-form': ['react-hook-form', '@hookform/resolvers', 'zod'],
