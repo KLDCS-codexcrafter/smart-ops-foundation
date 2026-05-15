@@ -4,7 +4,7 @@
  * Behaviour-preservation + decimal-safety for the migrated arithmetic.
  */
 import { describe, it, expect } from 'vitest';
-import { roundTo, resolveMoneyPrecision, dPct, dMul, dSub, dAdd } from '@/lib/decimal-helpers';
+import { roundTo, resolveMoneyPrecision, dPct, dMul, dAdd } from '@/lib/decimal-helpers';
 
 const mp = resolveMoneyPrecision(null, null);
 
