@@ -85,7 +85,8 @@ export default function LogisticDisputes() {
       notes: responseNotes,
       response_text: responseText.trim(),
       response_from: session.party_name,
-      resolution_amount: counterAmount ? parseFloat(counterAmount) : undefined,
+      // Precision Arc · Stage 3B · Block 4c — Pattern 2 form parseFloat (resolution money).
+      resolution_amount: counterAmount ? roundTo(parseFloat(counterAmount), resolveMoneyPrecision(null, null)) : undefined,
     });
     if (result.ok === false) {
       toast.error(result.reason);
