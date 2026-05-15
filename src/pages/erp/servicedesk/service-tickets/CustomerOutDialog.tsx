@@ -13,6 +13,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
 import { toast } from 'sonner';
+// Precision Arc · Stage 3B · Block 4c — paise integer-domain conversion (rupees->paise).
+import { roundTo, dMul } from '@/lib/decimal-helpers';
 import { createCustomerOutVoucher } from '@/lib/servicedesk-engine';
 import { emitFinalInvoiceToFinCore } from '@/lib/servicedesk-bridges';
 import type { ServiceTicket } from '@/types/service-ticket';
