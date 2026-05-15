@@ -10,6 +10,7 @@ import {
   TIER_THRESHOLDS, EARN_RATE_PER_RUPEE, REDEMPTION_RATE,
   TIER_GRACE_DAYS,
 } from '@/types/customer-loyalty';
+import { dMul } from './decimal-helpers';
 
 const MS_PER_DAY = 86_400_000;
 const TRAILING_12M_MS = 365 * MS_PER_DAY;
@@ -124,12 +125,12 @@ export function pointsForPurchase(
   amountPaise: number, tier: LoyaltyTier,
 ): number {
   const rupees = amountPaise / 100;
-  return Math.floor(rupees * EARN_RATE_PER_RUPEE[tier]);
+  return Math.floor(dMul(rupees, EARN_RATE_PER_RUPEE[tier]));
 }
 
 /** Discount paise from N points. */
 export function pointsToDiscountPaise(points: number): number {
-  return Math.floor((points / REDEMPTION_RATE) * 100);
+  return Math.floor(dMul(points / REDEMPTION_RATE, 100));
 }
 
 /** Which rewards can the customer see/redeem given state? */

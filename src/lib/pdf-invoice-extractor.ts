@@ -8,6 +8,7 @@
 import type {
   TransporterInvoiceLine, MappableField,
 } from '@/types/transporter-invoice';
+import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from './decimal-helpers';
 
 export interface PDFTextSpan {
   text: string;
@@ -149,14 +150,14 @@ function extractAmountFromRow(row: PDFTextSpan[]): FieldConfidence | null {
   const joined = row.map(s => s.text).join(' ');
   const m = joined.match(PATTERNS.amount);
   if (m) {
-    const num = parseFloat(m[1].replace(/,/g, ''));
+    const num = roundTo(parseFloat(m[1].replace(/,/g, '')), resolveMoneyPrecision(null, null));
     if (Number.isFinite(num) && num > 0) {
       return { field: 'total', value: num, confidence: 90, notes: 'Currency symbol matched' };
     }
   }
   const numbers = joined.match(/[\d,]+(?:\.\d{1,2})?/g) ?? [];
   const valid = numbers
-    .map(n => parseFloat(n.replace(/,/g, '')))
+    .map(n => roundTo(parseFloat(n.replace(/,/g, '')), resolveMoneyPrecision(null, null)))
     .filter(n => Number.isFinite(n) && n > 0);
   if (valid.length > 0) {
     const max = Math.max(...valid);
@@ -169,7 +170,7 @@ function extractWeightFromRow(row: PDFTextSpan[]): FieldConfidence | null {
   const joined = row.map(s => s.text).join(' ');
   const m = joined.match(PATTERNS.weight_kg);
   if (m) {
-    const num = parseFloat(m[1]);
+    const num = roundTo(parseFloat(m[1]), resolveQtyPrecision(undefined));
     if (Number.isFinite(num) && num > 0) {
       return {
         field: 'transporter_declared_weight_kg', value: num,

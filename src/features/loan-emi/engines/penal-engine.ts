@@ -25,6 +25,7 @@ import {
   appendLogEntry,
   type AccrualLogEntry,
 } from '../lib/accrual-log';
+import { roundTo, dAdd, dSub, dPct, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 
 const STORAGE_KEY = 'erp_group_ledger_definitions';
 
@@ -101,7 +102,7 @@ function isOverdueForPenal(row: EMIScheduleLiveRow, asOfDate: string): boolean {
 
 function outstandingOf(row: EMIScheduleLiveRow): number {
   // Outstanding = totalEMI − paidAmount (supports partial payments).
-  return Math.max(0, Math.round((row.totalEMI - row.paidAmount) * 100) / 100);
+  return Math.max(0, roundTo(dSub(row.totalEMI, row.paidAmount), resolveMoneyPrecision(null, null)));
 }
 
 export function planDailyPenal(asOfDate: string, ledgerIdFilter?: string): PenalPlanItem[] {
@@ -118,7 +119,7 @@ export function planDailyPenal(asOfDate: string, ledgerIdFilter?: string): Penal
       if (!isOverdueForPenal(row, asOfDate)) continue;
       const outstanding = outstandingOf(row);
       if (outstanding <= 0) continue;
-      const penalAmount = Math.round(outstanding * rate) / 100;
+      const penalAmount = roundTo(dPct(outstanding, rate), resolveMoneyPrecision(null, null));
       if (penalAmount <= 0) continue;
       const periodKey = `${asOfDate}#${row.emiNumber}`;
       const dup = findDuplicate(ledger.accrualLog, ledger.id, 'penal_daily', periodKey);
@@ -163,7 +164,7 @@ export function commitDailyPenal(asOfDate: string, entityCode: string): PenalRun
       if (!isOverdueForPenal(row, asOfDate)) continue;
       const outstanding = outstandingOf(row);
       if (outstanding <= 0) continue;
-      const penalAmount = Math.round(outstanding * rate) / 100;
+      const penalAmount = roundTo(dPct(outstanding, rate), resolveMoneyPrecision(null, null));
       if (penalAmount <= 0) continue;
       const periodKey = `${asOfDate}#${row.emiNumber}`;
       if (findDuplicate(log, ledger.id, 'penal_daily', periodKey)) {
@@ -250,7 +251,7 @@ export function commitDailyPenal(asOfDate: string, entityCode: string): PenalRun
         });
         mutatedSchedule = mutatedSchedule.map(r =>
           r.emiNumber === row.emiNumber
-            ? { ...r, penalAccrued: Math.round((r.penalAccrued + penalAmount) * 100) / 100 }
+            ? { ...r, penalAccrued: roundTo(dAdd(r.penalAccrued, penalAmount), resolveMoneyPrecision(null, null)) }
             : r,
         );
         touched = true;

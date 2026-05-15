@@ -18,6 +18,7 @@ import { ordersKey } from '@/types/order';
 import { generateDocNo } from './fincore-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { emitLeakEvent } from './leak-register-engine';
+import { roundTo, dMul, dAdd, dSum, resolveMoneyPrecision } from './decimal-helpers';
 
 export interface BridgeLinkRecord {
   id: string;
@@ -73,7 +74,7 @@ export function getBridgeLinkByPoId(poId: string, entityCode: string): BridgeLin
 
 /** Map Procure360 PO line to FinCore OrderLine */
 function mapPoLineToOrderLine(poLine: PurchaseOrderLine, idx: number): OrderLine {
-  const taxable = Math.round(poLine.qty * poLine.rate * 100) / 100;
+  const taxable = roundTo(dMul(poLine.qty, poLine.rate), resolveMoneyPrecision(null, null));
   return {
     id: `ol-${Date.now()}-${idx}`,
     item_id: poLine.item_id,
@@ -157,8 +158,8 @@ export async function bridgePoToFincoreOrder(
   try {
     const orderNo = generateDocNo('PO', entityCode);
     const lines: OrderLine[] = po.lines.map((pl, i) => mapPoLineToOrderLine(pl, i));
-    const grossAmount = Math.round(lines.reduce((s, l) => s + l.taxable_value, 0) * 100) / 100;
-    const totalTax = Math.round(po.total_tax_value * 100) / 100;
+    const grossAmount = roundTo(dSum(lines, l => l.taxable_value), resolveMoneyPrecision(null, null));
+    const totalTax = roundTo(po.total_tax_value, resolveMoneyPrecision(null, null));
     const order: Order = {
       id: `order-${Date.now()}`,
       order_no: orderNo,
@@ -171,7 +172,7 @@ export async function bridgePoToFincoreOrder(
       lines,
       gross_amount: grossAmount,
       total_tax: totalTax,
-      net_amount: Math.round((grossAmount + totalTax) * 100) / 100,
+      net_amount: roundTo(dAdd(grossAmount, totalTax), resolveMoneyPrecision(null, null)),
       narration: `Bridged from Procure360 PO ${po.po_no}`,
       terms_conditions: '',
       status: 'open',
