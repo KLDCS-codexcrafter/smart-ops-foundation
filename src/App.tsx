@@ -1,7 +1,15 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
-import { DishaniProvider, DishaniFloatingButton, DishaniPanel } from "@/components/ask-dishani";
+import { DishaniProvider } from "@/components/ask-dishani";
+// Block 2C-i-prev-2 · Q-LOCK-1 · DishaniFloatingButton + DishaniPanel lazy-loaded
+// to trim main bundle. Provider stays eager so context wraps the whole tree.
+const DishaniFloatingButton = React.lazy(() =>
+  import("@/components/ask-dishani").then(m => ({ default: m.DishaniFloatingButton }))
+);
+const DishaniPanel = React.lazy(() =>
+  import("@/components/ask-dishani").then(m => ({ default: m.DishaniPanel }))
+);
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme";
 import { GlobalDateRangeProvider } from '@/hooks/useGlobalDateRange';
@@ -20,10 +28,10 @@ const ConditionalDishani = () => {
   const hideOn = ['/auth/login'];
   if (hideOn.some(path => location.pathname.startsWith(path))) return null;
   return (
-    <>
+    <Suspense fallback={null}>
       <DishaniFloatingButton />
       <DishaniPanel />
-    </>
+    </Suspense>
   );
 };
 
