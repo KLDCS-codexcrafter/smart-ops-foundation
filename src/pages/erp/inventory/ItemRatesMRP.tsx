@@ -237,8 +237,9 @@ export function ItemRatesPanel() {
       newItems.forEach((item, idx) => {
         const old = getField(item, bulkField);
         if (old == null) return;
-        const nv = bulkDirection === 'increase' ? old * (1 + pct / 100) : old * (1 - pct / 100);
-        const rounded = Math.round(nv * 100) / 100;
+        // Precision Arc 3B 4b: Pattern 1 — decimal-safe percent application; money rounding.
+        const nv = bulkDirection === 'increase' ? dMul(old, 1 + pct / 100) : dMul(old, 1 - pct / 100);
+        const rounded = roundTo(nv, resolveMoneyPrecision(null, null));
         newItems[idx] = setField(item, bulkField, rounded);
         newHist.unshift({
           id: `rh-${Date.now()}-${Math.random().toString(36).slice(2)}`,
