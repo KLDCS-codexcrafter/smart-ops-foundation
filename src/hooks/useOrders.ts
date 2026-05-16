@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import type { Order } from '@/types/order';
 import { ordersKey } from '@/types/order';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension
+import { logAudit } from '@/lib/audit-trail-engine';
 
 function ls<T>(key: string): T[] {
   try {
