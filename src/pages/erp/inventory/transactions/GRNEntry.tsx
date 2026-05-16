@@ -41,7 +41,7 @@ import { useSAMPersons } from '@/hooks/useSAMPersons';
 import { useProjectCentres } from '@/hooks/useProjectCentres';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { voucherTypesKey } from '@/hooks/useVoucherTypes';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, dSub, round2, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
