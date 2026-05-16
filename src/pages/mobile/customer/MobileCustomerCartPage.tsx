@@ -13,6 +13,7 @@ import {
   type CustomerCart, type CustomerOrder,
   customerCartKey, customerOrdersKey,
 } from '@/types/customer-order';
+import { fyForDate } from '@/lib/fincore-engine';
 
 function readSession(): MobileSession | null {
   try { const raw = sessionStorage.getItem('opx_mobile_session'); return raw ? (JSON.parse(raw) as MobileSession) : null; } catch { return null; }
@@ -91,6 +92,8 @@ export default function MobileCustomerCartPage() {
       created_at: now,
       updated_at: now,
     };
+    // Sprint T-Phase-1.Hardening-B.2C-ii-c · stamp fiscal_year_id from placed_at + entity_code (mobile cart path).
+    order.fiscal_year_id = `FY-20${fyForDate(order.placed_at!, order.entity_code)}`;
     // [JWT] POST /api/customer/orders
     localStorage.setItem(customerOrdersKey(session.entity_code), JSON.stringify([order, ...orders]));
     persistCart({ ...cart, lines: [], subtotal_paise: 0, updated_at: now });
