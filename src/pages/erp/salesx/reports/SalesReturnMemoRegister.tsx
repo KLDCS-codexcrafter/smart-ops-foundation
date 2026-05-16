@@ -12,7 +12,7 @@
  */
 
 import { useCallback, useMemo, useState } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -238,8 +238,6 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
         onActionComplete={onActionComplete}
       />
 
-      {/* Silence unused-Card-import-equivalent: keep Card visible for HMR pattern */}
-      <Card className="hidden"><CardContent /></Card>
     </div>
   );
 }
