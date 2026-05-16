@@ -15,6 +15,8 @@ import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface CreateJobWorkOutOrderInput {
   entity_id: string;
