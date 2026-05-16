@@ -301,6 +301,9 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                 Paid: {r.bank_payment_voucher_no}
               </Badge>
             )}
+            <Button size="sm" variant="outline" className="h-7 text-[10px] px-2" onClick={() => setAgentInvoiceEntry(r)}>
+              <FileCheck className="h-3 w-3 mr-1" /> Agent Inv
+            </Button>
           </div>
         );
       },
