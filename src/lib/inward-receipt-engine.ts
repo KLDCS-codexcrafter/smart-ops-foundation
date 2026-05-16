@@ -19,6 +19,8 @@ import type {
 import { inwardReceiptsKey } from '@/types/inward-receipt';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 import {
   comply360QCKey, DEFAULT_QC_CONFIG, type QualiCheckConfig,
 } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
