@@ -224,6 +224,14 @@ export async function createInwardReceipt(
     },
   });
 
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'create', entityType: 'inward_receipt',
+    recordId: ir.id, recordLabel: ir.receipt_no,
+    beforeState: null, afterState: { ...ir },
+    sourceModule: 'inventory',
+  });
+
   return ir;
 }
 
