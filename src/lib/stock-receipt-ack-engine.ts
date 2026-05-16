@@ -26,6 +26,7 @@ import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import { generateDocNo, postVoucher, fyForDate } from '@/lib/fincore-engine';
 import { listInwardReceipts } from '@/lib/inward-receipt-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 // ============================================================
 // PUBLIC TYPES
