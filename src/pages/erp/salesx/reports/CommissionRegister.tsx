@@ -36,6 +36,7 @@ import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutoma
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { Voucher } from '@/types/voucher';
 import { CommissionPaymentDialog } from './actions/CommissionPaymentDialog';
+import { AgentInvoiceDialog } from './actions/AgentInvoiceDialog';
 import { CommissionDetailPanel } from './detail/CommissionDetailPanel';
 
 interface Props { entityCode: string }
@@ -83,6 +84,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
 
   const [payEntry, setPayEntry] = useState<CommissionEntry | null>(null);
   const [viewEntry, setViewEntry] = useState<CommissionEntry | null>(null);
+  const [agentInvoiceEntry, setAgentInvoiceEntry] = useState<CommissionEntry | null>(null);
 
   // Sprint 4 — Post GL voucher (byte-identical · lifted verbatim)
   const handlePostGLVoucher = useCallback((entry: CommissionEntry) => {
@@ -299,6 +301,9 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
                 Paid: {r.bank_payment_voucher_no}
               </Badge>
             )}
+            <Button size="sm" variant="outline" className="h-7 text-[10px] px-2" onClick={() => setAgentInvoiceEntry(r)}>
+              <FileCheck className="h-3 w-3 mr-1" /> Agent Inv
+            </Button>
           </div>
         );
       },
@@ -352,6 +357,14 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
         open={!!payEntry}
         onClose={() => setPayEntry(null)}
         onPaymentComplete={() => reload()}
+      />
+
+      <AgentInvoiceDialog
+        entityCode={entityCode}
+        entry={agentInvoiceEntry}
+        open={!!agentInvoiceEntry}
+        onClose={() => setAgentInvoiceEntry(null)}
+        onSaved={() => reload()}
       />
     </div>
   );

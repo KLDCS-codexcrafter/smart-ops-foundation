@@ -35,7 +35,7 @@
 - comply360SAMKey reads · same call site (loaded once into `samCfg` memo): IDENTICAL
 - decimal-helpers calls · `dMul`, `dPct`, `dSub`, `dAdd`, `dSum`, `round2` · no reordering, no substitution: VERIFIED
 - generateVoucherNo + postVoucher · same args, same order: VERIFIED
-- Deferred: Agent GST Invoice reconciliation (inline-row UI) is not reachable through the V2 register canonical grid. Agent invoice handlers preserved in commission-engine; UI re-entry deferred to a follow-up if required.
+- Restored in UPRA-1.1 · `src/pages/erp/salesx/reports/actions/AgentInvoiceDialog.tsx` (~180 LOC) · byte-identical to old CommissionRegister lines 415-445 handler + lines 730-780 UI · 7-field write path preserved verbatim · Save/Reconcile/Dispute workflow restored.
 
 ## Phase A (banked previously at 8a225cf7)
 - 6 Tier-1 NEW Registers + 6 DetailPanels + 6 Prints — preserved 0-diff through HOTFIX-A · Phase B · Phase C
