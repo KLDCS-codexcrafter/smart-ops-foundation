@@ -185,8 +185,15 @@ export function useOrders(entityCode: string) {
     // [JWT] PATCH /api/orders/:id/cancel
     ss(key, all);
     setOrders(all);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'cancel', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: prev, afterState: { ...order },
+      reason, sourceModule: 'orders',
+    });
     toast.success(`Order ${order.order_no} cancelled`);
-  }, [key]);
+  }, [entityCode, key]);
 
   const listOrders = useCallback((filters?: {
     base_voucher_type?: 'Sales Order' | 'Purchase Order';
