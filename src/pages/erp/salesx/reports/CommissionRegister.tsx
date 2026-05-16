@@ -36,6 +36,7 @@ import { comply360SAMKey } from '@/pages/erp/accounting/ComplianceSettingsAutoma
 import type { SAMConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import type { Voucher } from '@/types/voucher';
 import { CommissionPaymentDialog } from './actions/CommissionPaymentDialog';
+import { AgentInvoiceDialog } from './actions/AgentInvoiceDialog';
 import { CommissionDetailPanel } from './detail/CommissionDetailPanel';
 
 interface Props { entityCode: string }
