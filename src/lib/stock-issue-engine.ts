@@ -250,6 +250,14 @@ export async function postStockIssue(
     },
   });
 
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'post', entityType: 'stock_issue',
+    recordId: updated.id, recordLabel: updated.issue_no,
+    beforeState: { ...cur }, afterState: { ...updated },
+    sourceModule: 'store-hub',
+  });
+
   return updated;
 }
 
