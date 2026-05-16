@@ -84,6 +84,7 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
 
   const [payEntry, setPayEntry] = useState<CommissionEntry | null>(null);
   const [viewEntry, setViewEntry] = useState<CommissionEntry | null>(null);
+  const [agentInvoiceEntry, setAgentInvoiceEntry] = useState<CommissionEntry | null>(null);
 
   // Sprint 4 — Post GL voucher (byte-identical · lifted verbatim)
   const handlePostGLVoucher = useCallback((entry: CommissionEntry) => {
