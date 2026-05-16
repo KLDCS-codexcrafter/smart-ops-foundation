@@ -172,12 +172,22 @@ export function InvoiceUploadWizard({ open, onOpenChange, logistics, onCreated }
       original_filename: file?.name,
       created_at: nowISO(), updated_at: nowISO(),
     };
+    // Sprint T-Phase-1.Hardening-B.ATELC-b · FY stamp before persistence
+    inv.fiscal_year_id = `FY-20${fyForDate(inv.invoice_date, inv.entity_id)}`;
     const all = ls<TransporterInvoice>(transporterInvoicesKey(entityCode));
     all.push(inv);
     try {
       // [JWT] POST /api/dispatch/transporter-invoices
       localStorage.setItem(transporterInvoicesKey(entityCode), JSON.stringify(all));
     } catch { /* ignore */ }
+
+    // Sprint T-Phase-1.Hardening-B.ATELC-b · canonical audit-trail hookup
+    logAuditTrail({
+      entityCode, action: 'create', entityType: 'transporter_invoice',
+      recordId: inv.id, recordLabel: inv.invoice_no,
+      beforeState: null, afterState: { ...inv },
+      sourceModule: 'dispatch',
+    });
 
     if (saveMapping) {
       const allMaps = ls<InvoiceColumnMapping>(invoiceColumnMappingsKey(entityCode));
