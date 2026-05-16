@@ -141,6 +141,13 @@ export function createProductionConfirmation(
   }
 
   persist(input.entity_id, pc);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'production_confirmation',
+    recordId: pc.id, recordLabel: pc.doc_no,
+    beforeState: null, afterState: { ...pc },
+    sourceModule: 'production',
+  });
   return pc;
 }
 
