@@ -20,6 +20,7 @@ import { POAgainstIndentPanel } from './reports/POAgainstIndent';
 import { DepartmentWiseSummaryPanel } from './reports/DepartmentWiseSummary';
 import { CategoryWiseSpendEstimatePanel } from './reports/CategoryWiseSpendEstimate';
 import { AgeingPendingIndentsPanel } from './reports/AgeingPendingIndents';
+import { ServiceRequestRegisterPanel } from './reports/ServiceRequestRegister';
 import { DepartmentMasterReadOnlyPanel } from './masters/DepartmentMasterReadOnly';
 import { ApprovalMatrixTemplatesPanel } from './masters/ApprovalMatrixTemplates';
 import { RequestXVoucherTypesMasterPanel } from './masters/RequestXVoucherTypesMaster';
@@ -43,6 +44,7 @@ export default function RequestXPage(): JSX.Element {
       case 'rpt-department-summary': return <DepartmentWiseSummaryPanel />;
       case 'rpt-category-spend':     return <CategoryWiseSpendEstimatePanel />;
       case 'rpt-ageing-pending':     return <AgeingPendingIndentsPanel />;
+      case 'rpt-service-request-register': return <ServiceRequestRegisterPanel />;
       case 'master-departments':       return <DepartmentMasterReadOnlyPanel />;
       case 'master-approval-matrix':   return <ApprovalMatrixTemplatesPanel />;
       case 'master-voucher-types':     return <RequestXVoucherTypesMasterPanel />;

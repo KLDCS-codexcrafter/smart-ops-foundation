@@ -69,6 +69,10 @@ export const productionSidebarItems: SidebarItem[] = [
         icon: Users, moduleId: 'rpt-manpower-production', requiredCards: ['production'] },
       { id: 'rpt-production-trace', type: 'item', label: 'Production Trace Register',
         icon: Workflow, moduleId: 'rpt-production-trace', requiredCards: ['production'] },
+      { id: 'rpt-job-card-register', type: 'item', label: 'Job Card Register',
+        icon: ClipboardList, moduleId: 'rpt-job-card-register', requiredCards: ['production'] },
+      { id: 'rpt-production-confirmation-register', type: 'item', label: 'Production Confirmation Register',
+        icon: CheckCircle, moduleId: 'rpt-production-confirmation-register', requiredCards: ['production'] },
     ],
   },
   {

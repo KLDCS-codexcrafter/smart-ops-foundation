@@ -27,6 +27,7 @@ const ICONS: Record<RequestXModule, React.ElementType> = {
   'rpt-department-summary': FileText,
   'rpt-category-spend':     FileText,
   'rpt-ageing-pending':     FileText,
+  'rpt-service-request-register': FileText,
   'master-departments':     Building2,
   'master-approval-matrix': ListChecks,
   'master-voucher-types':   FileText,
