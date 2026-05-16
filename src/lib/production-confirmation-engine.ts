@@ -215,6 +215,13 @@ export function cancelProductionConfirmation(
     updated_by: user.name,
   };
   persist(pc.entity_id, updated);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: pc.entity_id, action: 'cancel', entityType: 'production_confirmation',
+    recordId: updated.id, recordLabel: updated.doc_no,
+    beforeState: { ...pc }, afterState: { ...updated },
+    reason, sourceModule: 'production',
+  });
   return updated;
 }
 
