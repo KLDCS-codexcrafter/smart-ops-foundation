@@ -21,7 +21,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Send, Plus, Trash2, Paperclip, CheckCircle2, RotateCcw, AlertTriangle } from 'lucide-react';
+import { Send, Plus, Trash2, Paperclip, CheckCircle2, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 // Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
 import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
