@@ -20,6 +20,8 @@ import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import type { QualiCheckConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { resolveFGOutputGodown } from '@/lib/production-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface CreateProductionConfirmationInput {
   entity_id: string;
