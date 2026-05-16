@@ -24,7 +24,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Save, Send, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { Save, Send, Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 // Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
 import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
@@ -35,7 +35,8 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import { useOrders } from '@/hooks/useOrders';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
 import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { useT } from '@/lib/i18n-engine';
@@ -257,6 +258,8 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
       created_at: now,
       updated_at: now,
     };
+    // Sprint T-Phase-1.Hardening-B.2C-ii-b · stamp fiscal_year_id from memo_date + entity (GST Rule 46 traceability).
+    memo.fiscal_year_id = `FY-20${fyForDate(memo.memo_date, memo.entity_id)}`;
     const key = supplyRequestMemosKey(entityCode);
     // [JWT] GET /api/salesx/supply-request-memos
     const list = ls<SupplyRequestMemo>(key);
@@ -350,47 +353,17 @@ export function SupplyRequestMemoPanel({ entityCode }: Props) {
         </div>
       </div>
 
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-sm">Memo Header</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <Label className="text-xs">Memo No</Label>
-            <Input value={memoNo} disabled className="h-9 font-mono text-sm" />
-          </div>
-          <div>
-            <Label className="text-xs">Memo Date</Label>
-            <SmartDateInput value={memoDate} onChange={setMemoDate} />
-            {memoDate && isPeriodLocked(memoDate, entityCode) && (
-              <div className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 p-2 mt-1">
-                <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
-                <div className="text-[11px] text-amber-800 dark:text-amber-300">
-                  <p className="font-medium">Period locked</p>
-                  <p className="text-amber-700 dark:text-amber-400">
-                    {periodLockMessage(memoDate, entityCode)} The downstream voucher will fail unless the period lock is lifted. You can still save this memo as a draft.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-          <div>
-            <Label className="text-xs">{t('common.effective_date', 'Effective Date')}</Label>
-            <Input
-              type="date"
-              value={effectiveDate}
-              placeholder={memoDate}
-              onChange={(e) => {
-                const v = e.target.value;
-                if (v && isPeriodLocked(v, entityCode)) {
-                  toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');
-                }
-                setEffectiveDate(v);
-              }}
-              className="h-9"
-            />
-            <p className="text-[10px] text-muted-foreground mt-1">accounting date · defaults to Memo Date</p>
-          </div>
-        </CardContent>
-      </Card>
+      <TallyVoucherHeader
+        voucherTypeName="Supply Request Memo"
+        baseVoucherType="Memo"
+        voucherFamily="supply_request_memo"
+        voucherNo={memoNo}
+        voucherDate={memoDate}
+        effectiveDate={effectiveDate}
+        status="draft"
+        onVoucherDateChange={setMemoDate}
+        onEffectiveDateChange={setEffectiveDate}
+      />
 
       <MultiSourcePicker
         refs={multiSources}

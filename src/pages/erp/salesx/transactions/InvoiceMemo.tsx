@@ -36,7 +36,7 @@ import { toast } from 'sonner';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { dMul, dPct, dSub, dAdd, dSum, round2 } from '@/lib/decimal-helpers';
 import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
 import { useT } from '@/lib/i18n-engine';
@@ -292,6 +292,8 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
       updated_at: now,
     };
     const key = invoiceMemosKey(entityCode);
+    // Sprint T-Phase-1.Hardening-B.2C-ii-b · stamp fiscal_year_id from memo_date + entity (GST Rule 46 traceability).
+    memo.fiscal_year_id = `FY-20${fyForDate(memo.memo_date, memo.entity_id)}`;
     // [JWT] GET /api/salesx/invoice-memos
     const list = ls<InvoiceMemo>(key);
     list.push(memo);

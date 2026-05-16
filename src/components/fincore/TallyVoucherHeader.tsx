@@ -13,12 +13,12 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { onEnterNext } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import type { VoucherBaseType, VoucherFamily } from '@/types/voucher-type';
-
 interface TallyVoucherHeaderProps {
   voucherTypeName: string;
-  baseVoucherType: VoucherBaseType;
-  voucherFamily: VoucherFamily;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-b · relaxed from VoucherBaseType enum to string · enables non-voucher records (memos, GRN, etc.) to render with the canonical header. Display-only inside component body. */
+  baseVoucherType: string;
+  /** Sprint T-Phase-1.Hardening-B.2C-ii-b · relaxed from VoucherFamily enum to string · same reason. */
+  voucherFamily: string;
   voucherNo: string;
   refNo?: string;
   refDate?: string;

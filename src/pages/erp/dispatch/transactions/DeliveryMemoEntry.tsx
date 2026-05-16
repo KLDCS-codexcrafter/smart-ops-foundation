@@ -32,6 +32,8 @@ import { getCurrentUser } from '@/lib/auth-helpers';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { fyForDate } from '@/lib/fincore-engine';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { useT } from '@/lib/i18n-engine';
 import {
   supplyRequestMemosKey,
@@ -226,6 +228,8 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
       created_at: now,
       updated_at: now,
     };
+    // Sprint T-Phase-1.Hardening-B.2C-ii-b · stamp fiscal_year_id from memo_date + entity (GST Rule 46 traceability).
+    memo.fiscal_year_id = `FY-20${fyForDate(memo.memo_date, memo.entity_id)}`;
     const key = deliveryMemosKey(entityCode);
     // [JWT] GET /api/dispatch/delivery-memos
     const list = ls<DeliveryMemo>(key);
@@ -357,24 +361,17 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
         </div>
       </div>
 
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-sm">Memo Header</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label className="text-xs">Memo No</Label>
-            <Input value={memoNo} disabled className="h-9 font-mono text-sm" />
-          </div>
-          <div>
-            <Label className="text-xs">Memo Date</Label>
-            <SmartDateInput value={memoDate} onChange={setMemoDate} />
-          </div>
-          <div>
-            {/* Sprint T-Phase-1.2.6b · D-226 UTS · effective accounting date */}
-            <Label className="text-xs">Effective Date</Label>
-            <SmartDateInput value={effectiveDate} onChange={setEffectiveDate} />
-          </div>
-        </CardContent>
-      </Card>
+      <TallyVoucherHeader
+        voucherTypeName="Delivery Memo"
+        baseVoucherType="Memo"
+        voucherFamily="delivery_memo"
+        voucherNo={memoNo}
+        voucherDate={memoDate}
+        effectiveDate={effectiveDate}
+        status="draft"
+        onVoucherDateChange={setMemoDate}
+        onEffectiveDateChange={setEffectiveDate}
+      />
 
       {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c multi-source linking (Supply Request Memos) */}
       <MultiSourcePicker
