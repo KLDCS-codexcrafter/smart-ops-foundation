@@ -122,6 +122,13 @@ export function createJobCard(input: CreateJobCardInput): JobCard {
   };
 
   persistJobCard(input.entity_id, jc);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'job_card',
+    recordId: jc.id, recordLabel: jc.doc_no,
+    beforeState: null, afterState: { ...jc },
+    sourceModule: 'plant-ops',
+  });
   return jc;
 }
 
