@@ -18,6 +18,8 @@ import { stockIssuesKey } from '@/types/stock-issue';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import { generateDocNo, postVoucher, fyForDate } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 // ============================================================
 // PUBLIC TYPES
@@ -139,6 +141,14 @@ export async function createStockIssue(
     },
   });
 
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'create', entityType: 'stock_issue',
+    recordId: si.id, recordLabel: si.issue_no,
+    beforeState: null, afterState: { ...si },
+    sourceModule: 'store-hub',
+  });
+
   return si;
 }
 
@@ -240,6 +250,14 @@ export async function postStockIssue(
     },
   });
 
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'post', entityType: 'stock_issue',
+    recordId: updated.id, recordLabel: updated.issue_no,
+    beforeState: { ...cur }, afterState: { ...updated },
+    sourceModule: 'store-hub',
+  });
+
   return updated;
 }
 
@@ -304,6 +322,14 @@ export async function cancelStockIssue(
     entityCode, entityId: entityCode, voucherId: id, voucherKind: 'vendor_quotation',
     action: 'stock_issue_cancelled', actorUserId: byUserId,
     payload: { issue_no: cur.issue_no, reason: cancelReason, prior_status: 'draft' },
+  });
+
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'cancel', entityType: 'stock_issue',
+    recordId: id, recordLabel: cur.issue_no,
+    beforeState: { ...cur }, afterState: { ...list[idx] },
+    reason: cancelReason, sourceModule: 'store-hub',
   });
 
   return { ok: true };

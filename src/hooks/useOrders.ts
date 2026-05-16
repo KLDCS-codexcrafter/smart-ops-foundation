@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import type { Order } from '@/types/order';
 import { ordersKey } from '@/types/order';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension
+import { logAudit } from '@/lib/audit-trail-engine';
 
 function ls<T>(key: string): T[] {
   try {
@@ -69,6 +71,13 @@ export function useOrders(entityCode: string) {
     all.push(order);
     ss(key, all);
     setOrders(all);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'create', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: null, afterState: { ...order },
+      sourceModule: 'orders',
+    });
     return order;
   }, [entityCode, key]);
 
@@ -81,18 +90,27 @@ export function useOrders(entityCode: string) {
       toast.error('Cannot edit a partially fulfilled order');
       return;
     }
+    const prev = { ...order };
     Object.assign(order, data, { updated_at: new Date().toISOString() });
     // [JWT] PATCH /api/orders/:id
     ss(key, all);
     setOrders(all);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'update', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: prev, afterState: { ...order },
+      sourceModule: 'orders',
+    });
     toast.success('Order updated');
-  }, [key]);
+  }, [entityCode, key]);
 
   const fulfillOrderLine = useCallback((orderId: string, amountFulfilled: number) => {
     // [JWT] GET /api/orders/:entityCode
     const all = ls<Order>(key);
     const order = all.find(o => o.id === orderId);
     if (!order) return;
+    const prev = { ...order, lines: order.lines.map(l => ({ ...l })) };
     // Simple order-level fulfilment in Sprint 5
     if (amountFulfilled >= order.net_amount * 0.95) {
       order.lines.forEach(l => { l.fulfilled_qty = l.qty; l.pending_qty = 0; l.status = 'closed'; });
@@ -111,7 +129,14 @@ export function useOrders(entityCode: string) {
     // [JWT] PATCH /api/orders/:id
     ss(key, all);
     setOrders(all);
-  }, [key]);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'update', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: prev, afterState: { ...order },
+      sourceModule: 'orders',
+    });
+  }, [entityCode, key]);
 
   const preCloseOrder = useCallback((orderId: string, reason: string) => {
     // [JWT] GET /api/orders/:entityCode
@@ -122,6 +147,7 @@ export function useOrders(entityCode: string) {
       toast.error('Only open or partial orders can be pre-closed');
       return;
     }
+    const prev = { ...order };
     order.lines.forEach(l => { l.status = 'preclosed'; });
     order.status = 'preclosed';
     order.preclose_reason = reason;
@@ -129,8 +155,15 @@ export function useOrders(entityCode: string) {
     // [JWT] PATCH /api/orders/:id
     ss(key, all);
     setOrders(all);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'cancel', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: prev, afterState: { ...order },
+      reason, sourceModule: 'orders',
+    });
     toast.success(`Order ${order.order_no} pre-closed`);
-  }, [key]);
+  }, [entityCode, key]);
 
   const cancelOrder = useCallback((orderId: string, reason: string) => {
     // [JWT] GET /api/orders/:entityCode
@@ -145,14 +178,22 @@ export function useOrders(entityCode: string) {
       toast.error('Order has fulfilments — use Pre-close instead');
       return;
     }
+    const prev = { ...order };
     order.status = 'cancelled';
     order.cancel_reason = reason;
     order.updated_at = new Date().toISOString();
     // [JWT] PATCH /api/orders/:id/cancel
     ss(key, all);
     setOrders(all);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'cancel', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: prev, afterState: { ...order },
+      reason, sourceModule: 'orders',
+    });
     toast.success(`Order ${order.order_no} cancelled`);
-  }, [key]);
+  }, [entityCode, key]);
 
   const listOrders = useCallback((filters?: {
     base_voucher_type?: 'Sales Order' | 'Purchase Order';

@@ -14,6 +14,8 @@ import type { PurchaseOrderRecord } from '@/types/po';
 import { listPurchaseOrders, getPurchaseOrder, updatePoLineReceivedQty } from './po-management-engine';
 import { appendAuditEntry } from './audit-trail-hash-chain';
 import { fyForDate } from './fincore-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from './audit-trail-engine';
 
 const newId = (p: string): string =>
   `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -157,6 +159,13 @@ export async function createGitStage1FromPo(
     action: 'git_stage1_created',
     actorUserId: byUserId,
     payload: { git_no: record.git_no, po_no: po.po_no, status },
+  });
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup (MCA Rule 3(1))
+  logAudit({
+    entityCode, action: 'create', entityType: 'git',
+    recordId: record.id, recordLabel: record.git_no,
+    beforeState: null, afterState: { ...record },
+    sourceModule: 'procurement',
   });
   return record;
 }

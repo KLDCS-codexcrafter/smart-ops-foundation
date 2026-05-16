@@ -20,6 +20,8 @@ import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import type { QualiCheckConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { resolveFGOutputGodown } from '@/lib/production-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface CreateProductionConfirmationInput {
   entity_id: string;
@@ -139,6 +141,13 @@ export function createProductionConfirmation(
   }
 
   persist(input.entity_id, pc);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'production_confirmation',
+    recordId: pc.id, recordLabel: pc.doc_no,
+    beforeState: null, afterState: { ...pc },
+    sourceModule: 'production',
+  });
   return pc;
 }
 
@@ -206,6 +215,13 @@ export function cancelProductionConfirmation(
     updated_by: user.name,
   };
   persist(pc.entity_id, updated);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: pc.entity_id, action: 'cancel', entityType: 'production_confirmation',
+    recordId: updated.id, recordLabel: updated.doc_no,
+    beforeState: { ...pc }, afterState: { ...updated },
+    reason, sourceModule: 'production',
+  });
   return updated;
 }
 

@@ -13,6 +13,8 @@ import type { Shift } from '@/types/payroll-masters';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import { rollupDWREntry } from '@/lib/dwr-aggregation-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface CreateJobCardInput {
   entity_id: string;
@@ -120,6 +122,13 @@ export function createJobCard(input: CreateJobCardInput): JobCard {
   };
 
   persistJobCard(input.entity_id, jc);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'job_card',
+    recordId: jc.id, recordLabel: jc.doc_no,
+    beforeState: null, afterState: { ...jc },
+    sourceModule: 'plant-ops',
+  });
   return jc;
 }
 
@@ -189,6 +198,13 @@ export function completeJobCard(
 
   persistJobCard(jc.entity_id, updated);
   rollupDWREntry(updated);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup (post = completed)
+  logAudit({
+    entityCode: jc.entity_id, action: 'post', entityType: 'job_card',
+    recordId: updated.id, recordLabel: updated.doc_no,
+    beforeState: { ...jc }, afterState: { ...updated },
+    sourceModule: 'plant-ops',
+  });
   return updated;
 }
 
@@ -233,6 +249,13 @@ export function cancelJobCard(jc: JobCard, user: { id: string; name: string }, r
     updated_by: user.name,
   };
   persistJobCard(jc.entity_id, updated);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: jc.entity_id, action: 'cancel', entityType: 'job_card',
+    recordId: updated.id, recordLabel: updated.doc_no,
+    beforeState: { ...jc }, afterState: { ...updated },
+    reason, sourceModule: 'plant-ops',
+  });
   return updated;
 }
 

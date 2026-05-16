@@ -15,6 +15,8 @@ import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface CreateJobWorkOutOrderInput {
   entity_id: string;
@@ -124,6 +126,13 @@ export function createJobWorkOutOrder(
   };
 
   persist(input.entity_id, jwo);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'job_work_out_order',
+    recordId: jwo.id, recordLabel: jwo.doc_no,
+    beforeState: null, afterState: { ...jwo },
+    sourceModule: 'production',
+  });
   return jwo;
 }
 
@@ -193,6 +202,13 @@ export function cancelJobWorkOutOrder(
     updated_by: user.name,
   };
   persist(jwo.entity_id, updated);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: jwo.entity_id, action: 'cancel', entityType: 'job_work_out_order',
+    recordId: updated.id, recordLabel: updated.doc_no,
+    beforeState: { ...jwo }, afterState: { ...updated },
+    reason, sourceModule: 'production',
+  });
   return updated;
 }
 

@@ -32,7 +32,14 @@ export type AuditEntityType =
   // ProjX
   | 'project' | 'project_centre' | 'project_milestone' | 'time_entry'
   // Masters
-  | 'employee' | 'ledger' | 'party' | 'item' | 'voucher_type' | 'godown';
+  | 'employee' | 'ledger' | 'party' | 'item' | 'voucher_type' | 'godown'
+  // Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) coverage extension (additive only)
+  | 'order' | 'bill_passing' | 'git' | 'inward_receipt'
+  | 'job_card' | 'job_work_out_order' | 'job_work_receipt'
+  | 'material_issue_note' | 'production_confirmation'
+  | 'stock_issue' | 'stock_receipt_ack'
+  | 'customer_voucher_in' | 'customer_voucher_out'
+  | 'transporter_invoice';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

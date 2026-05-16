@@ -19,6 +19,8 @@ import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { releaseProductionOrderReservations } from '@/lib/stock-reservation-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface CreateMaterialIssueInput {
   entity_id: string;
@@ -118,6 +120,13 @@ export function createMaterialIssue(
   };
 
   persistMIN(input.entity_id, min);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup (engine-layer 'material_issue_note')
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'material_issue_note',
+    recordId: min.id, recordLabel: min.doc_no,
+    beforeState: null, afterState: { ...min },
+    sourceModule: 'production',
+  });
   return min;
 }
 
@@ -197,6 +206,13 @@ export function cancelMaterialIssue(
     updated_by: user.name,
   };
   persistMIN(min.entity_id, updated);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: min.entity_id, action: 'cancel', entityType: 'material_issue_note',
+    recordId: updated.id, recordLabel: updated.doc_no,
+    beforeState: { ...min }, afterState: { ...updated },
+    reason, sourceModule: 'production',
+  });
   return updated;
 }
 
