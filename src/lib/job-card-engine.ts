@@ -13,6 +13,8 @@ import type { Shift } from '@/types/payroll-masters';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import { rollupDWREntry } from '@/lib/dwr-aggregation-engine';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface CreateJobCardInput {
   entity_id: string;
