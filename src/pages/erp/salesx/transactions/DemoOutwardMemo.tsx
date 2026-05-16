@@ -423,7 +423,7 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
         voucherFamily="demo_outward_memo"
         voucherNo={memoNo}
         voucherDate={memoDate}
-        status={memo.status === 'dispatched' ? 'posted' : memo.status === 'returned' ? 'posted' : memo.status === 'converted' ? 'posted' : memo.status === 'lost' ? 'cancelled' : 'draft'}
+        status="draft"
         onVoucherDateChange={setMemoDate}
       />
 
