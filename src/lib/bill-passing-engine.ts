@@ -25,6 +25,8 @@ import { emitLeakEvent } from './leak-register-engine';
 import { generateDocNo, fyForDate } from './fincore-engine';
 import { deriveAllTaxes } from './bill-passing-tax-derivation';
 import { notifyQaHandoff } from './bill-passing-qa-bridge';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from './audit-trail-engine';
 
 // ---------- Tolerance defaults (per-tenant override candidate · 3-c-3 may wire master) ----------
 const DEFAULT_TOLERANCE_PCT = 2;
