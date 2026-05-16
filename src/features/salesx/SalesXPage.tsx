@@ -70,6 +70,10 @@ import { InvoiceMemoRegisterPanel } from '@/pages/erp/salesx/reports/InvoiceMemo
 import { SecondarySalesRegisterPanel } from '@/pages/erp/salesx/reports/SecondarySalesRegister';
 import { SOMRegisterPanel } from '@/pages/erp/salesx/reports/SOMRegister';
 import { DOMRegisterPanel } from '@/pages/erp/salesx/reports/DOMRegister';
+// UPRA-1 Phase A
+import { CustomerOrderRegisterPanel } from '@/pages/erp/salesx/reports/CustomerOrderRegister';
+import { CustomerVoucherRegisterPanel } from '@/pages/erp/salesx/reports/CustomerVoucherRegister';
+import { InvoiceDisputeRegisterPanel } from '@/pages/erp/salesx/reports/InvoiceDisputeRegister';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
