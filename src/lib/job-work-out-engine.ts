@@ -126,6 +126,13 @@ export function createJobWorkOutOrder(
   };
 
   persist(input.entity_id, jwo);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'job_work_out_order',
+    recordId: jwo.id, recordLabel: jwo.doc_no,
+    beforeState: null, afterState: { ...jwo },
+    sourceModule: 'production',
+  });
   return jwo;
 }
 
