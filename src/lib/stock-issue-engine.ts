@@ -18,6 +18,8 @@ import { stockIssuesKey } from '@/types/stock-issue';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import { generateDocNo, postVoucher, fyForDate } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+// Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
+import { logAudit } from '@/lib/audit-trail-engine';
 
 // ============================================================
 // PUBLIC TYPES
