@@ -210,30 +210,15 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
       </div>
 
       {/* Header */}
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-sm">Memo Header</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label className="text-xs">Memo No</Label>
-            <Input value={memoNo} disabled className="h-9 font-mono text-sm" />
-          </div>
-          <div>
-            <Label className="text-xs">Memo Date</Label>
-            <SmartDateInput value={memoDate} onChange={setMemoDate} />
-            {memoDate && isPeriodLocked(memoDate, entityCode) && (
-              <div className="flex items-start gap-2 rounded-lg border border-amber-500/40 bg-amber-50 dark:bg-amber-950/30 p-2 mt-1">
-                <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 shrink-0" />
-                <div className="text-[11px] text-amber-800 dark:text-amber-300">
-                  <p className="font-medium">Period locked</p>
-                  <p className="text-amber-700 dark:text-amber-400">
-                    {periodLockMessage(memoDate, entityCode)} The downstream voucher will fail unless the period lock is lifted. You can still save this memo as a draft.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <TallyVoucherHeader
+        voucherTypeName="Sales Return Memo"
+        baseVoucherType="Memo"
+        voucherFamily="sales_return_memo"
+        voucherNo={memoNo}
+        voucherDate={memoDate}
+        status="draft"
+        onVoucherDateChange={setMemoDate}
+      />
 
       {/* Raised By */}
       <Card>
