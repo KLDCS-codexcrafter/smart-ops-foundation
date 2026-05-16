@@ -198,6 +198,13 @@ export function completeJobCard(
 
   persistJobCard(jc.entity_id, updated);
   rollupDWREntry(updated);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup (post = completed)
+  logAudit({
+    entityCode: jc.entity_id, action: 'post', entityType: 'job_card',
+    recordId: updated.id, recordLabel: updated.doc_no,
+    beforeState: { ...jc }, afterState: { ...updated },
+    sourceModule: 'plant-ops',
+  });
   return updated;
 }
 
