@@ -24,6 +24,8 @@ import { Download, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
+import { logAudit as logAuditTrail } from '@/lib/audit-trail-engine';
+import { fyForDate } from '@/lib/fincore-engine';
 import {
   type TransporterInvoice, type WorkflowMode,
   type MappableField, type InvoiceColumnMapping,
