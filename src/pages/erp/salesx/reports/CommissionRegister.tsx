@@ -358,6 +358,14 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
         onClose={() => setPayEntry(null)}
         onPaymentComplete={() => reload()}
       />
+
+      <AgentInvoiceDialog
+        entityCode={entityCode}
+        entry={agentInvoiceEntry}
+        open={!!agentInvoiceEntry}
+        onClose={() => setAgentInvoiceEntry(null)}
+        onSaved={() => reload()}
+      />
     </div>
   );
 }
