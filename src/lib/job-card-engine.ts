@@ -249,6 +249,13 @@ export function cancelJobCard(jc: JobCard, user: { id: string; name: string }, r
     updated_by: user.name,
   };
   persistJobCard(jc.entity_id, updated);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: jc.entity_id, action: 'cancel', entityType: 'job_card',
+    recordId: updated.id, recordLabel: updated.doc_no,
+    beforeState: { ...jc }, afterState: { ...updated },
+    reason, sourceModule: 'plant-ops',
+  });
   return updated;
 }
 
