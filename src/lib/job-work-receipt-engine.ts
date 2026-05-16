@@ -219,6 +219,13 @@ export function cancelJobWorkReceipt(
     updated_by: user.name,
   };
   persist(jwr.entity_id, updated);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: jwr.entity_id, action: 'cancel', entityType: 'job_work_receipt',
+    recordId: updated.id, recordLabel: updated.doc_no,
+    beforeState: { ...jwr }, afterState: { ...updated },
+    reason, sourceModule: 'production',
+  });
   return updated;
 }
 
