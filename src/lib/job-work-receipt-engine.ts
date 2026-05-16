@@ -145,6 +145,13 @@ export function createJobWorkReceipt(
   };
 
   persist(input.entity_id, jwr);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'job_work_receipt',
+    recordId: jwr.id, recordLabel: jwr.doc_no,
+    beforeState: null, afterState: { ...jwr },
+    sourceModule: 'production',
+  });
   return jwr;
 }
 
