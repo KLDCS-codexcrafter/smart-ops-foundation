@@ -617,6 +617,8 @@ export function GRNEntryPanel() {
     }
     const existing = editingId ? grns.find(g => g.id === editingId) : undefined;
     const built = buildGRN(target, existing);
+    // Sprint T-Phase-1.Hardening-B.2C-ii-b · stamp fiscal_year_id from receipt_date + entity (GST Rule 46 traceability).
+    built.fiscal_year_id = `FY-20${fyForDate(built.receipt_date, built.entity_id)}`;
     const next = existing
       ? grns.map(g => g.id === existing.id ? built : g)
       : [built, ...grns];
