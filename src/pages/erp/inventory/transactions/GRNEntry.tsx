@@ -46,6 +46,7 @@ import { voucherTypesKey } from '@/hooks/useVoucherTypes';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { dMul, dAdd, dSub, round2, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 // Sprint T-Phase-2.7-c-fix · Q3-d UPGRADED · cancellation audit log
 import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
 import { computeIRNLockState } from '@/lib/irn-lock-engine';
@@ -858,6 +859,19 @@ export function GRNEntryPanel() {
           setMultiSources([...multiSources, ...refs]);
           setSourcePickerOpen(false);
         }}
+      />
+
+      {/* Sprint T-Phase-1.Hardening-B.2C-ii-c · TVH band ADDED ABOVE existing form (existing Vendor/PO/Vehicle/LR card unchanged). */}
+      <TallyVoucherHeader
+        voucherTypeName={header.voucher_type_name || 'Goods Receipt Note'}
+        baseVoucherType="Receipt"
+        voucherFamily="grn"
+        voucherNo={editingId ? (grns.find(g => g.id === editingId)?.grn_no ?? '') : ''}
+        voucherDate={header.receipt_date}
+        effectiveDate={header.effective_date || header.receipt_date}
+        status={editingId ? ((grns.find(g => g.id === editingId)?.status === 'cancelled' ? 'cancelled' : grns.find(g => g.id === editingId)?.status === 'posted' ? 'posted' : 'draft')) : 'draft'}
+        onVoucherDateChange={v => setHeader(h => ({ ...h, receipt_date: v }))}
+        onEffectiveDateChange={v => setHeader(h => ({ ...h, effective_date: v }))}
       />
 
       {/* Sprint T-Phase-1.2.4 · GRN Type + Receipt Mode */}
