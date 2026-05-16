@@ -31,6 +31,10 @@ import { QuarantineQueuePanel } from './inward/QuarantineQueue';
 import { VendorReturnPanel } from './inward/VendorReturn';
 // Sprint 6-pre-2 · D-362
 import { StockHoldReportPanel } from './inward/StockHoldReport';
+// UPRA-1 Phase A
+import { DispatchReceiptRegisterPanel } from './reports/DispatchReceiptRegister';
+import { PackingSlipRegisterPanel } from './reports/PackingSlipRegister';
+import { PODRegisterPanel } from './reports/PODRegister';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -62,6 +66,10 @@ function renderModule(
     case 'dh-i-quarantine-queue':       return <QuarantineQueuePanel />;
     case 'dh-i-vendor-return':          return <VendorReturnPanel />;
     case 'dh-i-stock-hold-report':      return <StockHoldReportPanel />;
+    // UPRA-1 Phase A
+    case 'dh-r-dispatch-receipt-register': return <DispatchReceiptRegisterPanel />;
+    case 'dh-r-packing-slip-register':     return <PackingSlipRegisterPanel />;
+    case 'dh-r-pod-register':              return <PODRegisterPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
