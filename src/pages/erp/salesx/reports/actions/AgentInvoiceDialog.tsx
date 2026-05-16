@@ -75,14 +75,14 @@ export function AgentInvoiceDialog({
     nextStatus: 'received' | 'reconciled' | 'disputed',
     reason?: string,
   ) => {
-    const gross = parseFloat(agentInvGross);
-    const gst = parseFloat(agentInvGST) || 0;
+    const gross = Number(agentInvGross);
+    const gst = Number(agentInvGST);
     if (!agentInvNo.trim()) { toast.error('Agent invoice number required'); return; }
     if (!gross || gross <= 0) { toast.error('Gross amount must be positive'); return; }
     const variance = round2(dSub(dSub(gross, gst), entry.commission_earned_to_date));
     const list = loadRegister(entityCode);
     const idx = list.findIndex(e => e.id === entry.id);
-    if (idx < 0) { toast.error('Entry not found'); return; }
+    if (idx < 0) return;
     list[idx] = {
       ...list[idx],
       agent_invoice_no: agentInvNo.trim(),
@@ -95,6 +95,9 @@ export function AgentInvoiceDialog({
       updated_at: new Date().toISOString(),
     };
     saveRegister(entityCode, list);
+    setAgentInvNo('');
+    setAgentInvGross('');
+    setAgentInvGST('');
     toast.success(`Agent invoice ${nextStatus}`);
     onSaved?.(list[idx]);
     onClose();
