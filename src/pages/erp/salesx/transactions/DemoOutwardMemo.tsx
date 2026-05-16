@@ -32,7 +32,7 @@ import { writeCancellationAuditEntry } from '@/types/cancellation-audit-log';
 import { computeIRNLockState } from '@/lib/irn-lock-engine';
 import { getCurrentUser } from '@/lib/auth-helpers';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
-import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
+
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { findItemByName, resolveHSNForItem } from '@/lib/hsn-resolver';
