@@ -170,6 +170,8 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
       created_at: now,
       updated_at: now,
     };
+    // Sprint T-Phase-1.Hardening-B.2C-ii-b · stamp fiscal_year_id from memo_date + entity (GST Rule 46 traceability).
+    memo.fiscal_year_id = `FY-20${fyForDate(memo.memo_date, memo.entity_id)}`;
     const key = salesReturnMemosKey(entityCode);
     // [JWT] GET /api/salesx/sales-return-memos
     const list = ls<SalesReturnMemo>(key);
