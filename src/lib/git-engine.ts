@@ -158,6 +158,13 @@ export async function createGitStage1FromPo(
     actorUserId: byUserId,
     payload: { git_no: record.git_no, po_no: po.po_no, status },
   });
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup (MCA Rule 3(1))
+  logAudit({
+    entityCode, action: 'create', entityType: 'git',
+    recordId: record.id, recordLabel: record.git_no,
+    beforeState: null, afterState: { ...record },
+    sourceModule: 'procurement',
+  });
   return record;
 }
 
