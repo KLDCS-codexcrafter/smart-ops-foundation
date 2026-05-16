@@ -33,6 +33,7 @@ import {
 import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { fyForDate } from '@/lib/fincore-engine';
 // Precision Arc · Stage 3B · Block 4c — C4 integer-paise (redeem cap; floor preserved, inner arithmetic decimal-safe).
 import { dSub, dMul } from '@/lib/decimal-helpers';
 
@@ -201,6 +202,8 @@ export function CustomerCartPanel() {
         created_at: now,
         updated_at: now,
       };
+      // Sprint T-Phase-1.Hardening-B.2C-ii-c · stamp fiscal_year_id from placed_at + entity_code (web placeOrder path).
+      order.fiscal_year_id = `FY-20${fyForDate(order.placed_at!, order.entity_code)}`;
 
       const orders = ls<CustomerOrder>(customerOrdersKey(ENTITY));
       orders.push(order);
