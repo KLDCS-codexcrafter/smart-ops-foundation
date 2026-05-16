@@ -359,24 +359,17 @@ export function DeliveryMemoEntryPanel({ entityCode }: Props) {
         </div>
       </div>
 
-      <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-sm">Memo Header</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label className="text-xs">Memo No</Label>
-            <Input value={memoNo} disabled className="h-9 font-mono text-sm" />
-          </div>
-          <div>
-            <Label className="text-xs">Memo Date</Label>
-            <SmartDateInput value={memoDate} onChange={setMemoDate} />
-          </div>
-          <div>
-            {/* Sprint T-Phase-1.2.6b · D-226 UTS · effective accounting date */}
-            <Label className="text-xs">Effective Date</Label>
-            <SmartDateInput value={effectiveDate} onChange={setEffectiveDate} />
-          </div>
-        </CardContent>
-      </Card>
+      <TallyVoucherHeader
+        voucherTypeName="Delivery Memo"
+        baseVoucherType="Memo"
+        voucherFamily="delivery_memo"
+        voucherNo={memoNo}
+        voucherDate={memoDate}
+        effectiveDate={effectiveDate}
+        status="draft"
+        onVoucherDateChange={setMemoDate}
+        onEffectiveDateChange={setEffectiveDate}
+      />
 
       {/* Sprint T-Phase-1.2.6e-tally-1 · Q2-c multi-source linking (Supply Request Memos) */}
       <MultiSourcePicker
