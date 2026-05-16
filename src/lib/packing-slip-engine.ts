@@ -7,6 +7,7 @@ import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { ItemPacking } from '@/types/item-packing';
 import type { PackingSlip, PackingSlipLine } from '@/types/packing-slip';
 import { roundTo } from '@/lib/decimal-helpers';
+import { fyForDate } from '@/lib/fincore-engine';
 
 interface ComputeInput {
   dln: Voucher;

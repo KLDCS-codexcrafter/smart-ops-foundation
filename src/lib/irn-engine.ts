@@ -10,6 +10,7 @@ import type { Voucher } from '@/types/voucher';
 import type { IRNRecord } from '@/types/irn';
 import type { GSPProvider } from '@/types/entity-gst';
 import { dMul, dSub, dSum } from '@/lib/decimal-helpers';
+import { fyForDate } from '@/lib/fincore-engine';
 
 export interface IRPCredentials {
   username: string;
@@ -234,6 +235,8 @@ export async function generateIRN(
       voucher_id: voucher.id,
       voucher_no: voucher.voucher_no,
       voucher_date: voucher.date,
+      // Sprint T-Phase-1.Hardening-B.2C-ii-c · engine-side stamp · keeps SalesInvoice 0-diff (2A-canonical).
+      fiscal_year_id: `FY-20${fyForDate(voucher.date, entityCode)}`,
       voucher_type: voucher.voucher_type_name,
       supplier_gstin: payload.SellerDtls.Gstin,
       customer_gstin: payload.BuyerDtls.Gstin,
@@ -283,6 +286,8 @@ export async function generateIRN(
     voucher_id: voucher.id,
     voucher_no: voucher.voucher_no,
     voucher_date: voucher.date,
+    // Sprint T-Phase-1.Hardening-B.2C-ii-c · engine-side stamp · keeps SalesInvoice 0-diff (2A-canonical).
+    fiscal_year_id: `FY-20${fyForDate(voucher.date, entityCode)}`,
     voucher_type: voucher.voucher_type_name,
     supplier_gstin: payload.SellerDtls.Gstin,
     customer_gstin: payload.BuyerDtls.Gstin,
