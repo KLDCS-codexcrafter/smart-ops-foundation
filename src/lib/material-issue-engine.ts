@@ -120,6 +120,13 @@ export function createMaterialIssue(
   };
 
   persistMIN(input.entity_id, min);
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup (engine-layer 'material_issue_note')
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'material_issue_note',
+    recordId: min.id, recordLabel: min.doc_no,
+    beforeState: null, afterState: { ...min },
+    sourceModule: 'production',
+  });
   return min;
 }
 
