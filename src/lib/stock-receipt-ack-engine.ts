@@ -270,6 +270,14 @@ export async function postReceiptAck(
     },
   });
 
+  // Sprint T-Phase-1.Hardening-B.ATELC-b · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'post', entityType: 'stock_receipt_ack',
+    recordId: updated.id, recordLabel: updated.ack_no,
+    beforeState: { ...cur }, afterState: { ...updated },
+    sourceModule: 'store-hub',
+  });
+
   return updated;
 }
 
