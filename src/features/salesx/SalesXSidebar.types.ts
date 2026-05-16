@@ -65,7 +65,11 @@ export type SalesXModule =
   | 'sx-r-secondary-register'
   | 'sx-r-som-register'
   | 'sx-r-dom-register'
-  | 'sx-r-quotation-v2';
+  | 'sx-r-quotation-v2'
+  // UPRA-1 Phase A
+  | 'sx-r-customer-order'
+  | 'sx-r-customer-voucher'
+  | 'sx-r-invoice-dispute';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
@@ -123,4 +127,7 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-r-som-register',
   'sx-r-dom-register',
   'sx-r-quotation-v2',
+  'sx-r-customer-order',
+  'sx-r-customer-voucher',
+  'sx-r-invoice-dispute',
 ];
