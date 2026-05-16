@@ -117,7 +117,7 @@ export function ProductionOrderRegisterPanel(): JSX.Element {
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
       <UniversalRegisterGrid<ProductionOrder>
-        records={orders}
+        rows={orders}
         meta={meta}
         columns={columns}
         statusKey="status"
