@@ -292,6 +292,8 @@ export function InvoiceMemoPanel({ entityCode }: Props) {
       updated_at: now,
     };
     const key = invoiceMemosKey(entityCode);
+    // Sprint T-Phase-1.Hardening-B.2C-ii-b · stamp fiscal_year_id from memo_date + entity (GST Rule 46 traceability).
+    memo.fiscal_year_id = `FY-20${fyForDate(memo.memo_date, memo.entity_id)}`;
     // [JWT] GET /api/salesx/invoice-memos
     const list = ls<InvoiceMemo>(key);
     list.push(memo);
