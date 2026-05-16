@@ -40,7 +40,7 @@ function seedIfEmpty(entity: string): ServiceRequest[] {
       originating_department_id: 'dep-1', originating_department_name: 'Plant Maintenance',
       cost_center_id: 'cc-1', vendor_id: null, hod_user_id: 'u-hod',
       project_id: null, approval_tier: 1 as const, pending_approver_user_id: null,
-      approval_history: [], status: 'pending_approval' as const,
+      approval_history: [], status: 'submitted' as const,
       created_at: now, created_by: 'sys', updated_at: now, updated_by: 'sys',
     };
     const seed: ServiceRequest[] = [
@@ -57,7 +57,7 @@ function seedIfEmpty(entity: string): ServiceRequest[] {
       },
       {
         ...base, id: 'sr-seed-2', voucher_no: 'SR/2026/0002', date: today,
-        category: 'service', sub_type: 'amc', priority: 'medium', service_track: 'direct_po',
+        category: 'service', sub_type: 'amc', priority: 'normal', service_track: 'direct_po',
         requested_by_user_id: 'u-2', requested_by_name: 'Priya Sharma',
         lines: [{
           id: 'l1', line_no: 1, service_id: 's-2', service_name: 'AC AMC quarterly',
