@@ -359,6 +359,14 @@ export async function cancelReceiptAck(
     payload: { ack_no: cur.ack_no, reason: cancelReason, prior_status: 'draft' },
   });
 
+  // Sprint T-Phase-1.Hardening-B.ATELC-b · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'cancel', entityType: 'stock_receipt_ack',
+    recordId: id, recordLabel: cur.ack_no,
+    beforeState: { ...cur }, afterState: { ...list[idx] },
+    reason: cancelReason, sourceModule: 'store-hub',
+  });
+
   return { ok: true };
 }
 
