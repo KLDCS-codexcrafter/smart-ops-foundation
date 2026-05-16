@@ -71,6 +71,13 @@ export function useOrders(entityCode: string) {
     all.push(order);
     ss(key, all);
     setOrders(all);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'create', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: null, afterState: { ...order },
+      sourceModule: 'orders',
+    });
     return order;
   }, [entityCode, key]);
 
