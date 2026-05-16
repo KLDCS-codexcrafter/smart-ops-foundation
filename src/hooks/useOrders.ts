@@ -90,18 +90,27 @@ export function useOrders(entityCode: string) {
       toast.error('Cannot edit a partially fulfilled order');
       return;
     }
+    const prev = { ...order };
     Object.assign(order, data, { updated_at: new Date().toISOString() });
     // [JWT] PATCH /api/orders/:id
     ss(key, all);
     setOrders(all);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'update', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: prev, afterState: { ...order },
+      sourceModule: 'orders',
+    });
     toast.success('Order updated');
-  }, [key]);
+  }, [entityCode, key]);
 
   const fulfillOrderLine = useCallback((orderId: string, amountFulfilled: number) => {
     // [JWT] GET /api/orders/:entityCode
     const all = ls<Order>(key);
     const order = all.find(o => o.id === orderId);
     if (!order) return;
+    const prev = { ...order, lines: order.lines.map(l => ({ ...l })) };
     // Simple order-level fulfilment in Sprint 5
     if (amountFulfilled >= order.net_amount * 0.95) {
       order.lines.forEach(l => { l.fulfilled_qty = l.qty; l.pending_qty = 0; l.status = 'closed'; });
