@@ -129,7 +129,14 @@ export function useOrders(entityCode: string) {
     // [JWT] PATCH /api/orders/:id
     ss(key, all);
     setOrders(all);
-  }, [key]);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'update', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: prev, afterState: { ...order },
+      sourceModule: 'orders',
+    });
+  }, [entityCode, key]);
 
   const preCloseOrder = useCallback((orderId: string, reason: string) => {
     // [JWT] GET /api/orders/:entityCode
@@ -140,6 +147,7 @@ export function useOrders(entityCode: string) {
       toast.error('Only open or partial orders can be pre-closed');
       return;
     }
+    const prev = { ...order };
     order.lines.forEach(l => { l.status = 'preclosed'; });
     order.status = 'preclosed';
     order.preclose_reason = reason;
@@ -147,8 +155,15 @@ export function useOrders(entityCode: string) {
     // [JWT] PATCH /api/orders/:id
     ss(key, all);
     setOrders(all);
+    // Sprint T-Phase-1.Hardening-B.ATELC · audit-trail hookup (MCA Rule 3(1))
+    logAudit({
+      entityCode, action: 'cancel', entityType: 'order',
+      recordId: order.id, recordLabel: order.order_no,
+      beforeState: prev, afterState: { ...order },
+      reason, sourceModule: 'orders',
+    });
     toast.success(`Order ${order.order_no} pre-closed`);
-  }, [key]);
+  }, [entityCode, key]);
 
   const cancelOrder = useCallback((orderId: string, reason: string) => {
     // [JWT] GET /api/orders/:entityCode
@@ -163,6 +178,7 @@ export function useOrders(entityCode: string) {
       toast.error('Order has fulfilments — use Pre-close instead');
       return;
     }
+    const prev = { ...order };
     order.status = 'cancelled';
     order.cancel_reason = reason;
     order.updated_at = new Date().toISOString();
