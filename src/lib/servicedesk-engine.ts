@@ -39,6 +39,8 @@ import {
 import { STANDARD_CALL_TYPES, callTypeConfigurationKey } from '@/types/call-type';
 import type { CallTypeConfiguration } from '@/types/call-type';
 import { getRiskEngineSettings } from './cc-compliance-settings';
+import { fyForDate } from '@/lib/fincore-engine';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const newId = (prefix: string): string =>
   `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -1136,11 +1138,22 @@ export function createCustomerInVoucher(
     ...input,
     id: newId('cin'),
     voucher_no: nextCustomerVoucherNo('CIN', input.entity_id, list.length),
+    // Sprint T-Phase-1.Hardening-B.ATELC-b · engine-side FY stamp (2C-ii-c pattern)
+    fiscal_year_id: `FY-20${fyForDate(input.received_at, input.entity_id)}`,
     created_at: now,
     updated_at: now,
     audit_trail: [{ at: now, by: input.received_by, action: 'customer_in_received' }],
   };
   writeJson(customerInVoucherKey(input.entity_id), [...list, voucher]);
+
+  // Sprint T-Phase-1.Hardening-B.ATELC-b · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'customer_voucher_in',
+    recordId: voucher.id, recordLabel: voucher.voucher_no,
+    beforeState: null, afterState: { ...voucher },
+    sourceModule: 'servicedesk',
+  });
+
   return voucher;
 }
 
@@ -1153,11 +1166,22 @@ export function createCustomerOutVoucher(
     ...input,
     id: newId('cout'),
     voucher_no: nextCustomerVoucherNo('COUT', input.entity_id, list.length),
+    // Sprint T-Phase-1.Hardening-B.ATELC-b · engine-side FY stamp (2C-ii-c pattern)
+    fiscal_year_id: `FY-20${fyForDate(input.delivered_at, input.entity_id)}`,
     created_at: now,
     updated_at: now,
     audit_trail: [{ at: now, by: input.created_by, action: 'customer_out_delivered' }],
   };
   writeJson(customerOutVoucherKey(input.entity_id), [...list, voucher]);
+
+  // Sprint T-Phase-1.Hardening-B.ATELC-b · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'customer_voucher_out',
+    recordId: voucher.id, recordLabel: voucher.voucher_no,
+    beforeState: null, afterState: { ...voucher },
+    sourceModule: 'servicedesk',
+  });
+
   return voucher;
 }
 

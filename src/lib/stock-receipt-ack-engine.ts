@@ -26,6 +26,7 @@ import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import { generateDocNo, postVoucher, fyForDate } from '@/lib/fincore-engine';
 import { listInwardReceipts } from '@/lib/inward-receipt-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 // ============================================================
 // PUBLIC TYPES
@@ -154,6 +155,14 @@ export async function createReceiptAck(
     },
   });
 
+  // Sprint T-Phase-1.Hardening-B.ATELC-b · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'create', entityType: 'stock_receipt_ack',
+    recordId: ack.id, recordLabel: ack.ack_no,
+    beforeState: null, afterState: { ...ack },
+    sourceModule: 'store-hub',
+  });
+
   return ack;
 }
 
@@ -261,6 +270,14 @@ export async function postReceiptAck(
     },
   });
 
+  // Sprint T-Phase-1.Hardening-B.ATELC-b · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'post', entityType: 'stock_receipt_ack',
+    recordId: updated.id, recordLabel: updated.ack_no,
+    beforeState: { ...cur }, afterState: { ...updated },
+    sourceModule: 'store-hub',
+  });
+
   return updated;
 }
 
@@ -340,6 +357,14 @@ export async function cancelReceiptAck(
     entityCode, entityId: entityCode, voucherId: id, voucherKind: 'vendor_quotation',
     action: 'stock_receipt_ack_cancelled', actorUserId: byUserId,
     payload: { ack_no: cur.ack_no, reason: cancelReason, prior_status: 'draft' },
+  });
+
+  // Sprint T-Phase-1.Hardening-B.ATELC-b · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'cancel', entityType: 'stock_receipt_ack',
+    recordId: id, recordLabel: cur.ack_no,
+    beforeState: { ...cur }, afterState: { ...list[idx] },
+    reason: cancelReason, sourceModule: 'store-hub',
   });
 
   return { ok: true };
