@@ -1166,11 +1166,22 @@ export function createCustomerOutVoucher(
     ...input,
     id: newId('cout'),
     voucher_no: nextCustomerVoucherNo('COUT', input.entity_id, list.length),
+    // Sprint T-Phase-1.Hardening-B.ATELC-b · engine-side FY stamp (2C-ii-c pattern)
+    fiscal_year_id: `FY-20${fyForDate(input.delivered_at, input.entity_id)}`,
     created_at: now,
     updated_at: now,
     audit_trail: [{ at: now, by: input.created_by, action: 'customer_out_delivered' }],
   };
   writeJson(customerOutVoucherKey(input.entity_id), [...list, voucher]);
+
+  // Sprint T-Phase-1.Hardening-B.ATELC-b · canonical audit-trail hookup
+  logAudit({
+    entityCode: input.entity_id, action: 'create', entityType: 'customer_voucher_out',
+    recordId: voucher.id, recordLabel: voucher.voucher_no,
+    beforeState: null, afterState: { ...voucher },
+    sourceModule: 'servicedesk',
+  });
+
   return voucher;
 }
 
