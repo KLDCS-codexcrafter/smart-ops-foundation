@@ -132,6 +132,10 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-secondary-register':   'Secondary Sales Register',
   'sx-r-som-register':         'SOM Register',
   'sx-r-dom-register':         'DOM Register',
+  // UPRA-1 Phase A
+  'sx-r-customer-order':       'Customer Order Register',
+  'sx-r-customer-voucher':     'Customer Voucher Register',
+  'sx-r-invoice-dispute':      'Invoice Dispute Register',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -265,6 +269,12 @@ function renderModule(
       return <SOMRegisterPanel />;
     case 'sx-r-dom-register':
       return <DOMRegisterPanel />;
+    case 'sx-r-customer-order':
+      return <CustomerOrderRegisterPanel />;
+    case 'sx-r-customer-voucher':
+      return <CustomerVoucherRegisterPanel />;
+    case 'sx-r-invoice-dispute':
+      return <InvoiceDisputeRegisterPanel />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
