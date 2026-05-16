@@ -8,4 +8,5 @@ export type RequestXModule =
   | 'rpt-indent-register' | 'rpt-indent-pending' | 'rpt-indent-closed'
   | 'rpt-po-against-indent' | 'rpt-department-summary'
   | 'rpt-category-spend' | 'rpt-ageing-pending'
+  | 'rpt-service-request-register'
   | 'master-departments' | 'master-approval-matrix' | 'master-voucher-types' | 'master-pinned-templates';

@@ -36,4 +36,6 @@ export type ProductionModule =
   | 'rpt-jw-ageing'
   | 'rpt-jw-in-register'
   | 'rpt-jw-components-summary'
-  | 'rpt-jw-material-movement';
+  | 'rpt-jw-material-movement'
+  | 'rpt-job-card-register'
+  | 'rpt-production-confirmation-register';

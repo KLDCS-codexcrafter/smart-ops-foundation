@@ -42,6 +42,8 @@ import { JobWorkAgeingAnalysisPanel } from './reports/JobWorkAgeingAnalysis';
 import { JobWorkInRegisterPanel } from './reports/JobWorkInRegister';
 import { JobWorkComponentsOrderSummaryPanel } from './reports/JobWorkComponentsOrderSummary';
 import { JobWorkMaterialMovementRegisterPanel } from './reports/JobWorkMaterialMovementRegister';
+import { JobCardRegisterPanel } from './reports/JobCardRegister';
+import { ProductionConfirmationRegisterPanel } from './reports/ProductionConfirmationRegister';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
@@ -96,6 +98,8 @@ export default function ProductionPage(): JSX.Element {
       case 'rpt-jw-in-register': return <JobWorkInRegisterPanel />;
       case 'rpt-jw-components-summary': return <JobWorkComponentsOrderSummaryPanel />;
       case 'rpt-jw-material-movement': return <JobWorkMaterialMovementRegisterPanel />;
+      case 'rpt-job-card-register': return <JobCardRegisterPanel />;
+      case 'rpt-production-confirmation-register': return <ProductionConfirmationRegisterPanel />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }

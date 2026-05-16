@@ -30,6 +30,7 @@ export const REQUESTX_GROUPS: RequestXGroup[] = [
       { id: 'rpt-department-summary', label: 'Department-wise' },
       { id: 'rpt-category-spend',     label: 'Category Spend' },
       { id: 'rpt-ageing-pending',     label: 'Ageing of Pending' },
+      { id: 'rpt-service-request-register', label: 'Service Request Register' },
     ],
   },
   {
