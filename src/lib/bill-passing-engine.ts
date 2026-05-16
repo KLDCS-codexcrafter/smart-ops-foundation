@@ -329,6 +329,14 @@ export async function createBillPassing(
     },
   });
 
+  // Sprint T-Phase-1.Hardening-B.ATELC · canonical audit-trail hookup
+  logAudit({
+    entityCode, action: 'create', entityType: 'bill_passing',
+    recordId: bill.id, recordLabel: bill.bill_no,
+    beforeState: null, afterState: { ...bill },
+    sourceModule: 'procurement',
+  });
+
   // Leak emit if variance significant
   if (Math.abs(totals.variance_pct) >= LEAKAGE_VARIANCE_PCT) {
     emitLeakEvent({
