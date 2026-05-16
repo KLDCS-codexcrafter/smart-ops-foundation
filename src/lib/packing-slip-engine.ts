@@ -92,6 +92,8 @@ export function computePackingSlip(input: ComputeInput): PackingSlip {
     dln_voucher_id: dln.id,
     dln_voucher_no: dln.voucher_no,
     dln_date: dln.date,
+    // Sprint T-Phase-1.Hardening-B.2C-ii-c · engine-side stamp · keeps DeliveryNote 0-diff (2A-canonical).
+    fiscal_year_id: `FY-20${fyForDate(dln.date, input.entityCode)}`,
     party_id: dln.party_id ?? null,
     party_name: dln.party_name ?? '',
     ship_to_address: input.shipToAddress,
