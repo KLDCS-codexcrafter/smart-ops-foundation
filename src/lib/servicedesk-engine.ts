@@ -39,6 +39,8 @@ import {
 import { STANDARD_CALL_TYPES, callTypeConfigurationKey } from '@/types/call-type';
 import type { CallTypeConfiguration } from '@/types/call-type';
 import { getRiskEngineSettings } from './cc-compliance-settings';
+import { fyForDate } from '@/lib/fincore-engine';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const newId = (prefix: string): string =>
   `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
