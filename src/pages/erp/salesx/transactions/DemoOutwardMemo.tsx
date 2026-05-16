@@ -247,6 +247,8 @@ export function DemoOutwardMemoPanel({ entityCode }: Props) {
       ...extras,
     };
     const key = demoOutwardMemosKey(entityCode);
+    // Sprint T-Phase-1.Hardening-B.2C-ii-b · stamp fiscal_year_id from memo_date + entity (GST Rule 46 traceability).
+    memo.fiscal_year_id = `FY-20${fyForDate(memo.memo_date, memo.entity_id)}`;
     // [JWT] GET /api/salesx/demo-outward-memos
     const list = ls<DemoOutwardMemo>(key);
     list.push(memo);
