@@ -372,6 +372,8 @@ export default function Procure360Page(): JSX.Element {
         return <Procure360VendorAgreementsRegisterPanel onNavigate={handleNavigate} />;
       case 'vendor-agreement-entry':
         return <Procure360VendorAgreementEntryPanel onNavigate={handleNavigate} />;
+      // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
+      case 'git-register':                    return <GITRegisterPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
