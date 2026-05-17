@@ -165,7 +165,9 @@ function getGroupLabel(m: Procure360Module): string {
     m === 'rate-variance-graph' ||
     m === 'po-itemwise' ||
     m === 'po-status-by-enquiry' ||
-    m === 'material-rfq-print'
+    m === 'material-rfq-print' ||
+    // ─── UPRA-3 Phase A Step 2 ───
+    m === 'git-register'
   ) return 'Reports';
 
   return GROUP_LABELS[m] ?? '';
