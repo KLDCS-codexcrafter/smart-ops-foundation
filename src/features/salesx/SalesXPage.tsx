@@ -74,6 +74,8 @@ import { DOMRegisterPanel } from '@/pages/erp/salesx/reports/DOMRegister';
 import { CustomerOrderRegisterPanel } from '@/pages/erp/salesx/reports/CustomerOrderRegister';
 import { CustomerVoucherRegisterPanel } from '@/pages/erp/salesx/reports/CustomerVoucherRegister';
 import { InvoiceDisputeRegisterPanel } from '@/pages/erp/salesx/reports/InvoiceDisputeRegister';
+// UPRA-4 Phase B · Tier-1 NEW
+import { SalesOrderRegisterPanel } from '@/pages/erp/salesx/reports/SalesOrderRegister';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
