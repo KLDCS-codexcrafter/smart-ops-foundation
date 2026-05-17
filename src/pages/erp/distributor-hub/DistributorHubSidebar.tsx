@@ -11,6 +11,7 @@ import {
   BarChart3, IndianRupee, PieChart, ChevronRight,
   Database, Truck, Home, ArrowLeft,
   AlertTriangle, FileSpreadsheet, Star, Sparkles, LineChart,
+  ClipboardList,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -30,7 +31,9 @@ export type DistributorHubModule =
   | 'dh-t-stock-out' | 'dh-t-excel-sync' | 'dh-t-ratings'
   | 'dh-t-scheme-simulator'
   | 'dh-r-engagement' | 'dh-r-credit-util' | 'dh-r-dispute-stats'
-  | 'dh-r-scheme-effectiveness';
+  | 'dh-r-scheme-effectiveness'
+  // UPRA-3 Phase A Step 2 · Tier-1 NEW
+  | 'dh-r-distributor-order-register';
 
 interface DistributorHubSidebarProps {
   activeModule: DistributorHubModule;
@@ -63,6 +66,8 @@ const REPORTS_ITEMS: { label: string; module: DistributorHubModule;
   { label: 'Credit Utilisation',   module: 'dh-r-credit-util',          icon: IndianRupee },
   { label: 'Dispute Statistics',   module: 'dh-r-dispute-stats',        icon: PieChart },
   { label: 'Scheme Effectiveness', module: 'dh-r-scheme-effectiveness', icon: LineChart },
+  // UPRA-3 Phase A Step 2 · Tier-1 NEW
+  { label: 'Distributor Order Register', module: 'dh-r-distributor-order-register', icon: ClipboardList },
 ];
 
 export function DistributorHubSidebar(props: DistributorHubSidebarProps) {

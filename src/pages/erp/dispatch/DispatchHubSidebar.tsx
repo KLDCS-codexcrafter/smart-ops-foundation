@@ -17,6 +17,8 @@ import {
   PackageX,
   // UPRA-1 Phase A
   PackageCheck, ClipboardList, FileCheck2,
+  // UPRA-3 Phase A Step 2
+  Receipt,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -49,7 +51,9 @@ export type DispatchHubModule =
   // UPRA-1 Phase A
   | 'dh-r-dispatch-receipt-register'
   | 'dh-r-packing-slip-register'
-  | 'dh-r-pod-register';
+  | 'dh-r-pod-register'
+  // UPRA-3 Phase A Step 2 · Tier-1 NEW
+  | 'dh-r-transporter-invoice-register';
 
 interface DispatchHubSidebarProps {
   activeModule: DispatchHubModule;
@@ -79,6 +83,8 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'Dispatch Receipt Register', module: 'dh-r-dispatch-receipt-register', icon: PackageCheck },
   { label: 'Packing Slip Register',     module: 'dh-r-packing-slip-register',     icon: ClipboardList },
   { label: 'POD Register',              module: 'dh-r-pod-register',              icon: FileCheck2 },
+  // UPRA-3 Phase A Step 2 · Tier-1 NEW
+  { label: 'Transporter Invoice Register', module: 'dh-r-transporter-invoice-register', icon: Receipt },
 ];
 
 // Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
