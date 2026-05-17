@@ -30,6 +30,8 @@ import { CycleCountStatusPanel } from './reports/CycleCountStatus';
 import { StockMovementRegisterPanel } from './reports/StockMovementRegister';
 import { DepartmentConsumptionSummaryPanel } from './reports/DepartmentConsumptionSummary';
 import { StoreHubWelcomePanel } from './StoreHubWelcome';
+// UPRA-3 Phase A Step 2 · Tier-1 NEW
+import { StockReceiptAckRegisterPanel } from './reports/StockReceiptAckRegister';
 
 function WelcomePanel(): JSX.Element {
   return (
@@ -66,6 +68,7 @@ function renderModule(
     case 'sh-r-cycle-count-status':     return <CycleCountStatusPanel />;
     case 'sh-r-stock-movement-register':         return <StockMovementRegisterPanel />;
     case 'sh-r-department-consumption-summary':  return <DepartmentConsumptionSummaryPanel />;
+    case 'sh-r-stock-receipt-ack-register':      return <StockReceiptAckRegisterPanel />;
     case 'sh-t-stock-issue-entry':      return <StockIssueEntryPanel onModuleChange={onModuleChange} />;
     case 'sh-t-stock-issue-register':   return <StockIssueRegisterPanel onModuleChange={onModuleChange} />;
     case 'sh-t-receipt-ack':            return <StockReceiptAckPanel />;

@@ -19,7 +19,7 @@
  */
 import {
   Home, Boxes, Layers, TrendingUp, Package, ClipboardCheck, ArrowDown,
-  Warehouse, BarChart3, Activity, Flame,
+  Warehouse, BarChart3, Activity, Flame, Inbox,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -128,6 +128,16 @@ export const storeHubSidebarItems: SidebarItem[] = [
         moduleId: 'sh-r-department-consumption-summary',
         requiredCards: ['store-hub'],
         keyboard: 's u',
+      },
+      // UPRA-3 Phase A Step 2 · Tier-1 NEW Register
+      {
+        id: 'sh-r-stock-receipt-ack-register',
+        type: 'item',
+        label: 'Stock Receipt Ack Register',
+        icon: Inbox,
+        moduleId: 'sh-r-stock-receipt-ack-register',
+        requiredCards: ['store-hub'],
+        keyboard: 's k',
       },
     ],
   },

@@ -55,4 +55,6 @@ export type Procure360Module =
   | 'material-rfq-print'
   // ─── NEW · SM.Procure360-Vendor-Agreements ───
   | 'vendor-agreements-register'
-  | 'vendor-agreement-entry';
+  | 'vendor-agreement-entry'
+  // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
+  | 'git-register';

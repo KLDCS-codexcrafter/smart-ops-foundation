@@ -37,6 +37,8 @@ export type StoreHubModule =
   // α-b Block C · 2 NEW thin wrappers (D-387)
   | 'sh-r-stock-movement-register'
   | 'sh-r-department-consumption-summary'
+  // UPRA-3 Phase A Step 2 · Tier-1 NEW
+  | 'sh-r-stock-receipt-ack-register'
   // Transactions (NEW · Card #7 · D-381 + D-382)
   | 'sh-t-stock-issue-entry'
   | 'sh-t-stock-issue-register'

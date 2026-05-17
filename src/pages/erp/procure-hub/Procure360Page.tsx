@@ -84,6 +84,9 @@ import {
   Procure360VendorAgreementEntryPanel,
 } from './transactions/Procure360VendorAgreementEntry';
 
+// ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
+import { GITRegisterPanel } from './reports/GITRegister';
+
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
   'enquiry-entry', 'enquiry-list', 'rfq-list', 'quotation-comparison', 'award-history',
@@ -110,6 +113,8 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   // ─── NEW · SM.Procure360-Vendor-Agreements ───
   'vendor-agreements-register',
   'vendor-agreement-entry',
+  // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
+  'git-register',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
