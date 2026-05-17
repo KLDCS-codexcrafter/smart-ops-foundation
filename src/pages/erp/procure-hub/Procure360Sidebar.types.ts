@@ -57,4 +57,6 @@ export type Procure360Module =
   | 'vendor-agreements-register'
   | 'vendor-agreement-entry'
   // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
-  | 'git-register';
+  | 'git-register'
+  // ─── UPRA-4 Phase B · Tier-1 NEW ───
+  | 'po-register';
