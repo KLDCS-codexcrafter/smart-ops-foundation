@@ -138,6 +138,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-customer-order':       'Customer Order Register',
   'sx-r-customer-voucher':     'Customer Voucher Register',
   'sx-r-invoice-dispute':      'Invoice Dispute Register',
+  // UPRA-4 Phase B · Tier-1 NEW
+  'sx-r-so-register':          'Sales Order Register',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
