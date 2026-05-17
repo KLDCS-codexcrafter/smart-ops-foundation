@@ -279,6 +279,8 @@ function renderModule(
       return <CustomerVoucherRegisterPanel />;
     case 'sx-r-invoice-dispute':
       return <InvoiceDisputeRegisterPanel />;
+    case 'sx-r-so-register':
+      return <SalesOrderRegisterPanel />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
