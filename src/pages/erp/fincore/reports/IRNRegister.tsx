@@ -30,6 +30,9 @@ import {
   buildIRNPayload, generateIRN, type IRPCredentials,
 } from '@/lib/irn-engine';
 import { IRNActionsDialog, type IRNAction } from './actions/IRNActionsDialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { IRNDetailPanel } from './detail/IRNDetailPanel';
+import { IRNPrint } from './print/IRNPrint';
 
 interface Props { entityCode: string }
 
@@ -64,6 +67,8 @@ export function IRNRegisterPanel({ entityCode }: Props): JSX.Element {
   const [action, setAction] = useState<IRNAction | null>(null);
   const [target, setTarget] = useState<IRNRecord | null>(null);
   const [busy, setBusy] = useState(false);
+  const [selected, setSelected] = useState<IRNRecord | null>(null);
+  const [printing, setPrinting] = useState<IRNRecord | null>(null);
 
   const refresh = useCallback(() => {
     setRecords(loadList<IRNRecord>(irnRecordsKey(entityCode)));
@@ -133,7 +138,7 @@ export function IRNRegisterPanel({ entityCode }: Props): JSX.Element {
   };
 
   const columns: RegisterColumn<IRNRecord>[] = [
-    { key: 'voucher_no', label: 'Voucher', render: r => r.voucher_no, exportKey: 'voucher_no' },
+    { key: 'voucher_no', label: 'Voucher', clickable: true, render: r => r.voucher_no, exportKey: 'voucher_no' },
     { key: 'date', label: 'Date', render: r => r.voucher_date.slice(0, 10), exportKey: 'voucher_date' },
     { key: 'customer', label: 'Customer', render: r => r.customer_name, exportKey: 'customer_name' },
     { key: 'value', label: 'Value', align: 'right',
@@ -145,7 +150,7 @@ export function IRNRegisterPanel({ entityCode }: Props): JSX.Element {
       exportKey: 'status' },
     { key: 'actions', label: 'Actions', align: 'right',
       render: r => (
-        <div className="flex justify-end gap-1">
+        <div className="flex justify-end gap-1" onClick={e => e.stopPropagation()}>
           {(r.status === 'pending' || r.status === 'failed') && (
             <Button variant="outline" size="sm" className="h-7 text-[10px]"
               onClick={() => { setTarget(r); setAction('retry'); }}>
@@ -183,12 +188,23 @@ export function IRNRegisterPanel({ entityCode }: Props): JSX.Element {
         statusOptions={statusOptions}
         statusKey="status"
         summaryBuilder={summaryBuilder}
+        onNavigateToRecord={setSelected}
         customFilters={
           <Button data-primary size="sm" onClick={handleBulk} disabled={busy}>
             <Play className="h-3.5 w-3.5 mr-1" /> Bulk Generate
           </Button>
         }
       />
+      <Dialog open={!!selected} onOpenChange={o => !o && setSelected(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selected && <IRNDetailPanel record={selected} onPrint={() => setPrinting(selected)} />}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!printing} onOpenChange={o => !o && setPrinting(null)}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          {printing && <IRNPrint record={printing} onClose={() => setPrinting(null)} />}
+        </DialogContent>
+      </Dialog>
       <IRNActionsDialog
         entityCode={entityCode}
         record={target}
