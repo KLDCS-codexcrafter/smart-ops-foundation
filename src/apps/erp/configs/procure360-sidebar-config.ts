@@ -147,6 +147,9 @@ export const procure360SidebarItems: SidebarItem[] = [
       // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
       { id: 'git-register', type: 'item', label: 'GIT Register',
         icon: Package, moduleId: 'git-register', requiredCards: ['procure360'] },
+      // ─── UPRA-4 Phase B · Tier-1 NEW ───
+      { id: 'po-register', type: 'item', label: 'Purchase Order Register',
+        icon: ShoppingCart, moduleId: 'po-register', requiredCards: ['procure360'] },
     ],
   },
 ];
