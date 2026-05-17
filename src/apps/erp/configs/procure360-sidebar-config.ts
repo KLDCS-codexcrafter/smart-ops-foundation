@@ -14,6 +14,7 @@ import {
   Home, FileText, Send, BarChart3, Award, TrendingUp, Users, Activity,
   ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt, Plus,
   Wallet, AlertTriangle,   // NEW · A.3.b
+  Package,                  // UPRA-3 Phase A Step 2
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -143,6 +144,9 @@ export const procure360SidebarItems: SidebarItem[] = [
         icon: FileText, moduleId: 'enquiry-details-report', requiredCards: ['procure360'] },
       { id: 'material-rfq-print', type: 'item', label: 'Material RFQ Print',
         icon: Send, moduleId: 'material-rfq-print', requiredCards: ['procure360'] },
+      // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
+      { id: 'git-register', type: 'item', label: 'GIT Register',
+        icon: Package, moduleId: 'git-register', requiredCards: ['procure360'] },
     ],
   },
 ];

@@ -84,6 +84,9 @@ import {
   Procure360VendorAgreementEntryPanel,
 } from './transactions/Procure360VendorAgreementEntry';
 
+// ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
+import { GITRegisterPanel } from './reports/GITRegister';
+
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
   'enquiry-entry', 'enquiry-list', 'rfq-list', 'quotation-comparison', 'award-history',
@@ -110,6 +113,8 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   // ─── NEW · SM.Procure360-Vendor-Agreements ───
   'vendor-agreements-register',
   'vendor-agreement-entry',
+  // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
+  'git-register',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -160,7 +165,9 @@ function getGroupLabel(m: Procure360Module): string {
     m === 'rate-variance-graph' ||
     m === 'po-itemwise' ||
     m === 'po-status-by-enquiry' ||
-    m === 'material-rfq-print'
+    m === 'material-rfq-print' ||
+    // ─── UPRA-3 Phase A Step 2 ───
+    m === 'git-register'
   ) return 'Reports';
 
   return GROUP_LABELS[m] ?? '';
@@ -219,6 +226,8 @@ function getModuleLabel(m: Procure360Module): string {
     // ─── NEW · SM.Procure360-Vendor-Agreements ───
     'vendor-agreements-register': 'Vendor Agreements',
     'vendor-agreement-entry': 'New Agreement',
+    // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
+    'git-register': 'GIT Register',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -363,6 +372,8 @@ export default function Procure360Page(): JSX.Element {
         return <Procure360VendorAgreementsRegisterPanel onNavigate={handleNavigate} />;
       case 'vendor-agreement-entry':
         return <Procure360VendorAgreementEntryPanel onNavigate={handleNavigate} />;
+      // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
+      case 'git-register':                    return <GITRegisterPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }

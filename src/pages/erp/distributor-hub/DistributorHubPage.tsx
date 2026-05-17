@@ -45,6 +45,9 @@ import { DisputeStatsReportPanel } from './reports/DisputeStatsReport';
 import { SchemeSimulatorPanel } from './transactions/SchemeSimulator';
 import { SchemeEffectivenessReportPanel } from './reports/SchemeEffectivenessReport';
 
+// UPRA-3 Phase A Step 2 · Tier-1 NEW
+import { DistributorOrderRegisterPanel } from './reports/DistributorOrderRegister';
+
 function ComingSoonPanel({ module }: { module: DistributorHubModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
@@ -81,6 +84,9 @@ function renderModule(mod: DistributorHubModule): React.ReactElement {
     case 'dh-r-credit-util':          return <CreditUtilReportPanel />;
     case 'dh-r-dispute-stats':        return <DisputeStatsReportPanel />;
     case 'dh-r-scheme-effectiveness': return <SchemeEffectivenessReportPanel />;
+
+    // UPRA-3 Phase A Step 2 · Tier-1 NEW
+    case 'dh-r-distributor-order-register': return <DistributorOrderRegisterPanel />;
 
     default: return <ComingSoonPanel module={mod} />;
   }

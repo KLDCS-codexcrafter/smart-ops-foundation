@@ -35,6 +35,8 @@ import { StockHoldReportPanel } from './inward/StockHoldReport';
 import { DispatchReceiptRegisterPanel } from './reports/DispatchReceiptRegister';
 import { PackingSlipRegisterPanel } from './reports/PackingSlipRegister';
 import { PODRegisterPanel } from './reports/PODRegister';
+// UPRA-3 Phase A Step 2 · Tier-1 NEW
+import { TransporterInvoiceRegisterPanel } from './reports/TransporterInvoiceRegister';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -70,6 +72,8 @@ function renderModule(
     case 'dh-r-dispatch-receipt-register': return <DispatchReceiptRegisterPanel />;
     case 'dh-r-packing-slip-register':     return <PackingSlipRegisterPanel />;
     case 'dh-r-pod-register':              return <PODRegisterPanel />;
+    // UPRA-3 Phase A Step 2 · Tier-1 NEW
+    case 'dh-r-transporter-invoice-register': return <TransporterInvoiceRegisterPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
