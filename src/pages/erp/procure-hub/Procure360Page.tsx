@@ -86,6 +86,8 @@ import {
 
 // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
 import { GITRegisterPanel } from './reports/GITRegister';
+// ─── UPRA-4 Phase B · Tier-1 NEW ───
+import { PurchaseOrderRegisterPanel } from './reports/PurchaseOrderRegister';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
