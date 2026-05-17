@@ -69,7 +69,9 @@ export type SalesXModule =
   // UPRA-1 Phase A
   | 'sx-r-customer-order'
   | 'sx-r-customer-voucher'
-  | 'sx-r-invoice-dispute';
+  | 'sx-r-invoice-dispute'
+  // UPRA-4 Phase B · Tier-1 NEW
+  | 'sx-r-so-register';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
