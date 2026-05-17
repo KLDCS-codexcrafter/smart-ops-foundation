@@ -38,4 +38,5 @@ export type ProductionModule =
   | 'rpt-jw-components-summary'
   | 'rpt-jw-material-movement'
   | 'rpt-job-card-register'
-  | 'rpt-production-confirmation-register';
+  | 'rpt-production-confirmation-register'
+  | 'rpt-material-issue-note-register';

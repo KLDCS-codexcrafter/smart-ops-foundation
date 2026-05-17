@@ -44,6 +44,7 @@ import { JobWorkComponentsOrderSummaryPanel } from './reports/JobWorkComponentsO
 import { JobWorkMaterialMovementRegisterPanel } from './reports/JobWorkMaterialMovementRegister';
 import { JobCardRegisterPanel } from './reports/JobCardRegister';
 import { ProductionConfirmationRegisterPanel } from './reports/ProductionConfirmationRegister';
+import { MaterialIssueNoteRegisterPanel } from './reports/MaterialIssueNoteRegister';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
@@ -100,6 +101,7 @@ export default function ProductionPage(): JSX.Element {
       case 'rpt-jw-material-movement': return <JobWorkMaterialMovementRegisterPanel />;
       case 'rpt-job-card-register': return <JobCardRegisterPanel />;
       case 'rpt-production-confirmation-register': return <ProductionConfirmationRegisterPanel />;
+      case 'rpt-material-issue-note-register': return <MaterialIssueNoteRegisterPanel />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }

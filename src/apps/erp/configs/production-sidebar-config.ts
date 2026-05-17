@@ -73,6 +73,8 @@ export const productionSidebarItems: SidebarItem[] = [
         icon: ClipboardList, moduleId: 'rpt-job-card-register', requiredCards: ['production'] },
       { id: 'rpt-production-confirmation-register', type: 'item', label: 'Production Confirmation Register',
         icon: CheckCircle, moduleId: 'rpt-production-confirmation-register', requiredCards: ['production'] },
+      { id: 'rpt-material-issue-note-register', type: 'item', label: 'Material Issue Note Register',
+        icon: PackageMinus, moduleId: 'rpt-material-issue-note-register', requiredCards: ['production'] },
     ],
   },
   {
