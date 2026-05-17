@@ -232,6 +232,8 @@ function getModuleLabel(m: Procure360Module): string {
     'vendor-agreement-entry': 'New Agreement',
     // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
     'git-register': 'GIT Register',
+    // ─── UPRA-4 Phase B · Tier-1 NEW ───
+    'po-register': 'Purchase Order Register',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
