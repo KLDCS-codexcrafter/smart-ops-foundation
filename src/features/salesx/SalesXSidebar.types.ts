@@ -132,4 +132,5 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-r-customer-order',
   'sx-r-customer-voucher',
   'sx-r-invoice-dispute',
+  'sx-r-so-register',
 ];
