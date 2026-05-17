@@ -229,6 +229,7 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     { id: 'sx-r-secondary-register',  label: 'Secondary Register',   icon: ListTree,      live: true },
     { id: 'sx-r-som-register',        label: 'SOM Register',         icon: ListChecks,    live: true },
     { id: 'sx-r-dom-register',        label: 'DOM Register',         icon: ClipboardList, live: true },
+    { id: 'sx-r-so-register',         label: 'Sales Order Register', icon: ClipboardList, live: true },
   ], [cfg]);
 
   const filteredMasterItems = useMemo(() =>
