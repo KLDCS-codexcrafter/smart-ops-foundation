@@ -85,6 +85,7 @@ export const SALESX_MODULE_GROUP: Record<SalesXModule, SalesXGroup> = {
   'sx-r-customer-order':       'report',
   'sx-r-customer-voucher':     'report',
   'sx-r-invoice-dispute':      'report',
+  'sx-r-so-register':          'report',
 };
 
 /** Default landing module per group when user clicks the tab */
