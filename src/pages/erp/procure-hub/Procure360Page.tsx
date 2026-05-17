@@ -117,6 +117,8 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'vendor-agreement-entry',
   // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
   'git-register',
+  // ─── UPRA-4 Phase B · Tier-1 NEW ───
+  'po-register',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
