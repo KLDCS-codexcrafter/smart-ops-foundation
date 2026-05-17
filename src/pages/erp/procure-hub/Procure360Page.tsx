@@ -86,6 +86,8 @@ import {
 
 // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
 import { GITRegisterPanel } from './reports/GITRegister';
+// ─── UPRA-4 Phase B · Tier-1 NEW ───
+import { PurchaseOrderRegisterPanel } from './reports/PurchaseOrderRegister';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
@@ -115,6 +117,8 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'vendor-agreement-entry',
   // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
   'git-register',
+  // ─── UPRA-4 Phase B · Tier-1 NEW ───
+  'po-register',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -228,6 +232,8 @@ function getModuleLabel(m: Procure360Module): string {
     'vendor-agreement-entry': 'New Agreement',
     // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
     'git-register': 'GIT Register',
+    // ─── UPRA-4 Phase B · Tier-1 NEW ───
+    'po-register': 'Purchase Order Register',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -374,6 +380,8 @@ export default function Procure360Page(): JSX.Element {
         return <Procure360VendorAgreementEntryPanel onNavigate={handleNavigate} />;
       // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
       case 'git-register':                    return <GITRegisterPanel />;
+      // ─── UPRA-4 Phase B · Tier-1 NEW ───
+      case 'po-register':                     return <PurchaseOrderRegisterPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
