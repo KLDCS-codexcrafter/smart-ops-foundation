@@ -61,10 +61,11 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
     return t;
   }, [inventoryLines]);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
     if (!partyName) { toast.error('Vendor name is required'); return; }
     if (!againstBill) { toast.error('Against Bill No is required'); return; }
     if (!reasonCode) { toast.error('Reason code is required'); return; }
+    setSaving(true);
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
@@ -91,7 +92,9 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
       localStorage.setItem(key, JSON.stringify(existing));
       toast.success('Debit Note posted');
       setPostedVoucherId(voucher.id);
+      lastSavedRef.current = voucher.id;
     } catch { toast.error('Failed to save'); }
+    finally { setSaving(false); }
   }, [partyName, againstBill, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode]);
 
   const handleSaveDraft = useCallback(() => {
