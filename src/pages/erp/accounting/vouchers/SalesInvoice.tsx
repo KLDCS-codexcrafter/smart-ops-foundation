@@ -16,7 +16,8 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog';
-import { ChevronDown, Send, Info, Link2, ShieldAlert, FileText, Truck, Printer, X } from 'lucide-react';
+import { ChevronDown, Info, Link2, ShieldAlert, FileText, Truck, Printer, X } from 'lucide-react';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { checkCreditHold } from '@/lib/credit-hold-engine';
 import {
   creditHoldAuditKey, type CreditHoldCheck, type CreditHoldOverride,
@@ -131,6 +132,10 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   const [ewbVehicleNo, setEwbVehicleNo] = useState('');
   const [ewbTransporter, setEwbTransporter] = useState('');
   const [ewbDistanceKm, setEwbDistanceKm] = useState<number>(100);
+
+  // Canonical adoption — saving state + lastSavedRef (Receipt.tsx gold reference)
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
 
   const openSOs = useMemo(() => {
     const sos = getOpenOrdersForLookup('Sales Order');
@@ -324,6 +329,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
       setPostedVoucherId(voucher.id);
+      lastSavedRef.current = true;
       setPostedVoucherNo(voucher.voucher_no);
       setIrnStatus('pending');
       setCurrentIrn(null);
@@ -481,47 +487,53 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     commissionPreview, customerId, samPersons, customers, placeOfSupply,
   ]);
 
-  const handlePost = useCallback(() => {
-    if (!partyName) { toast.error('Party name is required'); return; }
-    // ── Sprint 8 — Credit hold check ────────────────────────
+  const handlePost = useCallback(async () => {
+    setSaving(true);
+    lastSavedRef.current = false;
     try {
-      // [JWT] GET /api/receivx/config
-      const cfgRaw = localStorage.getItem(`erp_receivx_config_${entityCode}`);
-      const cfg = cfgRaw ? JSON.parse(cfgRaw) : null;
-      const customer = customers.find(c => c.id === customerId);
-      if (cfg && customer && Array.isArray(cfg.credit_hold_block_on)
-        && cfg.credit_hold_block_on.includes('sales_invoice')) {
-        // [JWT] GET /api/accounting/outstanding
-        const allOut: OutstandingEntry[] = JSON.parse(
-          localStorage.getItem(`erp_outstanding_${entityCode}`) || '[]',
-        );
-        const check = checkCreditHold(
-          {
-            id: customer.id,
-            partyCode: customer.partyCode ?? '',
-            partyName: customer.partyName,
-            creditLimit: customer.creditLimit ?? 0,
-            warningLimit: customer.warningLimit ?? 0,
-            credit_hold_mode: customer.credit_hold_mode ?? null,
-          },
-          gstTotals.total,
-          allOut,
-          cfg.credit_hold_mode ?? 'soft_warn',
-          cfg.credit_hold_ratio ?? 1.0,
-        );
-        if (check.is_blocked) {
-          setCreditCheck(check);
-          setOverrideReason('');
-          setOverrideOpen(true);
-          return;
+      if (!partyName) { toast.error('Party name is required'); return; }
+      // ── Sprint 8 — Credit hold check ────────────────────────
+      try {
+        // [JWT] GET /api/receivx/config
+        const cfgRaw = localStorage.getItem(`erp_receivx_config_${entityCode}`);
+        const cfg = cfgRaw ? JSON.parse(cfgRaw) : null;
+        const customer = customers.find(c => c.id === customerId);
+        if (cfg && customer && Array.isArray(cfg.credit_hold_block_on)
+          && cfg.credit_hold_block_on.includes('sales_invoice')) {
+          // [JWT] GET /api/accounting/outstanding
+          const allOut: OutstandingEntry[] = JSON.parse(
+            localStorage.getItem(`erp_outstanding_${entityCode}`) || '[]',
+          );
+          const check = checkCreditHold(
+            {
+              id: customer.id,
+              partyCode: customer.partyCode ?? '',
+              partyName: customer.partyName,
+              creditLimit: customer.creditLimit ?? 0,
+              warningLimit: customer.warningLimit ?? 0,
+              credit_hold_mode: customer.credit_hold_mode ?? null,
+            },
+            gstTotals.total,
+            allOut,
+            cfg.credit_hold_mode ?? 'soft_warn',
+            cfg.credit_hold_ratio ?? 1.0,
+          );
+          if (check.is_blocked) {
+            setCreditCheck(check);
+            setOverrideReason('');
+            setOverrideOpen(true);
+            return;
+          }
+          if (check.is_warning) {
+            toast.warning(check.block_reason || 'Customer over warning limit');
+            recordOverride(check, 'soft_warn_auto', 'system');
+          }
         }
-        if (check.is_warning) {
-          toast.warning(check.block_reason || 'Customer over warning limit');
-          recordOverride(check, 'soft_warn_auto', 'system');
-        }
-      }
-    } catch { /* noop — credit check failure should not block */ }
-    commitVoucher();
+      } catch { /* noop — credit check failure should not block */ }
+      commitVoucher();
+    } finally {
+      setSaving(false);
+    }
   }, [partyName, entityCode, customers, customerId, gstTotals.total, commitVoucher, recordOverride]);
 
   const confirmOverride = useCallback(() => {
@@ -572,12 +584,16 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     [partyName.length, inventoryLines.length, ledgerLines.length, narration.length],
   );
 
-  const _handleCancel = useCallback(() => {
+  const handleCancel = useCallback(() => {
     if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
     clearForm();
     toast.info('Voucher discarded.');
   }, [isDirty, clearForm]);
-  void _handleCancel;
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
 
   const serializeFormState = useCallback(
     (): Partial<Voucher> => ({ party_name: partyName, date, narration }),
@@ -991,11 +1007,21 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         </Card>
       </Collapsible>
 
-      <div className="flex gap-3 justify-end">
-        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
-      </div>
+      {onSaveDraft && (
+        <div className="flex gap-3 justify-end">
+          <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
+        </div>
+      )}
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+        showPrint={false}
+      />
 
       {/* Sprint 9 — IRN / EWB / Print toolbar (visible after Post) */}
       {postedVoucherId && (
