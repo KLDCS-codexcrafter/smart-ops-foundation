@@ -1,6 +1,12 @@
 /**
+ * @deprecated Sprint T-Phase-1.D-RequestX-Shell-Migration (May 18, 2026) — RequestXSidebar is superseded by canonical Shell pattern.
+ *             Data migrated to `src/apps/erp/configs/requestx-sidebar-config.ts`.
+ *             Page consumer (RequestXPage.tsx) now uses `<Shell config={requestxShellConfig}>`.
+ *             This file kept for one sprint cycle (defensive · matches VoucherFormShell deprecation precedent TXUI-1b).
+ *             DO NOT use this in new code.
+ *
  * @file        RequestXSidebar.tsx
- * @sprint      T-Phase-1.2.6f-pre-1
+ * @sprint      T-Phase-1.2.6f-pre-1 (original) · DEPRECATED at T-Phase-1.D-RequestX-Shell-Migration
  * @purpose     Left sidebar for RequestX hub.
  */
 import { useState } from 'react';

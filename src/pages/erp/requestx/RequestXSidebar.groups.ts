@@ -1,6 +1,11 @@
 /**
+ * @deprecated Sprint T-Phase-1.D-RequestX-Shell-Migration (May 18, 2026) — RequestX groups data migrated to canonical sidebar-config.
+ *             New source: `src/apps/erp/configs/requestx-sidebar-config.ts` exports `requestxSidebarItems: SidebarItem[]`.
+ *             This file kept for one sprint cycle (defensive · matches VoucherFormShell deprecation precedent TXUI-1b).
+ *             DO NOT use this in new code.
+ *
  * @file        RequestXSidebar.groups.ts
- * @sprint      T-Phase-1.2.6f-pre-2 · Block H2
+ * @sprint      T-Phase-1.2.6f-pre-2 · Block H2 (original) · DEPRECATED at T-Phase-1.D-RequestX-Shell-Migration
  */
 import type { RequestXModule } from './RequestXSidebar.types';
 
