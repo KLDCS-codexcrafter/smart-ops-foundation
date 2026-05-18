@@ -2,14 +2,15 @@
  * StockJournal.tsx — Full Stock Journal form (two-grid layout)
  * [JWT] All storage via fincore-engine
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Send, Printer } from 'lucide-react';
+import { Printer } from 'lucide-react';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { StockJournalLineGrid } from '@/components/fincore/StockJournalLineGrid';
@@ -41,10 +42,13 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
   const [productionLines, setProductionLines] = useState<import('@/components/fincore/StockJournalLineGrid').StockJournalLine[]>([]);
   const [narration, setNarration] = useState('');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<string | null>(null);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
     if (consumptionLines.length === 0) { toast.error('At least one consumption line is required'); return; }
     if (purpose === 'Other' && !referenceNo) { toast.error('Reference No is mandatory for "Other" purpose'); return; }
+    setSaving(true);
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
@@ -105,7 +109,9 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
       localStorage.setItem(key, JSON.stringify(existing));
       setPostedVoucherId(voucher.id);
       toast.success('Stock Journal posted');
+      lastSavedRef.current = voucher.id;
     } catch { toast.error('Failed to save'); }
+    finally { setSaving(false); }
   }, [consumptionLines, productionLines, purpose, referenceNo, date, voucherNo, narration, entityCode, department]);
 
   const handleSaveDraft = useCallback(() => {
@@ -134,6 +140,15 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
     setConsumptionLines([]); setProductionLines([]); setNarration('');
     setPostedVoucherId(null);
   }, []);
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [isDirty, clearForm]);
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
   const handlePrint = useCallback(() => {
     if (postedVoucherId && entityCode) {
       const url = `/erp/fincore/stock-journal-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
@@ -203,17 +218,23 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex justify-end gap-2">
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
         {postedVoucherId && (
-          <Button variant="outline" onClick={handlePrint}>
-            <Printer className="h-4 w-4 mr-2" />
-            Print
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Stock Journal
           </Button>
         )}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+      />
     </div>
     </>
   );

@@ -2,14 +2,15 @@
  * DebitNote.tsx — Full Debit Note form
  * [JWT] All storage via fincore-engine
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Send, Printer } from 'lucide-react';
+import { Printer } from 'lucide-react';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InvoiceModeToggle } from '@/components/fincore/InvoiceModeToggle';
@@ -48,6 +49,8 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
   const [ledgerLines, setLedgerLines] = useState<VoucherLedgerLine[]>([]);
   const [narration, setNarration] = useState('');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<string | null>(null);
 
   const gstTotals = useMemo(() => {
     const t = { taxable: 0, cgst: 0, sgst: 0, igst: 0, cess: 0, total: 0 };
@@ -58,10 +61,11 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
     return t;
   }, [inventoryLines]);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
     if (!partyName) { toast.error('Vendor name is required'); return; }
     if (!againstBill) { toast.error('Against Bill No is required'); return; }
     if (!reasonCode) { toast.error('Reason code is required'); return; }
+    setSaving(true);
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
@@ -88,7 +92,9 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
       localStorage.setItem(key, JSON.stringify(existing));
       toast.success('Debit Note posted');
       setPostedVoucherId(voucher.id);
+      lastSavedRef.current = voucher.id;
     } catch { toast.error('Failed to save'); }
+    finally { setSaving(false); }
   }, [partyName, againstBill, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode]);
 
   const handleSaveDraft = useCallback(() => {
@@ -118,6 +124,17 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
     setInventoryLines([]); setLedgerLines([]); setNarration('');
     setPostedVoucherId(null);
   }, []);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [isDirty, clearForm]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
 
   const handlePrint = useCallback(() => {
     if (!postedVoucherId) return;
@@ -190,16 +207,23 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex justify-end gap-2">
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
         {postedVoucherId && (
           <Button size="sm" variant="outline" onClick={handlePrint}>
             <Printer className="h-3.5 w-3.5 mr-1" /> Print Debit Note
           </Button>
         )}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+      />
     </div>
     </>
   );

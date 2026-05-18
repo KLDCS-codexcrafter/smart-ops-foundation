@@ -2,14 +2,15 @@
  * ReceiptNote.tsx — Full Receipt Note (GRN) form
  * [JWT] All storage via fincore-engine
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Send, Printer } from 'lucide-react';
+import { Printer } from 'lucide-react';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
@@ -41,10 +42,13 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [narration, setNarration] = useState('');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<string | null>(null);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
     if (!partyName) { toast.error('Vendor name is required'); return; }
     if (!vendorChallanNo) { toast.error('Vendor challan number is required'); return; }
+    setSaving(true);
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
@@ -69,7 +73,9 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
       localStorage.setItem(key, JSON.stringify(existing));
       setPostedVoucherId(voucher.id);
       toast.success('Receipt Note (GRN) posted');
+      lastSavedRef.current = voucher.id;
     } catch { toast.error('Failed to save'); }
+    finally { setSaving(false); }
   }, [partyName, vendorChallanNo, date, voucherNo, receiveGodown, inventoryLines, narration, entityCode]);
 
   const handleSaveDraft = useCallback(() => {
@@ -100,6 +106,15 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
     setInventoryLines([]); setNarration('');
     setPostedVoucherId(null);
   }, []);
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [isDirty, clearForm]);
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
   const handlePrint = useCallback(() => {
     if (postedVoucherId && entityCode) {
       const url = `/erp/fincore/receipt-note-print?voucher_id=${postedVoucherId}&entity=${entityCode}&copy=stores`;
@@ -179,17 +194,23 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex justify-end gap-2">
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
         {postedVoucherId && (
-          <Button variant="outline" onClick={handlePrint}>
-            <Printer className="h-4 w-4 mr-2" />
-            Print
+          <Button size="sm" variant="outline" onClick={handlePrint}>
+            <Printer className="h-3.5 w-3.5 mr-1" /> Print Receipt Note
           </Button>
         )}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+      />
     </div>
     </>
   );

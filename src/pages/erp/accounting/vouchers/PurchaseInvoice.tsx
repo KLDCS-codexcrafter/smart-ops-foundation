@@ -3,7 +3,7 @@
  * Sprint 3B: Advance Adjustment Enhancement
  * [JWT] All storage via fincore-engine
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ChevronDown, Send, Info, Link2, Printer } from 'lucide-react';
+import { ChevronDown, Info, Link2, Printer } from 'lucide-react';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { TemplateField } from '@/components/fincore/TemplateField';
@@ -64,6 +65,8 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
   const [linkedAdvance, setLinkedAdvance] = useState<AdvanceEntry | null>(null);
   const [advancesOpen, setAdvancesOpen] = useState(false);
   const [againstPO, setAgainstPO] = useState('');
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<string | null>(null);
   const { getOpenOrdersForLookup, fulfillOrderLine } = useOrders(entityCode);
   const openPOs = useMemo(() => {
     const pos = getOpenOrdersForLookup('Purchase Order');
@@ -102,9 +105,10 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
     toast.success(`Linked advance ${adv.advance_ref_no}`);
   };
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
     if (!partyName) { toast.error('Vendor name is required'); return; }
     if (!vendorBillNo) { toast.error('Vendor bill number is required'); return; }
+    setSaving(true);
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
@@ -156,7 +160,9 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
       }
       toast.success('Purchase Invoice posted');
       setPostedVoucherId(voucher.id);
+      lastSavedRef.current = voucher.id;
     } catch { toast.error('Failed to save'); }
+    finally { setSaving(false); }
   }, [partyName, vendorBillNo, date, voucherNo, gstTotals, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance, againstPO, openPOs, fulfillOrderLine]);
 
   const handleSaveDraft = useCallback(() => {
@@ -189,6 +195,17 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
     setLinkedAdvance(null); setAgainstPO('');
     setPostedVoucherId(null);
   }, []);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [isDirty, clearForm]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
 
   const handlePrint = useCallback(() => {
     if (!postedVoucherId) return;
@@ -334,16 +351,23 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
         </Card>
       </Collapsible>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex justify-end gap-2">
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
         {postedVoucherId && (
           <Button size="sm" variant="outline" onClick={handlePrint}>
             <Printer className="h-3.5 w-3.5 mr-1" /> Print Purchase Invoice
           </Button>
         )}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+      />
     </div>
     </>
   );
