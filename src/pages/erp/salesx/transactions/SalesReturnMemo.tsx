@@ -191,7 +191,16 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
    
   void persistMemo;
 
-  const handleSubmit = useCallback(() => persistMemo('pending'), [persistMemo]);
+  const handlePost = useCallback(async () => {
+    lastSavedRef.current = false;
+    setSaving(true);
+    try {
+      persistMemo('pending');
+    } finally {
+      setSaving(false);
+    }
+  }, [persistMemo]);
+
   const handleSaveDraft = useCallback(() => {
     const err = validate();
     if (err) { toast.error(err); return; }
@@ -200,7 +209,34 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     toast.info('Saved as draft (pending approval)');
   }, [persistMemo, validate]);
 
-  useCtrlS(handleSubmit);
+  // ── Dirty / Cancel / Save & New (canonical · per Receipt.tsx gold reference) ──
+  const isDirty = useCallback(
+    () => Boolean(raisedById || againstInvoiceId || items.length > 0 || reasonNote.trim() || attachments.length > 0),
+    [raisedById, againstInvoiceId, items, reasonNote, attachments],
+  );
+
+  const clearForm = useCallback(() => {
+    setRaisedById('');
+    setAgainstInvoiceId('');
+    setReason('damaged_goods');
+    setReasonNote('');
+    setItems([]);
+    setAttachments([]);
+    lastSavedRef.current = false;
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard unsaved changes?')) return;
+    clearForm();
+    toast.info('Memo discarded.');
+  }, [isDirty, clearForm]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
+
+  useCtrlS(handlePost);
 
   // ── Render ─────────────────────────────────────────────────────────
   return (
