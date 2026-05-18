@@ -109,7 +109,9 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
       localStorage.setItem(key, JSON.stringify(existing));
       setPostedVoucherId(voucher.id);
       toast.success('Stock Journal posted');
+      lastSavedRef.current = voucher.id;
     } catch { toast.error('Failed to save'); }
+    finally { setSaving(false); }
   }, [consumptionLines, productionLines, purpose, referenceNo, date, voucherNo, narration, entityCode, department]);
 
   const handleSaveDraft = useCallback(() => {
