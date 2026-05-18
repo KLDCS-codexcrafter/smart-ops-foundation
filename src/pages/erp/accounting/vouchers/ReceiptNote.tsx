@@ -73,7 +73,9 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
       localStorage.setItem(key, JSON.stringify(existing));
       setPostedVoucherId(voucher.id);
       toast.success('Receipt Note (GRN) posted');
+      lastSavedRef.current = voucher.id;
     } catch { toast.error('Failed to save'); }
+    finally { setSaving(false); }
   }, [partyName, vendorChallanNo, date, voucherNo, receiveGodown, inventoryLines, narration, entityCode]);
 
   const handleSaveDraft = useCallback(() => {
