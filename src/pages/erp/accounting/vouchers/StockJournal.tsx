@@ -42,10 +42,13 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
   const [productionLines, setProductionLines] = useState<import('@/components/fincore/StockJournalLineGrid').StockJournalLine[]>([]);
   const [narration, setNarration] = useState('');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<string | null>(null);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
     if (consumptionLines.length === 0) { toast.error('At least one consumption line is required'); return; }
     if (purpose === 'Other' && !referenceNo) { toast.error('Reference No is mandatory for "Other" purpose'); return; }
+    setSaving(true);
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
