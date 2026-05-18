@@ -98,7 +98,14 @@ export function useCardEntitlement() {
       const servicedesk =
         ent.card_id === 'servicedesk' &&
         ent.status === 'locked';
-      if (gfProd || procure360 || qualicheck || engineeringx || sitex || maintainpro || servicedesk) {
+      // T-Phase-1.D.T2 · D-NEW-BB · 9th consumer · Migrate stale 'locked' for requestx
+      //   (Sprint D Shell migration · seed flip alone insufficient for existing tenants ·
+      //   caught by founder visual inspection during re-audit · 3rd consecutive Closeout-sprint
+      //   trap · institutional 3-step ceremony reaffirmed: catalog + seed + migration)
+      const requestx =
+        ent.card_id === 'requestx' &&
+        ent.status === 'locked';
+      if (gfProd || procure360 || qualicheck || engineeringx || sitex || maintainpro || servicedesk || requestx) {
         ent.status = 'active';
         ent.updated_at = new Date().toISOString();
         migrated = true;
