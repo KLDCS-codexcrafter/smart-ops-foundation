@@ -42,10 +42,13 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [narration, setNarration] = useState('');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<string | null>(null);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
     if (!partyName) { toast.error('Vendor name is required'); return; }
     if (!vendorChallanNo) { toast.error('Vendor challan number is required'); return; }
+    setSaving(true);
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
