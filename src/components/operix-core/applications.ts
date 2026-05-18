@@ -216,7 +216,7 @@ export const applications: AppDefinition[] = [
     id: 'vendor-portal',
     name: 'Vendor Portal',
     description: 'Tenant-internal vendor programme management · parallels Distributor Hub · vendor master · vendor agreements · vendor onboarding inbox · vendor performance scoring · MSME-43BH compliance · vendor communications · Saathi (साथी) WhatsApp AI co-pilot. D-282-REV reversal · Vendor Portal is now the canonical home for vendor programme (replaces redundant SupplyX role).',
-    category: 'Procurement Hub',
+    category: 'Ops Hub',
     route: '/erp/vendor-portal',
     icon: 'Building2',
     status: 'active',  // D-NEW-DN · A.1 NEW · 6th FR-81 application · parallels distributor-hub
