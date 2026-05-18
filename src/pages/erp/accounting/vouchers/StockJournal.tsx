@@ -2,14 +2,15 @@
  * StockJournal.tsx — Full Stock Journal form (two-grid layout)
  * [JWT] All storage via fincore-engine
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Send, Printer } from 'lucide-react';
+import { Printer } from 'lucide-react';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { StockJournalLineGrid } from '@/components/fincore/StockJournalLineGrid';
