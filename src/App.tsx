@@ -574,6 +574,8 @@ const App = () => (
               <Route path="/erp/supplyx/*" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/docvault" element={<P><DocVaultPage /></P>} />
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
+              <Route path="/erp/vendor-portal" element={<P><VendorPortal /></P>} />
+              <Route path="/erp/vendor-portal/*" element={<P><VendorPortal /></P>} />
               <Route path="/erp/production" element={<P><ProductionPage /></P>} />
               <Route path="/erp/production/*" element={<P><ProductionPage /></P>} />
               <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
