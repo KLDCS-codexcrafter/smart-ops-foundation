@@ -584,12 +584,16 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
     [partyName.length, inventoryLines.length, ledgerLines.length, narration.length],
   );
 
-  const _handleCancel = useCallback(() => {
+  const handleCancel = useCallback(() => {
     if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
     clearForm();
     toast.info('Voucher discarded.');
   }, [isDirty, clearForm]);
-  void _handleCancel;
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
 
   const serializeFormState = useCallback(
     (): Partial<Voucher> => ({ party_name: partyName, date, narration }),
