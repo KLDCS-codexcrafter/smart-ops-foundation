@@ -329,6 +329,7 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
       // [JWT] POST /api/accounting/vouchers
       localStorage.setItem(key, JSON.stringify(existing));
       setPostedVoucherId(voucher.id);
+      lastSavedRef.current = true;
       setPostedVoucherNo(voucher.voucher_no);
       setIrnStatus('pending');
       setCurrentIrn(null);
