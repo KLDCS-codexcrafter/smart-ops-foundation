@@ -160,7 +160,9 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
       }
       toast.success('Purchase Invoice posted');
       setPostedVoucherId(voucher.id);
+      lastSavedRef.current = voucher.id;
     } catch { toast.error('Failed to save'); }
+    finally { setSaving(false); }
   }, [partyName, vendorBillNo, date, voucherNo, gstTotals, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, linkedAdvance, againstPO, openPOs, fulfillOrderLine]);
 
   const handleSaveDraft = useCallback(() => {
