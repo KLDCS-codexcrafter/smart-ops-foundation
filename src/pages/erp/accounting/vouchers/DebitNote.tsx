@@ -49,6 +49,8 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
   const [ledgerLines, setLedgerLines] = useState<VoucherLedgerLine[]>([]);
   const [narration, setNarration] = useState('');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<string | null>(null);
 
   const gstTotals = useMemo(() => {
     const t = { taxable: 0, cgst: 0, sgst: 0, igst: 0, cess: 0, total: 0 };
