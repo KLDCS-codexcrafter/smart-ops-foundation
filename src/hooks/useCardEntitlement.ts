@@ -105,9 +105,26 @@ export function useCardEntitlement() {
       const requestx =
         ent.card_id === 'requestx' &&
         ent.status === 'locked';
-      if (gfProd || procure360 || qualicheck || engineeringx || sitex || maintainpro || servicedesk || requestx) {
+      // T-Phase-1.A.1 · D-NEW-BB · 10th consumer · Migrate stale 'locked' for vendor-portal
+      //   (NEW card creation · 3-step ceremony PROACTIVE per FR-82 candidate · this branch handles
+      //   the unlikely case that vendor-portal somehow ended up 'locked' for existing tenants ·
+      //   defensive · 1st PROACTIVE validation of 3-step ceremony · matches institutional pattern)
+      const vendorPortal =
+        ent.card_id === 'vendor-portal' &&
+        ent.status === 'locked';
+      if (gfProd || procure360 || qualicheck || engineeringx || sitex || maintainpro || servicedesk || requestx || vendorPortal) {
         ent.status = 'active';
         ent.updated_at = new Date().toISOString();
+        migrated = true;
+      }
+      // T-Phase-1.A.1 · D-NEW-DR · supplyx DEPRECATION migration · flip ACTIVE → 'locked'
+      //   (D-282-REV · SupplyX superseded by Vendor Portal · this migration applies to ALL
+      //   existing tenants whose seed flipped supplyx from active → locked · idempotent
+      //   matches institutional deprecation pattern · panels untouched · file removal deferred)
+      if (ent.card_id === 'supplyx' && ent.status === 'active') {
+        ent.status = 'locked';
+        ent.updated_at = new Date().toISOString();
+        ent.notes = 'Deprecated at T-Phase-1.A.1 · D-282-REV · superseded by Vendor Portal card';
         migrated = true;
       }
     }

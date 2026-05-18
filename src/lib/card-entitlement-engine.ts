@@ -89,7 +89,8 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     // matrix filter denied all sidebar items → empty sidebars. Invariant test in
     // src/test/seed-entitlement-coverage.test.ts prevents recurrence (D-NEW-CT 17th canonical).
     one('store-hub'),       // active · A.9.T1 Shell retrofit
-    one('supplyx'),         // active · A.9.T1 Shell retrofit
+    one('supplyx', 'locked'),  // DEPRECATED at Sprint T-Phase-1.A.1 · D-282-REV · superseded by Vendor Portal card · file removal deferred to cleanup sprint
+    one('vendor-portal'),      // active · A.1 NEW · D-NEW-DN · D-282-REV · 6th FR-81 application · parallels distributor-hub
     one('docvault'),        // active · A.8 DocVault Hub-and-Spoke (FR-73)
     one('engineeringx'),    // active · A.10/A.13 EngineeringX (MOAT #21)
     // ─── A.14 Foundation · 10th card on Shell pattern · D-NEW-CT invariant extension ───

@@ -205,12 +205,21 @@ export const applications: AppDefinition[] = [
   },
   {
     id: 'supplyx',
-    name: 'SupplyX',
-    description: 'Internal supply requisition · stock check before requisition, auto-PR trigger to Procure360. Lightweight requisition flow (early scaffold).',
+    name: 'SupplyX (deprecating)',
+    description: 'DEPRECATED per D-282-REV (Sprint T-Phase-1.A.1 · May 18 2026) · superseded by Vendor Portal card. SupplyX role (internal read-only mirror of Procure360) was redundant · Vendor Portal becomes the canonical tenant-internal vendor programme hub paralleling Distributor Hub. SupplyX file removal in cleanup sprint.',
     category: 'Ops Hub',
     route: '/erp/supplyx',
     icon: 'Truck',
-    status: 'active',  // T-Phase-1.A.7.α-a · Q-LOCK-13a · D-NEW-BB pattern (parallel to qualicheck A.5 + store-hub A.6)
+    status: 'coming_soon',  // D-282-REV · A.1 deprecation · file removal deferred
+  },
+  {
+    id: 'vendor-portal',
+    name: 'Vendor Portal',
+    description: 'Tenant-internal vendor programme management · parallels Distributor Hub · vendor master · vendor agreements · vendor onboarding inbox · vendor performance scoring · MSME-43BH compliance · vendor communications · Saathi (साथी) WhatsApp AI co-pilot. D-282-REV reversal · Vendor Portal is now the canonical home for vendor programme (replaces redundant SupplyX role).',
+    category: 'Ops Hub',
+    route: '/erp/vendor-portal',
+    icon: 'Building2',
+    status: 'active',  // D-NEW-DN · A.1 NEW · 6th FR-81 application · parallels distributor-hub
   },
   // 🆕 NEW Tier 1 #12 (Master Plan §51.2 April 30, 2026 LOCK)
   {

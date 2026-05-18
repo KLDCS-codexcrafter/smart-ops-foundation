@@ -25,7 +25,8 @@ export type CardId =
   | 'taskflow'                // Tier 3 stub (existing card · was missing)
   | 'unicomm'                 // Tier 3 stub (existing card · was missing)
   | 'webstorex'               // Tier 3 stub · MOAT #11 (existing card · was missing)
-  | 'comply360';              // Tier 4 deferred · Phase 1.4+ (existing card · was missing)
+  | 'comply360'              // Tier 4 deferred · Phase 1.4+ (existing card · was missing)
+  | 'vendor-portal';          // Sprint T-Phase-1.A.1 · NEW · D-282-REV · Vendor Portal card (parallels Distributor Hub · 6th FR-81 application)
 
 export type PlanTier = 'starter' | 'growth' | 'enterprise' | 'trial';
 

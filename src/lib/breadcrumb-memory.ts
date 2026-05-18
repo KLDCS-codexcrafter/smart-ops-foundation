@@ -72,6 +72,7 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'unicomm':         '/erp/unicomm',
   'webstorex':       '/erp/webstorex',
   'comply360':       '/erp/comply360',
+  'vendor-portal':   '/erp/vendor-portal',
 };
 
 /**

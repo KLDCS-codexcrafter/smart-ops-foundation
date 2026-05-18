@@ -222,6 +222,7 @@ const VendorCommLog = lazy(() => import('./pages/vendor-portal/VendorCommLog'));
 const VendorOnboardingFirstQuote = lazy(() => import('./pages/vendor-portal/VendorOnboardingFirstQuote'));
 const HappyCodeChannel2Form = lazy(() => import('./pages/public/HappyCodeChannel2Form'));
 const RequestX = lazy(() => import('./pages/erp/requestx/RequestXPage'));
+const VendorPortal = lazy(() => import('./pages/erp/vendor-portal/VendorPortalPage'));
 const ProductionPage = lazy(() => import('./pages/erp/production/ProductionPage'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
@@ -573,6 +574,8 @@ const App = () => (
               <Route path="/erp/supplyx/*" element={<P><SupplyXPage /></P>} />
               <Route path="/erp/docvault" element={<P><DocVaultPage /></P>} />
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
+              <Route path="/erp/vendor-portal" element={<P><VendorPortal /></P>} />
+              <Route path="/erp/vendor-portal/*" element={<P><VendorPortal /></P>} />
               <Route path="/erp/production" element={<P><ProductionPage /></P>} />
               <Route path="/erp/production/*" element={<P><ProductionPage /></P>} />
               <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
