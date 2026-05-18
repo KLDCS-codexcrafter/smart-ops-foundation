@@ -181,6 +181,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     list.push(memo);
     // [JWT] POST /api/salesx/sales-return-memos
     localStorage.setItem(key, JSON.stringify(list));
+    lastSavedRef.current = true;
     toast.success(`Sales Return Memo ${memoNo} submitted for approval`);
     // Reset form (memoNo stays — would be replaced by next sequence on a new entry)
     setRaisedById(''); setAgainstInvoiceId(''); setReason('damaged_goods');
