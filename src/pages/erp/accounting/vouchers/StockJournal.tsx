@@ -234,6 +234,7 @@ export function StockJournalPanel({ onSaveDraft }: StockJournalPanelProps) {
         isSaving={saving}
         canPost
         status="draft"
+        showPrint={false}
       />
     </div>
     </>

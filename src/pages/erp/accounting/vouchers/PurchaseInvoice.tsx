@@ -367,6 +367,7 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
         isSaving={saving}
         canPost
         status="draft"
+        showPrint={false}
       />
     </div>
     </>

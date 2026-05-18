@@ -210,6 +210,7 @@ export function ReceiptNotePanel({ onSaveDraft }: ReceiptNotePanelProps) {
         isSaving={saving}
         canPost
         status="draft"
+        showPrint={false}
       />
     </div>
     </>
