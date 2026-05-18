@@ -81,7 +81,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('gateflow'),     // active per Phase 1.A.1 (3 sub-sprints closed)
     one('production'),   // active per A.2.b D-NEW-T
     one('maintainpro'),  // A.17 STATUS FLIP · MOAT #23 banks · matches A.13 EngineeringX + A.15a SiteX precedent
-    one('requestx', 'locked'),
+    one('requestx'),       // active · D Shell migration · matches sibling Shell-pattern cards per D-NEW-CT
     one('frontdesk', 'locked'),
     one('servicedesk'),  // C.2.T1 STATUS FLIP · MOAT #24 banks · matches A.13 EngineeringX + A.15a SiteX + A.17 MaintainPro precedent
     // ─── A.13.T2 Hotfix · seed parity with active Shell-pattern cards ───
