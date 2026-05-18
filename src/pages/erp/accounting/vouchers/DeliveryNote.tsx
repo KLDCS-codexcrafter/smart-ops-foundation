@@ -2,17 +2,18 @@
  * DeliveryNote.tsx — Full Delivery Note form with SAM injection (Sprint 5)
  * [JWT] All storage via fincore-engine
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { Send, ChevronDown, Printer } from 'lucide-react';
+import { ChevronDown, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/fincore/DraftTray';
@@ -74,6 +75,8 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [narration, setNarration] = useState('');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
 
   // SAM state
   const [customerId, setCustomerId] = useState<string | null>(null);
@@ -151,9 +154,11 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
     setPartyName(c.partyName);
   }, [customers]);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
+    lastSavedRef.current = false;
     if (!partyName) { toast.error('Buyer name is required'); return; }
     const key = vouchersKey(entityCode);
+    setSaving(true);
     try {
       // [JWT] GET /api/accounting/vouchers
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
