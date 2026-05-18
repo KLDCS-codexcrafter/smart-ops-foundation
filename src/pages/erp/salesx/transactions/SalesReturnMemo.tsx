@@ -3,7 +3,7 @@
  * Sprint 6B. Memo is the authorization; Credit Note is the accounting entry.
  * [JWT] GET/POST/PATCH /api/salesx/sales-return-memos
  */
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,12 +17,13 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 
-import { Save, Send, Plus, Trash2, Paperclip } from 'lucide-react';
+import { Save, Plus, Trash2, Paperclip } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import { vouchersKey, generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
@@ -52,6 +53,8 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
   // ── Header ─────────────────────────────────────────────────────────
   const [memoNo] = useState(() => generateDocNo('SRM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<boolean>(false);
 
   // ── Raised By ──────────────────────────────────────────────────────
   const persons = useMemo(() =>
@@ -178,6 +181,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     list.push(memo);
     // [JWT] POST /api/salesx/sales-return-memos
     localStorage.setItem(key, JSON.stringify(list));
+    lastSavedRef.current = true;
     toast.success(`Sales Return Memo ${memoNo} submitted for approval`);
     // Reset form (memoNo stays — would be replaced by next sequence on a new entry)
     setRaisedById(''); setAgainstInvoiceId(''); setReason('damaged_goods');
@@ -187,7 +191,16 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
    
   void persistMemo;
 
-  const handleSubmit = useCallback(() => persistMemo('pending'), [persistMemo]);
+  const handlePost = useCallback(async () => {
+    lastSavedRef.current = false;
+    setSaving(true);
+    try {
+      persistMemo('pending');
+    } finally {
+      setSaving(false);
+    }
+  }, [persistMemo]);
+
   const handleSaveDraft = useCallback(() => {
     const err = validate();
     if (err) { toast.error(err); return; }
@@ -196,7 +209,34 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
     toast.info('Saved as draft (pending approval)');
   }, [persistMemo, validate]);
 
-  useCtrlS(handleSubmit);
+  // ── Dirty / Cancel / Save & New (canonical · per Receipt.tsx gold reference) ──
+  const isDirty = useCallback(
+    () => Boolean(raisedById || againstInvoiceId || items.length > 0 || reasonNote.trim() || attachments.length > 0),
+    [raisedById, againstInvoiceId, items, reasonNote, attachments],
+  );
+
+  const clearForm = useCallback(() => {
+    setRaisedById('');
+    setAgainstInvoiceId('');
+    setReason('damaged_goods');
+    setReasonNote('');
+    setItems([]);
+    setAttachments([]);
+    lastSavedRef.current = false;
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard unsaved changes?')) return;
+    clearForm();
+    toast.info('Memo discarded.');
+  }, [isDirty, clearForm]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
+
+  useCtrlS(handlePost);
 
   // ── Render ─────────────────────────────────────────────────────────
   return (
@@ -405,7 +445,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
         </CardContent>
       </Card>
 
-      {/* Totals */}
+      {/* Totals (display-only · canonical footer below) */}
       <Card className="border-orange-500/30">
         <CardContent className="pt-4 flex items-center justify-between">
           <div>
@@ -414,17 +454,27 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
               ₹{totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleSaveDraft}>
-              <Save className="h-4 w-4 mr-1" /> Save Draft
-            </Button>
-            <Button data-primary onClick={handleSubmit}
-              className="bg-orange-500 hover:bg-orange-600">
-              <Send className="h-4 w-4 mr-1" /> Submit
-            </Button>
-          </div>
         </CardContent>
       </Card>
+
+      {/* Workflow-specific Save Draft (kept separate from canonical footer) */}
+      <div className="flex justify-end">
+        <Button variant="outline" onClick={handleSaveDraft} disabled={saving}>
+          <Save className="h-4 w-4 mr-1" /> Save Draft
+        </Button>
+      </div>
+
+      {/* Canonical voucher footer (FR-CANDIDATE-81) */}
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+        showPrint={false}
+        postLabel="Submit"
+      />
     </div>
   );
 }
