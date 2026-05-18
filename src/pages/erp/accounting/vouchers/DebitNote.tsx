@@ -223,6 +223,7 @@ export function DebitNotePanel({ onSaveDraft }: DebitNotePanelProps) {
         isSaving={saving}
         canPost
         status="draft"
+        showPrint={false}
       />
     </div>
     </>

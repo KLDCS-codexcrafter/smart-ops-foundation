@@ -3,7 +3,7 @@
  * Sprint 4: Auto-trigger commission reversal + optional reversal JV.
  * [JWT] All storage via fincore-engine
  */
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Send, FileMinus, Printer } from 'lucide-react';
+import { FileMinus, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InvoiceModeToggle } from '@/components/fincore/InvoiceModeToggle';
@@ -20,6 +20,7 @@ import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
 import { LedgerLineGrid } from '@/components/fincore/LedgerLineGrid';
 import { GSTComputationPanel } from '@/components/fincore/GSTComputationPanel';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import {
   generateVoucherNo,
   postVoucher,
@@ -66,6 +67,8 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
   const [narration, setNarration] = useState('');
   const [selectedMemoId, setSelectedMemoId] = useState<string>(fromMemoId ?? '');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
 
   const [reversalBanner, setReversalBanner] = useState<string | null>(null);
   const [pendingReversalJV, setPendingReversalJV] = useState<{
@@ -125,11 +128,13 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
     return t;
   }, [inventoryLines]);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
+    lastSavedRef.current = false;
     if (!partyName) { toast.error('Party name is required'); return; }
     if (!againstInvoice) { toast.error('Against Invoice No is required'); return; }
     if (!reasonCode) { toast.error('Reason code is required'); return; }
     const key = vouchersKey(entityCode);
+    setSaving(true);
     try {
       // [JWT] GET /api/accounting/vouchers
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
@@ -216,7 +221,9 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
 
       toast.success('Credit Note posted');
       setPostedVoucherId(voucher.id);
-    } catch { toast.error('Failed to save'); }
+      lastSavedRef.current = true;
+    } catch { toast.error('Failed to save'); lastSavedRef.current = false; }
+    finally { setSaving(false); }
   }, [partyName, againstInvoice, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, selectedMemoId]);
 
   const handleSaveDraft = useCallback(() => {
@@ -255,6 +262,17 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
       '_blank',
     );
   }, [postedVoucherId, entityCode]);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [isDirty, clearForm]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
   const { GuardDialog } = useVoucherEntityGuard({
     isDirty, serializeFormState, onSaveDraft, clearForm,
     voucherTypeName: 'Credit Note',
@@ -402,16 +420,24 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex justify-end gap-2">
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
         {postedVoucherId && (
           <Button size="sm" variant="outline" onClick={handlePrint}>
             <Printer className="h-3.5 w-3.5 mr-1" /> Print Credit Note
           </Button>
         )}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+        showPrint={false}
+      />
     </div>
     </>
   );

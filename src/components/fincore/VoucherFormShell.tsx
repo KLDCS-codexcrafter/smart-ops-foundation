@@ -1,10 +1,17 @@
 /**
- * TODO (T10-pre.1+): Integrate TallyVoucherHeader + PartyDispatchDialog +
- * ItemAllocationDialog + ItemParametersDialog into this shared shell so
- * subsequent voucher types (Receipt, Payment, JV, etc.) inherit the pattern
- * without re-wiring.
- */
-/**
+ * @deprecated As of TXUI arc (Sprint T-Phase-1.TXUI-1b · May 18, 2026), this component is
+ * deprecated. The canonical voucher form pattern is now `TallyVoucherHeader` + `VoucherFormFooter`
+ * directly composed by each voucher form (see Receipt.tsx as gold reference).
+ *
+ * STATUS at TXUI-1b banking:
+ * - VoucherFormShell has 0 production consumers (empirically verified via TXUI-0 diagnostic)
+ * - 14 of 14 FinCore voucher forms now use TallyVoucherHeader + VoucherFormFooter directly
+ * - This file is preserved for institutional code-archive reference
+ * - DO NOT consume from new forms · use the canonical TVH + VFF composition instead
+ *
+ * REMOVAL TARGET: Future cleanup arc (P2BB or later) may delete this file entirely.
+ *
+ * ORIGINAL DESCRIPTION (historical):
  * VoucherFormShell.tsx — Shared voucher entry form shell
  * Renders narration + optional terms/payment template fields in a collapsible section
  * [JWT] Voucher CRUD will move to /api/accounting/vouchers

@@ -2,17 +2,18 @@
  * DeliveryNote.tsx — Full Delivery Note form with SAM injection (Sprint 5)
  * [JWT] All storage via fincore-engine
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 import { Card, CardContent } from '@/components/ui/card';
-import { Send, ChevronDown, Printer } from 'lucide-react';
+import { ChevronDown, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { generateVoucherNo, vouchersKey } from '@/lib/fincore-engine';
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import type { DraftEntry } from '@/components/fincore/DraftTray';
@@ -74,6 +75,8 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
   const [inventoryLines, setInventoryLines] = useState<VoucherInventoryLine[]>([]);
   const [narration, setNarration] = useState('');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
 
   // SAM state
   const [customerId, setCustomerId] = useState<string | null>(null);
@@ -151,9 +154,11 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
     setPartyName(c.partyName);
   }, [customers]);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
+    lastSavedRef.current = false;
     if (!partyName) { toast.error('Buyer name is required'); return; }
     const key = vouchersKey(entityCode);
+    setSaving(true);
     try {
       // [JWT] GET /api/accounting/vouchers
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
@@ -342,7 +347,9 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         // Graceful fallback — never block DLN post
         console.warn('Packing material auto-deduction failed:', err);
       }
-    } catch { toast.error('Failed to save'); }
+      lastSavedRef.current = true;
+    } catch { toast.error('Failed to save'); lastSavedRef.current = false; }
+    finally { setSaving(false); }
   }, [
     partyName, date, voucherNo, againstSI, inventoryLines, narration, entityCode,
     samCfg, samSalesmanId, samSalesmanName, samAgentId, samAgentName,
@@ -387,6 +394,17 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
       window.open(url, '_blank');
     }
   }, [postedVoucherId, entityCode]);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [isDirty, clearForm]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
   const { GuardDialog } = useVoucherEntityGuard({
     isDirty, serializeFormState, onSaveDraft, clearForm,
     voucherTypeName: 'Delivery Note',
@@ -610,10 +628,8 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         </CardContent>
       </Card>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex justify-end gap-2">
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
         {postedVoucherId && (
           <Button variant="outline" onClick={handlePrint}>
             <Printer className="h-4 w-4 mr-2" />
@@ -621,6 +637,16 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
           </Button>
         )}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+        showPrint={false}
+      />
     </div>
     </>
   );
