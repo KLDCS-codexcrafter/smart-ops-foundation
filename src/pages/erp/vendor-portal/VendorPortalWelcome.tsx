@@ -188,14 +188,17 @@ export function VendorPortalWelcome({ onNavigate }: VendorPortalWelcomeProps): J
         </CardContent>
       </Card>
 
-      {/* ROADMAP CARD · Sprint A-b.1 delivered 3 of 5 internal panels · A-b.2 delivers 2 more */}
+      {/* ROADMAP CARD · Sprint A-b complete · all 5 internal panels live */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
-            <Activity className="h-4 w-4 text-slate-600" />
-            Internal Panels · Sprint A-b Progress
+            <Activity className="h-4 w-4 text-emerald-600" />
+            Internal Panels · Sprint A-b Complete
+            <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-700 border-emerald-500/30">
+              5 of 5 live
+            </Badge>
           </CardTitle>
-          <CardDescription>3 of 5 panels live · 2 panels coming Sprint A-b.2</CardDescription>
+          <CardDescription>All Phase 1 admin surfaces live · Sprint A-c next (External Portal Expansion)</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
@@ -223,16 +226,22 @@ export function VendorPortalWelcome({ onNavigate }: VendorPortalWelcomeProps): J
               <span className="text-center">Activity Monitor</span>
               <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-700 border-emerald-500/30">Live</Badge>
             </button>
-            <div className="flex flex-col items-center gap-1 p-2 rounded border border-border/50">
-              <MessageSquare className="h-4 w-4 text-slate-600" />
+            <button
+              onClick={() => onNavigate('vendor-communication-log')}
+              className="flex flex-col items-center gap-1 p-2 rounded border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+            >
+              <MessageSquare className="h-4 w-4 text-emerald-600" />
               <span className="text-center">Communication Log</span>
-              <Badge variant="outline" className="text-[9px]">A-b.2</Badge>
-            </div>
-            <div className="flex flex-col items-center gap-1 p-2 rounded border border-border/50">
-              <Megaphone className="h-4 w-4 text-slate-600" />
+              <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-700 border-emerald-500/30">Live</Badge>
+            </button>
+            <button
+              onClick={() => onNavigate('vendor-broadcast')}
+              className="flex flex-col items-center gap-1 p-2 rounded border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+            >
+              <Megaphone className="h-4 w-4 text-emerald-600" />
               <span className="text-center">Broadcast Console</span>
-              <Badge variant="outline" className="text-[9px]">A-b.2</Badge>
-            </div>
+              <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-700 border-emerald-500/30">Live</Badge>
+            </button>
           </div>
         </CardContent>
       </Card>

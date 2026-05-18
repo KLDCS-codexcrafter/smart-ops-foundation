@@ -33,7 +33,7 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
       { id: 'vendor-master', type: 'item', label: 'Vendor Master', icon: Building2, moduleId: 'vendor-master', requiredCards: ['vendor-portal'], keyboard: 'v m' },
       { id: 'vendor-agreements', type: 'item', label: 'Vendor Agreements', icon: FileSignature, moduleId: 'vendor-agreements', requiredCards: ['vendor-portal'], keyboard: 'v a' },
       { id: 'vendor-onboarding-inbox', type: 'item', label: 'Onboarding Inbox', icon: UserPlus, moduleId: 'vendor-onboarding-inbox', requiredCards: ['vendor-portal'], keyboard: 'v o' },
-      { id: 'vendor-categories', type: 'item', label: 'Vendor Categories', icon: ListChecks, moduleId: 'vendor-categories', requiredCards: ['vendor-portal'], keyboard: 'v g', comingSoon: true },
+      { id: 'vendor-categories', type: 'item', label: 'Vendor Categories', icon: ListChecks, moduleId: 'vendor-categories', requiredCards: ['vendor-portal'], keyboard: 'v g' },
     ],
   },
   {
@@ -55,8 +55,8 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
     icon: MessageSquare,
     collapsibleByDefault: true,
     children: [
-      { id: 'vendor-communication-log', type: 'item', label: 'Communication Log', icon: MessageSquare, moduleId: 'vendor-communication-log', requiredCards: ['vendor-portal'], keyboard: 'v l', comingSoon: true },
-      { id: 'vendor-broadcast', type: 'item', label: 'Broadcast Console', icon: Megaphone, moduleId: 'vendor-broadcast', requiredCards: ['vendor-portal'], keyboard: 'v b', comingSoon: true },
+      { id: 'vendor-communication-log', type: 'item', label: 'Communication Log', icon: MessageSquare, moduleId: 'vendor-communication-log', requiredCards: ['vendor-portal'], keyboard: 'v l' },
+      { id: 'vendor-broadcast', type: 'item', label: 'Broadcast Console', icon: Megaphone, moduleId: 'vendor-broadcast', requiredCards: ['vendor-portal'], keyboard: 'v b' },
       { id: 'saathi-admin', type: 'item', label: 'Saathi · Vendor AI', icon: Bot, moduleId: 'saathi-admin', requiredCards: ['vendor-portal'], keyboard: 'v i' },
     ],
   },

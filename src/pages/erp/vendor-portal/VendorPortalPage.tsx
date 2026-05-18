@@ -1,7 +1,7 @@
 /**
  * @file        VendorPortalPage.tsx
- * @sprint      T-Phase-1.A.1-VendorPortal-Foundation · 6th FR-81 application
- * @decisions   D-250 · FR-81 · D-282-REV · D-NEW-DN · D-NEW-DO · D-NEW-DQ
+ * @sprint      T-Phase-1.A-b.2-VendorPortal-Communications-Categories (A-b arc closure)
+ * @decisions   D-250 · FR-81 · D-282-REV · D-NEW-DN · D-NEW-DO · D-NEW-DQ · D-NEW-DU · D-NEW-DV · D-NEW-DW
  */
 import { useState, useEffect } from 'react';
 import { Shell } from '@/shell';
@@ -15,21 +15,10 @@ import { SaathiAdminPanel } from './panels/SaathiAdminPanel';
 import { VendorScoringPanel } from './panels/VendorScoringPanel';
 import { Msme43BhTrackerPanel } from './panels/Msme43BhTrackerPanel';
 import { VendorActivityMonitorPanel } from './panels/VendorActivityMonitorPanel';
+import { VendorCategoriesPanel } from './panels/VendorCategoriesPanel';
+import { VendorCommunicationLogAdminPanel } from './panels/VendorCommunicationLogAdminPanel';
+import { VendorBroadcastConsolePanel } from './panels/VendorBroadcastConsolePanel';
 import type { VendorPortalModule } from './VendorPortalSidebar.types';
-
-function ComingSoonPanel({ module }: { module: VendorPortalModule }): JSX.Element {
-  const labels: Record<string, string> = {
-    'vendor-categories': 'Vendor Categories',
-    'vendor-communication-log': 'Vendor Communication Log',
-    'vendor-broadcast': 'Vendor Broadcast Console',
-  };
-  return (
-    <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-      <p className="text-lg font-semibold">{labels[module] ?? module}</p>
-      <p className="text-sm mt-1">Coming in Sprint A-b · Internal Panel Build</p>
-    </div>
-  );
-}
 
 function renderModule(active: VendorPortalModule, setActive: (m: VendorPortalModule) => void): JSX.Element {
   switch (active) {
@@ -41,10 +30,9 @@ function renderModule(active: VendorPortalModule, setActive: (m: VendorPortalMod
     case 'vendor-scoring':             return <VendorScoringPanel />;
     case 'msme-compliance':            return <Msme43BhTrackerPanel />;
     case 'vendor-activity-monitor':    return <VendorActivityMonitorPanel />;
-    case 'vendor-categories':
-    case 'vendor-communication-log':
-    case 'vendor-broadcast':
-      return <ComingSoonPanel module={active} />;
+    case 'vendor-categories':          return <VendorCategoriesPanel />;
+    case 'vendor-communication-log':   return <VendorCommunicationLogAdminPanel />;
+    case 'vendor-broadcast':           return <VendorBroadcastConsolePanel />;
     default:
       return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
   }
