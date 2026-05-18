@@ -43,9 +43,9 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
     icon: BarChart3,
     collapsibleByDefault: true,
     children: [
-      { id: 'vendor-scoring', type: 'item', label: 'Scoring Dashboard', icon: Award, moduleId: 'vendor-scoring', requiredCards: ['vendor-portal'], keyboard: 'v s', comingSoon: true },
-      { id: 'vendor-activity-monitor', type: 'item', label: 'Activity Monitor', icon: Activity, moduleId: 'vendor-activity-monitor', requiredCards: ['vendor-portal'], keyboard: 'v t', comingSoon: true },
-      { id: 'msme-compliance', type: 'item', label: 'MSME-43BH Compliance', icon: AlertTriangle, moduleId: 'msme-compliance', requiredCards: ['vendor-portal'], keyboard: 'v p', comingSoon: true },
+      { id: 'vendor-scoring', type: 'item', label: 'Scoring Dashboard', icon: Award, moduleId: 'vendor-scoring', requiredCards: ['vendor-portal'], keyboard: 'v s' },
+      { id: 'vendor-activity-monitor', type: 'item', label: 'Activity Monitor', icon: Activity, moduleId: 'vendor-activity-monitor', requiredCards: ['vendor-portal'], keyboard: 'v t' },
+      { id: 'msme-compliance', type: 'item', label: 'MSME-43BH Compliance', icon: AlertTriangle, moduleId: 'msme-compliance', requiredCards: ['vendor-portal'], keyboard: 'v p' },
     ],
   },
   {
