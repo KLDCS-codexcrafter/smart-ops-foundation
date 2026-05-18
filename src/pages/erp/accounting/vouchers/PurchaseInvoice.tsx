@@ -65,6 +65,8 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
   const [linkedAdvance, setLinkedAdvance] = useState<AdvanceEntry | null>(null);
   const [advancesOpen, setAdvancesOpen] = useState(false);
   const [againstPO, setAgainstPO] = useState('');
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<string | null>(null);
   const { getOpenOrdersForLookup, fulfillOrderLine } = useOrders(entityCode);
   const openPOs = useMemo(() => {
     const pos = getOpenOrdersForLookup('Purchase Order');
