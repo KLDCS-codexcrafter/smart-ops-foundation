@@ -188,35 +188,50 @@ export function VendorPortalWelcome({ onNavigate }: VendorPortalWelcomeProps): J
         </CardContent>
       </Card>
 
+      {/* ROADMAP CARD · Sprint A-b.1 delivered 3 of 5 internal panels · A-b.2 delivers 2 more */}
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-sm flex items-center gap-2">
             <Activity className="h-4 w-4 text-slate-600" />
-            Sprint A-b Roadmap · Internal Panel Build
+            Internal Panels · Sprint A-b Progress
           </CardTitle>
-          <CardDescription>5 panels coming next sprint cycle</CardDescription>
+          <CardDescription>3 of 5 panels live · 2 panels coming Sprint A-b.2</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
-            <div className="flex flex-col items-center gap-1 p-2 rounded border border-border/50">
-              <Award className="h-4 w-4 text-slate-600" />
+            <button
+              onClick={() => onNavigate('vendor-scoring')}
+              className="flex flex-col items-center gap-1 p-2 rounded border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+            >
+              <Award className="h-4 w-4 text-emerald-600" />
               <span className="text-center">Scoring Dashboard</span>
-            </div>
-            <div className="flex flex-col items-center gap-1 p-2 rounded border border-border/50">
-              <AlertTriangle className="h-4 w-4 text-slate-600" />
-              <span className="text-center">MSME-43BH Auto-Compliance</span>
-            </div>
-            <div className="flex flex-col items-center gap-1 p-2 rounded border border-border/50">
-              <Activity className="h-4 w-4 text-slate-600" />
+              <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-700 border-emerald-500/30">Live</Badge>
+            </button>
+            <button
+              onClick={() => onNavigate('msme-compliance')}
+              className="flex flex-col items-center gap-1 p-2 rounded border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+            >
+              <AlertTriangle className="h-4 w-4 text-emerald-600" />
+              <span className="text-center">MSME-43BH Tracker</span>
+              <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-700 border-emerald-500/30">Live</Badge>
+            </button>
+            <button
+              onClick={() => onNavigate('vendor-activity-monitor')}
+              className="flex flex-col items-center gap-1 p-2 rounded border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+            >
+              <Activity className="h-4 w-4 text-emerald-600" />
               <span className="text-center">Activity Monitor</span>
-            </div>
+              <Badge variant="outline" className="text-[9px] bg-emerald-500/10 text-emerald-700 border-emerald-500/30">Live</Badge>
+            </button>
             <div className="flex flex-col items-center gap-1 p-2 rounded border border-border/50">
               <MessageSquare className="h-4 w-4 text-slate-600" />
               <span className="text-center">Communication Log</span>
+              <Badge variant="outline" className="text-[9px]">A-b.2</Badge>
             </div>
             <div className="flex flex-col items-center gap-1 p-2 rounded border border-border/50">
               <Megaphone className="h-4 w-4 text-slate-600" />
               <span className="text-center">Broadcast Console</span>
+              <Badge variant="outline" className="text-[9px]">A-b.2</Badge>
             </div>
           </div>
         </CardContent>

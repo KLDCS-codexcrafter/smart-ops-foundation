@@ -12,14 +12,14 @@ import { VendorMasterPanel } from './panels/VendorMasterPanel';
 import { VendorAgreementsPanel } from './panels/VendorAgreementsPanel';
 import { VendorOnboardingInboxPanel } from './panels/VendorOnboardingInboxPanel';
 import { SaathiAdminPanel } from './panels/SaathiAdminPanel';
+import { VendorScoringPanel } from './panels/VendorScoringPanel';
+import { Msme43BhTrackerPanel } from './panels/Msme43BhTrackerPanel';
+import { VendorActivityMonitorPanel } from './panels/VendorActivityMonitorPanel';
 import type { VendorPortalModule } from './VendorPortalSidebar.types';
 
 function ComingSoonPanel({ module }: { module: VendorPortalModule }): JSX.Element {
   const labels: Record<string, string> = {
     'vendor-categories': 'Vendor Categories',
-    'vendor-scoring': 'Vendor Scoring Dashboard',
-    'vendor-activity-monitor': 'Vendor Activity Monitor',
-    'msme-compliance': 'MSME-43BH Compliance Tracker',
     'vendor-communication-log': 'Vendor Communication Log',
     'vendor-broadcast': 'Vendor Broadcast Console',
   };
@@ -38,10 +38,10 @@ function renderModule(active: VendorPortalModule, setActive: (m: VendorPortalMod
     case 'vendor-agreements':          return <VendorAgreementsPanel />;
     case 'vendor-onboarding-inbox':    return <VendorOnboardingInboxPanel />;
     case 'saathi-admin':               return <SaathiAdminPanel />;
+    case 'vendor-scoring':             return <VendorScoringPanel />;
+    case 'msme-compliance':            return <Msme43BhTrackerPanel />;
+    case 'vendor-activity-monitor':    return <VendorActivityMonitorPanel />;
     case 'vendor-categories':
-    case 'vendor-scoring':
-    case 'vendor-activity-monitor':
-    case 'msme-compliance':
     case 'vendor-communication-log':
     case 'vendor-broadcast':
       return <ComingSoonPanel module={active} />;
