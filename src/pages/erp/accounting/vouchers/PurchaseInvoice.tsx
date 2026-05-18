@@ -351,16 +351,23 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
         </Card>
       </Collapsible>
 
-      <div className="flex gap-3 justify-end">
+      <div className="flex justify-end gap-2">
         {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
         {postedVoucherId && (
           <Button size="sm" variant="outline" onClick={handlePrint}>
             <Printer className="h-3.5 w-3.5 mr-1" /> Print Purchase Invoice
           </Button>
         )}
       </div>
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+      />
     </div>
     </>
   );
