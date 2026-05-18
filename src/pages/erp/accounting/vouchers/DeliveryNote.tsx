@@ -347,7 +347,9 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
         // Graceful fallback — never block DLN post
         console.warn('Packing material auto-deduction failed:', err);
       }
-    } catch { toast.error('Failed to save'); }
+      lastSavedRef.current = true;
+    } catch { toast.error('Failed to save'); lastSavedRef.current = false; }
+    finally { setSaving(false); }
   }, [
     partyName, date, voucherNo, againstSI, inventoryLines, narration, entityCode,
     samCfg, samSalesmanId, samSalesmanName, samAgentId, samAgentName,
@@ -392,6 +394,17 @@ export function DeliveryNotePanel({ onSaveDraft }: DeliveryNotePanelProps) {
       window.open(url, '_blank');
     }
   }, [postedVoucherId, entityCode]);
+
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [isDirty, clearForm]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
   const { GuardDialog } = useVoucherEntityGuard({
     isDirty, serializeFormState, onSaveDraft, clearForm,
     voucherTypeName: 'Delivery Note',
