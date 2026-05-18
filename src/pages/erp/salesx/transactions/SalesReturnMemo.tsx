@@ -53,6 +53,8 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
   // ── Header ─────────────────────────────────────────────────────────
   const [memoNo] = useState(() => generateDocNo('SRM', entityCode));
   const [memoDate, setMemoDate] = useState(todayISO());
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef<boolean>(false);
 
   // ── Raised By ──────────────────────────────────────────────────────
   const persons = useMemo(() =>
