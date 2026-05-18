@@ -4,7 +4,7 @@
  * @decisions   D-NEW-DN · D-255 token-only onboarding · D-272 self-contained portal
  * @reuses      vendor-onboarding-engine (consume only · 0-diff)
  */
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,8 +36,8 @@ function loadAllOnboardings(): OnboardingRecord[] {
 }
 
 export function VendorOnboardingInboxPanel(): JSX.Element {
-  const [refreshCounter, setRefreshCounter] = useState(0);
-  const onboardings = useMemo(() => loadAllOnboardings(), [refreshCounter]);
+  const [onboardings, setOnboardings] = useState<OnboardingRecord[]>(() => loadAllOnboardings());
+  const handleRefresh = (): void => setOnboardings(loadAllOnboardings());
 
   const stageBadge = (rec: OnboardingRecord): JSX.Element => {
     if (rec.is_first_time) {
@@ -93,7 +93,7 @@ export function VendorOnboardingInboxPanel(): JSX.Element {
         </CardContent>
       </Card>
 
-      <Button variant="outline" onClick={() => setRefreshCounter(c => c + 1)}>
+      <Button variant="outline" onClick={handleRefresh}>
         Refresh
       </Button>
     </div>
