@@ -20,6 +20,7 @@ import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
 import { LedgerLineGrid } from '@/components/fincore/LedgerLineGrid';
 import { GSTComputationPanel } from '@/components/fincore/GSTComputationPanel';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import {
   generateVoucherNo,
   postVoucher,
@@ -66,6 +67,8 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
   const [narration, setNarration] = useState('');
   const [selectedMemoId, setSelectedMemoId] = useState<string>(fromMemoId ?? '');
   const [postedVoucherId, setPostedVoucherId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
 
   const [reversalBanner, setReversalBanner] = useState<string | null>(null);
   const [pendingReversalJV, setPendingReversalJV] = useState<{
@@ -125,11 +128,13 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
     return t;
   }, [inventoryLines]);
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
+    lastSavedRef.current = false;
     if (!partyName) { toast.error('Party name is required'); return; }
     if (!againstInvoice) { toast.error('Against Invoice No is required'); return; }
     if (!reasonCode) { toast.error('Reason code is required'); return; }
     const key = vouchersKey(entityCode);
+    setSaving(true);
     try {
       // [JWT] GET /api/accounting/vouchers
       const existing = JSON.parse(localStorage.getItem(key) || '[]');
@@ -216,7 +221,9 @@ export function CreditNotePanel({ onSaveDraft }: CreditNotePanelProps) {
 
       toast.success('Credit Note posted');
       setPostedVoucherId(voucher.id);
-    } catch { toast.error('Failed to save'); }
+      lastSavedRef.current = true;
+    } catch { toast.error('Failed to save'); lastSavedRef.current = false; }
+    finally { setSaving(false); }
   }, [partyName, againstInvoice, reasonCode, gstTotals, date, voucherNo, narration, ledgerLines, inventoryLines, invoiceMode, entityCode, selectedMemoId]);
 
   const handleSaveDraft = useCallback(() => {
