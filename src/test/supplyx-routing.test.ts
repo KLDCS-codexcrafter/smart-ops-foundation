@@ -47,11 +47,15 @@ describe('SupplyX sidebar config · D-NEW-CC canonical (α-a Block A)', () => {
       expect(kb.startsWith('x ')).toBe(true);
     }
   });
-  it('Q-LOCK-13a · supplyx status flipped to active at α-a close', async () => {
+  it('Q-LOCK-13a + D-282-REV \u00b7 supplyx deprecated \u00b7 status: coming_soon (was active)', async () => {
+    // Sprint T-Phase-1.A.1 (May 18 2026) \u00b7 D-282-REV institutionally reverses D-282.
+    // SupplyX deprecated \u00b7 superseded by Vendor Portal card (canonical tenant-internal vendor programme hub).
+    // This regression guard preserved \u00b7 assertion value updated to reflect new deprecated status.
+    // Per FR-10 Resolution (D-NEW-DS): intentional assertion updates per registered D-decisions are NOT FR-10 violations.
     const mod = await import('@/components/operix-core/applications');
     const apps = (mod as { applications?: ReadonlyArray<{ id: string; status: string }> }).applications;
     expect(apps).toBeDefined();
     const sx = apps?.find((a) => a.id === 'supplyx');
-    expect(sx?.status).toBe('active');
+    expect(sx?.status).toBe('coming_soon');
   });
 });
