@@ -445,7 +445,7 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
         </CardContent>
       </Card>
 
-      {/* Totals */}
+      {/* Totals (display-only · canonical footer below) */}
       <Card className="border-orange-500/30">
         <CardContent className="pt-4 flex items-center justify-between">
           <div>
@@ -454,17 +454,27 @@ export function SalesReturnMemoPanel({ entityCode }: Props) {
               ₹{totalAmount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </p>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={handleSaveDraft}>
-              <Save className="h-4 w-4 mr-1" /> Save Draft
-            </Button>
-            <Button data-primary onClick={handleSubmit}
-              className="bg-orange-500 hover:bg-orange-600">
-              <Send className="h-4 w-4 mr-1" /> Submit
-            </Button>
-          </div>
         </CardContent>
       </Card>
+
+      {/* Workflow-specific Save Draft (kept separate from canonical footer) */}
+      <div className="flex justify-end">
+        <Button variant="outline" onClick={handleSaveDraft} disabled={saving}>
+          <Save className="h-4 w-4 mr-1" /> Save Draft
+        </Button>
+      </div>
+
+      {/* Canonical voucher footer (FR-CANDIDATE-81) */}
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+        showPrint={false}
+        postLabel="Submit"
+      />
     </div>
   );
 }
