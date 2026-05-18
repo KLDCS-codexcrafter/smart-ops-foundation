@@ -196,6 +196,17 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
     setPostedVoucherId(null);
   }, []);
 
+  const handleCancel = useCallback(() => {
+    if (isDirty() && !window.confirm('Discard this voucher? Unsaved changes will be lost.')) return;
+    clearForm();
+    toast.info('Voucher discarded.');
+  }, [isDirty, clearForm]);
+
+  const handleSaveAndNew = useCallback(async () => {
+    await handlePost();
+    if (lastSavedRef.current) clearForm();
+  }, [handlePost, clearForm]);
+
   const handlePrint = useCallback(() => {
     if (!postedVoucherId) return;
     window.open(
