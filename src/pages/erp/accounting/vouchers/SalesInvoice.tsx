@@ -133,6 +133,10 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
   const [ewbTransporter, setEwbTransporter] = useState('');
   const [ewbDistanceKm, setEwbDistanceKm] = useState<number>(100);
 
+  // Canonical adoption — saving state + lastSavedRef (Receipt.tsx gold reference)
+  const [saving, setSaving] = useState(false);
+  const lastSavedRef = useRef(false);
+
   const openSOs = useMemo(() => {
     const sos = getOpenOrdersForLookup('Sales Order');
     if (partyName) return sos.filter(s => s.party_name === partyName);
