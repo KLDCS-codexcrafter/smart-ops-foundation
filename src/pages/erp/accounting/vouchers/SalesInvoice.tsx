@@ -16,7 +16,8 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription,
 } from '@/components/ui/dialog';
-import { ChevronDown, Send, Info, Link2, ShieldAlert, FileText, Truck, Printer, X } from 'lucide-react';
+import { ChevronDown, Info, Link2, ShieldAlert, FileText, Truck, Printer, X } from 'lucide-react';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { checkCreditHold } from '@/lib/credit-hold-engine';
 import {
   creditHoldAuditKey, type CreditHoldCheck, type CreditHoldOverride,
