@@ -11,6 +11,7 @@ import { VendorPortalWelcome } from './VendorPortalWelcome';
 import { VendorMasterPanel } from './panels/VendorMasterPanel';
 import { VendorAgreementsPanel } from './panels/VendorAgreementsPanel';
 import { VendorOnboardingInboxPanel } from './panels/VendorOnboardingInboxPanel';
+import { SaathiAdminPanel } from './panels/SaathiAdminPanel';
 import type { VendorPortalModule } from './VendorPortalSidebar.types';
 
 function ComingSoonPanel({ module }: { module: VendorPortalModule }): JSX.Element {
@@ -21,7 +22,6 @@ function ComingSoonPanel({ module }: { module: VendorPortalModule }): JSX.Elemen
     'msme-compliance': 'MSME-43BH Compliance Tracker',
     'vendor-communication-log': 'Vendor Communication Log',
     'vendor-broadcast': 'Vendor Broadcast Console',
-    'saathi-admin': 'Saathi · Vendor AI Co-Pilot',
   };
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
@@ -37,13 +37,13 @@ function renderModule(active: VendorPortalModule, setActive: (m: VendorPortalMod
     case 'vendor-master':              return <VendorMasterPanel />;
     case 'vendor-agreements':          return <VendorAgreementsPanel />;
     case 'vendor-onboarding-inbox':    return <VendorOnboardingInboxPanel />;
+    case 'saathi-admin':               return <SaathiAdminPanel />;
     case 'vendor-categories':
     case 'vendor-scoring':
     case 'vendor-activity-monitor':
     case 'msme-compliance':
     case 'vendor-communication-log':
     case 'vendor-broadcast':
-    case 'saathi-admin':
       return <ComingSoonPanel module={active} />;
     default:
       return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;

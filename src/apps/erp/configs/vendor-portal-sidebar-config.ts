@@ -57,7 +57,7 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
     children: [
       { id: 'vendor-communication-log', type: 'item', label: 'Communication Log', icon: MessageSquare, moduleId: 'vendor-communication-log', requiredCards: ['vendor-portal'], keyboard: 'v l', comingSoon: true },
       { id: 'vendor-broadcast', type: 'item', label: 'Broadcast Console', icon: Megaphone, moduleId: 'vendor-broadcast', requiredCards: ['vendor-portal'], keyboard: 'v b', comingSoon: true },
-      { id: 'saathi-admin', type: 'item', label: 'Saathi · Vendor AI', icon: Bot, moduleId: 'saathi-admin', requiredCards: ['vendor-portal'], keyboard: 'v i', comingSoon: true },
+      { id: 'saathi-admin', type: 'item', label: 'Saathi · Vendor AI', icon: Bot, moduleId: 'saathi-admin', requiredCards: ['vendor-portal'], keyboard: 'v i' },
     ],
   },
 ];

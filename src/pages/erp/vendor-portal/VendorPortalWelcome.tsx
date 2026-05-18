@@ -166,17 +166,22 @@ export function VendorPortalWelcome({ onNavigate }: VendorPortalWelcomeProps): J
         </CardContent>
       </Card>
 
-      <Card className="border-slate-500/50 bg-gradient-to-br from-slate-500/5 to-transparent">
+      {/* 4. SAATHI TILE (D-NEW-DQ · admin command surface ACTIVE post-Sprint A.2 · Phase 2 functionality) */}
+      <Card
+        className="border-slate-500/50 bg-gradient-to-br from-slate-500/5 to-transparent hover:border-slate-500/70 hover:bg-slate-500/10 transition-colors cursor-pointer"
+        onClick={() => onNavigate('saathi-admin')}
+      >
         <CardContent className="p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Bot className="h-6 w-6 text-slate-600" />
             <div>
               <p className="font-medium flex items-center gap-2">
                 Saathi · Vendor AI Co-Pilot
-                <Badge variant="outline" className="text-[9px]">Coming Phase 2</Badge>
+                <Badge variant="default" className="text-[9px] bg-slate-600">Admin Surface Active</Badge>
+                <Badge variant="outline" className="text-[9px]">Phase 2 functionality</Badge>
               </p>
               <p className="text-sm text-muted-foreground">
-                WhatsApp-native AI · drafts quotes · negotiates · tracks payments · multi-lingual (Hindi/Tamil/Bengali) · admin command surface in Sprint A.2
+                WhatsApp-native AI · drafts quotes · negotiates · tracks payments · multi-lingual (Hindi · Tamil · Bengali · Gujarati) · click to explore admin command surface
               </p>
             </div>
           </div>
