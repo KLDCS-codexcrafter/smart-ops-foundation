@@ -1007,11 +1007,21 @@ export function SalesInvoicePanel({ onSaveDraft }: SalesInvoicePanelProps) {
         </Card>
       </Collapsible>
 
-      <div className="flex gap-3 justify-end">
-        {onSaveDraft && <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>}
-        <Button variant="outline" onClick={() => toast.info('Discarded')}>Cancel</Button>
-        <Button data-primary onClick={handlePost}><Send className="h-4 w-4 mr-2" />Post</Button>
-      </div>
+      {onSaveDraft && (
+        <div className="flex gap-3 justify-end">
+          <Button variant="outline" onClick={handleSaveDraft}>Save to Draft Tray</Button>
+        </div>
+      )}
+
+      <VoucherFormFooter
+        onPost={handlePost}
+        onSaveAndNew={handleSaveAndNew}
+        onCancel={handleCancel}
+        isSaving={saving}
+        canPost
+        status="draft"
+        showPrint={false}
+      />
 
       {/* Sprint 9 — IRN / EWB / Print toolbar (visible after Post) */}
       {postedVoucherId && (
