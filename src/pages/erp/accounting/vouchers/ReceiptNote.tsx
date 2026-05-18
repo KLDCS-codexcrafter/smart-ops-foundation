@@ -2,14 +2,15 @@
  * ReceiptNote.tsx — Full Receipt Note (GRN) form
  * [JWT] All storage via fincore-engine
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Send, Printer } from 'lucide-react';
+import { Printer } from 'lucide-react';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { InventoryLineGrid } from '@/components/fincore/InventoryLineGrid';
