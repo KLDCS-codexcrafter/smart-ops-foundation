@@ -23,6 +23,7 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import { vouchersKey, generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { VoucherFormFooter } from '@/components/fincore/VoucherFormFooter';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { dMul, dSum, round2 } from '@/lib/decimal-helpers';
