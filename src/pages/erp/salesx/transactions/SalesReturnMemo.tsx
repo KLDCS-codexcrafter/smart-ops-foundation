@@ -17,7 +17,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 
-import { Save, Send, Plus, Trash2, Paperclip } from 'lucide-react';
+import { Save, Plus, Trash2, Paperclip } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
