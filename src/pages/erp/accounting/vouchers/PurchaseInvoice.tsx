@@ -105,9 +105,10 @@ export function PurchaseInvoicePanel({ onSaveDraft }: PurchaseInvoicePanelProps)
     toast.success(`Linked advance ${adv.advance_ref_no}`);
   };
 
-  const handlePost = useCallback(() => {
+  const handlePost = useCallback(async () => {
     if (!partyName) { toast.error('Vendor name is required'); return; }
     if (!vendorBillNo) { toast.error('Vendor bill number is required'); return; }
+    setSaving(true);
     const key = vouchersKey(entityCode);
     try {
       // [JWT] GET /api/accounting/vouchers
