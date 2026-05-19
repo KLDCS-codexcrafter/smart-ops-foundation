@@ -20,6 +20,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { FileUp, Upload, CheckCircle, FileText, Bot, Clock } from 'lucide-react';
 import { getVendorSession, recordVendorActivity } from '@/lib/vendor-portal-auth-engine';
 import { listPurchaseOrders } from '@/lib/po-management-engine';
+import { useT } from '@/lib/i18n-engine';
 
 interface VendorInvoiceUploadRecord {
   id: string;
@@ -67,6 +68,7 @@ function formatDate(iso: string): string {
 
 export default function VendorInvoiceUpload(): JSX.Element {
   const session = getVendorSession();
+  const t = useT();
   const [refreshCounter, setRefreshCounter] = useState(0);
   const [linkedPoId, setLinkedPoId] = useState('');
   const [invoiceNo, setInvoiceNo] = useState('');
@@ -158,14 +160,14 @@ export default function VendorInvoiceUpload(): JSX.Element {
               <FileUp className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold">Upload Invoice</h1>
+              <h1 className="text-2xl font-bold">{t('vendor.invoice.title', 'Upload Invoice')}</h1>
               <p className="text-sm text-muted-foreground">
-                Link to PO · enter invoice details · admin reviews · OCR + auto-match in Phase 2
+                {t('vendor.invoice.subtitle', 'Link to PO · enter invoice details · admin reviews')}
               </p>
             </div>
           </div>
           <Badge variant="outline" className="gap-1 text-[10px]">
-            <Bot className="h-3 w-3" /> Saathi · Invoice reminders · Phase 2
+            <Bot className="h-3 w-3" /> {t('vendor.saathi.invoice_reminder', 'Saathi · Invoice reminders · Phase 2')}
           </Badge>
         </div>
 
@@ -246,13 +248,13 @@ export default function VendorInvoiceUpload(): JSX.Element {
             {success && (
               <Alert className="border-emerald-500/30 bg-emerald-500/5">
                 <CheckCircle className="h-4 w-4 text-emerald-600" />
-                <AlertDescription>Invoice uploaded · pending admin review</AlertDescription>
+                <AlertDescription>{t('vendor.invoice.success', 'Invoice uploaded · pending admin review')}</AlertDescription>
               </Alert>
             )}
 
             <Button onClick={handleSubmit} disabled={!canSubmit} className="w-full gap-2">
               {submitting ? <Clock className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-              Upload Invoice
+              {t('vendor.invoice.btn_upload', 'Upload Invoice')}
             </Button>
           </CardContent>
         </Card>
@@ -261,7 +263,7 @@ export default function VendorInvoiceUpload(): JSX.Element {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Uploaded Invoices ({invoices.length})
+              {t('vendor.invoice.history_title', 'Uploaded Invoices')} ({invoices.length})
             </CardTitle>
             <CardDescription>Your invoice submission history · most recent first</CardDescription>
           </CardHeader>

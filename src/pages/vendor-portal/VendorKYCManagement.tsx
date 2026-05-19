@@ -18,6 +18,7 @@ import {
   vendorComplianceRecordKey,
   type VendorComplianceRecord,
 } from '@/types/vendor-compliance-record';
+import { useT } from '@/lib/i18n-engine';
 
 function loadComplianceRecords(entityCode: string, vendorId: string): VendorComplianceRecord[] {
   try {
@@ -54,6 +55,7 @@ function verificationDisplay(status: string): { label: string; className: string
 
 export default function VendorKYCManagement(): JSX.Element {
   const session = getVendorSession();
+  const t = useT();
 
   const data = useMemo(() => {
     if (!session) return { party: null, records: [] as VendorComplianceRecord[] };
@@ -91,8 +93,8 @@ export default function VendorKYCManagement(): JSX.Element {
             </div>
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
-                KYC Management
-                <Badge variant="outline" className="text-[10px] gap-1"><Lock className="h-3 w-3" />Read-only · v1</Badge>
+                {t('vendor.kyc.title', 'KYC Management')}
+                <Badge variant="outline" className="text-[10px] gap-1"><Lock className="h-3 w-3" />{t('vendor.kyc.read_only_v1', 'Read-only · v1')}</Badge>
               </h1>
               <p className="text-sm text-muted-foreground">
                 Your compliance documents · expiry tracking · editable upload coming Sprint A-d
@@ -100,7 +102,7 @@ export default function VendorKYCManagement(): JSX.Element {
             </div>
           </div>
           <Badge variant="outline" className="gap-1 text-[10px]">
-            <Bot className="h-3 w-3" /> Saathi · KYC renewal reminders · Phase 2
+            <Bot className="h-3 w-3" /> {t('vendor.saathi.kyc_reminder', 'Saathi · KYC renewal reminders · Phase 2')}
           </Badge>
         </div>
 
@@ -108,7 +110,7 @@ export default function VendorKYCManagement(): JSX.Element {
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              <strong>{expired} document(s) expired</strong> · contact procurement to update urgently
+              <strong>{t('vendor.kyc.expired_alert', '{n} document(s) expired', { n: expired })}</strong> · contact procurement to update urgently
             </AlertDescription>
           </Alert>
         )}
@@ -116,14 +118,14 @@ export default function VendorKYCManagement(): JSX.Element {
           <Alert>
             <Clock className="h-4 w-4 text-amber-600" />
             <AlertDescription>
-              <strong>{expiringSoon} document(s) expiring within 30 days</strong> · plan renewal
+              <strong>{t('vendor.kyc.expiring_alert', '{n} document(s) expiring within 30 days', { n: expiringSoon })}</strong> · plan renewal
             </AlertDescription>
           </Alert>
         )}
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Vendor Identity</CardTitle>
+            <CardTitle className="text-base">{t('vendor.kyc.identity_title', 'Vendor Identity')}</CardTitle>
             <CardDescription>Party-master record (read-only · contact procurement for changes)</CardDescription>
           </CardHeader>
           <CardContent className="grid md:grid-cols-2 gap-4">
@@ -150,14 +152,14 @@ export default function VendorKYCManagement(): JSX.Element {
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
               <FileText className="h-4 w-4" />
-              Compliance Documents ({data.records.length})
+              {t('vendor.kyc.docs_title', 'Compliance Documents')} ({data.records.length})
             </CardTitle>
             <CardDescription>Documents on file · expiry status · verification state</CardDescription>
           </CardHeader>
           <CardContent>
             {data.records.length === 0 ? (
               <div className="text-center py-8 text-sm text-muted-foreground">
-                No compliance documents on file · contact procurement to register documents
+                {t('vendor.kyc.empty_state', 'No compliance documents on file · contact procurement')}
               </div>
             ) : (
               <div className="space-y-3">
