@@ -40,9 +40,10 @@ interface NavEntry {
 
 const NAV: NavEntry[] = [
   { to: '/vendor-portal',                  label: 'Dashboard',       icon: LayoutDashboard },
-  { to: '/vendor-portal/inbox',            label: 'Enquiries',       icon: FileText },
-  { to: '/vendor-portal/bids',             label: 'Submit Bids',     icon: Send,          comingSoon: 'A-c.2' },
-  { to: '/vendor-portal/purchase-orders',  label: 'Purchase Orders', icon: ShoppingCart,  comingSoon: 'A-c.2' },
+  { to: '/vendor-portal/enquiries',        label: 'Enquiries',       icon: FileText },
+  { to: '/vendor-portal/inbox',            label: 'Inbox (legacy)',  icon: FileText },
+  { to: '/vendor-portal/bids',             label: 'Submit Bids',     icon: Send },
+  { to: '/vendor-portal/purchase-orders',  label: 'Purchase Orders', icon: ShoppingCart },
   { to: '/vendor-portal/invoices',         label: 'Upload Invoices', icon: FileUp,        comingSoon: 'A-c.3' },
   { to: '/vendor-portal/kyc',              label: 'KYC Management',  icon: Shield,        comingSoon: 'A-c.3' },
   { to: '/vendor-portal/performance',      label: 'Performance',     icon: BarChart,      comingSoon: 'A-c.3' },
