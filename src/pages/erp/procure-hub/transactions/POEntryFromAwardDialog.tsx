@@ -67,6 +67,11 @@ export function POEntryFromAwardDialog({
       });
       if (po) {
         toast.success(`PO ${po.po_no} created from award ${award.quotation_no}`);
+        // Sprint B.2 · pulse publisher per B2-Q4=B (D-NEW-ET)
+        publishProcurementPulse({
+          severity: 'info',
+          message: `PO ${po.po_no} created from award ${award.quotation_no} · awaiting approval`,
+        });
         onSuccess(po.po_no);
         onClose();
       } else {
