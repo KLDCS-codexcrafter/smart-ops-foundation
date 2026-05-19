@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import type { VendorQuotation } from '@/types/vendor-quotation';
 import { createPOFromAward } from '@/lib/po-management-engine';
 import { tierFor } from '@/lib/approval-tier-helper';
+import { publishProcurementPulse } from '@/lib/procurement-pulse-stub';
 
 interface POEntryFromAwardDialogProps {
   open: boolean;
