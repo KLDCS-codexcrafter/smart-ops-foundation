@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus, Trash2, Save, IndianRupee, Keyboard, Bell, Printer } from 'lucide-react';
+import { Plus, Trash2, Save, IndianRupee, Keyboard, Bell, Printer, Sparkles } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
@@ -45,6 +45,11 @@ import {
   computeWelcomeKpis, applyReportFilter, type ReportFilter,
 } from '@/lib/procure360-report-engine';
 import { listQuotations, compareQuotations, validateQuotationCompliance } from '@/lib/vendor-quotation-engine';
+// ─── NEW · B.1 ───
+import { listPurchaseOrders } from '@/lib/po-management-engine';
+import type { VendorQuotation } from '@/types/vendor-quotation';
+import { tierFor } from '@/lib/approval-tier-helper';
+import { POEntryFromAwardDialog } from './transactions/POEntryFromAwardDialog';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
 import { getTopVendorsByScore, type VendorScore } from '@/lib/vendor-scoring-engine';
 import { getOverdueRfqFollowups } from '@/lib/procure-followup-engine';
