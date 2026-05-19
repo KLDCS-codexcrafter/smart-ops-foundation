@@ -121,6 +121,8 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'git-register',
   // ─── UPRA-4 Phase B · Tier-1 NEW ───
   'po-register',
+  // ─── NEW · B.1 ───
+  'pi-admin-review',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
