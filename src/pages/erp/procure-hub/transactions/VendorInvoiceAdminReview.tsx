@@ -51,6 +51,8 @@ import {
   type PiVarianceClassification,
 } from '@/lib/pi-tolerance-helper';
 import { getLinksForPo } from '@/lib/grn-po-linkage-engine';
+import { publishProcurementPulse } from '@/lib/procurement-pulse-stub';
+import { ProcurementLineageBreadcrumb } from '@/components/procurement/ProcurementLineageBreadcrumb';
 
 // Status union ADMIN-EXTENDED · vendor portal writes only 'pending_admin_review' (D-NEW-EC)
 type VendorInvoiceStatus = 'pending_admin_review' | 'approved' | 'rejected';
