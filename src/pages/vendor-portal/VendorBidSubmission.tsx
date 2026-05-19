@@ -68,13 +68,14 @@ function loadEnquiry(enquiryId: string, entityCode: string): ProcurementEnquiry 
   } catch { return null; }
 }
 
+const MP = resolveMoneyPrecision(null, null);
+
 function lineAmount(line: LineDraft): { basic: number; after_tax: number } {
-  const precision = resolveMoneyPrecision();
   const gross = dMul(line.qty_quoted, line.rate);
   const discount = dMul(gross, line.discount_percent / 100);
-  const basic = roundTo(dSub(gross, discount), precision);
+  const basic = roundTo(dSub(gross, discount), MP);
   const tax = dMul(basic, line.tax_percent / 100);
-  const after_tax = roundTo(basic + tax, precision);
+  const after_tax = roundTo(basic + tax, MP);
   return { basic, after_tax };
 }
 
