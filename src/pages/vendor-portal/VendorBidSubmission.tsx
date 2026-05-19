@@ -123,6 +123,25 @@ export default function VendorBidSubmission(): JSX.Element {
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // Voice notes state · per A-d-Q6=B-light + A-d-Q13=B (vendor reviews)
+  const voiceSupported = isSpeechRecognitionSupported();
+  const [voiceLang, setVoiceLang] = useState<'en-IN' | 'hi-IN'>('en-IN');
+  const [voiceListening, setVoiceListening] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+
+  const handleVoiceCapture = async (): Promise<void> => {
+    setVoiceError(null);
+    setVoiceListening(true);
+    try {
+      const text = await transcribeVoice(voiceLang);
+      setNotes((current) => current ? `${current}\n${text}` : text);
+    } catch (e) {
+      setVoiceError(e instanceof Error ? e.message : 'Voice transcription failed');
+    } finally {
+      setVoiceListening(false);
+    }
+  };
+
   useEffect(() => {
     if (!enquiry) return;
     setLines(enquiry.lines.map((l) => ({
