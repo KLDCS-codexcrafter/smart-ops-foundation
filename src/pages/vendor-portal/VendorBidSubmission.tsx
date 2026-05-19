@@ -296,7 +296,7 @@ export default function VendorBidSubmission(): JSX.Element {
             </div>
           </div>
           <Badge variant="outline" className="gap-1 text-[10px]">
-            <Bot className="h-3 w-3" /> {t('vendor.saathi.quote_draft', 'Saathi · Quote drafting · Phase 2')}
+            <Sparkles className="h-3 w-3" /> {t('vendor.coach.live', 'AI Quote Coach v2 · Live')}
           </Badge>
         </div>
 
