@@ -474,9 +474,51 @@ export default function VendorBidSubmission(): JSX.Element {
               <Checkbox id="rcm" checked={rcmApplicable} onCheckedChange={(c) => setRcmApplicable(c === true)} />
               <Label htmlFor="rcm" className="text-xs cursor-pointer">{t('vendor.bid.rcm_applicable', 'RCM (Reverse Charge) applicable')}</Label>
             </div>
-            <div className="md:col-span-2">
-              <Label htmlFor="notes" className="text-xs">{t('vendor.bid.notes', 'Notes (optional)')}</Label>
-              <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
+            <div className="md:col-span-2 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="notes" className="text-xs">{t('vendor.bid.notes', 'Notes (optional)')}</Label>
+                {voiceSupported && (
+                  <div className="flex items-center gap-1">
+                    <Select value={voiceLang} onValueChange={(v) => setVoiceLang(v as 'en-IN' | 'hi-IN')}>
+                      <SelectTrigger className="h-7 text-xs w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en-IN">English</SelectItem>
+                        <SelectItem value="hi-IN">हिन्दी</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      variant={voiceListening ? 'default' : 'outline'}
+                      size="sm"
+                      className="h-7 gap-1"
+                      onClick={handleVoiceCapture}
+                      disabled={voiceListening}
+                    >
+                      {voiceListening ? <MicOff className="h-3 w-3 animate-pulse" /> : <Mic className="h-3 w-3" />}
+                      <span className="text-[10px]">{voiceListening ? t('vendor.voice.listening', 'Listening...') : t('vendor.voice.button', 'Speak')}</span>
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder={t('vendor.bid.notes_placeholder', 'Any clarifications · spoken text appears here for review')}
+                rows={4}
+              />
+              {voiceError && (
+                <Alert variant="destructive" className="py-1">
+                  <AlertDescription className="text-xs">{voiceError}</AlertDescription>
+                </Alert>
+              )}
+              {!voiceSupported && (
+                <p className="text-[10px] text-muted-foreground">
+                  {t('vendor.voice.unsupported', 'Voice input requires Chrome or Edge · type your notes')}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
