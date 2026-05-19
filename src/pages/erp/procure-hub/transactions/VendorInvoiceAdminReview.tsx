@@ -212,6 +212,11 @@ export function VendorInvoiceAdminReviewPanel(): JSX.Element {
     setRejectReason('');
     setSelected(null);
     toast.success(`Invoice ${selected.invoice_no} rejected`);
+    // Sprint B.2 · publish rejection event (D-NEW-ET)
+    publishProcurementPulse({
+      severity: 'warning',
+      message: `Vendor invoice ${selected.invoice_no} rejected · vendor ${selected.vendor_name} notified · reason: ${rejectReason.trim().slice(0, 60)}`,
+    });
   };
 
   return (
@@ -223,6 +228,16 @@ export function VendorInvoiceAdminReviewPanel(): JSX.Element {
           {counts.pending} pending · {counts.approved} approved
         </Badge>
       </div>
+
+      {/* Sprint B.2 · lineage breadcrumb for selected PI (D-NEW-ES) */}
+      {selected && (
+        <ProcurementLineageBreadcrumb
+          sourceVoucherNo={selected.invoice_no}
+          sourceKind="pi"
+          sourceId={selected.linked_po_id}
+          entityCode={entityCode}
+        />
+      )}
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
         <TabsList>
