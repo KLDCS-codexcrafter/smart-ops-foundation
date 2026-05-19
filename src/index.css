@@ -57,6 +57,11 @@
     --sidebar-accent-foreground: 220 30% 15%;
     --sidebar-border: 220 20% 88%;
     --sidebar-ring: 174 72% 40%;
+
+    /* Vendor Portal · A-d.1 brand polish · inherits admin primary, adds gradient */
+    --vendor-gradient-from: 174 72% 40%;
+    --vendor-gradient-to: 174 72% 50%;
+    --vendor-accent-glow: 174 72% 60%;
   }
 
   .dark {
