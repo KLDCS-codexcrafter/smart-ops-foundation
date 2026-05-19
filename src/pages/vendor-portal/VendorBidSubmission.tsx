@@ -26,7 +26,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Send, Loader2, ArrowLeft, CheckCircle, Bot, AlertCircle,
+  Send, Loader2, ArrowLeft, CheckCircle, AlertCircle,
   Sparkles, Lightbulb, AlertTriangle, Info, Mic, MicOff,
 } from 'lucide-react';
 import { rfqsKey, type RFQ } from '@/types/rfq';
