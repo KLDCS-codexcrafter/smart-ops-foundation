@@ -30,9 +30,12 @@ import {
   verifyVendorCredential, createVendorSession, persistVendorSession,
   touchVendorLastLogin, recordVendorActivity,
 } from '@/lib/vendor-portal-auth-engine';
+import { useT } from '@/lib/i18n-engine';
+import { VendorLocaleToggle } from './VendorLocaleToggle';
 
 export default function VendorLogin(): JSX.Element {
   const navigate = useNavigate();
+  const t = useT();
   const [params] = useSearchParams();
   const tokenFromUrl = params.get('token');
   const vendorIdFromUrl = params.get('vendor');
@@ -87,7 +90,7 @@ export default function VendorLogin(): JSX.Element {
         password || null,
       );
       if (!result.ok || !result.vendor) {
-        setError('Invalid credentials. Check your vendor ID, entity code, and password.');
+        setError(t('vendor.login.error_invalid', 'Invalid credentials. Check your vendor ID, entity code, and password.'));
         return;
       }
       const session = createVendorSession(
@@ -107,14 +110,17 @@ export default function VendorLogin(): JSX.Element {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4">
+      <div className="absolute top-4 right-4">
+        <VendorLocaleToggle />
+      </div>
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
             <Building2 className="h-7 w-7 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold">Operix · Vendor Portal</h1>
-          <p className="text-sm text-muted-foreground">Secure access for procurement partners</p>
+          <h1 className="text-2xl font-bold">{t('vendor.login.title', 'Operix · Vendor Portal')}</h1>
+          <p className="text-sm text-muted-foreground">{t('vendor.login.subtitle', 'Secure access for procurement partners')}</p>
         </div>
 
         <Card>
@@ -123,12 +129,12 @@ export default function VendorLogin(): JSX.Element {
               {isTokenLanding ? (
                 <>
                   <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                  Token Sign-in
+                  {t('vendor.login.token_signin', 'Token Sign-in')}
                 </>
               ) : (
                 <>
                   <KeyRound className="h-4 w-4" />
-                  Sign in
+                  {t('vendor.login.signin', 'Sign in')}
                 </>
               )}
             </CardTitle>
@@ -144,20 +150,20 @@ export default function VendorLogin(): JSX.Element {
                 {loading ? (
                   <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    Verifying token…
+                    {t('vendor.login.token_verifying', 'Verifying token…')}
                   </div>
                 ) : error ? (
                   <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 ) : (
-                  <div className="text-sm text-muted-foreground">Token verified · redirecting…</div>
+                  <div className="text-sm text-muted-foreground">{t('vendor.login.token_verified', 'Token verified · redirecting…')}</div>
                 )}
               </div>
             ) : (
               <>
                 <div>
-                  <Label htmlFor="vendor-id" className="text-xs">Vendor ID</Label>
+                  <Label htmlFor="vendor-id" className="text-xs">{t('vendor.login.vendor_id', 'Vendor ID')}</Label>
                   <Input
                     id="vendor-id"
                     value={vendorId}
@@ -168,7 +174,7 @@ export default function VendorLogin(): JSX.Element {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="entity-code" className="text-xs">Entity Code</Label>
+                  <Label htmlFor="entity-code" className="text-xs">{t('vendor.login.entity_code', 'Entity Code')}</Label>
                   <Input
                     id="entity-code"
                     value={entityCode}
@@ -179,7 +185,7 @@ export default function VendorLogin(): JSX.Element {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="password" className="text-xs">Password</Label>
+                  <Label htmlFor="password" className="text-xs">{t('vendor.login.password', 'Password')}</Label>
                   <Input
                     id="password"
                     type="password"
@@ -201,7 +207,7 @@ export default function VendorLogin(): JSX.Element {
                   className="w-full gap-2"
                 >
                   {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                  Sign in
+                  {t('vendor.login.signin', 'Sign in')}
                 </Button>
               </>
             )}
@@ -210,7 +216,7 @@ export default function VendorLogin(): JSX.Element {
 
         {!isTokenLanding && (
           <div className="text-center text-xs text-muted-foreground space-y-1">
-            <p>First-time vendor? Use the token link from your invitation email.</p>
+            <p>{t('vendor.login.help_firsttime', 'First-time vendor? Use the token link from your invitation email.')}</p>
             <Badge variant="outline" className="text-[10px]">D-255 · Token-only initial access</Badge>
           </div>
         )}
