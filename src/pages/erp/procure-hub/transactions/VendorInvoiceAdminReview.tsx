@@ -169,6 +169,11 @@ export function VendorInvoiceAdminReviewPanel(): JSX.Element {
     if (!selected || !selectedContext) return;
     if (selectedContext.classification === 'breach') {
       toast.error(`Cannot approve · variance ${selectedContext.variance_pct.toFixed(1)}% breaches tolerance ${selectedContext.tolerance_pct}% · reject or request vendor correction`);
+      // Sprint B.2 · publish breach event (D-NEW-ET)
+      publishProcurementPulse({
+        severity: 'critical',
+        message: `Vendor invoice ${selected.invoice_no} variance ${selectedContext.variance_pct.toFixed(1)}% breaches tolerance · admin review queue blocked`,
+      });
       return;
     }
     const list = loadAllInvoices(entityCode);
