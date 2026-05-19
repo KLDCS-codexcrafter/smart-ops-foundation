@@ -231,6 +231,11 @@ const VendorPerformanceView = lazy(() => import('./pages/vendor-portal/VendorPer
 const HappyCodeChannel2Form = lazy(() => import('./pages/public/HappyCodeChannel2Form'));
 const RequestX = lazy(() => import('./pages/erp/requestx/RequestXPage'));
 const VendorPortal = lazy(() => import('./pages/erp/vendor-portal/VendorPortalPage'));
+// Sprint T-Phase-1.EX-1 · EximX Foundation · card promotion + sub-module shell
+const EximXPage = lazy(() => import('./pages/erp/eximx/EximXPage'));
+const EximXExportLayout = lazy(() => import('./pages/erp/eximx/EximXExportLayout'));
+const EximXImportLayout = lazy(() => import('./pages/erp/eximx/EximXImportLayout'));
+const EximXUnifiedLayout = lazy(() => import('./pages/erp/eximx/EximXUnifiedLayout'));
 const ProductionPage = lazy(() => import('./pages/erp/production/ProductionPage'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
@@ -593,6 +598,11 @@ const App = () => (
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
               <Route path="/erp/vendor-portal" element={<P><VendorPortal /></P>} />
               <Route path="/erp/vendor-portal/*" element={<P><VendorPortal /></P>} />
+              {/* Sprint T-Phase-1.EX-1 · EximX Foundation */}
+              <Route path="/erp/eximx" element={<P><EximXPage /></P>} />
+              <Route path="/erp/eximx/export/*" element={<P><EximXExportLayout /></P>} />
+              <Route path="/erp/eximx/import/*" element={<P><EximXImportLayout /></P>} />
+              <Route path="/erp/eximx/unified/*" element={<P><EximXUnifiedLayout /></P>} />
               <Route path="/erp/production" element={<P><ProductionPage /></P>} />
               <Route path="/erp/production/*" element={<P><ProductionPage /></P>} />
               <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
