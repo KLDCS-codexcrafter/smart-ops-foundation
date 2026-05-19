@@ -366,4 +366,18 @@ export const en: Record<string, string> = {
   'vendor.saathi.invoice_reminder': 'Saathi · Invoice reminders · Phase 2',
   'vendor.saathi.quote_draft': 'Saathi · Quote drafting · Phase 2',
   'vendor.saathi.rfq_prioritize': 'Saathi · Auto-prioritize urgent RFQs · Phase 2',
+
+  // AI Quote Coach + Voice (Sprint A-d.2)
+  'vendor.coach.title': 'AI Quote Coach',
+  'vendor.coach.badge': 'Operix Superpower #5',
+  'vendor.coach.history': 'Based on {n} past quotes',
+  'vendor.coach.privacy': 'Peer signals use k-anonymity (≥{threshold} vendors per item).',
+  'vendor.coach.live': 'AI Quote Coach v2 · Live',
+  'vendor.voice.button': 'Speak',
+  'vendor.voice.listening': 'Listening...',
+  'vendor.voice.unsupported': 'Voice input requires Chrome or Edge · type your notes',
+  'vendor.bid.notes_placeholder': 'Any clarifications · spoken text appears here for review',
+  'vendor.dashboard.coach_card_title': 'AI Quote Coach',
+  'vendor.dashboard.coach_live': 'Live',
+  'vendor.dashboard.coach_summary': 'Real-time bid coaching · peer rates · win-rate insights',
 };
