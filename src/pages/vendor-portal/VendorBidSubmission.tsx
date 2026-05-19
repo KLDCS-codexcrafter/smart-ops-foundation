@@ -37,6 +37,7 @@ import { getVendorSession, recordVendorActivity } from '@/lib/vendor-portal-auth
 import { markFirstQuoteSubmitted } from '@/lib/vendor-onboarding-engine';
 import { scopeRfqsForVendor } from '@/lib/vendor-portal-scope';
 import { dMul, dSub, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { useT } from '@/lib/i18n-engine';
 
 interface LineDraft {
   enquiry_line_id: string;
@@ -83,6 +84,7 @@ export default function VendorBidSubmission(): JSX.Element {
   const navigate = useNavigate();
   const { rfqId } = useParams<{ rfqId: string }>();
   const session = getVendorSession();
+  const t = useT();
 
   const rfq = useMemo(
     () => (session && rfqId) ? loadRfq(rfqId, session.entity_code) : null,
@@ -219,9 +221,9 @@ export default function VendorBidSubmission(): JSX.Element {
         <Card className="border-emerald-500/30 bg-emerald-500/5 max-w-2xl">
           <CardContent className="p-8 text-center space-y-3">
             <CheckCircle className="h-12 w-12 text-emerald-600 mx-auto" />
-            <h2 className="text-xl font-bold">Quotation Submitted</h2>
+            <h2 className="text-xl font-bold">{t('vendor.bid.success_title', 'Quotation Submitted')}</h2>
             <p className="text-sm text-muted-foreground">
-              Your bid for RFQ {rfq.rfq_no} has been submitted · redirecting to Enquiries...
+              {t('vendor.bid.success_msg', 'Your bid for RFQ {rfq_no} has been submitted · redirecting…', { rfq_no: rfq.rfq_no })}
             </p>
           </CardContent>
         </Card>
@@ -240,21 +242,21 @@ export default function VendorBidSubmission(): JSX.Element {
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
                 <Send className="h-6 w-6 text-primary" />
-                Submit Bid · {rfq.rfq_no}
+                {t('vendor.bid.title', 'Submit Bid')} · {rfq.rfq_no}
               </h1>
               <p className="text-sm text-muted-foreground">
-                Quote line rates · review terms · submit · uses vendor-quotation-engine.submitQuotation
+                {t('vendor.bid.subtitle', 'Quote line rates · review terms · submit')}
               </p>
             </div>
           </div>
           <Badge variant="outline" className="gap-1 text-[10px]">
-            <Bot className="h-3 w-3" /> Saathi · Quote drafting · Phase 2
+            <Bot className="h-3 w-3" /> {t('vendor.saathi.quote_draft', 'Saathi · Quote drafting · Phase 2')}
           </Badge>
         </div>
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Line Items ({lines.length})</CardTitle>
+            <CardTitle className="text-base">{t('vendor.bid.line_items', 'Line Items')} ({lines.length})</CardTitle>
             <CardDescription>Enter rate · adjust qty if partial · discount + tax%</CardDescription>
           </CardHeader>
           <CardContent>
@@ -264,13 +266,13 @@ export default function VendorBidSubmission(): JSX.Element {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Item</TableHead>
-                    <TableHead className="w-20 text-right">Qty Req</TableHead>
-                    <TableHead className="w-20 text-right">Qty Quote</TableHead>
-                    <TableHead className="w-24 text-right">Rate ₹</TableHead>
-                    <TableHead className="w-20 text-right">Disc %</TableHead>
-                    <TableHead className="w-20 text-right">Tax %</TableHead>
-                    <TableHead className="w-28 text-right">Line Total</TableHead>
+                    <TableHead>{t('vendor.bid.col_item', 'Item')}</TableHead>
+                    <TableHead className="w-20 text-right">{t('vendor.bid.col_qty_req', 'Qty Req')}</TableHead>
+                    <TableHead className="w-20 text-right">{t('vendor.bid.col_qty_quote', 'Qty Quote')}</TableHead>
+                    <TableHead className="w-24 text-right">{t('vendor.bid.col_rate', 'Rate ₹')}</TableHead>
+                    <TableHead className="w-20 text-right">{t('vendor.bid.col_discount', 'Disc %')}</TableHead>
+                    <TableHead className="w-20 text-right">{t('vendor.bid.col_tax', 'Tax %')}</TableHead>
+                    <TableHead className="w-28 text-right">{t('vendor.bid.col_line_total', 'Line Total')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -329,15 +331,15 @@ export default function VendorBidSubmission(): JSX.Element {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Terms & Compliance</CardTitle>
+            <CardTitle className="text-base">{t('vendor.bid.terms_title', 'Terms & Compliance')}</CardTitle>
           </CardHeader>
           <CardContent className="grid md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="payment-terms" className="text-xs">Payment Terms</Label>
+              <Label htmlFor="payment-terms" className="text-xs">{t('vendor.bid.payment_terms', 'Payment Terms')}</Label>
               <Input id="payment-terms" value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="payment-days" className="text-xs">Payment Days</Label>
+              <Label htmlFor="payment-days" className="text-xs">{t('vendor.bid.payment_days', 'Payment Days')}</Label>
               <Input
                 id="payment-days"
                 type="number"
@@ -346,11 +348,11 @@ export default function VendorBidSubmission(): JSX.Element {
               />
             </div>
             <div>
-              <Label htmlFor="delivery-terms" className="text-xs">Delivery Terms</Label>
+              <Label htmlFor="delivery-terms" className="text-xs">{t('vendor.bid.delivery_terms', 'Delivery Terms')}</Label>
               <Input id="delivery-terms" value={deliveryTerms} onChange={(e) => setDeliveryTerms(e.target.value)} />
             </div>
             <div>
-              <Label htmlFor="validity-days" className="text-xs">Validity (days)</Label>
+              <Label htmlFor="validity-days" className="text-xs">{t('vendor.bid.validity_days', 'Validity (days)')}</Label>
               <Input
                 id="validity-days"
                 type="number"
@@ -359,11 +361,11 @@ export default function VendorBidSubmission(): JSX.Element {
               />
             </div>
             <div>
-              <Label htmlFor="gstin" className="text-xs">GSTIN</Label>
+              <Label htmlFor="gstin" className="text-xs">{t('vendor.bid.gstin', 'GSTIN')}</Label>
               <Input id="gstin" value={gstin} onChange={(e) => setGstin(e.target.value)} placeholder="15-char GSTIN" />
             </div>
             <div>
-              <Label className="text-xs">MSME Status</Label>
+              <Label className="text-xs">{t('vendor.bid.msme_status', 'MSME Status')}</Label>
               <Select value={msmeStatus} onValueChange={(v) => setMsmeStatus(v as typeof msmeStatus)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
@@ -376,10 +378,10 @@ export default function VendorBidSubmission(): JSX.Element {
             </div>
             <div className="md:col-span-2 flex items-center gap-2 pt-2">
               <Checkbox id="rcm" checked={rcmApplicable} onCheckedChange={(c) => setRcmApplicable(c === true)} />
-              <Label htmlFor="rcm" className="text-xs cursor-pointer">RCM (Reverse Charge) applicable</Label>
+              <Label htmlFor="rcm" className="text-xs cursor-pointer">{t('vendor.bid.rcm_applicable', 'RCM (Reverse Charge) applicable')}</Label>
             </div>
             <div className="md:col-span-2">
-              <Label htmlFor="notes" className="text-xs">Notes (optional · captured in activity log)</Label>
+              <Label htmlFor="notes" className="text-xs">{t('vendor.bid.notes', 'Notes (optional)')}</Label>
               <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
             </div>
           </CardContent>
@@ -400,7 +402,7 @@ export default function VendorBidSubmission(): JSX.Element {
               )}
               <Button onClick={handleSubmit} disabled={!canSubmit} size="lg" className="gap-2">
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                Submit Quotation
+                {t('vendor.bid.btn_submit', 'Submit Quotation')}
               </Button>
             </div>
           </CardContent>

@@ -26,6 +26,7 @@ import VendorPortalLayout from './VendorPortalLayout';
 import { getVendorSession } from '@/lib/vendor-portal-auth-engine';
 import { scopeRfqsForVendor } from '@/lib/vendor-portal-scope';
 import { rfqsKey, type RFQ } from '@/types/rfq';
+import { useT } from '@/lib/i18n-engine';
 
 function loadRfqs(entityCode: string): RFQ[] {
   try {
@@ -37,6 +38,7 @@ function loadRfqs(entityCode: string): RFQ[] {
 export default function VendorDashboard(): JSX.Element {
   const navigate = useNavigate();
   const session = getVendorSession();
+  const t = useT();
 
   const counts = useMemo(() => {
     if (!session) return { pending: 0, quoted: 0, declined: 0, total: 0 };
@@ -59,10 +61,10 @@ export default function VendorDashboard(): JSX.Element {
   }
 
   const stats = [
-    { label: 'Open RFQs',  value: counts.pending,  icon: Clock,         color: 'text-amber-600',   bg: 'bg-amber-500/10' },
-    { label: 'Quoted',     value: counts.quoted,   icon: CheckCircle,   color: 'text-emerald-600', bg: 'bg-emerald-500/10' },
-    { label: 'Declined',   value: counts.declined, icon: AlertCircle,   color: 'text-red-600',     bg: 'bg-red-500/10' },
-    { label: 'Lifetime',   value: counts.total,    icon: TrendingUp,    color: 'text-blue-600',    bg: 'bg-blue-500/10' },
+    { label: t('vendor.dashboard.kpi_open', 'Open RFQs'),  value: counts.pending,  icon: Clock,         color: 'text-amber-600',   bg: 'bg-amber-500/10' },
+    { label: t('vendor.dashboard.kpi_quoted', 'Quoted'),     value: counts.quoted,   icon: CheckCircle,   color: 'text-emerald-600', bg: 'bg-emerald-500/10' },
+    { label: t('vendor.dashboard.kpi_declined', 'Declined'),   value: counts.declined, icon: AlertCircle,   color: 'text-red-600',     bg: 'bg-red-500/10' },
+    { label: t('vendor.dashboard.kpi_lifetime', 'Lifetime'),   value: counts.total,    icon: TrendingUp,    color: 'text-blue-600',    bg: 'bg-blue-500/10' },
   ];
 
   return (
@@ -70,17 +72,17 @@ export default function VendorDashboard(): JSX.Element {
       <div className="space-y-6 max-w-6xl">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold">Welcome, {session.party_name}</h1>
+            <h1 className="text-2xl font-bold">{t('vendor.dashboard.welcome', 'Welcome, {name}', { name: session.party_name })}</h1>
             <p className="text-sm text-muted-foreground">
               <span className="font-mono">{session.party_code}</span> · Entity{' '}
-              <span className="font-mono">{session.entity_code}</span> · Session valid until{' '}
-              {new Date(session.expires_at).toLocaleString('en-IN')}
+              <span className="font-mono">{session.entity_code}</span> ·{' '}
+              {t('vendor.dashboard.session_expires', 'Session valid until {date}', { date: new Date(session.expires_at).toLocaleString('en-IN') })}
             </p>
           </div>
           <div className="flex items-center gap-2">
             {session.must_change_password && (
               <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 gap-1">
-                <AlertCircle className="h-3 w-3" /> Set password in Profile
+                <AlertCircle className="h-3 w-3" /> {t('vendor.dashboard.set_password_alert', 'Set password in Profile')}
               </Badge>
             )}
             <Badge variant="outline" className="gap-1">
@@ -110,7 +112,7 @@ export default function VendorDashboard(): JSX.Element {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Quick Actions</CardTitle>
+            <CardTitle className="text-base">{t('vendor.dashboard.quick_actions', 'Quick Actions')}</CardTitle>
             <CardDescription>Jump to common workflows</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -148,7 +150,7 @@ export default function VendorDashboard(): JSX.Element {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Coming Soon</CardTitle>
+            <CardTitle className="text-base">{t('vendor.dashboard.coming_soon', 'Coming Soon')}</CardTitle>
             <CardDescription>External portal expansion · Sprint A-c.2 + A-c.3</CardDescription>
           </CardHeader>
           <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
@@ -177,7 +179,7 @@ export default function VendorDashboard(): JSX.Element {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Legacy Access</CardTitle>
+            <CardTitle className="text-base">{t('vendor.dashboard.legacy_access', 'Legacy Access')}</CardTitle>
             <CardDescription>Existing flows · being modernized in Sprint A-d</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">

@@ -30,32 +30,36 @@ import {
 import {
   getVendorSession, clearVendorSession, recordVendorActivity,
 } from '@/lib/vendor-portal-auth-engine';
+import { useT } from '@/lib/i18n-engine';
+import { VendorLocaleToggle } from './VendorLocaleToggle';
 
 interface NavEntry {
   to: string;
-  label: string;
+  labelKey: string;
+  labelFallback: string;
   icon: typeof Building2;
   comingSoon?: 'A-c.2' | 'A-c.3';
 }
 
 const NAV: NavEntry[] = [
-  { to: '/vendor-portal',                  label: 'Dashboard',       icon: LayoutDashboard },
-  { to: '/vendor-portal/enquiries',        label: 'Enquiries',       icon: FileText },
-  { to: '/vendor-portal/inbox',            label: 'Inbox (legacy)',  icon: FileText },
-  { to: '/vendor-portal/bids',             label: 'Submit Bids',     icon: Send },
-  { to: '/vendor-portal/purchase-orders',  label: 'Purchase Orders', icon: ShoppingCart },
-  { to: '/vendor-portal/invoices',         label: 'Upload Invoices', icon: FileUp },
-  { to: '/vendor-portal/kyc',              label: 'KYC Management',  icon: Shield },
-  { to: '/vendor-portal/performance',      label: 'Performance',     icon: BarChart },
-  { to: '/vendor-portal/messages',         label: 'Messages',        icon: MessageSquare },
-  { to: '/vendor-portal/commlog',          label: 'Legacy CommLog',  icon: MessageSquare },
-  { to: '/vendor-portal/profile',          label: 'Profile',         icon: User },
+  { to: '/vendor-portal',                  labelKey: 'vendor.nav.dashboard',        labelFallback: 'Dashboard',       icon: LayoutDashboard },
+  { to: '/vendor-portal/enquiries',        labelKey: 'vendor.nav.enquiries',        labelFallback: 'Enquiries',       icon: FileText },
+  { to: '/vendor-portal/inbox',            labelKey: 'vendor.nav.inbox_legacy',     labelFallback: 'Inbox (legacy)',  icon: FileText },
+  { to: '/vendor-portal/bids',             labelKey: 'vendor.nav.bids',             labelFallback: 'Submit Bids',     icon: Send },
+  { to: '/vendor-portal/purchase-orders',  labelKey: 'vendor.nav.purchase_orders',  labelFallback: 'Purchase Orders', icon: ShoppingCart },
+  { to: '/vendor-portal/invoices',         labelKey: 'vendor.nav.invoices',         labelFallback: 'Upload Invoices', icon: FileUp },
+  { to: '/vendor-portal/kyc',              labelKey: 'vendor.nav.kyc',              labelFallback: 'KYC Management',  icon: Shield },
+  { to: '/vendor-portal/performance',      labelKey: 'vendor.nav.performance',      labelFallback: 'Performance',     icon: BarChart },
+  { to: '/vendor-portal/messages',         labelKey: 'vendor.nav.messages',         labelFallback: 'Messages',        icon: MessageSquare },
+  { to: '/vendor-portal/commlog',          labelKey: 'vendor.nav.commlog_legacy',   labelFallback: 'Legacy CommLog',  icon: MessageSquare },
+  { to: '/vendor-portal/profile',          labelKey: 'vendor.nav.profile',          labelFallback: 'Profile',         icon: User },
 ];
 
 export default function VendorPortalLayout({ children }: { children: ReactNode }): JSX.Element {
   const navigate = useNavigate();
   const location = useLocation();
   const session = getVendorSession();
+  const t = useT();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = (): void => {
@@ -80,13 +84,14 @@ export default function VendorPortalLayout({ children }: { children: ReactNode }
         </Button>
         <div className="flex items-center gap-2 font-semibold tracking-tight">
           <Building2 className="h-5 w-5 text-primary" />
-          <span>Operix · Vendor Portal</span>
+          <span>{t('vendor.brand.title', 'Operix · Vendor Portal')}</span>
         </div>
 
         <div className="flex-1" />
 
         {session && (
           <>
+            <VendorLocaleToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Notifications">
@@ -118,7 +123,7 @@ export default function VendorPortalLayout({ children }: { children: ReactNode }
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-2" /> Logout
+                  <LogOut className="h-4 w-4 mr-2" /> {t('vendor.nav.logout', 'Logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -156,7 +161,7 @@ export default function VendorPortalLayout({ children }: { children: ReactNode }
                 >
                   <span className="flex items-center gap-2 min-w-0">
                     <Icon className="h-4 w-4 flex-shrink-0" />
-                    <span className="truncate">{n.label}</span>
+                    <span className="truncate">{t(n.labelKey, n.labelFallback)}</span>
                   </span>
                   {n.comingSoon && (
                     <Badge variant="outline" className="text-[9px] flex-shrink-0">{n.comingSoon}</Badge>
@@ -166,7 +171,7 @@ export default function VendorPortalLayout({ children }: { children: ReactNode }
             })}
           </nav>
           <div className="mt-auto p-3 text-xs text-muted-foreground border-t">
-            Operix Procure360 · Phase 1
+            {t('vendor.brand.footer', 'Operix Procure360 · Phase 1')}
           </div>
         </aside>
 

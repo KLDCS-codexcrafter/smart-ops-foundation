@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { getVendorSession } from '@/lib/vendor-portal-auth-engine';
 import { listPurchaseOrders } from '@/lib/po-management-engine';
+import { useT } from '@/lib/i18n-engine';
 
 type FilterTab = 'pending' | 'approved' | 'completed' | 'all';
 
@@ -59,6 +60,7 @@ function formatDate(iso: string | null): string {
 
 export default function VendorPOView(): JSX.Element {
   const session = getVendorSession();
+  const t = useT();
   const [tab, setTab] = useState<FilterTab>('approved');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
@@ -97,10 +99,10 @@ export default function VendorPOView(): JSX.Element {
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <ShoppingCart className="h-6 w-6 text-primary" />
-            Purchase Orders
+            {t('vendor.po.title', 'Purchase Orders')}
           </h1>
           <p className="text-sm text-muted-foreground">
-            POs received from buyer · status tracking · acknowledgment + delivery confirm coming Phase 2
+            {t('vendor.po.subtitle', 'POs received from buyer · status tracking')}
           </p>
         </div>
 
@@ -116,10 +118,10 @@ export default function VendorPOView(): JSX.Element {
 
         <Tabs value={tab} onValueChange={(v) => { setTab(v as FilterTab); setSelectedPoId(null); }}>
           <TabsList>
-            <TabsTrigger value="pending">Pending <span className="ml-1 opacity-70">({counts.pending})</span></TabsTrigger>
-            <TabsTrigger value="approved">Active <span className="ml-1 opacity-70">({counts.approved})</span></TabsTrigger>
-            <TabsTrigger value="completed">Completed <span className="ml-1 opacity-70">({counts.completed})</span></TabsTrigger>
-            <TabsTrigger value="all">All <span className="ml-1 opacity-70">({counts.all})</span></TabsTrigger>
+            <TabsTrigger value="pending">{t('vendor.po.tab_pending', 'Pending')} <span className="ml-1 opacity-70">({counts.pending})</span></TabsTrigger>
+            <TabsTrigger value="approved">{t('vendor.po.tab_approved', 'Active')} <span className="ml-1 opacity-70">({counts.approved})</span></TabsTrigger>
+            <TabsTrigger value="completed">{t('vendor.po.tab_completed', 'Completed')} <span className="ml-1 opacity-70">({counts.completed})</span></TabsTrigger>
+            <TabsTrigger value="all">{t('vendor.po.tab_all', 'All')} <span className="ml-1 opacity-70">({counts.all})</span></TabsTrigger>
           </TabsList>
 
           <TabsContent value={tab} className="space-y-4 mt-4">
@@ -127,7 +129,7 @@ export default function VendorPOView(): JSX.Element {
               <CardContent className="p-0">
                 {filtered.length === 0 ? (
                   <div className="text-center py-12 text-sm text-muted-foreground">
-                    {allPos.length === 0 ? 'No POs received yet' : 'No POs match this filter'}
+                    {allPos.length === 0 ? t('vendor.po.empty_state', 'No POs received yet') : 'No POs match this filter'}
                   </div>
                 ) : (
                   <Table>
