@@ -88,6 +88,8 @@ import {
 import { GITRegisterPanel } from './reports/GITRegister';
 // ─── UPRA-4 Phase B · Tier-1 NEW ───
 import { PurchaseOrderRegisterPanel } from './reports/PurchaseOrderRegister';
+// ─── NEW · B.1 ───
+import { VendorInvoiceAdminReviewPanel } from './transactions/VendorInvoiceAdminReview';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
@@ -382,6 +384,8 @@ export default function Procure360Page(): JSX.Element {
       case 'git-register':                    return <GITRegisterPanel />;
       // ─── UPRA-4 Phase B · Tier-1 NEW ───
       case 'po-register':                     return <PurchaseOrderRegisterPanel />;
+      // ─── NEW · B.1 ───
+      case 'pi-admin-review':                 return <VendorInvoiceAdminReviewPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
