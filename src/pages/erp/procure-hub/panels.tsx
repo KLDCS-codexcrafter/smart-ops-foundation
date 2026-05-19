@@ -176,6 +176,10 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
         <KpiCard label="Active RFQs" value={kpis.activeRfqs} />
         <KpiCard label="Awaiting Quotations" value={kpis.awaitingQuotations} />
         <KpiCard label="Overdue Follow-ups" value={kpis.overdueFollowups} />
+        <KpiCard label="Awards Pending PO" value={p2pKpis.awardsPendingPo} />
+        <KpiCard label="POs Awaiting Approval" value={p2pKpis.posAwaitingApproval} />
+        <KpiCard label="PI Pending Review" value={p2pKpis.piPendingReview} />
+        <KpiCard label="PI Variance Breaches" value={p2pKpis.piBreachCount} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
