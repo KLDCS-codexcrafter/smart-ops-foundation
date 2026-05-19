@@ -21,6 +21,7 @@ import { useMaterialIndents } from '@/hooks/useMaterialIndents';
 import { useServiceRequests } from '@/hooks/useServiceRequests';
 import { useCapitalIndents } from '@/hooks/useCapitalIndents';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { ProcurementLineageBreadcrumb } from '@/components/procurement/ProcurementLineageBreadcrumb';
 import { STATUS_LABEL, STATUS_COLOR } from '@/types/requisition-common';
 import type { IndentStatus, MaterialIndent } from '@/types/material-indent';
 import type { ServiceRequest } from '@/types/service-request';
