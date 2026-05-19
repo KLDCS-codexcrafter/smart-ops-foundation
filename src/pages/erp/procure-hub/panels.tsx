@@ -122,6 +122,44 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
     [entityCode],
   );
 
+  // Sprint B.2 · 4 new KPI tiles · computed from B.1 surfaces · D-NEW-ER
+  const p2pKpis = useMemo(() => {
+    const awards = listQuotations(entityCode).filter((q) => q.is_awarded);
+    const pos = listPurchaseOrders(entityCode);
+    const poSourceIds = new Set(pos.map((p) => p.source_quotation_id).filter(Boolean));
+    const awardsPendingPo = awards.filter((a) => !poSourceIds.has(a.id)).length;
+
+    const posAwaitingApproval = pos.filter(
+      (p) => p.status === 'draft' || p.status === 'pending_approval',
+    ).length;
+
+    let piPendingReview = 0;
+    let piBreachCount = 0;
+    try {
+      const raw = localStorage.getItem(`vendor_invoices_${entityCode}`);
+      if (raw) {
+        const invoices = JSON.parse(raw) as Array<{
+          status: string;
+          linked_po_id: string;
+          invoice_amount: number;
+        }>;
+        const tolerance = resolveInvoiceTolerance(entityCode);
+        for (const inv of invoices) {
+          if (inv.status !== 'pending_admin_review') continue;
+          piPendingReview += 1;
+          const po = pos.find((p) => p.id === inv.linked_po_id);
+          if (!po) continue;
+          const variancePct = po.total_after_tax > 0
+            ? Math.abs((inv.invoice_amount - po.total_after_tax) / po.total_after_tax) * 100
+            : 0;
+          if (variancePct > tolerance.pct * 2) piBreachCount += 1;
+        }
+      }
+    } catch { /* graceful */ }
+
+    return { awardsPendingPo, posAwaitingApproval, piPendingReview, piBreachCount };
+  }, [entityCode]);
+
   useEffect(() => {
     const handle = subscribeProcurementPulse((a) => setPulses((p) => [a, ...p].slice(0, 8)), 30000);
     return () => handle.stop();
