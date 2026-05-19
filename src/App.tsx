@@ -224,6 +224,10 @@ const VendorOnboardingFirstQuote = lazy(() => import('./pages/vendor-portal/Vend
 const VendorEnquiryResponse = lazy(() => import('./pages/vendor-portal/VendorEnquiryResponse'));
 const VendorBidSubmission = lazy(() => import('./pages/vendor-portal/VendorBidSubmission'));
 const VendorPOView = lazy(() => import('./pages/vendor-portal/VendorPOView'));
+const VendorKYCManagement = lazy(() => import('./pages/vendor-portal/VendorKYCManagement'));
+const VendorInvoiceUpload = lazy(() => import('./pages/vendor-portal/VendorInvoiceUpload'));
+const VendorMessages = lazy(() => import('./pages/vendor-portal/VendorMessages'));
+const VendorPerformanceView = lazy(() => import('./pages/vendor-portal/VendorPerformanceView'));
 const HappyCodeChannel2Form = lazy(() => import('./pages/public/HappyCodeChannel2Form'));
 const RequestX = lazy(() => import('./pages/erp/requestx/RequestXPage'));
 const VendorPortal = lazy(() => import('./pages/erp/vendor-portal/VendorPortalPage'));
@@ -362,6 +366,10 @@ const App = () => (
               <Route path="/vendor-portal/bids" element={<VendorEnquiryResponse />} />
               <Route path="/vendor-portal/bids/:rfqId" element={<VendorBidSubmission />} />
               <Route path="/vendor-portal/purchase-orders" element={<VendorPOView />} />
+              <Route path="/vendor-portal/invoices" element={<VendorInvoiceUpload />} />
+              <Route path="/vendor-portal/kyc" element={<VendorKYCManagement />} />
+              <Route path="/vendor-portal/performance" element={<VendorPerformanceView />} />
+              <Route path="/vendor-portal/messages" element={<VendorMessages />} />
               <Route path="/vendor-portal/profile" element={<VendorPortalProfile />} />
               <Route path="/vendor-portal/commlog" element={<VendorCommLog />} />
               <Route path="/vendor-portal/onboarding" element={<VendorOnboardingFirstQuote />} />
