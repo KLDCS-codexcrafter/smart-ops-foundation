@@ -24,7 +24,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mic, MicOff } from 'lucide-react';
+import { isSpeechRecognitionSupported, transcribeVoice } from '@/lib/voice-to-order-engine';
 import { rfqsKey, type RFQ } from '@/types/rfq';
 import {
   procurementEnquiriesKey,
@@ -119,6 +120,26 @@ export default function RFQPublicForm(): JSX.Element {
   const [rcm, setRcm] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Voice notes · Sprint A-d.2 · per A-d-Q6=B-light + A-d-Q13=B (vendor reviews)
+  const voiceSupported = isSpeechRecognitionSupported();
+  const [voiceLang, setVoiceLang] = useState<'en-IN' | 'hi-IN'>('en-IN');
+  const [voiceListening, setVoiceListening] = useState(false);
+
+  const handleVoiceCapture = async (): Promise<void> => {
+    setVoiceListening(true);
+    try {
+      const text = await transcribeVoice(voiceLang);
+      setLines((prev) => prev.map((l) => ({
+        ...l,
+        remarks: l.remarks ? `${l.remarks}\n${text}` : text,
+      })));
+    } catch {
+      /* silent · vendor can retry */
+    } finally {
+      setVoiceListening(false);
+    }
+  };
 
   // Initialize line drafts from RFQ + enquiry
   useEffect(() => {
@@ -363,11 +384,42 @@ export default function RFQPublicForm(): JSX.Element {
                     <Label className="text-xs">Remarks (per line)</Label>
                     <p className="text-xs text-muted-foreground">Use the remarks textarea below — applied to all lines.</p>
                   </div>
-                  <Textarea
-                    placeholder="Optional notes …"
-                    value={lines[0]?.remarks ?? ''}
-                    onChange={(e) => setLines(prev => prev.map(l => ({ ...l, remarks: e.target.value })))}
-                  />
+                  <div className="space-y-2">
+                    {voiceSupported && (
+                      <div className="flex items-center justify-end gap-1">
+                        <Select value={voiceLang} onValueChange={(v) => setVoiceLang(v as 'en-IN' | 'hi-IN')}>
+                          <SelectTrigger className="h-7 text-xs w-24">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="en-IN">English</SelectItem>
+                            <SelectItem value="hi-IN">हिन्दी</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          type="button"
+                          variant={voiceListening ? 'default' : 'outline'}
+                          size="sm"
+                          className="h-7 gap-1"
+                          onClick={handleVoiceCapture}
+                          disabled={voiceListening}
+                        >
+                          {voiceListening ? <MicOff className="h-3 w-3 animate-pulse" /> : <Mic className="h-3 w-3" />}
+                          <span className="text-[10px]">{voiceListening ? 'Listening...' : 'Speak'}</span>
+                        </Button>
+                      </div>
+                    )}
+                    <Textarea
+                      placeholder="Optional notes · spoken text appears here for review"
+                      value={lines[0]?.remarks ?? ''}
+                      onChange={(e) => setLines(prev => prev.map(l => ({ ...l, remarks: e.target.value })))}
+                    />
+                    {!voiceSupported && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Voice input requires Chrome or Edge · type your notes
+                      </p>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>

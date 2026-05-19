@@ -26,7 +26,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Send, Loader2, ArrowLeft, CheckCircle, Bot, AlertCircle,
+  Send, Loader2, ArrowLeft, CheckCircle, AlertCircle,
+  Sparkles, Lightbulb, AlertTriangle, Info, Mic, MicOff,
 } from 'lucide-react';
 import { rfqsKey, type RFQ } from '@/types/rfq';
 import {
@@ -38,6 +39,13 @@ import { markFirstQuoteSubmitted } from '@/lib/vendor-onboarding-engine';
 import { scopeRfqsForVendor } from '@/lib/vendor-portal-scope';
 import { dMul, dSub, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { useT } from '@/lib/i18n-engine';
+import {
+  generateQuoteCoachReport,
+  type QuoteCoachReport,
+} from '@/lib/vendor-quote-coach-engine';
+import {
+  isSpeechRecognitionSupported, transcribeVoice,
+} from '@/lib/voice-to-order-engine';
 
 interface LineDraft {
   enquiry_line_id: string;
@@ -115,6 +123,25 @@ export default function VendorBidSubmission(): JSX.Element {
   const [success, setSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // Voice notes state · per A-d-Q6=B-light + A-d-Q13=B (vendor reviews)
+  const voiceSupported = isSpeechRecognitionSupported();
+  const [voiceLang, setVoiceLang] = useState<'en-IN' | 'hi-IN'>('en-IN');
+  const [voiceListening, setVoiceListening] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+
+  const handleVoiceCapture = async (): Promise<void> => {
+    setVoiceError(null);
+    setVoiceListening(true);
+    try {
+      const text = await transcribeVoice(voiceLang);
+      setNotes((current) => current ? `${current}\n${text}` : text);
+    } catch (e) {
+      setVoiceError(e instanceof Error ? e.message : 'Voice transcription failed');
+    } finally {
+      setVoiceListening(false);
+    }
+  };
+
   useEffect(() => {
     if (!enquiry) return;
     setLines(enquiry.lines.map((l) => ({
@@ -140,6 +167,25 @@ export default function VendorBidSubmission(): JSX.Element {
     });
     return { basic, afterTax, tax: afterTax - basic };
   }, [lines]);
+
+  // Quote Coach state · per A-d-Q5=B + A-d-Q12=B
+  const coachReport: QuoteCoachReport | null = useMemo(() => {
+    if (!session || !rfq) return null;
+    if (lines.length === 0 || !lines.some((l) => l.rate > 0)) return null;
+    return generateQuoteCoachReport({
+      vendor_id: session.vendor_id,
+      entity_code: session.entity_code,
+      current_lines: lines.map((l) => ({
+        enquiry_line_id: l.enquiry_line_id,
+        item_id: l.item_id,
+        rate: l.rate,
+        discount_percent: l.discount_percent,
+        tax_percent: l.tax_percent,
+        qty_quoted: l.qty_quoted,
+      })),
+    });
+  }, [session, rfq, lines]);
+
 
   if (!session) return <Navigate to="/vendor-portal/login" replace />;
   if (!rfq) return (
@@ -250,7 +296,7 @@ export default function VendorBidSubmission(): JSX.Element {
             </div>
           </div>
           <Badge variant="outline" className="gap-1 text-[10px]">
-            <Bot className="h-3 w-3" /> {t('vendor.saathi.quote_draft', 'Saathi · Quote drafting · Phase 2')}
+            <Sparkles className="h-3 w-3" /> {t('vendor.coach.live', 'AI Quote Coach v2 · Live')}
           </Badge>
         </div>
 
@@ -329,6 +375,54 @@ export default function VendorBidSubmission(): JSX.Element {
           </CardContent>
         </Card>
 
+        {/* AI Quote Coach Panel · per A-d-Q5=B + A-d-Q12=B · Superpower #5 FIRST VISIBLE */}
+        {coachReport && coachReport.insights.length > 0 && (
+          <Card className="border-amber-500/30 bg-amber-500/5">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-amber-600" />
+                  {t('vendor.coach.title', 'AI Quote Coach')}
+                  <Badge variant="outline" className="text-[9px] gap-1">
+                    <Lightbulb className="h-3 w-3" /> {t('vendor.coach.badge', 'Operix Superpower #5')}
+                  </Badge>
+                </CardTitle>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  {t('vendor.coach.history', 'Based on {n} past quotes', { n: coachReport.vendor_history_summary.total_quotes })}
+                </span>
+              </div>
+              <CardDescription className="text-xs">
+                {t('vendor.coach.privacy', 'Peer signals use k-anonymity (≥{threshold} vendors per item).', { threshold: coachReport.peer_anonymization_threshold })}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {coachReport.insights.map((insight, idx) => {
+                const Icon = insight.severity === 'warning' ? AlertTriangle : insight.severity === 'suggestion' ? Lightbulb : Info;
+                const colorClass = insight.severity === 'warning'
+                  ? 'border-red-500/30 bg-red-500/5'
+                  : insight.severity === 'suggestion'
+                    ? 'border-amber-500/30 bg-amber-500/5'
+                    : 'border-blue-500/30 bg-blue-500/5';
+                return (
+                  <div key={`coach-${idx}`} className={`rounded border ${colorClass} p-3`}>
+                    <div className="flex items-start gap-2">
+                      <Icon className={`h-4 w-4 flex-shrink-0 mt-0.5 ${
+                        insight.severity === 'warning' ? 'text-red-600' :
+                        insight.severity === 'suggestion' ? 'text-amber-600' : 'text-blue-600'
+                      }`} />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">{insight.title}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{insight.body}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
+
+
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{t('vendor.bid.terms_title', 'Terms & Compliance')}</CardTitle>
@@ -380,9 +474,51 @@ export default function VendorBidSubmission(): JSX.Element {
               <Checkbox id="rcm" checked={rcmApplicable} onCheckedChange={(c) => setRcmApplicable(c === true)} />
               <Label htmlFor="rcm" className="text-xs cursor-pointer">{t('vendor.bid.rcm_applicable', 'RCM (Reverse Charge) applicable')}</Label>
             </div>
-            <div className="md:col-span-2">
-              <Label htmlFor="notes" className="text-xs">{t('vendor.bid.notes', 'Notes (optional)')}</Label>
-              <Textarea id="notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} />
+            <div className="md:col-span-2 space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <Label htmlFor="notes" className="text-xs">{t('vendor.bid.notes', 'Notes (optional)')}</Label>
+                {voiceSupported && (
+                  <div className="flex items-center gap-1">
+                    <Select value={voiceLang} onValueChange={(v) => setVoiceLang(v as 'en-IN' | 'hi-IN')}>
+                      <SelectTrigger className="h-7 text-xs w-24">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="en-IN">English</SelectItem>
+                        <SelectItem value="hi-IN">हिन्दी</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button
+                      type="button"
+                      variant={voiceListening ? 'default' : 'outline'}
+                      size="sm"
+                      className="h-7 gap-1"
+                      onClick={handleVoiceCapture}
+                      disabled={voiceListening}
+                    >
+                      {voiceListening ? <MicOff className="h-3 w-3 animate-pulse" /> : <Mic className="h-3 w-3" />}
+                      <span className="text-[10px]">{voiceListening ? t('vendor.voice.listening', 'Listening...') : t('vendor.voice.button', 'Speak')}</span>
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <Textarea
+                id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder={t('vendor.bid.notes_placeholder', 'Any clarifications · spoken text appears here for review')}
+                rows={4}
+              />
+              {voiceError && (
+                <Alert variant="destructive" className="py-1">
+                  <AlertDescription className="text-xs">{voiceError}</AlertDescription>
+                </Alert>
+              )}
+              {!voiceSupported && (
+                <p className="text-[10px] text-muted-foreground">
+                  {t('vendor.voice.unsupported', 'Voice input requires Chrome or Edge · type your notes')}
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
