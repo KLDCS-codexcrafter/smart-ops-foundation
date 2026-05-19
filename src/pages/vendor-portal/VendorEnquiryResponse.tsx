@@ -29,6 +29,7 @@ import { rfqsKey, type RFQ, type RFQStatus } from '@/types/rfq';
 import {
   procurementEnquiriesKey, type ProcurementEnquiry,
 } from '@/types/procurement-enquiry';
+import { useT } from '@/lib/i18n-engine';
 
 type FilterTab = 'pending' | 'quoted' | 'declined' | 'all';
 
@@ -79,6 +80,7 @@ function classifyTab(status: RFQStatus): FilterTab {
 export default function VendorEnquiryResponse(): JSX.Element {
   const navigate = useNavigate();
   const session = getVendorSession();
+  const t = useT();
   const [tab, setTab] = useState<FilterTab>('pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRfqId, setSelectedRfqId] = useState<string | null>(null);
@@ -136,21 +138,21 @@ export default function VendorEnquiryResponse(): JSX.Element {
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <FileText className="h-6 w-6 text-primary" />
-              Enquiries
+              {t('vendor.rfq.title', 'Enquiries')}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Active RFQs from buyer · click row to view enquiry detail · submit bid to respond
+              {t('vendor.rfq.subtitle', 'Active RFQs from buyer · click row to view detail')}
             </p>
           </div>
           <Badge variant="outline" className="gap-1 text-[10px]">
-            <Bot className="h-3 w-3" /> Saathi · auto-prioritize urgent RFQs · Phase 2
+            <Bot className="h-3 w-3" /> {t('vendor.saathi.rfq_prioritize', 'Saathi · Auto-prioritize urgent RFQs · Phase 2')}
           </Badge>
         </div>
 
         <div className="relative max-w-md">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search RFQ number"
+            placeholder={t('vendor.rfq.search_placeholder', 'Search RFQ number')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-8"
@@ -159,10 +161,10 @@ export default function VendorEnquiryResponse(): JSX.Element {
 
         <Tabs value={tab} onValueChange={(v) => { setTab(v as FilterTab); setSelectedRfqId(null); }}>
           <TabsList>
-            <TabsTrigger value="pending">Pending <span className="ml-1 opacity-70">({counts.pending})</span></TabsTrigger>
-            <TabsTrigger value="quoted">Quoted <span className="ml-1 opacity-70">({counts.quoted})</span></TabsTrigger>
-            <TabsTrigger value="declined">Declined <span className="ml-1 opacity-70">({counts.declined})</span></TabsTrigger>
-            <TabsTrigger value="all">All <span className="ml-1 opacity-70">({counts.all})</span></TabsTrigger>
+            <TabsTrigger value="pending">{t('vendor.rfq.tab_pending', 'Pending')} <span className="ml-1 opacity-70">({counts.pending})</span></TabsTrigger>
+            <TabsTrigger value="quoted">{t('vendor.rfq.tab_quoted', 'Quoted')} <span className="ml-1 opacity-70">({counts.quoted})</span></TabsTrigger>
+            <TabsTrigger value="declined">{t('vendor.rfq.tab_declined', 'Declined')} <span className="ml-1 opacity-70">({counts.declined})</span></TabsTrigger>
+            <TabsTrigger value="all">{t('vendor.rfq.tab_all', 'All')} <span className="ml-1 opacity-70">({counts.all})</span></TabsTrigger>
           </TabsList>
 
           <TabsContent value={tab} className="space-y-4 mt-4">
@@ -170,18 +172,18 @@ export default function VendorEnquiryResponse(): JSX.Element {
               <CardContent className="p-0">
                 {filtered.length === 0 ? (
                   <div className="text-center py-12 text-sm text-muted-foreground">
-                    {data.rfqs.length === 0 ? 'No RFQs yet · waiting for first invitation' : 'No RFQs match this filter'}
+                    {data.rfqs.length === 0 ? t('vendor.rfq.empty_state', 'No RFQs yet · waiting for first invitation') : 'No RFQs match this filter'}
                   </div>
                 ) : (
                   <Table>
                     <TableHeader>
                       <TableRow>
                         <TableHead className="w-8"></TableHead>
-                        <TableHead>RFQ No</TableHead>
-                        <TableHead>Sent</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-center">Days Left</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
+                        <TableHead>{t('vendor.rfq.col_rfq_no', 'RFQ No')}</TableHead>
+                        <TableHead>{t('vendor.rfq.col_sent', 'Sent')}</TableHead>
+                        <TableHead>{t('vendor.rfq.col_status', 'Status')}</TableHead>
+                        <TableHead className="text-center">{t('vendor.rfq.col_days_left', 'Days Left')}</TableHead>
+                        <TableHead className="text-right">{t('vendor.rfq.col_action', 'Action')}</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -213,7 +215,7 @@ export default function VendorEnquiryResponse(): JSX.Element {
                             <TableCell className="text-right">
                               {(r.status === 'sent' || r.status === 'received_by_vendor' || r.status === 'opened') && (
                                 <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); handleSubmitBid(r); }}>
-                                  <Send className="h-3 w-3 mr-1" /> Submit Bid
+                                  <Send className="h-3 w-3 mr-1" /> {t('vendor.rfq.action_submit_bid', 'Submit Bid')}
                                 </Button>
                               )}
                             </TableCell>
