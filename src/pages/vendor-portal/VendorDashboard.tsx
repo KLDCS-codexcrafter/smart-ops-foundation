@@ -169,10 +169,17 @@ export default function VendorDashboard(): JSX.Element {
               <span className="text-center">Messages</span>
               <Badge variant="outline" className="text-[9px]">A-c.3</Badge>
             </div>
-            <div className="flex flex-col items-center gap-1 p-2 rounded border border-border/50">
-              <Bot className="h-4 w-4 text-slate-600" />
-              <span className="text-center">AI Quote Coach</span>
-              <Badge variant="outline" className="text-[9px]">A-d</Badge>
+            <div className="flex flex-col items-center gap-1 p-2 rounded border border-emerald-500/30 bg-emerald-500/5">
+              <p className="text-sm font-medium flex items-center justify-center gap-1">
+                <Sparkles className="h-3 w-3 text-amber-600" />
+                {t('vendor.dashboard.coach_card_title', 'AI Quote Coach')}
+              </p>
+              <Badge variant="outline" className="text-[9px] bg-emerald-500/15 text-emerald-700 border-emerald-500/30">
+                {t('vendor.dashboard.coach_live', 'Live')}
+              </Badge>
+              <p className="text-[10px] text-muted-foreground text-center">
+                {t('vendor.dashboard.coach_summary', 'Real-time bid coaching · peer rates · win-rate insights')}
+              </p>
             </div>
           </CardContent>
         </Card>
