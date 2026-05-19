@@ -121,6 +121,26 @@ export default function RFQPublicForm(): JSX.Element {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Voice notes · Sprint A-d.2 · per A-d-Q6=B-light + A-d-Q13=B (vendor reviews)
+  const voiceSupported = isSpeechRecognitionSupported();
+  const [voiceLang, setVoiceLang] = useState<'en-IN' | 'hi-IN'>('en-IN');
+  const [voiceListening, setVoiceListening] = useState(false);
+
+  const handleVoiceCapture = async (): Promise<void> => {
+    setVoiceListening(true);
+    try {
+      const text = await transcribeVoice(voiceLang);
+      setLines((prev) => prev.map((l) => ({
+        ...l,
+        remarks: l.remarks ? `${l.remarks}\n${text}` : text,
+      })));
+    } catch {
+      /* silent · vendor can retry */
+    } finally {
+      setVoiceListening(false);
+    }
+  };
+
   // Initialize line drafts from RFQ + enquiry
   useEffect(() => {
     if (!rfq || !enquiry) return;
