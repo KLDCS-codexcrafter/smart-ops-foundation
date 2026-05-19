@@ -53,6 +53,9 @@ import { getTopVendorsByScore, type VendorScore } from '@/lib/vendor-scoring-eng
 import { getOverdueRfqFollowups } from '@/lib/procure-followup-engine';
 import { subscribeProcurementPulse, type PulseAlert } from '@/lib/procurement-pulse-stub';
 import { getExpiringContracts } from '@/lib/oob/contract-expiry-alerts';
+// ─── NEW · B.2 ───
+import { resolveInvoiceTolerance } from '@/lib/pi-tolerance-helper';
+import { ProcurementLineageBreadcrumb } from '@/components/procurement/ProcurementLineageBreadcrumb';
 // Block H · D-278 · ALL 12 Card #2.7 mounts
 import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
@@ -119,6 +122,44 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
     [entityCode],
   );
 
+  // Sprint B.2 · 4 new KPI tiles · computed from B.1 surfaces · D-NEW-ER
+  const p2pKpis = useMemo(() => {
+    const awards = listQuotations(entityCode).filter((q) => q.is_awarded);
+    const pos = listPurchaseOrders(entityCode);
+    const poSourceIds = new Set(pos.map((p) => p.source_quotation_id).filter(Boolean));
+    const awardsPendingPo = awards.filter((a) => !poSourceIds.has(a.id)).length;
+
+    const posAwaitingApproval = pos.filter(
+      (p) => p.status === 'draft' || p.status === 'pending_approval',
+    ).length;
+
+    let piPendingReview = 0;
+    let piBreachCount = 0;
+    try {
+      const raw = localStorage.getItem(`vendor_invoices_${entityCode}`);
+      if (raw) {
+        const invoices = JSON.parse(raw) as Array<{
+          status: string;
+          linked_po_id: string;
+          invoice_amount: number;
+        }>;
+        const tolerance = resolveInvoiceTolerance(entityCode);
+        for (const inv of invoices) {
+          if (inv.status !== 'pending_admin_review') continue;
+          piPendingReview += 1;
+          const po = pos.find((p) => p.id === inv.linked_po_id);
+          if (!po) continue;
+          const variancePct = po.total_after_tax > 0
+            ? Math.abs((inv.invoice_amount - po.total_after_tax) / po.total_after_tax) * 100
+            : 0;
+          if (variancePct > tolerance.pct * 2) piBreachCount += 1;
+        }
+      }
+    } catch { /* graceful */ }
+
+    return { awardsPendingPo, posAwaitingApproval, piPendingReview, piBreachCount };
+  }, [entityCode]);
+
   useEffect(() => {
     const handle = subscribeProcurementPulse((a) => setPulses((p) => [a, ...p].slice(0, 8)), 30000);
     return () => handle.stop();
@@ -135,6 +176,10 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
         <KpiCard label="Active RFQs" value={kpis.activeRfqs} />
         <KpiCard label="Awaiting Quotations" value={kpis.awaitingQuotations} />
         <KpiCard label="Overdue Follow-ups" value={kpis.overdueFollowups} />
+        <KpiCard label="Awards Pending PO" value={p2pKpis.awardsPendingPo} />
+        <KpiCard label="POs Awaiting Approval" value={p2pKpis.posAwaitingApproval} />
+        <KpiCard label="PI Pending Review" value={p2pKpis.piPendingReview} />
+        <KpiCard label="PI Variance Breaches" value={p2pKpis.piBreachCount} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>
@@ -1827,6 +1872,17 @@ export function PoListPanel(): JSX.Element {
         <h1 className="text-2xl font-bold">Purchase Orders</h1>
         <p className="text-sm text-muted-foreground">Procure360 PO workflow · sibling of FinCore PurchaseOrder voucher (D-283)</p>
       </div>
+
+      {/* Sprint B.2 · lineage breadcrumb for selected PO (D-NEW-ES) */}
+      {selected && (
+        <ProcurementLineageBreadcrumb
+          sourceVoucherNo={selected.po_no}
+          sourceKind="po"
+          sourceId={selected.source_enquiry_id ?? selected.id}
+          entityCode={entityCode}
+        />
+      )}
+
 
       {monthlySummary.length > 0 && (
         <Card>

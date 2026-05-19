@@ -51,6 +51,8 @@ import {
   type PiVarianceClassification,
 } from '@/lib/pi-tolerance-helper';
 import { getLinksForPo } from '@/lib/grn-po-linkage-engine';
+import { publishProcurementPulse } from '@/lib/procurement-pulse-stub';
+import { ProcurementLineageBreadcrumb } from '@/components/procurement/ProcurementLineageBreadcrumb';
 
 // Status union ADMIN-EXTENDED · vendor portal writes only 'pending_admin_review' (D-NEW-EC)
 type VendorInvoiceStatus = 'pending_admin_review' | 'approved' | 'rejected';
@@ -167,6 +169,11 @@ export function VendorInvoiceAdminReviewPanel(): JSX.Element {
     if (!selected || !selectedContext) return;
     if (selectedContext.classification === 'breach') {
       toast.error(`Cannot approve · variance ${selectedContext.variance_pct.toFixed(1)}% breaches tolerance ${selectedContext.tolerance_pct}% · reject or request vendor correction`);
+      // Sprint B.2 · publish breach event (D-NEW-ET)
+      publishProcurementPulse({
+        severity: 'critical',
+        message: `Vendor invoice ${selected.invoice_no} variance ${selectedContext.variance_pct.toFixed(1)}% breaches tolerance · admin review queue blocked`,
+      });
       return;
     }
     const list = loadAllInvoices(entityCode);
@@ -205,6 +212,11 @@ export function VendorInvoiceAdminReviewPanel(): JSX.Element {
     setRejectReason('');
     setSelected(null);
     toast.success(`Invoice ${selected.invoice_no} rejected`);
+    // Sprint B.2 · publish rejection event (D-NEW-ET)
+    publishProcurementPulse({
+      severity: 'warning',
+      message: `Vendor invoice ${selected.invoice_no} rejected · vendor ${selected.vendor_name} notified · reason: ${rejectReason.trim().slice(0, 60)}`,
+    });
   };
 
   return (
@@ -216,6 +228,16 @@ export function VendorInvoiceAdminReviewPanel(): JSX.Element {
           {counts.pending} pending · {counts.approved} approved
         </Badge>
       </div>
+
+      {/* Sprint B.2 · lineage breadcrumb for selected PI (D-NEW-ES) */}
+      {selected && (
+        <ProcurementLineageBreadcrumb
+          sourceVoucherNo={selected.invoice_no}
+          sourceKind="pi"
+          sourceId={selected.linked_po_id}
+          entityCode={entityCode}
+        />
+      )}
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
         <TabsList>
