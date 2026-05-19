@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   FileText, Send, ShoppingCart, FileUp, Shield, BarChart, MessageSquare,
-  Clock, CheckCircle, TrendingUp, Calendar, Bot, AlertCircle, User,
+  Clock, CheckCircle, TrendingUp, Calendar, Bot, AlertCircle, User, Sparkles,
 } from 'lucide-react';
 import VendorPortalLayout from './VendorPortalLayout';
 import { getVendorSession } from '@/lib/vendor-portal-auth-engine';
