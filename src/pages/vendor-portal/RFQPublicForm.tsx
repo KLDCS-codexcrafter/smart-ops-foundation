@@ -384,11 +384,42 @@ export default function RFQPublicForm(): JSX.Element {
                     <Label className="text-xs">Remarks (per line)</Label>
                     <p className="text-xs text-muted-foreground">Use the remarks textarea below — applied to all lines.</p>
                   </div>
-                  <Textarea
-                    placeholder="Optional notes …"
-                    value={lines[0]?.remarks ?? ''}
-                    onChange={(e) => setLines(prev => prev.map(l => ({ ...l, remarks: e.target.value })))}
-                  />
+                  <div className="space-y-2">
+                    {voiceSupported && (
+                      <div className="flex items-center justify-end gap-1">
+                        <Select value={voiceLang} onValueChange={(v) => setVoiceLang(v as 'en-IN' | 'hi-IN')}>
+                          <SelectTrigger className="h-7 text-xs w-24">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="en-IN">English</SelectItem>
+                            <SelectItem value="hi-IN">हिन्दी</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          type="button"
+                          variant={voiceListening ? 'default' : 'outline'}
+                          size="sm"
+                          className="h-7 gap-1"
+                          onClick={handleVoiceCapture}
+                          disabled={voiceListening}
+                        >
+                          {voiceListening ? <MicOff className="h-3 w-3 animate-pulse" /> : <Mic className="h-3 w-3" />}
+                          <span className="text-[10px]">{voiceListening ? 'Listening...' : 'Speak'}</span>
+                        </Button>
+                      </div>
+                    )}
+                    <Textarea
+                      placeholder="Optional notes · spoken text appears here for review"
+                      value={lines[0]?.remarks ?? ''}
+                      onChange={(e) => setLines(prev => prev.map(l => ({ ...l, remarks: e.target.value })))}
+                    />
+                    {!voiceSupported && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Voice input requires Chrome or Edge · type your notes
+                      </p>
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
