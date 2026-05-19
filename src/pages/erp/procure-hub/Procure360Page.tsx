@@ -238,6 +238,8 @@ function getModuleLabel(m: Procure360Module): string {
     'git-register': 'GIT Register',
     // ─── UPRA-4 Phase B · Tier-1 NEW ───
     'po-register': 'Purchase Order Register',
+    // ─── NEW · B.1 ───
+    'pi-admin-review': 'Vendor Invoice Review',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
