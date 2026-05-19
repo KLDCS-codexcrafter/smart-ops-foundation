@@ -24,7 +24,8 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Mic, MicOff } from 'lucide-react';
+import { isSpeechRecognitionSupported, transcribeVoice } from '@/lib/voice-to-order-engine';
 import { rfqsKey, type RFQ } from '@/types/rfq';
 import {
   procurementEnquiriesKey,
