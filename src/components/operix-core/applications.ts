@@ -336,11 +336,11 @@ export const applications: AppDefinition[] = [
   {
     id: 'eximx',
     name: 'EximX',
-    description: 'International trade · export/import documentation, DGFT integration, e-BRC, shipping bills, BL, FIRC, LUT/Bond, FEMA tracker, landed cost computation. Tier 1 #14.',
+    description: 'International trade · 19 moats v10 LOCKED · IEC + LUT workflow + Replayable Landed Cost + TDL Gaps Atlas + Dual Exchange Rate + Buyer Reliability + FEMA 270-day · 3 sub-modules (Export · Import · Unified) · Tier 1 #14.',
     category: 'International Trade',
     route: '/erp/eximx',
     icon: 'Globe',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'peoplepay',
