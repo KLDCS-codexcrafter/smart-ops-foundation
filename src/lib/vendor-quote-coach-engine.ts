@@ -21,7 +21,8 @@
  * - Peer median: k-anonymity ≥ 5 (need ≥ 5 distinct vendors quoting same item_id) ·
  *   below threshold → suppress peer signal · "Not enough peer data" insight
  */
-import { listQuotations, type VendorQuotation } from './vendor-quotation-engine';
+import { listQuotations } from './vendor-quotation-engine';
+import type { VendorQuotation } from '@/types/vendor-quotation';
 import { computeVendorScore } from './vendor-scoring-engine';
 
 const PEER_ANONYMITY_THRESHOLD = 5;
