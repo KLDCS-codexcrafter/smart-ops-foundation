@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/table';
 import {
   Send, Loader2, ArrowLeft, CheckCircle, Bot, AlertCircle,
+  Sparkles, Lightbulb, AlertTriangle, Info, Mic, MicOff,
 } from 'lucide-react';
 import { rfqsKey, type RFQ } from '@/types/rfq';
 import {
@@ -38,6 +39,13 @@ import { markFirstQuoteSubmitted } from '@/lib/vendor-onboarding-engine';
 import { scopeRfqsForVendor } from '@/lib/vendor-portal-scope';
 import { dMul, dSub, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import { useT } from '@/lib/i18n-engine';
+import {
+  generateQuoteCoachReport,
+  type QuoteCoachReport,
+} from '@/lib/vendor-quote-coach-engine';
+import {
+  isSpeechRecognitionSupported, transcribeVoice,
+} from '@/lib/voice-to-order-engine';
 
 interface LineDraft {
   enquiry_line_id: string;
