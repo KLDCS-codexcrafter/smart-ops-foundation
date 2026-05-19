@@ -59,6 +59,7 @@ export default function VendorPortalLayout({ children }: { children: ReactNode }
   const navigate = useNavigate();
   const location = useLocation();
   const session = getVendorSession();
+  const t = useT();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = (): void => {
@@ -83,13 +84,14 @@ export default function VendorPortalLayout({ children }: { children: ReactNode }
         </Button>
         <div className="flex items-center gap-2 font-semibold tracking-tight">
           <Building2 className="h-5 w-5 text-primary" />
-          <span>Operix · Vendor Portal</span>
+          <span>{t('vendor.brand.title', 'Operix · Vendor Portal')}</span>
         </div>
 
         <div className="flex-1" />
 
         {session && (
           <>
+            <VendorLocaleToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" aria-label="Notifications">
@@ -121,7 +123,7 @@ export default function VendorPortalLayout({ children }: { children: ReactNode }
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="h-4 w-4 mr-2" /> Logout
+                  <LogOut className="h-4 w-4 mr-2" /> {t('vendor.nav.logout', 'Logout')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -159,7 +161,7 @@ export default function VendorPortalLayout({ children }: { children: ReactNode }
                 >
                   <span className="flex items-center gap-2 min-w-0">
                     <Icon className="h-4 w-4 flex-shrink-0" />
-                    <span className="truncate">{n.label}</span>
+                    <span className="truncate">{t(n.labelKey, n.labelFallback)}</span>
                   </span>
                   {n.comingSoon && (
                     <Badge variant="outline" className="text-[9px] flex-shrink-0">{n.comingSoon}</Badge>
@@ -169,7 +171,7 @@ export default function VendorPortalLayout({ children }: { children: ReactNode }
             })}
           </nav>
           <div className="mt-auto p-3 text-xs text-muted-foreground border-t">
-            Operix Procure360 · Phase 1
+            {t('vendor.brand.footer', 'Operix Procure360 · Phase 1')}
           </div>
         </aside>
 
