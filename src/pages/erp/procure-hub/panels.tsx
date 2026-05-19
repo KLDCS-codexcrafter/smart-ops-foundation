@@ -1873,6 +1873,17 @@ export function PoListPanel(): JSX.Element {
         <p className="text-sm text-muted-foreground">Procure360 PO workflow · sibling of FinCore PurchaseOrder voucher (D-283)</p>
       </div>
 
+      {/* Sprint B.2 · lineage breadcrumb for selected PO (D-NEW-ES) */}
+      {selected && (
+        <ProcurementLineageBreadcrumb
+          sourceVoucherNo={selected.po_no}
+          sourceKind="po"
+          sourceId={selected.source_enquiry_id ?? selected.id}
+          entityCode={entityCode}
+        />
+      )}
+
+
       {monthlySummary.length > 0 && (
         <Card>
           <CardHeader className="pb-2"><CardTitle className="text-base">Monthly Summary</CardTitle></CardHeader>
