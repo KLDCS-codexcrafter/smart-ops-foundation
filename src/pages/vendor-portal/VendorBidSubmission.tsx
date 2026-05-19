@@ -168,6 +168,25 @@ export default function VendorBidSubmission(): JSX.Element {
     return { basic, afterTax, tax: afterTax - basic };
   }, [lines]);
 
+  // Quote Coach state · per A-d-Q5=B + A-d-Q12=B
+  const coachReport: QuoteCoachReport | null = useMemo(() => {
+    if (!session || !rfq) return null;
+    if (lines.length === 0 || !lines.some((l) => l.rate > 0)) return null;
+    return generateQuoteCoachReport({
+      vendor_id: session.vendor_id,
+      entity_code: session.entity_code,
+      current_lines: lines.map((l) => ({
+        enquiry_line_id: l.enquiry_line_id,
+        item_id: l.item_id,
+        rate: l.rate,
+        discount_percent: l.discount_percent,
+        tax_percent: l.tax_percent,
+        qty_quoted: l.qty_quoted,
+      })),
+    });
+  }, [session, rfq, lines]);
+
+
   if (!session) return <Navigate to="/vendor-portal/login" replace />;
   if (!rfq) return (
     <VendorPortalLayout>
