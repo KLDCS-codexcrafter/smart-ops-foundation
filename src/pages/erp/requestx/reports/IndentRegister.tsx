@@ -230,6 +230,15 @@ export function IndentRegisterPanel(): JSX.Element {
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      {/* Sprint B.2 · lineage breadcrumb for selected indent (D-NEW-ES) */}
+      {selected && (
+        <ProcurementLineageBreadcrumb
+          sourceVoucherNo={selected.voucher_no}
+          sourceKind="indent"
+          sourceId={selected.id}
+          entityCode={safeEntity}
+        />
+      )}
       <UniversalRegisterGrid<IndentUnionRow>
         entityCode={safeEntity}
         meta={meta}
