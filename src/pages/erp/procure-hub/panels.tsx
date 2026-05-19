@@ -53,6 +53,9 @@ import { getTopVendorsByScore, type VendorScore } from '@/lib/vendor-scoring-eng
 import { getOverdueRfqFollowups } from '@/lib/procure-followup-engine';
 import { subscribeProcurementPulse, type PulseAlert } from '@/lib/procurement-pulse-stub';
 import { getExpiringContracts } from '@/lib/oob/contract-expiry-alerts';
+// ─── NEW · B.2 ───
+import { resolveInvoiceTolerance } from '@/lib/pi-tolerance-helper';
+import { ProcurementLineageBreadcrumb } from '@/components/procurement/ProcurementLineageBreadcrumb';
 // Block H · D-278 · ALL 12 Card #2.7 mounts
 import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
