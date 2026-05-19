@@ -13,9 +13,9 @@ describe('Status flip ceremony · ServiceDesk → active · MOAT #24', () => {
     expect(sd?.status).toBe('active');
   });
 
-  it('ACTIVE roster count = 25 (was 24 · +1 servicedesk)', () => {
+  it('ACTIVE roster count = 26 (was 25 · +1 eximx · MOAT-28 pre-bank)', () => {
     const active = applications.filter((a) => a.status === 'active');
-    expect(active.length).toBe(25);
+    expect(active.length).toBe(26);  // EX-1 flip · eximx joins · ACTIVE 25 → 26
   });
 
   it('servicedesk route remains /erp/servicedesk', () => {

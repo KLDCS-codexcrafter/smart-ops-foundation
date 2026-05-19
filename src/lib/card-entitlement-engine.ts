@@ -95,6 +95,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('engineeringx'),    // active · A.10/A.13 EngineeringX (MOAT #21)
     // ─── A.14 Foundation · 10th card on Shell pattern · D-NEW-CT invariant extension ───
     one('sitex'), // active default · A.15a Q-LOCK-16a STATUS FLIP · MOAT #22 banks
+    one('eximx'),  // EX-1 STATUS FLIP · 1st EximX sprint · D-NEW-CT 17th canonical extension · matches sitex/maintainpro/servicedesk precedent
   ];
 }
 
