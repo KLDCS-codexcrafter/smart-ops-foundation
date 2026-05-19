@@ -15,6 +15,7 @@ import {
   ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt, Plus,
   Wallet, AlertTriangle,   // NEW · A.3.b
   Package,                  // UPRA-3 Phase A Step 2
+  FileCheck,                // NEW · B.1
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -53,6 +54,9 @@ export const procure360SidebarItems: SidebarItem[] = [
         icon: Clock, moduleId: 'aged-git-procure', requiredCards: ['procure360'] },
       { id: 'bill-passing-pi-status', type: 'item', label: 'Bill Passing & PI Status',
         icon: Receipt, moduleId: 'bill-passing-pi-status', requiredCards: ['procure360'] },
+      // ─── NEW · B.1 ───
+      { id: 'pi-admin-review', type: 'item', label: 'Vendor Invoice Review',
+        icon: FileCheck, moduleId: 'pi-admin-review', requiredCards: ['procure360'] },
     ],
   },
   {

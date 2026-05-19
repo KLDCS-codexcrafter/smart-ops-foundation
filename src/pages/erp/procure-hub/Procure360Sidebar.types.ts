@@ -59,4 +59,6 @@ export type Procure360Module =
   // ─── UPRA-3 Phase A Step 2 · Tier-1 NEW ───
   | 'git-register'
   // ─── UPRA-4 Phase B · Tier-1 NEW ───
-  | 'po-register';
+  | 'po-register'
+  // ─── NEW · B.1 (Sprint T-Phase-1.B-1-P2P-Workflow-Closure) ───
+  | 'pi-admin-review';
