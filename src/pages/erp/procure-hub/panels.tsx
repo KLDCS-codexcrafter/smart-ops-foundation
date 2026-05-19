@@ -22,7 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus, Trash2, Save, IndianRupee, Keyboard, Bell, Printer } from 'lucide-react';
+import { Plus, Trash2, Save, IndianRupee, Keyboard, Bell, Printer, Sparkles } from 'lucide-react';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
@@ -45,6 +45,9 @@ import {
   computeWelcomeKpis, applyReportFilter, type ReportFilter,
 } from '@/lib/procure360-report-engine';
 import { listQuotations, compareQuotations, validateQuotationCompliance } from '@/lib/vendor-quotation-engine';
+// ─── NEW · B.1 ───
+import type { VendorQuotation } from '@/types/vendor-quotation';
+import { POEntryFromAwardDialog } from './transactions/POEntryFromAwardDialog';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
 import { getTopVendorsByScore, type VendorScore } from '@/lib/vendor-scoring-engine';
 import { getOverdueRfqFollowups } from '@/lib/procure-followup-engine';
@@ -1166,13 +1169,100 @@ export function QuotationComparisonPanel(): JSX.Element {
 
 export function AwardHistoryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const awards = listQuotations(entityCode).filter((q) => q.is_awarded);
+  const [awards, setAwards] = useState<VendorQuotation[]>(() =>
+    listQuotations(entityCode).filter((q) => q.is_awarded),
+  );
+  const [poByQuotationId, setPoByQuotationId] = useState<Map<string, string>>(() => {
+    const map = new Map<string, string>();
+    for (const po of listPurchaseOrders(entityCode)) {
+      if (po.source_quotation_id) map.set(po.source_quotation_id, po.po_no);
+    }
+    return map;
+  });
+  const [selectedAward, setSelectedAward] = useState<VendorQuotation | null>(null);
+
+  const refresh = (): void => {
+    setAwards(listQuotations(entityCode).filter((q) => q.is_awarded));
+    const map = new Map<string, string>();
+    for (const po of listPurchaseOrders(entityCode)) {
+      if (po.source_quotation_id) map.set(po.source_quotation_id, po.po_no);
+    }
+    setPoByQuotationId(map);
+  };
+
   return (
-    <PanelList
-      title="Awards"
-      headers={['Quotation No', 'Vendor', 'Amount', 'Awarded At']}
-      rows={awards.map((a) => [a.quotation_no, a.vendor_name, inr(a.total_after_tax), a.award_at ?? '—'])}
-    />
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Awards · Convert to Purchase Orders</h1>
+        <Badge variant="outline" className="gap-1 text-xs">
+          <Sparkles className="h-3 w-3 text-amber-600" />
+          {awards.length} award(s) · {poByQuotationId.size} converted
+        </Badge>
+      </div>
+
+      <Card>
+        <CardContent className="pt-6">
+          {awards.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No awards yet · award a quotation from Quotation Comparison.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Quotation No</TableHead>
+                  <TableHead>Vendor</TableHead>
+                  <TableHead className="text-right">Amount</TableHead>
+                  <TableHead>Awarded At</TableHead>
+                  <TableHead>PO Status</TableHead>
+                  <TableHead className="text-right">Action</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {awards.map((a) => {
+                  const poNo = poByQuotationId.get(a.id);
+                  const tier = tierFor(a.total_after_tax, false);
+                  return (
+                    <TableRow key={a.id}>
+                      <TableCell className="font-mono text-xs">{a.quotation_no}</TableCell>
+                      <TableCell>{a.vendor_name}</TableCell>
+                      <TableCell className="text-right font-mono">{inr(a.total_after_tax)}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{a.award_at ?? '—'}</TableCell>
+                      <TableCell>
+                        {poNo ? (
+                          <Badge variant="outline" className="text-[10px] bg-emerald-500/10 text-emerald-700 border-emerald-500/30">
+                            PO {poNo}
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-700 border-amber-500/30">
+                            Tier {tier} · pending
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {poNo ? (
+                          <span className="text-[10px] text-muted-foreground">Converted</span>
+                        ) : (
+                          <Button size="sm" variant="outline" onClick={() => setSelectedAward(a)}>
+                            Create PO
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <POEntryFromAwardDialog
+        open={selectedAward !== null}
+        onClose={() => setSelectedAward(null)}
+        award={selectedAward}
+        entityCode={entityCode}
+        onSuccess={() => refresh()}
+      />
+    </div>
   );
 }
 
