@@ -6,7 +6,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import VendorPortalShell from './VendorPortalShell';
+import VendorPortalLayout from './VendorPortalLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -83,7 +83,7 @@ export default function VendorPortalProfile(): JSX.Element {
   };
 
   return (
-    <VendorPortalShell>
+    <VendorPortalLayout>
       <div className="space-y-4 max-w-2xl">
         <Card>
           <CardHeader>
@@ -129,7 +129,7 @@ export default function VendorPortalProfile(): JSX.Element {
           </CardContent>
         </Card>
       </div>
-    </VendorPortalShell>
+    </VendorPortalLayout>
   );
 }
 

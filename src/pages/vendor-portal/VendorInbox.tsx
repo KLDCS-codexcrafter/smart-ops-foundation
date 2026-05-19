@@ -5,7 +5,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import VendorPortalShell from './VendorPortalShell';
+import VendorPortalLayout from './VendorPortalLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -89,7 +89,7 @@ export default function VendorInbox(): JSX.Element {
   };
 
   return (
-    <VendorPortalShell>
+    <VendorPortalLayout>
       <Card>
         <CardHeader>
           <CardTitle className="text-xl">RFQ Inbox</CardTitle>
@@ -164,6 +164,6 @@ export default function VendorInbox(): JSX.Element {
           </Tabs>
         </CardContent>
       </Card>
-    </VendorPortalShell>
+    </VendorPortalLayout>
   );
 }

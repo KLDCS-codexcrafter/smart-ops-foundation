@@ -5,7 +5,7 @@
  */
 import { useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import VendorPortalShell from './VendorPortalShell';
+import VendorPortalLayout from './VendorPortalLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -48,7 +48,7 @@ export default function VendorCommLog(): JSX.Element {
   };
 
   return (
-    <VendorPortalShell>
+    <VendorPortalLayout>
       <Card>
         <CardHeader>
           <CardTitle>Communication Log</CardTitle>
@@ -132,6 +132,6 @@ export default function VendorCommLog(): JSX.Element {
           )}
         </CardContent>
       </Card>
-    </VendorPortalShell>
+    </VendorPortalLayout>
   );
 }
