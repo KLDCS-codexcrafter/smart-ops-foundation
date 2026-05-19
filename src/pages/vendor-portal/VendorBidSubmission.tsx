@@ -375,6 +375,54 @@ export default function VendorBidSubmission(): JSX.Element {
           </CardContent>
         </Card>
 
+        {/* AI Quote Coach Panel · per A-d-Q5=B + A-d-Q12=B · Superpower #5 FIRST VISIBLE */}
+        {coachReport && coachReport.insights.length > 0 && (
+          <Card className="border-amber-500/30 bg-amber-500/5">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between gap-2">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-amber-600" />
+                  {t('vendor.coach.title', 'AI Quote Coach')}
+                  <Badge variant="outline" className="text-[9px] gap-1">
+                    <Lightbulb className="h-3 w-3" /> {t('vendor.coach.badge', 'Operix Superpower #5')}
+                  </Badge>
+                </CardTitle>
+                <span className="text-[10px] text-muted-foreground font-mono">
+                  {t('vendor.coach.history', 'Based on {n} past quotes', { n: coachReport.vendor_history_summary.total_quotes })}
+                </span>
+              </div>
+              <CardDescription className="text-xs">
+                {t('vendor.coach.privacy', 'Peer signals use k-anonymity (≥{threshold} vendors per item).', { threshold: coachReport.peer_anonymization_threshold })}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {coachReport.insights.map((insight, idx) => {
+                const Icon = insight.severity === 'warning' ? AlertTriangle : insight.severity === 'suggestion' ? Lightbulb : Info;
+                const colorClass = insight.severity === 'warning'
+                  ? 'border-red-500/30 bg-red-500/5'
+                  : insight.severity === 'suggestion'
+                    ? 'border-amber-500/30 bg-amber-500/5'
+                    : 'border-blue-500/30 bg-blue-500/5';
+                return (
+                  <div key={`coach-${idx}`} className={`rounded border ${colorClass} p-3`}>
+                    <div className="flex items-start gap-2">
+                      <Icon className={`h-4 w-4 flex-shrink-0 mt-0.5 ${
+                        insight.severity === 'warning' ? 'text-red-600' :
+                        insight.severity === 'suggestion' ? 'text-amber-600' : 'text-blue-600'
+                      }`} />
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium">{insight.title}</p>
+                        <p className="text-xs text-muted-foreground mt-1">{insight.body}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
+
+
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">{t('vendor.bid.terms_title', 'Terms & Compliance')}</CardTitle>
