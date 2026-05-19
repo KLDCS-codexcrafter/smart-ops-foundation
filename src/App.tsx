@@ -216,6 +216,8 @@ const DocVaultPage = lazy(() => import('./pages/erp/docvault/DocVaultPage'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
 // Sprint T-Phase-1.2.6f-b-1 · vendor portal public surface (token replaces auth · NO <P> wrapper)
 const VendorPortalLogin = lazy(() => import('./pages/vendor-portal/VendorPortalLogin'));
+const VendorLogin = lazy(() => import('./pages/vendor-portal/VendorLogin'));
+const VendorDashboard = lazy(() => import('./pages/vendor-portal/VendorDashboard'));
 const VendorInbox = lazy(() => import('./pages/vendor-portal/VendorInbox'));
 const VendorPortalProfile = lazy(() => import('./pages/vendor-portal/VendorPortalProfile'));
 const VendorCommLog = lazy(() => import('./pages/vendor-portal/VendorCommLog'));
@@ -351,7 +353,8 @@ const App = () => (
               {/* Sprint 14a — OperixGo PWA (public; has its own login) */}
               <Route path="/mobile/*" element={<MobileRouter />} />
               {/* Sprint 3-b-1 · vendor portal public routes · token replaces auth · NO <P> wrapper */}
-              <Route path="/vendor-portal/login" element={<VendorPortalLogin />} />
+              <Route path="/vendor-portal" element={<VendorDashboard />} />
+              <Route path="/vendor-portal/login" element={<VendorLogin />} />
               <Route path="/vendor-portal/inbox" element={<VendorInbox />} />
               <Route path="/vendor-portal/profile" element={<VendorPortalProfile />} />
               <Route path="/vendor-portal/commlog" element={<VendorCommLog />} />
