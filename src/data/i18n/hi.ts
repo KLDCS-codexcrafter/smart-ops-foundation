@@ -367,4 +367,18 @@ export const hi: Record<string, string> = {
   'vendor.saathi.invoice_reminder': 'Saathi · चालान अनुस्मारक · चरण 2',
   'vendor.saathi.quote_draft': 'Saathi · उद्धरण मसौदा · चरण 2',
   'vendor.saathi.rfq_prioritize': 'Saathi · तत्काल आरएफक्यू प्राथमिकता · चरण 2',
+
+  // AI Quote Coach + Voice (Sprint A-d.2 · Hindi)
+  'vendor.coach.title': 'AI कोटेशन कोच',
+  'vendor.coach.badge': 'ऑपरिक्स सुपरपावर #5',
+  'vendor.coach.history': '{n} पिछले उद्धरणों के आधार पर',
+  'vendor.coach.privacy': 'सहकर्मी संकेत k-अनामिता का उपयोग करते हैं (≥{threshold} विक्रेता प्रति आइटम)।',
+  'vendor.coach.live': 'AI कोटेशन कोच v2 · लाइव',
+  'vendor.voice.button': 'बोलें',
+  'vendor.voice.listening': 'सुन रहा है...',
+  'vendor.voice.unsupported': 'वॉइस इनपुट के लिए Chrome या Edge आवश्यक · अपने नोट्स टाइप करें',
+  'vendor.bid.notes_placeholder': 'कोई स्पष्टीकरण · बोला गया पाठ समीक्षा के लिए यहां दिखेगा',
+  'vendor.dashboard.coach_card_title': 'AI कोटेशन कोच',
+  'vendor.dashboard.coach_live': 'लाइव',
+  'vendor.dashboard.coach_summary': 'रीयल-टाइम बोली कोचिंग · सहकर्मी दरें · जीत-दर अंतर्दृष्टि',
 };
