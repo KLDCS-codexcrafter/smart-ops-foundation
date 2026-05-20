@@ -113,6 +113,9 @@ export function TDLGapsAtlasPreview(): JSX.Element {
             <Link to="/erp/eximx/unified" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
               <ExternalLink className="w-3 h-3" /> Drill into TT Payments + Form 15CA/15CB + Hedge + Month-End Reval + Custom Day Book (EX-8 · forex finance operations · D-NEW-FG voucher runtime resolution · architectural keystone)
             </Link>
+            <Link to="/erp/eximx/unified" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
+              <ExternalLink className="w-3 h-3" /> Drill into Unified Compliance Suite (EX-9 · 4 PRIMARY/FULL moats: AEO · CAROTAR · CoO Embassy · STPI Softex · 5 v7 Gaps closed: PCA · TP · EDPMS · Sanctions · STPI · EWS 7-signal aggregator · DGTR foundation · 100% v7 compliance milestone ⭐⭐⭐)
+            </Link>
           </div>
         </CardContent>
       </Card>

@@ -10,6 +10,7 @@ import { eximxUnifiedSidebarItems } from '@/apps/erp/configs/eximx-unified-sideb
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { EximXUnifiedModule } from './EximX.types';
 import { UnifiedFinanceLayout } from './finance/UnifiedFinanceLayout';
+import { UnifiedComplianceLayout } from './compliance/UnifiedComplianceLayout';
 
 const config: ShellConfig & { title: string } = {
   title: 'EximX · Unified',
@@ -30,6 +31,8 @@ function renderModule(active: EximXUnifiedModule): JSX.Element {
   switch (active) {
     case 'forex-rates':
       return <UnifiedFinanceLayout />;
+    case 'sanctions-watchlist':
+      return <UnifiedComplianceLayout />;
     default:
       return (
         <div className="p-4 md:p-6 animate-fade-in">
