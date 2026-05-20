@@ -104,6 +104,12 @@ export function TDLGapsAtlasPreview(): JSX.Element {
             <Link to="/erp/eximx/export/orders" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
               <ExternalLink className="w-3 h-3" /> Drill into Export PO + Doc Pack (EX-7a · architectural pivot · LUT hard gate · Buyer Reliability Index · 6 country doc rules: UAE legalized · EU EUR.1 · ASEAN Form AI · CEPA · GSP · standard)
             </Link>
+            <Link to="/erp/eximx/export/shipping-bills" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
+              <ExternalLink className="w-3 h-3" /> Drill into Shipping Bill + EGM + LEO + Export Dispatch Mirror (EX-7b · export GL commit · ICEGATE sim · CoO 4-state legalization · self-sealing facility · 5-leg outbound mirror)
+            </Link>
+            <Link to="/erp/eximx/export/realisation" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
+              <ExternalLink className="w-3 h-3" /> Drill into Export Realisation + e-BRC + FEMA (EX-7c · export cycle closure · FEMA 270-day 5-state classifier · Forex Triangulation · STPI Softex · Buyer Reliability feedback loop · ECGC foundation)
+            </Link>
           </div>
         </CardContent>
       </Card>
