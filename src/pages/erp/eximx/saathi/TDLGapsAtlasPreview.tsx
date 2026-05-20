@@ -98,6 +98,9 @@ export function TDLGapsAtlasPreview(): JSX.Element {
             <Link to="/erp/eximx/import" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
               <ExternalLink className="w-3 h-3" /> Drill into Commercial Invoice 6-Part Allocation (10-row Duty Waterfall · 6-basis CIF Pro-Rata · live)
             </Link>
+            <Link to="/erp/eximx/import" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
+              <ExternalLink className="w-3 h-3" /> Drill into Bill of Entry (EX-6 · GL Commit · 5 auto-posted vouchers · RMS + AEO + Project Imports Sec 25 · demurrage · live)
+            </Link>
           </div>
         </CardContent>
       </Card>
