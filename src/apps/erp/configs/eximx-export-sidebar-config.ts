@@ -29,9 +29,9 @@ export const eximxExportSidebarItems: SidebarItem[] = [
   {
     id: 'export-finance', type: 'group', label: 'Finance', icon: Banknote, collapsibleByDefault: true,
     children: [
-      { id: 'e-brc', type: 'item', label: 'e-BRC + EDPMS', icon: Banknote, moduleId: 'e-brc', requiredCards: ['eximx'], keyboard: 'x f', comingSoon: true },
-      { id: 'firc', type: 'item', label: 'FIRC', icon: Banknote, moduleId: 'firc', requiredCards: ['eximx'], keyboard: 'x r', comingSoon: true },
-      { id: 'fema-tracker', type: 'item', label: 'FEMA 270-day Tracker', icon: Banknote, moduleId: 'fema-tracker', requiredCards: ['eximx'], keyboard: 'x m', comingSoon: true },
+      { id: 'e-brc', type: 'item', label: 'e-BRC + EDPMS', icon: Banknote, moduleId: 'e-brc', requiredCards: ['eximx'], keyboard: 'x f' },
+      { id: 'firc', type: 'item', label: 'FIRC', icon: Banknote, moduleId: 'firc', requiredCards: ['eximx'], keyboard: 'x r' },
+      { id: 'fema-tracker', type: 'item', label: 'FEMA 270-day Tracker', icon: Banknote, moduleId: 'fema-tracker', requiredCards: ['eximx'], keyboard: 'x m' },
     ],
   },
   {
