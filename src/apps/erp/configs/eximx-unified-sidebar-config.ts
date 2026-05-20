@@ -12,7 +12,7 @@ export const eximxUnifiedSidebarItems: SidebarItem[] = [
   {
     id: 'unified-operations', type: 'group', label: 'Cross-Operations', icon: Layers, collapsibleByDefault: false,
     children: [
-      { id: 'sanctions-watchlist', type: 'item', label: 'Sanctions Watchlist', icon: Shield, moduleId: 'sanctions-watchlist', requiredCards: ['eximx'], keyboard: 'u s', comingSoon: true },
+      { id: 'sanctions-watchlist', type: 'item', label: 'Compliance Suite (AEO · CAROTAR · CoO · STPI · PCA · TP · EDPMS · Sanctions · DGTR · EWS)', icon: Shield, moduleId: 'sanctions-watchlist', requiredCards: ['eximx'], keyboard: 'u s' },
       { id: 'fema-compounding', type: 'item', label: 'FEMA Sec 13 Compounding', icon: AlertTriangle, moduleId: 'fema-compounding', requiredCards: ['eximx'], keyboard: 'u f', comingSoon: true },
       { id: 'forex-rates', type: 'item', label: 'Unified Finance · Forex Ops', icon: Globe, moduleId: 'forex-rates', requiredCards: ['eximx'], keyboard: 'u r' },
     ],
