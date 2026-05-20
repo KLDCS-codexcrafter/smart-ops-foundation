@@ -18,6 +18,7 @@ export type EximXExportModule =
 export type EximXImportModule =
   | 'import-welcome' | 'iec-master' | 'cth-master' | 'fta-preference' | 'port-extension'
   | 'import-orders' | 'bill-of-entry' | 'foreign-vendors' | 'import-shipments'
+  | 'commercial-invoice' | 'landed-cost-replay'
   | 'landed-cost' | 'customs-revaluation' | 'rms-declaration' | 'aeo-tier-mapping'
   | 'carotar-coo' | 'import-dashboard' | 'import-config';
 

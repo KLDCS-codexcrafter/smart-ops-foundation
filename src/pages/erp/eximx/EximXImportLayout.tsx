@@ -21,6 +21,9 @@ import { MultiLegGITList } from './import/MultiLegGITList';
 import { MultiLegGITDetail } from './import/MultiLegGITDetail';
 import { LandedCostReconciliationDashboard } from './import/LandedCostReconciliationDashboard';
 import { CustomsRevaluationAuditView } from './import/CustomsRevaluationAuditView';
+import { CIList } from './import/CIList';
+import { CIDetail } from './import/CIDetail';
+import { LandedCostReplayView } from './import/LandedCostReplayView';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXImportModule } from './EximX.types';
 
@@ -61,6 +64,12 @@ function parseShipmentsSubpath(pathname: string): { id: string } | null {
   return { id: m[1] };
 }
 
+function parseCISubpath(pathname: string): { id: string } | null {
+  const m = pathname.match(/\/erp\/eximx\/import\/commercial-invoices\/([^/]+)\/?$/);
+  if (!m) return null;
+  return { id: m[1] };
+}
+
 export default function EximXImportLayout(): JSX.Element {
   const [active, setActive] = useState<EximXImportModule>('import-welcome');
   const { entitlements, profile } = useCardEntitlement();
@@ -71,6 +80,7 @@ export default function EximXImportLayout(): JSX.Element {
 
   const orderSub = parseOrdersSubpath(location.pathname);
   const shipmentSub = parseShipmentsSubpath(location.pathname);
+  const ciSub = parseCISubpath(location.pathname);
 
   function renderContent(): JSX.Element {
     if (orderSub) {
@@ -80,6 +90,9 @@ export default function EximXImportLayout(): JSX.Element {
     if (shipmentSub) {
       return <MultiLegGITDetail />;
     }
+    if (ciSub) {
+      return <CIDetail />;
+    }
     switch (active) {
       case 'iec-master': return <IECMaster />;
       case 'cth-master': return <CustomsTariffHeadMaster />;
@@ -88,6 +101,8 @@ export default function EximXImportLayout(): JSX.Element {
       case 'import-orders': return <ImportPOList />;
       case 'foreign-vendors': return <ForeignVendorMaster />;
       case 'import-shipments': return <MultiLegGITList />;
+      case 'commercial-invoice': return <CIList />;
+      case 'landed-cost-replay': return <LandedCostReplayView />;
       case 'landed-cost': return <LandedCostReconciliationDashboard />;
       case 'customs-revaluation': return <CustomsRevaluationAuditView />;
       case 'import-welcome': return <ComingSoon label="Import Welcome (EX-6)" />;
@@ -103,7 +118,7 @@ export default function EximXImportLayout(): JSX.Element {
       onSidebarItemClick={(item) => {
         if (item.moduleId) {
           setActive(item.moduleId as EximXImportModule);
-          if (orderSub || shipmentSub) navigate('/erp/eximx/import', { replace: true });
+          if (orderSub || shipmentSub || ciSub) navigate('/erp/eximx/import', { replace: true });
         }
       }}
     >
