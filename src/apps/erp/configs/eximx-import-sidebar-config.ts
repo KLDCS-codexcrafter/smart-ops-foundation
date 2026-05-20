@@ -16,7 +16,7 @@ export const eximxImportSidebarItems: SidebarItem[] = [
     children: [
       { id: 'iec-master', type: 'item', label: 'IEC Master', icon: Award, moduleId: 'iec-master', requiredCards: ['eximx'], keyboard: 'm i' },
       { id: 'import-orders', type: 'item', label: 'Import Orders', icon: FileText, moduleId: 'import-orders', requiredCards: ['eximx'], keyboard: 'm o' },
-      { id: 'bill-of-entry', type: 'item', label: 'Bill of Entry', icon: FileText, moduleId: 'bill-of-entry', requiredCards: ['eximx'], keyboard: 'm b', comingSoon: true },
+      { id: 'bill-of-entry', type: 'item', label: 'Bill of Entry', icon: FileText, moduleId: 'bill-of-entry', requiredCards: ['eximx'], keyboard: 'm b' },
     ],
   },
   {
