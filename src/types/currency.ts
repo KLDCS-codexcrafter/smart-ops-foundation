@@ -55,6 +55,13 @@ export interface ForexRate {
    * Read-only. Priority: if set, overrides standard_rate on that date.
    */
   last_voucher_rate: number | null;
+  /**
+   * customs_valuation_rate: Import department's rate used for BoE customs valuation.
+   * Distinct from buying_rate (Purchase dept) per v6 founder ruling.
+   * Moat #16 Dual Exchange Rate Discipline anchor.
+   * Optional · falls back to buying_rate if null. EX-3 Q12=d REGISTERED.
+   */
+  customs_valuation_rate?: number | null;
   created_at: string;
 }
 

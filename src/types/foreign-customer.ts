@@ -6,7 +6,7 @@
  */
 
 export type ForeignCustomerType = 'distributor' | 'end-customer' | 'manufacturer' | 'trader';
-export type IncotermType = 'EXW' | 'FOB' | 'CFR' | 'CIF' | 'CIP' | 'DAP' | 'DDP' | 'FCA';
+export type IncotermType = 'EXW' | 'FCA' | 'FAS' | 'FOB' | 'CFR' | 'CIF' | 'CPT' | 'CIP' | 'DAP' | 'DPU' | 'DDP';
 
 export interface ForeignCustomer {
   id: string;
