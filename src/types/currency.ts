@@ -61,7 +61,7 @@ export interface ForexRate {
    * Moat #16 Dual Exchange Rate Discipline anchor.
    * Optional · falls back to buying_rate if null. EX-3 Q12=d REGISTERED.
    */
-  customs_valuation_rate: number | null;
+  customs_valuation_rate?: number | null;
   created_at: string;
 }
 
