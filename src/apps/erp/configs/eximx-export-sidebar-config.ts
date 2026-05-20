@@ -16,7 +16,7 @@ export const eximxExportSidebarItems: SidebarItem[] = [
     children: [
       { id: 'lut-master', type: 'item', label: 'LUT Master', icon: Award, moduleId: 'lut-master', requiredCards: ['eximx'], keyboard: 'x l' },
       { id: 'export-orders', type: 'item', label: 'Export Orders', icon: FileText, moduleId: 'export-orders', requiredCards: ['eximx'], keyboard: 'x o' },
-      { id: 'shipping-bills', type: 'item', label: 'Shipping Bills', icon: FileText, moduleId: 'shipping-bills', requiredCards: ['eximx'], keyboard: 'x b', comingSoon: true },
+      { id: 'shipping-bills', type: 'item', label: 'Shipping Bills', icon: FileText, moduleId: 'shipping-bills', requiredCards: ['eximx'], keyboard: 'x b' },
     ],
   },
   {
