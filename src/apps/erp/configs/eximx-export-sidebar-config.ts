@@ -23,7 +23,7 @@ export const eximxExportSidebarItems: SidebarItem[] = [
     id: 'export-logistics', type: 'group', label: 'Logistics', icon: Truck, collapsibleByDefault: true,
     children: [
       { id: 'foreign-customers', type: 'item', label: 'Foreign Customers', icon: Building2, moduleId: 'foreign-customers', requiredCards: ['eximx'], keyboard: 'x c' },
-      { id: 'export-shipments', type: 'item', label: 'Shipments', icon: Truck, moduleId: 'export-shipments', requiredCards: ['eximx'], keyboard: 'x s', comingSoon: true },
+      { id: 'export-shipments', type: 'item', label: 'Shipments', icon: Truck, moduleId: 'export-shipments', requiredCards: ['eximx'], keyboard: 'x s' },
     ],
   },
   {
