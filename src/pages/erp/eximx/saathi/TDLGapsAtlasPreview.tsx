@@ -110,6 +110,9 @@ export function TDLGapsAtlasPreview(): JSX.Element {
             <Link to="/erp/eximx/export/realisation" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
               <ExternalLink className="w-3 h-3" /> Drill into Export Realisation + e-BRC + FEMA (EX-7c · export cycle closure · FEMA 270-day 5-state classifier · Forex Triangulation · STPI Softex · Buyer Reliability feedback loop · ECGC foundation)
             </Link>
+            <Link to="/erp/eximx/unified" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
+              <ExternalLink className="w-3 h-3" /> Drill into TT Payments + Form 15CA/15CB + Hedge + Month-End Reval + Custom Day Book (EX-8 · forex finance operations · D-NEW-FG voucher runtime resolution · architectural keystone)
+            </Link>
           </div>
         </CardContent>
       </Card>
