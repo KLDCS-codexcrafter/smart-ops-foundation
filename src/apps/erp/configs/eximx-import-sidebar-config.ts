@@ -29,6 +29,8 @@ export const eximxImportSidebarItems: SidebarItem[] = [
   {
     id: 'import-finance', type: 'group', label: 'Finance', icon: Banknote, collapsibleByDefault: true,
     children: [
+      { id: 'commercial-invoice', type: 'item', label: 'Commercial Invoices', icon: FileText, moduleId: 'commercial-invoice', requiredCards: ['eximx'], keyboard: 'm n' },
+      { id: 'landed-cost-replay', type: 'item', label: 'Landed Cost Replay', icon: Banknote, moduleId: 'landed-cost-replay', requiredCards: ['eximx'], keyboard: 'm e' },
       { id: 'landed-cost', type: 'item', label: 'Replayable Landed Cost', icon: Banknote, moduleId: 'landed-cost', requiredCards: ['eximx'], keyboard: 'm l' },
       { id: 'customs-revaluation', type: 'item', label: 'Customs Revaluation Audit', icon: Banknote, moduleId: 'customs-revaluation', requiredCards: ['eximx'], keyboard: 'm c' },
     ],
