@@ -1,14 +1,20 @@
 /**
  * @file        src/pages/erp/eximx/EximXExportLayout.tsx
- * @purpose     Layout for EximX-Export sub-module · 7-group sidebar · LUT Master active
- * @sprint      T-Phase-1.EX-1-EximX-Foundation
+ * @purpose     Layout for EximX-Export sub-module · 7-group sidebar · EX-7a wires Export PO + Foreign Customer + Buyer Reliability
+ * @sprint      T-Phase-1.EX-7a-ExportPO-ForeignCustomer-DocPack
  */
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Shell } from '@/shell';
 import type { ShellConfig } from '@/shell/types';
 import { eximxExportSidebarItems } from '@/apps/erp/configs/eximx-export-sidebar-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { LUTMaster } from './masters/LUTMaster';
+import { ExportPOList } from './export/ExportPOList';
+import { ExportPOEntry } from './export/ExportPOEntry';
+import { ExportPODetail } from './export/ExportPODetail';
+import { ForeignCustomerMaster } from './masters/ForeignCustomerMaster';
+import { BuyerReliabilityDashboard } from './export/BuyerReliabilityDashboard';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXExportModule } from './EximX.types';
 
@@ -31,28 +37,57 @@ function ComingSoon({ label }: { label: string }): JSX.Element {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
       <p className="text-lg font-semibold">{label}</p>
-      <p className="text-sm mt-2">Coming in subsequent EX-2 through EX-12 sprints</p>
+      <p className="text-sm mt-2">Coming in subsequent EX-7b through EX-12 sprints</p>
     </div>
   );
+}
+
+function parseExportPOSubpath(pathname: string): { mode: 'new' } | { mode: 'detail'; id: string } | null {
+  const m = pathname.match(/\/erp\/eximx\/export\/orders\/([^/]+)\/?$/);
+  if (!m) return null;
+  if (m[1] === 'new') return { mode: 'new' };
+  return { mode: 'detail', id: m[1] };
 }
 
 export default function EximXExportLayout(): JSX.Element {
   const [active, setActive] = useState<EximXExportModule>('export-welcome');
   const { entitlements, profile } = useCardEntitlement();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => { seedSinhaEximX(); }, []);
+
+  const expoSub = parseExportPOSubpath(location.pathname);
+
+  function renderContent(): JSX.Element {
+    if (expoSub) {
+      if (expoSub.mode === 'new') return <ExportPOEntry />;
+      return <ExportPODetail />;
+    }
+    switch (active) {
+      case 'lut-master': return <LUTMaster />;
+      case 'export-orders': return <ExportPOList />;
+      case 'foreign-customers': return <ForeignCustomerMaster />;
+      case 'buyer-reliability': return <BuyerReliabilityDashboard />;
+      case 'export-welcome': return <ComingSoon label="Export Welcome (EX-7a)" />;
+      default: return <ComingSoon label={active} />;
+    }
+  }
 
   return (
     <Shell
       config={config}
       userProfile={profile}
       tenantEntitlements={entitlements}
-      onSidebarItemClick={(item) => { if (item.moduleId) setActive(item.moduleId as EximXExportModule); }}
+      onSidebarItemClick={(item) => {
+        if (item.moduleId) {
+          setActive(item.moduleId as EximXExportModule);
+          if (expoSub) navigate('/erp/eximx/export', { replace: true });
+        }
+      }}
     >
       <div className="p-4 md:p-6 animate-fade-in">
-        {active === 'lut-master' && <LUTMaster />}
-        {active === 'export-welcome' && <ComingSoon label="Export Welcome (EX-7a)" />}
-        {!['lut-master', 'export-welcome'].includes(active) && <ComingSoon label={active} />}
+        {renderContent()}
       </div>
     </Shell>
   );
