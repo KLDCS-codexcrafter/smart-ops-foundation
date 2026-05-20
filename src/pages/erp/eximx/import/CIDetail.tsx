@@ -25,10 +25,8 @@ export function CIDetail(): JSX.Element {
   const [expandedLineId, setExpandedLineId] = useState<string | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const ci = useMemo(
-    () => (entityCode ? getCI(entityCode, id) : null),
-    [entityCode, id, refreshKey],
-  );
+  void refreshKey;
+  const ci = entityCode ? getCI(entityCode, id) : null;
 
   if (!ci) {
     return (
