@@ -1,0 +1,95 @@
+/**
+ * @file        src/data/sinha-export-realisation-seed-data.ts
+ * @purpose     3 Sinha Realisations · 3 FEMA states · 1 STPI flag
+ * @sprint      T-Phase-1.EX-7c-ExportRealisation-eBRC-FEMA
+ * @decisions   EX-7c-Q11=b 3 realisations · USA safe · UAE attention · Japan warning
+ */
+import type { ExportRealisation } from '@/types/export-realisation';
+
+const now = '2026-05-19T00:00:00.000Z';
+
+export const SINHA_EXPORT_REALISATIONS: ExportRealisation[] = [
+  {
+    id: 'real-sinha-001', realisation_no: 'REAL-SINHA-2026-001', entity_id: 'sinha-trading',
+    status: 'fully_realised',
+    related_shipping_bill_id: 'sb-sinha-001', related_shipping_bill_no: 'SB-SINHA-2026-001',
+    related_export_po_id: 'expo-sinha-001', related_export_po_no: 'EXPO-SINHA-2026-001',
+    related_foreign_customer_id: 'fc-sinha-usa-001',
+    related_ecgc_policy_id: 'ecgc-pol-001',
+    goods_dispatched_date: '2026-03-15',
+    fema_270_day_deadline: '2026-12-10',
+    days_since_dispatch: 65,
+    fema_state: 'safe',
+    invoice_value_foreign: 10073, invoice_value_inr_at_dispatch: 851200,
+    currency_code: 'USD',
+    total_realised_foreign: 10073, total_realised_inr: 859210, outstanding_foreign: 0, outstanding_inr: 0,
+    realisation_pct: 100,
+    receipts: [{ id: 'rec-001-1', event_type: 'full_payment', received_date: '2026-04-25', amount_foreign: 10073, amount_inr: 859210, realised_rate: 85.30, related_firc_id: 'firc-001', related_ebrc_id: 'ebrc-001', bank_credit_ref: 'CITI-IN-2026-7821', notes: 'Full payment received from USA buyer · 41 days' }],
+    forex_triangulation: {
+      booking_rate: 85.00, booking_rate_at_date: '2026-02-10',
+      selling_rate_at_pol: 84.50, selling_rate_at_pol_date: '2026-03-15',
+      realised_rate: 85.30, realised_rate_date: '2026-04-25',
+      variance_booking_to_pol_inr: -5036.5,
+      variance_pol_to_realised_inr: 8058.4,
+      variance_total_inr: 3021.9,
+    },
+    month_end_reval_amount_inr: 0, month_end_reval_variance_inr: 0, month_end_reval_last_run: null,
+    is_stpi_export: false, stpi_unit_id: null, stpi_softex_form_no: null, stpi_softex_filed_date: null,
+    notes: 'Fully realised · USA buyer · FEMA safe · positive forex gain via triangulation · EBRC issued for RoDTEP claim',
+    created_at: now, updated_at: now, created_by: 'sinha-finance',
+  },
+  {
+    id: 'real-sinha-002', realisation_no: 'REAL-SINHA-2026-002', entity_id: 'sinha-trading',
+    status: 'partially_realised',
+    related_shipping_bill_id: 'sb-sinha-002', related_shipping_bill_no: 'SB-SINHA-2026-002',
+    related_export_po_id: 'expo-sinha-002', related_export_po_no: 'EXPO-SINHA-2026-002',
+    related_foreign_customer_id: 'fc-sinha-uae-001',
+    related_ecgc_policy_id: 'ecgc-pol-001',
+    goods_dispatched_date: '2025-10-15',
+    fema_270_day_deadline: '2026-07-12',
+    days_since_dispatch: 217,
+    fema_state: 'attention',
+    invoice_value_foreign: 23474, invoice_value_inr_at_dispatch: 542250,
+    currency_code: 'AED',
+    total_realised_foreign: 11737, total_realised_inr: 272128, outstanding_foreign: 11737, outstanding_inr: 272128,
+    realisation_pct: 50,
+    receipts: [{ id: 'rec-002-1', event_type: 'advance_payment', received_date: '2025-11-20', amount_foreign: 11737, amount_inr: 272128, realised_rate: 23.18, related_firc_id: 'firc-002', related_ebrc_id: null, bank_credit_ref: 'HDFC-AE-2025-3398', notes: 'Advance 50% received · balance pending per CEPA terms' }],
+    forex_triangulation: {
+      booking_rate: 23.10, booking_rate_at_date: '2025-09-25',
+      selling_rate_at_pol: 23.05, selling_rate_at_pol_date: '2025-10-15',
+      realised_rate: 23.18, realised_rate_date: '2025-11-20',
+      variance_booking_to_pol_inr: -1173.7, variance_pol_to_realised_inr: 1525.81, variance_total_inr: 352.11,
+    },
+    month_end_reval_amount_inr: 270400, month_end_reval_variance_inr: 1728, month_end_reval_last_run: '2026-04-30',
+    is_stpi_export: false, stpi_unit_id: null, stpi_softex_form_no: null, stpi_softex_filed_date: null,
+    notes: 'Partially realised (50%) · UAE buyer · FEMA attention zone (217 days) · operator follow-up needed · Month-End Reval ran April-end',
+    created_at: now, updated_at: now, created_by: 'sinha-finance',
+  },
+  {
+    id: 'real-sinha-003', realisation_no: 'REAL-SINHA-2026-003', entity_id: 'sinha-trading',
+    status: 'pending',
+    related_shipping_bill_id: 'sb-sinha-003', related_shipping_bill_no: 'SB-SINHA-2026-003',
+    related_export_po_id: 'expo-sinha-003', related_export_po_no: 'EXPO-SINHA-2026-003',
+    related_foreign_customer_id: 'fc-sinha-jp-001',
+    related_ecgc_policy_id: null,
+    goods_dispatched_date: '2025-09-10',
+    fema_270_day_deadline: '2026-06-07',
+    days_since_dispatch: 252,
+    fema_state: 'warning',
+    invoice_value_foreign: 2605714, invoice_value_inr_at_dispatch: 1459000,
+    currency_code: 'JPY',
+    total_realised_foreign: 0, total_realised_inr: 0, outstanding_foreign: 2605714, outstanding_inr: 1459000,
+    realisation_pct: 0,
+    receipts: [],
+    forex_triangulation: {
+      booking_rate: 0.56, booking_rate_at_date: '2025-08-20',
+      selling_rate_at_pol: 0.56, selling_rate_at_pol_date: '2025-09-10',
+      realised_rate: null, realised_rate_date: null,
+      variance_booking_to_pol_inr: 0, variance_pol_to_realised_inr: 0, variance_total_inr: 0,
+    },
+    month_end_reval_amount_inr: 0, month_end_reval_variance_inr: 0, month_end_reval_last_run: null,
+    is_stpi_export: true, stpi_unit_id: 'STPI-IN-MAA-0042', stpi_softex_form_no: 'SOFTEX-2025-MAA-7821', stpi_softex_filed_date: '2025-09-15',
+    notes: 'Pending realisation · Japan buyer · FEMA WARNING (252 days · 18 days to deadline) · STPI software export (v7 Gap #11) · escalate to finance + RBI extension if needed',
+    created_at: now, updated_at: now, created_by: 'sinha-finance',
+  },
+];

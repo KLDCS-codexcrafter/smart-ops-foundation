@@ -20,6 +20,10 @@ import { ShippingBillEntry } from './export/ShippingBillEntry';
 import { ShippingBillDetail } from './export/ShippingBillDetail';
 import { ExportDispatchList } from './export/ExportDispatchList';
 import { CoOLegalizationDashboard } from './export/CoOLegalizationDashboard';
+import { ExportRealisationList } from './export/ExportRealisationList';
+import { ExportRealisationDetail } from './export/ExportRealisationDetail';
+import { EBRCEDPMSDashboard } from './export/EBRCEDPMSDashboard';
+import { FEMA270DayTracker } from './export/FEMA270DayTracker';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXExportModule } from './EximX.types';
 
@@ -61,6 +65,12 @@ function parseSBSubpath(pathname: string): { mode: 'new' } | { mode: 'detail'; i
   return { mode: 'detail', id: m[1] };
 }
 
+function parseRealisationSubpath(pathname: string): { id: string } | null {
+  const m = pathname.match(/\/erp\/eximx\/export\/realisation\/([^/]+)\/?$/);
+  if (!m) return null;
+  return { id: m[1] };
+}
+
 export default function EximXExportLayout(): JSX.Element {
   const [active, setActive] = useState<EximXExportModule>('export-welcome');
   const { entitlements, profile } = useCardEntitlement();
@@ -71,8 +81,10 @@ export default function EximXExportLayout(): JSX.Element {
 
   const expoSub = parseExportPOSubpath(location.pathname);
   const sbSub = parseSBSubpath(location.pathname);
+  const realSub = parseRealisationSubpath(location.pathname);
 
   function renderContent(): JSX.Element {
+    if (realSub) return <ExportRealisationDetail />;
     if (sbSub) {
       if (sbSub.mode === 'new') return <ShippingBillEntry />;
       return <ShippingBillDetail />;
@@ -88,6 +100,9 @@ export default function EximXExportLayout(): JSX.Element {
       case 'buyer-reliability': return <BuyerReliabilityDashboard />;
       case 'shipping-bills': return <ShippingBillList />;
       case 'export-shipments': return <ExportDispatchList />;
+      case 'e-brc': return <><ExportRealisationList /><EBRCEDPMSDashboard /></>;
+      case 'firc': return <EBRCEDPMSDashboard />;
+      case 'fema-tracker': return <FEMA270DayTracker />;
       case 'export-welcome': return <><ShippingBillList /><CoOLegalizationDashboard /></>;
       default: return <ComingSoon label={active} />;
     }
