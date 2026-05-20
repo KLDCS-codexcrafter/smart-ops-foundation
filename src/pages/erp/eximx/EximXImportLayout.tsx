@@ -9,6 +9,9 @@ import type { ShellConfig } from '@/shell/types';
 import { eximxImportSidebarItems } from '@/apps/erp/configs/eximx-import-sidebar-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { IECMaster } from './masters/IECMaster';
+import { CustomsTariffHeadMaster } from './masters/CustomsTariffHeadMaster';
+import { FTAPreferenceTable } from './masters/FTAPreferenceTable';
+import { PortExtensionEditor } from './masters/PortExtensionEditor';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXImportModule } from './EximX.types';
 
