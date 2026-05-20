@@ -23,14 +23,14 @@ export const eximxImportSidebarItems: SidebarItem[] = [
     id: 'import-logistics', type: 'group', label: 'Logistics', icon: Truck, collapsibleByDefault: true,
     children: [
       { id: 'foreign-vendors', type: 'item', label: 'Foreign Vendors', icon: Building2, moduleId: 'foreign-vendors', requiredCards: ['eximx'], keyboard: 'm v' },
-      { id: 'import-shipments', type: 'item', label: 'Shipments + GIT', icon: Package, moduleId: 'import-shipments', requiredCards: ['eximx'], keyboard: 'm s', comingSoon: true },
+      { id: 'import-shipments', type: 'item', label: 'Shipments + GIT', icon: Package, moduleId: 'import-shipments', requiredCards: ['eximx'], keyboard: 'm s' },
     ],
   },
   {
     id: 'import-finance', type: 'group', label: 'Finance', icon: Banknote, collapsibleByDefault: true,
     children: [
-      { id: 'landed-cost', type: 'item', label: 'Replayable Landed Cost', icon: Banknote, moduleId: 'landed-cost', requiredCards: ['eximx'], keyboard: 'm l', comingSoon: true },
-      { id: 'customs-revaluation', type: 'item', label: 'Customs Revaluation Audit', icon: Banknote, moduleId: 'customs-revaluation', requiredCards: ['eximx'], keyboard: 'm c', comingSoon: true },
+      { id: 'landed-cost', type: 'item', label: 'Replayable Landed Cost', icon: Banknote, moduleId: 'landed-cost', requiredCards: ['eximx'], keyboard: 'm l' },
+      { id: 'customs-revaluation', type: 'item', label: 'Customs Revaluation Audit', icon: Banknote, moduleId: 'customs-revaluation', requiredCards: ['eximx'], keyboard: 'm c' },
     ],
   },
   {
