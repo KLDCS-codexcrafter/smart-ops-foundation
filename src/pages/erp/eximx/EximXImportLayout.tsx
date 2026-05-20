@@ -118,7 +118,7 @@ export default function EximXImportLayout(): JSX.Element {
       onSidebarItemClick={(item) => {
         if (item.moduleId) {
           setActive(item.moduleId as EximXImportModule);
-          if (orderSub || shipmentSub) navigate('/erp/eximx/import', { replace: true });
+          if (orderSub || shipmentSub || ciSub) navigate('/erp/eximx/import', { replace: true });
         }
       }}
     >
