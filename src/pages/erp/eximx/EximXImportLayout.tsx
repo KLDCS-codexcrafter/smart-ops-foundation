@@ -1,7 +1,7 @@
 /**
  * @file        src/pages/erp/eximx/EximXImportLayout.tsx
- * @purpose     Layout for EximX-Import sub-module · sidebar + nested routes for Import PO
- * @sprint      T-Phase-1.EX-3-ImportPO-ForeignVendor-DualRate
+ * @purpose     Layout for EximX-Import sub-module · sidebar + nested routes for Import PO + Shipments
+ * @sprint      T-Phase-1.EX-4-MultiLeg-GIT-3Bucket-4Method
  */
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -17,6 +17,10 @@ import { ForeignVendorMaster } from './masters/ForeignVendorMaster';
 import { ImportPOList } from './import/ImportPOList';
 import { ImportPOEntry } from './import/ImportPOEntry';
 import { ImportPODetail } from './import/ImportPODetail';
+import { MultiLegGITList } from './import/MultiLegGITList';
+import { MultiLegGITDetail } from './import/MultiLegGITDetail';
+import { LandedCostReconciliationDashboard } from './import/LandedCostReconciliationDashboard';
+import { CustomsRevaluationAuditView } from './import/CustomsRevaluationAuditView';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXImportModule } from './EximX.types';
 
@@ -44,12 +48,17 @@ function ComingSoon({ label }: { label: string }): JSX.Element {
   );
 }
 
-// Match /erp/eximx/import/orders/new and /erp/eximx/import/orders/:id
 function parseOrdersSubpath(pathname: string): { mode: 'new' } | { mode: 'detail'; id: string } | null {
   const m = pathname.match(/\/erp\/eximx\/import\/orders\/([^/]+)\/?$/);
   if (!m) return null;
   if (m[1] === 'new') return { mode: 'new' };
   return { mode: 'detail', id: m[1] };
+}
+
+function parseShipmentsSubpath(pathname: string): { id: string } | null {
+  const m = pathname.match(/\/erp\/eximx\/import\/shipments\/([^/]+)\/?$/);
+  if (!m) return null;
+  return { id: m[1] };
 }
 
 export default function EximXImportLayout(): JSX.Element {
@@ -61,11 +70,15 @@ export default function EximXImportLayout(): JSX.Element {
   useEffect(() => { seedSinhaEximX(); }, []);
 
   const orderSub = parseOrdersSubpath(location.pathname);
+  const shipmentSub = parseShipmentsSubpath(location.pathname);
 
   function renderContent(): JSX.Element {
     if (orderSub) {
       if (orderSub.mode === 'new') return <ImportPOEntry />;
       return <ImportPODetail />;
+    }
+    if (shipmentSub) {
+      return <MultiLegGITDetail />;
     }
     switch (active) {
       case 'iec-master': return <IECMaster />;
@@ -74,6 +87,9 @@ export default function EximXImportLayout(): JSX.Element {
       case 'port-extension': return <PortExtensionEditor />;
       case 'import-orders': return <ImportPOList />;
       case 'foreign-vendors': return <ForeignVendorMaster />;
+      case 'import-shipments': return <MultiLegGITList />;
+      case 'landed-cost': return <LandedCostReconciliationDashboard />;
+      case 'customs-revaluation': return <CustomsRevaluationAuditView />;
       case 'import-welcome': return <ComingSoon label="Import Welcome (EX-6)" />;
       default: return <ComingSoon label={active} />;
     }
@@ -87,8 +103,7 @@ export default function EximXImportLayout(): JSX.Element {
       onSidebarItemClick={(item) => {
         if (item.moduleId) {
           setActive(item.moduleId as EximXImportModule);
-          // Clear any /orders/:id subpath when switching sidebar
-          if (orderSub) navigate('/erp/eximx/import', { replace: true });
+          if (orderSub || shipmentSub) navigate('/erp/eximx/import', { replace: true });
         }
       }}
     >
