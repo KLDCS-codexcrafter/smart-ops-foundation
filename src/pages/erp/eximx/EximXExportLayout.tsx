@@ -58,11 +58,10 @@ function parseExportPOSubpath(pathname: string): { mode: 'new' } | { mode: 'deta
   return { mode: 'detail', id: m[1] };
 }
 
-function parseSBSubpath(pathname: string): { mode: 'new' } | { mode: 'detail'; id: string } | null {
-  if (/\/erp\/eximx\/export\/shipping-bills\/new\/?$/.test(pathname)) return { mode: 'new' };
-  const m = pathname.match(/\/erp\/eximx\/export\/shipping-bills\/([^/]+)\/?$/);
-  if (!m || m[1] === 'new') return null;
-  return { mode: 'detail', id: m[1] };
+function parseRealisationSubpath(pathname: string): { id: string } | null {
+  const m = pathname.match(/\/erp\/eximx\/export\/realisation\/([^/]+)\/?$/);
+  if (!m) return null;
+  return { id: m[1] };
 }
 
 export default function EximXExportLayout(): JSX.Element {
@@ -75,8 +74,10 @@ export default function EximXExportLayout(): JSX.Element {
 
   const expoSub = parseExportPOSubpath(location.pathname);
   const sbSub = parseSBSubpath(location.pathname);
+  const realSub = parseRealisationSubpath(location.pathname);
 
   function renderContent(): JSX.Element {
+    if (realSub) return <ExportRealisationDetail />;
     if (sbSub) {
       if (sbSub.mode === 'new') return <ShippingBillEntry />;
       return <ShippingBillDetail />;
@@ -92,6 +93,9 @@ export default function EximXExportLayout(): JSX.Element {
       case 'buyer-reliability': return <BuyerReliabilityDashboard />;
       case 'shipping-bills': return <ShippingBillList />;
       case 'export-shipments': return <ExportDispatchList />;
+      case 'e-brc': return <><ExportRealisationList /><EBRCEDPMSDashboard /></>;
+      case 'firc': return <EBRCEDPMSDashboard />;
+      case 'fema-tracker': return <FEMA270DayTracker />;
       case 'export-welcome': return <><ShippingBillList /><CoOLegalizationDashboard /></>;
       default: return <ComingSoon label={active} />;
     }
