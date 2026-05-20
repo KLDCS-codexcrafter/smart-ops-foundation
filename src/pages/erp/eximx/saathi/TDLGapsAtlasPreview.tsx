@@ -6,7 +6,8 @@
  */
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Shield, FileText, Banknote, Info } from 'lucide-react';
+import { Bot, Shield, FileText, Banknote, Info, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function TDLGapsAtlasPreview(): JSX.Element {
   return (
