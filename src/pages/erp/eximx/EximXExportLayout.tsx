@@ -58,6 +58,13 @@ function parseExportPOSubpath(pathname: string): { mode: 'new' } | { mode: 'deta
   return { mode: 'detail', id: m[1] };
 }
 
+function parseSBSubpath(pathname: string): { mode: 'new' } | { mode: 'detail'; id: string } | null {
+  if (/\/erp\/eximx\/export\/shipping-bills\/new\/?$/.test(pathname)) return { mode: 'new' };
+  const m = pathname.match(/\/erp\/eximx\/export\/shipping-bills\/([^/]+)\/?$/);
+  if (!m || m[1] === 'new') return null;
+  return { mode: 'detail', id: m[1] };
+}
+
 function parseRealisationSubpath(pathname: string): { id: string } | null {
   const m = pathname.match(/\/erp\/eximx\/export\/realisation\/([^/]+)\/?$/);
   if (!m) return null;
