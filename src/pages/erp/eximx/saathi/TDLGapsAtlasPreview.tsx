@@ -88,6 +88,11 @@ export function TDLGapsAtlasPreview(): JSX.Element {
             structure end-to-end so PCA audits, customs revaluation traces, and finance reconciliation are pixel-perfect.
             This is part of Moat #8 (CTH-Country-Date × 3-Bucket) and Moat #14 (Dynamic Duty Labels).
           </p>
+          <div className="pt-3 border-t mt-3">
+            <Link to="/erp/eximx/import" className="text-sm text-primary hover:underline inline-flex items-center gap-1">
+              <ExternalLink className="w-3 h-3" /> Drill into CTH × Country × Date master (live 3-bucket)
+            </Link>
+          </div>
         </CardContent>
       </Card>
 
