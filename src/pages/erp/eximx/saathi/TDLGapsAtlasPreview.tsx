@@ -101,6 +101,9 @@ export function TDLGapsAtlasPreview(): JSX.Element {
             <Link to="/erp/eximx/import" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
               <ExternalLink className="w-3 h-3" /> Drill into Bill of Entry (EX-6 · GL Commit · 5 auto-posted vouchers · RMS + AEO + Project Imports Sec 25 · demurrage · live)
             </Link>
+            <Link to="/erp/eximx/export/orders" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
+              <ExternalLink className="w-3 h-3" /> Drill into Export PO + Doc Pack (EX-7a · architectural pivot · LUT hard gate · Buyer Reliability Index · 6 country doc rules: UAE legalized · EU EUR.1 · ASEAN Form AI · CEPA · GSP · standard)
+            </Link>
           </div>
         </CardContent>
       </Card>

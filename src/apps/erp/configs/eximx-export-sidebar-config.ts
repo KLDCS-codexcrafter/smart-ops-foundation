@@ -15,14 +15,14 @@ export const eximxExportSidebarItems: SidebarItem[] = [
     id: 'export-operations', type: 'group', label: 'Operations', icon: FileText, collapsibleByDefault: false,
     children: [
       { id: 'lut-master', type: 'item', label: 'LUT Master', icon: Award, moduleId: 'lut-master', requiredCards: ['eximx'], keyboard: 'x l' },
-      { id: 'export-orders', type: 'item', label: 'Export Orders', icon: FileText, moduleId: 'export-orders', requiredCards: ['eximx'], keyboard: 'x o', comingSoon: true },
+      { id: 'export-orders', type: 'item', label: 'Export Orders', icon: FileText, moduleId: 'export-orders', requiredCards: ['eximx'], keyboard: 'x o' },
       { id: 'shipping-bills', type: 'item', label: 'Shipping Bills', icon: FileText, moduleId: 'shipping-bills', requiredCards: ['eximx'], keyboard: 'x b', comingSoon: true },
     ],
   },
   {
     id: 'export-logistics', type: 'group', label: 'Logistics', icon: Truck, collapsibleByDefault: true,
     children: [
-      { id: 'foreign-customers', type: 'item', label: 'Foreign Customers', icon: Building2, moduleId: 'foreign-customers', requiredCards: ['eximx'], keyboard: 'x c', comingSoon: true },
+      { id: 'foreign-customers', type: 'item', label: 'Foreign Customers', icon: Building2, moduleId: 'foreign-customers', requiredCards: ['eximx'], keyboard: 'x c' },
       { id: 'export-shipments', type: 'item', label: 'Shipments', icon: Truck, moduleId: 'export-shipments', requiredCards: ['eximx'], keyboard: 'x s', comingSoon: true },
     ],
   },
@@ -51,7 +51,7 @@ export const eximxExportSidebarItems: SidebarItem[] = [
   {
     id: 'export-intelligence', type: 'group', label: 'Intelligence', icon: BarChart3, collapsibleByDefault: true,
     children: [
-      { id: 'buyer-reliability', type: 'item', label: 'Buyer Reliability Index', icon: BarChart3, moduleId: 'buyer-reliability', requiredCards: ['eximx'], keyboard: 'x n', comingSoon: true },
+      { id: 'buyer-reliability', type: 'item', label: 'Buyer Reliability Index', icon: BarChart3, moduleId: 'buyer-reliability', requiredCards: ['eximx'], keyboard: 'x n' },
     ],
   },
   {
