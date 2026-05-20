@@ -15,6 +15,11 @@ import { ExportPOEntry } from './export/ExportPOEntry';
 import { ExportPODetail } from './export/ExportPODetail';
 import { ForeignCustomerMaster } from './masters/ForeignCustomerMaster';
 import { BuyerReliabilityDashboard } from './export/BuyerReliabilityDashboard';
+import { ShippingBillList } from './export/ShippingBillList';
+import { ShippingBillEntry } from './export/ShippingBillEntry';
+import { ShippingBillDetail } from './export/ShippingBillDetail';
+import { ExportDispatchList } from './export/ExportDispatchList';
+import { CoOLegalizationDashboard } from './export/CoOLegalizationDashboard';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXExportModule } from './EximX.types';
 
