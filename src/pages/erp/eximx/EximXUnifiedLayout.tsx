@@ -1,7 +1,7 @@
 /**
  * @file        src/pages/erp/eximx/EximXUnifiedLayout.tsx
- * @purpose     Layout for EximX-Unified sub-module · 3-group sidebar · all items coming_soon in EX-1
- * @sprint      T-Phase-1.EX-1-EximX-Foundation
+ * @purpose     Layout for EximX-Unified sub-module · 3-group sidebar
+ * @sprint      T-Phase-1.EX-8 · forex-rates slot wired to UnifiedFinanceLayout (Q12=a composition)
  */
 import { useState } from 'react';
 import { Shell } from '@/shell';
@@ -9,6 +9,7 @@ import type { ShellConfig } from '@/shell/types';
 import { eximxUnifiedSidebarItems } from '@/apps/erp/configs/eximx-unified-sidebar-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { EximXUnifiedModule } from './EximX.types';
+import { UnifiedFinanceLayout } from './finance/UnifiedFinanceLayout';
 
 const config: ShellConfig & { title: string } = {
   title: 'EximX · Unified',
@@ -25,6 +26,22 @@ const config: ShellConfig & { title: string } = {
   behaviour: { keyboardShortcuts: true, commandPalette: true, recentActivityDrawer: true, guidedTour: true, languages: ['en-IN'] },
 };
 
+function renderModule(active: EximXUnifiedModule): JSX.Element {
+  switch (active) {
+    case 'forex-rates':
+      return <UnifiedFinanceLayout />;
+    default:
+      return (
+        <div className="p-4 md:p-6 animate-fade-in">
+          <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
+            <p className="text-lg font-semibold">{active}</p>
+            <p className="text-sm mt-2">Coming soon</p>
+          </div>
+        </div>
+      );
+  }
+}
+
 export default function EximXUnifiedLayout(): JSX.Element {
   const [active, setActive] = useState<EximXUnifiedModule>('unified-welcome');
   const { entitlements, profile } = useCardEntitlement();
@@ -36,12 +53,7 @@ export default function EximXUnifiedLayout(): JSX.Element {
       tenantEntitlements={entitlements}
       onSidebarItemClick={(item) => { if (item.moduleId) setActive(item.moduleId as EximXUnifiedModule); }}
     >
-      <div className="p-4 md:p-6 animate-fade-in">
-        <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-          <p className="text-lg font-semibold">{active}</p>
-          <p className="text-sm mt-2">Unified cross-module surface · coming in EX-7c (FEMA) + EX-8 (Forex) + EX-9 (Sanctions)</p>
-        </div>
-      </div>
+      {renderModule(active)}
     </Shell>
   );
 }
