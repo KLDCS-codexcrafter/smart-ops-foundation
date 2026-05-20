@@ -14,7 +14,7 @@ export const eximxUnifiedSidebarItems: SidebarItem[] = [
     children: [
       { id: 'sanctions-watchlist', type: 'item', label: 'Sanctions Watchlist', icon: Shield, moduleId: 'sanctions-watchlist', requiredCards: ['eximx'], keyboard: 'u s', comingSoon: true },
       { id: 'fema-compounding', type: 'item', label: 'FEMA Sec 13 Compounding', icon: AlertTriangle, moduleId: 'fema-compounding', requiredCards: ['eximx'], keyboard: 'u f', comingSoon: true },
-      { id: 'forex-rates', type: 'item', label: 'Forex Rates (Dual)', icon: Globe, moduleId: 'forex-rates', requiredCards: ['eximx'], keyboard: 'u r', comingSoon: true },
+      { id: 'forex-rates', type: 'item', label: 'Unified Finance · Forex Ops', icon: Globe, moduleId: 'forex-rates', requiredCards: ['eximx'], keyboard: 'u r' },
     ],
   },
   {
