@@ -6,7 +6,7 @@
  */
 import type { PCAAudit, PCAAuditStatus } from '@/types/pca-audit';
 import { pcaAuditKey, PCA_VALID_TRANSITIONS } from '@/types/pca-audit';
-import { loadBills } from '@/lib/bill-of-entry-engine';
+import { loadBoEs } from '@/lib/bill-of-entry-engine';
 
 const SEED_PCA_AUDITS: PCAAudit[] = [
   { id: 'pca-001', pca_case_no: 'PCA-MUM-2026-001', entity_id: 'sinha-steel', status: 'document_request', trigger_source: 'rms_yellow_lane', related_boe_id: 'boe-sinha-002', related_boe_no: 'BOE-SINHA-2026-002', customs_zone: 'Mumbai Custom Zone', audit_initiated_date: '2026-05-08', document_request_date: '2026-05-08', document_response_date: null, findings_date: null, findings_summary: '', duty_short_paid_inr: 0, interest_payable_inr: 0, penalty_inr: 0, total_demand_inr: 0, appeal_filed: false, closed_date: null, notes: 'BoE-002 Yellow RMS lane · routine document audit', created_at: '2026-05-08T00:00:00.000Z', updated_at: '2026-05-08T00:00:00.000Z' },
@@ -27,7 +27,7 @@ export function savePCAAudits(entityCode: string, list: PCAAudit[]): void {
 }
 
 export function getEligibleBoEsForPCA(entityCode: string): { boe_id: string; boe_no: string; lane: 'yellow' | 'red' }[] {
-  const bills = loadBills(entityCode);
+  const bills = loadBoEs(entityCode);
   return bills
     .filter((b) => b.icegate_simulated_lane === 'yellow' || b.icegate_simulated_lane === 'red')
     .map((b) => ({ boe_id: b.id, boe_no: b.boe_no, lane: b.icegate_simulated_lane as 'yellow' | 'red' }));
