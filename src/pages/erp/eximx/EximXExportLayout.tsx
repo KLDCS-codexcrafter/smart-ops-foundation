@@ -54,6 +54,13 @@ function parseExportPOSubpath(pathname: string): { mode: 'new' } | { mode: 'deta
   return { mode: 'detail', id: m[1] };
 }
 
+function parseSBSubpath(pathname: string): { mode: 'new' } | { mode: 'detail'; id: string } | null {
+  if (/\/erp\/eximx\/export\/shipping-bills\/new\/?$/.test(pathname)) return { mode: 'new' };
+  const m = pathname.match(/\/erp\/eximx\/export\/shipping-bills\/([^/]+)\/?$/);
+  if (!m || m[1] === 'new') return null;
+  return { mode: 'detail', id: m[1] };
+}
+
 export default function EximXExportLayout(): JSX.Element {
   const [active, setActive] = useState<EximXExportModule>('export-welcome');
   const { entitlements, profile } = useCardEntitlement();
@@ -63,8 +70,13 @@ export default function EximXExportLayout(): JSX.Element {
   useEffect(() => { seedSinhaEximX(); }, []);
 
   const expoSub = parseExportPOSubpath(location.pathname);
+  const sbSub = parseSBSubpath(location.pathname);
 
   function renderContent(): JSX.Element {
+    if (sbSub) {
+      if (sbSub.mode === 'new') return <ShippingBillEntry />;
+      return <ShippingBillDetail />;
+    }
     if (expoSub) {
       if (expoSub.mode === 'new') return <ExportPOEntry />;
       return <ExportPODetail />;
@@ -74,7 +86,9 @@ export default function EximXExportLayout(): JSX.Element {
       case 'export-orders': return <ExportPOList />;
       case 'foreign-customers': return <ForeignCustomerMaster />;
       case 'buyer-reliability': return <BuyerReliabilityDashboard />;
-      case 'export-welcome': return <ComingSoon label="Export Welcome (EX-7a)" />;
+      case 'shipping-bills': return <ShippingBillList />;
+      case 'export-shipments': return <ExportDispatchList />;
+      case 'export-welcome': return <><ShippingBillList /><CoOLegalizationDashboard /></>;
       default: return <ComingSoon label={active} />;
     }
   }
