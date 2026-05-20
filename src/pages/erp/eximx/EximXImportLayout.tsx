@@ -74,6 +74,12 @@ function parseCISubpath(pathname: string): { id: string } | null {
   return { id: m[1] };
 }
 
+function parseBoESubpath(pathname: string): { id: string } | null {
+  const m = pathname.match(/\/erp\/eximx\/import\/bill-of-entry\/([^/]+)\/?$/);
+  if (!m) return null;
+  return { id: m[1] };
+}
+
 export default function EximXImportLayout(): JSX.Element {
   const [active, setActive] = useState<EximXImportModule>('import-welcome');
   const { entitlements, profile } = useCardEntitlement();
