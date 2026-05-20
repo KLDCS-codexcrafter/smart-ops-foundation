@@ -24,6 +24,10 @@ import { CustomsRevaluationAuditView } from './import/CustomsRevaluationAuditVie
 import { CIList } from './import/CIList';
 import { CIDetail } from './import/CIDetail';
 import { LandedCostReplayView } from './import/LandedCostReplayView';
+import { BoEList } from './import/BoEList';
+import { BoEDetail } from './import/BoEDetail';
+import { RMSDeclarationDashboard } from './import/RMSDeclarationDashboard';
+import { AEOTierMaster } from './masters/AEOTierMaster';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXImportModule } from './EximX.types';
 
@@ -70,6 +74,12 @@ function parseCISubpath(pathname: string): { id: string } | null {
   return { id: m[1] };
 }
 
+function parseBoESubpath(pathname: string): { id: string } | null {
+  const m = pathname.match(/\/erp\/eximx\/import\/bill-of-entry\/([^/]+)\/?$/);
+  if (!m) return null;
+  return { id: m[1] };
+}
+
 export default function EximXImportLayout(): JSX.Element {
   const [active, setActive] = useState<EximXImportModule>('import-welcome');
   const { entitlements, profile } = useCardEntitlement();
@@ -81,6 +91,7 @@ export default function EximXImportLayout(): JSX.Element {
   const orderSub = parseOrdersSubpath(location.pathname);
   const shipmentSub = parseShipmentsSubpath(location.pathname);
   const ciSub = parseCISubpath(location.pathname);
+  const boeSub = parseBoESubpath(location.pathname);
 
   function renderContent(): JSX.Element {
     if (orderSub) {
@@ -92,6 +103,9 @@ export default function EximXImportLayout(): JSX.Element {
     }
     if (ciSub) {
       return <CIDetail />;
+    }
+    if (boeSub) {
+      return <BoEDetail />;
     }
     switch (active) {
       case 'iec-master': return <IECMaster />;
@@ -105,6 +119,9 @@ export default function EximXImportLayout(): JSX.Element {
       case 'landed-cost-replay': return <LandedCostReplayView />;
       case 'landed-cost': return <LandedCostReconciliationDashboard />;
       case 'customs-revaluation': return <CustomsRevaluationAuditView />;
+      case 'bill-of-entry': return <BoEList />;
+      case 'rms-declaration': return <RMSDeclarationDashboard />;
+      case 'aeo-tier-mapping': return <AEOTierMaster />;
       case 'import-welcome': return <ComingSoon label="Import Welcome (EX-6)" />;
       default: return <ComingSoon label={active} />;
     }
@@ -118,7 +135,7 @@ export default function EximXImportLayout(): JSX.Element {
       onSidebarItemClick={(item) => {
         if (item.moduleId) {
           setActive(item.moduleId as EximXImportModule);
-          if (orderSub || shipmentSub || ciSub) navigate('/erp/eximx/import', { replace: true });
+          if (orderSub || shipmentSub || ciSub || boeSub) navigate('/erp/eximx/import', { replace: true });
         }
       }}
     >
