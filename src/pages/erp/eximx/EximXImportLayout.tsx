@@ -54,8 +54,13 @@ export default function EximXImportLayout(): JSX.Element {
     >
       <div className="p-4 md:p-6 animate-fade-in">
         {active === 'iec-master' && <IECMaster />}
+        {active === 'cth-master' && <CustomsTariffHeadMaster />}
+        {active === 'fta-preference' && <FTAPreferenceTable />}
+        {active === 'port-extension' && <PortExtensionEditor />}
         {active === 'import-welcome' && <ComingSoon label="Import Welcome (EX-6)" />}
-        {!['iec-master', 'import-welcome'].includes(active) && <ComingSoon label={active} />}
+        {!['iec-master', 'cth-master', 'fta-preference', 'port-extension', 'import-welcome'].includes(active) && (
+          <ComingSoon label={active} />
+        )}
       </div>
     </Shell>
   );
