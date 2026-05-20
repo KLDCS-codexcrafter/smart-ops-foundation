@@ -16,10 +16,10 @@ export type EximXExportModule =
   | 'buyer-reliability' | 'export-config';
 
 export type EximXImportModule =
-  | 'import-welcome' | 'iec-master' | 'import-orders' | 'bill-of-entry'
-  | 'foreign-vendors' | 'import-shipments' | 'landed-cost' | 'customs-revaluation'
-  | 'cth-master' | 'rms-declaration' | 'aeo-tier-mapping' | 'carotar-coo'
-  | 'import-dashboard' | 'import-config';
+  | 'import-welcome' | 'iec-master' | 'cth-master' | 'fta-preference' | 'port-extension'
+  | 'import-orders' | 'bill-of-entry' | 'foreign-vendors' | 'import-shipments'
+  | 'landed-cost' | 'customs-revaluation' | 'rms-declaration' | 'aeo-tier-mapping'
+  | 'carotar-coo' | 'import-dashboard' | 'import-config';
 
 export type EximXUnifiedModule =
   | 'unified-welcome' | 'sanctions-watchlist' | 'fema-compounding' | 'forex-rates'

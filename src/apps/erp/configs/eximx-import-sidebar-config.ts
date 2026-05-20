@@ -36,7 +36,9 @@ export const eximxImportSidebarItems: SidebarItem[] = [
   {
     id: 'import-india', type: 'group', label: 'India Compliance', icon: Building2, collapsibleByDefault: true,
     children: [
-      { id: 'cth-master', type: 'item', label: 'CTH × Country × Date', icon: Award, moduleId: 'cth-master', requiredCards: ['eximx'], keyboard: 'm t', comingSoon: true },
+      { id: 'cth-master', type: 'item', label: 'CTH × Country × Date', icon: Award, moduleId: 'cth-master', requiredCards: ['eximx'], keyboard: 'm t' },
+      { id: 'fta-preference', type: 'item', label: 'FTA Preferences', icon: Award, moduleId: 'fta-preference', requiredCards: ['eximx'], keyboard: 'm f' },
+      { id: 'port-extension', type: 'item', label: 'Port EXIM Extension', icon: Award, moduleId: 'port-extension', requiredCards: ['eximx'], keyboard: 'm p' },
       { id: 'rms-declaration', type: 'item', label: 'RMS Declaration', icon: Award, moduleId: 'rms-declaration', requiredCards: ['eximx'], keyboard: 'm r', comingSoon: true },
       { id: 'aeo-tier-mapping', type: 'item', label: 'AEO Tier Mapping', icon: Award, moduleId: 'aeo-tier-mapping', requiredCards: ['eximx'], keyboard: 'm a', comingSoon: true },
       { id: 'carotar-coo', type: 'item', label: 'CAROTAR + COO', icon: Award, moduleId: 'carotar-coo', requiredCards: ['eximx'], keyboard: 'm y', comingSoon: true },
