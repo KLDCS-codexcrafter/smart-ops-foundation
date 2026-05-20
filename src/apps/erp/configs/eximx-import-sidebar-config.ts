@@ -15,14 +15,14 @@ export const eximxImportSidebarItems: SidebarItem[] = [
     id: 'import-operations', type: 'group', label: 'Operations', icon: FileText, collapsibleByDefault: false,
     children: [
       { id: 'iec-master', type: 'item', label: 'IEC Master', icon: Award, moduleId: 'iec-master', requiredCards: ['eximx'], keyboard: 'm i' },
-      { id: 'import-orders', type: 'item', label: 'Import Orders', icon: FileText, moduleId: 'import-orders', requiredCards: ['eximx'], keyboard: 'm o', comingSoon: true },
+      { id: 'import-orders', type: 'item', label: 'Import Orders', icon: FileText, moduleId: 'import-orders', requiredCards: ['eximx'], keyboard: 'm o' },
       { id: 'bill-of-entry', type: 'item', label: 'Bill of Entry', icon: FileText, moduleId: 'bill-of-entry', requiredCards: ['eximx'], keyboard: 'm b', comingSoon: true },
     ],
   },
   {
     id: 'import-logistics', type: 'group', label: 'Logistics', icon: Truck, collapsibleByDefault: true,
     children: [
-      { id: 'foreign-vendors', type: 'item', label: 'Foreign Vendors', icon: Building2, moduleId: 'foreign-vendors', requiredCards: ['eximx'], keyboard: 'm v', comingSoon: true },
+      { id: 'foreign-vendors', type: 'item', label: 'Foreign Vendors', icon: Building2, moduleId: 'foreign-vendors', requiredCards: ['eximx'], keyboard: 'm v' },
       { id: 'import-shipments', type: 'item', label: 'Shipments + GIT', icon: Package, moduleId: 'import-shipments', requiredCards: ['eximx'], keyboard: 'm s', comingSoon: true },
     ],
   },
