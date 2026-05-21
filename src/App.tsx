@@ -590,11 +590,14 @@ const App = () => (
               <Route path="/erp/masters/vendor" element={<P><VendorMaster /></P>} />
               <Route path="/erp/masters/customer" element={<P><CustomerMaster /></P>} />
               <Route path="/erp/masters/business-unit" element={<P><BusinessUnitMaster /></P>} />
-              <Route path="/erp/inventory-hub" element={<P><MainStoreHub /></P>} />
+              {/* T-Phase-2.HK-2 · MainStoreHub Rename · canonical route + legacy redirect */}
+              <Route path="/erp/main-store-hub" element={<P><MainStoreHub /></P>} />
+              <Route path="/erp/inventory-hub" element={<Navigate to="/erp/main-store-hub" replace />} />
               <Route path="/erp/procure-hub" element={<P><Procure360Page /></P>} />
               <Route path="/erp/procure-hub/*" element={<P><Procure360Page /></P>} />
-              {/* Sprint T-Phase-1.2.6f-d-2 · Block B · D-298 · Store Hub landing */}
-              <Route path="/erp/store-hub" element={<P><DepartmentStorePage /></P>} />
+              {/* T-Phase-2.HK-2 · DepartmentStores Rename · canonical route + legacy redirect */}
+              <Route path="/erp/department-store" element={<P><DepartmentStorePage /></P>} />
+              <Route path="/erp/store-hub" element={<Navigate to="/erp/department-store" replace />} />
               <Route path="/erp/bill-passing" element={<P><BillPassingPage /></P>} />
               {/* Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block E · D-304 · GateFlow */}
               <Route path="/erp/gateflow" element={<P><GateFlowPage /></P>} />
@@ -621,28 +624,52 @@ const App = () => (
               <Route path="/erp/eximx/finance/packing-credit/:id" element={<P><PackingCreditDetail /></P>} />
               <Route path="/erp/production" element={<P><ProductionPage /></P>} />
               <Route path="/erp/production/*" element={<P><ProductionPage /></P>} />
-              <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
-              <Route path="/erp/inventory-hub/batch-grid" element={<P><BatchGrid /></P>} />
-              <Route path="/erp/inventory-hub/serial-grid" element={<P><SerialGrid /></P>} />
-              <Route path="/erp/inventory-hub/stock-matrix" element={<P><StockMatrix /></P>} />
-              <Route path="/erp/inventory-hub/classify" element={<P><Classify /></P>} />
-              <Route path="/erp/inventory-hub/brand-matrix" element={<P><BrandMatrix /></P>} />
-              <Route path="/erp/inventory-hub/storage-matrix" element={<P><StorageMatrix /></P>} />
-              <Route path="/erp/inventory-hub/measure-x" element={<P><MeasureX /></P>} />
-              <Route path="/erp/inventory-hub/item-craft" element={<P><ItemCraft /></P>} />
-              <Route path="/erp/inventory-hub/bom-master" element={<P><BOMMaster /></P>} />
-              <Route path="/erp/inventory-hub/code-matrix" element={<P><CodeMatrix /></P>} />
-              <Route path="/erp/inventory-hub/item-templates" element={<P><ItemTemplates /></P>} />
-              <Route path="/erp/inventory-hub/label-templates" element={<P><LabelTemplates /></P>} />
-              <Route path="/erp/inventory-hub/barcode-generator" element={<P><BarcodeGenerator /></P>} />
-              <Route path="/erp/inventory-hub/asset-tags" element={<P><AssetTagManager /></P>} />
-              <Route path="/erp/inventory-hub/bin-labels" element={<P><BinLocationLabels /></P>} />
-              <Route path="/erp/inventory-hub/print-queue" element={<P><PrintQueue /></P>} />
-              <Route path="/erp/inventory-hub/rfid-manager" element={<P><RFIDManager /></P>} />
-              <Route path="/erp/inventory-hub/opening-stock" element={<P><OpeningStockEntry /></P>} />
-              <Route path="/erp/inventory-hub/item-rates" element={<P><ItemRatesMRP /></P>} />
-              <Route path="/erp/inventory-hub/price-lists" element={<P><PriceListManager /></P>} />
-              <Route path="/erp/inventory-hub/reorder-alerts" element={<P><ReorderAlerts /></P>} />
+              {/* T-Phase-2.HK-2 · MainStoreHub sub-routes — canonical /erp/main-store-hub/* */}
+              <Route path="/erp/main-store-hub/parametric" element={<P><Parametric /></P>} />
+              <Route path="/erp/main-store-hub/batch-grid" element={<P><BatchGrid /></P>} />
+              <Route path="/erp/main-store-hub/serial-grid" element={<P><SerialGrid /></P>} />
+              <Route path="/erp/main-store-hub/stock-matrix" element={<P><StockMatrix /></P>} />
+              <Route path="/erp/main-store-hub/classify" element={<P><Classify /></P>} />
+              <Route path="/erp/main-store-hub/brand-matrix" element={<P><BrandMatrix /></P>} />
+              <Route path="/erp/main-store-hub/storage-matrix" element={<P><StorageMatrix /></P>} />
+              <Route path="/erp/main-store-hub/measure-x" element={<P><MeasureX /></P>} />
+              <Route path="/erp/main-store-hub/item-craft" element={<P><ItemCraft /></P>} />
+              <Route path="/erp/main-store-hub/bom-master" element={<P><BOMMaster /></P>} />
+              <Route path="/erp/main-store-hub/code-matrix" element={<P><CodeMatrix /></P>} />
+              <Route path="/erp/main-store-hub/item-templates" element={<P><ItemTemplates /></P>} />
+              <Route path="/erp/main-store-hub/label-templates" element={<P><LabelTemplates /></P>} />
+              <Route path="/erp/main-store-hub/barcode-generator" element={<P><BarcodeGenerator /></P>} />
+              <Route path="/erp/main-store-hub/asset-tags" element={<P><AssetTagManager /></P>} />
+              <Route path="/erp/main-store-hub/bin-labels" element={<P><BinLocationLabels /></P>} />
+              <Route path="/erp/main-store-hub/print-queue" element={<P><PrintQueue /></P>} />
+              <Route path="/erp/main-store-hub/rfid-manager" element={<P><RFIDManager /></P>} />
+              <Route path="/erp/main-store-hub/opening-stock" element={<P><OpeningStockEntry /></P>} />
+              <Route path="/erp/main-store-hub/item-rates" element={<P><ItemRatesMRP /></P>} />
+              <Route path="/erp/main-store-hub/price-lists" element={<P><PriceListManager /></P>} />
+              <Route path="/erp/main-store-hub/reorder-alerts" element={<P><ReorderAlerts /></P>} />
+              {/* T-Phase-2.HK-2 · Legacy /erp/inventory-hub/* redirects (bookmark preservation) */}
+              <Route path="/erp/inventory-hub/parametric" element={<Navigate to="/erp/main-store-hub/parametric" replace />} />
+              <Route path="/erp/inventory-hub/batch-grid" element={<Navigate to="/erp/main-store-hub/batch-grid" replace />} />
+              <Route path="/erp/inventory-hub/serial-grid" element={<Navigate to="/erp/main-store-hub/serial-grid" replace />} />
+              <Route path="/erp/inventory-hub/stock-matrix" element={<Navigate to="/erp/main-store-hub/stock-matrix" replace />} />
+              <Route path="/erp/inventory-hub/classify" element={<Navigate to="/erp/main-store-hub/classify" replace />} />
+              <Route path="/erp/inventory-hub/brand-matrix" element={<Navigate to="/erp/main-store-hub/brand-matrix" replace />} />
+              <Route path="/erp/inventory-hub/storage-matrix" element={<Navigate to="/erp/main-store-hub/storage-matrix" replace />} />
+              <Route path="/erp/inventory-hub/measure-x" element={<Navigate to="/erp/main-store-hub/measure-x" replace />} />
+              <Route path="/erp/inventory-hub/item-craft" element={<Navigate to="/erp/main-store-hub/item-craft" replace />} />
+              <Route path="/erp/inventory-hub/bom-master" element={<Navigate to="/erp/main-store-hub/bom-master" replace />} />
+              <Route path="/erp/inventory-hub/code-matrix" element={<Navigate to="/erp/main-store-hub/code-matrix" replace />} />
+              <Route path="/erp/inventory-hub/item-templates" element={<Navigate to="/erp/main-store-hub/item-templates" replace />} />
+              <Route path="/erp/inventory-hub/label-templates" element={<Navigate to="/erp/main-store-hub/label-templates" replace />} />
+              <Route path="/erp/inventory-hub/barcode-generator" element={<Navigate to="/erp/main-store-hub/barcode-generator" replace />} />
+              <Route path="/erp/inventory-hub/asset-tags" element={<Navigate to="/erp/main-store-hub/asset-tags" replace />} />
+              <Route path="/erp/inventory-hub/bin-labels" element={<Navigate to="/erp/main-store-hub/bin-labels" replace />} />
+              <Route path="/erp/inventory-hub/print-queue" element={<Navigate to="/erp/main-store-hub/print-queue" replace />} />
+              <Route path="/erp/inventory-hub/rfid-manager" element={<Navigate to="/erp/main-store-hub/rfid-manager" replace />} />
+              <Route path="/erp/inventory-hub/opening-stock" element={<Navigate to="/erp/main-store-hub/opening-stock" replace />} />
+              <Route path="/erp/inventory-hub/item-rates" element={<Navigate to="/erp/main-store-hub/item-rates" replace />} />
+              <Route path="/erp/inventory-hub/price-lists" element={<Navigate to="/erp/main-store-hub/price-lists" replace />} />
+              <Route path="/erp/inventory-hub/reorder-alerts" element={<Navigate to="/erp/main-store-hub/reorder-alerts" replace />} />
               <Route path="/erp/command-center" element={<P><CommandCenterPage /></P>} />
               <Route path="/erp/pay-hub" element={<P><PayHubPage /></P>} />
               <Route path="/erp/salesx" element={<P><SalesXPage /></P>} />
