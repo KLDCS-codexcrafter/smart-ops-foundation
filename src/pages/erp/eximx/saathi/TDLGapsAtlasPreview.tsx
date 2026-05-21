@@ -16,7 +16,7 @@ export function TDLGapsAtlasPreview(): JSX.Element {
         <Bot className="w-8 h-8 text-primary" />
         <div>
           <h1 className="text-2xl font-bold">Saathi · TDL Gaps Atlas Preview</h1>
-          <p className="text-sm text-muted-foreground">Educational walkthrough · full Atlas ships in EX-11</p>
+          <p className="text-sm text-muted-foreground">Educational walkthrough · full Atlas <strong>shipped in EX-11</strong> · <Link to="/erp/eximx/unified" className="underline text-primary">view full Atlas →</Link></p>
         </div>
       </div>
 
