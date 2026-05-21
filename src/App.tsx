@@ -239,6 +239,11 @@ const EximXUnifiedLayout = lazy(() => import('./pages/erp/eximx/EximXUnifiedLayo
 // Sprint T-Phase-2.B-2 · EximX Medium D-NEWs · D-NEW-FA + D-NEW-FE direct routes
 const CrossEntityRealisationDashboard = lazy(() => import('./pages/erp/eximx/finance/CrossEntityRealisationDashboard'));
 const Form3CEBDashboard = lazy(() => import('./pages/erp/eximx/compliance/Form3CEBDashboard'));
+// Sprint T-Phase-2.A-EX-12 · D-NEW-FJ + D-NEW-FK
+const LCList = lazy(() => import('./pages/erp/eximx/finance/LCList'));
+const LCDetail = lazy(() => import('./pages/erp/eximx/finance/LCDetail'));
+const PackingCreditList = lazy(() => import('./pages/erp/eximx/finance/PackingCreditList'));
+const PackingCreditDetail = lazy(() => import('./pages/erp/eximx/finance/PackingCreditDetail'));
 const ProductionPage = lazy(() => import('./pages/erp/production/ProductionPage'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
