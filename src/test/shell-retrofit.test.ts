@@ -27,9 +27,9 @@ describe('Shell retrofit · Q-LOCK-7-A.9 + Q-LOCK-T1-F1 · 3 cards canonical She
   });
 
   // T1 STRENGTHENING · verify Shell IS imported and used in each page
-  it('Q-LOCK-T1-F1 · StoreHubPage actually consumes Shell', () => {
+  it('Q-LOCK-T1-F1 · DepartmentStorePage actually consumes Shell', () => {
     const content = fs.readFileSync(
-      path.join(process.cwd(), 'src/pages/erp/store-hub/StoreHubPage.tsx'),
+      path.join(process.cwd(), 'src/pages/erp/store-hub/DepartmentStorePage.tsx'),
       'utf-8',
     );
     expect(content).toContain("from '@/shell'");

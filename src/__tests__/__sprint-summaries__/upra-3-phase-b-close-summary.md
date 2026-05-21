@@ -46,7 +46,7 @@
 - All canonical Register infrastructure: 0-diff
 - All domain engines (inward-receipt-engine.ts · stock-issue-engine.ts · bill-passing-engine.ts · all others): 0-diff
 - All sibling entry forms (InwardReceiptEntry · QuarantineQueue · VendorReturn · StockHoldReport · StockIssueEntry · StockReceiptAck entry · BillPassing files): 0-diff
-- All sidebar/page wiring (DispatchHubSidebar · DispatchHubPage · StoreHubSidebar · StoreHubPage · store-hub-sidebar-config · procure360-sidebar-config · Procure360Sidebar.types · etc.): 0-diff
+- All sidebar/page wiring (DispatchHubSidebar · DispatchHubPage · DepartmentStoreSidebar · DepartmentStorePage · store-hub-sidebar-config · procure360-sidebar-config · Procure360Sidebar.types · etc.): 0-diff
 - All UPRA-1 (24 files) and UPRA-2 (~26 files) and UPRA-3 Phase A (23 files) banked: 0-diff
 - No package.json / package-lock.json / vite.config.ts changes
 

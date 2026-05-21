@@ -31,12 +31,12 @@ import {
 import {
   useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
 } from '@/lib/form-carry-forward-kit';
-import type { StoreHubModule } from './../StoreHubSidebar';
+import type { DepartmentStoreModule } from './../DepartmentStoreSidebar';
 import { StockIssueDetailPanel } from './detail/StockIssueDetailPanel';
 import { StockIssuePrint } from './print/StockIssuePrint';
 
 interface Props {
-  onModuleChange: (m: StoreHubModule) => void;
+  onModuleChange: (m: DepartmentStoreModule) => void;
 }
 
 export function StockIssueRegisterPanel({ onModuleChange }: Props): JSX.Element {

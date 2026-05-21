@@ -202,10 +202,10 @@ const TermsOfDeliveryMaster = lazy(() => import('./pages/erp/masters/supporting/
 const LogisticMaster = lazy(() => import('./pages/erp/masters/LogisticMaster'));
 const VendorMaster = lazy(() => import('./pages/erp/masters/VendorMaster'));
 const CustomerMaster = lazy(() => import('./pages/erp/masters/CustomerMaster'));
-const InventoryHub = lazy(() => import('./pages/erp/inventory/InventoryHubPage'));
+const MainStoreHub = lazy(() => import('./pages/erp/inventory/MainStoreHubPage'));
 const Procure360Page = lazy(() => import('./pages/erp/procure-hub/Procure360Page'));
 // Sprint T-Phase-1.2.6f-d-2 · Block B · D-298 · Store Hub landing
-const StoreHubPage = lazy(() => import('./pages/erp/store-hub/StoreHubPage'));
+const DepartmentStorePage = lazy(() => import('./pages/erp/store-hub/DepartmentStorePage'));
 const BillPassingPage = lazy(() => import('./pages/erp/bill-passing/BillPassingPage'));
 // Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block E · D-304 · GateFlow Foundation
 const GateFlowPage = lazy(() => import('./pages/erp/gateflow/GateFlowPage'));
@@ -590,11 +590,11 @@ const App = () => (
               <Route path="/erp/masters/vendor" element={<P><VendorMaster /></P>} />
               <Route path="/erp/masters/customer" element={<P><CustomerMaster /></P>} />
               <Route path="/erp/masters/business-unit" element={<P><BusinessUnitMaster /></P>} />
-              <Route path="/erp/inventory-hub" element={<P><InventoryHub /></P>} />
+              <Route path="/erp/inventory-hub" element={<P><MainStoreHub /></P>} />
               <Route path="/erp/procure-hub" element={<P><Procure360Page /></P>} />
               <Route path="/erp/procure-hub/*" element={<P><Procure360Page /></P>} />
               {/* Sprint T-Phase-1.2.6f-d-2 · Block B · D-298 · Store Hub landing */}
-              <Route path="/erp/store-hub" element={<P><StoreHubPage /></P>} />
+              <Route path="/erp/store-hub" element={<P><DepartmentStorePage /></P>} />
               <Route path="/erp/bill-passing" element={<P><BillPassingPage /></P>} />
               {/* Sprint T-Phase-1.2.6f-d-2-card4-4-pre-1 · Block E · D-304 · GateFlow */}
               <Route path="/erp/gateflow" element={<P><GateFlowPage /></P>} />

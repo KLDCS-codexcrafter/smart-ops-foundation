@@ -17,7 +17,7 @@ Predecessor HEAD: `0891a71`
 | 8a | distributor-order.ts | DistributorOrder | submitted_at | entity_code | **STOP-AND-RAISE** (writes only in pages/mobile pages) |
 | 8b | distributor-order.ts | DistributorPaymentIntimation | paid_on | entity_code | **STOP-AND-RAISE** (no key references found) |
 | 9 | git.ts | GitStage1Record | receipt_date | entity_id | src/lib/git-engine.ts (createGitStage1FromPo, before list.push) |
-| 10 | grn.ts | GRN | receipt_date | entity_id | **STOP-AND-RAISE** (writes only in page files: GRNEntry/InventoryHubWelcome/etc) |
+| 10 | grn.ts | GRN | receipt_date | entity_id | **STOP-AND-RAISE** (writes only in page files: GRNEntry/MainStoreHubWelcome/etc) |
 | 11 | invoice-memo.ts | InvoiceMemo | memo_date | entity_id | **STOP-AND-RAISE** (writes only in page files) |
 | 12 | inward-receipt.ts | InwardReceipt | arrival_date | entity_id | src/lib/inward-receipt-engine.ts (createInwardReceipt, before list.push) |
 | 13 | irn.ts | IRNRecord | voucher_date | entity_id | **STOP-AND-RAISE** (writes only in SalesInvoice/SalesInvoicePrint pages) |

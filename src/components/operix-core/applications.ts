@@ -45,7 +45,7 @@
  *    - 'Inventory Hub' (with space) intentional · do not rename
  *      D-NEW-CM-fincore-naming-canonical pattern (display preservation · technical 'inventory-hub' · display 'Inventory Hub')
  *      Heavy 22k+ LOC platform inventory backbone · NOT to be confused with store-hub (Department Stores · lightweight 1.5k LOC console)
- *      ~39 instances at v17 ALL intentional · DO NOT migrate to 'InventoryHub' · DO NOT remove space
+ *      ~39 instances at v17 ALL intentional · DO NOT migrate to 'MainStoreHub' · DO NOT remove space
  *    - 'Department Stores' (display) · 'store-hub' (technical) · NOT 'Store Hub' duplicate
  *      D-NEW-CM-fincore-naming-canonical pattern (display preservation · same pattern as Inventory Hub)
  *    - 'Dispatch Hub' (operations) · 'Logistics' (transporter)

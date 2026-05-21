@@ -43,7 +43,7 @@ interface Row {
 }
 
 interface SlowMovingDeadStockReportPanelProps {
-  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+  onNavigate?: (module: import('../MainStoreHubSidebar.types').MainStoreHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
 }
 
 export function SlowMovingDeadStockReportPanel({ onNavigate }: SlowMovingDeadStockReportPanelProps = {}) {

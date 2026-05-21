@@ -28,7 +28,7 @@ function loadBalances(entityCode: string): StockBalanceEntry[] {
   } catch { return []; }
 }
 
-import type { InventoryHubModule } from '../InventoryHubSidebar.types';
+import type { MainStoreHubModule } from '../MainStoreHubSidebar.types';
 import type { DrillNavigationContext } from '@/types/drill-context';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
 import { useDrillDown } from '@/hooks/useDrillDown';
@@ -41,7 +41,7 @@ const TYPE_LABELS: Record<MovementType, string> = {
   cycle_count_adjustment: 'Cycle Count', stock_transfer: 'Transfer',
   rtv: 'RTV', sample_outward: 'Sample', demo_outward: 'Demo',
 };
-const TYPE_TO_MODULE: Record<MovementType, InventoryHubModule | null> = {
+const TYPE_TO_MODULE: Record<MovementType, MainStoreHubModule | null> = {
   grn_inward: 'r-grn-register', min_outward: 'r-min-register',
   consumption: 'r-consumption-register', cycle_count_adjustment: 'r-cycle-count-register',
   stock_transfer: 'r-min-register', rtv: 'r-rtv-register',
@@ -50,7 +50,7 @@ const TYPE_TO_MODULE: Record<MovementType, InventoryHubModule | null> = {
 
 interface StockLedgerReportPanelProps {
   /** Cross-panel navigation callback · Sprint 1.2.6b-rpt · Q2-c hybrid routing */
-  onNavigate?: (module: InventoryHubModule, ctx?: DrillNavigationContext) => void;
+  onNavigate?: (module: MainStoreHubModule, ctx?: DrillNavigationContext) => void;
 }
 
 /**

@@ -36,7 +36,7 @@ function loadGrns(key: string): GRN[] {
 }
 
 interface AgedGITReportPanelProps {
-  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+  onNavigate?: (module: import('../MainStoreHubSidebar.types').MainStoreHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
 }
 
 export function AgedGITReportPanel({ onNavigate }: AgedGITReportPanelProps = {}) {

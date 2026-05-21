@@ -1,9 +1,9 @@
 /**
- * StoreHubPanels.tsx — Card #7 Block D · D-379
+ * DepartmentStorePanels.tsx — Card #7 Block D · D-379
  * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1
  *
  * Extracted existing 3 panels (StockCheckPanel · ReorderSuggestionsPanel · DemandForecastPanel)
- * from StoreHubPage to a sibling file so StoreHubPage can be upgraded to module-based Shell.
+ * from DepartmentStorePage to a sibling file so DepartmentStorePage can be upgraded to module-based Shell.
  * D-298 thin card preserved · functionality byte-identical to prior inline implementation.
  * store-hub-engine.ts NOT modified.
  */

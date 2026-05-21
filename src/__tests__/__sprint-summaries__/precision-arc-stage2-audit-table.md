@@ -531,7 +531,7 @@ Rubric (unchanged from Stage 2 / T1):
 | src/components/fincore/dialogs/ItemAllocationDialog.tsx:213 | toFixed | `<TableCell className="text-right font-mono text-sm">{row.taxable_value.toFixed(2)}</TableCell>` | toFixed render/display |
 | src/components/fincore/dialogs/ItemAllocationDialog.tsx:230 | toFixed | `<>Allocated: <span className="font-mono">{totalQty.toFixed(3)}</span> / {lineQty.toFixed(3)}</>` | toFixed render/display |
 | src/pages/mobile/manager/MobileManagerTargetsPage.tsx:135 | toFixed | `{r.pct.toFixed(0)}%` | toFixed render/display |
-| src/pages/erp/store-hub/StoreHubPanels.tsx:268 | toFixed | `<TableCell className="font-mono text-xs text-right">{r.avg_daily_consumption.toFixed(2)}</TableCell>` | toFixed render/display |
+| src/pages/erp/store-hub/DepartmentStorePanels.tsx:268 | toFixed | `<TableCell className="font-mono text-xs text-right">{r.avg_daily_consumption.toFixed(2)}</TableCell>` | toFixed render/display |
 | src/features/loan-emi/engines/processing-fee-engine.ts:227 | toFixed | `narration: `IGST ₹${gstSpec.igstAmount.toFixed(2)} on processing fee — ${ledger.name}`,` | toFixed money display path |
 | src/pages/erp/sitex/transactions/SiteImprestPanel.tsx:103 | toFixed | `<Badge variant="outline" className={gaugeColor}>{utilPct.toFixed(1)}%</Badge>` | toFixed render/display |
 | src/pages/erp/pay-hub/masters/SalaryStructureMaster.tsx:242 | toFixed | `{ss.minCTC > 0 ? `₹${(ss.minCTC / 100000).toFixed(1)}L — ₹${(ss.maxCTC / 100000).toFixed(1)}L` : '—'}` | toFixed render/display |
@@ -901,7 +901,7 @@ Rubric (unchanged from Stage 2 / T1):
 | src/pages/erp/receivx/reports/CollectionEfficiency.tsx:81 | Math.round | `const avgPeriod = g.tasks.length > 0 ? Math.round(g.tasks.reduce((s, t) => s + t.age_days, 0) / g.tasks.length) : 0;` | display-only rounding (% or render) |
 | src/pages/erp/receivx/reports/CollectionEfficiency.tsx:84 | Math.round | `const over60 = allTotal > 0 ? Math.round((over60Total / allTotal) * 100) : 0;` | display-only rounding (% or render) |
 | src/pages/erp/receivx/reports/CollectionEfficiency.tsx:88 | Math.round | `const trend = lmInvoiced > 0 ? Math.round(((collected - lmInvoiced) / lmInvoiced) * 100) : 0;` | display-only rounding (% or render) |
-| src/pages/erp/inventory/InventoryHubWelcome.tsx:259 | Math.round | `<CardTitle className={`text-2xl font-mono ${storageUsage.tier === 'green' ? 'text-emerald-600' : storageUsage.tier === 'amber' ? 'text-amber` | display-only rounding (% or render) |
+| src/pages/erp/inventory/MainStoreHubWelcome.tsx:259 | Math.round | `<CardTitle className={`text-2xl font-mono ${storageUsage.tier === 'green' ? 'text-emerald-600' : storageUsage.tier === 'amber' ? 'text-amber` | display-only rounding (% or render) |
 | src/pages/erp/receivx/reports/AgingByPerson.tsx:99 | Math.round | `const avgAge = allTasks.length > 0 ? Math.round(allTasks.reduce((s, t) => s + t.age_days, 0) / allTasks.length) : 0;` | display-only rounding (% or render) |
 | src/pages/erp/inventory/reports/BinUtilizationReport.tsx:82 | Math.round | `const avg = total ? Math.round(m.reduce((s, r) => s + r.utilization, 0) / total) : 0;` | display-only rounding (% or render) |
 | src/pages/erp/engineeringx/transactions/SimilarityPredictor.tsx:66 | Math.round | `You found "${sMeta.drawing_no ?? similar.id}" (${similar.title}) is ${Math.round(score * 100)}% similar.` | display-only rounding (% or render) |
@@ -1295,7 +1295,7 @@ Rubric (unchanged from Stage 2 / T1):
 | src/components/batch-grid/BatchList.tsx:23 | Math.ceil | `const d = Math.ceil((new Date(b.expiry_date).getTime() - today.getTime()) / 86400000);` | non-money non-critical |
 | src/pages/erp/accounting/LedgerMaster.tsx:4015 | Math.ceil | `return Math.ceil(diff / (1000 * 60 * 60 * 24));` | non-money non-critical |
 | src/pages/erp/customer-hub/transactions/CustomerCart.tsx:136 | Math.ceil | `const effectiveRedeemPoints = loyaltyDiscount > 0 ? Math.ceil(loyaltyDiscount * 10 / 100) : 0; // reverse calc` | non-money non-critical |
-| src/pages/erp/inventory/InventoryHubWelcome.tsx:145 | Math.ceil | `cycleCountsDue = ageDays > 30 ? Math.ceil(ageDays / 30) : 0;` | non-money non-critical |
+| src/pages/erp/inventory/MainStoreHubWelcome.tsx:145 | Math.ceil | `cycleCountsDue = ageDays > 30 ? Math.ceil(ageDays / 30) : 0;` | non-money non-critical |
 | src/pages/erp/pay-hub/masters/AssetMaster.tsx:518 | Math.ceil | `if (diff < 90) return <p className="text-[10px] text-amber-600 mt-0.5">⚠ Warranty expires in {Math.ceil(diff)} days</p>;` | non-money non-critical |
 
 ---

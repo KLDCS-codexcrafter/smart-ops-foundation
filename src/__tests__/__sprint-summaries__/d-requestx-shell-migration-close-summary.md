@@ -7,7 +7,7 @@
 ## §1 · Sprint Outcome
 
 - 5th FR-81 canonical-pattern adoption application
-- 6th Shell migration in canonical sibling family (after Procure360 · StoreHub · SupplyX · StoreHub T1 · MaintainPro)
+- 6th Shell migration in canonical sibling family (after Procure360 · DepartmentStore · SupplyX · DepartmentStore T1 · MaintainPro)
 - RequestX brought to canonical baseline · last active business card unmigrated from deprecated ERPHeader + hand-rolled sidebar
 
 ## §2 · Files Changed

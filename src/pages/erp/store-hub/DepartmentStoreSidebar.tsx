@@ -1,5 +1,5 @@
 /**
- * StoreHubSidebar.tsx — Card #7 Block E · D-380
+ * DepartmentStoreSidebar.tsx — Card #7 Block E · D-380
  * Sprint T-Phase-1.2.6f-d-2-card7-7-pre-1
  *
  * Module-based sidebar matching DispatchHubSidebar (Card #4/#6) pattern.
@@ -26,7 +26,7 @@ import { cn } from '@/lib/utils';
 import { storeHubSidebarItems } from '@/apps/erp/configs/store-hub-sidebar-config';
 void storeHubSidebarItems;
 
-export type StoreHubModule =
+export type DepartmentStoreModule =
   | 'sh-welcome'
   | 'sh-r-welcome'
   // Reports (existing 3 panels preserved as modules · D-298)
@@ -44,14 +44,14 @@ export type StoreHubModule =
   | 'sh-t-stock-issue-register'
   | 'sh-t-receipt-ack';
 
-interface StoreHubSidebarProps {
-  activeModule: StoreHubModule;
-  onModuleChange: (m: StoreHubModule) => void;
+interface DepartmentStoreSidebarProps {
+  activeModule: DepartmentStoreModule;
+  onModuleChange: (m: DepartmentStoreModule) => void;
 }
 
 interface MenuItem {
   label: string;
-  module: StoreHubModule;
+  module: DepartmentStoreModule;
   icon: React.ComponentType<{ className?: string }>;
 }
 
@@ -70,7 +70,7 @@ const TRANSACTIONS_ITEMS: MenuItem[] = [
   { label: 'Receipt Ack',          module: 'sh-t-receipt-ack',          icon: ClipboardCheck },
 ];
 
-export function StoreHubSidebar(props: StoreHubSidebarProps) {
+export function DepartmentStoreSidebar(props: DepartmentStoreSidebarProps) {
   const navigate = useNavigate();
   const { activeModule, onModuleChange } = props;
   const [reportsOpen, setReportsOpen] = useState(activeModule.startsWith('sh-r-'));
@@ -190,4 +190,4 @@ export function StoreHubSidebar(props: StoreHubSidebarProps) {
   );
 }
 
-export default StoreHubSidebar;
+export default DepartmentStoreSidebar;

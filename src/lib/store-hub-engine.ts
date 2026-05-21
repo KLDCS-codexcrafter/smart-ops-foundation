@@ -7,7 +7,7 @@
  * @decisions   D-298 · D-128 (voucher schemas ZERO TOUCH · we READ only) · D-194
  * @reuses      vouchersKey (fincore-engine) · Voucher · VoucherInventoryLine (types/voucher)
  *              · types/location-reorder-rule
- * @consumers   Block B · StoreHubPage 3 panels.
+ * @consumers   Block B · DepartmentStorePage 3 panels.
  * @notes       Direction is derived from base_voucher_type (matches fincore-engine
  *              isOutward heuristic) since VoucherInventoryLine has no direction field.
  *              Reorder threshold uses LocationReorderRule.min_stock (no reorder_level field).

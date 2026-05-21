@@ -46,7 +46,7 @@ function loadJson<T>(key: string): T[] {
 }
 
 interface ConsumptionSummaryReportPanelProps {
-  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+  onNavigate?: (module: import('../MainStoreHubSidebar.types').MainStoreHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
 }
 
 export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummaryReportPanelProps = {}) {

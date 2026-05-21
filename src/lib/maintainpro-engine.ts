@@ -333,7 +333,7 @@ export function computeEquipmentEnergyConsumption(
 // Replica view helpers (FR-13 · FR-54 SSOT)
 // ============================================================================
 
-// [JWT] Phase 1 stub · Phase 2 filters InventoryHub stockitems by stock_group='Maintenance Spares'
+// [JWT] Phase 1 stub · Phase 2 filters MainStoreHub stockitems by stock_group='Maintenance Spares'
 export function listSpareParts(_entityCode: string): SparePartView[] {
   return [];
 }

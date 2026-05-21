@@ -1,13 +1,13 @@
 /**
- * InventoryHubPage.tsx — Inventory Hub card container (sidebar + content area)
+ * MainStoreHubPage.tsx — Inventory Hub card container (sidebar + content area)
  * Sprint T-Phase-1.2.1 · Tier 1 Card #2 sub-sprint 1/3 · mirrors ProjXPage shell pattern
  */
 import { useState, useEffect } from 'react';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { InventoryHubSidebar } from './InventoryHubSidebar';
+import { MainStoreHubSidebar } from './MainStoreHubSidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { InventoryHubWelcomePanel } from './InventoryHubWelcome';
+import { MainStoreHubWelcomePanel } from './MainStoreHubWelcome';
 import { GRNEntryPanel } from './transactions/GRNEntry';
 import { MaterialIssueNotePanel } from './transactions/MaterialIssueNote';
 import { ConsumptionEntryPanel } from './transactions/ConsumptionEntry';
@@ -43,16 +43,16 @@ import { ItemMovementHistoryReportPanel } from './reports/ItemMovementHistoryRep
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
-import type { InventoryHubModule } from './InventoryHubSidebar.types';
+import type { MainStoreHubModule } from './MainStoreHubSidebar.types';
 import type { DrillNavigationContext } from '@/types/drill-context';
 
-export default function InventoryHubPage() {
-  const [activeModule, setActiveModule] = useState<InventoryHubModule>('welcome');
+export default function MainStoreHubPage() {
+  const [activeModule, setActiveModule] = useState<MainStoreHubModule>('welcome');
   // Sprint 1.2.6b-rpt · Q2-c hybrid routing — cross-panel drill context.
   const [drillContext, setDrillContext] = useState<DrillNavigationContext | null>(null);
   const { entityCode, userId } = useCardEntitlement();
 
-  const navigateToModule = (module: InventoryHubModule, ctx?: DrillNavigationContext) => {
+  const navigateToModule = (module: MainStoreHubModule, ctx?: DrillNavigationContext) => {
     setDrillContext(ctx ?? null);
     setActiveModule(module);
   };
@@ -77,7 +77,7 @@ export default function InventoryHubPage() {
 
   const renderModule = () => {
     switch (activeModule) {
-      case 'welcome':                return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
+      case 'welcome':                return <MainStoreHubWelcomePanel onNavigate={setActiveModule} />;
       case 't-grn-entry':            return <GRNEntryPanel />;
       case 't-material-issue':       return <MaterialIssueNotePanel />;
       case 't-consumption-entry':    return <ConsumptionEntryPanel />;
@@ -109,7 +109,7 @@ export default function InventoryHubPage() {
       case 't-rtv':                  return <RTVEntryPanel />;
       case 'r-bin-utilization':      return <BinUtilizationReportPanel onNavigate={navigateToModule} />;
       case 'r-item-movement':        return <ItemMovementHistoryReportPanel onNavigate={navigateToModule} />;
-      default:                       return <InventoryHubWelcomePanel onNavigate={setActiveModule} />;
+      default:                       return <MainStoreHubWelcomePanel onNavigate={setActiveModule} />;
     }
   };
 
@@ -118,7 +118,7 @@ export default function InventoryHubPage() {
       <div className="min-h-screen flex flex-col w-full bg-background">
         <ERPHeader />
         <div className="flex-1 flex w-full overflow-hidden">
-          <InventoryHubSidebar active={activeModule} onNavigate={setActiveModule} />
+          <MainStoreHubSidebar active={activeModule} onNavigate={setActiveModule} />
           <main className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
               {renderModule()}
