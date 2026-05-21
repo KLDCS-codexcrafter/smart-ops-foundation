@@ -27,6 +27,12 @@ export function ExportRealisationSaathiPanel({ realisation: r }: { realisation: 
             <Button size="sm" variant="outline">View CrossEntityRealisation aggregation →</Button>
           </Link>
         </div>
+        <div className="pt-2 border-t">
+          <Badge className="mb-1">D-NEW-FK · Packing Credit</Badge>
+          <Link to="/erp/eximx/finance/packing-credit" className="block">
+            <Button size="sm" variant="outline">View Packing Credit contracts →</Button>
+          </Link>
+        </div>
         <div className="pt-2 border-t text-xs text-muted-foreground">Forward: drawback/RoDTEP claim via EBRC (EX-10) · Month-End Reval engine (EX-8) · STPI Softex full (EX-9) · ECGC claim API (Phase 2) · D-NEW-FF + D-NEW-FG carry forward.</div>
       </CardContent>
     </Card>
