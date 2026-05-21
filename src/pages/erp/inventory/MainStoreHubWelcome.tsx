@@ -1,5 +1,5 @@
 /**
- * MainStoreHubWelcome.tsx — Inventory Hub landing dashboard
+ * MainStoreHubWelcome.tsx — Main Store Hub landing dashboard
  * Sprint T-Phase-1.2.1 · Tier 1 Card #2 sub-sprint 1/3
  *
  * The departmental accountability strip is the MOAT feature — it makes
@@ -181,7 +181,7 @@ export function MainStoreHubWelcomePanel({ onNavigate }: MainStoreHubWelcomeProp
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Package className="h-6 w-6 text-cyan-500" />
-            Store Hub — Inventory Operations
+            Main Store Hub — Plant Inventory Operations
           </h1>
           <p className="text-sm text-muted-foreground">
             Departmental accountability · live stock balances · GRN-driven receipts

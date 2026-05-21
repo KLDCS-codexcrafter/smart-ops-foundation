@@ -1,7 +1,7 @@
 /**
  * @file        DepartmentStoreWelcome.tsx
  * @sprint      T-Phase-1.2.6f-d-2-card7-7-pre-2 · Block F · D-390
- * @purpose     Store Hub landing dashboard · 4 KPI tiles + Quick Actions.
+ * @purpose     Department Stores landing dashboard · 4 KPI tiles + Quick Actions.
  */
 
 import { useEffect, useState, useCallback } from 'react';
@@ -53,7 +53,7 @@ export function DepartmentStoreWelcomePanel({ onModuleChange }: Props): JSX.Elem
           <Warehouse className="h-6 w-6 text-indigo-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Store Hub</h1>
+          <h1 className="text-2xl font-bold">Department Stores</h1>
           <p className="text-sm text-muted-foreground">
             Department-level Stores console · Stock Issue · Receipt Ack · Reorder · Cycle Count
           </p>
