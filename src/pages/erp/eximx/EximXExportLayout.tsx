@@ -24,6 +24,7 @@ import { ExportRealisationList } from './export/ExportRealisationList';
 import { ExportRealisationDetail } from './export/ExportRealisationDetail';
 import { EBRCEDPMSDashboard } from './export/EBRCEDPMSDashboard';
 import { FEMA270DayTracker } from './export/FEMA270DayTracker';
+import { UnifiedDGFTLayout } from './dgft/UnifiedDGFTLayout';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXExportModule } from './EximX.types';
 
