@@ -236,6 +236,9 @@ const EximXPage = lazy(() => import('./pages/erp/eximx/EximXPage'));
 const EximXExportLayout = lazy(() => import('./pages/erp/eximx/EximXExportLayout'));
 const EximXImportLayout = lazy(() => import('./pages/erp/eximx/EximXImportLayout'));
 const EximXUnifiedLayout = lazy(() => import('./pages/erp/eximx/EximXUnifiedLayout'));
+// Sprint T-Phase-2.B-2 · EximX Medium D-NEWs · D-NEW-FA + D-NEW-FE direct routes
+const CrossEntityRealisationDashboard = lazy(() => import('./pages/erp/eximx/finance/CrossEntityRealisationDashboard'));
+const Form3CEBDashboard = lazy(() => import('./pages/erp/eximx/compliance/Form3CEBDashboard'));
 const ProductionPage = lazy(() => import('./pages/erp/production/ProductionPage'));
 const Parametric = lazy(() => import('./pages/erp/inventory/Parametric'));
 const BatchGrid = lazy(() => import('./pages/erp/inventory/BatchGrid'));
@@ -603,6 +606,9 @@ const App = () => (
               <Route path="/erp/eximx/export/*" element={<P><EximXExportLayout /></P>} />
               <Route path="/erp/eximx/import/*" element={<P><EximXImportLayout /></P>} />
               <Route path="/erp/eximx/unified/*" element={<P><EximXUnifiedLayout /></P>} />
+              {/* Sprint T-Phase-2.B-2 · D-NEW-FA + D-NEW-FE */}
+              <Route path="/erp/eximx/finance/cross-entity-realisation" element={<P><CrossEntityRealisationDashboard /></P>} />
+              <Route path="/erp/eximx/compliance/form-3ceb" element={<P><Form3CEBDashboard /></P>} />
               <Route path="/erp/production" element={<P><ProductionPage /></P>} />
               <Route path="/erp/production/*" element={<P><ProductionPage /></P>} />
               <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
