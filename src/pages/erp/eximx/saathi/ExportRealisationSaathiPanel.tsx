@@ -1,10 +1,13 @@
 /**
  * @file        src/pages/erp/eximx/saathi/ExportRealisationSaathiPanel.tsx
- * @purpose     10th Saathi surface · FEMA + Forex + Buyer Reliability + STPI explainer
- * @sprint      T-Phase-1.EX-7c-ExportRealisation-eBRC-FEMA
+ * @purpose     10th Saathi surface · FEMA + Forex + Buyer Reliability + STPI explainer + D-NEW-FA cross-entity tile
+ * @sprint      T-Phase-1.EX-7c + T-Phase-2.B-2 additive cross-entity tile
  */
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import type { ExportRealisation } from '@/types/export-realisation';
 
 export function ExportRealisationSaathiPanel({ realisation: r }: { realisation: ExportRealisation }): JSX.Element {
@@ -18,6 +21,12 @@ export function ExportRealisationSaathiPanel({ realisation: r }: { realisation: 
         <div><strong>Buyer Reliability FULL Feedback (Moat #18 closure)</strong>: This realisation's days-to-realise + FEMA state feed back into Buyer Reliability score via sibling extension. buyer-reliability-engine.ts stays 0-diff (EX-7a invariant preserved).</div>
         {r.is_stpi_export && <div><strong>STPI (v7 Gap #11)</strong>: Software export · Softex Form {r.stpi_softex_form_no} required for STPI unit {r.stpi_unit_id} · full Softex management in EX-9.</div>}
         {r.related_ecgc_policy_id && <div><strong>ECGC FOUNDATION (Moat #6)</strong>: Covered by policy {r.related_ecgc_policy_id}. Phase 1 plants policy register + claim shell · full claim filing API in Phase 2.</div>}
+        <div className="pt-2 border-t">
+          <Badge className="mb-1">D-NEW-FA · Cross-entity</Badge>
+          <Link to="/erp/eximx/finance/cross-entity-realisation" className="block">
+            <Button size="sm" variant="outline">View CrossEntityRealisation aggregation →</Button>
+          </Link>
+        </div>
         <div className="pt-2 border-t text-xs text-muted-foreground">Forward: drawback/RoDTEP claim via EBRC (EX-10) · Month-End Reval engine (EX-8) · STPI Softex full (EX-9) · ECGC claim API (Phase 2) · D-NEW-FF + D-NEW-FG carry forward.</div>
       </CardContent>
     </Card>

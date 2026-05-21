@@ -4,7 +4,10 @@
  * @sprint      T-Phase-1.EX-9-Compliance-Suite
  */
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export function ComplianceSaathiPanel({ activeTab }: { activeTab: string }): JSX.Element {
   const explainers: Record<string, { title: string; body: string }> = {
