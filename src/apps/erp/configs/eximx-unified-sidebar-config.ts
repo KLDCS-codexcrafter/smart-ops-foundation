@@ -20,7 +20,7 @@ export const eximxUnifiedSidebarItems: SidebarItem[] = [
   {
     id: 'unified-management', type: 'group', label: 'Management', icon: BarChart3, collapsibleByDefault: true,
     children: [
-      { id: 'unified-dashboard', type: 'item', label: 'Unified Dashboard', icon: BarChart3, moduleId: 'unified-dashboard', requiredCards: ['eximx'], keyboard: 'u d', comingSoon: true },
+      { id: 'unified-dashboard', type: 'item', label: 'Atlas FULL (Moat #13 PRIMARY · 21 Moats · BCD · FX · Board Pack · Phase 1 FINALE)', icon: BarChart3, moduleId: 'unified-dashboard', requiredCards: ['eximx'], keyboard: 'u d' },
     ],
   },
   {
