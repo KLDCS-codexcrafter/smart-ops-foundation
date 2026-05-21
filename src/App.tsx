@@ -614,6 +614,11 @@ const App = () => (
               {/* Sprint T-Phase-2.B-2 · D-NEW-FA + D-NEW-FE */}
               <Route path="/erp/eximx/finance/cross-entity-realisation" element={<P><CrossEntityRealisationDashboard /></P>} />
               <Route path="/erp/eximx/compliance/form-3ceb" element={<P><Form3CEBDashboard /></P>} />
+              {/* Sprint T-Phase-2.A-EX-12 · D-NEW-FJ + D-NEW-FK */}
+              <Route path="/erp/eximx/finance/lc" element={<P><LCList /></P>} />
+              <Route path="/erp/eximx/finance/lc/:id" element={<P><LCDetail /></P>} />
+              <Route path="/erp/eximx/finance/packing-credit" element={<P><PackingCreditList /></P>} />
+              <Route path="/erp/eximx/finance/packing-credit/:id" element={<P><PackingCreditDetail /></P>} />
               <Route path="/erp/production" element={<P><ProductionPage /></P>} />
               <Route path="/erp/production/*" element={<P><ProductionPage /></P>} />
               <Route path="/erp/inventory-hub/parametric" element={<P><Parametric /></P>} />
