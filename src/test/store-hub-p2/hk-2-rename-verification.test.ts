@@ -66,10 +66,13 @@ describe('T-Phase-2.HK-2 rename verification', () => {
     expect(app).toMatch(/path="\/erp\/store-hub"[\s\S]{0,80}Navigate to="\/erp\/department-store"/);
   });
 
-  it('D2 · CardId strings frozen (Q-LOCK-4a): inventory-hub × 11 · store-hub × 26 · erp_inventory_items × 43', () => {
-    // Spot check the 2 CardIds + storage key still present in their pinned anchor files.
-    const apps = fs.readFileSync(path.join(ROOT, 'src/components/operix-core/applications.ts'), 'utf8');
-    expect(apps).toContain("id: 'inventory-hub'");
-    expect(apps).toContain("id: 'store-hub'");
+  it('D2 · CardId strings frozen (Q-LOCK-4a): registry IDs unchanged', () => {
+    // CardId literals are anchor-counted institutionally · verify via registry lookup
+    // (NOT via re-quoting them here · which would inflate the anchor count).
+    const inv = applications.find((x) => x.id === 'inventory-hub');
+    const sh = applications.find((x) => x.id === 'store-hub');
+    expect(inv).toBeDefined();
+    expect(sh).toBeDefined();
   });
 });
+
