@@ -25,6 +25,7 @@ import { ExportRealisationDetail } from './export/ExportRealisationDetail';
 import { EBRCEDPMSDashboard } from './export/EBRCEDPMSDashboard';
 import { FEMA270DayTracker } from './export/FEMA270DayTracker';
 import { UnifiedDGFTLayout } from './dgft/UnifiedDGFTLayout';
+import { UnifiedAtlasLayout } from './atlas/UnifiedAtlasLayout';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXExportModule } from './EximX.types';
 
@@ -107,6 +108,7 @@ export default function EximXExportLayout(): JSX.Element {
       case 'rodtep': return <UnifiedDGFTLayout />;
       case 'drawback': return <UnifiedDGFTLayout />;
       case 'export-council': return <UnifiedDGFTLayout />;
+      case 'export-dashboard': return <UnifiedAtlasLayout />;
       case 'export-welcome': return <><ShippingBillList /><CoOLegalizationDashboard /></>;
       default: return <ComingSoon label={active} />;
     }

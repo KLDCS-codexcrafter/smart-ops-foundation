@@ -11,6 +11,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { EximXUnifiedModule } from './EximX.types';
 import { UnifiedFinanceLayout } from './finance/UnifiedFinanceLayout';
 import { UnifiedComplianceLayout } from './compliance/UnifiedComplianceLayout';
+import { UnifiedAtlasLayout } from './atlas/UnifiedAtlasLayout';
 
 const config: ShellConfig & { title: string } = {
   title: 'EximX · Unified',
@@ -33,6 +34,8 @@ function renderModule(active: EximXUnifiedModule): JSX.Element {
       return <UnifiedFinanceLayout />;
     case 'sanctions-watchlist':
       return <UnifiedComplianceLayout />;
+    case 'unified-dashboard':
+      return <UnifiedAtlasLayout />;
     default:
       return (
         <div className="p-4 md:p-6 animate-fade-in">
