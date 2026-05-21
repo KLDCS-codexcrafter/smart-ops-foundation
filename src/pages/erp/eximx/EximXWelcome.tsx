@@ -1,8 +1,8 @@
 /**
  * @file        src/pages/erp/eximx/EximXWelcome.tsx
- * @purpose     EximX Welcome · 4 pulse metrics + 6 quick actions + Saathi TDL Gaps Atlas tile
- * @sprint      T-Phase-1.EX-1-EximX-Foundation
- * @decisions   EX-1-Q5 (4 pulse metrics) · EX-1-Q6=b (Saathi educational) · Moat #13
+ * @purpose     EximX Welcome · 4 pulse metrics + 6 quick actions
+ * @sprint      T-Phase-2.HK-1-EximX-AtlasPreview-Retire
+ * @decisions   D-NEW-FM: removed Saathi TDL Gaps Atlas tile · users use "EximX · Unified" sidebar for full Atlas Suite
  */
 import { useState, useEffect } from 'react';
 import { summarizeIECValidity } from '@/lib/iec-engine';
@@ -10,7 +10,7 @@ import { summarizeLUTExpiry } from '@/lib/lut-engine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Award, Package, ArrowUpRight, Bot, FileText, BarChart3 } from 'lucide-react';
+import { Globe, Award, Package, ArrowUpRight, FileText, BarChart3 } from 'lucide-react';
 
 const DEFAULT_ENTITY = 'sinha-trading';
 
@@ -101,25 +101,6 @@ export function EximXWelcome({ onNavigate }: EximXWelcomeProps): JSX.Element {
               <BarChart3 className="w-4 h-4 mr-2" /> EximX Reports (EX-11)
             </Button>
           </div>
-        </CardContent>
-      </Card>
-
-      <Card className="bg-accent/30 border-accent">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Bot className="w-5 h-5 text-primary" />
-            Saathi · Vendor AI · TDL Gaps Atlas
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground mb-3">
-            Operix&apos;s TDL Gaps Atlas is the institutional moat catalog — the architectural fingerprint of every Tally TDL field
-            we fill against the gaps Tally itself leaves open. Saathi explains the 3-bucket Duty Structure (Customs · Other · GST)
-            and walks through CTH × Country × Date drill. Click below for the educational preview.
-          </p>
-          <Button onClick={() => onNavigate('saathi-tdl-gaps-atlas')}>
-            <Bot className="w-4 h-4 mr-2" /> Open TDL Gaps Atlas Preview
-          </Button>
         </CardContent>
       </Card>
 

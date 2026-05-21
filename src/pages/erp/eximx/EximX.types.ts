@@ -1,13 +1,14 @@
 /**
  * @file        src/pages/erp/eximx/EximX.types.ts
  * @purpose     EximX module ID types · canonical TypeScript discipline
+ * @sprint      T-Phase-2.HK-1-EximX-AtlasPreview-Retire
+ * @decisions   D-NEW-FM: removed 'saathi-tdl-gaps-atlas' union member
  */
 export type EximXModule =
   | 'welcome'
   | 'eximx-export'
   | 'eximx-import'
-  | 'eximx-unified'
-  | 'saathi-tdl-gaps-atlas';
+  | 'eximx-unified';
 
 export type EximXExportModule =
   | 'export-welcome' | 'lut-master' | 'export-orders' | 'shipping-bills'
