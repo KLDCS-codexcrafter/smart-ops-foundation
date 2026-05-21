@@ -3,13 +3,23 @@
  * @purpose     5-voucher preview · auto-posted on BoE filing · uses FinCore voucher engines READ-ONLY
  * @sprint      T-Phase-1.EX-6-BillOfEntry-CustomsDuty-Demurrage-AutoPostedVouchers
  */
+import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Receipt } from 'lucide-react';
+import { Receipt, Shield } from 'lucide-react';
 import { VOUCHER_LEDGER_MAP, type AutoPostedVoucherKind } from '@/types/auto-posted-voucher';
 import type { BillOfEntry } from '@/types/bill-of-entry';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { loadDGTRInvestigations, summarizeBoEDGTRImpact } from '@/lib/dgtr-duty-impact-engine';
 
 export function BoEDutyPaymentPanel({ boe }: { boe: BillOfEntry }): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const dgtrImpact = useMemo(() => {
+    if (!entityCode) return null;
+    const investigations = loadDGTRInvestigations(entityCode);
+    return summarizeBoEDGTRImpact(boe, investigations);
+  }, [boe, entityCode]);
+
   const total_customs_duty = boe.lines.reduce((s, l) => s + l.bcd_inr + l.sws_inr + l.anti_dumping_inr + l.safeguard_inr, 0);
   const total_landing = boe.lines.reduce((s, l) => s + l.landing_inr, 0);
 
