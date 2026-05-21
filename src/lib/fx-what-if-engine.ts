@@ -53,7 +53,7 @@ export function computeFXScenarioForRealisation(entityCode: string, realisationI
   const r = realisations.find((x) => x.id === realisationId);
   if (!r) return null;
 
-  const base_rate_inr = r.realised_rate ?? r.booking_rate;
+  const base_rate_inr = r.forex_triangulation.realised_rate ?? r.forex_triangulation.booking_rate;
   const base_amount_foreign = r.invoice_value_foreign ?? 0;
   const base_amount_inr = base_amount_foreign * base_rate_inr;
 
