@@ -124,9 +124,10 @@ export function TDLGapsAtlasPreview(): JSX.Element {
       </Card>
 
       <Card className="bg-muted/50">
-        <CardHeader><CardTitle className="text-base">What ships in EX-11 (Full Atlas)</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">What shipped in EX-11 (Full Atlas)</CardTitle></CardHeader>
         <CardContent className="text-sm space-y-2">
-          <p>The full TDL Gaps Atlas in EX-11 will catalog:</p>
+          <p>The full TDL Gaps Atlas in EX-11 catalogs:</p>
+
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>35 cataloged gaps</strong> with severity rating and how each is filled</li>
             <li><strong>17 voucher types</strong> with field-by-field mapping (TDL UDF → Operix field)</li>
