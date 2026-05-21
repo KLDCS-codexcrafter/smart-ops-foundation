@@ -4,12 +4,17 @@
  * @sprint      T-Phase-1.EX-2-CTH-Country-Date-Master
  * @decisions   EX-2-Q8=b Saathi panel inside CTH master
  */
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bot, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Bot, ExternalLink, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { CTHTimelineView } from '@/pages/erp/eximx/masters/CTHTimelineView';
 
 export function CTHSaathiPanel({ selectedCTH }: { selectedCTH: string | null }): JSX.Element {
+  const [showTimeline, setShowTimeline] = useState(false);
+
   return (
     <Card className="border-l-4 border-l-primary sticky top-4">
       <CardHeader className="pb-2">
@@ -36,10 +41,24 @@ export function CTHSaathiPanel({ selectedCTH }: { selectedCTH: string | null }):
             <p className="text-muted-foreground">Click 3-bucket card above to see dynamic duty labels resolved at render time (Moat #14).</p>
           </div>
         )}
+        <div className="pt-2 border-t">
+          <Badge className="mb-1">D-NEW-EZ · Timeline</Badge>
+          {selectedCTH ? (
+            <Button size="sm" variant="outline" className="w-full" onClick={() => setShowTimeline(true)}>
+              <Clock className="w-3 h-3 mr-1" /> View history timeline →
+            </Button>
+          ) : (
+            <p className="text-muted-foreground">Select a CTH to view its history timeline.</p>
+          )}
+          {showTimeline && selectedCTH && (
+            <CTHTimelineView cthCode={selectedCTH} countryCode="" onClose={() => setShowTimeline(false)} />
+          )}
+        </div>
         <Link to="/erp/eximx/saathi-tdl-gaps-atlas" className="flex items-center gap-1 text-primary hover:underline pt-2 border-t">
           <ExternalLink className="w-3 h-3" /> Open full TDL Gaps Atlas Preview
         </Link>
       </CardContent>
     </Card>
+
   );
 }

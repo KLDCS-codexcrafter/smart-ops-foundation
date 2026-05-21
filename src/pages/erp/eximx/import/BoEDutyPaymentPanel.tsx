@@ -3,13 +3,23 @@
  * @purpose     5-voucher preview · auto-posted on BoE filing · uses FinCore voucher engines READ-ONLY
  * @sprint      T-Phase-1.EX-6-BillOfEntry-CustomsDuty-Demurrage-AutoPostedVouchers
  */
+import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Receipt } from 'lucide-react';
+import { Receipt, Shield } from 'lucide-react';
 import { VOUCHER_LEDGER_MAP, type AutoPostedVoucherKind } from '@/types/auto-posted-voucher';
 import type { BillOfEntry } from '@/types/bill-of-entry';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { loadDGTRInvestigations, summarizeBoEDGTRImpact } from '@/lib/dgtr-duty-impact-engine';
 
 export function BoEDutyPaymentPanel({ boe }: { boe: BillOfEntry }): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const dgtrImpact = useMemo(() => {
+    if (!entityCode) return null;
+    const investigations = loadDGTRInvestigations(entityCode);
+    return summarizeBoEDGTRImpact(boe, investigations);
+  }, [boe, entityCode]);
+
   const total_customs_duty = boe.lines.reduce((s, l) => s + l.bcd_inr + l.sws_inr + l.anti_dumping_inr + l.safeguard_inr, 0);
   const total_landing = boe.lines.reduce((s, l) => s + l.landing_inr, 0);
 
@@ -44,6 +54,19 @@ export function BoEDutyPaymentPanel({ boe }: { boe: BillOfEntry }): JSX.Element 
           <div className="font-mono font-bold text-lg">₹{vouchers.reduce((s, v) => s + v.amount, 0).toLocaleString('en-IN')}</div>
         </div>
       </CardContent>
+      {dgtrImpact && dgtrImpact.affected_lines > 0 && (
+        <CardContent className="border-t border-l-4 border-l-orange-500 pt-3 mt-2">
+          <div className="text-sm font-bold flex items-center gap-2 mb-2">
+            <Shield className="w-4 h-4" /> DGTR Auto-Impact · D-NEW-FD · 6th SIBLING
+          </div>
+          <div className="text-xs space-y-1">
+            <p>Affected lines: <strong>{dgtrImpact.affected_lines} / {dgtrImpact.total_lines}</strong></p>
+            <p>Additional duty (auto-computed): <strong className="font-mono">₹{dgtrImpact.total_additional_duty_inr.toLocaleString('en-IN')}</strong></p>
+            <p className="text-muted-foreground">DGTR anti-dumping / safeguard / CVD applies based on CTH × Country × BoE filing date.</p>
+          </div>
+        </CardContent>
+      )}
     </Card>
   );
 }
+

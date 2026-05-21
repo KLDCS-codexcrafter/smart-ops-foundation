@@ -16,7 +16,7 @@ export function TDLGapsAtlasPreview(): JSX.Element {
         <Bot className="w-8 h-8 text-primary" />
         <div>
           <h1 className="text-2xl font-bold">Saathi · TDL Gaps Atlas Preview</h1>
-          <p className="text-sm text-muted-foreground">Educational walkthrough · full Atlas ships in EX-11</p>
+          <p className="text-sm text-muted-foreground">Educational walkthrough · full Atlas <strong>shipped in EX-11</strong> · <Link to="/erp/eximx/unified" className="underline text-primary">view full Atlas →</Link></p>
         </div>
       </div>
 
@@ -124,9 +124,10 @@ export function TDLGapsAtlasPreview(): JSX.Element {
       </Card>
 
       <Card className="bg-muted/50">
-        <CardHeader><CardTitle className="text-base">What ships in EX-11 (Full Atlas)</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">What shipped in EX-11 (Full Atlas)</CardTitle></CardHeader>
         <CardContent className="text-sm space-y-2">
-          <p>The full TDL Gaps Atlas in EX-11 will catalog:</p>
+          <p>The full TDL Gaps Atlas in EX-11 catalogs:</p>
+
           <ul className="list-disc pl-5 space-y-1">
             <li><strong>35 cataloged gaps</strong> with severity rating and how each is filled</li>
             <li><strong>17 voucher types</strong> with field-by-field mapping (TDL UDF → Operix field)</li>

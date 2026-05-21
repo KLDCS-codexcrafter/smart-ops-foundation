@@ -53,7 +53,8 @@ export const SINHA_MULTI_LEG_GITS: MultiLegGoodsInTransit[] = [
     ],
     booked_total_inr: 2550 * 84.50,
     custom_revalued_total_inr: 2550 * 85.20,
-    actual_landed_total_inr: 0,
+    actual_landed_total_inr: Math.round(2550 * 84.50 * 1.07),
+
     allocation_method: 'by_value',
     allocated_costs: [],
     notes: 'UAE-CEPA · AEO green lane · customs revaluation captured',

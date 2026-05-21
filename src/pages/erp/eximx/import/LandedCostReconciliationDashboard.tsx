@@ -11,7 +11,9 @@ import { TrendingUp, AlertCircle, Banknote } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadMultiLegGITs, averageDwellTime } from '@/lib/multi-leg-git-engine';
 import { summarizeMLGITReconciliation } from '@/lib/reconciliation-engine';
+import { computeVarianceForAll, type LandedCostVarianceReport } from '@/lib/landed-cost-variance-engine';
 import { SINHA_MULTI_LEG_GITS } from '@/data/sinha-multi-leg-git-seed-data';
+
 
 export function LandedCostReconciliationDashboard(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -25,6 +27,10 @@ export function LandedCostReconciliationDashboard(): JSX.Element {
   const totalRevalued = summaries.reduce((s, x) => s + x.summary.custom_revalued, 0);
   const totalActual = summaries.reduce((s, x) => s + x.summary.actual_landed, 0);
   const avgDwell = averageDwellTime(mlgits);
+  const varianceReports: LandedCostVarianceReport[] = useMemo(() => computeVarianceForAll(mlgits), [mlgits]);
+  const criticalVarianceCount = varianceReports.filter((r) => r.aggregate_severity === 'critical').length;
+  const materialVarianceCount = varianceReports.filter((r) => r.aggregate_severity === 'material').length;
+
 
   return (
     <div className="space-y-4">
@@ -69,6 +75,40 @@ export function LandedCostReconciliationDashboard(): JSX.Element {
           </Table>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader><CardTitle className="text-sm flex items-center gap-2"><AlertCircle className="w-4 h-4" /> Per-Line Variance Drill · D-NEW-EW</CardTitle></CardHeader>
+        <CardContent>
+          <div className="flex gap-2 mb-3">
+            <Badge variant={criticalVarianceCount > 0 ? 'destructive' : 'secondary'}>Critical: {criticalVarianceCount}</Badge>
+            <Badge variant="outline">Material: {materialVarianceCount}</Badge>
+          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>MLGIT</TableHead>
+                <TableHead className="text-right">Booked</TableHead>
+                <TableHead className="text-right">Actual</TableHead>
+                <TableHead className="text-right">Δ %</TableHead>
+                <TableHead>Severity</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {varianceReports.map((r) => (
+                <TableRow key={r.mlgit_id}>
+                  <TableCell className="font-mono text-xs">{r.mlgit_no}</TableCell>
+                  <TableCell className="text-right font-mono text-xs">₹{r.total_booked_inr.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</TableCell>
+                  <TableCell className="text-right font-mono text-xs">₹{r.total_actual_landed_inr.toLocaleString('en-IN', { maximumFractionDigits: 0 })}</TableCell>
+                  <TableCell className="text-right font-mono text-xs">{r.aggregate_delta_pct.toFixed(2)}%</TableCell>
+                  <TableCell><Badge variant={r.aggregate_severity === 'critical' ? 'destructive' : r.aggregate_severity === 'material' ? 'default' : 'outline'}>{r.aggregate_severity}</Badge></TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+
 
       <Card className="border-l-4 border-l-primary">
         <CardContent className="p-3 text-xs flex items-start gap-2">
