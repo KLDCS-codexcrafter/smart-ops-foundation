@@ -30,6 +30,12 @@ export function ComplianceSaathiPanel({ activeTab }: { activeTab: string }): JSX
       <CardContent className="text-sm space-y-3">
         <div><strong>{exp.title}</strong></div>
         <div>{exp.body}</div>
+        <div className="pt-2 border-t">
+          <Badge className="mb-1">D-NEW-FE · Section 92E</Badge>
+          <Link to="/erp/eximx/compliance/form-3ceb" className="block">
+            <Button size="sm" variant="outline">Form 3CEB dashboard →</Button>
+          </Link>
+        </div>
         <div className="pt-2 border-t text-xs text-muted-foreground"><strong>EX-9 Compliance Completion Sprint</strong>: 4 PRIMARY/FULL moats (AEO + CAROTAR + CoO Embassy + STPI Softex) + 6 NEW modules (PCA + TP + EDPMS + Sanctions + DGTR + EWS) + 5 v7 Compliance Gaps closed in one sprint. 100% Saathi visibility milestone achieved. Next: EX-10 DGFT Schemes + Drawback + D-NEW-FF · EX-11 TDL Atlas FULL + Board Pack PDF.</div>
       </CardContent>
     </Card>
