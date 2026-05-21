@@ -4,12 +4,17 @@
  * @sprint      T-Phase-1.EX-2-CTH-Country-Date-Master
  * @decisions   EX-2-Q8=b Saathi panel inside CTH master
  */
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Bot, ExternalLink } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Bot, ExternalLink, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { CTHTimelineView } from '@/pages/erp/eximx/masters/CTHTimelineView';
 
 export function CTHSaathiPanel({ selectedCTH }: { selectedCTH: string | null }): JSX.Element {
+  const [showTimeline, setShowTimeline] = useState(false);
+
   return (
     <Card className="border-l-4 border-l-primary sticky top-4">
       <CardHeader className="pb-2">
