@@ -17,6 +17,12 @@ export function ExportPOSaathiPanel({ po }: { po: ExportPurchaseOrder }): JSX.El
         <div><strong>Doc Pack Country Rule</strong>: <code>{po.doc_pack_country_rule}</code> · Operix resolves 6 country-specific paths (UAE legalized · EU EUR.1 · ASEAN Form AI · CEPA · GSP · standard). Embassy legalization auto-flagged for UAE/CEPA destinations.</div>
         <div><strong>Forward to EX-7b</strong>: When status transitions to <code>ready_for_shipping</code>, the Shipping Bill workflow takes over. Expected SB: <code>{po.expected_shipping_bill_no ?? 'pending'}</code></div>
         <div className="pt-2 border-t text-xs text-muted-foreground">Phase 2: PDF generation (EX-11) · embassy legalization workflow (EX-9 · Moat #10) · sanctions check (EX-9) · FEMA 270-day realization tracking (EX-7c · Moat #19 PRIMARY). D-NEW-FF (per-item valuation override · EX-10) and D-NEW-FG (voucher runtime wiring · EX-8) reserved for future sprints.</div>
+        <div className="pt-2 border-t">
+          <Badge className="mb-1">D-NEW-FJ · LC backed</Badge>
+          <Link to="/erp/eximx/finance/lc" className="block">
+            <Button size="sm" variant="outline">View LCs →</Button>
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );
