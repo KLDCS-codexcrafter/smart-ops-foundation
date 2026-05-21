@@ -123,6 +123,7 @@ export default function EximXImportLayout(): JSX.Element {
       case 'bill-of-entry': return <BoEList />;
       case 'rms-declaration': return <RMSDeclarationDashboard />;
       case 'aeo-tier-mapping': return <AEOTierMaster />;
+      case 'carotar-coo': return <UnifiedComplianceLayout />;
       case 'import-welcome': return <ComingSoon label="Import Welcome (EX-6)" />;
       default: return <ComingSoon label={active} />;
     }
