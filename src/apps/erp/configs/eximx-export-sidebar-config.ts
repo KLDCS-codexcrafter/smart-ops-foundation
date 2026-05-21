@@ -37,9 +37,9 @@ export const eximxExportSidebarItems: SidebarItem[] = [
   {
     id: 'export-india', type: 'group', label: 'India Compliance', icon: Building2, collapsibleByDefault: true,
     children: [
-      { id: 'rodtep', type: 'item', label: 'RoDTEP', icon: Award, moduleId: 'rodtep', requiredCards: ['eximx'], keyboard: 'x t', comingSoon: true },
-      { id: 'drawback', type: 'item', label: 'Drawback', icon: Award, moduleId: 'drawback', requiredCards: ['eximx'], keyboard: 'x d', comingSoon: true },
-      { id: 'export-council', type: 'item', label: 'Export Council Registry', icon: Building2, moduleId: 'export-council', requiredCards: ['eximx'], keyboard: 'x v', comingSoon: true },
+      { id: 'rodtep', type: 'item', label: 'RoDTEP Scrip Wallet', icon: Award, moduleId: 'rodtep', requiredCards: ['eximx'], keyboard: 'x t' },
+      { id: 'drawback', type: 'item', label: 'Drawback', icon: Award, moduleId: 'drawback', requiredCards: ['eximx'], keyboard: 'x d' },
+      { id: 'export-council', type: 'item', label: 'DGFT Suite (RoDTEP · Drawback · SEIS · MEIS · EPCG · Vendor Scorecard)', icon: Building2, moduleId: 'export-council', requiredCards: ['eximx'], keyboard: 'x v' },
     ],
   },
   {

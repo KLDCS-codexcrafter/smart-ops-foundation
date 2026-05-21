@@ -116,6 +116,9 @@ export function TDLGapsAtlasPreview(): JSX.Element {
             <Link to="/erp/eximx/unified" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
               <ExternalLink className="w-3 h-3" /> Drill into Unified Compliance Suite (EX-9 · 4 PRIMARY/FULL moats: AEO · CAROTAR · CoO Embassy · STPI Softex · 5 v7 Gaps closed: PCA · TP · EDPMS · Sanctions · STPI · EWS 7-signal aggregator · DGTR foundation · 100% v7 compliance milestone ⭐⭐⭐)
             </Link>
+            <Link to="/erp/eximx/export" className="text-sm text-primary hover:underline inline-flex items-center gap-1 block">
+              <ExternalLink className="w-3 h-3" /> Drill into Unified DGFT Suite (EX-10 · 3 PRIMARY moats: #20 DGFT Schemes (RoDTEP · Drawback · SEIS · MEIS · EPCG) · #21 Vendor Reliability Scorecard · HSN/CTH Reclass workflow · D-NEW-FF Per-Item Valuation Override RESOLVED via SIBLING · architectural keystone #2 · 6th voucher-runtime-engine consumer · D-NEW-FH closed)
+            </Link>
           </div>
         </CardContent>
       </Card>

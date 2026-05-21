@@ -43,7 +43,7 @@ export const eximxImportSidebarItems: SidebarItem[] = [
       { id: 'port-extension', type: 'item', label: 'Port EXIM Extension', icon: Award, moduleId: 'port-extension', requiredCards: ['eximx'], keyboard: 'm p' },
       { id: 'rms-declaration', type: 'item', label: 'RMS Declaration', icon: Award, moduleId: 'rms-declaration', requiredCards: ['eximx'], keyboard: 'm r' },
       { id: 'aeo-tier-mapping', type: 'item', label: 'AEO Tier Mapping', icon: Award, moduleId: 'aeo-tier-mapping', requiredCards: ['eximx'], keyboard: 'm a' },
-      { id: 'carotar-coo', type: 'item', label: 'CAROTAR + COO', icon: Award, moduleId: 'carotar-coo', requiredCards: ['eximx'], keyboard: 'm y', comingSoon: true },
+      { id: 'carotar-coo', type: 'item', label: 'Compliance Suite (CAROTAR · CoO · PCA · TP · EDPMS · Sanctions · DGTR · EWS · AEO · STPI)', icon: Award, moduleId: 'carotar-coo', requiredCards: ['eximx'], keyboard: 'm y' },
     ],
   },
   {
