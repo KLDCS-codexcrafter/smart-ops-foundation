@@ -28,6 +28,7 @@ import { BoEList } from './import/BoEList';
 import { BoEDetail } from './import/BoEDetail';
 import { RMSDeclarationDashboard } from './import/RMSDeclarationDashboard';
 import { AEOTierMaster } from './masters/AEOTierMaster';
+import { UnifiedComplianceLayout } from './compliance/UnifiedComplianceLayout';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXImportModule } from './EximX.types';
 
