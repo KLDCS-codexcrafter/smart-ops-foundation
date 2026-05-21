@@ -104,6 +104,9 @@ export default function EximXExportLayout(): JSX.Element {
       case 'e-brc': return <><ExportRealisationList /><EBRCEDPMSDashboard /></>;
       case 'firc': return <EBRCEDPMSDashboard />;
       case 'fema-tracker': return <FEMA270DayTracker />;
+      case 'rodtep': return <UnifiedDGFTLayout />;
+      case 'drawback': return <UnifiedDGFTLayout />;
+      case 'export-council': return <UnifiedDGFTLayout />;
       case 'export-welcome': return <><ShippingBillList /><CoOLegalizationDashboard /></>;
       default: return <ComingSoon label={active} />;
     }
