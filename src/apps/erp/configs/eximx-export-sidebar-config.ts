@@ -45,7 +45,7 @@ export const eximxExportSidebarItems: SidebarItem[] = [
   {
     id: 'export-management', type: 'group', label: 'Management', icon: ClipboardList, collapsibleByDefault: true,
     children: [
-      { id: 'export-dashboard', type: 'item', label: 'Export Dashboard', icon: BarChart3, moduleId: 'export-dashboard', requiredCards: ['eximx'], keyboard: 'x a', comingSoon: true },
+      { id: 'export-dashboard', type: 'item', label: 'Atlas FULL + Board Pack (Moat #13 PRIMARY · Phase 1 FINALE)', icon: BarChart3, moduleId: 'export-dashboard', requiredCards: ['eximx'], keyboard: 'x a' },
     ],
   },
   {

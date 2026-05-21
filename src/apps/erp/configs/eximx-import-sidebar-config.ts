@@ -49,7 +49,7 @@ export const eximxImportSidebarItems: SidebarItem[] = [
   {
     id: 'import-management', type: 'group', label: 'Management', icon: ClipboardList, collapsibleByDefault: true,
     children: [
-      { id: 'import-dashboard', type: 'item', label: 'Import Dashboard', icon: ClipboardList, moduleId: 'import-dashboard', requiredCards: ['eximx'], keyboard: 'm d', comingSoon: true },
+      { id: 'import-dashboard', type: 'item', label: 'Atlas FULL + BCD Calculator + FX What-If (Phase 1 FINALE)', icon: ClipboardList, moduleId: 'import-dashboard', requiredCards: ['eximx'], keyboard: 'm d' },
     ],
   },
   {

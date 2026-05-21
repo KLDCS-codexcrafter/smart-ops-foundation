@@ -29,6 +29,7 @@ import { BoEDetail } from './import/BoEDetail';
 import { RMSDeclarationDashboard } from './import/RMSDeclarationDashboard';
 import { AEOTierMaster } from './masters/AEOTierMaster';
 import { UnifiedComplianceLayout } from './compliance/UnifiedComplianceLayout';
+import { UnifiedAtlasLayout } from './atlas/UnifiedAtlasLayout';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXImportModule } from './EximX.types';
 
@@ -124,6 +125,7 @@ export default function EximXImportLayout(): JSX.Element {
       case 'rms-declaration': return <RMSDeclarationDashboard />;
       case 'aeo-tier-mapping': return <AEOTierMaster />;
       case 'carotar-coo': return <UnifiedComplianceLayout />;
+      case 'import-dashboard': return <UnifiedAtlasLayout />;
       case 'import-welcome': return <ComingSoon label="Import Welcome (EX-6)" />;
       default: return <ComingSoon label={active} />;
     }
