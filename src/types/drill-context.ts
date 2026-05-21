@@ -11,7 +11,7 @@
  * support natively is applied via a memoized rows filter on mount.
  */
 
-import type { InventoryHubModule } from '@/pages/erp/inventory/InventoryHubSidebar.types';
+import type { MainStoreHubModule } from '@/pages/erp/inventory/MainStoreHubSidebar.types';
 
 export interface InventoryDrillFilter {
   itemId?: string;
@@ -29,7 +29,7 @@ export interface InventoryDrillFilter {
 }
 
 export interface DrillNavigationContext {
-  fromModule: InventoryHubModule;
+  fromModule: MainStoreHubModule;
   fromLabel: string;
   filter?: InventoryDrillFilter;
 }

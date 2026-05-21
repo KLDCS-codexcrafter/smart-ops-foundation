@@ -1,5 +1,5 @@
 /**
- * InventoryHubWelcome.tsx — Inventory Hub landing dashboard
+ * MainStoreHubWelcome.tsx — Main Store Hub landing dashboard
  * Sprint T-Phase-1.2.1 · Tier 1 Card #2 sub-sprint 1/3
  *
  * The departmental accountability strip is the MOAT feature — it makes
@@ -28,7 +28,7 @@ import { useStorageQuota } from '@/hooks/useStorageQuota';
 import { readAuditTrail } from '@/lib/audit-trail-engine';
 import { cycleCountsKey, type CycleCount } from '@/types/cycle-count';
 import { useT } from '@/lib/i18n-engine';
-import type { InventoryHubModule } from './InventoryHubSidebar.types';
+import type { MainStoreHubModule } from './MainStoreHubSidebar.types';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -41,11 +41,11 @@ function loadJson<T>(key: string): T[] {
   } catch { return []; }
 }
 
-interface InventoryHubWelcomeProps {
-  onNavigate: (m: InventoryHubModule) => void;
+interface MainStoreHubWelcomeProps {
+  onNavigate: (m: MainStoreHubModule) => void;
 }
 
-export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProps) {
+export function MainStoreHubWelcomePanel({ onNavigate }: MainStoreHubWelcomeProps) {
   const { entityCode } = useCardEntitlement();
   const safeEntity = entityCode || 'SMRT';
   const { items } = useInventoryItems();
@@ -181,7 +181,7 @@ export function InventoryHubWelcomePanel({ onNavigate }: InventoryHubWelcomeProp
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Package className="h-6 w-6 text-cyan-500" />
-            Store Hub — Inventory Operations
+            Main Store Hub — Plant Inventory Operations
           </h1>
           <p className="text-sm text-muted-foreground">
             Departmental accountability · live stock balances · GRN-driven receipts

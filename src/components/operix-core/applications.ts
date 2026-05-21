@@ -45,7 +45,7 @@
  *    - 'Inventory Hub' (with space) intentional · do not rename
  *      D-NEW-CM-fincore-naming-canonical pattern (display preservation · technical 'inventory-hub' · display 'Inventory Hub')
  *      Heavy 22k+ LOC platform inventory backbone · NOT to be confused with store-hub (Department Stores · lightweight 1.5k LOC console)
- *      ~39 instances at v17 ALL intentional · DO NOT migrate to 'InventoryHub' · DO NOT remove space
+ *      ~39 instances at v17 ALL intentional · DO NOT migrate to 'MainStoreHub' · DO NOT remove space
  *    - 'Department Stores' (display) · 'store-hub' (technical) · NOT 'Store Hub' duplicate
  *      D-NEW-CM-fincore-naming-canonical pattern (display preservation · same pattern as Inventory Hub)
  *    - 'Dispatch Hub' (operations) · 'Logistics' (transporter)
@@ -131,10 +131,10 @@ export const applications: AppDefinition[] = [
   // T-Phase-1.H.3 · Q-LOCK-4a + Q-LOCK-5a · lock strengthened (was: 2-line comment · now: explicit ⚠️ + D-NEW-CM cite)
   {
     id: 'inventory-hub',
-    name: 'Inventory Hub',
-    description: 'Heavy inventory module · platform-level backbone. GRN, MIN, RTV, Cycle Count, Item Master, Storage Matrix, Batch/Serial tracking, ABC classification, Hazmat profiles, Reorder management.',
+    name: 'Main Store Hub',
+    description: 'Plant-level Main Store backbone · distributes to Department Stores. Heavy inventory module — GRN, MIN, RTV, Cycle Count, Item Master, Storage Matrix, Batch/Serial tracking, ABC classification, Hazmat profiles, Reorder management.',
     category: 'Ops Hub',
-    route: '/erp/inventory-hub',
+    route: '/erp/main-store-hub',
     icon: 'Package',
     status: 'active',
   },
@@ -197,9 +197,9 @@ export const applications: AppDefinition[] = [
   {
     id: 'store-hub',
     name: 'Department Stores',
-    description: 'Department-level Stores console · stock issue to departments, receipt acknowledgments, cycle count status, reorder suggestions, demand forecast. Lightweight operator console (NOT Inventory Hub).',
+    description: 'Department-level Stores console · receives from Main Store Hub · stock issue to departments, receipt acknowledgments, cycle count status, reorder suggestions, demand forecast. Lightweight operator console (NOT Main Store Hub).',
     category: 'Ops Hub',
-    route: '/erp/store-hub',
+    route: '/erp/department-store',
     icon: 'Warehouse',
     status: 'active',  // T-Phase-1.A.6.α-b · Q-LOCK-13a · D-NEW-BB pattern (parallel to qualicheck A.5)
   },

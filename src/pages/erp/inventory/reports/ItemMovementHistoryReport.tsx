@@ -14,7 +14,7 @@ import { Activity, Download, ExternalLink } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { getItemMovementHistory, type MovementType } from '@/lib/item-movement-engine';
 import type { InventoryItem } from '@/types/inventory-item';
-import type { InventoryHubModule } from '../InventoryHubSidebar.types';
+import type { MainStoreHubModule } from '../MainStoreHubSidebar.types';
 
 const TYPE_LABELS: Record<MovementType, string> = {
   grn_inward: 'GRN',
@@ -27,7 +27,7 @@ const TYPE_LABELS: Record<MovementType, string> = {
   demo_outward: 'Demo',
 };
 
-const TYPE_TO_MODULE: Record<MovementType, InventoryHubModule | null> = {
+const TYPE_TO_MODULE: Record<MovementType, MainStoreHubModule | null> = {
   grn_inward: 'r-grn-register',
   min_outward: 'r-min-register',
   consumption: 'r-consumption-register',
@@ -41,7 +41,7 @@ const TYPE_TO_MODULE: Record<MovementType, InventoryHubModule | null> = {
 const fmt = (n: number) => n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
 
 interface ItemMovementHistoryReportPanelProps {
-  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+  onNavigate?: (module: import('../MainStoreHubSidebar.types').MainStoreHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
 }
 
 export function ItemMovementHistoryReportPanel({ onNavigate }: ItemMovementHistoryReportPanelProps = {}) {

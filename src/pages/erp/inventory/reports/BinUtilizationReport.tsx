@@ -39,7 +39,7 @@ function computeRecommendation(util: number, lastActivityIso: string | null): Re
 }
 
 interface BinUtilizationReportPanelProps {
-  onNavigate?: (module: import('../InventoryHubSidebar.types').InventoryHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
+  onNavigate?: (module: import('../MainStoreHubSidebar.types').MainStoreHubModule, ctx?: import('@/types/drill-context').DrillNavigationContext) => void;
 }
 
 export function BinUtilizationReportPanel({ onNavigate }: BinUtilizationReportPanelProps = {}) {

@@ -1,5 +1,5 @@
 /**
- * InventoryHubSidebar.tsx — Inventory Hub left sidebar
+ * MainStoreHubSidebar.tsx — Inventory Hub left sidebar
  * Sprint T-Phase-1.2.1 · Tier 1 Card #2 sub-sprint 1/3 · mirrors ProjXSidebar pattern
  * Cyan/teal color scheme.
  */
@@ -18,9 +18,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import type { InventoryHubModule } from './InventoryHubSidebar.types';
+import type { MainStoreHubModule } from './MainStoreHubSidebar.types';
 
-const LIVE_MODULES: InventoryHubModule[] = [
+const LIVE_MODULES: MainStoreHubModule[] = [
   'welcome',
   't-grn-entry', 't-material-issue', 't-consumption-entry',
   't-cycle-count', 't-rtv',
@@ -35,7 +35,7 @@ const LIVE_MODULES: InventoryHubModule[] = [
 ];
 
 interface SidebarItem {
-  id: InventoryHubModule;
+  id: MainStoreHubModule;
   label: string;
   icon: React.ElementType;
   comingLabel?: string;
@@ -83,12 +83,12 @@ const MAS_ITEMS: SidebarItem[] = [
 ];
 
 
-interface InventoryHubSidebarProps {
-  active: InventoryHubModule;
-  onNavigate: (m: InventoryHubModule) => void;
+interface MainStoreHubSidebarProps {
+  active: MainStoreHubModule;
+  onNavigate: (m: MainStoreHubModule) => void;
 }
 
-export function InventoryHubSidebar({ active, onNavigate }: InventoryHubSidebarProps) {
+export function MainStoreHubSidebar({ active, onNavigate }: MainStoreHubSidebarProps) {
   const [txnOpen, setTxnOpen] = useState(true);
   const [rptOpen, setRptOpen] = useState(false);
   const [masOpen, setMasOpen] = useState(false);
@@ -99,7 +99,7 @@ export function InventoryHubSidebar({ active, onNavigate }: InventoryHubSidebarP
     else if (active.startsWith('m-')) setMasOpen(true);
   }, [active]);
 
-  const isLive = (id: InventoryHubModule) => LIVE_MODULES.includes(id);
+  const isLive = (id: MainStoreHubModule) => LIVE_MODULES.includes(id);
 
   const renderItem = (item: SidebarItem) => {
     const live = isLive(item.id);

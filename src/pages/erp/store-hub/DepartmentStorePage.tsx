@@ -1,5 +1,5 @@
 /**
- * @file        src/pages/erp/store-hub/StoreHubPage.tsx
+ * @file        src/pages/erp/store-hub/DepartmentStorePage.tsx
  * @purpose     Store Hub entry shell · canonical Shell consumer · 11 modules render
  * @who         Store Keeper · Department Heads · Storekeeper Supervisor
  * @when        2026-05-09 (T1 Shell retrofit)
@@ -19,17 +19,17 @@ import { storeHubShellConfig } from '@/apps/erp/configs/store-hub-shell-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Warehouse } from 'lucide-react';
-import type { StoreHubModule } from './StoreHubSidebar';
+import type { DepartmentStoreModule } from './DepartmentStoreSidebar';
 import {
   StockCheckPanel, ReorderSuggestionsPanel, DemandForecastPanel,
-} from './StoreHubPanels';
+} from './DepartmentStorePanels';
 import { StockIssueEntryPanel } from './transactions/StockIssueEntry';
 import { StockIssueRegisterPanel } from './transactions/StockIssueRegister';
 import { StockReceiptAckPanel } from './transactions/StockReceiptAck';
 import { CycleCountStatusPanel } from './reports/CycleCountStatus';
 import { StockMovementRegisterPanel } from './reports/StockMovementRegister';
 import { DepartmentConsumptionSummaryPanel } from './reports/DepartmentConsumptionSummary';
-import { StoreHubWelcomePanel } from './StoreHubWelcome';
+import { DepartmentStoreWelcomePanel } from './DepartmentStoreWelcome';
 // UPRA-3 Phase A Step 2 · Tier-1 NEW
 import { StockReceiptAckRegisterPanel } from './reports/StockReceiptAckRegister';
 
@@ -56,12 +56,12 @@ function WelcomePanel(): JSX.Element {
 }
 
 function renderModule(
-  mod: StoreHubModule,
-  onModuleChange: (m: StoreHubModule) => void,
+  mod: DepartmentStoreModule,
+  onModuleChange: (m: DepartmentStoreModule) => void,
 ): React.ReactElement {
   switch (mod) {
     case 'sh-welcome':                  return <WelcomePanel />;
-    case 'sh-r-welcome':                return <StoreHubWelcomePanel onModuleChange={onModuleChange} />;
+    case 'sh-r-welcome':                return <DepartmentStoreWelcomePanel onModuleChange={onModuleChange} />;
     case 'sh-r-stock-check':            return <StockCheckPanel />;
     case 'sh-r-reorder-suggestions':    return <ReorderSuggestionsPanel />;
     case 'sh-r-demand-forecast':        return <DemandForecastPanel />;
@@ -72,14 +72,14 @@ function renderModule(
     case 'sh-t-stock-issue-entry':      return <StockIssueEntryPanel onModuleChange={onModuleChange} />;
     case 'sh-t-stock-issue-register':   return <StockIssueRegisterPanel onModuleChange={onModuleChange} />;
     case 'sh-t-receipt-ack':            return <StockReceiptAckPanel />;
-    default:                            return <StoreHubWelcomePanel onModuleChange={onModuleChange} />;
+    default:                            return <DepartmentStoreWelcomePanel onModuleChange={onModuleChange} />;
   }
 }
 
-export default function StoreHubPage(): JSX.Element {
-  const [activeModule, setActiveModule] = useState<StoreHubModule>(() => {
+export default function DepartmentStorePage(): JSX.Element {
+  const [activeModule, setActiveModule] = useState<DepartmentStoreModule>(() => {
     const hash = window.location.hash.replace('#', '');
-    if (hash.startsWith('sh-')) return hash as StoreHubModule;
+    if (hash.startsWith('sh-')) return hash as DepartmentStoreModule;
     return 'sh-r-welcome';
   });
   const { entitlements, profile } = useCardEntitlement();
@@ -99,7 +99,7 @@ export default function StoreHubPage(): JSX.Element {
       tenantEntitlements={entitlements}
       contextFlags={{ accounting_mode: 'standalone' }}
       onSidebarItemClick={(item) => {
-        if (item.moduleId) setActiveModule(item.moduleId as StoreHubModule);
+        if (item.moduleId) setActiveModule(item.moduleId as DepartmentStoreModule);
       }}
     >
       <div className="p-4 md:p-6 animate-fade-in">

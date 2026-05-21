@@ -1,10 +1,10 @@
 /**
- * InventoryHubSidebar.types.ts — Module union for Inventory Hub card
+ * MainStoreHubSidebar.types.ts — Module union for Inventory Hub card
  * Sprint T-Phase-1.2.1 · Tier 1 Card #2 sub-sprint 1/3
  * Sprint T-Phase-1.2.2 · Activated MIN + Consumption Entry + Consumption Summary
  * Sprint T-Phase-1.2.6b · 4 new UTS register modules (D-226)
  */
-export type InventoryHubModule =
+export type MainStoreHubModule =
   | 'welcome'
   | 't-grn-entry'
   | 't-material-issue'

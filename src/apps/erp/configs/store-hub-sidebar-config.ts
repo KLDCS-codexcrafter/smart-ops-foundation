@@ -7,14 +7,14 @@
  *              T-Phase-1.A.6.α-b-Department-Stores-Closeout · Block C (2 NEW report module IDs)
  * @iso         ISO 25010 Maintainability · Usability
  * @whom        Audit Owner
- * @decisions   D-NEW-CC canonical (sidebar keyboard uniqueness) · D-380 (StoreHubSidebar source) ·
+ * @decisions   D-NEW-CC canonical (sidebar keyboard uniqueness) · D-380 (DepartmentStoreSidebar source) ·
  *              Q-LOCK-8a · Q-LOCK-9c revised (port 2 of 3 reports · skip Reorder Alerts redundant)
  * @disciplines FR-30 · FR-67 broad-stem grep verified at α-a Block 0
- * @reuses      @/shell/types SidebarItem · lucide-react icons · existing StoreHubModule type from
- *              src/pages/erp/store-hub/StoreHubSidebar.tsx (preserved verbatim)
+ * @reuses      @/shell/types SidebarItem · lucide-react icons · existing DepartmentStoreModule type from
+ *              src/pages/erp/store-hub/DepartmentStoreSidebar.tsx (preserved verbatim)
  * @[JWT]       N/A (config only)
  *
- * Module IDs PRESERVED from existing StoreHubSidebar.tsx StoreHubModule type.
+ * Module IDs PRESERVED from existing DepartmentStoreSidebar.tsx DepartmentStoreModule type.
  * Keyboard namespace: 's *' prefix · D-NEW-CC uniqueness preserved (no collision with qualicheck's 'q *').
  */
 import {

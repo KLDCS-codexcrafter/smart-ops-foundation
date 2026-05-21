@@ -506,7 +506,7 @@ export function emitFinalInvoiceToFinCore(
   return event;
 }
 
-/** OUTBOUND 9 · ServiceDesk → InventoryHub · Spares issued from field */
+/** OUTBOUND 9 · ServiceDesk → MainStoreHub · Spares issued from field */
 export function emitSparesIssueToInventoryHub(
   payload: Omit<SparesIssueToInventoryHubEvent, 'type' | 'emitted_at' | 'originating_card_id'>,
 ): SparesIssueToInventoryHubEvent {
@@ -516,7 +516,7 @@ export function emitSparesIssueToInventoryHub(
     originating_card_id: 'servicedesk',
     ...payload,
   };
-  // [JWT] Phase 2: eventBus.emit · InventoryHub stock decrement
+  // [JWT] Phase 2: eventBus.emit · MainStoreHub stock decrement
   return event;
 }
 

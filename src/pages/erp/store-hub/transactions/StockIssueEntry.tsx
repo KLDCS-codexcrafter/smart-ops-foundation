@@ -41,7 +41,7 @@ import {
   useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
 } from '@/lib/form-carry-forward-kit';
 import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
-import type { StoreHubModule } from '../StoreHubSidebar';
+import type { DepartmentStoreModule } from '../DepartmentStoreSidebar';
 
 interface LineDraft {
   key: string;
@@ -68,7 +68,7 @@ function emptyLine(): LineDraft {
 }
 
 interface Props {
-  onModuleChange: (m: StoreHubModule) => void;
+  onModuleChange: (m: DepartmentStoreModule) => void;
 }
 
 export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {

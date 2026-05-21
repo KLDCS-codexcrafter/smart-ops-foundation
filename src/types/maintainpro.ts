@@ -8,7 +8,7 @@
  * @whom        Audit Owner
  * @decisions   D-NEW-CW Path B 6th consumer · D-NEW-DA Asset Genealogy POSSIBLE 24th · D-194 Phase 1 localStorage · FR-50 Multi-Entity · FR-42 TDL · FR-54 SSOT
  * @disciplines FR-1 · FR-12 CC SSOT · FR-13 replica render · FR-22 type · FR-30 · FR-42 · FR-54 · FR-58 · FR-73.1
- * @reuses      CardId 'maintainpro' · CC VendorMaster (filtered vendor_type='service_provider' per FR-54 SSOT discipline) · InventoryHub stockitems (filtered stock_group='Maintenance Spares')
+ * @reuses      CardId 'maintainpro' · CC VendorMaster (filtered vendor_type='service_provider' per FR-54 SSOT discipline) · MainStoreHub stockitems (filtered stock_group='Maintenance Spares')
  * @[JWT]       Phase 2 backend: /api/maintainpro/equipment · /api/maintainpro/calibration · /api/maintainpro/firesafety · /api/maintainpro/pm-templates
  */
 
@@ -111,7 +111,7 @@ export const equipmentKey = (entityCode: string): string =>
   `erp_maintainpro_equipment_${entityCode}`;
 
 // ============================================================================
-// MASTER 2 · SPARE PARTS (replica view of InventoryHub · FR-13)
+// MASTER 2 · SPARE PARTS (replica view of MainStoreHub · FR-13)
 // ============================================================================
 
 export interface SparePartView {

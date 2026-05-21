@@ -8,7 +8,7 @@
 - **D-NEW-DJ Three-Layer Pattern · Layer 3 · 4th consumer LIVE** ⭐
   `emitServiceTicketToMaintainPro → consumeServiceTicketFromServiceDesk` stub
   → triggers **FR-72 promotion threshold** (1 → 4 consumers) → D-NEW-DJ promotes to FR-75 canonical.
-- 3 NEW outbound bridges live: MaintainPro / FinCore (final invoice) / InventoryHub (spares).
+- 3 NEW outbound bridges live: MaintainPro / FinCore (final invoice) / MainStoreHub (spares).
 
 ## Block summary
 - **Block 0** Pre-flight Triple Gate GREEN · FinCore guard 0 hits.

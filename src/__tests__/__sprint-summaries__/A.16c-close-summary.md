@@ -21,14 +21,14 @@ Composite target: 41st first-pass A
 
 > **FR-74 · Keyboard Namespace per Card** · `<card-prefix> <module-key>` pattern. Every card on Operix Shell MUST register a 1-letter keyboard namespace prefix and assign `keyboard:` properties on sidebar config items using `<prefix> <module-key>` format. Sidebar config audit at sprint close enforces 100% keyboard coverage on items (groups exempt). Promoted from D-NEW-CC POSSIBLE 5th canonical at A.16c close per FR-72 sibling promotion (7 consumers ≥ 4 threshold).
 >
-> Existing compliant cards (7): Command Center · Procure360 · InventoryHub · QualiCheck · EngineeringX · SiteX · MaintainPro
+> Existing compliant cards (7): Command Center · Procure360 · MainStoreHub · QualiCheck · EngineeringX · SiteX · MaintainPro
 > Future cards MUST register namespace at Foundation sprint: ServiceDesk · FrontDesk · etc.
 
 FR count: 73 → 74. Validates FR-72 sibling promotion discipline working as designed.
 
 ## D-decision registrations at v30
 
-- **D-NEW-DC POSSIBLE 26th canonical** · Report Shell Component Pattern · 1 consumer (MaintainPro 14 reports) · 4+ implicit future (Procure360 · InventoryHub · ProjX · FineCore) · FR-72 candidate at scale
+- **D-NEW-DC POSSIBLE 26th canonical** · Report Shell Component Pattern · 1 consumer (MaintainPro 14 reports) · 4+ implicit future (Procure360 · MainStoreHub · ProjX · FineCore) · FR-72 candidate at scale
 - **D-NEW-DD POSSIBLE 27th canonical** · Production Capacity Live Dashboard Pattern · 1 consumer · 2+ implicit (SiteX site capacity · ProjX resource availability)
 - **D-NEW-DE POSSIBLE 28th canonical** · Mobile Landing Page Pattern role-based · 2 consumers (SiteX site_engineer + MaintainPro maintenance_technician) · 4+ implicit future · FR-72 candidate (only 2 short)
 

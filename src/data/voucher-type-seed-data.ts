@@ -482,7 +482,7 @@ export const VOUCHER_TYPE_SEEDS: VoucherType[] = [
   // departmental accountability becomes possible (the gap no Indian ERP fills today).
   // Base type 'Stock Journal' so Phase 2 GL posting (Stock A/c Cr · WIP/Cost Centre Dr) is trivial.
   // accounting_impact: true — consumption hits P&L via cost-centre / overhead ledger.
-  // Activation: feature_based — flipped active by entity-setup-service when InventoryHub is provisioned.
+  // Activation: feature_based — flipped active by entity-setup-service when MainStoreHub is provisioned.
   seed('vt-consumption-entry', {
     name: 'Consumption Entry', abbreviation: 'CE',
     base_voucher_type: 'Stock Journal', family: 'Inventory',

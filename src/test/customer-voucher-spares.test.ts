@@ -81,7 +81,7 @@ describe('Customer vouchers + Spares', () => {
     expect(ev.amount_paise).toBe(413000);
   });
 
-  it('createSparesIssue + InventoryHub bridge', () => {
+  it('createSparesIssue + MainStoreHub bridge', () => {
     const s = createSparesIssue({
       entity_id: ENTITY,
       ticket_id: 'st-001',

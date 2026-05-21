@@ -1,13 +1,13 @@
 /**
- * InventoryHubSidebar.groups.ts — module → group mapping
+ * MainStoreHubSidebar.groups.ts — module → group mapping
  * Sprint T-Phase-1.2.1 · Tier 1 Card #2 sub-sprint 1/3
  * Sprint T-Phase-1.2.2 · Activated MIN + Consumption Entry + Consumption Summary
  * Sprint T-Phase-1.2.6b · UTS register modules
  */
-import type { InventoryHubModule } from './InventoryHubSidebar.types';
+import type { MainStoreHubModule } from './MainStoreHubSidebar.types';
 
 export const INVENTORY_MODULE_GROUP: Record<
-  InventoryHubModule,
+  MainStoreHubModule,
   'transactions' | 'masters' | 'reports' | 'home'
 > = {
   'welcome': 'home',

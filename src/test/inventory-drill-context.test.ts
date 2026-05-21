@@ -43,7 +43,7 @@ describe('Inventory drill-context (RD1-RD6)', () => {
     expect(ctx.filter).toBeUndefined();
   });
 
-  it('RD4 · 6 module IDs match the InventoryHubModule union', () => {
+  it('RD4 · 6 module IDs match the MainStoreHubModule union', () => {
     const ids: Array<DrillNavigationContext['fromModule']> = [
       'r-stock-ledger', 'r-item-movement', 'r-consumption-summary',
       'r-slow-moving-dead', 'r-aged-git', 'r-bin-utilization',

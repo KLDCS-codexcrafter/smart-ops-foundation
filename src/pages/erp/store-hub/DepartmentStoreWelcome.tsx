@@ -1,7 +1,7 @@
 /**
- * @file        StoreHubWelcome.tsx
+ * @file        DepartmentStoreWelcome.tsx
  * @sprint      T-Phase-1.2.6f-d-2-card7-7-pre-2 · Block F · D-390
- * @purpose     Store Hub landing dashboard · 4 KPI tiles + Quick Actions.
+ * @purpose     Department Stores landing dashboard · 4 KPI tiles + Quick Actions.
  */
 
 import { useEffect, useState, useCallback } from 'react';
@@ -13,11 +13,11 @@ import { listReorderSuggestions } from '@/lib/store-hub-engine';
 import { listStockIssues } from '@/lib/stock-issue-engine';
 import { listReceiptAcks } from '@/lib/stock-receipt-ack-engine';
 import { useCycleCounts } from '@/hooks/useCycleCounts';
-import type { StoreHubModule } from './StoreHubSidebar';
+import type { DepartmentStoreModule } from './DepartmentStoreSidebar';
 
-interface Props { onModuleChange: (m: StoreHubModule) => void }
+interface Props { onModuleChange: (m: DepartmentStoreModule) => void }
 
-export function StoreHubWelcomePanel({ onModuleChange }: Props): JSX.Element {
+export function DepartmentStoreWelcomePanel({ onModuleChange }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
   const { counts } = useCycleCounts(entityCode);
   const [reorderCount, setReorderCount] = useState(0);
@@ -40,10 +40,10 @@ export function StoreHubWelcomePanel({ onModuleChange }: Props): JSX.Element {
   }, [refresh]);
 
   const tiles = [
-    { label: 'Reorder Items',    value: reorderCount,     icon: AlertTriangle, accent: 'text-amber-600 bg-amber-500/10',  module: 'sh-r-reorder-suggestions' as StoreHubModule, isCurrency: false },
-    { label: 'Draft Issues',     value: draftIssuesCount, icon: ArrowUpRight,  accent: 'text-blue-600 bg-blue-500/10',    module: 'sh-t-stock-issue-register' as StoreHubModule, isCurrency: false },
-    { label: 'Pending Acks',     value: pendingAcksCount, icon: ClipboardList, accent: 'text-purple-600 bg-purple-500/10', module: 'sh-t-receipt-ack' as StoreHubModule, isCurrency: false },
-    { label: 'Cycle Variance ₹', value: varianceValue,    icon: TrendingUp,    accent: 'text-rose-600 bg-rose-500/10',     module: 'sh-r-cycle-count-status' as StoreHubModule, isCurrency: true },
+    { label: 'Reorder Items',    value: reorderCount,     icon: AlertTriangle, accent: 'text-amber-600 bg-amber-500/10',  module: 'sh-r-reorder-suggestions' as DepartmentStoreModule, isCurrency: false },
+    { label: 'Draft Issues',     value: draftIssuesCount, icon: ArrowUpRight,  accent: 'text-blue-600 bg-blue-500/10',    module: 'sh-t-stock-issue-register' as DepartmentStoreModule, isCurrency: false },
+    { label: 'Pending Acks',     value: pendingAcksCount, icon: ClipboardList, accent: 'text-purple-600 bg-purple-500/10', module: 'sh-t-receipt-ack' as DepartmentStoreModule, isCurrency: false },
+    { label: 'Cycle Variance ₹', value: varianceValue,    icon: TrendingUp,    accent: 'text-rose-600 bg-rose-500/10',     module: 'sh-r-cycle-count-status' as DepartmentStoreModule, isCurrency: true },
   ];
 
   return (
@@ -53,7 +53,7 @@ export function StoreHubWelcomePanel({ onModuleChange }: Props): JSX.Element {
           <Warehouse className="h-6 w-6 text-indigo-600" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Store Hub</h1>
+          <h1 className="text-2xl font-bold">Department Stores</h1>
           <p className="text-sm text-muted-foreground">
             Department-level Stores console · Stock Issue · Receipt Ack · Reorder · Cycle Count
           </p>

@@ -4,7 +4,7 @@
  * Sprint T-Phase-1.2.6b · Card #2.6 sub-sprint 2 of 6 · Q1 lock (b) · built alongside legacy GRNRegister.tsx
  *
  * Old `GRNRegister.tsx` stays for one sprint as fallback (removed in 1.2.6e
- * governance pass). Consumer in `InventoryHubPage.tsx` switches to V2 in this
+ * governance pass). Consumer in `MainStoreHubPage.tsx` switches to V2 in this
  * sprint.
  *
  * Implements all 8 D-226 UTS dimensions:
