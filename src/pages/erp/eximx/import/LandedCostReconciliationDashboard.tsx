@@ -11,7 +11,9 @@ import { TrendingUp, AlertCircle, Banknote } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadMultiLegGITs, averageDwellTime } from '@/lib/multi-leg-git-engine';
 import { summarizeMLGITReconciliation } from '@/lib/reconciliation-engine';
+import { computeVarianceForAll, type LandedCostVarianceReport } from '@/lib/landed-cost-variance-engine';
 import { SINHA_MULTI_LEG_GITS } from '@/data/sinha-multi-leg-git-seed-data';
+
 
 export function LandedCostReconciliationDashboard(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -25,6 +27,10 @@ export function LandedCostReconciliationDashboard(): JSX.Element {
   const totalRevalued = summaries.reduce((s, x) => s + x.summary.custom_revalued, 0);
   const totalActual = summaries.reduce((s, x) => s + x.summary.actual_landed, 0);
   const avgDwell = averageDwellTime(mlgits);
+  const varianceReports: LandedCostVarianceReport[] = useMemo(() => computeVarianceForAll(mlgits), [mlgits]);
+  const criticalVarianceCount = varianceReports.filter((r) => r.aggregate_severity === 'critical').length;
+  const materialVarianceCount = varianceReports.filter((r) => r.aggregate_severity === 'material').length;
+
 
   return (
     <div className="space-y-4">
