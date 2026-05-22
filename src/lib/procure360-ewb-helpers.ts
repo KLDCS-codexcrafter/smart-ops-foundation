@@ -35,11 +35,12 @@ export function computeInwardValue(
  * Interstate + value > threshold · or conservative fallback (over-warn) when state codes missing.
  */
 export function isEWBRequiredForInward(
-  _inward: InwardReceipt,
+  inward: InwardReceipt,
   vendor: Party | null,
   entityCode: string,
   inwardValue: number,
 ): boolean {
+  void inward;
   const threshold = getEWBThreshold(entityCode);
   const vendorState = vendor?.state_code ?? '';
   const entityState = getEntityStateCode(entityCode);
@@ -49,3 +50,4 @@ export function isEWBRequiredForInward(
   }
   return inwardValue > threshold;
 }
+
