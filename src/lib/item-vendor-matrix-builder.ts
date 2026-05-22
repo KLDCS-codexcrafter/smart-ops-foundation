@@ -1,6 +1,8 @@
 /**
  * item-vendor-matrix-builder.ts — Compute RFQ matrix
  * Sprint T-Phase-1.2.6f-a · per D-243
+ * Sprint T-Phase-2.B-Procure360-Phase2-Polish-Part-B-ii · Block E · D-NEW-GE
+ *   — adds optional rate_contract_id + rc_agreed_rate resolution via rate-contract-engine.findActiveRate
  */
 import type { ItemVendor } from '@/types/item-vendor';
 import type {
@@ -8,6 +10,7 @@ import type {
   ProcurementEnquiryLine,
   VendorSelectionMode,
 } from '@/types/procurement-enquiry';
+import { findActiveRate } from '@/lib/rate-contract-engine';
 
 export interface MatrixCell {
   line_id: string;
@@ -20,6 +23,9 @@ export interface MatrixCell {
   preferred: boolean;
   match_reason: 'product_master' | 'override' | 'preferred';
   override_reason?: string;
+  // NEW · Sprint 45b-ii Block E · D-NEW-GE · forward-link to active RC
+  rate_contract_id?: string | null;
+  rc_agreed_rate?: number | null;
 }
 
 export interface RFQMatrix {
@@ -38,6 +44,7 @@ export function buildItemVendorMatrix(
   mode: VendorSelectionMode,
   lookup: ItemVendorLookup,
   topNVendorIds: string[] = [],
+  entityCode?: string,
 ): RFQMatrix {
   const cells: MatrixCell[] = [];
   const warnings: string[] = [];
@@ -87,6 +94,17 @@ export function buildItemVendorMatrix(
       override_reason: ov.reason,
     });
     rfqVendorSet.add(ov.vendor_id);
+  }
+
+  // NEW · Block E · D-NEW-GE · resolve active RC per cell (optional · gated by entityCode)
+  if (entityCode) {
+    for (const cell of cells) {
+      const found = findActiveRate(entityCode, cell.vendor_id, cell.item_id);
+      if (found) {
+        cell.rate_contract_id = found.contract.id;
+        cell.rc_agreed_rate = found.line.agreed_rate;
+      }
+    }
   }
 
   return {
