@@ -37,7 +37,20 @@ export function ConsumptionRegisterPanel({ initialFilter }: ConsumptionRegisterP
   const safeEntity = entityCode || 'SMRT';
   const drill = useDrillDown();
   const [printCE, setPrintCE] = useState<ConsumptionEntry | null>(null);
-  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(initialFilter);
+  // D-NEW-FO · query-string drill from DepartmentConsumptionSummary
+  const [searchParams] = useSearchParams();
+  const qsDept = searchParams.get('dept');
+  const qsMonth = searchParams.get('month');
+  const [filter, setFilter] = useState<InventoryDrillFilter | undefined>(() => {
+    if (initialFilter) return initialFilter;
+    if (qsDept || qsMonth) {
+      return {
+        ...(qsDept ? { departmentCode: qsDept } : {}),
+        ...(qsMonth ? { dateFrom: `${qsMonth}-01`, dateTo: `${qsMonth}-31` } : {}),
+      };
+    }
+    return undefined;
+  });
   useEffect(() => { setFilter(initialFilter); }, [initialFilter]);
 
   const allEntries = useMemo<ConsumptionEntry[]>(() => {
