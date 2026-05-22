@@ -22,7 +22,7 @@ import type { SidebarItem } from '@/shell/types';
 export const procure360SidebarItems: SidebarItem[] = [
   {
     id: 'welcome', type: 'item', label: 'Welcome', icon: Home,
-    moduleId: 'welcome', requiredCards: ['procure360'],
+    moduleId: 'welcome', requiredCards: ['procure360'], keyboard: 'p w',
   },
   {
     id: 'procurement-group', type: 'group', label: 'Procurement', icon: FileText,
