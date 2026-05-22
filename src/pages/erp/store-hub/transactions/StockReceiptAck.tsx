@@ -334,7 +334,10 @@ export function StockReceiptAckPanel(): JSX.Element {
                   const variance = l.qty_acknowledged - l.qty_inward;
                   return (
                     <TableRow key={l.inward_line_id} className="text-xs">
-                      <TableCell>{l.item_name}</TableCell>
+                      <TableCell>
+                        <div>{l.item_name}</div>
+                        <BinHint itemId={l.item_id} entityCode={entityCode} />
+                      </TableCell>
                       <TableCell className="font-mono text-right">{l.qty_inward} {l.uom}</TableCell>
                       <TableCell className="text-right">
                         <Input type="number" value={l.qty_acknowledged || ''}
