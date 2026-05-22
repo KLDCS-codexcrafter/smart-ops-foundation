@@ -35,7 +35,7 @@ export function computeInwardValue(
  * Interstate + value > threshold · or conservative fallback (over-warn) when state codes missing.
  */
 export function isEWBRequiredForInward(
-  inward: InwardReceipt,
+  _inward: InwardReceipt,
   vendor: Party | null,
   entityCode: string,
   inwardValue: number,
