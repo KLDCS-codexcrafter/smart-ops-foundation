@@ -194,9 +194,14 @@ export function ReorderSuggestionsPanel(): JSX.Element {
                   <TableCell className="font-mono text-xs text-right">{r.reorder_qty}</TableCell>
                   <TableCell>{urgencyBadge(r.urgency)}</TableCell>
                   <TableCell>
-                    <Button size="sm" variant="outline" onClick={() => setSelected(r)}>
-                      <Send className="h-3 w-3 mr-1" />Promote to Indent
-                    </Button>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="outline" onClick={() => setSelected(r)}>
+                        <Send className="h-3 w-3 mr-1" />Promote to Indent
+                      </Button>
+                      <Button size="sm" variant="default" onClick={() => handleRaiseIndent(r)} className="h-8 text-xs">
+                        <Send className="h-3 w-3 mr-1" />Raise Indent
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
