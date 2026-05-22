@@ -102,6 +102,9 @@ import {
 import { RateContractListPanel } from '@/pages/erp/bill-passing/RateContractListPanel';
 // ─── NEW · HK-5 Block A · D-NEW-GK · Approver Dashboard ───
 import { ApproverDashboardPanel } from './reports/ApproverDashboardPanel';
+// ─── NEW · HK-5 Block B · D-NEW-GL · Budget Control ───
+import { BudgetAllocationMaster } from './masters/BudgetAllocationMaster';
+import { BudgetUtilizationDashboard } from './reports/BudgetUtilizationDashboard';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
@@ -142,6 +145,8 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'rate-contract-list', 'rate-contract-entry',
   // ─── NEW · HK-5 Block A ───
   'approver-dashboard',
+  // ─── NEW · HK-5 Block B ───
+  'budget-allocation-master', 'budget-utilization-dashboard',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -269,6 +274,9 @@ function getModuleLabel(m: Procure360Module): string {
     'rate-contract-list': 'Rate Contracts',
     'rate-contract-entry': 'New Rate Contract',
     'approver-dashboard': 'Approver Dashboard',
+    // ─── NEW · HK-5 Block B ───
+    'budget-allocation-master': 'Budget Allocation Master',
+    'budget-utilization-dashboard': 'Budget Utilization Dashboard',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -430,6 +438,9 @@ export default function Procure360Page(): JSX.Element {
       case 'rate-contract-entry':             return <RateContractListPanel />;
       // ─── NEW · HK-5 Block A · D-NEW-GK · Approver Dashboard ───
       case 'approver-dashboard':              return <ApproverDashboardPanel />;
+      // ─── NEW · HK-5 Block B · D-NEW-GL ───
+      case 'budget-allocation-master':        return <BudgetAllocationMaster />;
+      case 'budget-utilization-dashboard':    return <BudgetUtilizationDashboard />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }

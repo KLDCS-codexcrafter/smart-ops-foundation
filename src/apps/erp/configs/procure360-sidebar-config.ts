@@ -175,6 +175,11 @@ export const procure360SidebarItems: SidebarItem[] = [
       // ─── NEW · HK-5 Block A · D-NEW-GK · C1 Approval Matrix wiring ───
       { id: 'approver-dashboard', type: 'item', label: 'Approver Dashboard',
         icon: ShieldCheck, moduleId: 'approver-dashboard', requiredCards: ['procure360'] },
+      // ─── NEW · HK-5 Block B · D-NEW-GL · C2 Budget Control wiring ───
+      { id: 'budget-allocation-master', type: 'item', label: 'Budget Allocation Master',
+        icon: Wallet, moduleId: 'budget-allocation-master', requiredCards: ['procure360'] },
+      { id: 'budget-utilization-dashboard', type: 'item', label: 'Budget Utilization',
+        icon: BarChart3, moduleId: 'budget-utilization-dashboard', requiredCards: ['procure360'] },
     ],
   },
 ];
