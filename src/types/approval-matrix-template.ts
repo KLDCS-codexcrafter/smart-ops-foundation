@@ -22,7 +22,9 @@ export interface ApprovalTemplateTier {
 export interface ApprovalMatrixTemplate {
   id: string;
   entity_id: string;
-  voucher_kind: IndentVoucherKind | 'all';
+  // EXTENDED · Sprint HK-5 Block A · D-NEW-GK · adds 'po' + 'rate_contract' to existing union
+  // NON-BREAKING: existing RequestX consumers using IndentVoucherKind or 'all' continue to compile
+  voucher_kind: IndentVoucherKind | 'po' | 'rate_contract' | 'all';
   name: string;
   is_default: boolean;
   is_active: boolean;
