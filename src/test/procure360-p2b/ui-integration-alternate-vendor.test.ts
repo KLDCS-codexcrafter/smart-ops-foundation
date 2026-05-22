@@ -25,15 +25,9 @@ describe('HK-5-2 Block D · AlternateVendor UI integration', () => {
   it('does not throw on negative rate (defensive)', () => {
     expect(() => suggestAlternates('item-x', -10, 'v1', 'e1')).not.toThrow();
   });
-  it('stub module is deleted (Block E-completion)', async () => {
-    let importErr: Error | null = null;
-    try {
-      // @ts-expect-error · module intentionally deleted
-      await import('@/lib/oob/price-benchmark-stub');
-    } catch (e) {
-      importErr = e as Error;
-    }
-    expect(importErr).not.toBe(null);
+  it('module remains functional post Block E-completion (stub inlined)', () => {
+    // Hint logic absorbed into alternate-vendor-suggest.ts · stub file deleted
+    expect(suggestAlternates('item-x', 100, 'v1', 'e1')).toBe(null);
   });
   it('panel name stability', () => {
     expect(P2.AlternateVendorSuggestPanel.name).toContain('AlternateVendor');
