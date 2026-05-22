@@ -323,6 +323,7 @@ export function StockIssueEntryPanel({ onModuleChange }: Props): JSX.Element {
                   <TableCell>
                     <Input value={l.item_name} onChange={e => updateLine(idx, { item_name: e.target.value })}
                       className="h-7 text-xs" placeholder="Item name" />
+                    <BinHint itemId={l.item_id} entityCode={entityCode} />
                   </TableCell>
                   <TableCell>
                     <Input value={l.uom} onChange={e => updateLine(idx, { uom: e.target.value })}
