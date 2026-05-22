@@ -120,7 +120,7 @@ export function ReorderSuggestionsPanel(): JSX.Element {
       suggestion: r,
       department_id: 'engineering',
       department_name: 'Engineering',
-      notes: `Auto-raised from reorder suggestion · ${r.item_code ?? r.item_id}`,
+      notes: `Auto-raised from reorder suggestion · ${r.item_name ?? r.item_id}`,
       created_by: 'stores-mgr',
     }, entityCode);
     if (result.ok) {
