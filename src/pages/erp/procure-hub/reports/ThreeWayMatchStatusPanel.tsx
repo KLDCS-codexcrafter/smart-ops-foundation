@@ -91,17 +91,17 @@ export function ThreeWayMatchStatusPanel(): JSX.Element {
           {bills.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">No bills yet.</div>
           ) : (
-            <table className="w-full text-sm">
+            <table className="w-full text-sm table-fixed">
               <thead className="bg-muted">
                 <tr>
-                  <th className="text-left p-2">Bill #</th>
-                  <th className="text-left p-2">PO #</th>
-                  <th className="text-left p-2">GRN #</th>
-                  <th className="text-left p-2">Invoice #</th>
-                  <th className="text-left p-2">Status</th>
-                  <th className="text-right p-2">Variance %</th>
-                  <th className="text-left p-2">QC</th>
-                  <th className="text-left p-2">Action</th>
+                  <th className="text-left p-2 w-[120px]">Bill #</th>
+                  <th className="text-left p-2 w-[120px]">PO #</th>
+                  <th className="text-left p-2 w-[120px]">GRN #</th>
+                  <th className="text-left p-2 w-[140px]">Invoice #</th>
+                  <th className="text-left p-2 w-[140px]">Status</th>
+                  <th className="text-right p-2 w-[100px]">Variance %</th>
+                  <th className="text-center p-2 w-[80px]">QC</th>
+                  <th className="text-center p-2 w-[100px]">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -124,8 +124,8 @@ export function ThreeWayMatchStatusPanel(): JSX.Element {
                         </span>
                       </td>
                       <td className="p-2 text-right font-mono">{b.variance_pct.toFixed(2)}%</td>
-                      <td className="p-2 text-xs">{qcLabel}</td>
-                      <td className="p-2">
+                      <td className="p-2 text-xs text-center">{qcLabel}</td>
+                      <td className="p-2 text-center">
                         <button
                           type="button"
                           className="text-xs px-2 py-0.5 rounded-lg bg-primary/15 text-primary hover:bg-primary/25"

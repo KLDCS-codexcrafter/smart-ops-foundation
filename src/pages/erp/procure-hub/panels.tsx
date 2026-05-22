@@ -38,6 +38,9 @@ import { getPendingPurchaseIndents, type PendingPurchaseIndent } from '@/lib/pro
 import { listRfqs, computePreCloseRecommendation, type PreCloseRecommendation } from '@/lib/rfq-engine';
 import { listPreCloseCandidates } from '@/lib/pre-close-batch';
 import { computeSourcingRecommendations, type SourcingRecommendation } from '@/lib/sourcing-recommendation-engine';
+// ─── NEW · 45b-ii-2 Block G · D-NEW-GH · Welcome 9th + 10th KPI tiles ───
+import { summarizeCascades as summarizeEnquiryFollowups } from '@/lib/enquiry-followup-engine';
+import { summarizeCascades as summarizePoDeliveryFollowups } from '@/lib/po-delivery-followup-engine';
 import { aggregatePoByParty, type PoPartyStatusRow } from '@/lib/po-cross-dept-followup';
 import {
   computeRfqRegister, computePendingRfqs, computeAwardHistory,
@@ -160,6 +163,24 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
     return { awardsPendingPo, posAwaitingApproval, piPendingReview, piBreachCount };
   }, [entityCode]);
 
+  // 45b-ii-2 Block G · 9th KPI · Concentration Alerts (ratified deviation 2: recommended_strategy enum)
+  const concentrationAlerts = useMemo(() => {
+    const recs = computeSourcingRecommendations(entityCode);
+    return recs.filter((r) =>
+      r.recommended_strategy === 'force_alternate' ||
+      r.recommended_strategy === 'split_2' ||
+      r.recommended_strategy === 'split_3+',
+    ).length;
+  }, [entityCode]);
+
+  // 45b-ii-2 Block G · 10th KPI · Vendor Follow-Up Pending (both cascade engines)
+  const vendorFollowupPending = useMemo(() => {
+    const es = summarizeEnquiryFollowups(entityCode);
+    const ps = summarizePoDeliveryFollowups(entityCode);
+    return (es.pending + es.in_reminder_1 + es.in_reminder_2 + es.escalated)
+      + (ps.pre_delivery + ps.late_day_1 + ps.late_day_7 + ps.late_day_14);
+  }, [entityCode]);
+
   useEffect(() => {
     const handle = subscribeProcurementPulse((a) => setPulses((p) => [a, ...p].slice(0, 8)), 30000);
     return () => handle.stop();
@@ -180,6 +201,8 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
         <KpiCard label="POs Awaiting Approval" value={p2pKpis.posAwaitingApproval} />
         <KpiCard label="PI Pending Review" value={p2pKpis.piPendingReview} />
         <KpiCard label="PI Variance Breaches" value={p2pKpis.piBreachCount} />
+        <KpiCard label="Concentration Alerts" value={concentrationAlerts} />
+        <KpiCard label="Vendor Follow-Up Pending" value={vendorFollowupPending} />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card>

@@ -67,4 +67,7 @@ export type Procure360Module =
   | 'enquiry-template-library'
   | 'price-benchmark'
   | 'alternate-vendor-suggest'
-  | 'contract-expiry-dashboard';
+  | 'contract-expiry-dashboard'
+  // ─── NEW · T-Phase-2.B-Procure360-Phase2-Polish-Part-B-ii-2 (45b-ii-2) · Block C · D-NEW-GF · founder explicit RC surface ───
+  | 'rate-contract-list'
+  | 'rate-contract-entry';

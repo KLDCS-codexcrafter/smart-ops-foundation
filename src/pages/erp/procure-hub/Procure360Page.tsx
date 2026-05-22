@@ -98,6 +98,8 @@ import {
   AlternateVendorSuggestPanel,
   ContractExpiryDashboardPanel,
 } from './panels-p2';
+// ─── NEW · 45b-ii-2 Block C · D-NEW-GF · Rate Contract surface (re-export from Bill Passing DRY) ───
+import { RateContractListPanel } from '@/pages/erp/bill-passing/RateContractListPanel';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
@@ -134,6 +136,8 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   // ─── NEW · 45b-i Blocks A-E ───
   'vendor-auto-rank', 'enquiry-template-library', 'price-benchmark',
   'alternate-vendor-suggest', 'contract-expiry-dashboard',
+  // ─── NEW · 45b-ii-2 Block C ───
+  'rate-contract-list', 'rate-contract-entry',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -257,6 +261,9 @@ function getModuleLabel(m: Procure360Module): string {
     'price-benchmark': 'Price Benchmark',
     'alternate-vendor-suggest': 'Alternate Vendor Suggest',
     'contract-expiry-dashboard': 'Contract Expiry Dashboard',
+    // ─── NEW · 45b-ii-2 Block C ───
+    'rate-contract-list': 'Rate Contracts',
+    'rate-contract-entry': 'New Rate Contract',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -413,6 +420,9 @@ export default function Procure360Page(): JSX.Element {
       case 'price-benchmark':                 return <PriceBenchmarkPanel />;
       case 'alternate-vendor-suggest':        return <AlternateVendorSuggestPanel />;
       case 'contract-expiry-dashboard':       return <ContractExpiryDashboardPanel />;
+      // ─── NEW · 45b-ii-2 Block C · D-NEW-GF · Rate Contract surface (founder explicit) ───
+      case 'rate-contract-list':              return <RateContractListPanel />;
+      case 'rate-contract-entry':             return <RateContractListPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
