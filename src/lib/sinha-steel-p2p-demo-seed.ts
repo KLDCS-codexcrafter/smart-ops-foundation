@@ -596,3 +596,59 @@ export function clearSinhaSteelP2PDemo(entityCode: string = ENTITY_CODE_DEFAULT)
     } catch { /* skip */ }
   }
 }
+
+// ────────────────────────────────────────────────────────────────────────────────
+// HK-5-2 Block G · Additive demo extensions
+// Showcases 24th SIBLING entity-gst-engine + 23rd SIBLING vendor-advance-engine
+// 11-file Sinha manifest preserved (additive to existing file · zero new files)
+// ────────────────────────────────────────────────────────────────────────────────
+
+import { createVendorAdvance } from './vendor-advance-engine';
+import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
+
+export function seedHK52PolishExtensions(entityCode: string = ENTITY_CODE_DEFAULT): {
+  vendor_advance_seeded: number;
+  entity_gst_seeded: number;
+} {
+  // 1 · Entity GST config (EWB API enabled · interstate test scenario)
+  let entity_gst_seeded = 0;
+  try {
+    const existingGst = localStorage.getItem(entityGstKey(entityCode));
+    if (!existingGst) {
+      localStorage.setItem(entityGstKey(entityCode), JSON.stringify({
+        ...DEFAULT_ENTITY_GST_CONFIG,
+        entity_id: entityCode,
+        gstin: '27AABCS1234N1Z5',
+        legal_name: 'Sinha Steel Industries Pvt Ltd',
+        trade_name: 'Sinha Steel',
+        pan: 'AABCS1234N',
+        state_code: '27',
+        address_line_1: 'Plot 42, MIDC Industrial Area',
+        city: 'Pune',
+        pincode: '411019',
+        ewb_api_enabled: true,
+        auto_generate_ewb_above: 50000,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      }));
+      entity_gst_seeded = 1;
+    }
+  } catch { /* quota silent */ }
+
+  // 1 · Vendor advance demo record (paid · not yet adjusted)
+  let vendor_advance_seeded = 0;
+  try {
+    createVendorAdvance({
+      entity_id: entityCode,
+      vendor_id: 'VEN-VOLTAS-DEMO',
+      vendor_name: 'Voltas Industries Pvt Ltd',
+      po_id: null,
+      po_no: null,
+      advance_amount: 250000,
+      notes: 'HK-5-2 demo · advance for upcoming Phase 2 AC supply',
+    });
+    vendor_advance_seeded = 1;
+  } catch { /* skip */ }
+
+  return { vendor_advance_seeded, entity_gst_seeded };
+}
