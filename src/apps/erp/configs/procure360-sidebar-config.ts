@@ -154,6 +154,17 @@ export const procure360SidebarItems: SidebarItem[] = [
       // ─── UPRA-4 Phase B · Tier-1 NEW ───
       { id: 'po-register', type: 'item', label: 'Purchase Order Register',
         icon: ShoppingCart, moduleId: 'po-register', requiredCards: ['procure360'], keyboard: 'p r' },
+      // ─── NEW · 45b-i Blocks A-E ───
+      { id: 'vendor-auto-rank', type: 'item', label: 'Vendor Auto-Rank',
+        icon: Award, moduleId: 'vendor-auto-rank', requiredCards: ['procure360'] },
+      { id: 'enquiry-template-library', type: 'item', label: 'Enquiry Template Library',
+        icon: FileText, moduleId: 'enquiry-template-library', requiredCards: ['procure360'] },
+      { id: 'price-benchmark', type: 'item', label: 'Price Benchmark',
+        icon: TrendingUp, moduleId: 'price-benchmark', requiredCards: ['procure360'] },
+      { id: 'alternate-vendor-suggest', type: 'item', label: 'Alternate Vendor Suggest',
+        icon: AlertTriangle, moduleId: 'alternate-vendor-suggest', requiredCards: ['procure360'] },
+      { id: 'contract-expiry-dashboard', type: 'item', label: 'Contract Expiry Dashboard',
+        icon: AlertTriangle, moduleId: 'contract-expiry-dashboard', requiredCards: ['procure360'] },
     ],
   },
 ];
