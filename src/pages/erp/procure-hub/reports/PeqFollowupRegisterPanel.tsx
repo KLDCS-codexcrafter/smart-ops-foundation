@@ -2,19 +2,21 @@
  * @file        PeqFollowupRegisterPanel.tsx
  * @purpose     Read-only register · all open procurement enquiries with key timestamps.
  * @sprint      T-Phase-1.A.3.c-Procure360-OOB-Polish-PEQ-FU
- * @decisions   D-NEW-AQ
+ *              T-Phase-2.B-Procure360-Phase2-Polish-Part-B-ii-2 · Block A items 10 + 12
+ * @decisions   D-NEW-AQ · D-NEW-GC remainder
  * @disciplines FR-19 · FR-30 · FR-50
- * @reuses      procurement-enquiry-engine
+ * @reuses      procurement-enquiry-engine · procure360-formatters (formatDateIN · debounce)
  * @[JWT]       n/a · register view
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { listEnquiries } from '@/lib/procurement-enquiry-engine';
 import type { ProcurementEnquiry } from '@/types/procurement-enquiry';
-import { formatDateIN } from '@/lib/procure360-formatters';
+import { formatDateIN, debounce } from '@/lib/procure360-formatters';
 
 const fmtDate = (iso: string | null): string => formatDateIN(iso);
 
@@ -27,19 +29,38 @@ const FINAL: ProcurementEnquiry['status'][] = ['cancelled', 'closed', 'rejected'
 
 export function PeqFollowupRegisterPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const [searchInput, setSearchInput] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Item 10 · debounce search · 300ms
+  const debouncedSetSearchTerm = useMemo(
+    () => debounce((val: unknown) => setSearchTerm(String(val)), 300),
+    [],
+  );
+
   const items = useMemo<ProcurementEnquiry[]>(
     () => listEnquiries(entityCode).filter((e) => !FINAL.includes(e.status)),
     [entityCode],
   );
 
+  const filteredItems = useMemo(() => {
+    if (!searchTerm) return items;
+    const lower = searchTerm.toLowerCase();
+    return items.filter((e) =>
+      e.enquiry_no.toLowerCase().includes(lower) ||
+      (e.department_id ?? '').toLowerCase().includes(lower) ||
+      e.status.toLowerCase().includes(lower),
+    );
+  }, [items, searchTerm]);
+
   const kpis = useMemo(() => ({
-    total: items.length,
-    pendingQuotes: items.filter((e) => e.status === 'quotations_pending').length,
-    pendingAward: items.filter((e) => e.status === 'award_pending').length,
-    avgAge: items.length === 0
+    total: filteredItems.length,
+    pendingQuotes: filteredItems.filter((e) => e.status === 'quotations_pending').length,
+    pendingAward: filteredItems.filter((e) => e.status === 'award_pending').length,
+    avgAge: filteredItems.length === 0
       ? 0
-      : Math.round(items.reduce((s, e) => s + ageDays(e.created_at), 0) / items.length),
-  }), [items]);
+      : Math.round(filteredItems.reduce((s, e) => s + ageDays(e.created_at), 0) / filteredItems.length),
+  }), [filteredItems]);
 
   return (
     <div className="p-6 space-y-4">
@@ -67,12 +88,23 @@ export function PeqFollowupRegisterPanel(): JSX.Element {
         </Card>
       </div>
 
+      <Input
+        placeholder="Search by enquiry #, department, status..."
+        value={searchInput}
+        onChange={(e) => {
+          setSearchInput(e.target.value);
+          debouncedSetSearchTerm(e.target.value);
+        }}
+        className="max-w-sm"
+      />
+
       <Card>
         <CardContent className="p-0">
-          {items.length === 0 ? (
+          {filteredItems.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">No open enquiries.</div>
           ) : (
             <table className="w-full text-sm">
+              {/* Item 12 · Institutional column order: ID → Date → Dept → Status → Days Open → Activity → Awarded At */}
               <thead className="bg-muted">
                 <tr>
                   <th className="text-left p-2">Enquiry #</th>
@@ -86,7 +118,7 @@ export function PeqFollowupRegisterPanel(): JSX.Element {
                 </tr>
               </thead>
               <tbody>
-                {items.map((e) => (
+                {filteredItems.map((e) => (
                   <tr key={e.id} className="border-t">
                     <td className="p-2 font-mono">{e.enquiry_no}</td>
                     <td className="p-2">{fmtDate(e.enquiry_date)}</td>
