@@ -80,6 +80,18 @@ export function PoAgingCrossDeptPanel(): JSX.Element {
         </Card>
       </div>
 
+      <Input
+        placeholder="Search by department..."
+        value={searchInput}
+        onChange={(e) => {
+          setSearchInput(e.target.value);
+          debouncedSetSearchTerm(e.target.value);
+        }}
+        className="max-w-sm"
+      />
+
+
+
       <Card>
         <CardContent className="p-0">
           {buckets.length === 0 ? (
