@@ -43,10 +43,13 @@ export function GroupWiseOutstandingPanel(): JSX.Element {
 
   const aggregates: GroupAging[] = useMemo(() => {
     const open = listBillPassing(entityCode).filter((b) => !CLOSED.has(b.status));
+    const parties = loadPartyMaster(entityCode);
+    const partyById = new Map(parties.map((p) => [p.id, p]));
     const map = new Map<string, GroupAging & { vendors: Set<string> }>();
     const now = Date.now();
     for (const b of open) {
-      const k = groupKey(b.vendor_name);
+      const party = partyById.get(b.vendor_id);
+      const k = vendorGroup(party?.group, party?.party_type);
       const a = map.get(k) ?? {
         group: k, vendor_count: 0, open_bills: 0, total: 0,
         b0_30: 0, b31_60: 0, b61_90: 0, b90p: 0, vendors: new Set<string>(),
@@ -72,7 +75,7 @@ export function GroupWiseOutstandingPanel(): JSX.Element {
       <div>
         <h1 className="text-2xl font-bold">Group-Wise Outstanding</h1>
         <p className="text-sm text-muted-foreground">
-          Outstanding pivoted by vendor group · alphabetical fallback until vendor groups land.
+          Outstanding pivoted by vendor group · Party.group dimension active (party_type bracket fallback).
         </p>
       </div>
 
