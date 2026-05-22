@@ -38,6 +38,9 @@ import { getPendingPurchaseIndents, type PendingPurchaseIndent } from '@/lib/pro
 import { listRfqs, computePreCloseRecommendation, type PreCloseRecommendation } from '@/lib/rfq-engine';
 import { listPreCloseCandidates } from '@/lib/pre-close-batch';
 import { computeSourcingRecommendations, type SourcingRecommendation } from '@/lib/sourcing-recommendation-engine';
+// ─── NEW · 45b-ii-2 Block G · D-NEW-GH · Welcome 9th + 10th KPI tiles ───
+import { summarizeCascades as summarizeEnquiryFollowups } from '@/lib/enquiry-followup-engine';
+import { summarizeCascades as summarizePoDeliveryFollowups } from '@/lib/po-delivery-followup-engine';
 import { aggregatePoByParty, type PoPartyStatusRow } from '@/lib/po-cross-dept-followup';
 import {
   computeRfqRegister, computePendingRfqs, computeAwardHistory,
