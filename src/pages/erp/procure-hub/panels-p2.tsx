@@ -917,8 +917,3 @@ function KpiTile({
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════════════════
-   Optional: Textarea import compatibility shim (lint silencer) — Textarea unused.
-   ═══════════════════════════════════════════════════════════════════════════ */
-// Kept in import list for future use in template editor sprint (not used now)
-void Textarea;
