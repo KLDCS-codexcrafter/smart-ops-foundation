@@ -61,4 +61,10 @@ export type Procure360Module =
   // ─── UPRA-4 Phase B · Tier-1 NEW ───
   | 'po-register'
   // ─── NEW · B.1 (Sprint T-Phase-1.B-1-P2P-Workflow-Closure) ───
-  | 'pi-admin-review';
+  | 'pi-admin-review'
+  // ─── NEW · T-Phase-2.B-Procure360-Phase2-Polish-Part-B (45b-i) · Blocks A-E ───
+  | 'vendor-auto-rank'
+  | 'enquiry-template-library'
+  | 'price-benchmark'
+  | 'alternate-vendor-suggest'
+  | 'contract-expiry-dashboard';
