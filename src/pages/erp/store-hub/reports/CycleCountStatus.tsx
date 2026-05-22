@@ -16,15 +16,21 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ClipboardList, ExternalLink, AlertTriangle, CheckCircle2, FileText } from 'lucide-react';
+import { ClipboardList, ExternalLink, AlertTriangle, CheckCircle2, FileText, Receipt } from 'lucide-react';
+import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useCycleCounts } from '@/hooks/useCycleCounts';
 import type { CycleCount, CycleCountStatus } from '@/types/cycle-count';
+import {
+  createDraftCycleAdjustmentVoucher,
+  postCycleAdjustmentVoucher,
+} from '@/lib/cycle-count-voucher-engine';
 
 const STATUS_VARIANT: Record<CycleCountStatus, 'default' | 'destructive' | 'outline' | 'secondary'> = {
   draft: 'outline', submitted: 'secondary', approved: 'secondary',
