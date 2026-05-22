@@ -150,6 +150,8 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'approver-dashboard',
   // ─── NEW · HK-5 Block B ───
   'budget-allocation-master', 'budget-utilization-dashboard',
+  // ─── NEW · HK-5-2 Block H · D-NEW-GP · N1 Vendor Advance ───
+  'vendor-advance-entry', 'vendor-advance-register',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
