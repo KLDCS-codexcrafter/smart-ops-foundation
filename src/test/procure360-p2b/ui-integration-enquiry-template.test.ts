@@ -18,6 +18,7 @@ function mkInput(name: string, category: EnquiryTemplateCategory = 'custom'):
     default_delivery_terms: [],
     default_packing_terms: [],
     is_approved: true,
+    created_by: 'test-user',
   };
 }
 
