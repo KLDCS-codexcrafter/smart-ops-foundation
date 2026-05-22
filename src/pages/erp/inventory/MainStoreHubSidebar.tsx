@@ -150,7 +150,7 @@ export function MainStoreHubSidebar({ active, onNavigate }: MainStoreHubSidebarP
             <Package className="h-4 w-4 text-cyan-500" />
           </div>
           <div className="group-data-[collapsible=icon]:hidden">
-            <p className="font-bold text-sm">Store Hub</p>
+            <p className="font-bold text-sm">Main Store Hub</p>
             <p className="text-[10px] text-muted-foreground">Inventory & Receipts</p>
           </div>
         </div>
