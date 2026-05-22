@@ -136,6 +136,38 @@ export function CycleCountStatusPanel(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {/* D-NEW-FQ · Posted counts with variance · Post Cycle Adjustment Voucher action (10th D-NEW-FG consumer) */}
+      {summary.posted.some(c => (c.total_variance_value || 0) !== 0) && (
+        <Card>
+          <CardHeader><CardTitle className="text-base">Posted with Variance · Adjustment Vouchers</CardTitle></CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader><TableRow>
+                <TableHead>Count No</TableHead><TableHead>Posted</TableHead>
+                <TableHead>Godown</TableHead>
+                <TableHead className="text-right">Variance ₹</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
+                {summary.posted.filter(c => (c.total_variance_value || 0) !== 0).map((c: CycleCount) => (
+                  <TableRow key={c.id}>
+                    <TableCell className="font-mono text-xs">{c.count_no}</TableCell>
+                    <TableCell>{c.posted_at ? new Date(c.posted_at).toLocaleDateString('en-IN') : '—'}</TableCell>
+                    <TableCell>{c.godown_name ?? '—'}</TableCell>
+                    <TableCell className="font-mono text-right">₹ {Math.abs(c.total_variance_value || 0).toLocaleString('en-IN')}</TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handlePostAdjustmentVoucher(c)}>
+                        <Receipt className="w-3 h-3 mr-1" /> Post Adjustment Voucher
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
