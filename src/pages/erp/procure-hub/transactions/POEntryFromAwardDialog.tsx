@@ -29,6 +29,8 @@ import type { VendorQuotation } from '@/types/vendor-quotation';
 import { createPOFromAward } from '@/lib/po-management-engine';
 import { tierFor } from '@/lib/approval-tier-helper';
 import { publishProcurementPulse } from '@/lib/procurement-pulse-stub';
+// ─── NEW · HK-5 Block B · D-NEW-GL · additive budget pre-check badge ───
+import { checkBudgetForAmount } from '@/lib/budget-allocation-engine';
 
 interface POEntryFromAwardDialogProps {
   open: boolean;
@@ -53,6 +55,13 @@ export function POEntryFromAwardDialog({
     2: 'Tier 2 · HOD approval ₹50k – ₹5L',
     3: 'Tier 3 · Director approval above ₹5L',
   };
+  // HK-5 Block B · entity-scope budget pre-check (department/cost-center scope kicks in once PO is created)
+  const budgetCheck = checkBudgetForAmount(entityCode, award.total_after_tax);
+  const budgetBadgeClass =
+    budgetCheck.status === 'breach' ? 'border-destructive/40 bg-destructive/5'
+    : budgetCheck.status === 'warning' ? 'border-amber-500/30 bg-amber-500/5'
+    : budgetCheck.status === 'within' ? 'border-emerald-500/30 bg-emerald-500/5'
+    : 'border-border bg-muted/30';
 
   const handleCreate = async (): Promise<void> => {
     if (!deliveryAddress.trim()) {
@@ -112,6 +121,11 @@ export function POEntryFromAwardDialog({
                 </p>
               </div>
             </div>
+          </div>
+
+          <div className={`rounded border p-3 ${budgetBadgeClass}`}>
+            <p className="text-sm font-medium">Budget pre-check · {budgetCheck.status.replace('_', ' ')}</p>
+            <p className="text-xs text-muted-foreground mt-1">{budgetCheck.rationale}</p>
           </div>
 
           <div className="space-y-2">

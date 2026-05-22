@@ -72,4 +72,8 @@ export type Procure360Module =
   | 'rate-contract-list'
   | 'rate-contract-entry'
   // ─── NEW · T-Phase-2.HK-5 · Block A · D-NEW-GK · C1 Approval Matrix wiring ───
-  | 'approver-dashboard';
+  | 'approver-dashboard'
+  // ─── NEW · T-Phase-2.HK-5 · Block B · D-NEW-GL · C2 Budget Control wiring ───
+  | 'budget-allocation-master'
+  | 'budget-utilization-dashboard';
+
