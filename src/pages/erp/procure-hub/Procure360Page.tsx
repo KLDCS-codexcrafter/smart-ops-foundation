@@ -268,6 +268,7 @@ function getModuleLabel(m: Procure360Module): string {
     // ─── NEW · 45b-ii-2 Block C ───
     'rate-contract-list': 'Rate Contracts',
     'rate-contract-entry': 'New Rate Contract',
+    'approver-dashboard': 'Approver Dashboard',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
