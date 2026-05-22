@@ -41,6 +41,7 @@ export function CycleCountStatusPanel(): JSX.Element {
   const navigate = useNavigate();
   const { entityCode } = useEntityCode();
   const { counts } = useCycleCounts(entityCode);
+  const user = useCurrentUser();
 
   const summary = useMemo(() => {
     const list = counts ?? [];
@@ -50,6 +51,18 @@ export function CycleCountStatusPanel(): JSX.Element {
     const lastPosted = [...posted].sort((a, b) => (b.posted_at ?? '').localeCompare(a.posted_at ?? ''))[0];
     return { all: list, pending, posted, totalVarianceValue, lastPosted };
   }, [counts]);
+
+  // D-NEW-FQ · 10th D-NEW-FG consumer · Post Cycle Adjustment Voucher
+  const handlePostAdjustmentVoucher = useCallback((cc: CycleCount) => {
+    try {
+      if (cc.status !== 'posted') { toast.error('Cycle count must be posted first'); return; }
+      const draft = createDraftCycleAdjustmentVoucher(entityCode, cc, user?.id ?? 'system');
+      const posted = postCycleAdjustmentVoucher(entityCode, draft.id);
+      toast.success(`Adjustment voucher ${posted.voucher_no} posted · net ₹${posted.net_value_inr.toLocaleString('en-IN')}`);
+    } catch (e) {
+      toast.error(`Failed: ${e instanceof Error ? e.message : 'unknown'}`);
+    }
+  }, [entityCode, user]);
 
   return (
     <div className="p-6 space-y-4">
