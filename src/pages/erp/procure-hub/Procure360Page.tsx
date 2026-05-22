@@ -90,6 +90,14 @@ import { GITRegisterPanel } from './reports/GITRegister';
 import { PurchaseOrderRegisterPanel } from './reports/PurchaseOrderRegister';
 // ─── NEW · B.1 ───
 import { VendorInvoiceAdminReviewPanel } from './transactions/VendorInvoiceAdminReview';
+// ─── NEW · 45b-i · Blocks A-E ───
+import {
+  VendorAutoRankPanel,
+  EnquiryTemplateLibraryPanel,
+  PriceBenchmarkPanel,
+  AlternateVendorSuggestPanel,
+  ContractExpiryDashboardPanel,
+} from './panels-p2';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
@@ -123,6 +131,9 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'po-register',
   // ─── NEW · B.1 ───
   'pi-admin-review',
+  // ─── NEW · 45b-i Blocks A-E ───
+  'vendor-auto-rank', 'enquiry-template-library', 'price-benchmark',
+  'alternate-vendor-suggest', 'contract-expiry-dashboard',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
