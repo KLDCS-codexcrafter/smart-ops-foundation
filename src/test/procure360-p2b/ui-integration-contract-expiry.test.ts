@@ -13,14 +13,17 @@ describe('HK-5-2 Block D · ContractExpiry UI integration', () => {
   it('panel exported', () => { expect(typeof P2.ContractExpiryDashboardPanel).toBe('function'); });
   it('engine imports', () => { expect(Engine).toBeDefined(); });
   it('classifyTier exposed', () => { expect(typeof Engine.classifyTier).toBe('function'); });
-  it('classifyTier T-30 for daysToExpiry <= 30', () => {
-    expect(['T-30', 'T-60', 'T-90', 'EXPIRED']).toContain(Engine.classifyTier(15));
+  it('classifyTier urgent for daysToExpiry <= 30', () => {
+    expect(Engine.classifyTier(15)).toBe('urgent');
   });
-  it('classifyTier returns valid tier for negative days', () => {
-    expect(['T-30', 'T-60', 'T-90', 'EXPIRED']).toContain(Engine.classifyTier(-5));
+  it('classifyTier reminder for 31-60', () => {
+    expect(Engine.classifyTier(45)).toBe('reminder');
+  });
+  it('classifyTier informational for > 60', () => {
+    expect(Engine.classifyTier(75)).toBe('informational');
   });
   it('scanAgreements empty array returns empty', () => {
-    expect(Engine.scanAgreements([], new Date().toISOString())).toEqual([]);
+    expect(Engine.scanAgreements([], 90)).toEqual([]);
   });
   it('loadAcknowledgments empty default', () => {
     expect(Engine.loadAcknowledgments('e1')).toEqual([]);
