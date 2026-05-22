@@ -7,12 +7,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Warehouse, ArrowUpRight, ClipboardList, AlertTriangle, TrendingUp, ArrowRight, Plus, Send } from 'lucide-react';
+import { Warehouse, ArrowUpRight, ClipboardList, AlertTriangle, TrendingUp, ArrowRight, Plus, Send, Wallet } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listReorderSuggestions } from '@/lib/store-hub-engine';
 import { listStockIssues } from '@/lib/stock-issue-engine';
 import { listReceiptAcks } from '@/lib/stock-receipt-ack-engine';
 import { useCycleCounts } from '@/hooks/useCycleCounts';
+import { consumptionEntriesKey, type ConsumptionEntry } from '@/types/consumption';
 import type { DepartmentStoreModule } from './DepartmentStoreSidebar';
 
 interface Props { onModuleChange: (m: DepartmentStoreModule) => void }
@@ -24,6 +25,7 @@ export function DepartmentStoreWelcomePanel({ onModuleChange }: Props): JSX.Elem
   const [draftIssuesCount, setDraftIssuesCount] = useState(0);
   const [pendingAcksCount, setPendingAcksCount] = useState(0);
   const [varianceValue, setVarianceValue] = useState(0);
+  const [monthConsumptionValue, setMonthConsumptionValue] = useState(0);
 
   const refresh = useCallback((): void => {
     setReorderCount(listReorderSuggestions(entityCode).filter(r => r.urgency !== 'normal').length);
@@ -31,6 +33,16 @@ export function DepartmentStoreWelcomePanel({ onModuleChange }: Props): JSX.Elem
     setPendingAcksCount(listReceiptAcks(entityCode).filter(a => a.status === 'draft').length);
     const posted = (counts ?? []).filter(c => c.status === 'posted');
     setVarianceValue(posted.reduce((sum, c) => sum + Math.abs(c.total_variance_value || 0), 0));
+    // D-NEW-FO complement · 5th KPI tile · This Month Dept Consumption ₹
+    try {
+      const raw = localStorage.getItem(consumptionEntriesKey(entityCode)) ?? '[]';
+      const entries = JSON.parse(raw) as ConsumptionEntry[];
+      const thisMonth = new Date().toISOString().slice(0, 7);
+      const total = entries
+        .filter(e => e.status === 'posted' && (e.consumption_date ?? '').startsWith(thisMonth))
+        .reduce((sum, e) => sum + (e.total_value || 0), 0);
+      setMonthConsumptionValue(total);
+    } catch { setMonthConsumptionValue(0); }
   }, [entityCode, counts]);
 
   useEffect(() => {
@@ -44,6 +56,7 @@ export function DepartmentStoreWelcomePanel({ onModuleChange }: Props): JSX.Elem
     { label: 'Draft Issues',     value: draftIssuesCount, icon: ArrowUpRight,  accent: 'text-blue-600 bg-blue-500/10',    module: 'sh-t-stock-issue-register' as DepartmentStoreModule, isCurrency: false },
     { label: 'Pending Acks',     value: pendingAcksCount, icon: ClipboardList, accent: 'text-purple-600 bg-purple-500/10', module: 'sh-t-receipt-ack' as DepartmentStoreModule, isCurrency: false },
     { label: 'Cycle Variance ₹', value: varianceValue,    icon: TrendingUp,    accent: 'text-rose-600 bg-rose-500/10',     module: 'sh-r-cycle-count-status' as DepartmentStoreModule, isCurrency: true },
+    { label: 'This Month Dept Consumption ₹', value: monthConsumptionValue, icon: Wallet, accent: 'text-emerald-600 bg-emerald-500/10', module: 'sh-r-department-consumption-summary' as DepartmentStoreModule, isCurrency: true },
   ];
 
   return (
@@ -60,7 +73,7 @@ export function DepartmentStoreWelcomePanel({ onModuleChange }: Props): JSX.Elem
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         {tiles.map(t => {
           const Icon = t.icon;
           const display = t.isCurrency ? `₹ ${t.value.toLocaleString('en-IN')}` : t.value;

@@ -45,6 +45,20 @@ import {
   useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
 } from '@/lib/form-carry-forward-kit';
 import { AuditHistoryButton } from '@/components/uth/AuditHistoryButton';
+import { Package } from 'lucide-react';
+import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
+
+// D-NEW-FN · Per-line bin hint subcomponent · "Place at" verb for inward acknowledgement
+function BinHint({ itemId, entityCode }: { itemId: string; entityCode: string }): JSX.Element | null {
+  const preferred = useItemPreferredLocation(itemId, entityCode);
+  if (!preferred) return null;
+  return (
+    <div className="text-[10px] text-emerald-600 flex items-center gap-1 mt-0.5">
+      <Package className="w-3 h-3" />
+      Place at: <span className="font-mono">{preferred.binCode ?? preferred.godownName}</span>
+    </div>
+  );
+}
 
 interface AckDraftLine {
   inward_line_id: string;
@@ -320,7 +334,10 @@ export function StockReceiptAckPanel(): JSX.Element {
                   const variance = l.qty_acknowledged - l.qty_inward;
                   return (
                     <TableRow key={l.inward_line_id} className="text-xs">
-                      <TableCell>{l.item_name}</TableCell>
+                      <TableCell>
+                        <div>{l.item_name}</div>
+                        <BinHint itemId={l.item_id} entityCode={entityCode} />
+                      </TableCell>
                       <TableCell className="font-mono text-right">{l.qty_inward} {l.uom}</TableCell>
                       <TableCell className="text-right">
                         <Input type="number" value={l.qty_acknowledged || ''}

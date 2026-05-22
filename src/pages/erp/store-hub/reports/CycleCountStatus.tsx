@@ -16,15 +16,21 @@
  */
 
 import { useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ClipboardList, ExternalLink, AlertTriangle, CheckCircle2, FileText } from 'lucide-react';
+import { ClipboardList, ExternalLink, AlertTriangle, CheckCircle2, FileText, Receipt } from 'lucide-react';
+import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useCycleCounts } from '@/hooks/useCycleCounts';
 import type { CycleCount, CycleCountStatus } from '@/types/cycle-count';
+import {
+  createDraftCycleAdjustmentVoucher,
+  postCycleAdjustmentVoucher,
+} from '@/lib/cycle-count-voucher-engine';
 
 const STATUS_VARIANT: Record<CycleCountStatus, 'default' | 'destructive' | 'outline' | 'secondary'> = {
   draft: 'outline', submitted: 'secondary', approved: 'secondary',
@@ -35,6 +41,7 @@ export function CycleCountStatusPanel(): JSX.Element {
   const navigate = useNavigate();
   const { entityCode } = useEntityCode();
   const { counts } = useCycleCounts(entityCode);
+  const user = useCurrentUser();
 
   const summary = useMemo(() => {
     const list = counts ?? [];
@@ -44,6 +51,18 @@ export function CycleCountStatusPanel(): JSX.Element {
     const lastPosted = [...posted].sort((a, b) => (b.posted_at ?? '').localeCompare(a.posted_at ?? ''))[0];
     return { all: list, pending, posted, totalVarianceValue, lastPosted };
   }, [counts]);
+
+  // D-NEW-FQ · 10th D-NEW-FG consumer · Post Cycle Adjustment Voucher
+  const handlePostAdjustmentVoucher = useCallback((cc: CycleCount) => {
+    try {
+      if (cc.status !== 'posted') { toast.error('Cycle count must be posted first'); return; }
+      const draft = createDraftCycleAdjustmentVoucher(entityCode, cc, user?.id ?? 'system');
+      const posted = postCycleAdjustmentVoucher(entityCode, draft.id);
+      toast.success(`Adjustment voucher ${posted.voucher_no} posted · net ₹${posted.net_value_inr.toLocaleString('en-IN')}`);
+    } catch (e) {
+      toast.error(`Failed: ${e instanceof Error ? e.message : 'unknown'}`);
+    }
+  }, [entityCode, user]);
 
   return (
     <div className="p-6 space-y-4">
@@ -56,7 +75,7 @@ export function CycleCountStatusPanel(): JSX.Element {
             Read-only summary · physical stocktaking lives in Inventory Hub
           </p>
         </div>
-        <Button variant="outline" onClick={() => navigate('/erp/inventory-hub')}>
+        <Button variant="outline" onClick={() => navigate('/erp/main-store-hub')}>
           <ExternalLink className="h-4 w-4 mr-1" />Manage in Inventory Hub
         </Button>
       </div>
@@ -92,7 +111,7 @@ export function CycleCountStatusPanel(): JSX.Element {
               <FileText className="w-12 h-12 mx-auto text-muted-foreground" />
               <h3 className="text-base font-semibold">No pending counts</h3>
               <p className="text-sm text-muted-foreground">All cycle counts are posted or cancelled.</p>
-              <Button variant="outline" onClick={() => navigate('/erp/inventory-hub')}>
+              <Button variant="outline" onClick={() => navigate('/erp/main-store-hub')}>
                 <ExternalLink className="h-4 w-4 mr-1" />Open Inventory Hub
               </Button>
             </div>
@@ -117,6 +136,38 @@ export function CycleCountStatusPanel(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {/* D-NEW-FQ · Posted counts with variance · Post Cycle Adjustment Voucher action (10th D-NEW-FG consumer) */}
+      {summary.posted.some(c => (c.total_variance_value || 0) !== 0) && (
+        <Card>
+          <CardHeader><CardTitle className="text-base">Posted with Variance · Adjustment Vouchers</CardTitle></CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader><TableRow>
+                <TableHead>Count No</TableHead><TableHead>Posted</TableHead>
+                <TableHead>Godown</TableHead>
+                <TableHead className="text-right">Variance ₹</TableHead>
+                <TableHead className="text-right">Action</TableHead>
+              </TableRow></TableHeader>
+              <TableBody>
+                {summary.posted.filter(c => (c.total_variance_value || 0) !== 0).map((c: CycleCount) => (
+                  <TableRow key={c.id}>
+                    <TableCell className="font-mono text-xs">{c.count_no}</TableCell>
+                    <TableCell>{c.posted_at ? new Date(c.posted_at).toLocaleDateString('en-IN') : '—'}</TableCell>
+                    <TableCell>{c.godown_name ?? '—'}</TableCell>
+                    <TableCell className="font-mono text-right">₹ {Math.abs(c.total_variance_value || 0).toLocaleString('en-IN')}</TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => handlePostAdjustmentVoucher(c)}>
+                        <Receipt className="w-3 h-3 mr-1" /> Post Adjustment Voucher
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
