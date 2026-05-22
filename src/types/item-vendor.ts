@@ -12,6 +12,9 @@ export interface ItemVendor {
   quality_rating?: 1 | 2 | 3 | 4 | 5 | null;
   last_rejection_percent?: number | null;
   is_preferred: boolean;
+  // NEW · Sprint 45b-ii Block E · D-NEW-GE · forward-link to active Rate Contract
+  // OPTIONAL · non-breaking · populated by item-vendor-matrix-builder via rate-contract-engine.findActiveRate
+  rate_contract_id?: string | null;
   created_at: string;
   updated_at: string;
 }

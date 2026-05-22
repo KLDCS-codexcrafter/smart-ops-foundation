@@ -25,6 +25,8 @@ import {
 } from '@/lib/procurement-enquiry-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import type { ProcurementEnquiry, ProcurementEnquiryStatus } from '@/types/procurement-enquiry';
+import { formatDateIN } from '@/lib/procure360-formatters';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ACTIONABLE: ProcurementEnquiryStatus[] = [
   'rfqs_dispatched',
@@ -33,8 +35,14 @@ const ACTIONABLE: ProcurementEnquiryStatus[] = [
   'award_pending',
 ];
 
-const fmtDate = (iso: string): string =>
-  iso ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+const STATUS_TOOLTIPS: Record<string, string> = {
+  rfqs_dispatched: 'RFQs sent to vendors · awaiting first response',
+  quotations_pending: 'Quotations not yet received · follow-up due',
+  quotations_received: 'Quotations in · ready for comparison + award',
+  award_pending: 'Comparison complete · awaiting buyer award decision',
+};
+
+const fmtDate = (iso: string): string => formatDateIN(iso);
 
 const ageDays = (iso: string): number => {
   if (!iso) return 0;
@@ -127,7 +135,16 @@ export function PeqFollowupPanel(): JSX.Element {
                   <tr key={enq.id} className="border-t">
                     <td className="p-2 font-mono">{enq.enquiry_no}</td>
                     <td className="p-2">{fmtDate(enq.enquiry_date)}</td>
-                    <td className="p-2"><Badge variant="secondary">{enq.status}</Badge></td>
+                    <td className="p-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="secondary">{enq.status}</Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>{STATUS_TOOLTIPS[enq.status] ?? enq.status}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </td>
                     <td className="p-2 text-right font-mono">{ageDays(enq.created_at)}</td>
                     <td className="p-2 text-right space-x-1">
                       <Button size="sm" variant="ghost" onClick={() => sendReminder(enq)}>

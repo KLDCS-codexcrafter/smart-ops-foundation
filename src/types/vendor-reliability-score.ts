@@ -23,6 +23,9 @@ export interface VendorReliabilityComponents {
   dgtr_exposure_score: number;
   sanctions_clearance_score: number;
   payment_terms_adherence_score: number;
+  // NEW · Sprint 45b-ii Block D · D-NEW-GD · 8th component · OPTIONAL · non-breaking
+  // Populated by NEW rate-contract-adherence-engine (FR-19 SIBLING) · vendor-reliability-engine 0-DIFF
+  rate_contract_adherence_score?: number;
   composite_score: number;
   classification: VendorReliabilityClass;
   computed_at: string;

@@ -14,9 +14,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { listEnquiries } from '@/lib/procurement-enquiry-engine';
 import type { ProcurementEnquiry } from '@/types/procurement-enquiry';
+import { formatDateIN } from '@/lib/procure360-formatters';
 
-const fmtDate = (iso: string | null): string =>
-  iso ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+const fmtDate = (iso: string | null): string => formatDateIN(iso);
 
 const ageDays = (iso: string): number => {
   if (!iso) return 0;

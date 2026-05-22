@@ -5,12 +5,16 @@
  * @who         Lovable · Procurement / Cross-dept ops
  * @when        2026-05-08
  * @sprint      T-Phase-1.A.3.c-Procure360-OOB-Polish-PEQ-FU
+ * @sprint      T-Phase-2.B-Procure360-Phase2-Polish-Part-B-ii · Block F · D-NEW-GG · D-NEW-AP α-d closure
  * @iso         25010 · Functional Suitability + Compatibility (Trident pattern)
  * @whom        Procurement + originating departments
  * @decisions   D-NEW-AP (Cross-Dept aggregator + Party Status pivot · per FR-25 + FR-53 + Trident B12)
+ *              D-NEW-GG (α-d institutional debt closure · department_name + vendor lookup wired)
  * @disciplines FR-19 · FR-25 · FR-30 · FR-53
  * @reuses      po-management-engine (listPurchaseOrders · listOverduePos · computePoOverdueDays) ·
- *              bill-passing-engine (listBillPassing) · decimal-helpers
+ *              bill-passing-engine (listBillPassing) · decimal-helpers ·
+ *              party-master-engine.loadPartiesByType (public API · 0-DIFF consumer) ·
+ *              org-structure DEPARTMENTS_KEY (localStorage · 0-DIFF read)
  * @[JWT]       n/a · pure compute
  */
 
@@ -21,6 +25,9 @@ import {
 } from './po-management-engine';
 import { listBillPassing } from './bill-passing-engine';
 import { dAdd, round2 } from './decimal-helpers';
+import { loadPartiesByType } from './party-master-engine';
+import type { Department } from '@/types/org-structure';
+import { DEPARTMENTS_KEY } from '@/types/org-structure';
 
 export interface CrossDeptPoBucket {
   department_id: string;
@@ -37,16 +44,34 @@ const UNASSIGNED_DEPT_ID = 'unassigned';
 const UNASSIGNED_DEPT_NAME = 'Unassigned';
 
 /**
+ * D-NEW-GG · Block F · resolve department name via org-structure SSOT (DEPARTMENTS_KEY).
+ * Returns the department name when present · falls back to the id otherwise.
+ */
+function resolveDepartmentName(deptId: string, departments: Department[]): string {
+  if (deptId === UNASSIGNED_DEPT_ID) return UNASSIGNED_DEPT_NAME;
+  const match = departments.find((d) => d.id === deptId || d.code === deptId);
+  return match?.name ?? deptId;
+}
+
+function loadDepartments(): Department[] {
+  try {
+    const raw = localStorage.getItem(DEPARTMENTS_KEY);
+    return raw ? (JSON.parse(raw) as Department[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Aggregate open + overdue POs by department_id (canonical PurchaseOrderRecord field).
  * Joins bill-passing data to surface bills-pending dimension.
- *
- * NOTE · α-c: PurchaseOrderRecord exposes `department_id` only (no `department_name`).
- * Display layer can resolve via department master in α-d enhancement.
+ * Department names resolved via org-structure SSOT (D-NEW-GG closure of D-NEW-AP α-d).
  */
 export function aggregatePoByDepartment(entityCode: string): CrossDeptPoBucket[] {
   const allPos = listPurchaseOrders(entityCode);
   const overduePos = listOverduePos(entityCode);
   const bills = listBillPassing(entityCode);
+  const departments = loadDepartments();
 
   // Open POs · status not in (cancelled · closed)
   const openPos = allPos.filter(
@@ -58,8 +83,7 @@ export function aggregatePoByDepartment(entityCode: string): CrossDeptPoBucket[]
 
   for (const po of openPos) {
     const deptId = po.department_id ?? UNASSIGNED_DEPT_ID;
-    // TODO(D-NEW-AP · α-d): resolve department_name via department master
-    const deptName = deptId === UNASSIGNED_DEPT_ID ? UNASSIGNED_DEPT_NAME : deptId;
+    const deptName = resolveDepartmentName(deptId, departments);
 
     if (!buckets.has(deptId)) {
       buckets.set(deptId, {
@@ -116,13 +140,18 @@ export interface PoPartyStatusRow {
 
 /**
  * Trident PO Party Status pivot (B12 enhancement).
- * NOTE · α-c: PurchaseOrderRecord has no `vendor_group` field at HEAD.
- * TODO(D-NEW-AP · α-d): join vendor master to surface vendor_group.
+ * D-NEW-GG · Block F · joins vendor master (party-master-engine.loadPartiesByType) to
+ * surface vendor_group dimension. Party shape at HEAD has no `group` column · the
+ * field is surfaced from party_type (lightweight institutional grouping) until a
+ * richer vendor classification is introduced (HK-5 enrichment).
  */
 export function aggregatePoByParty(entityCode: string): PoPartyStatusRow[] {
   const allPos = listPurchaseOrders(entityCode);
   const overduePos = listOverduePos(entityCode);
   const overdueIds = new Set(overduePos.map((p) => p.id));
+
+  const vendorMaster = loadPartiesByType(entityCode, 'vendor');
+  const vendorLookup = new Map(vendorMaster.map((v) => [v.id, v]));
 
   const buckets = new Map<string, PoPartyStatusRow>();
 
@@ -130,11 +159,11 @@ export function aggregatePoByParty(entityCode: string): PoPartyStatusRow[] {
     if (po.status === 'cancelled') continue;
     const key = po.vendor_id;
     if (!buckets.has(key)) {
+      const masterRecord = vendorLookup.get(po.vendor_id);
       buckets.set(key, {
         vendor_id: po.vendor_id,
-        vendor_name: po.vendor_name ?? po.vendor_id,
-        // TODO(D-NEW-AP · α-d): resolve vendor_group from vendor master
-        vendor_group: null,
+        vendor_name: masterRecord?.party_name ?? po.vendor_name ?? po.vendor_id,
+        vendor_group: masterRecord?.party_type ?? null,
         open_pos: 0,
         overdue_pos: 0,
         total_outstanding: 0,
