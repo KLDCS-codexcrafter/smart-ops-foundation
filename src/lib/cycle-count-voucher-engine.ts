@@ -40,10 +40,10 @@ export function generateCycleAdjustmentVoucher(
         godown_id: cycleCount.godown_id ?? '',
         godown_name: cycleCount.godown_name ?? '',
         bin_code: line.bin_code ?? null,
-        book_qty: line.book_qty ?? 0,
+        book_qty: line.system_qty ?? 0,
         physical_qty: line.physical_qty ?? 0,
         variance_qty: line.variance_qty ?? 0,
-        variance_value_inr: Math.abs(line.variance_value_inr ?? 0),
+        variance_value_inr: Math.abs(line.variance_value ?? 0),
         direction,
         ledger_account: direction === 'gain' ? 'ADJUSTMENT_GAIN' : 'ADJUSTMENT_LOSS',
       };
