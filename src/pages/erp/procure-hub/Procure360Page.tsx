@@ -261,6 +261,9 @@ function getModuleLabel(m: Procure360Module): string {
     'price-benchmark': 'Price Benchmark',
     'alternate-vendor-suggest': 'Alternate Vendor Suggest',
     'contract-expiry-dashboard': 'Contract Expiry Dashboard',
+    // ─── NEW · 45b-ii-2 Block C ───
+    'rate-contract-list': 'Rate Contracts',
+    'rate-contract-entry': 'New Rate Contract',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
