@@ -26,7 +26,7 @@ const formatINR = (n: number): string =>
   '₹' + new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n);
 
 export function ApproverDashboardPanel(): JSX.Element {
-  const entityCode = useEntityCode();
+  const { entityCode } = useEntityCode();
   const [pos, setPos] = useState<PurchaseOrderRecord[]>([]);
   const [role, setRole] = useState<string>('HOD');
   const [tick, setTick] = useState(0);
