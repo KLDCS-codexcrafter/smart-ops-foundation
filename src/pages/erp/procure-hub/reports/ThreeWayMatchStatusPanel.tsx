@@ -124,8 +124,8 @@ export function ThreeWayMatchStatusPanel(): JSX.Element {
                         </span>
                       </td>
                       <td className="p-2 text-right font-mono">{b.variance_pct.toFixed(2)}%</td>
-                      <td className="p-2 text-xs">{qcLabel}</td>
-                      <td className="p-2">
+                      <td className="p-2 text-xs text-center">{qcLabel}</td>
+                      <td className="p-2 text-center">
                         <button
                           type="button"
                           className="text-xs px-2 py-0.5 rounded-lg bg-primary/15 text-primary hover:bg-primary/25"
