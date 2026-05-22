@@ -127,7 +127,7 @@ export function scanAndAdvanceCascades(
     const po = allPOs.find((p) => p.id === cascade.po_id);
 
     // If PO closed/received elsewhere, close the cascade.
-    if (po && (po.status === 'closed' || po.status === 'completed')) {
+    if (po && (po.status === 'fully_received' || po.status === 'cancelled')) {
       const closed: PoDeliveryFollowupCascade = {
         ...cascade,
         current_stage: 'received',
