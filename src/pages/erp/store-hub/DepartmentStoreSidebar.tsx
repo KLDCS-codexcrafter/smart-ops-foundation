@@ -84,7 +84,7 @@ export function DepartmentStoreSidebar(props: DepartmentStoreSidebarProps) {
             <Warehouse className="h-4 w-4 text-indigo-600" />
           </div>
           <div className="group-data-[collapsible=icon]:hidden">
-            <p className="text-sm font-bold text-foreground leading-tight">Store Hub</p>
+            <p className="text-sm font-bold text-foreground leading-tight">Department Stores</p>
             <p className="text-[10px] text-muted-foreground leading-tight">Issue · Receipt · Reorder</p>
           </div>
         </div>

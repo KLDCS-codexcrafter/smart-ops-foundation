@@ -143,8 +143,8 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       { id: 'inventory-rfid', type: 'item', label: 'RFID Manager', icon: Wifi,
         moduleId: 'inventory-rfid', requiredCards: ['command-center'] },
       // Sprint T-Phase-1.2.6f-d-2 · Block B · D-298 · Store Hub launcher (route-based)
-      { id: 'cc-store-hub-launcher', type: 'item', label: 'Store Hub', icon: Warehouse,
-        route: '/erp/store-hub', requiredCards: ['command-center'] },
+    { id: 'cc-store-hub-launcher', type: 'item', label: 'Department Stores', icon: Warehouse,
+      route: '/erp/department-store', requiredCards: ['command-center'] },
     ],
   },
   {
