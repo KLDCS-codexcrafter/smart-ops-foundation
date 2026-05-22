@@ -90,6 +90,14 @@ import { GITRegisterPanel } from './reports/GITRegister';
 import { PurchaseOrderRegisterPanel } from './reports/PurchaseOrderRegister';
 // ─── NEW · B.1 ───
 import { VendorInvoiceAdminReviewPanel } from './transactions/VendorInvoiceAdminReview';
+// ─── NEW · 45b-i · Blocks A-E ───
+import {
+  VendorAutoRankPanel,
+  EnquiryTemplateLibraryPanel,
+  PriceBenchmarkPanel,
+  AlternateVendorSuggestPanel,
+  ContractExpiryDashboardPanel,
+} from './panels-p2';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
@@ -123,6 +131,9 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'po-register',
   // ─── NEW · B.1 ───
   'pi-admin-review',
+  // ─── NEW · 45b-i Blocks A-E ───
+  'vendor-auto-rank', 'enquiry-template-library', 'price-benchmark',
+  'alternate-vendor-suggest', 'contract-expiry-dashboard',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
@@ -240,6 +251,12 @@ function getModuleLabel(m: Procure360Module): string {
     'po-register': 'Purchase Order Register',
     // ─── NEW · B.1 ───
     'pi-admin-review': 'Vendor Invoice Review',
+    // ─── NEW · 45b-i Blocks A-E ───
+    'vendor-auto-rank': 'Vendor Auto-Rank',
+    'enquiry-template-library': 'Enquiry Template Library',
+    'price-benchmark': 'Price Benchmark',
+    'alternate-vendor-suggest': 'Alternate Vendor Suggest',
+    'contract-expiry-dashboard': 'Contract Expiry Dashboard',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
@@ -390,6 +407,12 @@ export default function Procure360Page(): JSX.Element {
       case 'po-register':                     return <PurchaseOrderRegisterPanel />;
       // ─── NEW · B.1 ───
       case 'pi-admin-review':                 return <VendorInvoiceAdminReviewPanel />;
+      // ─── NEW · 45b-i Blocks A-E ───
+      case 'vendor-auto-rank':                return <VendorAutoRankPanel />;
+      case 'enquiry-template-library':        return <EnquiryTemplateLibraryPanel />;
+      case 'price-benchmark':                 return <PriceBenchmarkPanel />;
+      case 'alternate-vendor-suggest':        return <AlternateVendorSuggestPanel />;
+      case 'contract-expiry-dashboard':       return <ContractExpiryDashboardPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
