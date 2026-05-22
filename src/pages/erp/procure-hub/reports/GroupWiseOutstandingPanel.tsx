@@ -1,8 +1,8 @@
 /**
  * @file        GroupWiseOutstandingPanel.tsx
  * @purpose     Group-wise outstanding (Trident SKGroup parity) · pivots open bills by vendor group.
- *              TODO(D-NEW-AL · vendor group dimension · enrich in α-c) — no vendor master group field
- *              exists yet; falls back to alphabetical bucket from vendor name initial.
+ *              D-NEW-AL CLOSED · Sprint HK-5-1 Block F · Party.group field added to party-master
+ *              (optional · non-breaking · uses party_type bracket fallback when group is null).
  * @who         Finance · Procurement
  * @when        Sprint T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring · Block E
  * @sprint      T-Phase-1.A.3.b-T1-Bill-Passing-Reports-Wiring
@@ -14,6 +14,7 @@
 import { useMemo } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listBillPassing } from '@/lib/bill-passing-engine';
+import { loadPartyMaster } from '@/lib/party-master-engine';
 import { dAdd, round2 } from '@/lib/decimal-helpers';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -21,10 +22,9 @@ const fmtMoney = (n: number): string => `₹${n.toLocaleString('en-IN')}`;
 const MS_PER_DAY = 86_400_000;
 const CLOSED = new Set(['approved_for_fcpi', 'fcpi_drafted', 'cancelled', 'rejected']);
 
-// TODO(D-NEW-AL): replace with real vendor.group_id when vendor-master gains group dimension.
-function groupKey(vendorName: string): string {
-  const c = (vendorName || '#').charAt(0).toUpperCase();
-  return /[A-Z]/.test(c) ? c : '#';
+// D-NEW-AL CLOSED · using party.group field (Sprint HK-5-1 Block F)
+function vendorGroup(group: string | null | undefined, partyType: string | undefined): string {
+  return (group ?? `[${partyType ?? 'vendor'}]`).trim();
 }
 
 interface GroupAging {
@@ -43,10 +43,13 @@ export function GroupWiseOutstandingPanel(): JSX.Element {
 
   const aggregates: GroupAging[] = useMemo(() => {
     const open = listBillPassing(entityCode).filter((b) => !CLOSED.has(b.status));
+    const parties = loadPartyMaster(entityCode);
+    const partyById = new Map(parties.map((p) => [p.id, p]));
     const map = new Map<string, GroupAging & { vendors: Set<string> }>();
     const now = Date.now();
     for (const b of open) {
-      const k = groupKey(b.vendor_name);
+      const party = partyById.get(b.vendor_id);
+      const k = vendorGroup(party?.group, party?.party_type);
       const a = map.get(k) ?? {
         group: k, vendor_count: 0, open_bills: 0, total: 0,
         b0_30: 0, b31_60: 0, b61_90: 0, b90p: 0, vendors: new Set<string>(),
@@ -72,7 +75,7 @@ export function GroupWiseOutstandingPanel(): JSX.Element {
       <div>
         <h1 className="text-2xl font-bold">Group-Wise Outstanding</h1>
         <p className="text-sm text-muted-foreground">
-          Outstanding pivoted by vendor group · alphabetical fallback until vendor groups land.
+          Outstanding pivoted by vendor group · Party.group dimension active (party_type bracket fallback).
         </p>
       </div>
 

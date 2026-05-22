@@ -29,6 +29,9 @@ export interface Party {
   /** ISO when finance team confirmed/edited the quick-add record. */
   audit_flag_resolved_at: string | null;
 
+  // NEW · Sprint HK-5-1 Block F · D-NEW-GO · institutional vendor grouping dimension · optional · non-breaking · closes D-NEW-AL
+  group?: string | null;
+
   created_at: string;
   updated_at: string;
   created_by: string;
