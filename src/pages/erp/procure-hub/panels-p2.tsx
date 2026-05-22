@@ -261,7 +261,7 @@ export function EnquiryTemplateLibraryPanel(): JSX.Element {
   useMemo(() => loadTemplates(entityCode), [entityCode]);
 
   const templates: EnquiryTemplate[] = useMemo(
-    () => listByCategory(entityCode, category),
+    () => { void version; return listByCategory(entityCode, category); },
     [entityCode, category, version],
   );
 
