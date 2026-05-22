@@ -51,7 +51,7 @@ export function ApproverDashboardPanel(): JSX.Element {
     toast.success(`Recorded ${role} approval for PO ${poId}`);
     if (isPoFullyApproved(entityCode, poId)) {
       try {
-        await transitionPoStatus(poId, entityCode, 'approved', 'mock-user');
+        await transitionPoStatus(poId, 'approved', entityCode, 'mock-user');
         toast.success('PO fully approved · status moved to approved');
       } catch (e) {
         toast.error(`Status transition failed: ${e instanceof Error ? e.message : 'unknown'}`);
