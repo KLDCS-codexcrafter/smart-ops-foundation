@@ -180,6 +180,11 @@ export const procure360SidebarItems: SidebarItem[] = [
         icon: Wallet, moduleId: 'budget-allocation-master', requiredCards: ['procure360'] },
       { id: 'budget-utilization-dashboard', type: 'item', label: 'Budget Utilization',
         icon: BarChart3, moduleId: 'budget-utilization-dashboard', requiredCards: ['procure360'] },
+      // ─── NEW · HK-5-2 Block H · D-NEW-GP · N1 Vendor Advance (23rd SIBLING ⭐) ───
+      { id: 'vendor-advance-entry', type: 'item', label: 'New Vendor Advance',
+        icon: Plus, moduleId: 'vendor-advance-entry', requiredCards: ['procure360'] },
+      { id: 'vendor-advance-register', type: 'item', label: 'Vendor Advance Register',
+        icon: Wallet, moduleId: 'vendor-advance-register', requiredCards: ['procure360'], keyboard: 'p v' },
     ],
   },
 ];

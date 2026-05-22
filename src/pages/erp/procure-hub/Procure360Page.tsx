@@ -105,6 +105,9 @@ import { ApproverDashboardPanel } from './reports/ApproverDashboardPanel';
 // ─── NEW · HK-5 Block B · D-NEW-GL · Budget Control ───
 import { BudgetAllocationMaster } from './masters/BudgetAllocationMaster';
 import { BudgetUtilizationDashboard } from './reports/BudgetUtilizationDashboard';
+// ─── NEW · HK-5-2 Block H · D-NEW-GP · Vendor Advance (23rd SIBLING ⭐) ───
+import { VendorAdvanceEntry } from './transactions/VendorAdvanceEntry';
+import { VendorAdvanceRegister } from './reports/VendorAdvanceRegister';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
@@ -441,6 +444,9 @@ export default function Procure360Page(): JSX.Element {
       // ─── NEW · HK-5 Block B · D-NEW-GL ───
       case 'budget-allocation-master':        return <BudgetAllocationMaster />;
       case 'budget-utilization-dashboard':    return <BudgetUtilizationDashboard />;
+      // ─── NEW · HK-5-2 Block H · D-NEW-GP · N1 Vendor Advance (23rd SIBLING ⭐) ───
+      case 'vendor-advance-entry':            return <VendorAdvanceEntry />;
+      case 'vendor-advance-register':         return <VendorAdvanceRegister />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
