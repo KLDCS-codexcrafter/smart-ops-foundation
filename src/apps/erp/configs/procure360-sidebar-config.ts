@@ -16,6 +16,7 @@ import {
   Wallet, AlertTriangle,   // NEW · A.3.b
   Package,                  // UPRA-3 Phase A Step 2
   FileCheck,                // NEW · B.1
+  ShieldCheck,              // NEW · HK-5 Block A
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
