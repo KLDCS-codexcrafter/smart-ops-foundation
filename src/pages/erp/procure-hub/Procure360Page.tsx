@@ -428,6 +428,8 @@ export default function Procure360Page(): JSX.Element {
       // ─── NEW · 45b-ii-2 Block C · D-NEW-GF · Rate Contract surface (founder explicit) ───
       case 'rate-contract-list':              return <RateContractListPanel />;
       case 'rate-contract-entry':             return <RateContractListPanel />;
+      // ─── NEW · HK-5 Block A · D-NEW-GK · Approver Dashboard ───
+      case 'approver-dashboard':              return <ApproverDashboardPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
