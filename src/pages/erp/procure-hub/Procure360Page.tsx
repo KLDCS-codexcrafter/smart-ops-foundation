@@ -407,6 +407,12 @@ export default function Procure360Page(): JSX.Element {
       case 'po-register':                     return <PurchaseOrderRegisterPanel />;
       // ─── NEW · B.1 ───
       case 'pi-admin-review':                 return <VendorInvoiceAdminReviewPanel />;
+      // ─── NEW · 45b-i Blocks A-E ───
+      case 'vendor-auto-rank':                return <VendorAutoRankPanel />;
+      case 'enquiry-template-library':        return <EnquiryTemplateLibraryPanel />;
+      case 'price-benchmark':                 return <PriceBenchmarkPanel />;
+      case 'alternate-vendor-suggest':        return <AlternateVendorSuggestPanel />;
+      case 'contract-expiry-dashboard':       return <ContractExpiryDashboardPanel />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
