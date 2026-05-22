@@ -14,8 +14,9 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { listBillPassing } from '@/lib/bill-passing-engine';
 import { dAdd, round2 } from '@/lib/decimal-helpers';
 import { Card, CardContent } from '@/components/ui/card';
+import { formatCurrencyIN } from '@/lib/procure360-formatters';
 
-const fmtMoney = (n: number): string => `₹${n.toLocaleString('en-IN')}`;
+const fmtMoney = (n: number): string => formatCurrencyIN(n, 0);
 const MS_PER_DAY = 86_400_000;
 const CLOSED = new Set(['approved_for_fcpi', 'fcpi_drafted', 'cancelled', 'rejected']);
 
