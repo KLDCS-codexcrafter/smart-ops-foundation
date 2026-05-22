@@ -172,6 +172,9 @@ export const procure360SidebarItems: SidebarItem[] = [
         icon: FileText, moduleId: 'rate-contract-list', requiredCards: ['procure360'], keyboard: 'p t' },
       { id: 'rate-contract-entry', type: 'item', label: 'New Rate Contract',
         icon: Plus, moduleId: 'rate-contract-entry', requiredCards: ['procure360'] },
+      // ─── NEW · HK-5 Block A · D-NEW-GK · C1 Approval Matrix wiring ───
+      { id: 'approver-dashboard', type: 'item', label: 'Approver Dashboard',
+        icon: ShieldCheck, moduleId: 'approver-dashboard', requiredCards: ['procure360'] },
     ],
   },
 ];
