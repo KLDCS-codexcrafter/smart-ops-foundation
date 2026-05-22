@@ -163,6 +163,24 @@ export function Procure360Welcome({ onNavigate }: NavProps): JSX.Element {
     return { awardsPendingPo, posAwaitingApproval, piPendingReview, piBreachCount };
   }, [entityCode]);
 
+  // 45b-ii-2 Block G · 9th KPI · Concentration Alerts (ratified deviation 2: recommended_strategy enum)
+  const concentrationAlerts = useMemo(() => {
+    const recs = computeSourcingRecommendations(entityCode);
+    return recs.filter((r) =>
+      r.recommended_strategy === 'force_alternate' ||
+      r.recommended_strategy === 'split_2' ||
+      r.recommended_strategy === 'split_3+',
+    ).length;
+  }, [entityCode]);
+
+  // 45b-ii-2 Block G · 10th KPI · Vendor Follow-Up Pending (both cascade engines)
+  const vendorFollowupPending = useMemo(() => {
+    const es = summarizeEnquiryFollowups(entityCode);
+    const ps = summarizePoDeliveryFollowups(entityCode);
+    return (es.pending + es.in_reminder_1 + es.in_reminder_2 + es.escalated)
+      + (ps.pre_delivery + ps.late_day_1 + ps.late_day_7 + ps.late_day_14);
+  }, [entityCode]);
+
   useEffect(() => {
     const handle = subscribeProcurementPulse((a) => setPulses((p) => [a, ...p].slice(0, 8)), 30000);
     return () => handle.stop();
