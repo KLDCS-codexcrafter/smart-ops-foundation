@@ -56,7 +56,7 @@ The Sprint 45a SSOT Three-Greps Audit did **not** include `src/lib/oob/*` direct
 
 - **TS**: `bunx tsc --noEmit` → 0 errors ✅
 - **Tests**: 21/21 passing (10 F + 10 G + 1 UI smoke); existing 45a tests untouched ✅
-- **Lint**: clean (no new ESLint violations from edits) ✅
+- **Lint**: 1 warning landed in initial pass (`panels-p2.tsx:265` `react-hooks/exhaustive-deps`); T1 fix applied · ESLint exit 0 · ESLint 0/0 (111 CENTENNIAL+11) preserved ✅
 
 ## §11 D-NEW disposition
 
