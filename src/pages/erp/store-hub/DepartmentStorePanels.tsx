@@ -114,6 +114,23 @@ export function ReorderSuggestionsPanel(): JSX.Element {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // D-NEW-FP · one-click "Raise Indent" · consumes existing promoteReorderToIndent bridge (0-DIFF)
+  const handleRaiseIndent = (r: ReorderSuggestion): void => {
+    const result = promoteReorderToIndent({
+      suggestion: r,
+      department_id: 'engineering',
+      department_name: 'Engineering',
+      notes: `Auto-raised from reorder suggestion · ${r.item_code ?? r.item_id}`,
+      created_by: 'stores-mgr',
+    }, entityCode);
+    if (result.ok) {
+      toast.success(`Indent ${result.voucher_no} raised`);
+      setRefreshTick(t => t + 1);
+    } else {
+      toast.error(`Failed: ${result.reason ?? 'unknown error'}`);
+    }
+  };
+
   const urgencyBadge = (u: 'critical' | 'warning' | 'normal'): JSX.Element => {
     if (u === 'critical') return <Badge variant="destructive">Critical</Badge>;
     if (u === 'warning') return <Badge className="bg-warning text-warning-foreground">Warning</Badge>;
