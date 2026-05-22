@@ -92,7 +92,7 @@ export function CycleCountStatusPanel(): JSX.Element {
               <FileText className="w-12 h-12 mx-auto text-muted-foreground" />
               <h3 className="text-base font-semibold">No pending counts</h3>
               <p className="text-sm text-muted-foreground">All cycle counts are posted or cancelled.</p>
-              <Button variant="outline" onClick={() => navigate('/erp/inventory-hub')}>
+              <Button variant="outline" onClick={() => navigate('/erp/main-store-hub')}>
                 <ExternalLink className="h-4 w-4 mr-1" />Open Inventory Hub
               </Button>
             </div>
