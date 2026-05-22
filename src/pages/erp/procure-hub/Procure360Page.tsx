@@ -251,6 +251,12 @@ function getModuleLabel(m: Procure360Module): string {
     'po-register': 'Purchase Order Register',
     // ─── NEW · B.1 ───
     'pi-admin-review': 'Vendor Invoice Review',
+    // ─── NEW · 45b-i Blocks A-E ───
+    'vendor-auto-rank': 'Vendor Auto-Rank',
+    'enquiry-template-library': 'Enquiry Template Library',
+    'price-benchmark': 'Price Benchmark',
+    'alternate-vendor-suggest': 'Alternate Vendor Suggest',
+    'contract-expiry-dashboard': 'Contract Expiry Dashboard',
   };
   return known[m] ?? m.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
