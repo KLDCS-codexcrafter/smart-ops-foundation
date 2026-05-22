@@ -56,7 +56,7 @@ export function CycleCountStatusPanel(): JSX.Element {
             Read-only summary · physical stocktaking lives in Inventory Hub
           </p>
         </div>
-        <Button variant="outline" onClick={() => navigate('/erp/inventory-hub')}>
+        <Button variant="outline" onClick={() => navigate('/erp/main-store-hub')}>
           <ExternalLink className="h-4 w-4 mr-1" />Manage in Inventory Hub
         </Button>
       </div>
