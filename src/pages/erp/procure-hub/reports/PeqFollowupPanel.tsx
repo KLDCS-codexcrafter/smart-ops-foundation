@@ -25,6 +25,8 @@ import {
 } from '@/lib/procurement-enquiry-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import type { ProcurementEnquiry, ProcurementEnquiryStatus } from '@/types/procurement-enquiry';
+import { formatDateIN } from '@/lib/procure360-formatters';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const ACTIONABLE: ProcurementEnquiryStatus[] = [
   'rfqs_dispatched',
@@ -33,8 +35,14 @@ const ACTIONABLE: ProcurementEnquiryStatus[] = [
   'award_pending',
 ];
 
-const fmtDate = (iso: string): string =>
-  iso ? new Date(iso).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+const STATUS_TOOLTIPS: Record<string, string> = {
+  rfqs_dispatched: 'RFQs sent to vendors · awaiting first response',
+  quotations_pending: 'Quotations not yet received · follow-up due',
+  quotations_received: 'Quotations in · ready for comparison + award',
+  award_pending: 'Comparison complete · awaiting buyer award decision',
+};
+
+const fmtDate = (iso: string): string => formatDateIN(iso);
 
 const ageDays = (iso: string): number => {
   if (!iso) return 0;
