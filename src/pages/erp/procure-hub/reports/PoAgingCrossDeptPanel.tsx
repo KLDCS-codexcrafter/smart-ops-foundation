@@ -8,20 +8,36 @@
  * @[JWT]       n/a · derived view
  */
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { aggregatePoByDepartment, type CrossDeptPoBucket } from '@/lib/po-cross-dept-followup';
-import { formatCurrencyIN } from '@/lib/procure360-formatters';
+import { formatCurrencyIN, debounce } from '@/lib/procure360-formatters';
 
 const fmtINR = (n: number): string => formatCurrencyIN(n);
 
 export function PoAgingCrossDeptPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const buckets = useMemo<CrossDeptPoBucket[]>(
+  const [searchInput, setSearchInput] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Block A item 10 · debounce search · 300ms
+  const debouncedSetSearchTerm = useMemo(
+    () => debounce((val: unknown) => setSearchTerm(String(val)), 300),
+    [],
+  );
+
+  const allBuckets = useMemo<CrossDeptPoBucket[]>(
     () => aggregatePoByDepartment(entityCode),
     [entityCode],
   );
+
+  const buckets = useMemo(() => {
+    if (!searchTerm) return allBuckets;
+    const lower = searchTerm.toLowerCase();
+    return allBuckets.filter((b) => b.department_name.toLowerCase().includes(lower));
+  }, [allBuckets, searchTerm]);
 
   const kpis = useMemo(() => {
     const totals = buckets.reduce(
