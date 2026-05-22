@@ -140,6 +140,8 @@ const HASH_ALLOWLIST: Procure360Module[] = [
   'alternate-vendor-suggest', 'contract-expiry-dashboard',
   // ─── NEW · 45b-ii-2 Block C ───
   'rate-contract-list', 'rate-contract-entry',
+  // ─── NEW · HK-5 Block A ───
+  'approver-dashboard',
 ];
 
 const GROUP_LABELS: Partial<Record<Procure360Module, string>> = {
