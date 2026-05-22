@@ -35,6 +35,14 @@ function Field({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+// Sprint 45b-ii-2 · Block A item 5 · Print-friendly styles for browser native print
+const PRINT_STYLES = `
+  @media print {
+    .no-print { display: none !important; }
+    .print-section { page-break-inside: avoid; }
+  }
+`;
+
 export interface PurchaseOrderDetailPanelProps {
   order: Order;
   onPrint: () => void;
@@ -46,8 +54,15 @@ export function PurchaseOrderDetailPanel({ order, onPrint }: PurchaseOrderDetail
   const sumPending = order.lines.reduce((a, l) => a + l.pending_qty, 0);
   const sumFulfilled = order.lines.reduce((a, l) => a + l.fulfilled_qty, 0);
 
+  // Sprint 45b-ii-2 · Block A item 5 · "Print PO" wraps both upstream callback + browser print fallback
+  function handlePrintPO(): void {
+    onPrint();
+    window.print();
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 print-section">
+      <style>{PRINT_STYLES}</style>
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between gap-3">
@@ -57,10 +72,10 @@ export function PurchaseOrderDetailPanel({ order, onPrint }: PurchaseOrderDetail
                 {order.party_name} · {order.party_gstin ?? 'Unregistered'}
               </p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 no-print">
               <Badge variant="outline" className={STATUS_COLORS[order.status]}>{STATUS_LABELS[order.status]}</Badge>
-              <Button size="sm" variant="outline" onClick={onPrint}>
-                <Printer className="h-3.5 w-3.5 mr-1" /> Print
+              <Button size="sm" variant="default" onClick={handlePrintPO}>
+                <Printer className="h-3.5 w-3.5 mr-1" /> Print PO
               </Button>
             </div>
           </div>
