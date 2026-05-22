@@ -100,6 +100,8 @@ import {
 } from './panels-p2';
 // ─── NEW · 45b-ii-2 Block C · D-NEW-GF · Rate Contract surface (re-export from Bill Passing DRY) ───
 import { RateContractListPanel } from '@/pages/erp/bill-passing/RateContractListPanel';
+// ─── NEW · HK-5 Block A · D-NEW-GK · Approver Dashboard ───
+import { ApproverDashboardPanel } from './reports/ApproverDashboardPanel';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
