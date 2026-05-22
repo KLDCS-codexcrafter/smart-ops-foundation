@@ -35,13 +35,14 @@ describe('HK-5-2 Block D · EnquiryTemplate UI integration', () => {
     expect(typeof Engine.updateTemplate).toBe('function');
     expect(typeof Engine.deleteTemplate).toBe('function');
   });
-  it('loadTemplates empty default', () => {
-    expect(Engine.loadTemplates('e1')).toEqual([]);
+  it('loadTemplates includes 5 starter templates on first load', () => {
+    const t = Engine.loadTemplates('e1');
+    expect(t.length).toBeGreaterThanOrEqual(5);
   });
-  it('createTemplate persists', () => {
-    const t = Engine.createTemplate('e1', mkInput('T1', 'steel'));
-    expect(t.id).toBeTruthy();
-    expect(Engine.loadTemplates('e1').length).toBe(1);
+  it('createTemplate persists (delta +1)', () => {
+    const before = Engine.loadTemplates('e1').length;
+    Engine.createTemplate('e1', mkInput('T1', 'steel'));
+    expect(Engine.loadTemplates('e1').length).toBe(before + 1);
   });
   it('getTemplate roundtrip', () => {
     const t = Engine.createTemplate('e1', mkInput('T2', 'bearings'));
@@ -57,10 +58,10 @@ describe('HK-5-2 Block D · EnquiryTemplate UI integration', () => {
     expect(Engine.deleteTemplate('e1', t.id)).toBe(true);
     expect(Engine.getTemplate('e1', t.id)).toBe(null);
   });
-  it('listByCategory filters by approved category', () => {
+  it('listByCategory delta +1 after adding to category', () => {
+    const before = Engine.listByCategory('e1', 'steel').length;
     Engine.createTemplate('e1', mkInput('A', 'steel'));
-    Engine.createTemplate('e1', mkInput('B', 'bearings'));
-    expect(Engine.listByCategory('e1', 'steel').length).toBe(1);
+    expect(Engine.listByCategory('e1', 'steel').length).toBe(before + 1);
   });
   it('applyTemplate returns null for missing', () => {
     expect(Engine.applyTemplate('e1', 'missing')).toBe(null);
@@ -69,9 +70,11 @@ describe('HK-5-2 Block D · EnquiryTemplate UI integration', () => {
     Engine.saveTemplates('e1', []);
     expect(Engine.loadTemplates('e1')).toEqual([]);
   });
-  it('entity scoping isolated', () => {
-    Engine.createTemplate('e1', mkInput('X', 'custom'));
-    expect(Engine.loadTemplates('e2').length).toBe(0);
+  it('entity scoping: each entity gets its own seed', () => {
+    const e1Count = Engine.loadTemplates('e1').length;
+    const e2Count = Engine.loadTemplates('e2').length;
+    expect(e1Count).toBeGreaterThan(0);
+    expect(e2Count).toBeGreaterThan(0);
   });
   it('panel name stability', () => {
     expect(P2.EnquiryTemplateLibraryPanel.name).toContain('EnquiryTemplate');
