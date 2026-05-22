@@ -165,6 +165,12 @@ export const procure360SidebarItems: SidebarItem[] = [
         icon: AlertTriangle, moduleId: 'alternate-vendor-suggest', requiredCards: ['procure360'] },
       { id: 'contract-expiry-dashboard', type: 'item', label: 'Contract Expiry Dashboard',
         icon: AlertTriangle, moduleId: 'contract-expiry-dashboard', requiredCards: ['procure360'] },
+      // ─── NEW · 45b-ii-2 Block C · D-NEW-GF · Rate Contract surface (founder explicit) ───
+      // 21st `p *` shortcut · `p t` for "conTracT" mnemonic (5th ratified spec deviation: `p k` was bound to quotation-comparison)
+      { id: 'rate-contract-list', type: 'item', label: 'Rate Contracts',
+        icon: FileText, moduleId: 'rate-contract-list', requiredCards: ['procure360'], keyboard: 'p t' },
+      { id: 'rate-contract-entry', type: 'item', label: 'New Rate Contract',
+        icon: Plus, moduleId: 'rate-contract-entry', requiredCards: ['procure360'] },
     ],
   },
 ];
