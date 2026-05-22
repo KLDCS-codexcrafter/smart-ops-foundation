@@ -12,8 +12,9 @@ import { useMemo } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { aggregatePoByDepartment, type CrossDeptPoBucket } from '@/lib/po-cross-dept-followup';
+import { formatCurrencyIN } from '@/lib/procure360-formatters';
 
-const fmtINR = (n: number): string => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
+const fmtINR = (n: number): string => formatCurrencyIN(n);
 
 export function PoAgingCrossDeptPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
