@@ -28,6 +28,8 @@ export function BudgetUtilizationDashboard(): JSX.Element {
 
   useEffect(() => { setRows(listBudgets(entityCode).filter((b) => b.is_active)); }, [entityCode]);
 
+  // rows is intentionally included to recompute summary after CRUD refreshes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const summary = useMemo(() => summarizeUtilization(entityCode), [entityCode, rows]);
 
   return (
