@@ -99,6 +99,11 @@ export interface InwardReceipt {
   reference_no?: string | null;
   voucher_hash?: string | null;
 
+  // NEW · Sprint HK-5-2 Block C V2 · D-NEW-GM-V2 · EWB compliance fields (optional · non-breaking)
+  ewb_number?: string | null;
+  ewb_generated_at?: string | null;
+  ewb_valid_till?: string | null;
+
   created_at: string;
   updated_at: string;
   released_at: string | null;

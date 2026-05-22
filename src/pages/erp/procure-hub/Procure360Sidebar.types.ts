@@ -75,5 +75,8 @@ export type Procure360Module =
   | 'approver-dashboard'
   // ─── NEW · T-Phase-2.HK-5 · Block B · D-NEW-GL · C2 Budget Control wiring ───
   | 'budget-allocation-master'
-  | 'budget-utilization-dashboard';
+  | 'budget-utilization-dashboard'
+  // ─── NEW · T-Phase-2.HK-5-2 · Block H · D-NEW-GP · N1 Vendor Advance ───
+  | 'vendor-advance-entry'
+  | 'vendor-advance-register';
 
