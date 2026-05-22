@@ -135,7 +135,16 @@ export function PeqFollowupPanel(): JSX.Element {
                   <tr key={enq.id} className="border-t">
                     <td className="p-2 font-mono">{enq.enquiry_no}</td>
                     <td className="p-2">{fmtDate(enq.enquiry_date)}</td>
-                    <td className="p-2"><Badge variant="secondary">{enq.status}</Badge></td>
+                    <td className="p-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Badge variant="secondary">{enq.status}</Badge>
+                          </TooltipTrigger>
+                          <TooltipContent>{STATUS_TOOLTIPS[enq.status] ?? enq.status}</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </td>
                     <td className="p-2 text-right font-mono">{ageDays(enq.created_at)}</td>
                     <td className="p-2 text-right space-x-1">
                       <Button size="sm" variant="ghost" onClick={() => sendReminder(enq)}>
