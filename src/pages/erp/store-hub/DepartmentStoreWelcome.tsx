@@ -7,12 +7,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Warehouse, ArrowUpRight, ClipboardList, AlertTriangle, TrendingUp, ArrowRight, Plus, Send } from 'lucide-react';
+import { Warehouse, ArrowUpRight, ClipboardList, AlertTriangle, TrendingUp, ArrowRight, Plus, Send, Wallet } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listReorderSuggestions } from '@/lib/store-hub-engine';
 import { listStockIssues } from '@/lib/stock-issue-engine';
 import { listReceiptAcks } from '@/lib/stock-receipt-ack-engine';
 import { useCycleCounts } from '@/hooks/useCycleCounts';
+import { consumptionEntriesKey, type ConsumptionEntry } from '@/types/consumption';
 import type { DepartmentStoreModule } from './DepartmentStoreSidebar';
 
 interface Props { onModuleChange: (m: DepartmentStoreModule) => void }
