@@ -99,17 +99,21 @@ storage keys via `inwardReceiptsKey(entity)` / `deliveryMemosKey(entity)`.
 - Vitest: 53/53 local batch · sample-expense-voucher-engine 34/34 PASS ·
   sprint46-ewb-integration 10/10 PASS post-fix.
 
-## §11 · Files Changed (16 / +1004 / -9)
-**Created (5)**
+## §11 · Files Changed (19 / +1004 / -9)
+**Created — production code (3)**
 - `src/pages/erp/dispatch/reports/EWBMonitor.tsx`
 - `src/pages/erp/dispatch/reports/DispatchSummary.tsx`
 - `src/lib/sample-expense-voucher-engine.ts`
+
+**Created — tests (3)**
 - `src/test/procure360-p2/sample-expense-voucher-engine.test.ts`
 - `src/test/procure360-p2/sprint46-ewb-integration.test.ts`
 - `src/test/procure360-p2/sprint46-structural.test.ts`
-- `audit_workspace/HK_46_close_evidence/close_summary.md`
 
-**Edited (11)**
+**Created — audit (1)**
+- `audit_workspace/HK_46_close_evidence/close_summary.md` (canonical)
+
+**Edited (12)**
 - `src/lib/inward-receipt-engine.ts` (additive 3 EWB fields)
 - `src/pages/erp/dispatch/DispatchHubPage.tsx`
 - `src/pages/erp/dispatch/DispatchHubSidebar.tsx`
@@ -122,6 +126,8 @@ storage keys via `inwardReceiptsKey(entity)` / `deliveryMemosKey(entity)`.
 - `src/pages/erp/dispatch/masters/PackingMaterialMaster.tsx`
 - `src/pages/erp/dispatch/reports/PODRegister.tsx`
 - `src/pages/erp/dispatch/transactions/LRTracker.tsx`
+
+**Totals:** 7 created (3 prod + 3 test + 1 audit) · 12 edited · **19 files**.
 
 ## §12 · Composite Grade
 **51st composite A** · post-HALF-CENTURY institutional continuation banked.
