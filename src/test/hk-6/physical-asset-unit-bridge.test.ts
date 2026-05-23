@@ -34,7 +34,7 @@ function seedFA(): AssetUnitRecord {
 }
 
 function seedHR(id = 'hr-1'): Asset {
-  const a: Partial<Asset> = { id, name: 'Lathe-HR', status: 'in_use' };
+  const a: Partial<Asset> = { id, name: 'Lathe-HR', status: 'assigned' };
   localStorage.setItem(ASSETS_KEY, JSON.stringify([a]));
   return a as Asset;
 }
