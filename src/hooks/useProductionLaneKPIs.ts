@@ -9,6 +9,14 @@ import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { computeOpenVarianceAlerts } from '@/lib/production-variance-alert-engine';
+// T-Phase-3.PROD-2 · ST12 · 6th KPI "Open Leaks Count" feeds (Q-LOCK-12)
+import { listOpenJWShortageAlerts } from '@/lib/job-work-shortage-engine';
+import { listOpenBOMDriftAlerts } from '@/lib/bom-drift-detector-engine';
+import { listOpenJWMSMEBreaches } from '@/lib/msme-43bh-jw-engine';
+import { listOpenFactoryLicenseAlerts } from '@/lib/factory-license-cap-engine';
+import { listOpenHazmatCapAlerts } from '@/lib/hazmat-production-cap-engine';
+import { listOpenWastageDriftAlerts } from '@/lib/wastage-drift-detector-engine';
+import { listOpenToolingAlerts } from '@/lib/tooling-consumption-tracker-engine';
 
 export interface ProductionLaneKPIs {
   activePOs: number;
@@ -16,6 +24,7 @@ export interface ProductionLaneKPIs {
   onTimeDeliveryPct: number;
   variancAlertsOpen: number;
   wipValue: number;
+  openLeaksCount: number;
 }
 
 function readPOs(entityCode: string): ProductionOrder[] {
