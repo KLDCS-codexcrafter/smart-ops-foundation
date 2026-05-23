@@ -514,6 +514,10 @@ export function seedEntityDemoData(
   seedSinhaOperatorSkills(entityCode);
   seedSinhaSkillOperationMappings(entityCode);
 
+  // T-Phase-3.PROD-2 · ST13 · Sinha-anchor 6 leak scenarios (Q-LOCK-13)
+  // FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-*-seed-data file.
+  seedSinhaLeakScenarios(entityCode);
+
 
 
   return {
