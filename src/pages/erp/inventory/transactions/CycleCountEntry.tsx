@@ -513,13 +513,40 @@ function CountDetail({
     w.print();
   }
 
+  // Sprint HK-6 Pass 2 · Theme 3 · Cycle Count Excel additive extension (xlsx 0.18.5 · Q-LOCK-5 confirmed)
+  function handleExportExcel() {
+    const rows = count.lines.map(l => ({
+      'Item Code': l.item_code,
+      'Description': l.item_name,
+      'UOM': l.uom,
+      'Godown': l.godown_name,
+      'Bin': l.bin_code ?? '',
+      'System Qty': l.system_qty,
+      'Physical Qty': l.physical_qty,
+      'Variance Qty': l.variance_qty,
+      'Variance Value (₹)': l.variance_value,
+      'Variance Reason': l.variance_reason ? VARIANCE_REASON_LABELS[l.variance_reason] : '',
+      'Notes': l.variance_notes ?? '',
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Cycle Count');
+    XLSX.writeFile(wb, `${count.count_no}_${count.count_date}.xlsx`);
+    toast.success(`Exported ${rows.length} lines to Excel`);
+  }
+
   return (
     <div className="space-y-4 mt-4">
       <div className="flex items-center justify-between">
         <Badge variant="outline" className={COUNT_STATUS_COLORS[count.status]}>{count.status}</Badge>
-        <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1">
-          <Printer className="h-3.5 w-3.5" /> Print Count Sheet
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={handleExportExcel} className="gap-1">
+            <FileSpreadsheet className="h-3.5 w-3.5" /> Export Excel
+          </Button>
+          <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1">
+            <Printer className="h-3.5 w-3.5" /> Print Count Sheet
+          </Button>
+        </div>
       </div>
       <div className="hidden">
         <PrintNarrationHeader voucherTypeId="vt-physical-stock" voucherTypeName="Cycle Count Sheet" baseVoucherType="Physical Stock" voucherNo={count.count_no} />
