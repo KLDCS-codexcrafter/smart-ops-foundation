@@ -80,6 +80,8 @@ function buildJournalVoucher(
 /**
  * Fire WIP capitalization voucher on released → in_progress.
  * DR Work-in-Progress · CR Raw Materials Inventory.
+ * Amount source rationale (Q-LOCK-6): budget total at release · reservations
+ * do not carry rate, so budget is the earliest reliable signal at PO start.
  */
 export function fireProductionWIPCapitalization(po: ProductionOrder): string | null {
   const amount = po.cost_structure?.budget?.total ?? po.cost_structure?.master?.total ?? 0;
