@@ -15,7 +15,8 @@
  *              shadcn/ui Dialog + Form + Input + Button + Badge · CONSUME ONLY
  * @[JWT]       Phase 2: POST /api/po/from-award (currently consumes engine writing to localStorage)
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
@@ -43,9 +44,23 @@ interface POEntryFromAwardDialogProps {
 export function POEntryFromAwardDialog({
   open, onClose, award, entityCode, onSuccess,
 }: POEntryFromAwardDialogProps): JSX.Element | null {
+  // Sprint HK-6 Pass 2 · Theme 9 · Procure360 prefill from query string
+  // ?delivery_address=...&expected_days=NN — populates dialog on mount when dialog opens.
+  const [searchParams] = useSearchParams();
   const [deliveryAddress, setDeliveryAddress] = useState<string>('');
   const [expectedDays, setExpectedDays] = useState<number>(30);
   const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const qpAddr = searchParams.get('delivery_address');
+    const qpDays = searchParams.get('expected_days');
+    if (qpAddr && qpAddr.trim()) setDeliveryAddress(qpAddr.trim());
+    if (qpDays) {
+      const n = Number(qpDays);
+      if (Number.isFinite(n) && n >= 1 && n <= 365) setExpectedDays(Math.floor(n));
+    }
+  }, [open, searchParams]);
 
   if (!award) return null;
 

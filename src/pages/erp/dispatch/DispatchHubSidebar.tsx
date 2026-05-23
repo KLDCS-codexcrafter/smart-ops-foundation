@@ -67,37 +67,36 @@ interface MenuItem {
   module: DispatchHubModule;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
+  /** Sprint HK-6 Pass 2 · Theme 6 · FR-74 dispatch keyboard namespace · 'l' prefix for Logistics Hub */
+  keyboard?: string;
 }
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
-  { label: 'LR Tracker',           module: 'dh-t-lr-tracker',          icon: Route },
-  { label: 'LR Update',            module: 'dh-t-lr-update',           icon: ClipboardEdit },
-  { label: 'Transporter Invoices', module: 'dh-t-transporter-invoice', icon: FileSpreadsheet },
-  { label: 'PDF Invoice Upload',   module: 'dh-t-pdf-invoice-upload',  icon: FileUp },
-  { label: 'Dispute Queue',        module: 'dh-t-dispute-queue',       icon: AlertCircle },
+  { label: 'LR Tracker',           module: 'dh-t-lr-tracker',          icon: Route,           keyboard: 'l t' },
+  { label: 'LR Update',            module: 'dh-t-lr-update',           icon: ClipboardEdit,   keyboard: 'l u' },
+  { label: 'Transporter Invoices', module: 'dh-t-transporter-invoice', icon: FileSpreadsheet, keyboard: 'l i' },
+  { label: 'PDF Invoice Upload',   module: 'dh-t-pdf-invoice-upload',  icon: FileUp,          keyboard: 'l p' },
+  { label: 'Dispute Queue',        module: 'dh-t-dispute-queue',       icon: AlertCircle,     keyboard: 'l q' },
 ];
 
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Reconciliation Summary', module: 'dh-r-reconciliation-summary', icon: Scale },
-  { label: 'Transporter Scorecard',  module: 'dh-r-transporter-scorecard',  icon: Award },
-  { label: 'Savings ROI',            module: 'dh-r-savings-roi',            icon: TrendingUp },
-  // UPRA-1 Phase A
-  { label: 'Dispatch Receipt Register', module: 'dh-r-dispatch-receipt-register', icon: PackageCheck },
-  { label: 'Packing Slip Register',     module: 'dh-r-packing-slip-register',     icon: ClipboardList },
-  { label: 'POD Register',              module: 'dh-r-pod-register',              icon: FileCheck2 },
-  // UPRA-3 Phase A Step 2 · Tier-1 NEW
-  { label: 'Transporter Invoice Register', module: 'dh-r-transporter-invoice-register', icon: Receipt },
-  // Sprint 46 Pass 1 · Theme A §1.4
-  { label: 'EWB Monitor',                  module: 'dh-r-ewb-monitor',                  icon: ShieldAlert },
+  { label: 'Reconciliation Summary', module: 'dh-r-reconciliation-summary', icon: Scale,         keyboard: 'l r s' },
+  { label: 'Transporter Scorecard',  module: 'dh-r-transporter-scorecard',  icon: Award,         keyboard: 'l r c' },
+  { label: 'Savings ROI',            module: 'dh-r-savings-roi',            icon: TrendingUp,    keyboard: 'l r o' },
+  { label: 'Dispatch Receipt Register', module: 'dh-r-dispatch-receipt-register', icon: PackageCheck, keyboard: 'l r d' },
+  { label: 'Packing Slip Register',     module: 'dh-r-packing-slip-register',     icon: ClipboardList, keyboard: 'l r k' },
+  { label: 'POD Register',              module: 'dh-r-pod-register',              icon: FileCheck2,    keyboard: 'l r p' },
+  { label: 'Transporter Invoice Register', module: 'dh-r-transporter-invoice-register', icon: Receipt, keyboard: 'l r i' },
+  { label: 'EWB Monitor',                  module: 'dh-r-ewb-monitor',                  icon: ShieldAlert, keyboard: 'l r e' },
 ];
 
 // Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
 const INWARD_ITEMS: MenuItem[] = [
-  { label: 'Inward Receipt Entry',    module: 'dh-i-inward-receipt-entry',    icon: PackageOpen },
-  { label: 'Inward Receipt Register', module: 'dh-i-inward-receipt-register', icon: Inbox },
-  { label: 'Quarantine Queue',        module: 'dh-i-quarantine-queue',        icon: ShieldAlert },
-  { label: 'Stock Hold Report',       module: 'dh-i-stock-hold-report',       icon: PackageX },
-  { label: 'Vendor Return',           module: 'dh-i-vendor-return',           icon: Undo2 },
+  { label: 'Inward Receipt Entry',    module: 'dh-i-inward-receipt-entry',    icon: PackageOpen,  keyboard: 'l i e' },
+  { label: 'Inward Receipt Register', module: 'dh-i-inward-receipt-register', icon: Inbox,        keyboard: 'l i r' },
+  { label: 'Quarantine Queue',        module: 'dh-i-quarantine-queue',        icon: ShieldAlert,  keyboard: 'l i q' },
+  { label: 'Stock Hold Report',       module: 'dh-i-stock-hold-report',       icon: PackageX,     keyboard: 'l i h' },
+  { label: 'Vendor Return',           module: 'dh-i-vendor-return',           icon: Undo2,        keyboard: 'l i v' },
 ];
 
 export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
