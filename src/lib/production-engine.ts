@@ -29,6 +29,7 @@ import { emitLeakEvent } from '@/lib/leak-register-engine';
 import { createProductionOrderReservations } from '@/lib/stock-reservation-engine';
 import { getProductionPlanById, linkProductionOrder } from '@/lib/production-plan-engine';
 import { fireProductionWIPCapitalization, fireProductionFGCapitalization } from '@/lib/production-wip-cascade';
+import { checkSkillMatchAtPORelease } from '@/lib/peoplepay-skill-engine';
 
 // ════════════════════════════════════════════════════════════════════
 // 1. CRUD · CREATE
@@ -449,6 +450,12 @@ export function releaseProductionOrder(
   released.lines = updated_lines;
   released.reservation_ids = reservation_ids;
   released.cost_structure = updated_cost_structure;
+
+  // T-Phase-3.PROD-1 · ST9 · PeoplePay skill match (advisory · non-blocking · Q-LOCK-3)
+  const skillCheck = checkSkillMatchAtPORelease(released, po.entity_id);
+  if (skillCheck.warnings.length > 0) {
+    released.skill_warnings = skillCheck.warnings;
+  }
 
   const all = readPOs(po.entity_id);
   const idx = all.findIndex(x => x.id === po.id);
