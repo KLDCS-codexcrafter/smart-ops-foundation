@@ -14,6 +14,7 @@ import type { Voucher } from '@/types/voucher';
 import type { AssetUnitRecord, ITActBlock } from '@/types/fixed-asset';
 import { faUnitsKey, IT_ACT_RATES } from '@/types/fixed-asset';
 import { postVoucher, generateVoucherNo } from './fincore-engine';
+import { addPlaceholderMachineToCapacity } from './capacity-planning-engine';
 
 // ============================================================================
 // TYPES
@@ -230,6 +231,25 @@ export function cascadeCAPEXGRNToFA(
 
   // -------- 3. CWIP marker · returned id same as CP voucher when status='cwip' --------
   const cwipVoucherId = event.put_to_use_date ? null : voucherId;
+
+  // Sprint T-Phase-3.PROD-1 · Sub-theme 4 · CAPEX → capacity-engine bridge (Q-LOCK-5)
+  // Auto-create placeholder Machine in 'pending_configuration' so ops can wire factory/work-center.
+  try {
+    if (newIds.length > 0) {
+      addPlaceholderMachineToCapacity({
+        capex_po_id: event.po_id,
+        vendor_id: event.vendor_id,
+        vendor_name: event.vendor_name,
+        item_name: event.item_name,
+        asset_code: newUnits[0]?.asset_id ?? '',
+        cost: event.received_value,
+        entity_code: entityCode,
+        fixed_asset_id: newIds[0],
+      });
+    }
+  } catch (e) {
+    console.error('[procure-capex-fa-cascade] placeholder machine creation failed (non-blocking)', e);
+  }
 
   return {
     capital_purchase_voucher_id: voucherId,

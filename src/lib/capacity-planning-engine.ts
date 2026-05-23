@@ -325,3 +325,97 @@ function buildCapacityRow(
   if (mode === 'per_week') { row.week_start = weekStart(atomic.date); row.week_label = `Week of ${weekStart(atomic.date)}`; }
   return row;
 }
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint T-Phase-3.PROD-1 · Sub-theme 4 · Placeholder Machine from CAPEX
+// Q-LOCK-5 middle-path · CAPEX PO close auto-creates Machine record in
+// 'pending_configuration' state · ops must edit before scheduling.
+// ════════════════════════════════════════════════════════════════════
+
+export interface PlaceholderMachineInput {
+  capex_po_id: string;
+  vendor_id: string;
+  vendor_name: string;
+  item_name: string;
+  asset_code: string;
+  cost: number;
+  entity_code: string;
+  fixed_asset_id?: string | null;
+}
+
+export interface PlaceholderMachineResult {
+  machine_id: string;
+  placeholder: boolean;
+}
+
+function readMachines(entityCode: string): Machine[] {
+  try {
+    // [JWT] GET /api/plant-ops/machines
+    const raw = localStorage.getItem(machinesKey(entityCode));
+    return raw ? (JSON.parse(raw) as Machine[]) : [];
+  } catch { return []; }
+}
+
+function writeMachines(entityCode: string, list: Machine[]): void {
+  // [JWT] POST /api/plant-ops/machines
+  localStorage.setItem(machinesKey(entityCode), JSON.stringify(list));
+}
+
+function nextMachineCode(existing: Machine[]): string {
+  const nums = existing
+    .map(m => /MCH-(\d+)/.exec(m.code))
+    .filter((x): x is RegExpExecArray => !!x)
+    .map(x => parseInt(x[1], 10));
+  const next = (nums.length ? Math.max(...nums) : 0) + 1;
+  return `MCH-${String(next).padStart(4, '0')}`;
+}
+
+/**
+ * Idempotent · if a machine already exists with same asset_tag === asset_code,
+ * returns its id and placeholder=false.
+ */
+export function addPlaceholderMachineToCapacity(
+  input: PlaceholderMachineInput,
+): PlaceholderMachineResult {
+  const existing = readMachines(input.entity_code);
+  const dupe = existing.find(m => m.asset_tag === input.asset_code);
+  if (dupe) return { machine_id: dupe.id, placeholder: false };
+
+  const now = new Date().toISOString();
+  // Use 'idle' as MachineStatus to remain enum-compliant; flag via notes prefix.
+  const status: MachineStatus = 'idle';
+  const machine: Machine = {
+    id: `mch-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+    entity_id: input.entity_code,
+    factory_id: '',
+    work_center_id: '',
+    code: nextMachineCode(existing),
+    name: input.item_name,
+    asset_tag: input.asset_code,
+    fixed_asset_id: input.fixed_asset_id ?? null,
+    manufacturer: input.vendor_name,
+    model: '',
+    serial_number: '',
+    year_of_make: new Date().getFullYear(),
+    capabilities: [],
+    rated_capacity_per_hour: 0,
+    rated_capacity_uom: '',
+    setup_time_minutes: 0,
+    current_status: status,
+    current_operator_employee_id: null,
+    last_maintenance_at: null,
+    next_maintenance_due: null,
+    maintenance_interval_hours: 0,
+    hourly_run_cost: 0,
+    power_kw: 0,
+    notes: `[PENDING_CONFIGURATION] Auto-created from CAPEX PO ${input.capex_po_id} · cost ₹${input.cost.toLocaleString('en-IN')} · vendor ${input.vendor_name} · configure factory/work-center/capacity before scheduling.`,
+    created_at: now,
+    created_by: 'system:capex-cascade',
+    updated_at: now,
+    updated_by: 'system:capex-cascade',
+  };
+
+  writeMachines(input.entity_code, [...existing, machine]);
+  return { machine_id: machine.id, placeholder: true };
+}
+
