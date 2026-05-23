@@ -128,6 +128,13 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   const [multiOutputMode, setMultiOutputMode] = useState<boolean>(false);
   const [outputs, setOutputs] = useState<ProductionOrderOutput[]>([]);
 
+  // Sprint T-Phase-3.PROD-1 · Sub-theme 2 · BOM shortage advisory dialog state
+  const [pendingRelease, setPendingRelease] = useState<{
+    po: import('@/types/production-order').ProductionOrder;
+    bom: Bom;
+    shortages: BOMShortageItem[];
+  } | null>(null);
+
   // Block I · Plan Linkage Picker (M:N · Q14=a · D-551)
   const { plans } = useProductionPlans();
   const approvedPlans = useMemo(
