@@ -67,7 +67,7 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'Outward Movement Report', module: 'dops-r-outward-movement',     icon: GitMerge },
   { label: 'Packing Consumption',     module: 'dops-r-packing-consumption',  icon: TrendingUp },
   { label: 'Packer Performance',      module: 'dops-r-packer-performance',   icon: Users },
-  { label: 'Dispatch Summary',        module: 'dops-r-dispatch-summary',     icon: BarChart3, badge: 'Soon' },
+  { label: 'Dispatch Summary',        module: 'dops-r-dispatch-summary',     icon: BarChart3 },
   { label: 'SOM Register (SalesX) ↗', module: 'dops-link-som-register',      icon: ArrowUpRight },
   { label: 'DOM Register (SalesX) ↗', module: 'dops-link-dom-register',      icon: ArrowUpRight },
 ];

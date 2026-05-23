@@ -25,6 +25,8 @@ import { SampleOutwardIssuePanel } from './transactions/SampleOutwardIssue';
 import { DemoOutwardIssuePanel } from './transactions/DemoOutwardIssue';
 import { OutwardMovementReportPanel } from './reports/OutwardMovementReport';
 import { DeliveryMemoRegisterPanel } from './reports/DeliveryMemoRegister';
+// Sprint 46 Pass 2 · B.1
+import { DispatchSummaryPanel } from './reports/DispatchSummary';
 
 function ComingSoonPanel({ module }: { module: DispatchOpsModule }) {
   return (
@@ -79,6 +81,7 @@ function renderModule(mod: DispatchOpsModule, entityCode: string): React.ReactEl
     case 'dops-r-packing-consumption':   return <PackingConsumptionReportPanel />;
     case 'dops-r-packer-performance':    return <PackerPerformanceReportPanel />;
     case 'dops-r-delivery-memo-register':return <DeliveryMemoRegisterPanel />;
+    case 'dops-r-dispatch-summary':      return <DispatchSummaryPanel />;
     default:                             return <ComingSoonPanel module={mod} />;
   }
 }
