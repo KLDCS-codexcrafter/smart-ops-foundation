@@ -253,6 +253,8 @@ export function FinCorePagePanel() {
       case 'fc-rpt-stock-summary': return <StockSummaryPanel entityCode={entityCode} />;
       case 'fc-rpt-outstanding': return <OutstandingAgingPanel entityCode={entityCode} />;
       case 'fc-bnk-reconciliation': return <BankReconciliationPanel entityCode={entityCode} />;
+      case 'fc-bnk-reconciliation-v2': return <BankReconciliationAdvancedPanel entityCode={entityCode} />;
+      case 'fc-rpt-asset-unification': return <AssetUnificationPanel entityCode={entityCode} />;
       case 'fc-bnk-cheque': return <ChequeManagementPanel entityCode={entityCode} />;
       case 'fc-out-receivables': return <OutstandingAgingPanel entityCode={entityCode} type="debtor" />;
       case 'fc-out-payables': return <OutstandingAgingPanel entityCode={entityCode} type="creditor" />;
