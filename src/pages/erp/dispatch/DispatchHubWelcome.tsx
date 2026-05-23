@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Truck, ClipboardEdit, CheckCircle2, AlertTriangle, ArrowRight, Inbox } from 'lucide-react';
+import { Truck, ClipboardEdit, CheckCircle2, AlertTriangle, ArrowRight, Inbox, PackageX } from 'lucide-react';
 import type { Voucher } from '@/types/voucher';
 import type { POD } from '@/types/pod';
 import { podsKey } from '@/types/pod';
@@ -18,6 +18,7 @@ import type { DispatchHubModule } from './DispatchHubSidebar';
 import { listInwardReceipts, listQuarantineQueue } from '@/lib/inward-receipt-engine';
 import { listPendingVendorReturns } from '@/lib/vendor-return-engine';
 import { countPendingReceiptAcks } from '@/lib/stock-receipt-ack-engine';
+import { packingMaterialsKey, type PackingMaterial } from '@/types/packing-material';
 import { useT } from '@/lib/i18n-engine';
 
 interface Props { onModuleChange: (m: DispatchHubModule) => void }
@@ -41,6 +42,7 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
   const [vendorReturnCount, setVendorReturnCount] = useState(0);
   const [releasedTodayCount, setReleasedTodayCount] = useState(0);
   const [pendingAcksCount, setPendingAcksCount] = useState(0);
+  const [packingReorderCount, setPackingReorderCount] = useState(0);
 
   useEffect(() => {
     // [JWT] GET /api/accounting/vouchers
@@ -60,6 +62,12 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
     setVendorReturnCount(listPendingVendorReturns(entityCode).length);
     // Card #7 D-384 cross-card · Pending Stores acknowledgment of released IRs
     setPendingAcksCount(countPendingReceiptAcks(entityCode));
+    // Sprint 46 Pass 1 · B.6 · 10th KPI · Packing Reorder
+    try {
+      const pmRaw = localStorage.getItem(packingMaterialsKey(entityCode));
+      const pms = pmRaw ? (JSON.parse(pmRaw) as PackingMaterial[]) : [];
+      setPackingReorderCount(pms.filter(m => m.active && m.current_stock <= m.reorder_level).length);
+    } catch { setPackingReorderCount(0); }
   }, [entityCode]);
 
   const dlns = useMemo(
@@ -105,6 +113,9 @@ export function DispatchHubWelcomePanel({ onModuleChange }: Props) {
     { label: 'Released Today', value: releasedTodayCount, icon: CheckCircle2, accent: 'text-emerald-600 bg-emerald-500/10' },
     { label: 'Vendor Returns', value: vendorReturnCount, icon: ArrowRight, accent: 'text-amber-600 bg-amber-500/10' },
     { label: 'Pending Acks', value: pendingAcksCount, icon: Inbox, accent: 'text-indigo-600 bg-indigo-500/10' },
+    // Sprint 46 Pass 1 · B.6 · 10th KPI tile
+    { label: 'Packing Reorder', value: packingReorderCount, icon: PackageX,
+      accent: packingReorderCount > 0 ? 'text-orange-600 bg-orange-500/10' : 'text-muted-foreground bg-muted' },
   ];
 
   return (

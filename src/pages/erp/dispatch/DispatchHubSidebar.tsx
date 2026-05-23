@@ -53,7 +53,9 @@ export type DispatchHubModule =
   | 'dh-r-packing-slip-register'
   | 'dh-r-pod-register'
   // UPRA-3 Phase A Step 2 · Tier-1 NEW
-  | 'dh-r-transporter-invoice-register';
+  | 'dh-r-transporter-invoice-register'
+  // Sprint 46 Pass 1 · Theme A §1.4 · Inward EWB Monitor (re-scoped per Q1=A1)
+  | 'dh-r-ewb-monitor';
 
 interface DispatchHubSidebarProps {
   activeModule: DispatchHubModule;
@@ -85,6 +87,8 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'POD Register',              module: 'dh-r-pod-register',              icon: FileCheck2 },
   // UPRA-3 Phase A Step 2 · Tier-1 NEW
   { label: 'Transporter Invoice Register', module: 'dh-r-transporter-invoice-register', icon: Receipt },
+  // Sprint 46 Pass 1 · Theme A §1.4
+  { label: 'EWB Monitor',                  module: 'dh-r-ewb-monitor',                  icon: ShieldAlert },
 ];
 
 // Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION

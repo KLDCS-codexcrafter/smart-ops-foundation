@@ -80,6 +80,7 @@ export function QuarantineQueuePanel() {
                 <TableHead>Arrival</TableHead>
                 <TableHead>Vendor</TableHead>
                 <TableHead className="text-right">Q-Lines</TableHead>
+                <TableHead>EWB</TableHead>
                 <TableHead>Top Reason</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -88,12 +89,12 @@ export function QuarantineQueuePanel() {
               {loading ? (
                 Array.from({ length: 3 }).map((_, i) => (
                   <TableRow key={`sk-${i}`}>
-                    <TableCell colSpan={6}><Skeleton className="h-6 w-full" /></TableCell>
+                    <TableCell colSpan={7}><Skeleton className="h-6 w-full" /></TableCell>
                   </TableRow>
                 ))
               ) : rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
                     <div className="flex flex-col items-center gap-2">
                       <ShieldAlert className="h-8 w-8 text-muted-foreground/40" />
                       <p className="text-sm">No quarantine items</p>
@@ -105,12 +106,26 @@ export function QuarantineQueuePanel() {
                 const top = r.lines.find(l =>
                   l.routing_decision === 'quarantine' || l.routing_decision === 'inspection_required',
                 );
+                const hrs = r.ewb_valid_till
+                  ? (new Date(r.ewb_valid_till).getTime() - Date.now()) / 3_600_000
+                  : null;
+                const ewbCls = hrs == null ? ''
+                  : hrs <= 0 ? 'bg-destructive/15 text-destructive border-destructive/30'
+                  : hrs < 4 ? 'bg-warning/15 text-warning border-warning/30'
+                  : hrs < 24 ? 'bg-muted text-muted-foreground' : '';
                 return (
                   <TableRow key={r.id} className="hover:bg-muted/50">
                     <TableCell className="font-mono text-sm">{r.receipt_no}</TableCell>
                     <TableCell className="font-mono text-xs">{r.arrival_date}</TableCell>
                     <TableCell className="text-sm">{r.vendor_name}</TableCell>
                     <TableCell className="text-right font-mono text-sm">{r.quarantine_lines}</TableCell>
+                    <TableCell>
+                      {r.ewb_number
+                        ? <Badge variant="outline" className={`text-[10px] ${ewbCls}`}>
+                            {hrs == null ? r.ewb_number : hrs <= 0 ? 'EXPIRED' : `${hrs.toFixed(1)}h`}
+                          </Badge>
+                        : <span className="text-xs text-muted-foreground">—</span>}
+                    </TableCell>
                     <TableCell className="text-xs text-muted-foreground">
                       {top ? `${ROUTING_DECISION_LABELS[top.routing_decision]} · ${top.routing_reason}` : '—'}
                     </TableCell>

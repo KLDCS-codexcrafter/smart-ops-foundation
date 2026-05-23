@@ -62,6 +62,10 @@ export interface CreateInwardReceiptInput {
   lines: CreateInwardReceiptLineInput[];
   narration?: string;
   reference_no?: string | null;
+  // Sprint 46 Pass 1 · Theme A · EWB capture (optional · non-breaking)
+  ewb_number?: string | null;
+  ewb_generated_at?: string | null;
+  ewb_valid_till?: string | null;
 }
 
 // ============================================================
@@ -197,6 +201,9 @@ export async function createInwardReceipt(
     cancel_reason: null,
     reference_no: input.reference_no ?? null,
     voucher_hash: null,
+    ewb_number: input.ewb_number ?? null,
+    ewb_generated_at: input.ewb_generated_at ?? null,
+    ewb_valid_till: input.ewb_valid_till ?? null,
     created_at: now,
     updated_at: now,
     released_at: null,

@@ -20,8 +20,9 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus, Search, AlertTriangle, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Search, AlertTriangle, Pencil, Trash2, PackageX, ShoppingCart } from 'lucide-react';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
   type PackingMaterial, type PackingMaterialKind, type PackingMaterialUOM,
@@ -78,11 +79,13 @@ function seedDefaults(entity: string): PackingMaterial[] {
 
 export function PackingMaterialMasterPanel() {
   const { entityCode } = useCardEntitlement();
+  const navigate = useNavigate();
   const storageKey = packingMaterialsKey(entityCode);
 
   const [materials, setMaterials] = useState<PackingMaterial[]>([]);
   const [search, setSearch] = useState('');
   const [kindFilter, setKindFilter] = useState<'all' | PackingMaterialKind>('all');
+  const [reorderOnly, setReorderOnly] = useState(false);
   const [editing, setEditing] = useState<PackingMaterial | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -106,9 +109,10 @@ export function PackingMaterialMasterPanel() {
     const needle = search.trim().toLowerCase();
     return materials.filter(m =>
       (kindFilter === 'all' || m.kind === kindFilter) &&
+      (!reorderOnly || m.current_stock <= m.reorder_level) &&
       (!needle || m.code.toLowerCase().includes(needle) || m.name.toLowerCase().includes(needle))
     );
-  }, [materials, search, kindFilter]);
+  }, [materials, search, kindFilter, reorderOnly]);
 
   const lowStock = useMemo(
     () => materials.filter(m => m.active && m.current_stock <= m.reorder_level),
@@ -194,6 +198,16 @@ export function PackingMaterialMasterPanel() {
                 {KINDS.map(k => <SelectItem key={k} value={k}>{k.replace(/_/g, ' ')}</SelectItem>)}
               </SelectContent>
             </Select>
+            {/* Sprint 46 Pass 1 · B.6 · Reorder Only toggle */}
+            <Button
+              size="sm"
+              variant={reorderOnly ? 'default' : 'outline'}
+              onClick={() => setReorderOnly(v => !v)}
+              className={reorderOnly ? 'bg-orange-600 hover:bg-orange-700 text-white' : ''}
+            >
+              <PackageX className="h-3.5 w-3.5 mr-1" />
+              Reorder Only{reorderOnly ? ` · ${lowStock.length}` : ''}
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
@@ -233,6 +247,17 @@ export function PackingMaterialMasterPanel() {
                         : <Badge variant="outline" className="text-[10px]">Inactive</Badge>}
                     </TableCell>
                     <TableCell className="text-right">
+                      {low && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 mr-1 text-orange-600 border-orange-500/40 hover:bg-orange-500/10"
+                          onClick={() => navigate('/erp/procure-hub?m=po-list')}
+                        >
+                          <ShoppingCart className="h-3.5 w-3.5 mr-1" />
+                          Raise PO
+                        </Button>
+                      )}
                       <Button size="icon" variant="ghost" onClick={() => openEdit(m)}>
                         <Pencil className="h-3.5 w-3.5" />
                       </Button>

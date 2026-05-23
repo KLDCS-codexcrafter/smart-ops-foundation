@@ -14,6 +14,7 @@ import type { Voucher } from '@/types/voucher';
 import type { POD } from '@/types/pod';
 import { podsKey } from '@/types/pod';
 import { vouchersKey } from '@/lib/fincore-engine';
+import { lrAcceptancesKey, type LRAcceptance } from '@/types/logistic-portal';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
 import type { DispatchHubModule } from '../DispatchHubSidebar';
@@ -36,6 +37,7 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
   const { entityCode } = useCardEntitlement();
   const [vouchers, setVouchers] = useState<Voucher[]>([]);
   const [pods, setPods] = useState<POD[]>([]);
+  const [acceptances, setAcceptances] = useState<LRAcceptance[]>([]);
   const [tab, setTab] = useState<TabKey>('all');
   const [search, setSearch] = useState('');
   const [podDialog, setPodDialog] = useState<POD | null>(null);
@@ -44,6 +46,8 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
   useEffect(() => {
     setVouchers(ls<Voucher>(vouchersKey(entityCode)));
     setPods(ls<POD>(podsKey(entityCode)));
+    // Sprint 46 Pass 1 · B.2 · LRAcceptance join for Carrier Acceptance column
+    setAcceptances(ls<LRAcceptance>(lrAcceptancesKey(entityCode)));
   }, [entityCode]);
 
   const dlns = useMemo(
@@ -55,6 +59,11 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
     pods.forEach(p => m.set(p.dln_voucher_id, p));
     return m;
   }, [pods]);
+  const acceptanceByDln = useMemo(() => {
+    const m = new Map<string, LRAcceptance>();
+    acceptances.forEach(a => m.set(a.dln_voucher_id, a));
+    return m;
+  }, [acceptances]);
 
   const filtered = useMemo(() => {
     const needle = search.trim().toLowerCase();
@@ -138,13 +147,20 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
                       <tr className="text-left text-xs uppercase text-muted-foreground border-b">
                         <th className="py-2">DLN No</th><th>Date</th><th>Party</th>
                         <th>Transporter</th><th>LR No</th><th>LR Date</th>
-                        <th>Age</th><th>POD</th><th></th>
+                        <th>Age</th><th>POD</th><th>Carrier Acceptance</th><th></th>
                       </tr>
                     </thead>
                     <tbody>
                       {filtered.map(d => {
                         const pod = podByDln.get(d.id);
+                        const acc = acceptanceByDln.get(d.id);
                         const age = ageDays(d.date);
+                        const accBadge = !acc
+                          ? <span className="text-xs text-muted-foreground">No carrier action</span>
+                          : acc.status === 'awaiting'  ? <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground">Awaiting</Badge>
+                          : acc.status === 'accepted'  ? <Badge variant="outline" className="text-[10px] bg-success/10 text-success border-success/30">Accepted{acc.accepted_at ? ` · ${acc.accepted_at.slice(0, 10)}` : ''}</Badge>
+                          : acc.status === 'rejected'  ? <Badge variant="outline" className="text-[10px] bg-destructive/10 text-destructive border-destructive/30" title={acc.rejection_reason ?? ''}>Rejected{acc.rejection_reason ? ` · ${acc.rejection_reason.slice(0, 24)}` : ''}</Badge>
+                          :                              <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30">Invoiced</Badge>;
                         return (
                           <tr key={d.id} className="border-b hover:bg-blue-500/5">
                             <td className="py-2 font-mono text-xs">{d.voucher_no}</td>
@@ -163,6 +179,7 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
                                 {pod?.status ?? 'none'}
                               </Badge>
                             </td>
+                            <td>{accBadge}</td>
                             <td className="text-right">
                               {!d.lr_no && (
                                 <Button size="sm" variant="ghost" className="text-blue-600 h-7"

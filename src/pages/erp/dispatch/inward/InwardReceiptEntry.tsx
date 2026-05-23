@@ -52,6 +52,10 @@ export function InwardReceiptEntryPanel({ onModuleChange }: Props) {
   const [vendorInvoiceNo, setVendorInvoiceNo] = useState('');
   const [godownName, setGodownName] = useState('Main Godown');
   const [narration, setNarration] = useState('');
+  // Sprint 46 Pass 1 · Theme A §1.3 · EWB capture fields
+  const [ewbNumber, setEwbNumber] = useState('');
+  const [ewbGeneratedAt, setEwbGeneratedAt] = useState('');
+  const [ewbValidTill, setEwbValidTill] = useState('');
   const [lines, setLines] = useState<LineDraft[]>([blankLine()]);
   const [saving, setSaving] = useState(false);
 
@@ -86,6 +90,9 @@ export function InwardReceiptEntryPanel({ onModuleChange }: Props) {
         received_by_id: userId,
         received_by_name: userId,
         narration: narration.trim(),
+        ewb_number: ewbNumber.trim() || null,
+        ewb_generated_at: ewbGeneratedAt ? new Date(ewbGeneratedAt).toISOString() : null,
+        ewb_valid_till: ewbValidTill ? new Date(ewbValidTill).toISOString() : null,
         lines: validLines.map(l => ({
           item_id: l.item_code.trim(),
           item_code: l.item_code.trim(),
@@ -129,6 +136,16 @@ export function InwardReceiptEntryPanel({ onModuleChange }: Props) {
           <div><Label>Vehicle No</Label><Input value={vehicleNo} onChange={e => setVehicleNo(e.target.value)} /></div>
           <div><Label>LR No</Label><Input value={lrNo} onChange={e => setLrNo(e.target.value)} /></div>
           <div className="md:col-span-3"><Label>Godown</Label><Input value={godownName} onChange={e => setGodownName(e.target.value)} /></div>
+        </CardContent>
+      </Card>
+
+      {/* Sprint 46 Pass 1 · Theme A §1.3 · EWB capture */}
+      <Card>
+        <CardHeader><CardTitle className="text-sm">E-Way Bill (optional)</CardTitle></CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div><Label>EWB Number</Label><Input value={ewbNumber} onChange={e => setEwbNumber(e.target.value)} placeholder="12-digit EWB no" /></div>
+          <div><Label>Generated At</Label><Input type="datetime-local" value={ewbGeneratedAt} onChange={e => setEwbGeneratedAt(e.target.value)} /></div>
+          <div><Label>Valid Till</Label><Input type="datetime-local" value={ewbValidTill} onChange={e => setEwbValidTill(e.target.value)} /></div>
         </CardContent>
       </Card>
 
