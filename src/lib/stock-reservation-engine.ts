@@ -238,6 +238,53 @@ export function createProductionOrderReservations(
   return fresh;
 }
 
+// ── 5c. BOM shortage computation (Sprint T-Phase-3.PROD-1 · Sub-theme 2 · advisory) ──
+
+export interface BOMShortageItem {
+  item_id: string;
+  item_name: string;
+  required_qty: number;
+  available_qty: number;
+  shortage_qty: number;
+  uom: string;
+}
+
+/**
+ * Compute shortage for a list of BOM-required items against current on-hand
+ * minus active reservations. Pure advisory · does NOT block release.
+ * Sprint T-Phase-3.PROD-1 · Q-LOCK-3 + 4 middle-path.
+ */
+export function computeBOMShortage(
+  entityCode: string,
+  items: Array<{ item_id: string; item_name: string; required_qty: number; uom: string }>,
+): BOMShortageItem[] {
+  if (!items || items.length === 0) return [];
+  const onHandMap = loadOnHandMap();
+  const reservations = loadReservations(entityCode).filter(r => r.status === 'active');
+  const reservedByItem = new Map<string, number>();
+  for (const r of reservations) {
+    reservedByItem.set(r.item_name, (reservedByItem.get(r.item_name) ?? 0) + r.reserved_qty);
+  }
+  const shortages: BOMShortageItem[] = [];
+  for (const it of items) {
+    if (!it.item_name || it.required_qty <= 0) continue;
+    const onHand = onHandMap.get(it.item_name) ?? 0;
+    const reserved = reservedByItem.get(it.item_name) ?? 0;
+    const available = onHand - reserved;
+    if (available < it.required_qty) {
+      shortages.push({
+        item_id: it.item_id,
+        item_name: it.item_name,
+        required_qty: it.required_qty,
+        available_qty: Math.max(0, available),
+        shortage_qty: it.required_qty - Math.max(0, available),
+        uom: it.uom,
+      });
+    }
+  }
+  return shortages;
+}
+
 /**
  * Release production-order reservations · status 'active' → 'released'.
  * Mirrors releaseQuoteReservations pattern · Sprint 3a-pre-2 D-186 lineage extension.
