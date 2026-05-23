@@ -21,6 +21,11 @@ import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import type { QualiCheckConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 // Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
 import { logAudit } from '@/lib/audit-trail-engine';
+// Sprint T-Phase-3.PROD-2 · Sub-theme 3 · PROD-LEAK-5 advisory shortage detection.
+import {
+  detectJWReceiptShortages,
+  persistJWShortageAlerts,
+} from '@/lib/job-work-shortage-engine';
 
 export interface CreateJobWorkReceiptInput {
   entity_id: string;
@@ -190,6 +195,13 @@ export function confirmJobWorkReceipt(
     updated_by: user.name,
   };
   persist(jwr.entity_id, updated);
+  // PROD-2 ST3 · PROD-LEAK-5 · non-blocking advisory shortage detection.
+  try {
+    const alerts = detectJWReceiptShortages(updated, jwr.entity_id);
+    if (alerts.length > 0) persistJWShortageAlerts(alerts, jwr.entity_id);
+  } catch {
+    /* advisory · failures must not block receipt confirm */
+  }
   return updated;
 }
 
