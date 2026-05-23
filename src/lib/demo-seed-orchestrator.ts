@@ -504,6 +504,11 @@ export function seedEntityDemoData(
     DEMO_BOM_HAPPY_PATH.map(b => ({ ...b, entity_id: entityCode })),
   );
 
+  // Sprint HK-6.T1 · §19 closure · 4 mock bank statements for Banking Reconciliation demo (55 transactions)
+  // FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-bank-statements-seed-data.ts file.
+  seedSinhaBankStatements(entityCode);
+
+
   return {
     entityCode, archetype,
     customers, vendors, items, samPersons, enquiries, quotations,
