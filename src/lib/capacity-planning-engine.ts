@@ -424,7 +424,7 @@ export function addPlaceholderMachineToCapacity(
 // Additive extension · matches PROD-1 backward-compat pattern.
 
 import { jobCardsKey } from '@/types/job-card';
-import type { JobCard } from '@/types/job-card';
+
 
 export interface BottleneckAlert {
   machine_id: string;
