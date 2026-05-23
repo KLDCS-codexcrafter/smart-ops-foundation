@@ -539,7 +539,6 @@ function CountDetail({
           `${result.applied_count} applied · ${result.skipped_count} skipped · ${result.validation_errors.length} errors`,
         );
         // Errors are reported via toast summary; detailed view deferred to T2.
-        // eslint-disable-next-line no-console
         console.warn('Excel import validation errors', result.validation_errors);
       } else {
         toast.success(`Imported ${result.applied_count} lines from Excel`);
