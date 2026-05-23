@@ -6,12 +6,22 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Smartphone, Monitor } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import { podsKey, type POD, type PODStatus } from '@/types/pod';
 import { PODDetailPanel } from './detail/PODDetailPanel';
 import { PODPrint } from './print/PODPrint';
+
+// Sprint 46 Pass 1 · B.3 · mobile/web capture source detection
+type CaptureSource = 'all' | 'mobile' | 'web';
+function isMobileCapture(p: POD): boolean {
+  if (p.captured_by.startsWith('driver-') || p.captured_by.startsWith('mobile-')) return true;
+  if (p.gps_latitude !== null && p.gps_accuracy_m !== null && p.gps_accuracy_m <= 50) return true;
+  return false;
+}
 
 const STATUS_LABELS: Record<PODStatus, string> = {
   pending: 'Pending', captured: 'Captured', verified: 'Verified',
@@ -78,14 +88,20 @@ export function PODRegisterPanel() {
   const [selected, setSelected] = useState<POD | null>(null);
   const [printing, setPrinting] = useState<POD | null>(null);
   const [tick, setTick] = useState(0);
+  const [source, setSource] = useState<CaptureSource>('all');
 
   useEffect(() => { seedIfEmpty(safeEntity); setTick(t => t + 1); }, [safeEntity]);
 
-  const rows = useMemo<POD[]>(() => {
+  const allRows = useMemo<POD[]>(() => {
     try { return JSON.parse(localStorage.getItem(podsKey(safeEntity)) || '[]') as POD[]; }
     catch { return []; }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [safeEntity, tick]);
+
+  const rows = useMemo<POD[]>(() => {
+    if (source === 'all') return allRows;
+    return allRows.filter(p => source === 'mobile' ? isMobileCapture(p) : !isMobileCapture(p));
+  }, [allRows, source]);
 
   const meta: RegisterMeta<POD> = {
     registerCode: 'pod_register',
@@ -104,6 +120,14 @@ export function PODRegisterPanel() {
     { key: 'photo', label: 'Photo', render: r => r.photo_verified ? '✓' : '—', exportKey: r => r.photo_verified ? 'Yes' : 'No' },
     { key: 'sig', label: 'Sign', render: r => r.signature_verified ? '✓' : '—', exportKey: r => r.signature_verified ? 'Yes' : 'No' },
     { key: 'otp', label: 'OTP', render: r => r.otp_verified ? '✓' : '—', exportKey: r => r.otp_verified ? 'Yes' : 'No' },
+    // Sprint 46 Pass 1 · B.3 · Source column
+    {
+      key: 'source', label: 'Source',
+      render: r => isMobileCapture(r)
+        ? <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/30"><Smartphone className="h-3 w-3 mr-1 inline" />Mobile</Badge>
+        : <Badge variant="outline" className="text-[10px] text-muted-foreground"><Monitor className="h-3 w-3 mr-1 inline" />Web</Badge>,
+      exportKey: r => isMobileCapture(r) ? 'Mobile' : 'Web',
+    },
     { key: 'status', label: 'Status', render: r => (
       <Badge className={`text-[10px] ${STATUS_TONE[r.status]}`}>{STATUS_LABELS[r.status]}</Badge>
     ), exportKey: 'status' },
@@ -122,6 +146,23 @@ export function PODRegisterPanel() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      {/* Sprint 46 Pass 1 · B.3 · Capture source filter chips */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-xs text-muted-foreground uppercase tracking-wider">Capture Source:</span>
+        {([
+          { v: 'all',    l: 'All Sources' },
+          { v: 'web',    l: 'Web Capture' },
+          { v: 'mobile', l: 'Mobile Capture (OperixGo)' },
+        ] as const).map(o => (
+          <Button
+            key={o.v}
+            size="sm"
+            variant={source === o.v ? 'default' : 'outline'}
+            onClick={() => setSource(o.v)}
+            className="h-7 text-xs"
+          >{o.l}</Button>
+        ))}
+      </div>
       <UniversalRegisterGrid<POD>
         entityCode={safeEntity}
         meta={meta}
