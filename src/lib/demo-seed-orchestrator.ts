@@ -704,3 +704,197 @@ function seedSinhaBankStatements(entityCode: string): void {
     );
   } catch { /* quota */ }
 }
+
+// ============================================================================
+// T-Phase-3.PROD-1 · ST10 · Sinha-anchor Production seed (Q-LOCK-13)
+// FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-*-seed-data file
+// ============================================================================
+import type { Order, OrderLine } from '@/types/order';
+import { ordersKey } from '@/types/order';
+import type { OperatorSkill, SkillOperationMapping } from './peoplepay-skill-engine';
+import { operatorSkillsKey, skillOperationMappingKey } from './peoplepay-skill-engine';
+
+function seedSinhaProductionEligibleSalesOrders(entityCode: string): void {
+  try {
+    const existing = localStorage.getItem(ordersKey(entityCode));
+    if (existing) {
+      const arr = JSON.parse(existing) as Order[];
+      if (arr.some(o => o.order_no?.startsWith('SO/PROD-1/'))) return; // idempotent
+    }
+  } catch { /* fall through */ }
+
+  const today = new Date();
+  const daysAgo = (n: number): string => {
+    const d = new Date(today.getTime() - n * 86400000);
+    return d.toISOString().slice(0, 10);
+  };
+  const mkLine = (
+    id: string,
+    itemId: string,
+    itemCode: string,
+    itemName: string,
+    qty: number,
+    rate: number,
+    delivery: string,
+  ): OrderLine => {
+    const taxable = qty * rate;
+    return {
+      id, item_id: itemId, item_code: itemCode, item_name: itemName,
+      hsn_sac_code: '8428', qty, uom: 'NOS', rate,
+      discount_percent: 0, taxable_value: taxable, gst_rate: 18,
+      delivery_date: delivery, pending_qty: qty, fulfilled_qty: 0, status: 'open',
+    };
+  };
+
+  // Sinha pattern: ETO turnkey + spares + export
+  const sos: Order[] = [
+    // 3 large turnkey
+    {
+      id: 'so-prod1-001', order_no: 'SO/PROD-1/0001', base_voucher_type: 'Sales Order',
+      entity_id: entityCode, date: daysAgo(55),
+      party_id: 'cust-ace-corp', party_name: 'Ace Cement Corp',
+      lines: [
+        mkLine('l1', 'it-m-1', 'MF-F001', 'Automotive Gear Assembly', 50, 8500, daysAgo(-15)),
+        mkLine('l2', 'it-m-6', 'MF-F006', 'Hydraulic Cylinder', 30, 12500, daysAgo(-20)),
+      ],
+      gross_amount: 800000, total_tax: 144000, net_amount: 944000,
+      narration: 'Turnkey belt conveyor system · 30 TPH',
+      terms_conditions: '50% advance · balance against PI',
+      status: 'open', created_at: daysAgo(55) + 'T10:00:00Z', updated_at: daysAgo(55) + 'T10:00:00Z',
+    },
+    {
+      id: 'so-prod1-002', order_no: 'SO/PROD-1/0002', base_voucher_type: 'Sales Order',
+      entity_id: entityCode, date: daysAgo(45),
+      party_id: 'cust-bharat-steel', party_name: 'Bharat Steel Mills',
+      lines: [
+        mkLine('l1', 'it-m-7', 'MF-F007', 'Crankshaft Forged', 40, 18500, daysAgo(-25)),
+      ],
+      gross_amount: 740000, total_tax: 207200, net_amount: 947200,
+      narration: 'Bucket elevator turnkey · 50m height',
+      terms_conditions: '30% advance · balance LC sight',
+      status: 'open', created_at: daysAgo(45) + 'T10:00:00Z', updated_at: daysAgo(45) + 'T10:00:00Z',
+    },
+    {
+      id: 'so-prod1-003', order_no: 'SO/PROD-1/0003', base_voucher_type: 'Sales Order',
+      entity_id: entityCode, date: daysAgo(35),
+      party_id: 'cust-ganesh-poly', party_name: 'Ganesh Polymers Ltd',
+      lines: [
+        mkLine('l1', 'it-m-2', 'MF-F002', 'Pump Housing', 75, 4200, daysAgo(-10)),
+        mkLine('l2', 'it-m-3', 'MF-F003', 'Motor Coil 3-Phase', 25, 6500, daysAgo(-10)),
+      ],
+      gross_amount: 477500, total_tax: 85950, net_amount: 563450,
+      narration: 'Screw conveyor turnkey · pneumatic discharge',
+      terms_conditions: '40% advance',
+      status: 'open', created_at: daysAgo(35) + 'T10:00:00Z', updated_at: daysAgo(35) + 'T10:00:00Z',
+    },
+    // 4 spares
+    {
+      id: 'so-prod1-004', order_no: 'SO/PROD-1/0004', base_voucher_type: 'Sales Order',
+      entity_id: entityCode, date: daysAgo(25),
+      party_id: 'cust-deepak-min', party_name: 'Deepak Minerals',
+      lines: [mkLine('l1', 'it-m-5', 'MF-F005', 'Bearing 6204', 200, 280, daysAgo(-5))],
+      gross_amount: 56000, total_tax: 10080, net_amount: 66080,
+      narration: 'Spare bearings · maintenance batch',
+      terms_conditions: 'Net 30',
+      status: 'open', created_at: daysAgo(25) + 'T10:00:00Z', updated_at: daysAgo(25) + 'T10:00:00Z',
+    },
+    {
+      id: 'so-prod1-005', order_no: 'SO/PROD-1/0005', base_voucher_type: 'Sales Order',
+      entity_id: entityCode, date: daysAgo(20),
+      party_id: 'cust-eshwar-eng', party_name: 'Eshwar Engineering Works',
+      lines: [mkLine('l1', 'it-m-4', 'MF-F004', 'Valve Body Brass', 50, 1850, daysAgo(-8))],
+      gross_amount: 92500, total_tax: 16650, net_amount: 109150,
+      narration: 'Replacement valves',
+      terms_conditions: 'Net 15',
+      status: 'open', created_at: daysAgo(20) + 'T10:00:00Z', updated_at: daysAgo(20) + 'T10:00:00Z',
+    },
+    {
+      id: 'so-prod1-006', order_no: 'SO/PROD-1/0006', base_voucher_type: 'Sales Order',
+      entity_id: entityCode, date: daysAgo(15),
+      party_id: 'cust-falcon-auto', party_name: 'Falcon Auto Parts',
+      lines: [
+        mkLine('l1', 'it-m-8', 'MF-F008', 'Brake Disc', 60, 2800, daysAgo(-12)),
+        mkLine('l2', 'it-m-9', 'MF-F009', 'Clutch Plate', 40, 1950, daysAgo(-12)),
+      ],
+      gross_amount: 246000, total_tax: 68880, net_amount: 314880,
+      narration: 'Aftermarket spares batch',
+      terms_conditions: 'Net 30',
+      status: 'open', created_at: daysAgo(15) + 'T10:00:00Z', updated_at: daysAgo(15) + 'T10:00:00Z',
+    },
+    {
+      id: 'so-prod1-007', order_no: 'SO/PROD-1/0007', base_voucher_type: 'Sales Order',
+      entity_id: entityCode, date: daysAgo(10),
+      party_id: 'cust-gulf-export', party_name: 'Gulf Trading FZE',
+      lines: [mkLine('l1', 'it-m-10', 'MF-F010', 'Radiator Assembly', 25, 7200, daysAgo(-18))],
+      gross_amount: 180000, total_tax: 0, net_amount: 180000,
+      narration: 'Export · zero-rated · UAE',
+      terms_conditions: 'LC at sight · CIF Jebel Ali',
+      status: 'open', created_at: daysAgo(10) + 'T10:00:00Z', updated_at: daysAgo(10) + 'T10:00:00Z',
+    },
+  ];
+
+  try {
+    const existing = localStorage.getItem(ordersKey(entityCode));
+    const arr: Order[] = existing ? JSON.parse(existing) : [];
+    const have = new Set(arr.map(o => o.id));
+    const merged = [...arr, ...sos.filter(s => !have.has(s.id))];
+    localStorage.setItem(ordersKey(entityCode), JSON.stringify(merged));
+  } catch { /* quota */ }
+}
+
+function seedSinhaOperatorSkills(entityCode: string): void {
+  try {
+    const existing = localStorage.getItem(operatorSkillsKey(entityCode));
+    if (existing && JSON.parse(existing).length > 0) return;
+  } catch { /* fall through */ }
+  const seed: OperatorSkill[] = [
+    { id: 'os-001', operator_id: 'emp-001', operator_name: 'Ramesh Kumar',
+      skill_codes: ['cnc-turning', 'fitting', 'inspection'],
+      certified_machines: ['mc-cnc-01', 'mc-cnc-02'], certification_expiry: '2027-03-31' },
+    { id: 'os-002', operator_id: 'emp-002', operator_name: 'Suresh Patil',
+      skill_codes: ['welding', 'fitting'],
+      certified_machines: ['mc-weld-01'], certification_expiry: '2026-12-31' },
+    { id: 'os-003', operator_id: 'emp-003', operator_name: 'Mahesh Joshi',
+      skill_codes: ['grinding', 'polishing', 'inspection'],
+      certified_machines: ['mc-grind-01'], certification_expiry: null },
+    { id: 'os-004', operator_id: 'emp-004', operator_name: 'Dinesh Pawar',
+      skill_codes: ['pickling', 'painting'],
+      certified_machines: ['mc-paint-01'], certification_expiry: '2026-09-30' },
+    { id: 'os-005', operator_id: 'emp-005', operator_name: 'Vinod Shinde',
+      skill_codes: ['packing', 'inspection'],
+      certified_machines: [], certification_expiry: null },
+    { id: 'os-006', operator_id: 'emp-006', operator_name: 'Anil Deshmukh',
+      skill_codes: ['cnc-turning', 'welding', 'fitting'],
+      certified_machines: ['mc-cnc-01', 'mc-weld-01'], certification_expiry: '2027-06-30' },
+    { id: 'os-007', operator_id: 'emp-007', operator_name: 'Prakash Gawade',
+      skill_codes: ['fitting', 'inspection', 'packing'],
+      certified_machines: [], certification_expiry: null },
+  ];
+  try {
+    localStorage.setItem(operatorSkillsKey(entityCode), JSON.stringify(seed));
+  } catch { /* quota */ }
+}
+
+function seedSinhaSkillOperationMappings(entityCode: string): void {
+  try {
+    const existing = localStorage.getItem(skillOperationMappingKey(entityCode));
+    if (existing && JSON.parse(existing).length > 0) return;
+  } catch { /* fall through */ }
+  const seed: SkillOperationMapping[] = [
+    { id: 'som-001', operation_name: 'machining',
+      required_skill_codes: ['cnc-turning'], machine_compatibility: ['mc-cnc-01', 'mc-cnc-02'] },
+    { id: 'som-002', operation_name: 'fabrication',
+      required_skill_codes: ['welding', 'fitting'], machine_compatibility: ['mc-weld-01'] },
+    { id: 'som-003', operation_name: 'finishing',
+      required_skill_codes: ['grinding', 'polishing'], machine_compatibility: ['mc-grind-01'] },
+    { id: 'som-004', operation_name: 'coating',
+      required_skill_codes: ['pickling', 'painting'], machine_compatibility: ['mc-paint-01'] },
+    { id: 'som-005', operation_name: 'assembly',
+      required_skill_codes: ['fitting', 'inspection'], machine_compatibility: [] },
+    { id: 'som-006', operation_name: 'dispatch',
+      required_skill_codes: ['packing', 'inspection'], machine_compatibility: [] },
+  ];
+  try {
+    localStorage.setItem(skillOperationMappingKey(entityCode), JSON.stringify(seed));
+  } catch { /* quota */ }
+}
