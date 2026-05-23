@@ -9,7 +9,8 @@
  * @reuses      decimal-helpers, useSprint27d1Mount, Sprint27d2Mount, Sprint27eMount
  * @[JWT]       /api/requestx/material-indents
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
