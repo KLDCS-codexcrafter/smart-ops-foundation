@@ -37,7 +37,9 @@ export type FinCoreModule =
   | 'fc-rpt-credit-note-register' | 'fc-rpt-debit-note-register'
   | 'fc-rpt-delivery-note-register' | 'fc-rpt-receipt-note-register'
   | 'fc-rpt-stock-adjustment-register' | 'fc-rpt-stock-journal-register'
-  | 'fc-rpt-stock-transfer-register';
+  | 'fc-rpt-stock-transfer-register'
+  // [HK-6 Sprint · 26th + 27th SIBLING consumer panels]
+  | 'fc-bnk-reconciliation-v2' | 'fc-rpt-asset-unification';
 
 export interface DraftEntry {
   id: string;

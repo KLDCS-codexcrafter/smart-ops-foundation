@@ -634,3 +634,122 @@ export function setFcpiLink(
 }
 
 // 3-c-3 will ADD sibling validateContractCompliance(invoice, contract) · this engine zero-touch from 3-c-3.
+
+// ============================================================================
+// HK-6 Sprint · Q-LOCK-4 v2 B-1 · CapitalIndent → AssetUnit loop closure
+// ============================================================================
+// On CAPEX bill pass · flip `fixed_asset_pre_link_pending: false` + emit cascade
+// event that procure-capex-fa-cascade-engine consumes to materialise AssetUnitRecords
+// and the canonical vt-capital-purchase voucher.
+// D-127/128a 139 voucher type ABSOLUTE invariant preserved · uses existing engine.
+
+import type { CapitalIndent } from '@/types/capital-indent';
+import { capitalIndentsKey } from '@/types/capital-indent';
+import { cascadeCAPEXGRNToFA, type CAPEXGRNCascadeEvent } from './procure-capex-fa-cascade-engine';
+import type { ITActBlock } from '@/types/fixed-asset';
+
+function readCapitalIndents(entityCode: string): CapitalIndent[] {
+  try {
+    // [JWT] GET /api/requestx/capital-indents?entityCode=...
+    const raw = localStorage.getItem(capitalIndentsKey(entityCode));
+    return raw ? (JSON.parse(raw) as CapitalIndent[]) : [];
+  } catch { return []; }
+}
+
+function writeCapitalIndents(entityCode: string, list: CapitalIndent[]): void {
+  try {
+    // [JWT] PUT /api/requestx/capital-indents
+    localStorage.setItem(capitalIndentsKey(entityCode), JSON.stringify(list));
+  } catch { /* quota */ }
+}
+
+export interface CloseCapitalIndentResult {
+  asset_unit_ids: string[];
+  capital_purchase_voucher_id: string;
+  cwip_voucher_id: string | null;
+}
+
+/**
+ * Close CapitalIndent → AssetUnit loop on CAPEX bill pass.
+ * - Flips line-level `fixed_asset_pre_link_pending` → false
+ * - Delegates to procure-capex-fa-cascade-engine for AssetUnit + voucher creation
+ * - Back-populates `linked_asset_unit_ids` on each indent line
+ *
+ * Per Path A 50-year-architect Decision LOCKED May 23.
+ */
+export function closeCapitalIndentLoop(
+  entityCode: string,
+  billId: string,
+  capitalIndentId: string,
+  options: {
+    asset_id_prefix?: string;
+    location?: string;
+    department?: string;
+    custodian_name?: string;
+    put_to_use_date?: string;
+    it_act_block?: ITActBlock;
+    ledger_definition_id?: string;
+    ledger_name?: string;
+  } = {},
+): CloseCapitalIndentResult {
+  const indents = readCapitalIndents(entityCode);
+  const idx = indents.findIndex(ci => ci.id === capitalIndentId);
+  if (idx < 0) throw new Error(`CapitalIndent ${capitalIndentId} not found`);
+  const indent = indents[idx];
+
+  const allAssetIds: string[] = [];
+  let firstCpVoucherId = '';
+  let firstCwipVoucherId: string | null = null;
+
+  const now = new Date().toISOString();
+  const itActBlock: ITActBlock = options.it_act_block ?? 'Plant & Machinery';
+
+  for (const line of indent.lines) {
+    if (!line.fixed_asset_pre_link_pending) continue;
+    const qty = line.qty;
+    const value = (line.estimated_rate ?? 0) * qty;
+    const event: CAPEXGRNCascadeEvent = {
+      type: 'procure360:grn.capex_received',
+      entity_id: entityCode,
+      po_id: billId,
+      grn_id: billId,
+      capital_indent_id: capitalIndentId,
+      capital_indent_line_id: line.id,
+      vendor_id: indent.preferred_vendor_id ?? '',
+      vendor_name: '',
+      received_qty: qty,
+      received_value: value,
+      item_id: line.item_id,
+      item_name: line.item_name,
+      ledger_definition_id: options.ledger_definition_id ?? 'ppe-default',
+      ledger_name: options.ledger_name ?? 'Plant & Machinery',
+      asset_id_prefix: options.asset_id_prefix ?? 'PPE',
+      it_act_block: itActBlock,
+      cwip_account_id: line.cwip_account_id || 'cwip-suspense',
+      put_to_use_date: options.put_to_use_date,
+      location: options.location,
+      department: options.department ?? indent.originating_department_name,
+      custodian_name: options.custodian_name,
+      emitted_at: now,
+    };
+    const result = cascadeCAPEXGRNToFA(entityCode, event);
+    allAssetIds.push(...result.asset_unit_ids);
+    if (!firstCpVoucherId) {
+      firstCpVoucherId = result.capital_purchase_voucher_id;
+      firstCwipVoucherId = result.cwip_voucher_id;
+    }
+    // Mutate line in-place (we'll write the whole indent below)
+    line.fixed_asset_pre_link_pending = false;
+    line.linked_asset_unit_ids = result.asset_unit_ids;
+    line.asset_id_pattern = `${options.asset_id_prefix ?? 'PPE'}/`;
+  }
+
+  indents[idx] = { ...indent, updated_at: now };
+  writeCapitalIndents(entityCode, indents);
+
+  return {
+    asset_unit_ids: allAssetIds,
+    capital_purchase_voucher_id: firstCpVoucherId,
+    cwip_voucher_id: firstCwipVoucherId,
+  };
+}

@@ -101,7 +101,9 @@ const ORDER_ITEMS: SidebarItem[] = [
 
 const BANKING_ITEMS: SidebarItem[] = [
   { id: 'fc-bnk-reconciliation', label: 'Bank Reconciliation', icon: Landmark },
+  { id: 'fc-bnk-reconciliation-v2', label: 'Bank Reco (v2 · Engine)', icon: Landmark },
   { id: 'fc-bnk-cheque', label: 'Cheque Management', icon: Receipt },
+  { id: 'fc-rpt-asset-unification', label: 'Asset Unification (3-Shape)', icon: Landmark },
 ];
 
 const OUTSTANDING_ITEMS: SidebarItem[] = [

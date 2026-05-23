@@ -16,6 +16,10 @@ export interface CapitalIndentLine extends Omit<MaterialIndentLine, 'cascade_rea
   cwip_account_id: string;
   expected_useful_life_years: number;
   depreciation_method: 'slm' | 'wdv' | null;
+  /** Sprint HK-6 · Q-LOCK-4 v2 B-1 (additive) · populated when CAPEX bill is passed + AssetUnits created. */
+  linked_asset_unit_ids?: string[];
+  /** Sprint HK-6 · Q-LOCK-4 v2 B-1 (additive) · pattern for AssetUnit ID generation (e.g. "PPE/25-26/"). */
+  asset_id_pattern?: string;
 }
 
 export interface CapitalIndent {
