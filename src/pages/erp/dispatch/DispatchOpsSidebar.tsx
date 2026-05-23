@@ -47,29 +47,31 @@ interface MenuItem {
   module: DispatchOpsModule;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
+  /** Sprint HK-6 Pass 2 · Theme 6 · FR-74 dispatch keyboard namespace · 'o' prefix for Dispatch Ops */
+  keyboard?: string;
 }
 
 const TRANSACTIONS_ITEMS: MenuItem[] = [
-  { label: 'Delivery Memo',         module: 'dops-t-delivery-memo',        icon: Truck },
-  { label: 'Sample Outward Issue',  module: 'dops-t-sample-outward-issue', icon: ArrowUpRight },
-  { label: 'Demo Outward Issue',    module: 'dops-t-demo-outward-issue',   icon: ArrowUpRight },
-  { label: 'Packing Slip Print',    module: 'dops-t-packing-slip',         icon: Printer },
-  { label: 'Dispatch Exceptions',   module: 'dops-t-exceptions',           icon: AlertTriangle },
+  { label: 'Delivery Memo',         module: 'dops-t-delivery-memo',        icon: Truck,         keyboard: 'o d' },
+  { label: 'Sample Outward Issue',  module: 'dops-t-sample-outward-issue', icon: ArrowUpRight,  keyboard: 'o s' },
+  { label: 'Demo Outward Issue',    module: 'dops-t-demo-outward-issue',   icon: ArrowUpRight,  keyboard: 'o e' },
+  { label: 'Packing Slip Print',    module: 'dops-t-packing-slip',         icon: Printer,       keyboard: 'o p' },
+  { label: 'Dispatch Exceptions',   module: 'dops-t-exceptions',           icon: AlertTriangle, keyboard: 'o x' },
 ];
 
 const MASTERS_ITEMS: MenuItem[] = [
-  { label: 'Packing Materials', module: 'dops-m-packing-material', icon: Package },
-  { label: 'Packing BOM',       module: 'dops-m-packing-bom',      icon: ListChecks },
+  { label: 'Packing Materials', module: 'dops-m-packing-material', icon: Package,    keyboard: 'o m m' },
+  { label: 'Packing BOM',       module: 'dops-m-packing-bom',      icon: ListChecks, keyboard: 'o m b' },
 ];
 
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Delivery Memo Register', module: 'dops-r-delivery-memo-register', icon: Truck },
-  { label: 'Outward Movement Report', module: 'dops-r-outward-movement',     icon: GitMerge },
-  { label: 'Packing Consumption',     module: 'dops-r-packing-consumption',  icon: TrendingUp },
-  { label: 'Packer Performance',      module: 'dops-r-packer-performance',   icon: Users },
-  { label: 'Dispatch Summary',        module: 'dops-r-dispatch-summary',     icon: BarChart3 },
-  { label: 'SOM Register (SalesX) ↗', module: 'dops-link-som-register',      icon: ArrowUpRight },
-  { label: 'DOM Register (SalesX) ↗', module: 'dops-link-dom-register',      icon: ArrowUpRight },
+  { label: 'Delivery Memo Register',  module: 'dops-r-delivery-memo-register', icon: Truck,        keyboard: 'o r d' },
+  { label: 'Outward Movement Report', module: 'dops-r-outward-movement',       icon: GitMerge,     keyboard: 'o r o' },
+  { label: 'Packing Consumption',     module: 'dops-r-packing-consumption',    icon: TrendingUp,   keyboard: 'o r c' },
+  { label: 'Packer Performance',      module: 'dops-r-packer-performance',     icon: Users,        keyboard: 'o r p' },
+  { label: 'Dispatch Summary',        module: 'dops-r-dispatch-summary',       icon: BarChart3,    keyboard: 'o r s' },
+  { label: 'SOM Register (SalesX) ↗', module: 'dops-link-som-register',        icon: ArrowUpRight, keyboard: 'o r m' },
+  { label: 'DOM Register (SalesX) ↗', module: 'dops-link-dom-register',        icon: ArrowUpRight, keyboard: 'o r n' },
 ];
 
 export function DispatchOpsSidebar(props: DispatchOpsSidebarProps) {
