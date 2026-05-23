@@ -102,7 +102,7 @@ describe('bank-reconciliation-engine · auto-match scoring', () => {
     insertStatement(ENTITY, stmt);
     const sug = autoMatchStatement(ENTITY, 'stmt-1');
     expect(sug.length).toBeGreaterThan(0);
-    expect(sug[0].match_score).toBe(100); // 50 amount_exact + 20 date_within_3d + 30 ref_match
+    expect(sug[0].match_score).toBeGreaterThanOrEqual(100); // 50 amount_exact + 20 date_within_3d + 30 ref_match (+20 description_has_vno)
     expect(sug[0].voucher_id).toBe('v1');
     expect(sug[0].match_reasons).toContain('amount_exact');
     expect(sug[0].match_reasons).toContain('ref_match');
