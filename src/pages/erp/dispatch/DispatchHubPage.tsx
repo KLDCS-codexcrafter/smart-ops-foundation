@@ -37,6 +37,8 @@ import { PackingSlipRegisterPanel } from './reports/PackingSlipRegister';
 import { PODRegisterPanel } from './reports/PODRegister';
 // UPRA-3 Phase A Step 2 · Tier-1 NEW
 import { TransporterInvoiceRegisterPanel } from './reports/TransporterInvoiceRegister';
+// Sprint 46 Pass 1 · Theme A §1.4
+import { EWBMonitorPanel } from './reports/EWBMonitor';
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -74,6 +76,8 @@ function renderModule(
     case 'dh-r-pod-register':              return <PODRegisterPanel />;
     // UPRA-3 Phase A Step 2 · Tier-1 NEW
     case 'dh-r-transporter-invoice-register': return <TransporterInvoiceRegisterPanel />;
+    // Sprint 46 Pass 1 · Theme A §1.4
+    case 'dh-r-ewb-monitor':                  return <EWBMonitorPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
