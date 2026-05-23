@@ -153,6 +153,9 @@ const breadcrumbLabels: Partial<Record<FinCoreModule, string>> = {
   'fc-rpt-stock-adjustment-register': 'Stock Adjustment Register',
   'fc-rpt-stock-journal-register':    'Stock Journal Register',
   'fc-rpt-stock-transfer-register':   'Stock Transfer Register',
+  // [HK-6 Sprint] 26th + 27th SIBLING consumers
+  'fc-bnk-reconciliation-v2':         'Bank Reconciliation (v2 · Engine)',
+  'fc-rpt-asset-unification':         'Asset Unification (3-Shape)',
 };
 
 export function FinCorePagePanel() {
