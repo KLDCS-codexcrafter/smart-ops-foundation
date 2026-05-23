@@ -114,6 +114,14 @@ export function ProductionModule() {
           href="/erp/production"
           description="In-progress PO budget totals · matches WIP cascade source."
         />
+        <StatCard
+          icon={<ShieldAlert className="h-5 w-5" />}
+          title="Open Leaks Count"
+          value={kpis.openLeaksCount}
+          status={kpis.openLeaksCount === 0 ? 'ok' : 'warn'}
+          href="/erp/production"
+          description="Unack'd PROD-2 leak alerts · JW shortage, BOM drift, MSME-JW, licence, hazmat, wastage drift, tooling."
+        />
       </div>
     </div>
   );
