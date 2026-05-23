@@ -5,6 +5,14 @@
  *              Sub-helper engine · NOT a new SIBLING.
  * @disciplines FR-26 entity-scoped · FR-93 engine-side ls-helper
  * @[JWT]       POST /api/production/bom-drift/scan
+ *
+ * BOM drift v1 limitation note:
+ * Computes aggregate yield-implied drift (output-ratio × input-qty) per-BOM.
+ * Per-material direct tracking deferred to future sprint (PROD-2.5 or PROD-3) when
+ * ProductionConfirmation type can be extended to carry per-material actual_consumed_qty.
+ * Current approach surfaces same drift signal class · misses per-material directional split
+ * (e.g. one material wasted heavily + another conserved averages out).
+ * Acceptable trade-off for LEAK-7 v1 closure.
  */
 
 import type { Bom } from '@/types/bom';
