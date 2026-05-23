@@ -9,7 +9,15 @@
  */
 
 import type { Voucher } from '@/types/voucher';
-import { listVouchers } from './fincore-engine';
+import { vouchersKey } from './fincore-engine';
+
+function listVouchersForEntity(entityCode: string): Voucher[] {
+  try {
+    // [JWT] GET /api/fincore/vouchers?entityCode=...
+    const raw = localStorage.getItem(vouchersKey(entityCode));
+    return raw ? (JSON.parse(raw) as Voucher[]) : [];
+  } catch { return []; }
+}
 
 // ============================================================================
 // TYPES
@@ -196,7 +204,7 @@ export function autoMatchStatement(
   const statement = getBankStatement(entityCode, statementId);
   if (!statement) return [];
 
-  const vouchers = listVouchers(entityCode).filter(v =>
+  const vouchers = listVouchersForEntity(entityCode).filter((v: Voucher) =>
     v.base_voucher_type === 'Payment' || v.base_voucher_type === 'Receipt',
   );
 

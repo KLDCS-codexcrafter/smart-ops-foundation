@@ -100,20 +100,12 @@ function readAssetTags(entityCode: string): AssetTag[] {
   } catch { return []; }
 }
 
-function writeAssetTags(entityCode: string, list: AssetTag[]): void {
-  try { localStorage.setItem(assetTagsKey(entityCode), JSON.stringify(list)); } catch { /* quota */ }
-}
-
 function readHRAssets(): Asset[] {
   // Pay Hub Asset Master is global (not entity-scoped in current schema)
   try {
     const raw = localStorage.getItem(ASSETS_KEY);
     return raw ? (JSON.parse(raw) as Asset[]) : [];
   } catch { return []; }
-}
-
-function writeHRAssets(list: Asset[]): void {
-  try { localStorage.setItem(ASSETS_KEY, JSON.stringify(list)); } catch { /* quota */ }
 }
 
 // ============================================================================
