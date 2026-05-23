@@ -419,3 +419,120 @@ export function addPlaceholderMachineToCapacity(
   return { machine_id: machine.id, placeholder: true };
 }
 
+// ── PROD-2 · Sub-theme 4 · PROD-LEAK-6 closure · Q-LOCK-4 ──────────
+// Bottleneck heatmap · machine-level · 85% · 5+ days · 30-day window.
+// Additive extension · matches PROD-1 backward-compat pattern.
+
+import { jobCardsKey } from '@/types/job-card';
+import type { JobCard } from '@/types/job-card';
+
+export interface BottleneckAlert {
+  machine_id: string;
+  machine_code: string;
+  machine_name: string;
+  work_center_id: string;
+  factory_id: string;
+  avg_utilization_30d: number;
+  consecutive_days_over_threshold: number;
+  threshold_pct: number;
+  severity: 'warning' | 'critical';
+  detected_at: string;
+}
+
+const BOTTLENECK_THRESHOLD_PCT = 85;
+const SUSTAINED_DAYS = 5;
+const WINDOW_DAYS = 30;
+const ASSUMED_DAILY_HOURS = 24;
+
+function bottleneckDayKey(iso: string): string {
+  return iso.slice(0, 10);
+}
+
+function bottleneckHoursBetween(startIso: string | null, endIso: string | null): number {
+  if (!startIso || !endIso) return 0;
+  const ms = new Date(endIso).getTime() - new Date(startIso).getTime();
+  return ms > 0 ? ms / 3_600_000 : 0;
+}
+
+export function getBottleneckUtilizationSeries(
+  machineId: string,
+  entityCode: string,
+  days: number,
+): Array<{ date: string; utilization_pct: number }> {
+  let jcs: JobCard[] = [];
+  try {
+    // [JWT] GET /api/job-cards?entityCode=...
+    const raw = localStorage.getItem(jobCardsKey(entityCode));
+    jcs = raw ? (JSON.parse(raw) as JobCard[]) : [];
+  } catch {
+    jcs = [];
+  }
+  const out: Array<{ date: string; utilization_pct: number }> = [];
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    let used = 0;
+    for (const jc of jcs) {
+      if (jc.machine_id !== machineId) continue;
+      const refStart = jc.actual_start ?? jc.scheduled_start;
+      if (!refStart || bottleneckDayKey(refStart) !== key) continue;
+      used += bottleneckHoursBetween(
+        jc.actual_start ?? jc.scheduled_start,
+        jc.actual_end ?? jc.scheduled_end,
+      );
+    }
+    const pct = Math.min(100, Math.round((used / ASSUMED_DAILY_HOURS) * 100));
+    out.push({ date: key, utilization_pct: pct });
+  }
+  return out;
+}
+
+export function computeBottleneckHeatmap(entityCode: string): BottleneckAlert[] {
+  let machinesList: Machine[] = [];
+  try {
+    // [JWT] GET /api/machines?entityCode=...
+    const raw = localStorage.getItem(machinesKey(entityCode));
+    machinesList = raw ? (JSON.parse(raw) as Machine[]) : [];
+  } catch {
+    machinesList = [];
+  }
+  const now = new Date().toISOString();
+  const alerts: BottleneckAlert[] = [];
+  for (const m of machinesList) {
+    const series = getBottleneckUtilizationSeries(m.id, entityCode, WINDOW_DAYS);
+    if (series.length === 0) continue;
+    const avg = series.reduce((s, p) => s + p.utilization_pct, 0) / series.length;
+    let longestRun = 0;
+    let run = 0;
+    for (const p of series) {
+      if (p.utilization_pct > BOTTLENECK_THRESHOLD_PCT) {
+        run += 1;
+        if (run > longestRun) longestRun = run;
+      } else {
+        run = 0;
+      }
+    }
+    if (longestRun < SUSTAINED_DAYS) continue;
+    const mAny = m as unknown as {
+      code?: string; name?: string; work_center_id?: string;
+    };
+    alerts.push({
+      machine_id: m.id,
+      machine_code: mAny.code ?? m.id,
+      machine_name: mAny.name ?? m.id,
+      work_center_id: mAny.work_center_id ?? '',
+      factory_id: m.factory_id,
+      avg_utilization_30d: Math.round(avg),
+      consecutive_days_over_threshold: longestRun,
+      threshold_pct: BOTTLENECK_THRESHOLD_PCT,
+      severity: longestRun >= 8 ? 'critical' : 'warning',
+      detected_at: now,
+    });
+  }
+  return alerts;
+}
+
+
