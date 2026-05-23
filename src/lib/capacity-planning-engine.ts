@@ -1,11 +1,13 @@
 /**
  * capacity-planning-engine.ts — Q34=ALL + Q37=ALL polymorphic · Q25=a runCapacityCheck
  * Sprint T-Phase-1.3-3-PlantOps-pre-3a · D-594
+ * Sprint T-Phase-3.PROD-1 · Sub-theme 4 · addPlaceholderMachineToCapacity (Q-LOCK-5)
  */
 import type { ProductionPlan } from '@/types/production-plan';
 import type { ProductionOrder } from '@/types/production-order';
 import type { JobCard } from '@/types/job-card';
-import type { Machine } from '@/types/machine';
+import type { Machine, MachineStatus } from '@/types/machine';
+import { machinesKey } from '@/types/machine';
 import type { Factory } from '@/types/factory';
 import type { Shift } from '@/types/payroll-masters';
 import type { Employee } from '@/types/employee';
