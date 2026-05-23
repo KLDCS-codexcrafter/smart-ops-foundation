@@ -9,7 +9,8 @@
  * @reuses      decimal-helpers, useSprint27d1Mount, Sprint27d2Mount, Sprint27eMount
  * @[JWT]       /api/requestx/material-indents
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -100,6 +101,34 @@ export function MaterialIndentEntry(): JSX.Element {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
+
+  // ST3 · T-Phase-3.PROD-1 · Hydrate from BOMShortageDialog handoff (location.state from Production PO release).
+  const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    const s = location.state as {
+      prefill_source?: string;
+      prefill_po_doc_no?: string;
+      prefill_notes?: string;
+      prefill_items?: Array<{ item_id: string; item_name: string; qty: number; uom: string }>;
+    } | null;
+    if (!s || s.prefill_source !== 'production_shortage' || !s.prefill_items?.length) return;
+    setPriority('urgent');
+    setCategory('raw_material');
+    setSubType(s.prefill_notes ?? `Production shortage · PO ${s.prefill_po_doc_no ?? ''}`);
+    setLines(s.prefill_items.map((it, i) => ({
+      ...emptyLine(i + 1),
+      item_id: it.item_id,
+      item_name: it.item_name,
+      description: it.item_name,
+      uom: it.uom,
+      qty: it.qty,
+      remarks: `Auto-prefilled from PO ${s.prefill_po_doc_no ?? ''}`,
+    })));
+    toast.info(`Prefilled ${s.prefill_items.length} line(s) from PO ${s.prefill_po_doc_no ?? ''}`);
+    navigate(location.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const total = useMemo(() => {
     let t = 0;
