@@ -7,7 +7,7 @@
 import { useNavigate } from 'react-router-dom';
 import {
   Factory, Activity, Truck, AlertTriangle, Wallet, ArrowRight,
-  CheckCircle, AlertCircle,
+  CheckCircle, AlertCircle, ShieldAlert,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEntityCode } from '@/hooks/useEntityCode';
