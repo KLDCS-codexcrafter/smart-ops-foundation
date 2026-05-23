@@ -216,6 +216,9 @@ export interface ProductionOrder {
   created_by: string;
   updated_at: string;
   updated_by: string;
+
+  // T-Phase-3.PROD-1 · ST9 · PeoplePay skill match advisory (Q-LOCK-3 non-blocking)
+  skill_warnings?: import('@/lib/peoplepay-skill-engine').SkillWarning[];
 }
 
 export const productionOrdersKey = (entityCode: string): string =>
