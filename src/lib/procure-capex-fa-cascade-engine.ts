@@ -196,6 +196,8 @@ export function cascadeCAPEXGRNToFA(
       {
         id: newId('vll'),
         ledger_id: 'vendor-payable',
+        ledger_code: 'PAY',
+        ledger_group_code: 'sundry_creditors',
         ledger_name: `${event.vendor_name} - Payable`,
         dr_amount: 0,
         cr_amount: event.received_value,
