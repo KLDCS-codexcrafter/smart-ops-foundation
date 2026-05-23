@@ -252,7 +252,16 @@ export function PackingMaterialMasterPanel() {
                           size="sm"
                           variant="outline"
                           className="h-7 mr-1 text-orange-600 border-orange-500/40 hover:bg-orange-500/10"
-                          onClick={() => navigate('/erp/procure-hub?m=po-list')}
+                          onClick={() => {
+                            // Sprint HK-6.T1 · §21 closure · BOTH schemas supported (Q-LOCK-T1-5(i) ratified)
+                            const qp = new URLSearchParams({
+                              m: 'po-list',
+                              prefill_item_id: m.id,
+                              delivery_address: 'Sinha Steel Plant 1, MIDC Andheri',
+                              expected_days: '30',
+                            });
+                            navigate(`/erp/procure-hub?${qp.toString()}`);
+                          }}
                         >
                           <ShoppingCart className="h-3.5 w-3.5 mr-1" />
                           Raise PO

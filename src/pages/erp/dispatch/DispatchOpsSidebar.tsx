@@ -1,6 +1,11 @@
 /**
  * DispatchOpsSidebar.tsx — Orange-500 accent · Dispatch Hub (internal ops)
  * Sprint T-Phase-1.1.1p-v2.
+ *
+ * @sprint   HK-6.T1 · §18 closure · FR-93 (CANDIDATE) doctrine codified
+ * @pattern  21 of 26 dispatch files use the inline ls<T>() helper · all FR-26 entity-scoped ·
+ *           all engine-side compliant per FR-93. See audit_workspace/HK_6_T1_close_evidence/
+ *           FR_93_CANDIDATE_ls_helper_doctrine.md
  */
 
 import { useState } from 'react';

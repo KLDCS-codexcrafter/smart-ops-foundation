@@ -18,8 +18,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, ClipboardCheck, Printer, FileSpreadsheet, AlertTriangle, Send, CheckCircle2, XCircle } from 'lucide-react';
-import * as XLSX from 'xlsx';
+import { Plus, ClipboardCheck, Printer, FileSpreadsheet, AlertTriangle, Send, CheckCircle2, XCircle, FileUp } from 'lucide-react';
+import {
+  exportCycleCountToExcel,
+  parseExcelToCycleCount,
+  applyExcelImportToVoucher,
+} from '@/lib/cycle-count-voucher-engine';
 import { toast } from 'sonner';
 import { useCycleCounts, getCycleCountSuggestions } from '@/hooks/useCycleCounts';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
@@ -513,27 +517,39 @@ function CountDetail({
     w.print();
   }
 
-  // Sprint HK-6 Pass 2 · Theme 3 · Cycle Count Excel additive extension (xlsx 0.18.5 · Q-LOCK-5 confirmed)
+  // Sprint HK-6.T1 · §20 closure · use engine exports (parseExcelToCycleCount + applyExcelImportToVoucher)
   function handleExportExcel() {
-    const rows = count.lines.map(l => ({
-      'Item Code': l.item_code,
-      'Description': l.item_name,
-      'UOM': l.uom,
-      'Godown': l.godown_name,
-      'Bin': l.bin_code ?? '',
-      'System Qty': l.system_qty,
-      'Physical Qty': l.physical_qty,
-      'Variance Qty': l.variance_qty,
-      'Variance Value (₹)': l.variance_value,
-      'Variance Reason': l.variance_reason ? VARIANCE_REASON_LABELS[l.variance_reason] : '',
-      'Notes': l.variance_notes ?? '',
-    }));
-    const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Cycle Count');
-    XLSX.writeFile(wb, `${count.count_no}_${count.count_date}.xlsx`);
-    toast.success(`Exported ${rows.length} lines to Excel`);
+    const { blob, filename } = exportCycleCountToExcel(count);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Exported ${count.lines.length} lines to Excel`);
   }
+
+  async function handleImportExcel(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      const rows = await parseExcelToCycleCount(file);
+      const result = applyExcelImportToVoucher(count, rows);
+      onUpdate({ lines: result.updated_lines });
+      if (result.validation_errors.length > 0) {
+        toast.warning(
+          `${result.applied_count} applied · ${result.skipped_count} skipped · ${result.validation_errors.length} errors`,
+        );
+        // Errors are reported via toast summary; detailed view deferred to T2.
+        console.warn('Excel import validation errors', result.validation_errors);
+      } else {
+        toast.success(`Imported ${result.applied_count} lines from Excel`);
+      }
+    } catch (err) {
+      toast.error(`Excel import failed: ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      e.target.value = '';
+    }
+  }
+
 
   return (
     <div className="space-y-4 mt-4">
@@ -543,6 +559,22 @@ function CountDetail({
           <Button variant="outline" size="sm" onClick={handleExportExcel} className="gap-1">
             <FileSpreadsheet className="h-3.5 w-3.5" /> Export Excel
           </Button>
+          {isDraft && (
+            <>
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={handleImportExcel}
+                className="hidden"
+                id="cycle-count-excel-import"
+              />
+              <Button asChild variant="outline" size="sm" className="gap-1">
+                <label htmlFor="cycle-count-excel-import" className="cursor-pointer">
+                  <FileUp className="h-3.5 w-3.5" /> Import Excel
+                </label>
+              </Button>
+            </>
+          )}
           <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1">
             <Printer className="h-3.5 w-3.5" /> Print Count Sheet
           </Button>

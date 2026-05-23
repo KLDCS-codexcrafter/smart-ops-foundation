@@ -504,6 +504,11 @@ export function seedEntityDemoData(
     DEMO_BOM_HAPPY_PATH.map(b => ({ ...b, entity_id: entityCode })),
   );
 
+  // Sprint HK-6.T1 · §19 closure · 4 mock bank statements for Banking Reconciliation demo (55 transactions)
+  // FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-bank-statements-seed-data.ts file.
+  seedSinhaBankStatements(entityCode);
+
+
   return {
     entityCode, archetype,
     customers, vendors, items, samPersons, enquiries, quotations,
@@ -519,4 +524,176 @@ export function detectArchetype(businessActivity: string): DemoArchetype {
   if (a.includes('manufact')) return 'manufacturing';
   if (a.includes('service') || a.includes('it') || a.includes('consult')) return 'services';
   return 'trading';
+}
+
+// ============================================================================
+// Sprint HK-6.T1 · §19 closure · Mock Sinha bank statements (4 banks · 55 txns)
+// FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-*-seed-data file
+// ============================================================================
+import {
+  bankStatementsKey,
+  type BankStatement,
+  type BankStatementLine,
+} from './bank-reconciliation-engine';
+
+interface MiniTxn {
+  d: string;            // day in March 2026
+  desc: string;
+  ref: string;
+  cr?: number;          // credit (receipt)
+  dr?: number;          // debit (payment)
+}
+
+function buildStatement(args: {
+  id: string;
+  bankAccountId: string;
+  bankName: string;
+  accountNumber: string;
+  entityCode: string;
+  opening: number;
+  txns: MiniTxn[];
+}): BankStatement {
+  let bal = args.opening;
+  const lines: BankStatementLine[] = args.txns.map((t, i) => {
+    const credit = t.cr ?? 0;
+    const debit = t.dr ?? 0;
+    bal = bal + credit - debit;
+    return {
+      id: `${args.id}-l-${i + 1}`,
+      statement_id: args.id,
+      date: `2026-03-${t.d.padStart(2, '0')}`,
+      description: t.desc,
+      reference: t.ref,
+      debit_amount: debit,
+      credit_amount: credit,
+      balance_after: bal,
+      matched_voucher_id: null,
+      match_status: 'unmatched',
+      match_confidence: 0,
+      matched_at: null,
+      matched_by: null,
+    };
+  });
+  return {
+    id: args.id,
+    entity_id: args.entityCode,
+    bank_account_id: args.bankAccountId,
+    bank_name: args.bankName,
+    account_number: args.accountNumber,
+    statement_period_from: '2026-03-01',
+    statement_period_to: '2026-03-31',
+    opening_balance: args.opening,
+    closing_balance: bal,
+    source_format: 'csv',
+    uploaded_at: '2026-04-01T09:30:00Z',
+    uploaded_by: 'demo-user',
+    lines,
+  };
+}
+
+function seedSinhaBankStatements(entityCode: string): void {
+  // Idempotent · skip if any bank statements already exist for entity
+  try {
+    const existing = localStorage.getItem(bankStatementsKey(entityCode));
+    if (existing && JSON.parse(existing).length > 0) return;
+  } catch { /* fall through */ }
+
+  // ICICI Current A/c · primary · 20 transactions
+  const icici = buildStatement({
+    id: 'stmt-icici-2026-03', bankAccountId: 'BA-ICICI-001',
+    bankName: 'ICICI Bank', accountNumber: '0001ICI23456789',
+    entityCode, opening: 1250000,
+    txns: [
+      { d: '02', desc: 'NEFT INW ABC ENTERPRISES SI-2026-0142', ref: 'NEFTN20260302001', cr: 450000 },
+      { d: '03', desc: 'IMPS XYZ INDUSTRIES SI-2026-0145', ref: 'IMPS260303001122', cr: 280000 },
+      { d: '04', desc: 'CHQ PAID 100123 PRECISION STEEL', ref: 'CHQ100123', dr: 175000 },
+      { d: '05', desc: 'NEFT OUT MAHAVIR LOGISTICS', ref: 'NEFTO20260305002', dr: 62000 },
+      { d: '06', desc: 'RTGS INW SUNRISE TRADERS SI-2026-0148', ref: 'RTGS20260306N7788', cr: 925000 },
+      { d: '08', desc: 'BANK CHARGES MAR-2026', ref: 'BCHG2603', dr: 1850 },
+      { d: '09', desc: 'GST PAID CHALLAN 2603', ref: 'GST2603SINHA', dr: 248000 },
+      { d: '10', desc: 'NEFT INW KIRTI ENTERPRISES SI-2026-0151', ref: 'NEFTN20260310009', cr: 365000 },
+      { d: '11', desc: 'CHQ PAID 100124 SHREE METALS', ref: 'CHQ100124', dr: 120000 },
+      { d: '12', desc: 'IMPS RAJ STEEL CO SI-2026-0153', ref: 'IMPS260312553311', cr: 210000 },
+      { d: '14', desc: 'TDS PAYMENT 194Q MAR-2026', ref: 'TDS194Q2603', dr: 42500 },
+      { d: '15', desc: 'INTEREST CREDIT QTR ENDED MAR', ref: 'INTQTR2603', cr: 4250 },
+      { d: '17', desc: 'NEFT OUT PAYROLL BATCH MAR', ref: 'NEFTO20260317PAY', dr: 685000 },
+      { d: '19', desc: 'NEFT INW TIRUPATI METALS SI-2026-0157', ref: 'NEFTN20260319033', cr: 540000 },
+      { d: '20', desc: 'CHQ DEPOSIT 778812 ALPHA TRADERS', ref: 'CHQDEP778812', cr: 180000 },
+      { d: '22', desc: 'RTGS OUT POWER GRID ELEC BILL', ref: 'RTGS20260322ELEC', dr: 87500 },
+      { d: '24', desc: 'NEFT OUT TATA TELESERVICES', ref: 'NEFTO20260324TEL', dr: 18500 },
+      { d: '26', desc: 'NEFT INW MM FORGINGS SI-2026-0162', ref: 'NEFTN20260326045', cr: 295000 },
+      { d: '28', desc: 'CHQ PAID 100125 ACE TOOLS', ref: 'CHQ100125', dr: 64000 },
+      { d: '30', desc: 'NEFT INW PATEL ENGG SI-2026-0166', ref: 'NEFTN20260330055', cr: 420000 },
+    ],
+  });
+
+  // SBI Current A/c · 15 transactions
+  const sbi = buildStatement({
+    id: 'stmt-sbi-2026-03', bankAccountId: 'BA-SBI-001',
+    bankName: 'SBI', accountNumber: '31234567890',
+    entityCode, opening: 825000,
+    txns: [
+      { d: '03', desc: 'NEFT INW GANESH STEEL SI-2026-0143', ref: 'SBIN20260303I001', cr: 320000 },
+      { d: '05', desc: 'CHQ PAID 200401 KAVERI METAL', ref: 'CHQ200401', dr: 145000 },
+      { d: '07', desc: 'NEFT INW VEER INDUSTRIES SI-2026-0147', ref: 'SBIN20260307I003', cr: 215000 },
+      { d: '09', desc: 'RTGS OUT VENKATESHWAR FORGE', ref: 'SBIN20260309R002', dr: 380000 },
+      { d: '11', desc: 'BANK CHARGES + SMS MAR', ref: 'BCHG2603SBI', dr: 1250 },
+      { d: '13', desc: 'NEFT INW SHARMA UDYOG SI-2026-0149', ref: 'SBIN20260313I007', cr: 285000 },
+      { d: '15', desc: 'GST PAYMENT CGST 2603', ref: 'GSTCGST2603SBI', dr: 95000 },
+      { d: '17', desc: 'CHQ DEPOSIT 882201 KRISHNA AGRO', ref: 'CHQDEP882201', cr: 175000 },
+      { d: '19', desc: 'NEFT OUT VENDOR JINDAL SAW', ref: 'SBIN20260319O004', dr: 410000 },
+      { d: '21', desc: 'IMPS INW SAMRAT FORGE SI-2026-0154', ref: 'SBIN20260321IMPS', cr: 92000 },
+      { d: '23', desc: 'NEFT OUT TELEPHONE BSNL', ref: 'SBIN20260323O005', dr: 8500 },
+      { d: '25', desc: 'CASH DEPOSIT BRANCH', ref: 'CASHDEP2503', cr: 50000 },
+      { d: '27', desc: 'NEFT INW INDIRA METAL SI-2026-0160', ref: 'SBIN20260327I011', cr: 198000 },
+      { d: '29', desc: 'TDS REMITTANCE 194C MAR', ref: 'TDS194C2603', dr: 28500 },
+      { d: '31', desc: 'INTEREST QTR CR', ref: 'INTQTR2603SBI', cr: 2150 },
+    ],
+  });
+
+  // HDFC Current A/c · 12 transactions
+  const hdfc = buildStatement({
+    id: 'stmt-hdfc-2026-03', bankAccountId: 'BA-HDFC-001',
+    bankName: 'HDFC Bank', accountNumber: '00012345678901',
+    entityCode, opening: 675000,
+    txns: [
+      { d: '04', desc: 'NEFT INW BHARAT METAL SI-2026-0144', ref: 'HDFC20260304N011', cr: 380000 },
+      { d: '06', desc: 'NEFT OUT SHRI RAM TRANSPORT', ref: 'HDFC20260306N012', dr: 58000 },
+      { d: '08', desc: 'CHQ PAID 300101 GUJARAT STEEL', ref: 'CHQ300101', dr: 220000 },
+      { d: '11', desc: 'RTGS INW NATIONAL ENGG SI-2026-0150', ref: 'HDFC20260311R005', cr: 615000 },
+      { d: '13', desc: 'BANK CHARGES MAR', ref: 'BCHG2603HDFC', dr: 1450 },
+      { d: '16', desc: 'NEFT OUT MAHESH METAL SUPPLIES', ref: 'HDFC20260316N014', dr: 195000 },
+      { d: '18', desc: 'NEFT INW ARJUN STEEL SI-2026-0152', ref: 'HDFC20260318N015', cr: 245000 },
+      { d: '20', desc: 'IMPS OUT COURIER DTDC', ref: 'IMPS260320DTDC', dr: 12500 },
+      { d: '23', desc: 'NEFT INW HARSHA INDS SI-2026-0156', ref: 'HDFC20260323N018', cr: 175000 },
+      { d: '25', desc: 'TDS 194J PROFESSIONAL', ref: 'TDS194J2603HDFC', dr: 15000 },
+      { d: '27', desc: 'RTGS OUT BAJAJ FINANCE EMI', ref: 'HDFC20260327REMI', dr: 125000 },
+      { d: '30', desc: 'NEFT INW SAGAR FAB SI-2026-0165', ref: 'HDFC20260330N022', cr: 168000 },
+    ],
+  });
+
+  // Cosmos Cooperative Bank · 8 transactions
+  const cosmos = buildStatement({
+    id: 'stmt-cosmos-2026-03', bankAccountId: 'BA-COSMOS-001',
+    bankName: 'Cosmos Cooperative Bank', accountNumber: '12345-COOP-789',
+    entityCode, opening: 185000,
+    txns: [
+      { d: '05', desc: 'NEFT INW DEEP UDYOG SI-2026-0146', ref: 'COOP2603D0501', cr: 85000 },
+      { d: '09', desc: 'CHQ PAID C0001 RAJESH BROTHERS', ref: 'CHQC0001', dr: 42000 },
+      { d: '13', desc: 'BANK CHARGES COOP MAR', ref: 'BCHG2603COOP', dr: 650 },
+      { d: '16', desc: 'NEFT INW NAVDEEP STEEL SI-2026-0155', ref: 'COOP2603N1601', cr: 65000 },
+      { d: '20', desc: 'CASH WITHDRAWAL PETTY', ref: 'CWDR2003COOP', dr: 15000 },
+      { d: '24', desc: 'NEFT INW LOCAL CUST SI-2026-0159', ref: 'COOP2603N2401', cr: 38000 },
+      { d: '27', desc: 'CHQ PAID C0002 LOCAL VENDOR', ref: 'CHQC0002', dr: 28000 },
+      { d: '31', desc: 'INTEREST QTR COOP', ref: 'INTQTR2603COOP', cr: 1850 },
+    ],
+  });
+
+  // Idempotent write via direct storage (insertStatement reads/writes per call · batch here)
+  try {
+    localStorage.setItem(
+      bankStatementsKey(entityCode),
+      JSON.stringify([icici, sbi, hdfc, cosmos]),
+    );
+  } catch { /* quota */ }
 }

@@ -53,6 +53,14 @@ export function POEntryFromAwardDialog({
 
   useEffect(() => {
     if (!open) return;
+    // Sprint HK-6.T1 · §21 closure · BOTH schemas supported (Q-LOCK-T1-5(i) ratified)
+    // (i) original 16th-deviation spec · prefill_item_id (item-level)
+    const qpItemId = searchParams.get('prefill_item_id');
+    if (qpItemId) {
+      // Consumer surfaces the prefill via toast; item-line wiring will follow PO line schema work.
+      toast.info(`Prefilled context: item ${qpItemId}`);
+    }
+    // (ii) Lovable's HK-6 schema · delivery context (preserved)
     const qpAddr = searchParams.get('delivery_address');
     const qpDays = searchParams.get('expected_days');
     if (qpAddr && qpAddr.trim()) setDeliveryAddress(qpAddr.trim());

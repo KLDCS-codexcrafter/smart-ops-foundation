@@ -279,7 +279,7 @@ export function applyMatch(
 ): ReconciliationRecord {
   const statements = readStatements(entityCode);
   let statementId = '';
-  let confidence = matchType === 'auto' ? 80 : 100;
+  const confidence = matchType === 'auto' ? 80 : 100;
 
   for (const st of statements) {
     const idx = st.lines.findIndex(l => l.id === bankLineId);
