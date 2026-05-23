@@ -29,7 +29,9 @@ export type NonFinCoreVoucherFamily =
   | 'service_invoice'
   // C.1c · ServiceDesk · additive (Q-LOCK-5)
   | 'customer_in'
-  | 'customer_out';
+  | 'customer_out'
+  // Sprint T-Phase-3.PROD-1 · Sub-theme 5 · Q-LOCK-7 · Production WIP cascade
+  | 'production_wip';
 
 /** Sprint 2.7-b · OOB-3 field rule per voucher type.
  *  Driven from Voucher Class Master · enforced at form save (mandatory at posted state · soft warn on draft per Q2-c). */
@@ -157,6 +159,10 @@ export const DEFAULT_NON_FINECORE_VOUCHER_TYPES: NonFinCoreVoucherType[] = [
   // C.1c · ServiceDesk · 2 voucher type registrations
   { id: 'vt-customer-in', family: 'customer_in', display_name: 'Customer In', prefix: 'CIN', is_default: true, is_active: true },
   { id: 'vt-customer-out', family: 'customer_out', display_name: 'Customer Out', prefix: 'COUT', is_default: true, is_active: true },
+  // Sprint T-Phase-3.PROD-1 · Sub-theme 5 · Q-LOCK-7 · Production WIP voucher types
+  // D-127/128a 139 ABSOLUTE preserved · these live OUTSIDE the FinCore 139 main types
+  { id: 'production_wip_capitalization', family: 'production_wip', display_name: 'Production WIP Capitalization', prefix: 'JV', is_default: true, is_active: true },
+  { id: 'production_fg_capitalization', family: 'production_wip', display_name: 'Production FG Capitalization', prefix: 'JV', is_default: false, is_active: true },
 ];
 
 /** Storage key (per-entity custom voucher types · entities can extend defaults). */

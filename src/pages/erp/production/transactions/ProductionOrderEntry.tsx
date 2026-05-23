@@ -56,6 +56,8 @@ import {
   findApprovedSubstitutes,
   applySubstitution,
 } from '@/lib/bom-substitution-engine';
+import { computeBOMShortage, type BOMShortageItem } from '@/lib/stock-reservation-engine';
+import { BOMShortageDialog } from '@/components/production/BOMShortageDialog';
 import type { Bom } from '@/types/bom';
 import type { ItemSubstitute } from '@/types/item-substitute';
 import type { QCScenario, SalesOrderLineMapping, ProductionOrderOutput, ProductionOrderOutputKind, CostAllocationBasis, SubstituteReason } from '@/types/production-order';
@@ -125,6 +127,13 @@ export function ProductionOrderEntryPanel(): JSX.Element {
   // Block H · Multi-output (Q13=a)
   const [multiOutputMode, setMultiOutputMode] = useState<boolean>(false);
   const [outputs, setOutputs] = useState<ProductionOrderOutput[]>([]);
+
+  // Sprint T-Phase-3.PROD-1 · Sub-theme 2 · BOM shortage advisory dialog state
+  const [pendingRelease, setPendingRelease] = useState<{
+    po: import('@/types/production-order').ProductionOrder;
+    bom: Bom;
+    shortages: BOMShortageItem[];
+  } | null>(null);
 
   // Block I · Plan Linkage Picker (M:N · Q14=a · D-551)
   const { plans } = useProductionPlans();
@@ -450,6 +459,20 @@ export function ProductionOrderEntryPanel(): JSX.Element {
       }
 
       if (release) {
+        // Sprint T-Phase-3.PROD-1 · Sub-theme 2 · advisory BOM shortage check
+        const shortages = computeBOMShortage(
+          entityCode,
+          workingPo.lines.map(l => ({
+            item_id: l.item_id,
+            item_name: l.item_name,
+            required_qty: l.required_qty,
+            uom: l.uom,
+          })),
+        );
+        if (shortages.length > 0) {
+          setPendingRelease({ po: workingPo, bom: selectedBom, shortages });
+          return;
+        }
         releaseProductionOrder(workingPo, selectedBom, items, config, { id: 'current-user', name: 'Current User' });
         toast.success(`Production Order ${workingPo.doc_no} released`);
       } else {
@@ -462,6 +485,28 @@ export function ProductionOrderEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {pendingRelease && (
+        <BOMShortageDialog
+          open={!!pendingRelease}
+          onClose={() => setPendingRelease(null)}
+          onProceed={() => {
+            try {
+              releaseProductionOrder(
+                pendingRelease.po,
+                pendingRelease.bom,
+                items,
+                config,
+                { id: 'current-user', name: 'Current User' },
+              );
+              toast.success(`Production Order ${pendingRelease.po.doc_no} released (with shortage warning)`);
+            } catch (e) { toast.error((e as Error).message); }
+            setPendingRelease(null);
+          }}
+          shortages={pendingRelease.shortages}
+          poDocNo={pendingRelease.po.doc_no}
+          poId={pendingRelease.po.id}
+        />
+      )}
       <DraftRecoveryDialog
         formKey="production-order-entry"
         entityCode={entityCode}

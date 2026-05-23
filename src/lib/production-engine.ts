@@ -28,6 +28,7 @@ import { generateDocNo } from '@/lib/fincore-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
 import { createProductionOrderReservations } from '@/lib/stock-reservation-engine';
 import { getProductionPlanById, linkProductionOrder } from '@/lib/production-plan-engine';
+import { fireProductionWIPCapitalization, fireProductionFGCapitalization } from '@/lib/production-wip-cascade';
 
 // ════════════════════════════════════════════════════════════════════
 // 1. CRUD · CREATE
@@ -354,6 +355,17 @@ export function transitionState(
     changed_at: new Date().toISOString(),
     note,
   };
+  // Sprint T-Phase-3.PROD-1 · Sub-theme 5 · WIP voucher cascade (Q-LOCK-6)
+  // D-127/128a 139 ABSOLUTE preserved · voucher types live in non-fincore registry (Q-LOCK-7)
+  try {
+    if (po.status === 'released' && to === 'in_progress') {
+      fireProductionWIPCapitalization(po);
+    } else if (po.status === 'in_progress' && to === 'completed') {
+      fireProductionFGCapitalization(po);
+    }
+  } catch (e) {
+    console.error('[production-engine] WIP cascade failed (non-blocking)', e);
+  }
   return {
     ...po,
     status: to,
