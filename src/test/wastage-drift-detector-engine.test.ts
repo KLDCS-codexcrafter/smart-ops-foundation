@@ -13,16 +13,17 @@ import type { Machine } from '@/types/machine';
 
 const ENTITY = 'TEST-WD';
 
-function mkJC(over: Partial<JobCard> & { id: string; date: string; wastage_qty: number }): JobCard {
+function mkJC(args: { id: string; date: string; wastage_qty: number } & Partial<JobCard>): JobCard {
+  const { id, date, wastage_qty, ...rest } = args;
   return {
-    id: over.id, entity_id: ENTITY, factory_id: 'f1', machine_id: 'm1',
-    doc_no: over.id, status: 'completed' as const, planned_qty: 100, produced_qty: 90,
-    rejected_qty: 0, wastage_qty: over.wastage_qty,
+    id, entity_id: ENTITY, factory_id: 'f1', machine_id: 'm1',
+    doc_no: id, status: 'completed' as const, planned_qty: 100, produced_qty: 90,
+    rejected_qty: 0, wastage_qty,
     wastage_reason: 'process_defects' as JobCard['wastage_reason'],
     wastage_notes: '', breakdown_notes: '',
-    scheduled_start: over.date, scheduled_end: over.date,
-    actual_start: over.date, actual_end: over.date,
-    ...over,
+    scheduled_start: date, scheduled_end: date,
+    actual_start: date, actual_end: date,
+    ...rest,
   } as JobCard;
 }
 
