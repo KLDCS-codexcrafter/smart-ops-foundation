@@ -18,8 +18,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, ClipboardCheck, Printer, FileSpreadsheet, AlertTriangle, Send, CheckCircle2, XCircle } from 'lucide-react';
-import * as XLSX from 'xlsx';
+import { Plus, ClipboardCheck, Printer, FileSpreadsheet, AlertTriangle, Send, CheckCircle2, XCircle, FileUp } from 'lucide-react';
+import {
+  exportCycleCountToExcel,
+  parseExcelToCycleCount,
+  applyExcelImportToVoucher,
+} from '@/lib/cycle-count-voucher-engine';
 import { toast } from 'sonner';
 import { useCycleCounts, getCycleCountSuggestions } from '@/hooks/useCycleCounts';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
@@ -556,6 +560,22 @@ function CountDetail({
           <Button variant="outline" size="sm" onClick={handleExportExcel} className="gap-1">
             <FileSpreadsheet className="h-3.5 w-3.5" /> Export Excel
           </Button>
+          {isDraft && (
+            <>
+              <input
+                type="file"
+                accept=".xlsx,.xls"
+                onChange={handleImportExcel}
+                className="hidden"
+                id="cycle-count-excel-import"
+              />
+              <Button asChild variant="outline" size="sm" className="gap-1">
+                <label htmlFor="cycle-count-excel-import" className="cursor-pointer">
+                  <FileUp className="h-3.5 w-3.5" /> Import Excel
+                </label>
+              </Button>
+            </>
+          )}
           <Button variant="outline" size="sm" onClick={handlePrint} className="gap-1">
             <Printer className="h-3.5 w-3.5" /> Print Count Sheet
           </Button>
