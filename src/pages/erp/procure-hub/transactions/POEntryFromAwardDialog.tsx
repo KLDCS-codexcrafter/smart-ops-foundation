@@ -15,7 +15,8 @@
  *              shadcn/ui Dialog + Form + Input + Button + Badge · CONSUME ONLY
  * @[JWT]       Phase 2: POST /api/po/from-award (currently consumes engine writing to localStorage)
  */
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog';
