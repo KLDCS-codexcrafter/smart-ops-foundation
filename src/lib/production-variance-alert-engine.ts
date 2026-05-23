@@ -115,10 +115,14 @@ export function computeOpenVarianceAlerts(entityCode: string): VarianceAlert[] {
     if (po.status !== 'in_progress' && po.status !== 'completed') continue;
     const variance = po.cost_structure?.variance?.master_vs_actual;
     if (!variance) continue;
-    const matPct = variance.material?.total_pct ?? 0;
-    const labPct = variance.labour?.total_pct ?? 0;
-    const ohdPct = variance.overhead?.total_pct ?? 0;
-    const scrPct = variance.scrap?.total_pct ?? 0;
+    const master = po.cost_structure?.master;
+    const safeDiv = (n: number, d: number): number => (d > 0 ? (n / d) * 100 : 0);
+    // Per-component pct vs master baseline (master_vs_actual decomposition)
+    const matPct = safeDiv(variance.by_component?.direct_material ?? 0, master?.direct_material ?? 0);
+    const labPct = safeDiv(variance.by_component?.direct_labour ?? 0, master?.direct_labour ?? 0);
+    const ohdPct = safeDiv(variance.by_component?.manufacturing_overhead ?? 0, master?.manufacturing_overhead ?? 0);
+    // 'scrap' surrogate · yield_variance from by_variance_type
+    const scrPct = safeDiv(variance.by_variance_type?.yield_variance ?? 0, master?.total ?? 0);
 
     const m = evalComponent(po, 'material', matPct, thresholds.material_variance_pct, ackMap);
     if (m && !m.acknowledged_at) out.push(m);
