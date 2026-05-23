@@ -107,6 +107,8 @@ export function fireProductionWIPCapitalization(po: ProductionOrder): string | n
 /**
  * Fire FG capitalization voucher on in_progress → completed.
  * DR Finished Goods Inventory · CR Work-in-Progress.
+ * Amount source rationale (Q-LOCK-6): master standard cost + variance ·
+ * matches IFRS / Ind AS standard-cost + variance capitalization pattern.
  */
 export function fireProductionFGCapitalization(po: ProductionOrder): string | null {
   const masterTotal = po.cost_structure?.master?.total ?? 0;
