@@ -277,6 +277,8 @@ export function putToUseAssetUnit(
       {
         id: newId('vll'),
         ledger_id: unit.ledger_definition_id,
+        ledger_code: 'PPE',
+        ledger_group_code: 'fixed_assets',
         ledger_name: unit.ledger_name,
         dr_amount: unit.gross_block_cost,
         cr_amount: 0,
@@ -285,6 +287,8 @@ export function putToUseAssetUnit(
       {
         id: newId('vll'),
         ledger_id: 'cwip-suspense',
+        ledger_code: 'CWIP',
+        ledger_group_code: 'fixed_assets',
         ledger_name: 'CWIP - Suspense',
         dr_amount: 0,
         cr_amount: unit.gross_block_cost,
