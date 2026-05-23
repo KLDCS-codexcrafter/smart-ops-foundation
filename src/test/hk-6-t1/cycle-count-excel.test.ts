@@ -64,7 +64,10 @@ describe('Cycle Count Excel round-trip (HK-6.T1 · §20)', () => {
   it('parseExcelToCycleCount round-trips exported data', async () => {
     const count = makeCount();
     const { blob } = exportCycleCountToExcel(count);
-    const rows = await parseExcelToCycleCount(blob);
+    // jsdom Blob lacks arrayBuffer(); shim from internal buffer
+    const buf = await new Response(blob).arrayBuffer();
+    const shim = { arrayBuffer: async () => buf } as unknown as Blob;
+    const rows = await parseExcelToCycleCount(shim);
     expect(rows.length).toBe(count.lines.length);
     expect(rows[0]['Item Code']).toBe(count.lines[0].item_code);
   });
