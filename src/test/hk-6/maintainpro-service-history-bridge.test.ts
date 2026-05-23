@@ -34,7 +34,7 @@ function seedUnit(overrides: Partial<AssetUnitRecord> = {}): AssetUnitRecord {
     opening_wdv: 500000,
     purchase_date: '2025-04-01',
     put_to_use_date: '2025-04-01',
-    it_act_block: 'block_iv_pm',
+    it_act_block: 'Plant & Machinery',
     it_act_depr_rate: 15,
     location: 'Plant A',
     department: 'Production',
