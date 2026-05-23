@@ -42,6 +42,8 @@ import { BalanceSheetPanel } from './reports/BalanceSheet';
 import { StockSummaryPanel } from './reports/StockSummary';
 import { OutstandingAgingPanel } from './reports/OutstandingAging';
 import { BankReconciliationPanel } from './reports/BankReconciliation';
+import { BankReconciliationAdvancedPanel } from './BankReconciliationAdvancedPanel';
+import { AssetUnificationPanel } from './AssetUnificationPanel';
 import { ChequeManagementPanel } from './reports/ChequeManagement';
 import { TDSAdvancePanel } from './reports/TDSAdvance';
 import { GSTR1Panel } from './reports/gst/GSTR1';
