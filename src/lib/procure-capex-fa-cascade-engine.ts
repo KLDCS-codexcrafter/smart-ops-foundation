@@ -186,6 +186,8 @@ export function cascadeCAPEXGRNToFA(
       {
         id: newId('vll'),
         ledger_id: event.put_to_use_date ? event.ledger_definition_id : event.cwip_account_id,
+        ledger_code: event.put_to_use_date ? 'PPE' : 'CWIP',
+        ledger_group_code: 'fixed_assets',
         ledger_name: event.put_to_use_date ? event.ledger_name : 'CWIP - Suspense',
         dr_amount: event.received_value,
         cr_amount: 0,
