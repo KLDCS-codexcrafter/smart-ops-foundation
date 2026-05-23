@@ -12,6 +12,7 @@ import { FoundationModule } from '../modules/FoundationModule';
 import { SecurityModule } from '../modules/SecurityModule';
 import { OverviewModule } from '../modules/OverviewModule';
 import { FinCoreMastersModule } from '../modules/FinCoreMastersModule';
+import { ProductionModule } from '../modules/ProductionModule';
 import { TaxRateMasterPanel } from '@/pages/erp/accounting/TaxRateMaster';
 import { TDSSectionMasterPanel } from '@/pages/erp/accounting/TDSSectionMaster';
 import { TCSSectionMasterPanel } from '@/pages/erp/accounting/TCSSectionMaster';
@@ -233,7 +234,9 @@ export type CommandCenterModule =
   // Sprint T-Phase-1.3-3-PlantOps-pre-1 · Plant Operations
   | 'plant-ops-factory-master'
   | 'plant-ops-work-center-master'
-  | 'plant-ops-machine-master';
+  | 'plant-ops-machine-master'
+  // T-Phase-3.PROD-1 · ST6 · Production Lane (Q-LOCK-9 standalone tab)
+  | 'production';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -269,6 +272,7 @@ export default function CommandCenterPage() {
       'distributor-hub', 'distributor-hierarchy', 'distributor-price-list',
       'distributor-credit-refs', 'distributor-dispute-refs',
       'plant-ops-factory-master', 'plant-ops-work-center-master', 'plant-ops-machine-master',
+      'production',
     ].includes(hash)) {
       return hash as CommandCenterModule;
     }
