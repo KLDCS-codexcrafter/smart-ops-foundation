@@ -707,7 +707,7 @@ export function closeCapitalIndentLoop(
   for (const line of indent.lines) {
     if (!line.fixed_asset_pre_link_pending) continue;
     const qty = line.qty;
-    const value = (line.estimated_rate ?? line.rate ?? 0) * qty;
+    const value = (line.estimated_rate ?? 0) * qty;
     const event: CAPEXGRNCascadeEvent = {
       type: 'procure360:grn.capex_received',
       entity_id: entityCode,
