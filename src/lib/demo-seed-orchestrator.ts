@@ -508,6 +508,13 @@ export function seedEntityDemoData(
   // FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-bank-statements-seed-data.ts file.
   seedSinhaBankStatements(entityCode);
 
+  // T-Phase-3.PROD-1 · ST10 · Sinha-anchor production seed (Q-LOCK-13)
+  // FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-*-seed-data file.
+  seedSinhaProductionEligibleSalesOrders(entityCode);
+  seedSinhaOperatorSkills(entityCode);
+  seedSinhaSkillOperationMappings(entityCode);
+
+
 
   return {
     entityCode, archetype,
