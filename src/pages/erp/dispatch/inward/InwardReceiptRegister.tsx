@@ -53,6 +53,25 @@ export function InwardReceiptRegisterPanel(_props: Props): JSX.Element {
     { key: 'vehicle', label: 'Vehicle', render: r => r.vehicle_no ?? '—', exportKey: r => r.vehicle_no ?? '' },
     { key: 'lines', label: 'Lines', align: 'right', render: r => r.total_lines, exportKey: r => r.total_lines },
     { key: 'quarantine', label: 'Quarantine', align: 'right', render: r => r.quarantine_lines, exportKey: r => r.quarantine_lines },
+    // Sprint 46 Pass 1 · Theme A §1.3 · EWB column with validity badge
+    {
+      key: 'ewb', label: 'EWB',
+      render: r => {
+        if (!r.ewb_number) return <span className="text-muted-foreground text-xs">—</span>;
+        const hrs = r.ewb_valid_till
+          ? (new Date(r.ewb_valid_till).getTime() - Date.now()) / 3_600_000
+          : null;
+        const cls = hrs == null ? ''
+          : hrs <= 0 ? 'bg-destructive/15 text-destructive border-destructive/30'
+          : hrs < 4 ? 'bg-warning/15 text-warning border-warning/30'
+          : hrs < 24 ? 'bg-muted text-muted-foreground' : '';
+        const lbl = hrs == null ? r.ewb_number
+          : hrs <= 0 ? `${r.ewb_number} · EXPIRED`
+          : `${r.ewb_number} · ${hrs.toFixed(1)}h`;
+        return <Badge variant="outline" className={`text-[10px] ${cls}`}>{lbl}</Badge>;
+      },
+      exportKey: r => r.ewb_number ?? '',
+    },
     {
       key: 'status', label: 'Status',
       render: r => <Badge variant="outline" className={INWARD_STATUS_COLORS[r.status]}>{INWARD_STATUS_LABELS[r.status]}</Badge>,
