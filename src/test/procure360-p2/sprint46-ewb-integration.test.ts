@@ -25,19 +25,19 @@ async function mkIR(overrides: Partial<Parameters<typeof createInwardReceipt>[0]
 
 describe('Sprint 46 · EWB integration (10)', () => {
   it('1 · CreateInwardReceiptInput accepts ewb_number additively', async () => {
-    const ir = await mkIR({ ewb_number: '123456789012' } as any);
+    const ir = await mkIR({ ewb_number: '123456789012' });
     expect((ir as InwardReceipt).ewb_number).toBe('123456789012');
   });
 
   it('2 · CreateInwardReceiptInput accepts ewb_valid_till additively', async () => {
     const till = new Date(Date.now() + 6 * 3600_000).toISOString();
-    const ir = await mkIR({ ewb_valid_till: till } as any);
+    const ir = await mkIR({ ewb_valid_till: till });
     expect((ir as InwardReceipt).ewb_valid_till).toBe(till);
   });
 
   it('3 · CreateInwardReceiptInput accepts ewb_generated_at additively', async () => {
     const gen = new Date().toISOString();
-    const ir = await mkIR({ ewb_generated_at: gen } as any);
+    const ir = await mkIR({ ewb_generated_at: gen });
     expect((ir as InwardReceipt).ewb_generated_at).toBe(gen);
   });
 
@@ -53,7 +53,7 @@ describe('Sprint 46 · EWB integration (10)', () => {
 
   it('6 · EWBMonitor data filter — only EWB-bearing in-flight rows qualify', async () => {
     const till = new Date(Date.now() + 2 * 3600_000).toISOString();
-    await mkIR({ ewb_number: 'EWB-A', ewb_valid_till: till } as any);
+    await mkIR({ ewb_number: 'EWB-A', ewb_valid_till: till });
     await mkIR(); // no EWB → excluded
     const all = listInwardReceipts(E);
     const monitor = all.filter(r =>
@@ -65,7 +65,7 @@ describe('Sprint 46 · EWB integration (10)', () => {
 
   it('7 · EWBMonitor tone < 4h flagged warning', async () => {
     const till = new Date(Date.now() + 2 * 3600_000).toISOString();
-    await mkIR({ ewb_number: 'EWB-W', ewb_valid_till: till } as any);
+    await mkIR({ ewb_number: 'EWB-W', ewb_valid_till: till });
     const all = listInwardReceipts(E);
     const r = all[0];
     const hrs = (new Date(r.ewb_valid_till as string).getTime() - Date.now()) / 3_600_000;
@@ -75,7 +75,7 @@ describe('Sprint 46 · EWB integration (10)', () => {
 
   it('8 · EWBMonitor tone > 0 expired flagged destructive', async () => {
     const past = new Date(Date.now() - 1 * 3600_000).toISOString();
-    await mkIR({ ewb_number: 'EWB-X', ewb_valid_till: past } as any);
+    await mkIR({ ewb_number: 'EWB-X', ewb_valid_till: past });
     const r = listInwardReceipts(E)[0];
     const hrs = (new Date(r.ewb_valid_till as string).getTime() - Date.now()) / 3_600_000;
     expect(hrs).toBeLessThanOrEqual(0);
@@ -84,8 +84,8 @@ describe('Sprint 46 · EWB integration (10)', () => {
   it('9 · DispatchSummary EWB Risk KPI — filters inwards <4h validity in-flight', async () => {
     const tNow = new Date(Date.now() + 2 * 3600_000).toISOString();
     const tLater = new Date(Date.now() + 10 * 3600_000).toISOString();
-    await mkIR({ ewb_number: 'A', ewb_valid_till: tNow } as any);
-    await mkIR({ ewb_number: 'B', ewb_valid_till: tLater } as any);
+    await mkIR({ ewb_number: 'A', ewb_valid_till: tNow });
+    await mkIR({ ewb_number: 'B', ewb_valid_till: tLater });
     const all = listInwardReceipts(E);
     const now = Date.now();
     const risk = all.filter(r => {

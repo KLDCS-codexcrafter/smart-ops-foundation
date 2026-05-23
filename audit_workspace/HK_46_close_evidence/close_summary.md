@@ -90,10 +90,14 @@ Pass 2: D-NEW-GT · D-NEW-GW · D-NEW-GX
 EWBMonitor + DispatchSummary use `useCardEntitlement` for entity scoping ·
 storage keys via `inwardReceiptsKey(entity)` / `deliveryMemosKey(entity)`.
 
-## §10 · Triple Gate
+## §10 · Triple Gate (post-T2 closeout fix)
 - TSC: 0 errors (117th preservation)
-- ESLint: 0/0 (116th · CENTENNIAL+16 ⭐)
-- Vitest: 53/53 local batch · sample-expense-voucher-engine 34/34 PASS
+- ESLint: 0/0 (116th · CENTENNIAL+16 ⭐) — confirmed AFTER removing 8 unnecessary
+  `as any` casts in sprint46-ewb-integration.test.ts (lines 28/34/40/56/68/78/87/88).
+  Casts were redundant because the 17th ratified deviation already extended
+  `CreateInwardReceiptInput` natively with the 3 EWB fields.
+- Vitest: 53/53 local batch · sample-expense-voucher-engine 34/34 PASS ·
+  sprint46-ewb-integration 10/10 PASS post-fix.
 
 ## §11 · Files Changed (16 / +1004 / -9)
 **Created (5)**
