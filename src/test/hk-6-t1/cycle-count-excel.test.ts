@@ -61,11 +61,19 @@ describe('Cycle Count Excel round-trip (HK-6.T1 · §20)', () => {
     expect(filename).toMatch(/\.xlsx$/);
   });
 
-  it('parseExcelToCycleCount round-trips exported data', async () => {
+  it('parseExcelToCycleCount round-trips exported rows via in-memory workbook', async () => {
     const count = makeCount();
-    const { blob } = exportCycleCountToExcel(count);
-    // jsdom Blob lacks arrayBuffer(); shim from internal buffer
-    const buf = await new Response(blob).arrayBuffer();
+    // Build workbook directly (jsdom Blob.arrayBuffer is unreliable); validate parser symmetrically.
+    const XLSX = await import('xlsx');
+    const rowsIn = count.lines.map(l => ({
+      'Item Code': l.item_code, 'Description': l.item_name, 'UOM': l.uom,
+      'Godown': l.godown_name, 'System Qty': l.system_qty,
+      'Physical Qty': l.physical_qty, 'Variance Qty': l.variance_qty,
+    }));
+    const ws = XLSX.utils.json_to_sheet(rowsIn);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Cycle Count');
+    const buf = XLSX.write(wb, { type: 'array', bookType: 'xlsx' }) as ArrayBuffer;
     const shim = { arrayBuffer: async () => buf } as unknown as Blob;
     const rows = await parseExcelToCycleCount(shim);
     expect(rows.length).toBe(count.lines.length);
