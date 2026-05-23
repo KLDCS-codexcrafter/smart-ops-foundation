@@ -151,3 +151,22 @@ export function acknowledgeVarianceAlert(
   if (idx >= 0) acks[idx] = entry; else acks.push(entry);
   lsWrite(ackKey(entityCode), acks);
 }
+
+// ── PROD-2 · Sub-theme 2 · PROD-LEAK-3 closure · Q-LOCK-2 ──────────
+// Auto-surface helpers · additive · backward-compat (matches PROD-1 Dev #2 pattern).
+
+/**
+ * Get critical unacknowledged variances for auto-surface (KPI + dashboard banner).
+ * Sprint T-Phase-3.PROD-2 · Sub-theme 2 · PROD-LEAK-3 closure.
+ */
+export function getCriticalUnacknowledgedVariances(
+  entityCode: string,
+): VarianceAlert[] {
+  const allOpen = computeOpenVarianceAlerts(entityCode);
+  return allOpen.filter(a => a.severity === 'critical' && a.acknowledged_at === null);
+}
+
+/** Count of critical unacknowledged variances · for KPI surfacing. */
+export function countCriticalUnacknowledgedVariances(entityCode: string): number {
+  return getCriticalUnacknowledgedVariances(entityCode).length;
+}
