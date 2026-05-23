@@ -902,3 +902,84 @@ function seedSinhaSkillOperationMappings(entityCode: string): void {
     localStorage.setItem(skillOperationMappingKey(entityCode), JSON.stringify(seed));
   } catch { /* quota */ }
 }
+
+// T-Phase-3.PROD-2 · ST13 · Sinha-anchor 6 leak scenarios (Q-LOCK-13)
+// FR-86 ABSOLUTE preserved · inline · NO new sinha-*-seed-data file.
+// Seeds the side-stores read by the 7 PROD-2 sub-helper engines so that the
+// Command Center "Open Leaks Count" KPI surfaces realistic leak signals on first boot.
+function seedSinhaLeakScenarios(entityCode: string): void {
+  if (entityCode !== 'SINHA') return;
+  const now = new Date().toISOString();
+  const safeSeed = (key: string, value: unknown): void => {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw && JSON.parse(raw).length > 0) return;
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch { /* quota silent */ }
+  };
+
+  // Scenario 1 — JW shortage alert (LEAK-5)
+  safeSeed(`erp_jw_shortage_alerts_${entityCode}`, [{
+    id: `jwsh-seed-1`, jw_receipt_id: 'jwr-seed-1', jw_receipt_no: 'JWR/26/0007',
+    jwo_id: 'jwo-seed-1', vendor_id: 'vend-001', vendor_name: 'Mahalaxmi Powder Coating',
+    item_id: 'itm-mhf-002', item_name: 'MS Flange — Powder Coated',
+    expected_qty: 500, received_qty: 462, shortage_qty: 38,
+    shortage_pct: 7.6, shortage_value: 38_000, severity: 'warning',
+    triggered_at: now, acknowledged_at: null, acknowledged_by: null,
+    valuation_suggestion: 38_000,
+  }]);
+
+  // Scenario 2 — BOM drift alert (LEAK-7)
+  safeSeed(`erp_bom_drift_alerts_${entityCode}`, [{
+    id: 'bomd-seed-1', bom_id: 'bom-001',
+    bom_name: 'Hydraulic Power Pack — 5 HP v3',
+    parent_item_id: 'itm-hpp-005', parent_item_name: 'Hydraulic Power Pack — 5 HP',
+    drift_item_id: 'itm-oil-iso68', drift_item_name: 'Hydraulic Oil ISO VG 68',
+    bom_standard_qty: 12, actual_avg_qty: 13.56, drift_pct: 13,
+    drift_severity: 'warning', sample_size: 5, detected_at: now, acknowledged_at: null,
+  }]);
+
+  // Scenario 3 — Factory licence cap (LEAK-10) · warning band
+  safeSeed(`erp_factory_capacity_${entityCode}`, [
+    { factory_id: 'fac-sinha-mum-01', installed_capacity_units: 10000,
+      license_no: 'MH-FAC-2018-04412', uom: 'units' },
+  ]);
+  safeSeed(`erp_factory_license_alerts_${entityCode}`, [{
+    id: 'flc-fac-sinha-mum-01-FY26', factory_id: 'fac-sinha-mum-01',
+    factory_name: 'Sinha Mumbai Plant 1', utilisation_pct: 87.5,
+    status: 'warning', fy_label: 'FY26', detected_at: now, acknowledged_at: null,
+  }]);
+
+  // Scenario 4 — Hazmat production cap (LEAK-11) · breach band
+  safeSeed(`erp_hazmat_caps_${entityCode}`, [
+    { dg_class: '3', monthly_cap_units: 2000, uom: 'litres' },
+  ]);
+  const monthLabel = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+  safeSeed(`erp_hazmat_cap_alerts_${entityCode}`, [{
+    id: `hzc-3-${monthLabel}`, dg_class: '3', utilisation_pct: 104.5,
+    status: 'breach', month_label: monthLabel, detected_at: now, acknowledged_at: null,
+  }]);
+
+  // Scenario 5 — Wastage drift alert (LEAK-13)
+  safeSeed(`erp_wastage_drift_alerts_${entityCode}`, [{
+    id: 'wd-fac-sinha-mum-01-process_defects-seed',
+    factory_id: 'fac-sinha-mum-01',
+    category_12: 'process_defects', category_label: 'Process Defects',
+    recent_avg_qty: 18.4, baseline_avg_qty: 12.1, drift_pct: 52.1,
+    severity: 'critical', detected_at: now, acknowledged_at: null,
+    sample_size_recent: 14, sample_size_baseline: 31,
+  }]);
+
+  // Scenario 6 — Tooling consumption near EOL (LEAK-14)
+  safeSeed(`erp_tooling_register_${entityCode}`, [
+    { tool_id: 'tool-cnc-insert-001', tool_name: 'CNC Turning Insert — DNMG 150608',
+      machine_id: 'mc-cnc-01', expected_life_units: 8000, consumed_units: 7720,
+      installed_at: now, last_reset_at: null },
+  ]);
+  safeSeed(`erp_tooling_consumption_alerts_${entityCode}`, [{
+    id: 'tool-tool-cnc-insert-001', tool_id: 'tool-cnc-insert-001',
+    tool_name: 'CNC Turning Insert — DNMG 150608', machine_id: 'mc-cnc-01',
+    consumed_units: 7720, expected_life_units: 8000, consumption_pct: 96.5,
+    severity: 'critical', detected_at: now, acknowledged_at: null,
+  }]);
+}
