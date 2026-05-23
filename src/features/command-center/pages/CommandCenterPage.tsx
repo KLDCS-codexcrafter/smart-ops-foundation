@@ -396,6 +396,10 @@ export default function CommandCenterPage() {
       case 'plant-ops-work-center-master': return <WorkCenterMasterPanel />;
       case 'plant-ops-machine-master':     return <MachineMasterPanel />;
 
+      // T-Phase-3.PROD-1 · ST6 · Production Lane
+      case 'production': return <ProductionModule />;
+
+
       // Stage 1 — CRM
       case 'crm-hub':       return <CRMMastersModule onNavigate={handleNavigate} />;
       case 'crm-customer':  return <CustomerMasterPanel />;
@@ -491,6 +495,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     overview: 'Overview',
     foundation: 'Entity Management',
     geography: 'Geography',
+    production: 'Production Lane',
     'org-structure': 'Business Units',
     console: 'Security Console',
     'fincore-hub': 'Finance & Compliance Hub',
