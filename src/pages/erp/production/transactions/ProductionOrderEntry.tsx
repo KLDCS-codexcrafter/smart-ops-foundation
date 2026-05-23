@@ -485,6 +485,28 @@ export function ProductionOrderEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {pendingRelease && (
+        <BOMShortageDialog
+          open={!!pendingRelease}
+          onClose={() => setPendingRelease(null)}
+          onProceed={() => {
+            try {
+              releaseProductionOrder(
+                pendingRelease.po,
+                pendingRelease.bom,
+                items,
+                config,
+                { id: 'current-user', name: 'Current User' },
+              );
+              toast.success(`Production Order ${pendingRelease.po.doc_no} released (with shortage warning)`);
+            } catch (e) { toast.error((e as Error).message); }
+            setPendingRelease(null);
+          }}
+          shortages={pendingRelease.shortages}
+          poDocNo={pendingRelease.po.doc_no}
+          poId={pendingRelease.po.id}
+        />
+      )}
       <DraftRecoveryDialog
         formKey="production-order-entry"
         entityCode={entityCode}
