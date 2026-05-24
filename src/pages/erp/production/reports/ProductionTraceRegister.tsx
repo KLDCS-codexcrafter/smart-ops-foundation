@@ -18,8 +18,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { Workflow, ExternalLink, Search, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
+import { useFactories } from '@/hooks/useFactories';
 import { useProductionPlans } from '@/hooks/useProductionPlans';
 import { useJobCards } from '@/hooks/useJobCards';
 import { useOrders } from '@/hooks/useOrders';
