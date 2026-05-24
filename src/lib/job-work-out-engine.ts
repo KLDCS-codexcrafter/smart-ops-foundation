@@ -15,6 +15,7 @@ import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 // Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
 import { logAudit } from '@/lib/audit-trail-engine';
 
@@ -54,6 +55,14 @@ export interface CreateJobWorkOutOrderInput {
 export function createJobWorkOutOrder(
   input: CreateJobWorkOutOrderInput,
 ): JobWorkOutOrder {
+  // Sprint T-Phase-3.PROD-FIX-A · ST12+ST13 · period-lock + future-date guards
+  const _today_lock = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(_today_lock, input.entity_id)) {
+    throw new Error(periodLockMessage(_today_lock, input.entity_id) ?? 'Period locked');
+  }
+  if (input.jwo_date > _today_lock) {
+    throw new Error('Transaction date cannot be in the future');
+  }
   if (!input.vendor_id || !input.vendor_name) throw new Error('Vendor required');
   if (input.lines.length === 0) throw new Error('At least one line required');
   if (new Date(input.expected_return_date) < new Date(input.jwo_date)) {

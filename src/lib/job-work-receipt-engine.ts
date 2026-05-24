@@ -18,6 +18,7 @@ import type {
 } from '@/types/job-work-out-order';
 import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import type { QualiCheckConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 // Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
 import { logAudit } from '@/lib/audit-trail-engine';
@@ -60,6 +61,14 @@ export function createJobWorkReceipt(
   input: CreateJobWorkReceiptInput,
   qcConfig: QualiCheckConfig,
 ): JobWorkReceipt {
+  // Sprint T-Phase-3.PROD-FIX-A · ST12+ST13 · period-lock + future-date guards
+  const _today_lock = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(_today_lock, input.entity_id)) {
+    throw new Error(periodLockMessage(_today_lock, input.entity_id) ?? 'Period locked');
+  }
+  if (input.receipt_date > _today_lock) {
+    throw new Error('Transaction date cannot be in the future');
+  }
   const jwo = input.job_work_out_order;
   if (jwo.status !== 'sent' && jwo.status !== 'partially_received') {
     throw new Error(`Cannot receive against JWO in ${jwo.status} status`);

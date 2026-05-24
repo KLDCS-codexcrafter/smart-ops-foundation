@@ -29,6 +29,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   buildFiscalYear, readFiscalYears, writeFiscalYears,
 } from '@/lib/fiscal-year-engine';
+import { closeProductionForFY } from '@/lib/fy-close-engine';
 import type { FiscalYear } from '@/types/fiscal-year';
 
 const MONTH_OPTIONS = [
@@ -109,13 +110,33 @@ export function FiscalYearMasterPanel() {
   }
 
   function handleCloseFy(fyId: string) {
+    const fy = years.find(y => y.id === fyId);
+    if (!fy) return;
+    const now = new Date().toISOString();
+    const closedBy = { id: 'current-user', name: 'current-user' };
+    // Sprint T-Phase-3.PROD-FIX-A · ST10 · capture closedBy + lock all 12 periods
     const next = years.map(y => y.id !== fyId ? y : {
       ...y,
       closed: true,
-      closedAt: new Date().toISOString(),
+      closedAt: now,
+      closedBy,
+      periods: y.periods.map(p => ({
+        ...p,
+        locked: true,
+        lockedAt: p.lockedAt ?? now,
+        lockedBy: p.lockedBy ?? 'current-user',
+      })),
     });
     persist(next);
-    toast.success('Fiscal Year closed');
+    // Sprint T-Phase-3.PROD-FIX-A · ST9 · Q-LOCK-5 · Production-arc close orchestration
+    try {
+      const summary = closeProductionForFY(entityCode, fyId, closedBy);
+      toast.success(
+        `FY ${fy.label} closed · WIP snapshotted · ${summary.variances_frozen_count} variances frozen · ${summary.opening_wip_carry_forward_count} POs carried forward.`,
+      );
+    } catch (err) {
+      toast.warning(`FY ${fy.label} closed · Production-arc orchestration skipped: ${(err as Error).message}`);
+    }
   }
 
   if (!entityCode) {
@@ -250,10 +271,17 @@ export function FiscalYearMasterPanel() {
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Close Fiscal Year {activeFy.label}?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Closing an FY blocks all voucher creation across all 12 periods. Periods cannot
-                      be unlocked individually after closure. This action cannot be undone here —
-                      reopen requires governance approval (later sprint).
+                    <AlertDialogDescription asChild>
+                      <div className="space-y-2 text-sm">
+                        <div>Closing this FY will:</div>
+                        <ul className="list-disc pl-6 space-y-1">
+                          <li>Snapshot current Production WIP value for audit trail</li>
+                          <li>Freeze all open Production Variances</li>
+                          <li>Tag in-progress Production Orders for next FY opening WIP carry-forward</li>
+                          <li>Lock all 12 periods · block voucher creation across all modules</li>
+                        </ul>
+                        <div>This action cannot be undone here — reopen requires governance approval.</div>
+                      </div>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
