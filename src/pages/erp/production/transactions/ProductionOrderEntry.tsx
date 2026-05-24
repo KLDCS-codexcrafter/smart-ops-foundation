@@ -34,6 +34,7 @@ import { useBOM } from '@/hooks/useBOM';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
 import { useProductionPlans } from '@/hooks/useProductionPlans';
+import { useFactories } from '@/hooks/useFactories';
 import { useItemSubstitutes } from '@/hooks/useItemSubstitutes';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
