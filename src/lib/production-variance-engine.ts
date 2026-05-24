@@ -12,6 +12,8 @@ import type { JobWorkReceipt } from '@/types/job-work-receipt';
 import type { ProductionVariance, VarianceComponent } from '@/types/production-variance';
 import { productionVariancesKey } from '@/types/production-variance';
 import { round2 } from '@/lib/decimal-helpers';
+import type { ProcessBatch } from '@/types/process-batch';
+import type { Recipe } from '@/types/recipe';
 
 // ─── 1. RATE VARIANCE ──────────────────────────────────────────────
 export function computeRateVariance(
@@ -361,4 +363,136 @@ export function freezeProductionVariance(
   };
   localStorage.setItem(productionVariancesKey(entityCode), JSON.stringify(all));
   return all[idx];
+}
+
+// ============================================================================
+// Sprint T-Phase-3.PROD-3.5.PASS2 · ST9 · Process variance extension (additive)
+// Q-LOCK-11 Option A · EXTEND existing engine · do NOT create new SIBLING.
+// All 7 existing variance functions + composite stay 0-diff.
+// ============================================================================
+
+export interface ProcessVarianceInput {
+  batch: ProcessBatch;
+  recipe: Recipe;
+  expected_co_product_costs?: Record<string, number>;
+  expected_by_product_revenue?: Record<string, number>;
+}
+
+export interface ProcessVariance {
+  batch_id: string;
+  batch_no: string;
+  recipe_id: string;
+  recipe_version: string;
+  computed_at: string;
+  yield_variance_pct: number;
+  yield_variance_kg: number;
+  yield_is_unfavourable: boolean;
+  co_product_variances: Array<{
+    item_id: string;
+    expected_allocated_cost: number;
+    actual_allocated_cost: number;
+    variance: number;
+    is_unfavourable: boolean;
+  }>;
+  by_product_variances: Array<{
+    item_id: string;
+    expected_revenue: number;
+    actual_revenue: number;
+    variance: number;
+    is_unfavourable: boolean;
+  }>;
+  total_process_variance: number;
+  total_unfavourable_count: number;
+}
+
+/**
+ * Compute process-specific variance for a completed batch.
+ * Complements existing discrete production-variance-engine functions.
+ */
+export function computeProcessVariance(
+  input: ProcessVarianceInput,
+): ProcessVariance {
+  const { batch, recipe } = input;
+  const actualYield = batch.actual_yield ?? 0;
+  const yield_variance_kg = actualYield - batch.planned_yield;
+  const yield_variance_pct = batch.planned_yield > 0
+    ? (yield_variance_kg / batch.planned_yield) * 100
+    : 0;
+  const yield_is_unfavourable = yield_variance_kg < 0;
+
+  const co_product_variances = batch.co_products.map(cp => {
+    const expected = input.expected_co_product_costs?.[cp.item_id] ?? 0;
+    const variance = cp.allocated_cost - expected;
+    return {
+      item_id: cp.item_id,
+      expected_allocated_cost: expected,
+      actual_allocated_cost: cp.allocated_cost,
+      variance,
+      is_unfavourable: variance > 0,
+    };
+  });
+
+  const by_product_variances = batch.by_products.map(bp => {
+    const expected = input.expected_by_product_revenue?.[bp.item_id] ?? 0;
+    const variance = bp.total_revenue_credit - expected;
+    return {
+      item_id: bp.item_id,
+      expected_revenue: expected,
+      actual_revenue: bp.total_revenue_credit,
+      variance,
+      is_unfavourable: variance < 0,
+    };
+  });
+
+  const totalCoVariance = co_product_variances.reduce((s, v) => s + v.variance, 0);
+  const totalByVariance = by_product_variances.reduce((s, v) => s + v.variance, 0);
+  const total_process_variance = (yield_variance_kg * -1) + totalCoVariance - totalByVariance;
+
+  const total_unfavourable_count =
+    (yield_is_unfavourable ? 1 : 0) +
+    co_product_variances.filter(v => v.is_unfavourable).length +
+    by_product_variances.filter(v => v.is_unfavourable).length;
+
+  void recipe;
+
+  return {
+    batch_id: batch.id,
+    batch_no: batch.batch_no,
+    recipe_id: batch.recipe_id,
+    recipe_version: batch.recipe_version,
+    computed_at: new Date().toISOString(),
+    yield_variance_pct,
+    yield_variance_kg,
+    yield_is_unfavourable,
+    co_product_variances,
+    by_product_variances,
+    total_process_variance,
+    total_unfavourable_count,
+  };
+}
+
+/** Storage key for process variances · FR-26 entity-scoped. */
+export const processVariancesKey = (entityCode: string): string =>
+  `process_variances_${entityCode}`;
+
+const lsReadVar = <T>(key: string, def: T): T => {
+  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) as T : def; } catch { return def; }
+};
+const lsWriteVar = <T>(key: string, value: T): void => {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* quota */ }
+};
+
+export function persistProcessVariance(
+  entityCode: string,
+  variance: ProcessVariance,
+): void {
+  const all = lsReadVar<ProcessVariance[]>(processVariancesKey(entityCode), []);
+  const idx = all.findIndex(v => v.batch_id === variance.batch_id);
+  if (idx >= 0) all[idx] = variance;
+  else all.unshift(variance);
+  lsWriteVar(processVariancesKey(entityCode), all);
+}
+
+export function listProcessVariances(entityCode: string): ProcessVariance[] {
+  return lsReadVar<ProcessVariance[]>(processVariancesKey(entityCode), []);
 }
