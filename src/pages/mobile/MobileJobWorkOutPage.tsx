@@ -51,6 +51,13 @@ export default function MobileJobWorkOutPage(): JSX.Element {
     }
     setBusy(true);
     try {
+      // Sprint T-Phase-3.PROD-3 · ST5 · offline-first
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        const queued = enqueueWrite(entityCode, 'job_work_out', { vendorName, itemId, sentQty: qty, sourceGodownId });
+        toast.info(`Saved offline · will sync (${queued.id})`);
+        navigate('/operix-go');
+        return;
+      }
       const item = items.find(i => i.id === itemId);
       if (!item) throw new Error('Item not found');
       const src = godowns.find(g => g.id === sourceGodownId);
