@@ -85,12 +85,13 @@ export function ProductionVarianceDashboardPanel(): JSX.Element {
   }, [orders, entityCode, thresholdPct]);
 
   const filtered = useMemo(() => {
-    if (statusFilter === 'all') return variances;
-    if (statusFilter === 'breached') return variances.filter(v => v.threshold_breach_count > 0);
-    if (statusFilter === 'favourable') return variances.filter(v => v.total_variance_amount < 0);
-    if (statusFilter === 'unfavourable') return variances.filter(v => v.total_variance_amount > 0);
-    return variances;
-  }, [variances, statusFilter]);
+    let arr = variances;
+    if (factoryFilter !== '__all__') arr = arr.filter(v => v.factory_id === factoryFilter);
+    if (statusFilter === 'breached') return arr.filter(v => v.threshold_breach_count > 0);
+    if (statusFilter === 'favourable') return arr.filter(v => v.total_variance_amount < 0);
+    if (statusFilter === 'unfavourable') return arr.filter(v => v.total_variance_amount > 0);
+    return arr;
+  }, [variances, statusFilter, factoryFilter]);
 
   const totalVariance = round2(dSum(filtered, v => v.total_variance_amount));
   const totalBreaches = filtered.reduce((s, v) => s + v.threshold_breach_count, 0);
