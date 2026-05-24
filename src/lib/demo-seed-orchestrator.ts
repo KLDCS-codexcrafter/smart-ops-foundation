@@ -21,6 +21,7 @@
  * T-Phase-1.2.2: DEMO_BOM_HAPPY_PATH seeded · erp_bom_{entityCode}
  */
 import { DEMO_BOM_HAPPY_PATH } from '@/data/demo-bom-data';
+import { applyManufacturingModeToEntity } from '@/lib/entity-setup-service';
 import {
   customersForArchetype, vendorsForArchetype, type DemoArchetype,
 } from '@/data/demo-customers-vendors';
