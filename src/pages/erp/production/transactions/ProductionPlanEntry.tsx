@@ -20,6 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Plus, Trash2, Save, ClipboardList, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useFactories } from '@/hooks/useFactories';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
@@ -102,6 +103,8 @@ export function ProductionPlanEntryPanel(): JSX.Element {
   );
   const [departmentId, setDepartmentId] = useState<string>('');
   const [businessUnitId, setBusinessUnitId] = useState<string>('');
+  // Sprint T-Phase-3.PROD-FIX-A · ST4 · Q-LOCK-1 · factory_id (optional · NULL acceptable)
+  const [factoryId, setFactoryId] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [lines, setLines] = useState<DraftLine[]>([emptyLine()]);
 
