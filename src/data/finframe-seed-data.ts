@@ -41,7 +41,7 @@ export interface L4IndustryGroup {
   l3Code: string;
   nature: 'Dr' | 'Cr';
   // [T-T8.1-LedgerSeed-Triggers] Added 'd_and_c' to support Construction / D&C / Engineering & Construction industry pack.
-  industry: 'manufacturing' | 'trading' | 'services' | 'common' | 'd_and_c';
+  industry: 'manufacturing' | 'trading' | 'services' | 'common' | 'd_and_c' | 'process_mfg';
 }
 
 // ─── L1 Primary Groups — 5 records ──────────────────────────────
