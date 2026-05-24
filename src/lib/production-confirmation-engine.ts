@@ -94,6 +94,8 @@ export function createProductionConfirmation(
   const pc: ProductionConfirmation = {
     id: `pc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     entity_id: input.entity_id,
+    // Sprint T-Phase-3.PROD-FIX-A · ST6 · Q-LOCK-1 · factory inherited from parent PO (single-source)
+    factory_id: input.production_order.production_site_id ?? null,
     doc_no,
     status: 'draft',
     confirmation_date: input.confirmation_date,
