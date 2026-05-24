@@ -49,6 +49,13 @@ export default function MobileMaterialIssuePage(): JSX.Element {
     try {
       const po = releasedPOs.find(p => p.id === poId);
       if (!po) throw new Error('PO not found');
+      // Sprint T-Phase-3.PROD-3 · ST5 · offline-first save (Q-LOCK-6 Option A)
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        const queued = enqueueWrite(po.entity_id, 'material_issue', { poId, sourceGodownId, destGodownId, geoStamp });
+        toast.info(`Saved offline · will sync when online (${queued.id})`);
+        navigate('/operix-go');
+        return;
+      }
       const min = createMaterialIssue({
         entity_id: po.entity_id,
         production_order: po,
