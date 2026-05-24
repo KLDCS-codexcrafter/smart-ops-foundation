@@ -13,6 +13,7 @@ import MobileStoreIssueCapture from '@/components/mobile/MobileStoreIssueCapture
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { listStockIssues } from '@/lib/stock-issue-engine';
 import { enqueueWrite } from '@/lib/offline-queue-engine';
+import { toast } from 'sonner';
 
 function getActiveEntityCode(): string {
   try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
