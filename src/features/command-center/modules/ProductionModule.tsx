@@ -12,6 +12,59 @@ import {
 import { cn } from '@/lib/utils';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionLaneKPIs } from '@/hooks/useProductionLaneKPIs';
+// T-Phase-3.PROD-2.5 · ST9 · Q-LOCK-9 · mode-aware KPI descriptions
+import { useEntityManufacturingMode } from '@/hooks/useEntityManufacturingMode';
+import type { ManufacturingMode } from '@/types/manufacturing-mode';
+
+const KPI_DESCRIPTIONS_BY_MODE: Record<ManufacturingMode, {
+  activePOs: string;
+  plantOEE: string;
+  onTimeDelivery: string;
+  varianceAlerts: string;
+  wipValue: string;
+  openLeaks: string;
+}> = {
+  discrete: {
+    activePOs: 'Production Orders in released/in_progress state',
+    plantOEE: 'Plant-wide Overall Equipment Effectiveness (last 30 days)',
+    onTimeDelivery: 'On-time PO completion · last 30 days · actual_end ≤ target_end',
+    varianceAlerts: 'Critical material/labour/overhead variance alerts · unacknowledged',
+    wipValue: 'Work-in-Progress inventory value · in_progress POs',
+    openLeaks: "Unack'd PROD-2 leak alerts · JW shortage, BOM drift, MSME-JW, licence, hazmat, wastage drift, tooling.",
+  },
+  process: {
+    activePOs: 'Active Batches in released/in_progress state',
+    plantOEE: 'Plant-wide OEE · weighted across reactor capacity',
+    onTimeDelivery: 'On-time batch completion · last 30 days · actual_end ≤ target_end',
+    varianceAlerts: 'Yield variance + batch material variance alerts · unacknowledged',
+    wipValue: 'WIP value including intermediates + by-products',
+    openLeaks: 'Process leak alerts · effluent · licence · hazmat caps · catalyst burn · yield drift.',
+  },
+  repetitive: {
+    activePOs: 'Active Production Lots in released/in_progress state',
+    plantOEE: 'Line-wide OEE · weighted across packaging line capacity',
+    onTimeDelivery: 'On-time lot completion · last 30 days',
+    varianceAlerts: 'Line efficiency + material variance alerts · unacknowledged',
+    wipValue: 'WIP value across active lots',
+    openLeaks: 'Repetitive line leak alerts · BOM drift, line efficiency, wastage, tooling.',
+  },
+  mixed_mode: {
+    activePOs: 'Active BU-Production Orders across discrete + process + repetitive BUs',
+    plantOEE: 'Plant-wide OEE · BU-weighted aggregate',
+    onTimeDelivery: 'On-time completion across all BUs',
+    varianceAlerts: 'Cross-BU variance alerts · unacknowledged',
+    wipValue: 'Total WIP value · all BUs',
+    openLeaks: 'All leak alerts across BUs · cross-mode coverage.',
+  },
+  na: {
+    activePOs: 'N/A · entity is trading/services',
+    plantOEE: 'N/A',
+    onTimeDelivery: 'N/A',
+    varianceAlerts: 'N/A',
+    wipValue: 'N/A',
+    openLeaks: 'N/A',
+  },
+};
 
 interface StatCardProps {
   icon: React.ReactNode;
@@ -62,6 +115,8 @@ function formatINR(n: number): string {
 export function ProductionModule() {
   const { entityCode } = useEntityCode();
   const kpis = useProductionLaneKPIs(entityCode);
+  const mfgPreset = useEntityManufacturingMode(entityCode);
+  const descriptions = KPI_DESCRIPTIONS_BY_MODE[mfgPreset.mode];
 
   return (
     <div className="space-y-6">
@@ -80,7 +135,7 @@ export function ProductionModule() {
           value={kpis.activePOs}
           status={kpis.activePOs > 0 ? 'ok' : 'empty'}
           href="/erp/production"
-          description="Released and in-progress production orders."
+          description={descriptions.activePOs}
         />
         <StatCard
           icon={<Activity className="h-5 w-5" />}
@@ -88,7 +143,7 @@ export function ProductionModule() {
           value={`${kpis.plantOEE}%`}
           status={kpis.plantOEE >= 70 ? 'ok' : kpis.plantOEE > 0 ? 'warn' : 'empty'}
           href="/erp/production"
-          description="Weighted output efficiency across machines (simplified proxy)."
+          description={descriptions.plantOEE}
         />
         <StatCard
           icon={<Truck className="h-5 w-5" />}
@@ -96,7 +151,7 @@ export function ProductionModule() {
           value={`${kpis.onTimeDeliveryPct}%`}
           status={kpis.onTimeDeliveryPct >= 85 ? 'ok' : kpis.onTimeDeliveryPct > 0 ? 'warn' : 'empty'}
           href="/erp/production"
-          description="Last 30 days · completed by target_end_date."
+          description={descriptions.onTimeDelivery}
         />
         <StatCard
           icon={<AlertTriangle className="h-5 w-5" />}
@@ -104,7 +159,7 @@ export function ProductionModule() {
           value={kpis.variancAlertsOpen}
           status={kpis.variancAlertsOpen === 0 ? 'ok' : 'warn'}
           href="/erp/production"
-          description="Unacknowledged material/labour/overhead/scrap breaches."
+          description={descriptions.varianceAlerts}
         />
         <StatCard
           icon={<Wallet className="h-5 w-5" />}
@@ -112,7 +167,7 @@ export function ProductionModule() {
           value={formatINR(kpis.wipValue)}
           status={kpis.wipValue > 0 ? 'ok' : 'empty'}
           href="/erp/production"
-          description="In-progress PO budget totals · matches WIP cascade source."
+          description={descriptions.wipValue}
         />
         <StatCard
           icon={<ShieldAlert className="h-5 w-5" />}
@@ -120,7 +175,7 @@ export function ProductionModule() {
           value={kpis.openLeaksCount}
           status={kpis.openLeaksCount === 0 ? 'ok' : 'warn'}
           href="/erp/production"
-          description="Unack'd PROD-2 leak alerts · JW shortage, BOM drift, MSME-JW, licence, hazmat, wastage drift, tooling."
+          description={descriptions.openLeaks}
         />
       </div>
     </div>

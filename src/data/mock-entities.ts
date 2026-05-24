@@ -1,10 +1,14 @@
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import type { ManufacturingMode } from '@/types/manufacturing-mode';
 
 export interface MockEntity {
   id: string;
   name: string;
   shortCode: string; // max 6 chars — prefixes all transaction codes for this entity
   type: 'parent' | 'subsidiary' | 'branch';
+  // T-Phase-3.PROD-2.5 · ST3 · Q-LOCK-3 · OPTIONAL · backward-compat
+  // Reader code defaults to 'discrete' via getEntityManufacturingMode().
+  manufacturingMode?: ManufacturingMode;
 }
 
 // [JWT] Replace with: const MOCK_ENTITIES = await fetch('/api/foundation/entities')
