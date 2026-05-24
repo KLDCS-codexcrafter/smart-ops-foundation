@@ -99,7 +99,7 @@ function severityFor(varianceAbs: number): WIPReconciliationSnapshot['severity']
 export function runWIPReconciliation(
   entityCode: string,
   user: { id: string; name: string },
-  trigger: 'manual' | 'month_end_auto',
+  trigger: 'manual' | 'month_end_auto' | 'fy_end_manual' | 'fy_end_auto',
 ): WIPReconciliationSnapshot {
   const ledger = computeLedgerWIP(entityCode);
   const physical = computePhysicalWIP(entityCode);
