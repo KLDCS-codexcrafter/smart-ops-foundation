@@ -988,3 +988,19 @@ function seedSinhaLeakScenarios(entityCode: string): void {
     severity: 'critical', detected_at: now, acknowledged_at: null,
   }]);
 }
+
+// ============================================================================
+// T-Phase-3.PROD-2.5-T1 · ST1 · Sinha-anchor mfg-mode assignments (7 entities)
+// FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-mfg-mode-seed-data.ts file.
+// Q-LOCK-14 SAFE WRITE · only manufacturingMode field touched · no cascade.
+// Strategy v2 §4.1 mapping: ABDOS=mixed_mode · BCPL/SHKPH=process · others=discrete.
+// ============================================================================
+function seedSinhaAnchorMfgModes(): void {
+  applyManufacturingModeToEntity('SINHA', 'discrete');
+  applyManufacturingModeToEntity('AMITH', 'discrete');
+  applyManufacturingModeToEntity('CHRSE', 'discrete');
+  applyManufacturingModeToEntity('SMRTP', 'discrete');
+  applyManufacturingModeToEntity('BCPL',  'process');
+  applyManufacturingModeToEntity('SHKPH', 'process');
+  applyManufacturingModeToEntity('ABDOS', 'mixed_mode');
+}
