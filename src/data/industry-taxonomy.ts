@@ -237,3 +237,29 @@ export const OPERATING_SCALES = [
   { id: 'enterprise', label: 'Enterprise', hint: 'Turnover > ₹1,000 Cr' },
 ] as const;
 export type OperatingScale = typeof OPERATING_SCALES[number]['id'];
+
+// ── Sprint T-Phase-3.PROD-2.5 · Sub-theme 2 · Q-LOCK-2 (Strategy v2 §4.2) ───
+// Manufacturing-mode mapping by industry-activity id. 14 entries cover 95% of
+// SME manufacturing realities. Default fallback = 'discrete'.
+import type { ManufacturingMode } from '@/types/manufacturing-mode';
+
+export const ACTIVITY_TO_MFG_MODE: Record<string, ManufacturingMode> = {
+  'pharmaceuticals': 'process',
+  'chemicals-petrochemicals': 'process',
+  'textiles-apparel': 'mixed_mode',
+  'steel-metals': 'discrete',
+  'electronics-electrical': 'discrete',
+  'automotive-components': 'discrete',
+  'food-beverage-processing': 'process',
+  'fmcg-manufacturing': 'mixed_mode',
+  'plastics-packaging': 'mixed_mode',
+  'engineering-goods': 'discrete',
+  'capital-goods': 'discrete',
+  'contract-manufacturing': 'discrete',
+  'assembly-operations': 'discrete',
+  'others': 'discrete',
+};
+
+export function suggestMfgModeFromActivity(activity: string): ManufacturingMode {
+  return ACTIVITY_TO_MFG_MODE[activity] ?? 'discrete';
+}
