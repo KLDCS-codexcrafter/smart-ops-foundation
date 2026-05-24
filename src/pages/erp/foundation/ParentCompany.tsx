@@ -32,7 +32,17 @@ import {
   BUSINESS_ENTITIES, INDUSTRY_SECTORS, getActivitiesForSector,
   getSectorLabel, getActivityLabel,
   OPERATING_SCALES, type OperatingScale,
+  suggestMfgModeFromActivity,
 } from '@/data/industry-taxonomy';
+// T-Phase-3.PROD-2.5 · ST6 · Q-LOCK-6 · 5-card mfg-mode selector
+import {
+  type ManufacturingMode,
+  MANUFACTURING_MODE_LABELS,
+  MANUFACTURING_MODE_DESCRIPTIONS,
+  MANUFACTURING_MODE_ICONS,
+  DEFAULT_MANUFACTURING_MODE,
+} from '@/types/manufacturing-mode';
+import { applyManufacturingModeToEntity } from '@/lib/entity-setup-service';
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
 interface GSTReg {
