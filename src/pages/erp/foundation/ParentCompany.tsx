@@ -422,6 +422,11 @@ export default function ParentCompany() {
       localStorage.setItem('erp_currency_symbol', form.currencySymbol);
       // [JWT] PATCH /api/foundation/company
       localStorage.setItem('erp_parent_company_saved', 'true');
+
+      // T-Phase-3.PROD-2.5 · ST6 · Q-LOCK-14 · apply mfg-mode (mode field only · no cascading)
+      if (showMfgModeSelector && form.shortCode) {
+        applyManufacturingModeToEntity(form.shortCode, manufacturingMode);
+      }
       setSaving(false);
       setConfetti(true);
       toast.success('Parent Company saved', {
