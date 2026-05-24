@@ -21,6 +21,7 @@
  * T-Phase-1.2.2: DEMO_BOM_HAPPY_PATH seeded · erp_bom_{entityCode}
  */
 import { DEMO_BOM_HAPPY_PATH } from '@/data/demo-bom-data';
+import { applyManufacturingModeToEntity } from '@/lib/entity-setup-service';
 import {
   customersForArchetype, vendorsForArchetype, type DemoArchetype,
 } from '@/data/demo-customers-vendors';
@@ -986,4 +987,20 @@ function seedSinhaLeakScenarios(entityCode: string): void {
     consumed_units: 7720, expected_life_units: 8000, consumption_pct: 96.5,
     severity: 'critical', detected_at: now, acknowledged_at: null,
   }]);
+}
+
+// ============================================================================
+// T-Phase-3.PROD-2.5-T1 · ST1 · Sinha-anchor mfg-mode assignments (7 entities)
+// FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-mfg-mode-seed-data.ts file.
+// Q-LOCK-14 SAFE WRITE · only manufacturingMode field touched · no cascade.
+// Strategy v2 §4.1 mapping: ABDOS=mixed_mode · BCPL/SHKPH=process · others=discrete.
+// ============================================================================
+function seedSinhaAnchorMfgModes(): void {
+  applyManufacturingModeToEntity('SINHA', 'discrete');
+  applyManufacturingModeToEntity('AMITH', 'discrete');
+  applyManufacturingModeToEntity('CHRSE', 'discrete');
+  applyManufacturingModeToEntity('SMRTP', 'discrete');
+  applyManufacturingModeToEntity('BCPL',  'process');
+  applyManufacturingModeToEntity('SHKPH', 'process');
+  applyManufacturingModeToEntity('ABDOS', 'mixed_mode');
 }
