@@ -18,6 +18,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
 import { Workflow, ExternalLink, Search, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useProductionPlans } from '@/hooks/useProductionPlans';
@@ -28,6 +31,7 @@ import { useProjects } from '@/hooks/useProjects';
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
 import { useMaterialIssueNotes } from '@/hooks/useMaterialIssueNotes';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useFactories } from '@/hooks/useFactories';
 import { listProductionConfirmations } from '@/lib/production-confirmation-engine';
 import { dAdd, round2 } from '@/lib/decimal-helpers';
 
@@ -35,6 +39,9 @@ export function ProductionTraceRegisterPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPoId, setSelectedPoId] = useState<string | null>(null);
+  // Sprint T-Phase-3.PROD-FIX-A · ST7b · factory filter
+  const { factories } = useFactories();
+  const [factoryFilter, setFactoryFilter] = useState<string>('__all__');
 
   const { orders: productionOrders } = useProductionOrders();
   const { plans } = useProductionPlans();
@@ -48,14 +55,17 @@ export function ProductionTraceRegisterPanel(): JSX.Element {
   const productionConfirmations = useMemo(() => listProductionConfirmations(entityCode), [entityCode]);
 
   const matchingPOs = useMemo(() => {
-    if (!searchQuery.trim()) return productionOrders.slice(0, 10);
+    const factoryFiltered = factoryFilter === '__all__'
+      ? productionOrders
+      : productionOrders.filter(po => po.production_site_id === factoryFilter);
+    if (!searchQuery.trim()) return factoryFiltered.slice(0, 10);
     const q = searchQuery.trim().toLowerCase();
-    return productionOrders.filter(po =>
+    return factoryFiltered.filter(po =>
       po.doc_no?.toLowerCase().includes(q) ||
       po.production_plan_id?.toLowerCase().includes(q) ||
       plans.find(p => p.id === po.production_plan_id && p.doc_no?.toLowerCase().includes(q)) !== undefined
     ).slice(0, 20);
-  }, [productionOrders, plans, searchQuery]);
+  }, [productionOrders, plans, searchQuery, factoryFilter]);
 
   const selectedPO = useMemo(() =>
     productionOrders.find(po => po.id === selectedPoId) ?? null,
@@ -117,6 +127,19 @@ export function ProductionTraceRegisterPanel(): JSX.Element {
 
       <Card>
         <CardContent className="pt-6 space-y-3">
+          {/* Sprint T-Phase-3.PROD-FIX-A · ST7b · factory filter */}
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground">Factory</Label>
+            <Select value={factoryFilter} onValueChange={setFactoryFilter}>
+              <SelectTrigger><SelectValue placeholder="All factories" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__all__">All factories</SelectItem>
+                {factories.map(f => (
+                  <SelectItem key={f.id} value={f.id}>{f.code} · {f.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div>
             <Label>Search by Production Order / Plan / SO / Indent No</Label>
             <div className="flex gap-2">
