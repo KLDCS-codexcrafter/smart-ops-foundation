@@ -112,6 +112,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     phase: 'phase2',
   },
   {
+    id: 'shop-floor-operator',
+    title: 'Shop Floor Operator — ऑपरेटर',
+    icon: Factory,
+    description: 'Operator hands-free shop floor · voice confirmation · barcode scan · IoT machine health · offline-resilient.',
+    details: 'A.PROD-3: operator-first mobile · voice-input production confirmation (English baseline · Hindi at PROD-5) · barcode scan for materials/PO/machine asset · live OEE + machine health from IoT bridge · offline queue for connectivity gaps. PWA — no install.',
+    route: '/operix-go/shop-floor-operator',
+    phase: 'phase2',
+  },
+  {
     id: 'site-dpr',
     title: 'Site DPR',
     icon: ClipboardList,
