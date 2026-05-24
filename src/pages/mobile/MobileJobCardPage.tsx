@@ -6,7 +6,7 @@
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Square, Pause } from 'lucide-react';
+import { ArrowLeft, Play, Square, Pause, ScanBarcode } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { useJobCards } from '@/hooks/useJobCards';
 import { startJobCard, completeJobCard, holdJobCard } from '@/lib/job-card-engine';
+import { enqueueWrite } from '@/lib/offline-queue-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { JobCard } from '@/types/job-card';
+
+interface MinBarcodeDetector { detect: (s: HTMLVideoElement) => Promise<Array<{ rawValue: string }>>; }
 
 interface SessionLite { user_id: string | null; display_name: string }
 function readSession(): SessionLite | null {
