@@ -95,6 +95,7 @@ import { timeEntriesKey } from '@/types/projx/time-entry';
 import { projectInvoiceScheduleKey } from '@/types/projx/project-invoice-schedule';
 import { quotationsKey } from '@/types/quotation';
 import type { Quotation } from '@/types/quotation';
+import { buildFiscalYear, writeFiscalYears } from '@/lib/fiscal-year-engine';
 
 export interface SeedResult {
   entityCode: string;
