@@ -108,6 +108,59 @@ export function getDemoFactories(entityCode: string): Factory[] {
         configured_by: 'seed',
       },
     }),
+    // Sprint T-Phase-3.PROD-FIX-A · ST15 · Q-LOCK-11 · Sinha Nashik twin factory
+    base({
+      id: 'fac-sinha-nashik',
+      code: 'FAC-005',
+      name: 'Sinha Nashik Unit',
+      unit_type: 'manufacturing',
+      city: 'Nashik',
+      state: 'Maharashtra',
+      manufacturing_config: {
+        primary_template_id: 'engineer-to-order',
+        secondary_template_id: null,
+        industry_sector_template_id: null,
+        enabled_modules: ['production-plan', 'job-card', 'project-link'],
+        compliance_standards: ['ISO9001'],
+        costing_method: 'actual',
+        production_model: 'eto',
+        configured_at: NOW,
+        configured_by: 'seed',
+      },
+    }),
+    // Sprint T-Phase-3.PROD-FIX-A · ST15 · Q-LOCK-12 · 4 entity factories
+    base({
+      id: 'fac-abdos-mum',
+      code: 'FAC-006',
+      name: 'Abdos Mumbai Plant',
+      unit_type: 'manufacturing',
+      city: 'Mumbai',
+      state: 'Maharashtra',
+    }),
+    base({
+      id: 'fac-bcpl-vapi',
+      code: 'FAC-007',
+      name: 'BCPL Vapi Plant',
+      unit_type: 'manufacturing',
+      city: 'Vapi',
+      state: 'Gujarat',
+    }),
+    base({
+      id: 'fac-shkph-pune',
+      code: 'FAC-008',
+      name: 'Shankar Pharma Pune Plant',
+      unit_type: 'manufacturing',
+      city: 'Pune',
+      state: 'Maharashtra',
+    }),
+    base({
+      id: 'fac-amith-rj',
+      code: 'FAC-009',
+      name: 'Amith Rajasthan Yard',
+      unit_type: 'manufacturing',
+      city: 'Kishangarh',
+      state: 'Rajasthan',
+    }),
   ];
 }
 
@@ -142,6 +195,9 @@ export function getDemoWorkCenters(entityCode: string): WorkCenter[] {
     wc('wc-sp-assy', 'WC-007', 'Assembly Line', 'fac-smartpower-blr'),
     wc('wc-sp-test', 'WC-008', 'Functional Test', 'fac-smartpower-blr'),
     wc('wc-sp-pack', 'WC-009', 'Packaging', 'fac-smartpower-blr'),
+    // Sprint T-Phase-3.PROD-FIX-A · ST15 · Nashik work centers (codes WC-010/011 · no Smartpower collision)
+    wc('wc-sinha-nashik-fab', 'WC-010', 'Fabrication Bay Nashik', 'fac-sinha-nashik'),
+    wc('wc-sinha-nashik-assy', 'WC-011', 'Assembly Bay Nashik', 'fac-sinha-nashik'),
   ];
 }
 
@@ -184,5 +240,9 @@ export function getDemoMachines(entityCode: string): Machine[] {
     m('mch-test-1', 'MCH-012', 'Functional Tester', 'fac-smartpower-blr', 'wc-sp-test', ['testing']),
     m('mch-test-2', 'MCH-013', 'Burn-in Chamber', 'fac-smartpower-blr', 'wc-sp-test', ['burn-in']),
     m('mch-pack-3', 'MCH-014', 'Carton Sealer', 'fac-smartpower-blr', 'wc-sp-pack', ['packing']),
+    // Sprint T-Phase-3.PROD-FIX-A · ST15 · Nashik machines (codes MCH-015/016/017 · no Smartpower collision)
+    m('mch-sinha-nashik-1', 'MCH-015', 'CNC Lathe Nashik', 'fac-sinha-nashik', 'wc-sinha-nashik-fab', ['cnc-turning']),
+    m('mch-sinha-nashik-2', 'MCH-016', 'Welding Station Nashik', 'fac-sinha-nashik', 'wc-sinha-nashik-fab', ['welding']),
+    m('mch-sinha-nashik-3', 'MCH-017', 'Assembly Bench Nashik', 'fac-sinha-nashik', 'wc-sinha-nashik-assy', ['assembly']),
   ];
 }
