@@ -1009,3 +1009,64 @@ function seedSinhaAnchorMfgModes(): void {
   applyManufacturingModeToEntity('SHKPH', 'process');
   applyManufacturingModeToEntity('ABDOS', 'mixed_mode');
 }
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint T-Phase-3.PROD-FIX-A · ST16 · Q-LOCK-13 · Sinha FY-close demo simulation
+// FR-86 ABSOLUTE preserved · INLINE · NO new sinha-fy-close-seed-data.ts file.
+// USES safeSetArray (module-level helper) · NOT safeSeed.
+// ════════════════════════════════════════════════════════════════════
+function seedSinhaFYCloseSimulation(entityCode: string): void {
+  if (entityCode !== 'SINHA') return;
+
+  // Step 1 · Initialize FY-2024-25 (closed) and FY-2025-26 (current)
+  const fy2425 = buildFiscalYear(2024, 4);
+  fy2425.id = 'FY-2024-25';
+  fy2425.label = '2024-25';
+  fy2425.closed = true;
+  fy2425.closedAt = '2025-03-31T23:59:59.999Z';
+  fy2425.closedBy = { id: 'seed', name: 'Demo Close' };
+  fy2425.periods.forEach(p => {
+    p.locked = true;
+    p.lockedAt = '2025-03-31T23:59:59.999Z';
+    p.lockedBy = 'seed';
+  });
+
+  const fy2526 = buildFiscalYear(2025, 4);
+  fy2526.id = 'FY-2025-26';
+  fy2526.label = '2025-26';
+  fy2526.closed = false;
+  fy2526.closedAt = null;
+
+  writeFiscalYears(entityCode, [fy2425, fy2526]);
+
+  // Step 2 · Simulate FY-end WIP snapshot for FY-2024-25
+  const wipSnapshot = {
+    id: 'wipr-fy2425-end-sim',
+    entity_code: entityCode,
+    run_date: '2025-03-31T23:59:59.999Z',
+    trigger: 'fy_end_manual' as const,
+    ledger_wip_value: 4_850_000,
+    physical_wip_value: 4_790_000,
+    variance: 60_000,
+    variance_abs: 60_000,
+    severity: 'warning' as const,
+    in_progress_po_count: 3,
+    reconciler: { id: 'seed', name: 'Demo Close' },
+    notes: 'FY-end snapshot for FY-2024-25. Variance ₹60K · warning band.',
+  };
+  safeSetArray(`erp_wip_reconciliation_${entityCode}`, [wipSnapshot]);
+
+  // Step 3 · Simulate FY closure summary record
+  const fyClosureSummary = {
+    id: 'fyc-fy2425-sim',
+    entity_code: entityCode,
+    fiscal_year_id: 'FY-2024-25',
+    closed_at: '2025-03-31T23:59:59.999Z',
+    closed_by: { id: 'seed', name: 'Demo Close' },
+    wip_snapshot_id: 'wipr-fy2425-end-sim',
+    variances_frozen_count: 2,
+    opening_wip_carry_forward_count: 3,
+    in_progress_po_ids: [] as string[],
+  };
+  safeSetArray(`erp_fy_closure_summaries_${entityCode}`, [fyClosureSummary]);
+}
