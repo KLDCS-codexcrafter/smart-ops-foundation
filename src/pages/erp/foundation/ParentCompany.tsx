@@ -189,6 +189,18 @@ export default function ParentCompany() {
   const [booksDate, setBooksDate] = useState<Date>();
   const [incorporationDt, setIncorpDt] = useState<Date>();
 
+  // T-Phase-3.PROD-2.5 · ST6 · Q-LOCK-6 · manufacturing-mode (conditional · industry === 'manufacturing')
+  const [manufacturingMode, setManufacturingMode] = useState<ManufacturingMode>(DEFAULT_MANUFACTURING_MODE);
+  const showMfgModeSelector = form.industry === 'manufacturing';
+
+  // Auto-suggest mfg-mode when activity changes
+  useEffect(() => {
+    if (form.businessActivity) {
+      setManufacturingMode(suggestMfgModeFromActivity(form.businessActivity));
+    }
+  }, [form.businessActivity]);
+
+
   const upd = useCallback((field: string, val: unknown) => {
     setForm(p => ({ ...p, [field]: val }));
     setErrors(e => { const n = { ...e }; delete n[field]; return n; });
