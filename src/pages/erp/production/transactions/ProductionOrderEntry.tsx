@@ -138,6 +138,8 @@ export function ProductionOrderEntryPanel(): JSX.Element {
 
   // Block I · Plan Linkage Picker (M:N · Q14=a · D-551)
   const { plans } = useProductionPlans();
+  // Sprint T-Phase-3.PROD-FIX-A · ST3 · Q-LOCK-3 · factory dropdown source
+  const { factories: availableFactories } = useFactories();
   const approvedPlans = useMemo(
     () => plans.filter(p => p.status === 'approved' || p.status === 'in_execution'),
     [plans],
@@ -1064,8 +1066,16 @@ export function ProductionOrderEntryPanel(): JSX.Element {
             <CardHeader><CardTitle className="text-base">Production Context</CardTitle></CardHeader>
             <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Production Site ID</Label>
-                <Input value={productionSiteId} onChange={e => setProductionSiteId(e.target.value)} placeholder="Phase 2" />
+                <Label>Factory / Plant</Label>
+                {/* Sprint T-Phase-3.PROD-FIX-A · ST3 · Q-LOCK-3 · inline Select (LEAK-10/11 paper→functional · KEEP productionSiteId state name) */}
+                <Select value={productionSiteId} onValueChange={setProductionSiteId}>
+                  <SelectTrigger><SelectValue placeholder="Select factory..." /></SelectTrigger>
+                  <SelectContent>
+                    {availableFactories.map(f => (
+                      <SelectItem key={f.id} value={f.id}>{f.code} · {f.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label>Nature of Processing</Label>
