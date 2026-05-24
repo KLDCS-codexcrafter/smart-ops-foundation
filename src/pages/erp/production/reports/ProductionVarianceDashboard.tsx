@@ -58,9 +58,12 @@ export function ProductionVarianceDashboardPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const { orders } = useProductionOrders();
   const config = useProductionConfig();
+  const { factories } = useFactories();
   const thresholdPct = config.varianceThresholdPct ?? 10;
 
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  // Sprint T-Phase-3.PROD-FIX-A · ST7b · factory filter
+  const [factoryFilter, setFactoryFilter] = useState<string>('__all__');
   const [drillIndex, setDrillIndex] = useState<number | null>(null);
 
   const variances: ProductionVariance[] = useMemo(() => {
