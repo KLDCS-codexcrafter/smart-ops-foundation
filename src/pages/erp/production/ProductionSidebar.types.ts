@@ -39,4 +39,10 @@ export type ProductionModule =
   | 'rpt-jw-material-movement'
   | 'rpt-job-card-register'
   | 'rpt-production-confirmation-register'
-  | 'rpt-material-issue-note-register';
+  | 'rpt-material-issue-note-register'
+  // ST12 · PASS 3 · Process Mfg
+  | 'tx-process-batch-entry'
+  | 'mst-recipe-master'
+  | 'rpt-process-batch-register'
+  | 'rpt-process-genealogy-tracker';
+
