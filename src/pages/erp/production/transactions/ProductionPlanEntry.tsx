@@ -93,6 +93,8 @@ function emptyLine(): DraftLine {
 
 export function ProductionPlanEntryPanel(): JSX.Element {
   const { entityCode, entityId } = useEntityCode();
+  // Sprint T-Phase-3.PROD-FIX-A · ST4 · Q-LOCK-1 · factory dropdown
+  const { factories: availableFactories } = useFactories();
   const user = useCurrentUser();
   const { items } = useInventoryItems();
 
@@ -219,6 +221,7 @@ export function ProductionPlanEntryPanel(): JSX.Element {
       const plan = createProductionPlan(
         {
           entity_id: entityId || entityCode,
+          factory_id: factoryId || undefined,
           plan_period_start: periodStart,
           plan_period_end: periodEnd,
           plan_type: planType,
