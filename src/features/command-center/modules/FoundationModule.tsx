@@ -13,6 +13,8 @@ import { getOrgTagCoverage } from '@/lib/voucher-org-tag-engine';
 // [Hardening-A · Block A] Entity-scoped key helpers for divisions/departments.
 import { divisionsKey, departmentsKey } from '@/types/org-structure';
 import { useEntityCode } from '@/hooks/useEntityCode';
+// T-Phase-3.PROD-2.5 · ST8 · Q-LOCK-8 · mfg-mode header badge
+import { useEntityManufacturingMode } from '@/hooks/useEntityManufacturingMode';
 
 // [JWT] Replace with real API data — GET /api/foundation/stats
 function useFoundationStats() {
@@ -106,10 +108,32 @@ export function FoundationModule() {
   // [T-T8.0-OrgTagFoundation] Org-Tag Coverage = % of vouchers with derived 5-tier metadata.
   const orgTagCoverage = getOrgTagCoverage();
 
+  // T-Phase-3.PROD-2.5 · ST8 · Q-LOCK-8 · mfg-mode header badge
+  const mfgPreset = useEntityManufacturingMode(entityCode);
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-semibold text-foreground">Foundation — Entity Core</h2>
+        <div className="flex items-center gap-3 flex-wrap">
+          <h2 className="text-lg font-semibold text-foreground">Foundation — Entity Core</h2>
+          {mfgPreset.mode !== 'na' && (
+            <Badge
+              variant="outline"
+              className={cn(
+                'gap-1',
+                mfgPreset.ui.badgeColor === 'blue' && 'border-blue-500/30 bg-blue-500/5 text-blue-700 dark:text-blue-300',
+                mfgPreset.ui.badgeColor === 'amber' && 'border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-300',
+                mfgPreset.ui.badgeColor === 'green' && 'border-green-500/30 bg-green-500/5 text-green-700 dark:text-green-300',
+                mfgPreset.ui.badgeColor === 'purple' && 'border-purple-500/30 bg-purple-500/5 text-purple-700 dark:text-purple-300',
+                mfgPreset.ui.badgeColor === 'gray' && 'border-gray-500/30 bg-gray-500/5 text-gray-700 dark:text-gray-300',
+              )}
+              title={mfgPreset.description}
+            >
+              <span>{mfgPreset.icon}</span>
+              <span>{mfgPreset.label}</span>
+            </Badge>
+          )}
+        </div>
         <p className="text-sm text-muted-foreground">
           Set up your organisation's legal entity structure. Start with Parent Company.
         </p>
