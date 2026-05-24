@@ -97,7 +97,9 @@ export function recomputeToolingConsumption(entityCode: string): ToolingRegister
         burnt += line.actual_qty;
       }
     }
-    return { ...tool, consumed_units: Number(burnt.toFixed(2)) };
+    // Preserve seeded baseline when no confirmation-based accrual is available yet.
+    const next_consumed = burnt > 0 ? burnt : tool.consumed_units;
+    return { ...tool, consumed_units: Number(next_consumed.toFixed(2)) };
   });
 
   lsWrite(toolingRegisterKey(entityCode), next);
