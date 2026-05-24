@@ -24,7 +24,7 @@ import type { InventoryItem } from '@/types/inventory-item';
 import type { QualiCheckConfig, ProductionConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { productionOrdersKey } from '@/types/production-order';
 import { emptyCostStructure } from '@/types/production-cost';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
 import { createProductionOrderReservations } from '@/lib/stock-reservation-engine';
 import { getProductionPlanById, linkProductionOrder } from '@/lib/production-plan-engine';
@@ -166,6 +166,15 @@ export function createProductionOrder(
   user: { id: string; name: string },
   allBoms?: Bom[],
 ): ProductionOrder {
+  // Sprint T-Phase-3.PROD-FIX-A · ST12 · Q-LOCK-9 · period-lock enforcement
+  const _today_lock = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(_today_lock, input.entity_id)) {
+    throw new Error(periodLockMessage(_today_lock, input.entity_id) ?? 'Period locked');
+  }
+  // Sprint T-Phase-3.PROD-FIX-A · ST13 · Q-LOCK-10 · future-date prevention
+  if (input.start_date > _today_lock) {
+    throw new Error('Transaction date cannot be in the future');
+  }
   if (input.planned_qty <= 0) throw new Error('planned_qty must be positive');
   if (new Date(input.target_end_date) < new Date(input.start_date))
     throw new Error('target_end_date must be after start_date');
@@ -387,6 +396,11 @@ export function releaseProductionOrder(
   config: ProductionConfig,
   user: { id: string; name: string },
 ): ProductionOrder {
+  // Sprint T-Phase-3.PROD-FIX-A · ST12 · period-lock enforcement
+  const _today_lock_rel = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(_today_lock_rel, po.entity_id)) {
+    throw new Error(periodLockMessage(_today_lock_rel, po.entity_id) ?? 'Period locked');
+  }
   if (po.status !== 'draft') throw new Error('Only DRAFT orders can be released');
 
   const reservations = createProductionOrderReservations(
@@ -603,6 +617,12 @@ function readPOs(entityCode: string): ProductionOrder[] {
 }
 
 function writePOs(entityCode: string, pos: ProductionOrder[]): void {
+  // Sprint T-Phase-3.PROD-FIX-A · ST11 · Q-LOCK-8 · fiscal_year_id stamping.
+  for (const po of pos) {
+    if (!po.fiscal_year_id && po.start_date && po.entity_id) {
+      po.fiscal_year_id = `FY-20${fyForDate(po.start_date, po.entity_id)}`;
+    }
+  }
   // [JWT] PUT /api/production-orders/:entityCode
   localStorage.setItem(productionOrdersKey(entityCode), JSON.stringify(pos));
 }
@@ -756,6 +776,11 @@ export function completeProductionOrder(
   user: { id: string; name: string },
   qcContext?: CompletePOQCContext,
 ): ProductionOrder {
+  // Sprint T-Phase-3.PROD-FIX-A · ST12 · period-lock enforcement
+  const _today_lock_cmp = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(_today_lock_cmp, po.entity_id)) {
+    throw new Error(periodLockMessage(_today_lock_cmp, po.entity_id) ?? 'Period locked');
+  }
   const transitioned = transitionState(po, 'completed', user, 'Completed');
   if (!qcContext || !transitioned.qc_required) return transitioned;
   if (!qcContext.productionConfig.enableProductionQC) return transitioned;
