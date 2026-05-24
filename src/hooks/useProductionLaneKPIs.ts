@@ -9,6 +9,14 @@ import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { computeOpenVarianceAlerts } from '@/lib/production-variance-alert-engine';
+// T-Phase-3.PROD-2 · ST12 · 6th KPI "Open Leaks Count" feeds (Q-LOCK-12)
+import { listOpenJWShortageAlerts } from '@/lib/job-work-shortage-engine';
+import { listOpenBOMDriftAlerts } from '@/lib/bom-drift-detector-engine';
+import { listOpenJWMSMEBreaches } from '@/lib/msme-43bh-jw-engine';
+import { listOpenFactoryLicenseAlerts } from '@/lib/factory-license-cap-engine';
+import { listOpenHazmatCapAlerts } from '@/lib/hazmat-production-cap-engine';
+import { listOpenWastageDriftAlerts } from '@/lib/wastage-drift-detector-engine';
+import { listOpenToolingAlerts } from '@/lib/tooling-consumption-tracker-engine';
 
 export interface ProductionLaneKPIs {
   activePOs: number;
@@ -16,6 +24,7 @@ export interface ProductionLaneKPIs {
   onTimeDeliveryPct: number;
   variancAlertsOpen: number;
   wipValue: number;
+  openLeaksCount: number;
 }
 
 function readPOs(entityCode: string): ProductionOrder[] {
@@ -71,6 +80,18 @@ function computeWIPValue(pos: ProductionOrder[]): number {
     .reduce((s, p) => s + (p.cost_structure?.budget?.total ?? p.cost_structure?.master?.total ?? 0), 0);
 }
 
+export function computeOpenLeaksCount(entityCode: string): number {
+  return (
+    listOpenJWShortageAlerts(entityCode).length +
+    listOpenBOMDriftAlerts(entityCode).length +
+    listOpenJWMSMEBreaches(entityCode).length +
+    listOpenFactoryLicenseAlerts(entityCode).length +
+    listOpenHazmatCapAlerts(entityCode).length +
+    listOpenWastageDriftAlerts(entityCode).length +
+    listOpenToolingAlerts(entityCode).length
+  );
+}
+
 export function useProductionLaneKPIs(entityCode: string): ProductionLaneKPIs {
   const [kpis, setKPIs] = useState<ProductionLaneKPIs>({
     activePOs: 0,
@@ -78,6 +99,7 @@ export function useProductionLaneKPIs(entityCode: string): ProductionLaneKPIs {
     onTimeDeliveryPct: 0,
     variancAlertsOpen: 0,
     wipValue: 0,
+    openLeaksCount: 0,
   });
 
   const reload = useCallback(() => {
@@ -87,7 +109,8 @@ export function useProductionLaneKPIs(entityCode: string): ProductionLaneKPIs {
     const onTimeDeliveryPct = computeOnTimePct(pos);
     const variancAlertsOpen = computeOpenVarianceAlerts(entityCode).length;
     const wipValue = computeWIPValue(pos);
-    setKPIs({ activePOs, plantOEE, onTimeDeliveryPct, variancAlertsOpen, wipValue });
+    const openLeaksCount = computeOpenLeaksCount(entityCode);
+    setKPIs({ activePOs, plantOEE, onTimeDeliveryPct, variancAlertsOpen, wipValue, openLeaksCount });
   }, [entityCode]);
 
   useEffect(() => { reload(); }, [reload]);

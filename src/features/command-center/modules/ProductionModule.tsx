@@ -7,7 +7,7 @@
 import { useNavigate } from 'react-router-dom';
 import {
   Factory, Activity, Truck, AlertTriangle, Wallet, ArrowRight,
-  CheckCircle, AlertCircle,
+  CheckCircle, AlertCircle, ShieldAlert,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useEntityCode } from '@/hooks/useEntityCode';
@@ -113,6 +113,14 @@ export function ProductionModule() {
           status={kpis.wipValue > 0 ? 'ok' : 'empty'}
           href="/erp/production"
           description="In-progress PO budget totals · matches WIP cascade source."
+        />
+        <StatCard
+          icon={<ShieldAlert className="h-5 w-5" />}
+          title="Open Leaks Count"
+          value={kpis.openLeaksCount}
+          status={kpis.openLeaksCount === 0 ? 'ok' : 'warn'}
+          href="/erp/production"
+          description="Unack'd PROD-2 leak alerts · JW shortage, BOM drift, MSME-JW, licence, hazmat, wastage drift, tooling."
         />
       </div>
     </div>
