@@ -170,6 +170,9 @@ export interface ProductionOrder {
   is_export_project: boolean;
 
   production_site_id: string | null;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST11 · FY-close carry-forward marker (Q-LOCK-8).
+   *  Set by fy-close-engine.generateOpeningWIPForNextFY when PO carries across FY boundary. */
+  opening_wip_snapshot_id?: string;
   nature_of_processing: string | null;
   is_job_work_in: boolean;
 

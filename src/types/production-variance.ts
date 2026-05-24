@@ -31,6 +31,9 @@ export interface VarianceComponent {
 export interface ProductionVariance {
   id: string;
   entity_id: string;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST1 · per-factory transaction linkage (Q-LOCK-1).
+   *  Optional for backward-compat. Single-factory entities may leave NULL. */
+  factory_id?: string | null;
   po_id: string;
   po_doc_no: string;
   computed_at: string;

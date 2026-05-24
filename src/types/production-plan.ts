@@ -99,6 +99,11 @@ export interface ProductionPlanStatusEvent {
 export interface ProductionPlan {
   id: string;
   entity_id: string;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST1 · per-factory transaction linkage (Q-LOCK-1).
+   *  Optional for backward-compat. Single-factory entities may leave NULL. */
+  factory_id?: string | null;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST14 · FY tag · matches Hardening-B.2C-ii-a pattern. */
+  fiscal_year_id?: string;
   doc_no: string;
 
   plan_period_start: string;

@@ -48,6 +48,9 @@ export interface JobWorkReceiptLine {
 export interface JobWorkReceipt {
   id: string;
   entity_id: string;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST1 · per-factory transaction linkage (Q-LOCK-1).
+   *  Optional for backward-compat. Single-factory entities may leave NULL. */
+  factory_id?: string | null;
   /** Sprint T-Phase-1.Hardening-B.2C-ii-a · FY tag computed at save time from receipt_date + entity.
    *  Format matches FiscalYear.id ("FY-2024-25"). Optional for backwards compat with legacy rows. */
   fiscal_year_id?: string;
