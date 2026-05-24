@@ -118,7 +118,7 @@ export function createProcessBatch(
   // Sprint 58 PASS 2B-i institutional canon: period-lock + future-date guards
   if (input.start_date) {
     if (isPeriodLocked(input.start_date, input.entity_id)) {
-      throw new Error(periodLockMessage(input.start_date, input.entity_id));
+      throw new Error(periodLockMessage(input.start_date, input.entity_id) ?? 'Period locked');
     }
     const today = new Date().toISOString().slice(0, 10);
     if (input.start_date > today) {
@@ -261,7 +261,7 @@ export function completeProcessBatch(
   // Sprint 58 institutional canon: period-lock + future-date guards
   if (input.end_date) {
     if (isPeriodLocked(input.end_date, batch.entity_id)) {
-      throw new Error(periodLockMessage(input.end_date, batch.entity_id));
+      throw new Error(periodLockMessage(input.end_date, batch.entity_id) ?? 'Period locked');
     }
     const today = new Date().toISOString().slice(0, 10);
     if (input.end_date > today) {
