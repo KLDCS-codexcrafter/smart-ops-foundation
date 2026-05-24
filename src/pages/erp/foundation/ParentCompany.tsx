@@ -1202,6 +1202,39 @@ export default function ParentCompany() {
         <p className="text-xs text-muted-foreground mt-3">
           This controls whether the Company Selector appears in the ERP header.
         </p>
+
+        {/* T-Phase-3.PROD-2.5 · ST6 · Q-LOCK-6 · 5-card Manufacturing-Mode selector */}
+        {showMfgModeSelector && (
+          <>
+            <Separator className="my-4" />
+            <p className="text-xs font-semibold text-foreground mb-1">Manufacturing Mode</p>
+            <p className="text-[11px] text-muted-foreground mb-3">
+              Select the manufacturing mode that best describes this entity. Auto-suggested from business activity.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+              {(['discrete', 'process', 'repetitive', 'mixed_mode', 'na'] as ManufacturingMode[]).map(mode => (
+                <button
+                  key={mode}
+                  type="button"
+                  onClick={() => setManufacturingMode(mode)}
+                  className={cn(
+                    'rounded-lg border p-3 text-left transition-all',
+                    'hover:shadow-md hover:border-primary/50',
+                    manufacturingMode === mode
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border bg-card',
+                  )}
+                >
+                  <div className="text-xl mb-1">{MANUFACTURING_MODE_ICONS[mode]}</div>
+                  <div className="text-xs font-semibold mb-1">{MANUFACTURING_MODE_LABELS[mode]}</div>
+                  <div className="text-[10px] text-muted-foreground line-clamp-3">
+                    {MANUFACTURING_MODE_DESCRIPTIONS[mode]}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </FormSection>
     );
   }
