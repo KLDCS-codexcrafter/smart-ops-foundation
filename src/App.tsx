@@ -139,6 +139,7 @@ const MaintainProPage = lazy(() => import('./pages/erp/maintainpro/MaintainProPa
 const ServiceDeskPage = lazy(() => import('./pages/erp/servicedesk/ServiceDeskPage'));
 const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
 const MobileMaintenanceTechnicianPage = lazy(() => import('./pages/mobile/MobileMaintenanceTechnicianPage'));
+const MobileShopFloorOperatorPage = lazy(() => import('./pages/mobile/MobileShopFloorOperatorPage'));
 // A.15b · 4 mobile SiteX captures
 const MobileSiteDPRCapture = lazy(() => import('./components/mobile/MobileSiteDPRCapture'));
 const MobileSiteSnagCapture = lazy(() => import('./components/mobile/MobileSiteSnagCapture'));
