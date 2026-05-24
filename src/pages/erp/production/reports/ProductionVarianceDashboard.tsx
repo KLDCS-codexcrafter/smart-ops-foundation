@@ -15,9 +15,11 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { TrendingUp, AlertTriangle } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
+import { useFactories } from '@/hooks/useFactories';
 import {
   computeProductionVariance,
   listProductionVariances,
@@ -56,9 +58,12 @@ export function ProductionVarianceDashboardPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const { orders } = useProductionOrders();
   const config = useProductionConfig();
+  const { factories } = useFactories();
   const thresholdPct = config.varianceThresholdPct ?? 10;
 
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  // Sprint T-Phase-3.PROD-FIX-A · ST7b · factory filter
+  const [factoryFilter, setFactoryFilter] = useState<string>('__all__');
   const [drillIndex, setDrillIndex] = useState<number | null>(null);
 
   const variances: ProductionVariance[] = useMemo(() => {
@@ -80,12 +85,13 @@ export function ProductionVarianceDashboardPanel(): JSX.Element {
   }, [orders, entityCode, thresholdPct]);
 
   const filtered = useMemo(() => {
-    if (statusFilter === 'all') return variances;
-    if (statusFilter === 'breached') return variances.filter(v => v.threshold_breach_count > 0);
-    if (statusFilter === 'favourable') return variances.filter(v => v.total_variance_amount < 0);
-    if (statusFilter === 'unfavourable') return variances.filter(v => v.total_variance_amount > 0);
-    return variances;
-  }, [variances, statusFilter]);
+    let arr = variances;
+    if (factoryFilter !== '__all__') arr = arr.filter(v => v.factory_id === factoryFilter);
+    if (statusFilter === 'breached') return arr.filter(v => v.threshold_breach_count > 0);
+    if (statusFilter === 'favourable') return arr.filter(v => v.total_variance_amount < 0);
+    if (statusFilter === 'unfavourable') return arr.filter(v => v.total_variance_amount > 0);
+    return arr;
+  }, [variances, statusFilter, factoryFilter]);
 
   const totalVariance = round2(dSum(filtered, v => v.total_variance_amount));
   const totalBreaches = filtered.reduce((s, v) => s + v.threshold_breach_count, 0);
@@ -118,17 +124,34 @@ export function ProductionVarianceDashboardPanel(): JSX.Element {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <CardTitle className="text-base">7-way Decomposition</CardTitle>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="breached">Threshold breached</SelectItem>
-                <SelectItem value="favourable">Favourable only</SelectItem>
-                <SelectItem value="unfavourable">Unfavourable only</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-3">
+              <div className="space-y-1">
+                <Label className="text-[10px] text-muted-foreground">Factory</Label>
+                <Select value={factoryFilter} onValueChange={setFactoryFilter}>
+                  <SelectTrigger className="w-48"><SelectValue placeholder="All factories" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__all__">All factories</SelectItem>
+                    {factories.map(f => (
+                      <SelectItem key={f.id} value={f.id}>{f.code} · {f.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px] text-muted-foreground">Status</Label>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="breached">Threshold breached</SelectItem>
+                    <SelectItem value="favourable">Favourable only</SelectItem>
+                    <SelectItem value="unfavourable">Unfavourable only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
         </CardHeader>
         <CardContent>

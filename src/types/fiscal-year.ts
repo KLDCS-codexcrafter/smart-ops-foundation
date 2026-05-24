@@ -41,6 +41,8 @@ export interface FiscalYear {
   closed: boolean;
   /** ISO timestamp when FY closed. */
   closedAt: string | null;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST10 · user who closed the FY. */
+  closedBy?: { id: string; name: string } | null;
 }
 
 export const fiscalYearStorageKey = (entityCode: string) =>

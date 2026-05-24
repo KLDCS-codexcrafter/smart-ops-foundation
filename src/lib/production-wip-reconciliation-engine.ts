@@ -16,7 +16,7 @@ export interface WIPReconciliationSnapshot {
   id: string;
   entity_code: string;
   run_date: string;
-  trigger: 'manual' | 'month_end_auto';
+  trigger: 'manual' | 'month_end_auto' | 'fy_end_manual' | 'fy_end_auto';
   ledger_wip_value: number;
   physical_wip_value: number;
   variance: number;
@@ -99,7 +99,7 @@ function severityFor(varianceAbs: number): WIPReconciliationSnapshot['severity']
 export function runWIPReconciliation(
   entityCode: string,
   user: { id: string; name: string },
-  trigger: 'manual' | 'month_end_auto',
+  trigger: 'manual' | 'month_end_auto' | 'fy_end_manual' | 'fy_end_auto',
 ): WIPReconciliationSnapshot {
   const ledger = computeLedgerWIP(entityCode);
   const physical = computePhysicalWIP(entityCode);
