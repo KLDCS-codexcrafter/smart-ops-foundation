@@ -16,7 +16,8 @@ import type {
   CapacityCheckStatus,
 } from '@/types/production-plan';
 import { productionPlansKey } from '@/types/production-plan';
-import { generateDocNo } from '@/lib/fincore-engine';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { runCapacityCheck as runCapacityCheckPlanOps } from '@/lib/capacity-planning-engine';
 
 // ════════════════════════════════════════════════════════════════════
@@ -39,6 +40,10 @@ function writePlans(entityCode: string, plans: ProductionPlan[]): void {
 }
 
 function upsertPlan(entityCode: string, plan: ProductionPlan): void {
+  // Sprint T-Phase-3.PROD-FIX-A · ST14 · Q-LOCK-8 · fiscal_year_id stamping.
+  if (!plan.fiscal_year_id && plan.plan_period_start && plan.entity_id) {
+    plan.fiscal_year_id = `FY-20${fyForDate(plan.plan_period_start, plan.entity_id)}`;
+  }
   const all = readPlans(entityCode);
   const idx = all.findIndex(p => p.id === plan.id);
   if (idx >= 0) all[idx] = plan;
@@ -125,6 +130,11 @@ export function createProductionPlan(
   input: CreateProductionPlanInput,
   user: { id: string; name: string },
 ): ProductionPlan {
+  // Sprint T-Phase-3.PROD-FIX-A · ST12 · period-lock enforcement (Plan EXEMPT from ST13 future-date per Q-LOCK-10)
+  const _today_lock = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(_today_lock, input.entity_id)) {
+    throw new Error(periodLockMessage(_today_lock, input.entity_id) ?? 'Period locked');
+  }
   if (!input.lines || input.lines.length === 0)
     throw new Error('Production Plan requires at least one line');
   if (new Date(input.plan_period_end) < new Date(input.plan_period_start))
