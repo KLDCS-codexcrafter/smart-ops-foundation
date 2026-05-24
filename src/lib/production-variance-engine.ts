@@ -12,6 +12,8 @@ import type { JobWorkReceipt } from '@/types/job-work-receipt';
 import type { ProductionVariance, VarianceComponent } from '@/types/production-variance';
 import { productionVariancesKey } from '@/types/production-variance';
 import { round2 } from '@/lib/decimal-helpers';
+import type { ProcessBatch } from '@/types/process-batch';
+import type { Recipe } from '@/types/recipe';
 
 // ─── 1. RATE VARIANCE ──────────────────────────────────────────────
 export function computeRateVariance(
