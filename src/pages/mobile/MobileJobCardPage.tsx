@@ -143,7 +143,12 @@ export default function MobileJobCardPage(): JSX.Element {
       </div>
 
       <Card className="p-4 space-y-3">
-        <Label>Select Job Card</Label>
+        <div className="flex items-center justify-between">
+          <Label>Select Job Card</Label>
+          <Button type="button" variant="outline" size="sm" onClick={startBarcodeScan} disabled={scanning} className="gap-1">
+            <ScanBarcode className="h-3 w-3" /> {scanning ? 'Scanning…' : 'Scan'}
+          </Button>
+        </div>
         <Select value={selectedId} onValueChange={setSelectedId}>
           <SelectTrigger><SelectValue placeholder="Choose active JC" /></SelectTrigger>
           <SelectContent>
