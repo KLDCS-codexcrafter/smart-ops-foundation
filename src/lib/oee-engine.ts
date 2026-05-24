@@ -189,3 +189,81 @@ function classifyOEE(oee_pct: number): OEEClassification {
   if (oee_pct >= 40) return 'fair';
   return 'poor';
 }
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint T-Phase-3.PROD-3 · ST3 · Q-LOCK-9 Option A · IoT-augmented OEE (additive)
+// ════════════════════════════════════════════════════════════════════
+import {
+  listTelemetryForMachine,
+  getMachineHealth,
+} from '@/lib/iot-machine-bridge';
+
+export interface OEEFromTelemetryInput {
+  entityCode: string;
+  machineId: string;
+  startDate: string;
+  endDate: string;
+  baseSource: OEESourceData;
+  template?: ManufacturingTemplate;
+  formulaMode?: OEEFormulaMode;
+}
+
+export type OEEFromTelemetryResult = OEEResult & {
+  telemetry_record_count: number;
+  machine_health_score: number;
+  telemetry_downtime_factor_pct: number;
+};
+
+/**
+ * IoT-augmented OEE calculation. Reuses computeOEE then applies a
+ * telemetry-derived availability haircut bounded at 30 pct.
+ */
+export function computeOEEFromTelemetry(
+  input: OEEFromTelemetryInput,
+): OEEFromTelemetryResult {
+  const telemetry = listTelemetryForMachine(
+    input.entityCode,
+    input.machineId,
+    input.startDate,
+  ).filter((t) => t.ingested_at <= input.endDate);
+
+  const breachRecords = telemetry.filter(
+    (t) =>
+      t.payload.threshold_breach === 'critical' ||
+      t.payload.threshold_breach === 'high',
+  );
+  const telemetryDowntimeFactorPct =
+    telemetry.length > 0
+      ? Math.min(30, (breachRecords.length / telemetry.length) * 100)
+      : 0;
+
+  const baseResult = computeOEE(
+    input.baseSource,
+    input.formulaMode ?? 'classic_apq',
+    input.template,
+  );
+
+  const baseAvail = baseResult.availability_pct ?? 0;
+  const adjustedAvailabilityPct = Math.max(
+    0,
+    round2(baseAvail - telemetryDowntimeFactorPct),
+  );
+  const perfPct = baseResult.performance_pct ?? 100;
+  const qualPct = baseResult.quality_pct ?? 100;
+  const adjustedOeePct = round2(
+    (adjustedAvailabilityPct / 100) * (perfPct / 100) * (qualPct / 100) * 100,
+  );
+
+  const health = getMachineHealth(input.entityCode, input.machineId);
+
+  return {
+    ...baseResult,
+    availability_pct: adjustedAvailabilityPct,
+    oee_pct: adjustedOeePct,
+    classification: classifyOEE(adjustedOeePct),
+    telemetry_record_count: telemetry.length,
+    machine_health_score: health.score,
+    telemetry_downtime_factor_pct: round2(telemetryDowntimeFactorPct),
+  };
+}
+

@@ -6,7 +6,7 @@
  */
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Play, Square, Pause } from 'lucide-react';
+import { ArrowLeft, Play, Square, Pause, ScanBarcode } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,7 +15,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner';
 import { useJobCards } from '@/hooks/useJobCards';
 import { startJobCard, completeJobCard, holdJobCard } from '@/lib/job-card-engine';
+import { enqueueWrite } from '@/lib/offline-queue-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { JobCard } from '@/types/job-card';
+
+interface MinBarcodeDetector { detect: (s: HTMLVideoElement) => Promise<Array<{ rawValue: string }>>; }
 
 interface SessionLite { user_id: string | null; display_name: string }
 function readSession(): SessionLite | null {
@@ -29,6 +33,7 @@ function readSession(): SessionLite | null {
 export default function MobileJobCardPage(): JSX.Element {
   const navigate = useNavigate();
   const session = readSession();
+  const { entityCode } = useEntityCode();
   const { jobCards, reload } = useJobCards();
 
   const myActive = useMemo(
@@ -40,9 +45,37 @@ export default function MobileJobCardPage(): JSX.Element {
   const [producedQty, setProducedQty] = useState('');
   const [rejectedQty, setRejectedQty] = useState('0');
   const [busy, setBusy] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const selected: JobCard | undefined = jobCards.find(jc => jc.id === selectedId);
 
   const user = { id: session?.user_id ?? 'mobile', name: session?.display_name ?? 'Mobile User' };
+
+  // Sprint T-Phase-3.PROD-3 · ST7 · scan machine asset_tag → pick JC by tag match
+  async function startBarcodeScan(): Promise<void> {
+    const w = window as unknown as { BarcodeDetector?: new (opts: { formats: string[] }) => MinBarcodeDetector };
+    if (!w.BarcodeDetector) { toast.error('Barcode scanning not supported'); return; }
+    setScanning(true);
+    let stream: MediaStream | null = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      await video.play();
+      const detector = new w.BarcodeDetector({ formats: ['code_128', 'code_39', 'qr_code', 'ean_13'] });
+      const codes = await detector.detect(video);
+      if (codes.length > 0) {
+        const code = codes[0].rawValue;
+        const match = myActive.find(jc => jc.machine_id === code || jc.doc_no === code);
+        if (match) { setSelectedId(match.id); toast.success(`JC ${match.doc_no} selected`); }
+        else toast.warning(`Scanned ${code} · no matching job card`);
+      } else toast.error('No barcode detected');
+    } catch (err) {
+      toast.error(`Scan failed: ${(err as Error).message}`);
+    } finally {
+      stream?.getTracks().forEach(t => t.stop());
+      setScanning(false);
+    }
+  }
 
   const handleStart = async (): Promise<void> => {
     if (!selected) return;
@@ -63,6 +96,13 @@ export default function MobileJobCardPage(): JSX.Element {
     if (qty <= 0) { toast.error('Enter produced qty'); return; }
     setBusy(true);
     try {
+      // Sprint T-Phase-3.PROD-3 · ST5 · offline-first
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        const queued = enqueueWrite(entityCode, 'job_card_event', { jobCardId: selected.id, event: 'complete', producedQty: qty, rejectedQty: rej });
+        toast.info(`Saved offline · will sync (${queued.id})`);
+        setProducedQty(''); setRejectedQty('0'); setSelectedId('');
+        return;
+      }
       // [JWT] PATCH /api/plant-ops/job-cards/:id/complete
       completeJobCard(selected, {
         produced_qty: qty,
@@ -103,7 +143,12 @@ export default function MobileJobCardPage(): JSX.Element {
       </div>
 
       <Card className="p-4 space-y-3">
-        <Label>Select Job Card</Label>
+        <div className="flex items-center justify-between">
+          <Label>Select Job Card</Label>
+          <Button type="button" variant="outline" size="sm" onClick={startBarcodeScan} disabled={scanning} className="gap-1">
+            <ScanBarcode className="h-3 w-3" /> {scanning ? 'Scanning…' : 'Scan'}
+          </Button>
+        </div>
         <Select value={selectedId} onValueChange={setSelectedId}>
           <SelectTrigger><SelectValue placeholder="Choose active JC" /></SelectTrigger>
           <SelectContent>

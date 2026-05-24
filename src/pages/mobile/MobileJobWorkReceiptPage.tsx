@@ -17,6 +17,7 @@ import { useGodowns } from '@/hooks/useGodowns';
 import { listJobWorkOutOrders } from '@/lib/job-work-out-engine';
 import { createJobWorkReceipt, confirmJobWorkReceipt } from '@/lib/job-work-receipt-engine';
 import { DEFAULT_QC_CONFIG } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
+import { enqueueWrite } from '@/lib/offline-queue-engine';
 
 interface SessionLite { user_id: string | null; display_name: string }
 function readSession(): SessionLite | null {
@@ -52,6 +53,13 @@ export default function MobileJobWorkReceiptPage(): JSX.Element {
     }
     setBusy(true);
     try {
+      // Sprint T-Phase-3.PROD-3 · ST5 · offline-first
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        const queued = enqueueWrite(entityCode, 'job_work_receipt', { jwoId, receivedQty: recv, rejectedQty: rej, destGodownId });
+        toast.info(`Saved offline · will sync (${queued.id})`);
+        navigate('/operix-go');
+        return;
+      }
       const jwo = jwos.find(j => j.id === jwoId);
       if (!jwo) throw new Error('JWO not found');
       const firstLine = jwo.lines[0];

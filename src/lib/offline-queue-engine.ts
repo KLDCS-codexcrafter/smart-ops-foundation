@@ -10,7 +10,14 @@ export type QueuedWriteKind =
   | 'complaint_submit'
   | 'sample_kit_request'
   | 'family_transfer'
-  | 'reward_redeem';
+  | 'reward_redeem'
+  // Sprint T-Phase-3.PROD-3 · ST5 · production mobile pages (Q-LOCK-6 Option A)
+  | 'production_confirmation'
+  | 'material_issue'
+  | 'job_work_out'
+  | 'job_work_receipt'
+  | 'job_card_event'
+  | 'store_issue';
 
 export interface QueuedWrite {
   id: string;

@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package, Wrench } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package, Wrench, Factory } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
@@ -109,6 +109,15 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: 'Field-first mobile landing for maintenance technicians · captures land at A.17 (OOB-M9). Active WO / today PM / open ticket summary tiles live now.',
     details: 'A.16c: landing-only per Q-LOCK-3. A.17 wires 4 captures (breakdown · PM tick-off · spares issue · asset photo).',
     route: '/operix-go/maintenance-technician',
+    phase: 'phase2',
+  },
+  {
+    id: 'shop-floor-operator',
+    title: 'Shop Floor Operator — ऑपरेटर',
+    icon: Factory,
+    description: 'Operator hands-free shop floor · voice confirmation · barcode scan · IoT machine health · offline-resilient.',
+    details: 'A.PROD-3: operator-first mobile · voice-input production confirmation (English baseline · Hindi at PROD-5) · barcode scan for materials/PO/machine asset · live OEE + machine health from IoT bridge · offline queue for connectivity gaps. PWA — no install.',
+    route: '/operix-go/shop-floor-operator',
     phase: 'phase2',
   },
   {

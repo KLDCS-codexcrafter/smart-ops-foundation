@@ -4,7 +4,7 @@
  */
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, MapPin } from 'lucide-react';
+import { ArrowLeft, Save, MapPin, ScanBarcode } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -14,6 +14,9 @@ import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
 import { createMaterialIssue, issueMaterialIssue } from '@/lib/material-issue-engine';
 import { getCurrentLocation } from '@/lib/geolocation-bridge';
+import { enqueueWrite } from '@/lib/offline-queue-engine';
+
+interface MinBarcodeDetector { detect: (s: HTMLVideoElement) => Promise<Array<{ rawValue: string }>>; }
 
 interface SessionLite { user_id: string | null; display_name: string }
 function readSession(): SessionLite | null {
@@ -36,11 +39,39 @@ export default function MobileMaterialIssuePage(): JSX.Element {
   const [destGodownId, setDestGodownId] = useState('');
   const [geoStamp, setGeoStamp] = useState('');
   const [busy, setBusy] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
   const captureLocation = useCallback(async () => {
     const loc = await getCurrentLocation();
     setGeoStamp(loc.ok && loc.latitude !== undefined ? `${loc.latitude.toFixed(4)},${loc.longitude?.toFixed(4)}` : 'unavailable');
   }, []);
+
+  // Sprint T-Phase-3.PROD-3 · ST7 · scan ITEM barcode → select PO by output_item_code match
+  async function startBarcodeScan(): Promise<void> {
+    const w = window as unknown as { BarcodeDetector?: new (opts: { formats: string[] }) => MinBarcodeDetector };
+    if (!w.BarcodeDetector) { toast.error('Barcode scanning not supported'); return; }
+    setScanning(true);
+    let stream: MediaStream | null = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      await video.play();
+      const detector = new w.BarcodeDetector({ formats: ['code_128', 'code_39', 'qr_code', 'ean_13'] });
+      const codes = await detector.detect(video);
+      if (codes.length > 0) {
+        const code = codes[0].rawValue;
+        const match = releasedPOs.find(p => p.output_item_code === code || p.doc_no === code);
+        if (match) { setPoId(match.id); toast.success(`PO ${match.doc_no} selected`); }
+        else toast.warning(`Scanned ${code} · no matching PO`);
+      } else toast.error('No barcode detected');
+    } catch (err) {
+      toast.error(`Scan failed: ${(err as Error).message}`);
+    } finally {
+      stream?.getTracks().forEach(t => t.stop());
+      setScanning(false);
+    }
+  }
 
   const handleSave = async (): Promise<void> => {
     if (!poId || !sourceGodownId || !destGodownId) { toast.error('Select PO + source + destination'); return; }
@@ -48,6 +79,13 @@ export default function MobileMaterialIssuePage(): JSX.Element {
     try {
       const po = releasedPOs.find(p => p.id === poId);
       if (!po) throw new Error('PO not found');
+      // Sprint T-Phase-3.PROD-3 · ST5 · offline-first save (Q-LOCK-6 Option A)
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        const queued = enqueueWrite(po.entity_id, 'material_issue', { poId, sourceGodownId, destGodownId, geoStamp });
+        toast.info(`Saved offline · will sync when online (${queued.id})`);
+        navigate('/operix-go');
+        return;
+      }
       const min = createMaterialIssue({
         entity_id: po.entity_id,
         production_order: po,
@@ -120,6 +158,9 @@ export default function MobileMaterialIssuePage(): JSX.Element {
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={captureLocation}>
             <MapPin className="h-3 w-3 mr-1" /> Capture
+          </Button>
+          <Button variant="outline" size="sm" onClick={startBarcodeScan} disabled={scanning}>
+            <ScanBarcode className="h-3 w-3 mr-1" /> {scanning ? 'Scanning…' : 'Scan'}
           </Button>
           {geoStamp && <span className="text-xs text-muted-foreground font-mono">{geoStamp}</span>}
         </div>

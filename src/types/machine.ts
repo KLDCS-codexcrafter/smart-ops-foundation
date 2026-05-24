@@ -49,6 +49,11 @@ export interface Machine {
   hourly_run_cost: number;
   power_kw: number;
 
+  // Sprint T-Phase-3.PROD-3 · ST2 · IoT optional fields (backward-compat ABSOLUTE)
+  iot_enabled?: boolean;
+  iot_sensor_id?: string | null;
+  iot_last_telemetry_at?: string | null;
+
   notes: string;
   created_at: string;
   created_by: string;

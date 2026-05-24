@@ -139,6 +139,7 @@ const MaintainProPage = lazy(() => import('./pages/erp/maintainpro/MaintainProPa
 const ServiceDeskPage = lazy(() => import('./pages/erp/servicedesk/ServiceDeskPage'));
 const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
 const MobileMaintenanceTechnicianPage = lazy(() => import('./pages/mobile/MobileMaintenanceTechnicianPage'));
+const MobileShopFloorOperatorPage = lazy(() => import('./pages/mobile/MobileShopFloorOperatorPage'));
 // A.15b · 4 mobile SiteX captures
 const MobileSiteDPRCapture = lazy(() => import('./components/mobile/MobileSiteDPRCapture'));
 const MobileSiteSnagCapture = lazy(() => import('./components/mobile/MobileSiteSnagCapture'));
@@ -422,6 +423,7 @@ const App = () => (
               <Route path="/operix-go/approval-inbox" element={<P><MobileApprovalInboxPage /></P>} />
               <Route path="/operix-go/site-engineer" element={<P><MobileSiteEngineerPage /></P>} />
               <Route path="/operix-go/maintenance-technician" element={<P><MobileMaintenanceTechnicianPage /></P>} />
+              <Route path="/operix-go/shop-floor-operator" element={<P><MobileShopFloorOperatorPage /></P>} />
               <Route path="/operix-go/site-dpr" element={<P><MobileSiteDPRCapture /></P>} />
               <Route path="/operix-go/site-snag" element={<P><MobileSiteSnagCapture /></P>} />
               <Route path="/operix-go/site-safety" element={<P><MobileSiteSafetyIncidentCapture /></P>} />
