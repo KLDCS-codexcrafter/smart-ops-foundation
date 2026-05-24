@@ -16,6 +16,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PackagePlus, Save, AlertTriangle, ExternalLink } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useFactories } from '@/hooks/useFactories';
 import { useGodowns } from '@/hooks/useGodowns';
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
 import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
@@ -39,6 +40,8 @@ import type { JobWorkOutOrder } from '@/types/job-work-out-order';
 
 export function JobWorkReceiptEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  // Sprint T-Phase-3.PROD-FIX-A · ST5 · factory dropdown
+  const { factories: availableFactories } = useFactories();
   const navigate = useNavigate();
   const user = useCurrentUser();
   const [helpOpen, setHelpOpen] = useState(false);
@@ -52,6 +55,8 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
   const [receiptDate, setReceiptDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [departmentId, setDepartmentId] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
+  // Sprint T-Phase-3.PROD-FIX-A · ST5 · optional factory_id (auto-inherits from JWO)
+  const [factoryId, setFactoryId] = useState<string>('');
   const [lineRecv, setLineRecv] = useState<Record<string, number>>({});
   const [lineRej, setLineRej] = useState<Record<string, number>>({});
   const [lineDest, setLineDest] = useState<Record<string, string>>({});
@@ -129,6 +134,7 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
         receipt_date: receiptDate,
         department_id: departmentId,
         department_name: selectedJWO.department_name,
+        factory_id: factoryId || (selectedJWO.factory_id ?? undefined),
         received_by_user_id: 'current-user',
         received_by_name: 'Current User',
         lines,
@@ -222,6 +228,18 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
           <div className="space-y-2">
             <Label>Department</Label>
             <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID" />
+          </div>
+          {/* Sprint T-Phase-3.PROD-FIX-A · ST5 · factory selector */}
+          <div className="space-y-2">
+            <Label>Factory / Plant</Label>
+            <Select value={factoryId} onValueChange={setFactoryId}>
+              <SelectTrigger><SelectValue placeholder="Inherit from JWO..." /></SelectTrigger>
+              <SelectContent>
+                {availableFactories.map(f => (
+                  <SelectItem key={f.id} value={f.id}>{f.code} · {f.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="md:col-span-2 space-y-2">
             <Label>Notes</Label>
