@@ -124,17 +124,34 @@ export function ProductionVarianceDashboardPanel(): JSX.Element {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <CardTitle className="text-base">7-way Decomposition</CardTitle>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="breached">Threshold breached</SelectItem>
-                <SelectItem value="favourable">Favourable only</SelectItem>
-                <SelectItem value="unfavourable">Unfavourable only</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex items-center gap-3">
+              <div className="space-y-1">
+                <Label className="text-[10px] text-muted-foreground">Factory</Label>
+                <Select value={factoryFilter} onValueChange={setFactoryFilter}>
+                  <SelectTrigger className="w-48"><SelectValue placeholder="All factories" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__all__">All factories</SelectItem>
+                    {factories.map(f => (
+                      <SelectItem key={f.id} value={f.id}>{f.code} · {f.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px] text-muted-foreground">Status</Label>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="breached">Threshold breached</SelectItem>
+                    <SelectItem value="favourable">Favourable only</SelectItem>
+                    <SelectItem value="unfavourable">Unfavourable only</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
