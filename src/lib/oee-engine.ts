@@ -243,12 +243,13 @@ export function computeOEEFromTelemetry(
     input.template,
   );
 
+  const baseAvail = baseResult.availability_pct ?? 0;
   const adjustedAvailabilityPct = Math.max(
     0,
-    round2(baseResult.availability_pct - telemetryDowntimeFactorPct),
+    round2(baseAvail - telemetryDowntimeFactorPct),
   );
   const perfPct = baseResult.performance_pct ?? 100;
-  const qualPct = baseResult.quality_pct;
+  const qualPct = baseResult.quality_pct ?? 100;
   const adjustedOeePct = round2(
     (adjustedAvailabilityPct / 100) * (perfPct / 100) * (qualPct / 100) * 100,
   );
