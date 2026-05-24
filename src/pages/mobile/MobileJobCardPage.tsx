@@ -96,6 +96,13 @@ export default function MobileJobCardPage(): JSX.Element {
     if (qty <= 0) { toast.error('Enter produced qty'); return; }
     setBusy(true);
     try {
+      // Sprint T-Phase-3.PROD-3 · ST5 · offline-first
+      if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+        const queued = enqueueWrite(entityCode, 'job_card_event', { jobCardId: selected.id, event: 'complete', producedQty: qty, rejectedQty: rej });
+        toast.info(`Saved offline · will sync (${queued.id})`);
+        setProducedQty(''); setRejectedQty('0'); setSelectedId('');
+        return;
+      }
       // [JWT] PATCH /api/plant-ops/job-cards/:id/complete
       completeJobCard(selected, {
         produced_qty: qty,
