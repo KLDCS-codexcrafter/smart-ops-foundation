@@ -234,6 +234,11 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
               <Label>Output Item</Label>
               <Input readOnly value={`${selectedPO.output_item_code} · ${selectedPO.output_item_name}`} />
             </div>
+            {/* Sprint T-Phase-3.PROD-FIX-A · ST6 · factory inherited from PO (read-only) */}
+            <div className="space-y-2">
+              <Label>Factory (inherited from PO)</Label>
+              <Input readOnly value={selectedPO.production_site_id ?? '—'} />
+            </div>
             <div className="space-y-2">
               <Label>Planned Qty</Label>
               <Input readOnly className="font-mono" value={`${selectedPO.planned_qty} ${selectedPO.uom}`} />
