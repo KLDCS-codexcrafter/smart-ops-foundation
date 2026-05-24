@@ -39,11 +39,39 @@ export default function MobileMaterialIssuePage(): JSX.Element {
   const [destGodownId, setDestGodownId] = useState('');
   const [geoStamp, setGeoStamp] = useState('');
   const [busy, setBusy] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
   const captureLocation = useCallback(async () => {
     const loc = await getCurrentLocation();
     setGeoStamp(loc.ok && loc.latitude !== undefined ? `${loc.latitude.toFixed(4)},${loc.longitude?.toFixed(4)}` : 'unavailable');
   }, []);
+
+  // Sprint T-Phase-3.PROD-3 · ST7 · scan ITEM barcode → select PO by output_item_code match
+  async function startBarcodeScan(): Promise<void> {
+    const w = window as unknown as { BarcodeDetector?: new (opts: { formats: string[] }) => MinBarcodeDetector };
+    if (!w.BarcodeDetector) { toast.error('Barcode scanning not supported'); return; }
+    setScanning(true);
+    let stream: MediaStream | null = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      await video.play();
+      const detector = new w.BarcodeDetector({ formats: ['code_128', 'code_39', 'qr_code', 'ean_13'] });
+      const codes = await detector.detect(video);
+      if (codes.length > 0) {
+        const code = codes[0].rawValue;
+        const match = releasedPOs.find(p => p.output_item_code === code || p.doc_no === code);
+        if (match) { setPoId(match.id); toast.success(`PO ${match.doc_no} selected`); }
+        else toast.warning(`Scanned ${code} · no matching PO`);
+      } else toast.error('No barcode detected');
+    } catch (err) {
+      toast.error(`Scan failed: ${(err as Error).message}`);
+    } finally {
+      stream?.getTracks().forEach(t => t.stop());
+      setScanning(false);
+    }
+  }
 
   const handleSave = async (): Promise<void> => {
     if (!poId || !sourceGodownId || !destGodownId) { toast.error('Select PO + source + destination'); return; }
