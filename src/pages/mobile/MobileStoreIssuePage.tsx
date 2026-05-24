@@ -73,7 +73,17 @@ export default function MobileStoreIssuePage(): JSX.Element {
         </Card>
       </div>
 
-      <Button onClick={() => setShowCapture(true)} className="w-full h-14 text-base">
+      <Button
+        onClick={() => {
+          // Sprint T-Phase-3.PROD-3 · ST5 · Q-LOCK-6 · offline guard before launching capture flow
+          if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+            const queued = enqueueWrite(ENTITY, 'store_issue', { intent: 'new_capture_offline', queued_at: new Date().toISOString() });
+            toast.info(`Offline · capture will sync when online (${queued.id})`);
+          }
+          setShowCapture(true);
+        }}
+        className="w-full h-14 text-base"
+      >
         <Plus className="h-5 w-5 mr-2" />New Stock Issue
       </Button>
     </div>
