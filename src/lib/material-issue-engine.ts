@@ -18,6 +18,7 @@ import { materialIssueNotesKey } from '@/types/material-issue-note';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { releaseProductionOrderReservations } from '@/lib/stock-reservation-engine';
 // Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
 import { logAudit } from '@/lib/audit-trail-engine';
@@ -57,6 +58,14 @@ export interface CreateMaterialIssueInput {
 export function createMaterialIssue(
   input: CreateMaterialIssueInput,
 ): MaterialIssueNote {
+  // Sprint T-Phase-3.PROD-FIX-A · ST12+ST13 · period-lock + future-date guards
+  const _today_lock = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(_today_lock, input.entity_id)) {
+    throw new Error(periodLockMessage(_today_lock, input.entity_id) ?? 'Period locked');
+  }
+  if (input.issue_date > _today_lock) {
+    throw new Error('Transaction date cannot be in the future');
+  }
   if (
     input.production_order.status !== 'released' &&
     input.production_order.status !== 'in_progress'
@@ -144,6 +153,14 @@ export function issueMaterialIssue(
   min: MaterialIssueNote,
   user: { id: string; name: string },
 ): MaterialIssueNote {
+  // Sprint T-Phase-3.PROD-FIX-A · ST12+ST13 · period-lock + future-date guards
+  const _today_lock_iss = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(_today_lock_iss, min.entity_id)) {
+    throw new Error(periodLockMessage(_today_lock_iss, min.entity_id) ?? 'Period locked');
+  }
+  if (min.issue_date > _today_lock_iss) {
+    throw new Error('Transaction date cannot be in the future');
+  }
   if (min.status !== 'draft') throw new Error('Only DRAFT MINs can be issued');
 
   const reservationIdsConsumed = min.lines

@@ -17,6 +17,7 @@ import { productionConfirmationsKey } from '@/types/production-confirmation';
 import type { ProductionOrder, ProductionOrderStatusEvent } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import type { QualiCheckConfig } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
 import { resolveFGOutputGodown } from '@/lib/production-engine';
 import { emitLeakEvent } from '@/lib/leak-register-engine';
@@ -45,6 +46,14 @@ export function createProductionConfirmation(
   input: CreateProductionConfirmationInput,
   qcConfig: QualiCheckConfig,
 ): ProductionConfirmation {
+  // Sprint T-Phase-3.PROD-FIX-A · ST12+ST13 · period-lock + future-date guards
+  const _today_lock = new Date().toISOString().slice(0, 10);
+  if (isPeriodLocked(_today_lock, input.entity_id)) {
+    throw new Error(periodLockMessage(_today_lock, input.entity_id) ?? 'Period locked');
+  }
+  if (input.confirmation_date > _today_lock) {
+    throw new Error('Transaction date cannot be in the future');
+  }
   if (
     input.production_order.status !== 'in_progress' &&
     input.production_order.status !== 'released'
