@@ -518,6 +518,10 @@ export function seedEntityDemoData(
   // FR-86 ABSOLUTE preserved · inline in orchestrator · NO new sinha-*-seed-data file.
   seedSinhaLeakScenarios(entityCode);
 
+  // T-Phase-3.PROD-2.5 · ST10 · Q-LOCK-10 · 7 Sinha-anchor mfg-mode assignments
+  // FR-86 ABSOLUTE preserved · inline · NO new sinha-mfg-mode-seed-data.ts file.
+  seedSinhaAnchorMfgModes();
+
 
 
   return {
