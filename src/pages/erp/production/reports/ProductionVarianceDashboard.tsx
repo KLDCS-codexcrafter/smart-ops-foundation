@@ -15,9 +15,11 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { TrendingUp, AlertTriangle } from 'lucide-react';
+import { Label } from '@/components/ui/label';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useProductionConfig } from '@/hooks/useProductionConfig';
+import { useFactories } from '@/hooks/useFactories';
 import {
   computeProductionVariance,
   listProductionVariances,
