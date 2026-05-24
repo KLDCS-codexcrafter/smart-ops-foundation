@@ -304,12 +304,44 @@ const DC_PACK: L4IndustryGroup[] = [
   { name: 'Retention Money Payable',                 l3Code: 'TPAY', nature: 'Cr', industry: 'd_and_c' },
 ];
 
+// ── Sprint T-Phase-3.PROD-2.5 · Sub-theme 7 · Q-LOCK-7 (Strategy v2 §4.3) ───
+// Process-manufacturing L4 ledgers (~20). LEDGERS only — D-127/128a 139 voucher
+// type ABSOLUTE preserved (voucher-type-seed-data.ts MUST be 0-diff).
+const PROCESS_MFG_PACK: L4IndustryGroup[] = [
+  // Plant & equipment (process-specific)
+  { name: 'Reactor Vessels',                 l3Code: 'PPE',   nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Storage Tanks (Process)',         l3Code: 'PPE',   nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Pipelines & Distribution',        l3Code: 'PPE',   nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Catalyst Charging Equipment',     l3Code: 'PPE',   nature: 'Dr', industry: 'process_mfg' },
+  { name: 'CIP/SIP Systems',                 l3Code: 'PPE',   nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Laboratory Equipment',            l3Code: 'PPE',   nature: 'Dr', industry: 'process_mfg' },
+  // Inventory (process-specific)
+  { name: 'Raw Materials (Bulk Liquid)',     l3Code: 'INV',   nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Catalysts',                       l3Code: 'INV',   nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Intermediate Products',           l3Code: 'INV',   nature: 'Dr', industry: 'process_mfg' },
+  { name: 'By-Products',                     l3Code: 'INV',   nature: 'Cr', industry: 'process_mfg' },
+  { name: 'Co-Products (Joint)',             l3Code: 'INV',   nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Process Waste Buffer',            l3Code: 'INV',   nature: 'Dr', industry: 'process_mfg' },
+  // Direct costs (process-specific)
+  { name: 'Catalyst Consumption',            l3Code: 'PURCH', nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Process Utilities (Steam/Water)', l3Code: 'DEXP',  nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Effluent Treatment',              l3Code: 'DEXP',  nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Yield Variance (Process)',        l3Code: 'DEXP',  nature: 'Dr', industry: 'process_mfg' },
+  // Revenue
+  { name: 'By-Product Sales',                l3Code: 'SALE',  nature: 'Cr', industry: 'process_mfg' },
+  // Variance + Loss accounts
+  { name: 'Batch Yield Variance',            l3Code: 'DEXP',  nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Process Loss (Normal)',           l3Code: 'DEXP',  nature: 'Dr', industry: 'process_mfg' },
+  { name: 'Process Loss (Abnormal)',         l3Code: 'DEXP',  nature: 'Dr', industry: 'process_mfg' },
+];
+
 export const L4_INDUSTRY_PACKS = {
   common: COMMON_PACK,
   manufacturing: MANUFACTURING_PACK,
   trading: TRADING_PACK,
   services: SERVICES_PACK,
   d_and_c: DC_PACK,  // [T-T8.1-LedgerSeed-Triggers]
+  process_mfg: PROCESS_MFG_PACK,  // [T-Phase-3.PROD-2.5 · ST7 · Q-LOCK-7]
 };
 
 // ── Numeric Code Derivation — Single Source of Truth ──────────────
