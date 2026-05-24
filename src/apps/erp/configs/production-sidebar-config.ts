@@ -19,6 +19,7 @@ import {
   List, TrendingUp, BarChart3, Download, Activity, CalendarDays,
   Gauge, AlertTriangle, Clock, Users, Workflow,
   Wrench, Package, Scale, Hourglass, ArrowDownToLine, Layers, FileText,
+  Beaker,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -44,6 +45,19 @@ export const productionSidebarItems: SidebarItem[] = [
         icon: PackagePlus, moduleId: 'tx-job-work-receipt', requiredCards: ['production'], keyboard: 'g r' },
       { id: 'tx-job-card-entry', type: 'item', label: 'Job Card Entry',
         icon: IdCard, moduleId: 'tx-job-card-entry', requiredCards: ['production'], keyboard: 'g k' },
+    ],
+  },
+  {
+    id: 'process-mfg-group', type: 'group', label: 'Process Mfg', icon: Beaker,
+    children: [
+      { id: 'tx-process-batch-entry', type: 'item', label: 'Process Batch Entry',
+        icon: Beaker, moduleId: 'tx-process-batch-entry', requiredCards: ['production'], keyboard: 'g b' },
+      { id: 'mst-recipe-master', type: 'item', label: 'Recipe Master',
+        icon: FileText, moduleId: 'mst-recipe-master', requiredCards: ['production'], keyboard: 'g m' },
+      { id: 'rpt-process-batch-register', type: 'item', label: 'Process Batch Register',
+        icon: List, moduleId: 'rpt-process-batch-register', requiredCards: ['production'] },
+      { id: 'rpt-process-genealogy-tracker', type: 'item', label: 'Genealogy Tracker (FDA)',
+        icon: Workflow, moduleId: 'rpt-process-genealogy-tracker', requiredCards: ['production'] },
     ],
   },
   {

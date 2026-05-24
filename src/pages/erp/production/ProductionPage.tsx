@@ -45,6 +45,11 @@ import { JobWorkMaterialMovementRegisterPanel } from './reports/JobWorkMaterialM
 import { JobCardRegisterPanel } from './reports/JobCardRegister';
 import { ProductionConfirmationRegisterPanel } from './reports/ProductionConfirmationRegister';
 import { MaterialIssueNoteRegisterPanel } from './reports/MaterialIssueNoteRegister';
+// ST12 · PASS 3 · Process Mfg pages
+import { ProcessBatchEntryPanel } from './transactions/ProcessBatchEntry';
+import { RecipeMasterPanel } from './masters/RecipeMaster';
+import { ProcessBatchRegisterPanel } from './reports/ProcessBatchRegister';
+import { ProcessGenealogyTrackerPanel } from './reports/ProcessGenealogyTracker';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
@@ -102,6 +107,11 @@ export default function ProductionPage(): JSX.Element {
       case 'rpt-job-card-register': return <JobCardRegisterPanel />;
       case 'rpt-production-confirmation-register': return <ProductionConfirmationRegisterPanel />;
       case 'rpt-material-issue-note-register': return <MaterialIssueNoteRegisterPanel />;
+      // ST12 · PASS 3 · Process Mfg
+      case 'tx-process-batch-entry': return <ProcessBatchEntryPanel />;
+      case 'mst-recipe-master': return <RecipeMasterPanel />;
+      case 'rpt-process-batch-register': return <ProcessBatchRegisterPanel />;
+      case 'rpt-process-genealogy-tracker': return <ProcessGenealogyTrackerPanel />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }
