@@ -29,6 +29,8 @@ import {
 
 export interface CreateJobWorkReceiptInput {
   entity_id: string;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST1/ST5 · Q-LOCK-1 · optional factory linkage */
+  factory_id?: string | null;
   job_work_out_order: JobWorkOutOrder;
   receipt_date: string;
   department_id: string;
@@ -114,6 +116,7 @@ export function createJobWorkReceipt(
   const jwr: JobWorkReceipt = {
     id: `jwr-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     entity_id: input.entity_id,
+    factory_id: input.factory_id ?? jwo.factory_id ?? null,
     doc_no,
     status: 'draft',
     receipt_date: input.receipt_date,
