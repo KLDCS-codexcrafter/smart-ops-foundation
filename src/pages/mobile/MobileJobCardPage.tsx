@@ -33,6 +33,7 @@ function readSession(): SessionLite | null {
 export default function MobileJobCardPage(): JSX.Element {
   const navigate = useNavigate();
   const session = readSession();
+  const { entityCode } = useEntityCode();
   const { jobCards, reload } = useJobCards();
 
   const myActive = useMemo(
@@ -44,9 +45,37 @@ export default function MobileJobCardPage(): JSX.Element {
   const [producedQty, setProducedQty] = useState('');
   const [rejectedQty, setRejectedQty] = useState('0');
   const [busy, setBusy] = useState(false);
+  const [scanning, setScanning] = useState(false);
   const selected: JobCard | undefined = jobCards.find(jc => jc.id === selectedId);
 
   const user = { id: session?.user_id ?? 'mobile', name: session?.display_name ?? 'Mobile User' };
+
+  // Sprint T-Phase-3.PROD-3 · ST7 · scan machine asset_tag → pick JC by tag match
+  async function startBarcodeScan(): Promise<void> {
+    const w = window as unknown as { BarcodeDetector?: new (opts: { formats: string[] }) => MinBarcodeDetector };
+    if (!w.BarcodeDetector) { toast.error('Barcode scanning not supported'); return; }
+    setScanning(true);
+    let stream: MediaStream | null = null;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      const video = document.createElement('video');
+      video.srcObject = stream;
+      await video.play();
+      const detector = new w.BarcodeDetector({ formats: ['code_128', 'code_39', 'qr_code', 'ean_13'] });
+      const codes = await detector.detect(video);
+      if (codes.length > 0) {
+        const code = codes[0].rawValue;
+        const match = myActive.find(jc => jc.machine_id === code || jc.doc_no === code);
+        if (match) { setSelectedId(match.id); toast.success(`JC ${match.doc_no} selected`); }
+        else toast.warning(`Scanned ${code} · no matching job card`);
+      } else toast.error('No barcode detected');
+    } catch (err) {
+      toast.error(`Scan failed: ${(err as Error).message}`);
+    } finally {
+      stream?.getTracks().forEach(t => t.stop());
+      setScanning(false);
+    }
+  }
 
   const handleStart = async (): Promise<void> => {
     if (!selected) return;
