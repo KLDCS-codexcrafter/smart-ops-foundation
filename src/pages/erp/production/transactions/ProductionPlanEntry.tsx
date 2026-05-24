@@ -327,6 +327,18 @@ export function ProductionPlanEntryPanel(): JSX.Element {
               placeholder="Optional"
             />
           </div>
+          {/* Sprint T-Phase-3.PROD-FIX-A · ST4 · Q-LOCK-1 · factory selector (NULL acceptable) */}
+          <div className="space-y-2">
+            <Label>Factory / Plant</Label>
+            <Select value={factoryId} onValueChange={setFactoryId}>
+              <SelectTrigger><SelectValue placeholder="Select factory (optional)..." /></SelectTrigger>
+              <SelectContent>
+                {availableFactories.map(f => (
+                  <SelectItem key={f.id} value={f.id}>{f.code} · {f.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-2">
             <Label>Total Planned Qty</Label>
             <div className="h-10 rounded-md border bg-muted/30 px-3 flex items-center font-mono text-sm">
