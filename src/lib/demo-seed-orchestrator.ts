@@ -523,6 +523,10 @@ export function seedEntityDemoData(
   // FR-86 ABSOLUTE preserved · inline · NO new sinha-mfg-mode-seed-data.ts file.
   seedSinhaAnchorMfgModes();
 
+  // T-Phase-3.PROD-FIX-A · ST16 · Q-LOCK-13 · Sinha FY-close simulation
+  seedSinhaFYCloseSimulation(entityCode);
+
+
 
 
   return {
