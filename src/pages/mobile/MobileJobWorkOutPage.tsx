@@ -16,6 +16,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { useGodowns } from '@/hooks/useGodowns';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { createJobWorkOutOrder } from '@/lib/job-work-out-engine';
+import { enqueueWrite } from '@/lib/offline-queue-engine';
 
 interface SessionLite { user_id: string | null; display_name: string }
 function readSession(): SessionLite | null {
