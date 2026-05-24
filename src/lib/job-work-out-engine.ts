@@ -20,6 +20,8 @@ import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface CreateJobWorkOutOrderInput {
   entity_id: string;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST1/ST5 · Q-LOCK-1 · optional factory linkage */
+  factory_id?: string | null;
   jwo_date: string;
   expected_return_date: string;
 
@@ -80,6 +82,7 @@ export function createJobWorkOutOrder(
   const jwo: JobWorkOutOrder = {
     id: `jwo-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     entity_id: input.entity_id,
+    factory_id: input.factory_id ?? null,
     doc_no,
     status: 'draft',
     jwo_date: input.jwo_date,

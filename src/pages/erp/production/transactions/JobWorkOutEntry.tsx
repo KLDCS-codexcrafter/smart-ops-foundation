@@ -18,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Truck, Save, Send, Plus, Trash2, ExternalLink, ChevronDown, Lock } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useFactories } from '@/hooks/useFactories';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
@@ -49,6 +50,8 @@ const emptyLine = (): LineDraft => ({
 
 export function JobWorkOutEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
+  // Sprint T-Phase-3.PROD-FIX-A · ST5 · factory dropdown source
+  const { factories: availableFactories } = useFactories();
   const navigate = useNavigate();
   const user = useCurrentUser();
   const [helpOpen, setHelpOpen] = useState(false);
@@ -64,6 +67,8 @@ export function JobWorkOutEntryPanel(): JSX.Element {
   const [vendorId, setVendorId] = useState<string>('');
   const [poId, setPoId] = useState<string>('');
   const [departmentId, setDepartmentId] = useState<string>('');
+  // Sprint T-Phase-3.PROD-FIX-A · ST5 · optional factory_id
+  const [factoryId, setFactoryId] = useState<string>('');
   const [jwoDate, setJwoDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [returnDate, setReturnDate] = useState<string>(
     new Date(Date.now() + 14 * 86400000).toISOString().slice(0, 10),
@@ -135,6 +140,7 @@ export function JobWorkOutEntryPanel(): JSX.Element {
         entity_id: entityCode,
         jwo_date: jwoDate,
         expected_return_date: returnDate,
+        factory_id: factoryId || (linkedPO?.production_site_id ?? undefined),
         vendor_id: vendor.partyCode,
         vendor_name: vendor.partyName,
         vendor_gstin: vendor.gstin,
@@ -247,6 +253,18 @@ export function JobWorkOutEntryPanel(): JSX.Element {
           <div className="space-y-2">
             <Label>JWO Date</Label>
             <Input type="date" className="font-mono" value={jwoDate} onChange={e => setJwoDate(e.target.value)} />
+          </div>
+          {/* Sprint T-Phase-3.PROD-FIX-A · ST5 · factory selector */}
+          <div className="space-y-2">
+            <Label>Factory / Plant</Label>
+            <Select value={factoryId} onValueChange={setFactoryId}>
+              <SelectTrigger><SelectValue placeholder="Inherit from PO..." /></SelectTrigger>
+              <SelectContent>
+                {availableFactories.map(f => (
+                  <SelectItem key={f.id} value={f.id}>{f.code} · {f.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>Expected Return Date</Label>

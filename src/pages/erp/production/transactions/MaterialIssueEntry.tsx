@@ -18,6 +18,7 @@ import { PackageMinus, Save, Send, ExternalLink } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
+import { useFactories } from '@/hooks/useFactories';
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
 import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
@@ -40,10 +41,14 @@ export function MaterialIssueEntryPanel(): JSX.Element {
   });
   const { orders } = useProductionOrders();
   const { godowns } = useGodowns();
+  // Sprint T-Phase-3.PROD-FIX-A · ST5 · Q-LOCK-1 · factory dropdown source
+  const { factories: availableFactories } = useFactories();
 
   const [poId, setPoId] = useState<string>('');
   const [issueDate, setIssueDate] = useState<string>(new Date().toISOString().slice(0, 10));
   const [departmentId, setDepartmentId] = useState<string>('');
+  // Sprint T-Phase-3.PROD-FIX-A · ST5 · optional factory_id (auto-inherits from PO if blank)
+  const [factoryId, setFactoryId] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [lineQtys, setLineQtys] = useState<Record<string, number>>({});
   const [lineSourceGodown, setLineSourceGodown] = useState<Record<string, string>>({});
@@ -121,6 +126,7 @@ export function MaterialIssueEntryPanel(): JSX.Element {
         issue_date: issueDate,
         department_id: departmentId,
         department_name: selectedPO.department_name,
+        factory_id: factoryId || selectedPO.production_site_id || undefined,
         issued_by_user_id: 'current-user',
         issued_by_name: 'Current User',
         lines,
@@ -216,6 +222,18 @@ export function MaterialIssueEntryPanel(): JSX.Element {
           <div className="space-y-2">
             <Label>Destination (WIP) Godown</Label>
             <Input readOnly value={wipGodownName} />
+          </div>
+          {/* Sprint T-Phase-3.PROD-FIX-A · ST5 · factory selector (optional · inherits PO factory if blank) */}
+          <div className="space-y-2">
+            <Label>Factory / Plant</Label>
+            <Select value={factoryId} onValueChange={setFactoryId}>
+              <SelectTrigger><SelectValue placeholder="Inherit from PO..." /></SelectTrigger>
+              <SelectContent>
+                {availableFactories.map(f => (
+                  <SelectItem key={f.id} value={f.id}>{f.code} · {f.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="md:col-span-2 space-y-2">
             <Label>Notes</Label>

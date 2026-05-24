@@ -108,6 +108,8 @@ export interface CreateProductionPlanLineInput {
 
 export interface CreateProductionPlanInput {
   entity_id: string;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST1/ST4 · Q-LOCK-1 · optional factory linkage */
+  factory_id?: string | null;
   plan_period_start: string;
   plan_period_end: string;
   plan_type: ProductionPlanType;
@@ -161,6 +163,7 @@ export function createProductionPlan(
   const plan: ProductionPlan = {
     id: `pp-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     entity_id: input.entity_id,
+    factory_id: input.factory_id ?? null,
     doc_no,
     plan_period_start: input.plan_period_start,
     plan_period_end: input.plan_period_end,

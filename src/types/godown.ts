@@ -175,5 +175,9 @@ export interface Godown {
   /** System godowns are auto-created by entity-setup-service and cannot be deleted by users.
    *  Used for: Goods-in-Transit (1.2.4), Samples & Demos (existing), Quarantine (1.2.5) */
   is_system_godown?: boolean;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST2 · reverse-link to Factory (Q-LOCK-2).
+   *  Factory has primary_godown_id + primary_fg_godown_id (factory-side); this is godown-side reverse link.
+   *  Optional for backward-compat · existing godowns NULL by default. */
+  factory_id?: string | null;
   created_at: string; updated_at: string;
 }

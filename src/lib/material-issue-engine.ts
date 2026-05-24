@@ -24,6 +24,8 @@ import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface CreateMaterialIssueInput {
   entity_id: string;
+  /** Sprint T-Phase-3.PROD-FIX-A · ST1/ST5 · Q-LOCK-1 · optional factory linkage */
+  factory_id?: string | null;
   production_order: ProductionOrder;
   issue_date: string;
   department_id: string;
@@ -84,6 +86,7 @@ export function createMaterialIssue(
   const min: MaterialIssueNote = {
     id: `min-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     entity_id: input.entity_id,
+    factory_id: input.factory_id ?? input.production_order.production_site_id ?? null,
     doc_no,
     status: 'draft',
     issue_date: input.issue_date,

@@ -20,6 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Plus, Trash2, Save, ClipboardList, AlertTriangle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useFactories } from '@/hooks/useFactories';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
@@ -92,6 +93,8 @@ function emptyLine(): DraftLine {
 
 export function ProductionPlanEntryPanel(): JSX.Element {
   const { entityCode, entityId } = useEntityCode();
+  // Sprint T-Phase-3.PROD-FIX-A · ST4 · Q-LOCK-1 · factory dropdown
+  const { factories: availableFactories } = useFactories();
   const user = useCurrentUser();
   const { items } = useInventoryItems();
 
@@ -102,6 +105,8 @@ export function ProductionPlanEntryPanel(): JSX.Element {
   );
   const [departmentId, setDepartmentId] = useState<string>('');
   const [businessUnitId, setBusinessUnitId] = useState<string>('');
+  // Sprint T-Phase-3.PROD-FIX-A · ST4 · Q-LOCK-1 · factory_id (optional · NULL acceptable)
+  const [factoryId, setFactoryId] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [lines, setLines] = useState<DraftLine[]>([emptyLine()]);
 
@@ -216,6 +221,7 @@ export function ProductionPlanEntryPanel(): JSX.Element {
       const plan = createProductionPlan(
         {
           entity_id: entityId || entityCode,
+          factory_id: factoryId || undefined,
           plan_period_start: periodStart,
           plan_period_end: periodEnd,
           plan_type: planType,
@@ -320,6 +326,18 @@ export function ProductionPlanEntryPanel(): JSX.Element {
               onChange={e => setBusinessUnitId(e.target.value)}
               placeholder="Optional"
             />
+          </div>
+          {/* Sprint T-Phase-3.PROD-FIX-A · ST4 · Q-LOCK-1 · factory selector (NULL acceptable) */}
+          <div className="space-y-2">
+            <Label>Factory / Plant</Label>
+            <Select value={factoryId} onValueChange={setFactoryId}>
+              <SelectTrigger><SelectValue placeholder="Select factory (optional)..." /></SelectTrigger>
+              <SelectContent>
+                {availableFactories.map(f => (
+                  <SelectItem key={f.id} value={f.id}>{f.code} · {f.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>Total Planned Qty</Label>
