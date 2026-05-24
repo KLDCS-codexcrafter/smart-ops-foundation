@@ -159,6 +159,9 @@ export default function MobileMaterialIssuePage(): JSX.Element {
           <Button variant="outline" size="sm" onClick={captureLocation}>
             <MapPin className="h-3 w-3 mr-1" /> Capture
           </Button>
+          <Button variant="outline" size="sm" onClick={startBarcodeScan} disabled={scanning}>
+            <ScanBarcode className="h-3 w-3 mr-1" /> {scanning ? 'Scanning…' : 'Scan'}
+          </Button>
           {geoStamp && <span className="text-xs text-muted-foreground font-mono">{geoStamp}</span>}
         </div>
         <Button className="w-full" size="lg" onClick={handleSave} disabled={busy}>
