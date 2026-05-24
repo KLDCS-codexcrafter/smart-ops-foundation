@@ -14,6 +14,7 @@ import { useProductionOrders } from '@/hooks/useProductionOrders';
 import { useGodowns } from '@/hooks/useGodowns';
 import { createMaterialIssue, issueMaterialIssue } from '@/lib/material-issue-engine';
 import { getCurrentLocation } from '@/lib/geolocation-bridge';
+import { enqueueWrite } from '@/lib/offline-queue-engine';
 
 interface SessionLite { user_id: string | null; display_name: string }
 function readSession(): SessionLite | null {
