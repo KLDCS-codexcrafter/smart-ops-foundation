@@ -4,7 +4,7 @@
  */
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, MapPin } from 'lucide-react';
+import { ArrowLeft, Save, MapPin, ScanBarcode } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,8 @@ import { useGodowns } from '@/hooks/useGodowns';
 import { createMaterialIssue, issueMaterialIssue } from '@/lib/material-issue-engine';
 import { getCurrentLocation } from '@/lib/geolocation-bridge';
 import { enqueueWrite } from '@/lib/offline-queue-engine';
+
+interface MinBarcodeDetector { detect: (s: HTMLVideoElement) => Promise<Array<{ rawValue: string }>>; }
 
 interface SessionLite { user_id: string | null; display_name: string }
 function readSession(): SessionLite | null {
