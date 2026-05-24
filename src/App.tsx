@@ -423,6 +423,7 @@ const App = () => (
               <Route path="/operix-go/approval-inbox" element={<P><MobileApprovalInboxPage /></P>} />
               <Route path="/operix-go/site-engineer" element={<P><MobileSiteEngineerPage /></P>} />
               <Route path="/operix-go/maintenance-technician" element={<P><MobileMaintenanceTechnicianPage /></P>} />
+              <Route path="/operix-go/shop-floor-operator" element={<P><MobileShopFloorOperatorPage /></P>} />
               <Route path="/operix-go/site-dpr" element={<P><MobileSiteDPRCapture /></P>} />
               <Route path="/operix-go/site-snag" element={<P><MobileSiteSnagCapture /></P>} />
               <Route path="/operix-go/site-safety" element={<P><MobileSiteSafetyIncidentCapture /></P>} />
