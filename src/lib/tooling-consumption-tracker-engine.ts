@@ -18,6 +18,10 @@ import type { ProductionConfirmation } from '@/types/production-confirmation';
 import { productionConfirmationsKey } from '@/types/production-confirmation';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
+// Sprint T-Phase-3.PROD-FIX-A · ST7 · Q-LOCK-4 Option Y · LEAK-14 surgical fix
+// machine→factory ancestry: compare PO factory with the tool's machine's factory.
+import type { Machine } from '@/types/machine';
+import { machinesKey } from '@/types/machine';
 
 export interface ToolingRegisterRecord {
   tool_id: string;
@@ -76,6 +80,9 @@ export function recomputeToolingConsumption(entityCode: string): ToolingRegister
   if (tools.length === 0) return [];
   const pos = lsRead<ProductionOrder[]>(productionOrdersKey(entityCode), []);
   const poById = new Map(pos.map(p => [p.id, p]));
+  // Sprint T-Phase-3.PROD-FIX-A · ST7 · LEAK-14 fix · machine-master ancestry
+  const machines = lsRead<Machine[]>(machinesKey(entityCode), []);
+  const machineById = new Map(machines.map(m => [m.id, m]));
   const confs = lsRead<ProductionConfirmation[]>(
     productionConfirmationsKey(entityCode),
     [],
@@ -83,15 +90,17 @@ export function recomputeToolingConsumption(entityCode: string): ToolingRegister
 
   const next: ToolingRegisterRecord[] = tools.map(tool => {
     const since = tool.last_reset_at ?? tool.installed_at;
+    const toolMachine = machineById.get(tool.machine_id);
     let burnt = 0;
     for (const c of confs) {
       if (c.confirmation_date < since) continue;
-      // Inference: a confirmation contributes to a tool when its PO's primary site/machine matches.
-      // Tools are machine-scoped; we conservatively treat all production-site POs as relevant.
+      // Sprint T-Phase-3.PROD-FIX-A · ST7 · LEAK-14 surgical fix (Q-LOCK-4 Option Y).
+      // Previous (buggy): po.production_site_id === tool.machine_id (factory_id vs machine_id mismatch).
+      // Fixed: match when the tool's machine belongs to the PO's factory.
       const po = poById.get(c.id) ?? null;
-      const matches = po
-        ? po.production_site_id === tool.machine_id
-        : true; /* fallback when PO linkage missing */
+      const matches = po && toolMachine
+        ? toolMachine.factory_id === po.production_site_id
+        : true; /* fallback when linkage missing */
       if (!matches) continue;
       for (const line of c.lines) {
         burnt += line.actual_qty;
