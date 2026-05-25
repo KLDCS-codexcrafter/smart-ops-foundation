@@ -876,7 +876,7 @@ export function optimizeMaintenanceScheduleByCarbon(
   const seed = entityCode + pmScheduleId;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
   const baselineKwh = 400 + (h % 600);
-  const currentHour = 18 + (h % 5); // peak hours
+  // peak-hours baseline implied via factorCurrent multiplier
   const optimizedHour = 2 + ((h >>> 4) % 4); // off-peak
   const factorCurrent = _CEA_BASELINE * 1.12;
   const factorOptimized = _CEA_BASELINE * 0.82;
