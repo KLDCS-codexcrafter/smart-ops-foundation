@@ -161,4 +161,15 @@ export const maintainproSidebarItems: SidebarItem[] = [
       { id: 'mp-r-predictive-alerts',      type: 'item', label: 'Predictive Alerts',      icon: AlertTriangle, moduleId: 'mp-r-predictive-alerts',      requiredCards: ['maintainpro'] },
     ],
   },
+  // 🆕 Sprint 63 PROD-5 · Theme A · ESG & Compliance
+  {
+    id: 'esg-compliance-group',
+    type: 'group',
+    label: 'ESG & Compliance',
+    icon: Layers,
+    children: [
+      { id: 'esg-energy-dashboard', type: 'item', label: 'ESG Energy Dashboard', icon: Zap, moduleId: 'esg-energy-dashboard', requiredCards: ['maintainpro'] },
+      { id: 'brsr-compliance-snapshot', type: 'item', label: 'BRSR Compliance Snapshot', icon: ShieldAlert, moduleId: 'brsr-compliance-snapshot', requiredCards: ['maintainpro'] },
+    ],
+  },
 ];
