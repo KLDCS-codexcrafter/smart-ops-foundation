@@ -124,16 +124,14 @@ export const applications: AppDefinition[] = [
     icon: 'ShoppingCart',
     status: 'active',  // T-Phase-1.A.8.α-a-T1 · Q-LOCK-T1-NEW · Master Plan §51.2 rows 3+4 (Sprint 1.A.3 + 1.A.4 CLOSED) · D-NEW-BB pattern
   },
-  // Display name "Main Store Hub" · renamed via UPRA arc · route /erp/inventory-hub
-  // Technical 'inventory-hub' preserved for route stability · display decoupled
+  // ⚠️ Display name 'Inventory Hub' (with space) intentional · keep as-is · D-NEW-CM-fincore-naming-canonical pattern
   // Heavy 22k+ LOC platform inventory backbone · NOT to be confused with store-hub (Department Stores · lightweight console)
-  // T-Phase-3.HK-D14 · stale 'Inventory Hub' lock-comment retired
   {
     id: 'inventory-hub',
-    name: 'Main Store Hub',
+    name: 'Inventory Hub',
     description: 'Plant-level Main Store backbone · distributes to Department Stores. Heavy inventory module — GRN, MIN, RTV, Cycle Count, Item Master, Storage Matrix, Batch/Serial tracking, ABC classification, Hazmat profiles, Reorder management.',
     category: 'Ops Hub',
-    route: '/erp/main-store-hub',
+    route: '/erp/inventory-hub',
     icon: 'Package',
     status: 'active',
   },
