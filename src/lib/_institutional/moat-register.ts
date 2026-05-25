@@ -167,6 +167,22 @@ export const MOATS: MoatEntry[] = [
     competitivePositioning: 'No Indian SMB ERP under ₹50L has 21 CFR Part 11 e-signature + audit trail · SAP S/4 has at ₹2-10Cr · Operix at ₹3-8L unlocks pharma SMB beachhead',
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 63 PROD-5 · MOAT-38 · World-First Carbon-Aware Production Planning at SMB Price
+  {
+    id: 'MOAT-38',
+    name: 'World-First Carbon-Aware Production Planning at SMB Price',
+    sprintBanked: 63,
+    compositeBanked: 63,
+    headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/lib/carbon-planning-engine.ts',
+      'src/types/carbon-planning.ts',
+      'src/pages/erp/production/reports/CarbonAwareProductionPlanner.tsx',
+      'src/pages/erp/production/reports/ProductionCarbonDashboard.tsx',
+    ],
+    competitivePositioning: 'Category-defining · only ERP globally offering carbon-aware planning at SMB price · SAP S/4 has partial at ₹2-10Cr · Operix at ₹3-8L TCO 30-300x cheaper',
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getMoatCount(): number {
