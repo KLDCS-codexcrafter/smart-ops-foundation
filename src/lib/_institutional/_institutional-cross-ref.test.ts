@@ -16,20 +16,20 @@ import { SPRINTS, getSprintCount, getCurrentAStreak } from './sprint-history';
 import { SUB_PORTALS, getSubPortalCount } from './sub-portal-registry';
 
 describe('Institutional registers · cardinality', () => {
-  it('SIBLINGS has 36 entries', () => {
-    expect(getSiblingCount()).toBe(36);
+  it('SIBLINGS has 37 entries', () => {
+    expect(getSiblingCount()).toBe(37);
   });
 
-  it('MOATS has 34 entries', () => {
-    expect(getMoatCount()).toBe(34);
+  it('MOATS has 36 entries', () => {
+    expect(getMoatCount()).toBe(36);
   });
 
   it('CAPABILITIES has 28 entries', () => {
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 60 entries', () => {
-    expect(getSprintCount()).toBe(60);
+  it('SPRINTS has 61 entries', () => {
+    expect(getSprintCount()).toBe(61);
   });
 
   it('SUB_PORTALS has 3 entries', () => {
@@ -37,31 +37,30 @@ describe('Institutional registers · cardinality', () => {
   });
 });
 
-describe('Capability scorecard · empirical truth at HEAD 3d7483e7', () => {
-  it('getCapabilityScoreFullOnly returns the empirical full-count framing', () => {
-    // Empirical: 22 'full' entries · narrative target "26/28" deferred to Sprint 61.HK reconciliation
-    expect(getCapabilityScoreFullOnly()).toBe('22/28');
+describe('Capability scorecard · post-Sprint-61 (CAP-25 + CAP-26 lit)', () => {
+  it('getCapabilityScoreFullOnly returns 24/28 after Sprint 61 capability flip', () => {
+    expect(getCapabilityScoreFullOnly()).toBe('24/28');
   });
 
-  it('breakdown is 22 full · 2 partial · 4 absent · 28 total', () => {
+  it('breakdown is 24 full · 2 partial · 2 absent · 28 total', () => {
     const score = getCapabilityScore();
-    expect(score.full).toBe(22);
+    expect(score.full).toBe(24);
     expect(score.partial).toBe(2);
-    expect(score.absent).toBe(4);
+    expect(score.absent).toBe(2);
     expect(score.total).toBe(28);
   });
 });
 
 describe('Sprint history · A-streak counter', () => {
-  it('current A-streak is 7 (Sprint 54-60 v2 era)', () => {
-    expect(getCurrentAStreak()).toBe(7);
+  it('current A-streak is 8 (Sprint 54-61 v2 era · NEW Operix record extended)', () => {
+    expect(getCurrentAStreak()).toBe(8);
   });
 
-  it('Sprint 60 is the most recent banked composite', () => {
+  it('Sprint 61 is the most recent banked composite', () => {
     const latest = SPRINTS[SPRINTS.length - 1];
-    expect(latest.sprintNumber).toBe(60);
-    expect(latest.headSha).toBe('3d7483e7');
-    expect(latest.newSiblings.length).toBe(5);
+    expect(latest.sprintNumber).toBe(61);
+    expect(latest.newSiblings.length).toBe(1);
+    expect(latest.newSiblings[0]).toBe('demand-forecast-engine');
   });
 });
 

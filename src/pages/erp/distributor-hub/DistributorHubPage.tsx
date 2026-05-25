@@ -48,6 +48,9 @@ import { SchemeEffectivenessReportPanel } from './reports/SchemeEffectivenessRep
 // UPRA-3 Phase A Step 2 · Tier-1 NEW
 import { DistributorOrderRegisterPanel } from './reports/DistributorOrderRegister';
 
+// Sprint 61 PROD-4 PASS 2 · OOB-PROD-1 · MOAT 35
+import { DistributorDemandForecastFeedPanel } from './reports/DistributorDemandForecastFeed';
+
 function ComingSoonPanel({ module }: { module: DistributorHubModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
@@ -87,6 +90,9 @@ function renderModule(mod: DistributorHubModule): React.ReactElement {
 
     // UPRA-3 Phase A Step 2 · Tier-1 NEW
     case 'dh-r-distributor-order-register': return <DistributorOrderRegisterPanel />;
+
+    // Sprint 61 PROD-4 PASS 2 · OOB-PROD-1 · MOAT 35
+    case 'dh-r-demand-forecast-feed':       return <DistributorDemandForecastFeedPanel />;
 
     default: return <ComingSoonPanel module={mod} />;
   }

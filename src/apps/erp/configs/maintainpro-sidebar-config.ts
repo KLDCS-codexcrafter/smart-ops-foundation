@@ -150,4 +150,15 @@ export const maintainproSidebarItems: SidebarItem[] = [
       { id: 'energy-esg', type: 'item', label: 'Energy / ESG (OOB-M12)', icon: Layers, moduleId: 'energy-esg', requiredCards: ['maintainpro'] },
     ],
   },
+  // 🆕 Sprint 61 PROD-4 PASS 2 · AI & Predictive
+  {
+    id: 'predictive-group',
+    type: 'group',
+    label: 'AI & Predictive',
+    icon: Activity,
+    children: [
+      { id: 'mp-r-machine-health-monitor', type: 'item', label: 'Machine Health Monitor', icon: TrendingUp, moduleId: 'mp-r-machine-health-monitor', requiredCards: ['maintainpro'] },
+      { id: 'mp-r-predictive-alerts',      type: 'item', label: 'Predictive Alerts',      icon: AlertTriangle, moduleId: 'mp-r-predictive-alerts',      requiredCards: ['maintainpro'] },
+    ],
+  },
 ];

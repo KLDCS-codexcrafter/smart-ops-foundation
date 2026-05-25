@@ -124,6 +124,34 @@ export const MOATS: MoatEntry[] = [
     competitivePositioning: 'Q-LOCK-14 MANDATORY ASK + 24-pillar at scale + 14-Q-LOCK upfront + Path B canon + Lesson 17 banners',
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 61 PROD-4 PASS 2 · OOB-PROD-1
+  {
+    id: 'MOAT-35',
+    name: 'OOB-PROD-1 · Distributor Demand Forecast Feed · enterprise-grade demand sensing at SMB price',
+    sprintBanked: 61,
+    compositeBanked: 61,
+    headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/lib/demand-forecast-engine.ts',
+      'src/pages/erp/distributor-hub/reports/DistributorDemandForecastFeed.tsx',
+    ],
+    competitivePositioning: 'No Indian SMB ERP has cross-card distributor → production demand sensing · SAP/Oracle at 10x cost',
+    provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 61 PROD-4 PASS 2 · OOB-PROD-2 · Predictive Machine Condition
+  {
+    id: 'MOAT-36',
+    name: 'OOB-PROD-2 · Predictive Machine Condition · SAP S/4 capability at SMB price',
+    sprintBanked: 61,
+    compositeBanked: 61,
+    headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/lib/iot-machine-bridge.ts',
+      'src/pages/erp/maintainpro/reports/PredictiveMachineHealth.tsx',
+    ],
+    competitivePositioning: 'Predictive machine condition via telemetry trend regression · SAP S/4 INR 50L+ TCO · no Indian SMB ERP under INR 10L',
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getMoatCount(): number {

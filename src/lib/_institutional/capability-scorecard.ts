@@ -42,8 +42,8 @@ export const CAPABILITIES: Capability[] = [
   { id: 'CAP-22', name: 'Repetitive manufacturing (rate-based scheduling)', state: 'partial', lastChangedSprint: null, evidenceFiles: [] },
   { id: 'CAP-23', name: 'Mixed-mode manufacturing (multi-mode BU)', state: 'partial', lastChangedSprint: null, evidenceFiles: [] },
   { id: 'CAP-24', name: 'FY-close + period-lock automation', state: 'full', lastChangedSprint: 58, evidenceFiles: [] },
-  { id: 'CAP-25', name: 'Real-time predictive machine condition', state: 'absent', lastChangedSprint: null, evidenceFiles: [] },
-  { id: 'CAP-26', name: 'AI-driven demand forecast', state: 'absent', lastChangedSprint: null, evidenceFiles: [] },
+  { id: 'CAP-25', name: 'Real-time predictive machine condition', state: 'full', lastChangedSprint: 61, evidenceFiles: ['src/lib/iot-machine-bridge.ts', 'src/pages/erp/maintainpro/reports/PredictiveMachineHealth.tsx'] },
+  { id: 'CAP-26', name: 'AI-driven demand forecast', state: 'full', lastChangedSprint: 61, evidenceFiles: ['src/lib/demand-forecast-engine.ts', 'src/lib/store-hub-engine.ts'] },
   { id: 'CAP-27', name: 'Carbon-aware production planning (world-first)', state: 'absent', lastChangedSprint: null, evidenceFiles: [] },
   { id: 'CAP-28', name: '21 CFR Part 11 electronic audit trail (pharma)', state: 'absent', lastChangedSprint: null, evidenceFiles: [] },
 ];

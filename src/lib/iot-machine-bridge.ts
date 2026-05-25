@@ -385,3 +385,203 @@ export function importEnergyReadingsCSV(
 
   return { imported, errors };
 }
+
+// ============================================================================
+// SPRINT 61 PROD-4 · PASS 2 · ST5 · PREDICTIVE LAYER · Q-LOCK-6 Option A · ADDITIVE
+// Existing 15 exports remain 0-DIFF · this section ADDS:
+//   - 1 type alias:    PredictionConfidence
+//   - 2 interfaces:    MachineFailurePrediction · TrendRegressionResult
+//   - 3 functions:     computeTrendRegression · predictMachineFailure · listMachineFailurePredictions
+// ============================================================================
+
+import { machinePredictionsKey as forecastMachinePredictionsKey } from '@/types/forecast';
+
+export type PredictionConfidence = 'low' | 'medium' | 'high';
+
+export interface MachineFailurePrediction {
+  id: string;
+  machine_id: string;
+  entity_code: string;
+  predicted_failure_at: string;
+  prediction_horizon_hours: number;
+  confidence: PredictionConfidence;
+  contributing_parameters: {
+    parameter: string;
+    trend_slope: number;
+    severity: 'normal' | 'warning' | 'critical';
+  }[];
+  generated_at: string;
+  generated_by: string;
+}
+
+export interface TrendRegressionResult {
+  parameter: string;
+  machine_id: string;
+  window_hours: number;
+  slope: number;
+  intercept: number;
+  r_squared: number;
+  current_value: number;
+  projected_value_24h: number;
+  projected_value_72h: number;
+  sample_count: number;
+}
+
+/**
+ * Compute trend regression on a machine's telemetry parameter (metric) over a window.
+ * Uses simple linear regression (least squares) on the time series.
+ * Returns NULL if insufficient data (< 5 samples).
+ *
+ * Adapted to actual TelemetryRecord shape (per-record metric/value · NOT a values map).
+ */
+export function computeTrendRegression(
+  entityCode: string,
+  machineId: string,
+  parameter: string,
+  windowHours: number,
+): TrendRegressionResult | null {
+  const telemetry = listTelemetryForMachine(entityCode, machineId);
+  const cutoffMs = Date.now() - windowHours * 3600 * 1000;
+  const filtered = telemetry.filter(
+    (t) =>
+      t.payload.metric === parameter &&
+      new Date(t.payload.timestamp).getTime() >= cutoffMs,
+  );
+
+  if (filtered.length < 5) return null;
+
+  const timestamps = filtered.map((t) => new Date(t.payload.timestamp).getTime());
+  const windowStartMs = Math.min(...timestamps);
+
+  const points: { x: number; y: number }[] = [];
+  for (const t of filtered) {
+    const val = t.payload.value;
+    if (typeof val !== 'number' || Number.isNaN(val)) continue;
+    const xHours = (new Date(t.payload.timestamp).getTime() - windowStartMs) / (3600 * 1000);
+    points.push({ x: xHours, y: val });
+  }
+
+  if (points.length < 5) return null;
+
+  const n = points.length;
+  const sumX = points.reduce((s, p) => s + p.x, 0);
+  const sumY = points.reduce((s, p) => s + p.y, 0);
+  const sumXY = points.reduce((s, p) => s + p.x * p.y, 0);
+  const sumX2 = points.reduce((s, p) => s + p.x * p.x, 0);
+
+  const denom = n * sumX2 - sumX * sumX;
+  if (denom === 0) return null;
+
+  const slope = (n * sumXY - sumX * sumY) / denom;
+  const intercept = (sumY - slope * sumX) / n;
+
+  const meanY = sumY / n;
+  const ssRes = points.reduce((s, p) => {
+    const pred = slope * p.x + intercept;
+    return s + Math.pow(p.y - pred, 2);
+  }, 0);
+  const ssTot = points.reduce((s, p) => s + Math.pow(p.y - meanY, 2), 0);
+  const rSquared = ssTot === 0 ? 1 : 1 - ssRes / ssTot;
+
+  const lastX = Math.max(...points.map((p) => p.x));
+  const currentValue = points[points.length - 1].y;
+  const projected24h = slope * (lastX + 24) + intercept;
+  const projected72h = slope * (lastX + 72) + intercept;
+
+  return {
+    parameter,
+    machine_id: machineId,
+    window_hours: windowHours,
+    slope,
+    intercept,
+    r_squared: Math.round(rSquared * 1000) / 1000,
+    current_value: currentValue,
+    projected_value_24h: Math.round(projected24h * 100) / 100,
+    projected_value_72h: Math.round(projected72h * 100) / 100,
+    sample_count: n,
+  };
+}
+
+/**
+ * Predict machine failure within a horizon window.
+ * Confidence = high if 2+ critical parameters · medium if 1 critical or 2+ warning · low otherwise.
+ */
+export function predictMachineFailure(
+  entityCode: string,
+  machineId: string,
+  horizonHours: number,
+): MachineFailurePrediction {
+  const parametersToCheck = ['temperature', 'vibration', 'pressure', 'current_draw'];
+  const windowHours = Math.max(72, horizonHours);
+
+  const contributing: MachineFailurePrediction['contributing_parameters'] = [];
+  for (const param of parametersToCheck) {
+    const trend = computeTrendRegression(entityCode, machineId, param, windowHours);
+    if (!trend) continue;
+    const severity: 'normal' | 'warning' | 'critical' =
+      Math.abs(trend.slope) > 0.5 && trend.r_squared > 0.6
+        ? 'critical'
+        : Math.abs(trend.slope) > 0.2 && trend.r_squared > 0.4
+          ? 'warning'
+          : 'normal';
+    if (severity !== 'normal') {
+      contributing.push({ parameter: param, trend_slope: trend.slope, severity });
+    }
+  }
+
+  const criticalCount = contributing.filter((c) => c.severity === 'critical').length;
+  const warningCount = contributing.filter((c) => c.severity === 'warning').length;
+
+  let confidence: PredictionConfidence;
+  let predictedFailureAt: string;
+  if (criticalCount >= 2) {
+    confidence = 'high';
+    predictedFailureAt = new Date(Date.now() + horizonHours * 3600 * 1000 * 0.3).toISOString();
+  } else if (criticalCount >= 1 || warningCount >= 2) {
+    confidence = 'medium';
+    predictedFailureAt = new Date(Date.now() + horizonHours * 3600 * 1000 * 0.6).toISOString();
+  } else {
+    confidence = 'low';
+    predictedFailureAt = new Date(Date.now() + horizonHours * 3600 * 1000).toISOString();
+  }
+
+  const prediction: MachineFailurePrediction = {
+    id: `mfp-${entityCode}-${machineId}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    machine_id: machineId,
+    entity_code: entityCode,
+    predicted_failure_at: predictedFailureAt,
+    prediction_horizon_hours: horizonHours,
+    confidence,
+    contributing_parameters: contributing,
+    generated_at: new Date().toISOString(),
+    generated_by: 'system',
+  };
+
+  try {
+    // [JWT] POST /api/forecast/machine-predictions
+    const key = forecastMachinePredictionsKey(entityCode);
+    const existing: MachineFailurePrediction[] = JSON.parse(localStorage.getItem(key) ?? '[]');
+    existing.push(prediction);
+    localStorage.setItem(key, JSON.stringify(existing));
+  } catch {
+    /* silent · localStorage quota or SSR safety */
+  }
+
+  return prediction;
+}
+
+/**
+ * List all persisted machine failure predictions for an entity · most recent first.
+ */
+export function listMachineFailurePredictions(entityCode: string): MachineFailurePrediction[] {
+  try {
+    // [JWT] GET /api/forecast/machine-predictions
+    const key = forecastMachinePredictionsKey(entityCode);
+    const raw = localStorage.getItem(key);
+    const all: MachineFailurePrediction[] = raw ? JSON.parse(raw) : [];
+    return [...all].sort((a, b) => b.generated_at.localeCompare(a.generated_at));
+  } catch {
+    return [];
+  }
+}
+
