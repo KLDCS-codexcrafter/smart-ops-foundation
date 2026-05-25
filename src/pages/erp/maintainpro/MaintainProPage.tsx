@@ -43,6 +43,8 @@ import { SLAPerformanceReport } from './reports/SLAPerformanceReport';
 import { AgingTicketsReport } from './reports/AgingTicketsReport';
 import { TopReportersByDepartment } from './reports/TopReportersByDepartment';
 import { ProductionCapacityLiveDashboard } from './reports/ProductionCapacityLiveDashboard';
+// Sprint 61 PROD-4 PASS 2 · AI & Predictive
+import PredictiveMachineHealth from './reports/PredictiveMachineHealth';
 
 export default function MaintainProPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<MaintainProModule>('welcome');
