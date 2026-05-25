@@ -70,6 +70,8 @@ const REPORTS_ITEMS: { label: string; module: DistributorHubModule;
   { label: 'Scheme Effectiveness', module: 'dh-r-scheme-effectiveness', icon: LineChart },
   // UPRA-3 Phase A Step 2 · Tier-1 NEW
   { label: 'Distributor Order Register', module: 'dh-r-distributor-order-register', icon: ClipboardList },
+  // 🆕 Sprint 61 PROD-4 PASS 2 · OOB-PROD-1 · MOAT 35
+  { label: 'Demand Forecast Feed', module: 'dh-r-demand-forecast-feed', icon: Sparkles },
 ];
 
 export function DistributorHubSidebar(props: DistributorHubSidebarProps) {
