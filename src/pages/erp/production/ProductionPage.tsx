@@ -58,6 +58,10 @@ import ForecastVsActual from './reports/ForecastVsActual';
 import RepetitiveLineRunEntry from './transactions/RepetitiveLineRunEntry';
 import RepetitiveLineOEEReport from './reports/RepetitiveLineOEEReport';
 import MixedModeBUDashboard from './reports/MixedModeBUDashboard';
+// 🆕 Sprint 63 PROD-5 · ESG + Carbon + Closeout
+import CarbonAwareProductionPlannerPanel from './reports/CarbonAwareProductionPlanner';
+import ProductionCarbonDashboardPanel from './reports/ProductionCarbonDashboard';
+import Phase3v2ClosureDashboardPanel from './reports/Phase3v2ClosureDashboard';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
