@@ -119,6 +119,17 @@ export const SIBLINGS: SiblingEntry[] = [
     moatsRealized: [],
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 61 PROD-4 PASS 1 · 37th SIBLING · AI-driven demand forecast (CAP-26)
+  {
+    id: 'demand-forecast-engine',
+    name: 'Demand Forecast Engine',
+    path: 'src/lib/demand-forecast-engine.ts',
+    sprintAdded: 61,
+    compositeAdded: 61,
+    functionCount: 11,
+    moatsRealized: ['MOAT-35'],
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSiblingCount(): number {
