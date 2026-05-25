@@ -55,6 +55,8 @@ export interface ProductionPlanSourceLinks {
   reorder_item_ids?: string[];
   campaign_id?: string | null;
   mps_id?: string | null;
+  // Sprint 61 PROD-4 · references DemandForecastRecord.id
+  forecast_source_id?: string | null;
 }
 
 export type CapacityCheckStatus = 'not_run' | 'pass' | 'warn' | 'fail';

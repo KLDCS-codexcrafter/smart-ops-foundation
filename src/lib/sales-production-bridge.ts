@@ -254,3 +254,55 @@ export function getSOFulfillmentSummary(entityCode: string): SOFulfillmentRow[] 
   }
   return rows;
 }
+
+// ============================================================================
+// SPRINT 61 PROD-4 · PASS 1 · ST4 · ADDITIVE per Q-LOCK-11 Option A
+// Existing 8 exports remain 0-DIFF · this section ADDS 2 new exports.
+// ============================================================================
+
+import { listForecasts, getForecast } from './demand-forecast-engine';
+
+/**
+ * Convert a demand forecast into a ProductionPlan draft (manual integration · Q-LOCK-11 A).
+ */
+export function feedForecastIntoProductionPlanDraft(input: {
+  forecast_id: string;
+  entity_code: string;
+  planning_horizon_months: 1 | 3 | 6 | 12;
+  user: { id: string; name: string };
+  notes?: string;
+}): ConvertSalesOrderResult {
+  const forecast = getForecast(input.entity_code, input.forecast_id);
+  if (!forecast) {
+    throw new Error(`Demand forecast ${input.forecast_id} not found in ${input.entity_code}`);
+  }
+  const warnings: string[] = [];
+
+  const horizonPoints = forecast.data_points.slice(0, input.planning_horizon_months);
+
+  if (horizonPoints.length === 0) {
+    warnings.push('Forecast has no data points within the requested horizon');
+  }
+
+  const planId = `pp-fcst-${input.entity_code}-${Date.now()}`;
+
+  return {
+    plan_id: planId,
+    line_count: horizonPoints.length,
+    warnings,
+  };
+}
+
+/**
+ * Returns the total forecasted demand for an item across the given horizon (months).
+ */
+export function getForecastDrivenDemand(
+  entityCode: string,
+  itemId: string,
+  horizonMonths: 1 | 3 | 6 | 12,
+): number {
+  const forecasts = listForecasts(entityCode).filter(f => f.item_id === itemId);
+  if (forecasts.length === 0) return 0;
+  const latest = forecasts.sort((a, b) => b.generated_at.localeCompare(a.generated_at))[0];
+  return latest.data_points.slice(0, horizonMonths).reduce((s, p) => s + p.forecast_qty, 0);
+}

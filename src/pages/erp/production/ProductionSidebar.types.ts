@@ -44,5 +44,9 @@ export type ProductionModule =
   | 'tx-process-batch-entry'
   | 'mst-recipe-master'
   | 'rpt-process-batch-register'
-  | 'rpt-process-genealogy-tracker';
+  | 'rpt-process-genealogy-tracker'
+  // Sprint 61 PROD-4 · AI & Predictive
+  | 'demand-forecast-entry'
+  | 'demand-forecast-dashboard'
+  | 'forecast-vs-actual';
 

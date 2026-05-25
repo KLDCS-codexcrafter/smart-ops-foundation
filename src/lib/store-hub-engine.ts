@@ -16,6 +16,7 @@
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import { vouchersKey } from '@/lib/fincore-engine';
 import type { LocationReorderRule } from '@/types/location-reorder-rule';
+import { smoothMonthlyBackSeries } from '@/lib/demand-forecast-engine';
 
 // ============================================================
 // PUBLIC TYPES
@@ -196,8 +197,11 @@ export function listReorderSuggestions(entityCode: string): ReorderSuggestion[] 
 }
 
 /**
- * 30/60/90-day consumption forecast · simple moving-average pattern.
- * Phase 1: average-of-90 forecast. Phase 2 may swap in ML.
+ * 30/60/90-day consumption forecast · UPGRADED in Sprint 61 PROD-4 PASS 1 (Q-LOCK-2-A Option β).
+ * Phase 1 90-day-average was REPLACED with exponential smoothing on the monthly back-series,
+ * delegated to demand-forecast-engine.smoothMonthlyBackSeries.
+ * Function signature and return shape PRESERVED · consumers (DepartmentStorePanels.tsx) unchanged.
+ * Source comment "Phase 2 may swap in ML" honored.
  */
 export function computeDemandForecast(entityCode: string): DemandForecast[] {
   const vouchers = readVouchers(entityCode);
@@ -208,6 +212,7 @@ export function computeDemandForecast(entityCode: string): DemandForecast[] {
   const dayMs = 86400000;
   const buckets = new Map<string, DemandForecast>();
 
+  // STEP 1 · aggregate consumption into 30d/60d/90d buckets per item·godown (0-DIFF from prior algorithm).
   for (const v of vouchers) {
     if (v.status === 'cancelled' || v.is_cancelled) continue;
     if (!v.inventory_lines || v.inventory_lines.length === 0) continue;
@@ -240,9 +245,19 @@ export function computeDemandForecast(entityCode: string): DemandForecast[] {
     }
   }
 
+  // STEP 2 · UPGRADED: exponential smoothing on (month-2 → month-1 → month-0) back-series.
+  // Reacts faster to recent trends than a flat 90-day average.
   for (const [key, b] of buckets.entries()) {
-    b.avg_daily_consumption = b.consumed_90d / 90;
-    b.forecast_30d = Math.round(b.avg_daily_consumption * 30);
+    const month0 = b.consumed_30d;
+    const month1 = Math.max(0, b.consumed_60d - b.consumed_30d);
+    const month2 = Math.max(0, b.consumed_90d - b.consumed_60d);
+    const monthlySeries = [month2, month1, month0];  // chronological
+
+    const smoothed = smoothMonthlyBackSeries(monthlySeries, 0.5);
+
+    b.forecast_30d = Math.round(smoothed);
+    b.avg_daily_consumption = smoothed / 30;
+
     const bal = balanceMap.get(key);
     if (bal && b.avg_daily_consumption > 0) {
       b.days_of_cover = Math.round(bal.qty_balance / b.avg_daily_consumption);
