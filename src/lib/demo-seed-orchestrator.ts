@@ -1100,14 +1100,21 @@ import {
 import {
   seedSinhaFAImportedMachinery,
 } from '@/data/sinha-fa-imported-machinery-seed-data';
+// 🆕 FAR-0 T-fix · Theme 2 remediation · entity-specific FA depth
+import { seedABDOSFAMultiBU } from '@/data/abdos-fa-multi-bu-seed-data';
+import { seedCHRSEFAGMPCompliant } from '@/data/chrse-fa-gmp-compliant-seed-data';
+import { seedBCPLFAHazardousReactor } from '@/data/bcpl-fa-hazardous-reactor-seed-data';
+import { seedSMRTPFAMoldDie } from '@/data/smrtp-fa-mold-die-seed-data';
+import { seedAMITHFACNCMachine } from '@/data/amith-fa-cnc-machine-seed-data';
+import { seedSHKPHFAAPIReactor } from '@/data/shkph-fa-api-reactor-seed-data';
 
 /** Entity-tailored FA depth · 4-8 records exemplifying scenario FA pattern */
-function seedABDOSFADepth(_entityCode: string): void { /* multi-BU conglomerate · cross-BU assets (additive · placeholder) */ }
-function seedCHRSEFADepth(_entityCode: string): void { /* GMP-compliant FA · CFR-11 e-sig on asset events */ }
-function seedBCPLFADepth(_entityCode: string): void  { /* hazardous reactor FA · tank-flow capitalization */ }
-function seedSMRTPFADepth(_entityCode: string): void { /* mold + die FA · UOP depreciation candidates */ }
-function seedAMITHFADepth(_entityCode: string): void { /* CNC FA · custodian-employee linkage */ }
-function seedSHKPHFADepth(_entityCode: string): void { /* API reactor FA · campaign-based depreciation */ }
+function seedABDOSFADepth(entityCode: string): void { seedABDOSFAMultiBU(entityCode); }
+function seedCHRSEFADepth(entityCode: string): void { seedCHRSEFAGMPCompliant(entityCode); }
+function seedBCPLFADepth(entityCode: string): void  { seedBCPLFAHazardousReactor(entityCode); }
+function seedSMRTPFADepth(entityCode: string): void { seedSMRTPFAMoldDie(entityCode); }
+function seedAMITHFADepth(entityCode: string): void { seedAMITHFACNCMachine(entityCode); }
+function seedSHKPHFADepth(entityCode: string): void { seedSHKPHFAAPIReactor(entityCode); }
 function seedSINHAFADepth(entityCode: string): void  { seedSinhaFAImportedMachinery(entityCode); }
 
 export function seedFAUniverse(entityCode: string): void {
