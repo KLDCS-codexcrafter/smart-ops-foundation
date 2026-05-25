@@ -52,5 +52,9 @@ export type ProductionModule =
   // 🆕 Sprint 62 PROD-4.5 · Theme A + B
   | 'prod-t-repetitive-line-run-entry'
   | 'prod-r-repetitive-line-oee'
-  | 'prod-r-mixed-mode-bu-dashboard';
+  | 'prod-r-mixed-mode-bu-dashboard'
+  // 🆕 Sprint 63 PROD-5 · ESG + Carbon + Closeout
+  | 'carbon-aware-production-planner'
+  | 'production-carbon-dashboard'
+  | 'phase3v2-closure-dashboard';
 
