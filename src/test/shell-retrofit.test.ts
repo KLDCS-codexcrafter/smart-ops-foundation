@@ -15,11 +15,8 @@ describe('Shell retrofit · Q-LOCK-7-A.9 + Q-LOCK-T1-F1 · 3 cards canonical She
     expect(storeHubShellConfig.title).toContain('Department Stores');
     expect(storeHubShellConfig.routing.landingRoute).toBe('/erp/store-hub');
   });
-  it('supplyx-shell-config has title and breadcrumb root', () => {
-    expect(supplyxShellConfig.title).toBeDefined();
-    expect(supplyxShellConfig.title).toContain('SupplyX');
-    expect(supplyxShellConfig.routing.landingRoute).toBe('/erp/supplyx');
-  });
+  // supplyx-shell-config · γ-DELETED at T-Phase-3.HK-D14 (D-282-REV institutional follow-through)
+
   it('docvault-shell-config has title and breadcrumb root', () => {
     expect(docvaultShellConfig.title).toBeDefined();
     expect(docvaultShellConfig.title).toContain('DocVault');
