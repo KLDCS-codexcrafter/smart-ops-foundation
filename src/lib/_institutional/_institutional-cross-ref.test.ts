@@ -8,6 +8,8 @@ import { MOATS, getMoatCount } from './moat-register';
 import { CAPABILITIES, getCapabilityScore, getCapabilityScoreFullOnly } from './capability-scorecard';
 import { SPRINTS, getSprintCount, getCurrentAStreak } from './sprint-history';
 import { SUB_PORTALS, getSubPortalCount } from './sub-portal-registry';
+import { FAR_CAPABILITIES, getFARCapabilityCount, getFARCapabilityScoreSchemaStaged } from './far-extended-scorecard';
+import { FK_CAPABILITIES, getFKCapabilityCount, getFKCapabilityScoreSchemaStaged } from './fk-extended-scorecard';
 
 describe('Institutional registers · cardinality', () => {
   it('SIBLINGS has 39 entries', () => {
@@ -22,8 +24,8 @@ describe('Institutional registers · cardinality', () => {
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 63 entries', () => {
-    expect(getSprintCount()).toBe(63);
+  it('SPRINTS has 64 entries', () => {
+    expect(getSprintCount()).toBe(64);
   });
 
   it('SUB_PORTALS has 3 entries', () => {
@@ -31,8 +33,8 @@ describe('Institutional registers · cardinality', () => {
   });
 });
 
-describe('Capability scorecard · post-Sprint-63 (CAP-27 lit · Phase 3 v2 CLOSES)', () => {
-  it('getCapabilityScoreFullOnly returns 28/28 after Sprint 63 capability flip', () => {
+describe('Capability scorecard · post-Sprint-63 (canonical 28/28 ⭐ FULL PRESERVED at Sprint 64 FAR-0)', () => {
+  it('getCapabilityScoreFullOnly returns 28/28 · canonical untouched', () => {
     expect(getCapabilityScoreFullOnly()).toBe('28/28');
   });
 
@@ -45,16 +47,33 @@ describe('Capability scorecard · post-Sprint-63 (CAP-27 lit · Phase 3 v2 CLOSE
   });
 });
 
+describe('FAR + FK extended scorecards · Sprint 64 FAR-0 schema-stage', () => {
+  it('FAR_CAPABILITIES has 24 entries · 6 schema-staged at Sprint 64', () => {
+    expect(getFARCapabilityCount()).toBe(24);
+    expect(getFARCapabilityScoreSchemaStaged()).toBe('6/24');
+  });
+  it('FK_CAPABILITIES has 8 entries · 4 schema-staged at Sprint 64', () => {
+    expect(getFKCapabilityCount()).toBe(8);
+    expect(getFKCapabilityScoreSchemaStaged()).toBe('4/8');
+  });
+  it('Combined score is 38/60 schema-stage', () => {
+    const canonical = CAPABILITIES.filter(c => c.state === 'full').length;
+    const far = FAR_CAPABILITIES.filter(c => c.state === 'schema-staged' || c.state === 'full').length;
+    const fk = FK_CAPABILITIES.filter(c => c.state === 'schema-staged' || c.state === 'full').length;
+    expect(`${canonical + far + fk}/60`).toBe('38/60');
+  });
+});
+
 describe('Sprint history · A-streak counter', () => {
-  it('current A-streak is 10 (Sprint 54-63 v2 era · DOUBLE-DIGIT MILESTONE NEW Operix record)', () => {
-    expect(getCurrentAStreak()).toBe(10);
+  it('current A-streak is 11 (Sprint 54-64 v2 era · DOUBLE-DIGIT MILESTONE+1)', () => {
+    expect(getCurrentAStreak()).toBe(11);
   });
 
-  it('Sprint 63 is the most recent banked sprint', () => {
+  it('Sprint 64 FAR-0 is the most recent banked sprint · no new SIBLING', () => {
     const latest = SPRINTS[SPRINTS.length - 1];
-    expect(latest.sprintNumber).toBe(63);
-    expect(latest.newSiblings.length).toBe(1);
-    expect(latest.newSiblings[0]).toBe('carbon-planning-engine');
+    expect(latest.sprintNumber).toBe(64);
+    expect(latest.code).toBe('T-Phase-4.FAR-0');
+    expect(latest.newSiblings.length).toBe(0);
   });
 });
 

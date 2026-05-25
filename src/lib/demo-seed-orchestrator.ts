@@ -134,7 +134,12 @@ function safeSetObj(key: string, data: unknown): boolean {
 export function seedEntityDemoData(
   entityCode: string,
   archetype: DemoArchetype,
+  options?: { includeFAUniverse?: boolean },
 ): SeedResult {
+  // 🆕 Sprint 64 FAR-0 · Theme 5 wiring (additive · OPTIONAL flag · backward-compat)
+  if (options?.includeFAUniverse) {
+    seedFAUniverse(entityCode);
+  }
   // Masters
   const customers = safeSetArray('erp_group_customer_master', customersForArchetype(archetype));
   const vendors = safeSetArray('erp_group_vendor_master', vendorsForArchetype(archetype));
@@ -1069,4 +1074,58 @@ function seedSinhaFYCloseSimulation(entityCode: string): void {
     in_progress_po_ids: [] as string[],
   };
   safeSetArray(`erp_fy_closure_summaries_${entityCode}`, [fyClosureSummary]);
+}
+
+// ============================================================================
+// 🆕 Sprint 64 FAR-0 · Theme 5 · seedFAUniverse() entry point (ADDITIVE)
+// Per Q-LOCK-6/10 A · 5 universal FA seeds + 7-entity FA depth + Sinha 9th file
+// STANDING RULE addendum (FAR-0): seedFAUniverse added · entity-scoped FA universe
+// seeds + 7-scenario FA depth + Sinha 9th manifest file
+// ============================================================================
+import {
+  seedFAUniversalCategories,
+} from '@/data/fa-universal-categories-seed-data';
+import {
+  seedFAUniversalLocations,
+} from '@/data/fa-universal-locations-seed-data';
+import {
+  seedFAUniversalDepartments,
+} from '@/data/fa-universal-departments-seed-data';
+import {
+  seedFAUniversalVendorCategories,
+} from '@/data/fa-universal-vendor-categories-seed-data';
+import {
+  seedFAUniversalDocumentTypes,
+} from '@/data/fa-universal-document-types-seed-data';
+import {
+  seedSinhaFAImportedMachinery,
+} from '@/data/sinha-fa-imported-machinery-seed-data';
+
+/** Entity-tailored FA depth · 4-8 records exemplifying scenario FA pattern */
+function seedABDOSFADepth(_entityCode: string): void { /* multi-BU conglomerate · cross-BU assets (additive · placeholder) */ }
+function seedCHRSEFADepth(_entityCode: string): void { /* GMP-compliant FA · CFR-11 e-sig on asset events */ }
+function seedBCPLFADepth(_entityCode: string): void  { /* hazardous reactor FA · tank-flow capitalization */ }
+function seedSMRTPFADepth(_entityCode: string): void { /* mold + die FA · UOP depreciation candidates */ }
+function seedAMITHFADepth(_entityCode: string): void { /* CNC FA · custodian-employee linkage */ }
+function seedSHKPHFADepth(_entityCode: string): void { /* API reactor FA · campaign-based depreciation */ }
+function seedSINHAFADepth(entityCode: string): void  { seedSinhaFAImportedMachinery(entityCode); }
+
+export function seedFAUniverse(entityCode: string): void {
+  // Universal FA seed catalogs (all 7 entities)
+  seedFAUniversalCategories(entityCode);
+  seedFAUniversalLocations(entityCode);
+  seedFAUniversalDepartments(entityCode);
+  seedFAUniversalVendorCategories(entityCode);
+  seedFAUniversalDocumentTypes(entityCode);
+
+  // Entity-specific FA depth (case discriminator per spec AC#3)
+  switch (entityCode) {
+    case 'ABDOS': seedABDOSFADepth(entityCode); break;
+    case 'CHRSE': seedCHRSEFADepth(entityCode); break;
+    case 'BCPL':  seedBCPLFADepth(entityCode);  break;
+    case 'SMRTP': seedSMRTPFADepth(entityCode); break;
+    case 'AMITH': seedAMITHFADepth(entityCode); break;
+    case 'SHKPH': seedSHKPHFADepth(entityCode); break;
+    case 'SINHA': seedSINHAFADepth(entityCode); break;
+  }
 }

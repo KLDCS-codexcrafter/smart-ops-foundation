@@ -80,6 +80,12 @@ export const SPRINTS: SprintEntry[] = [
     headSha: 'TBD_AT_BANK', predecessorSha: '2c11f18b', loc: 1200,
     newSiblings: ['carbon-planning-engine'], bankDate: '2026-05-25', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 64 FAR-0 · Demo Seed + Cross-Card-Integrity Schema · Phase 4 FAR Arc OPEN · 6 FAR-CAPs + 4 FK-CAPs schema-staged · 11-streak ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
+  {
+    sprintNumber: 64, code: 'T-Phase-4.FAR-0', composite: false, grade: 'A first-pass-clean',
+    headSha: 'TBD_AT_BANK', predecessorSha: '567c140c', loc: 1300,
+    newSiblings: [], bankDate: '2026-05-25', provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSprintCount(): number {
