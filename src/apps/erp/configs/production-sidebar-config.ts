@@ -21,6 +21,7 @@ import {
   Wrench, Package, Scale, Hourglass, ArrowDownToLine, Layers, FileText,
   Beaker,
   LineChart, Target,
+  Repeat, Boxes,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -133,6 +134,22 @@ export const productionSidebarItems: SidebarItem[] = [
         icon: BarChart3, moduleId: 'demand-forecast-dashboard', requiredCards: ['production'] },
       { id: 'forecast-vs-actual', type: 'item', label: 'Forecast vs Actual',
         icon: Target, moduleId: 'forecast-vs-actual', requiredCards: ['production'] },
+    ],
+  },
+  {
+    id: 'repetitive-mfg-group', type: 'group', label: 'Repetitive Mfg', icon: Repeat,
+    children: [
+      { id: 'prod-t-repetitive-line-run-entry', type: 'item', label: 'Repetitive Line Run',
+        icon: Repeat, moduleId: 'prod-t-repetitive-line-run-entry', requiredCards: ['production'] },
+      { id: 'prod-r-repetitive-line-oee', type: 'item', label: 'Repetitive Line OEE',
+        icon: Activity, moduleId: 'prod-r-repetitive-line-oee', requiredCards: ['production'] },
+    ],
+  },
+  {
+    id: 'multi-mode-group', type: 'group', label: 'Multi-Mode', icon: Boxes,
+    children: [
+      { id: 'prod-r-mixed-mode-bu-dashboard', type: 'item', label: 'Mixed-Mode BU Dashboard',
+        icon: Boxes, moduleId: 'prod-r-mixed-mode-bu-dashboard', requiredCards: ['production'] },
     ],
   },
 ];

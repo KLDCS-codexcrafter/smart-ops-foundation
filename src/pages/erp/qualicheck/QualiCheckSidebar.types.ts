@@ -51,4 +51,7 @@ export type QualiCheckModule =
   | 'reprocess-report'
   // ─── NEW · SM.QualiCheck-NCR-Evidence · D-NEW-CJ 4th CONSUMER · INSTITUTIONAL FR PROMOTION THRESHOLD MET ───
   | 'ncr-evidence-register'
-  | 'ncr-evidence-entry';
+  | 'ncr-evidence-entry'
+  // 🆕 Sprint 62 PROD-4.5 · Theme C + D
+  | 'qc-r-schedule-m-compliance'
+  | 'qc-r-cfr-part-11-audit-trail';

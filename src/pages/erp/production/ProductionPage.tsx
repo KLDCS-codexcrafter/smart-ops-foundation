@@ -54,6 +54,10 @@ import { ProcessGenealogyTrackerPanel } from './reports/ProcessGenealogyTracker'
 import DemandForecastEntry from './transactions/DemandForecastEntry';
 import DemandForecastDashboard from './reports/DemandForecastDashboard';
 import ForecastVsActual from './reports/ForecastVsActual';
+// 🆕 Sprint 62 PROD-4.5 · Theme A + B
+import RepetitiveLineRunEntry from './transactions/RepetitiveLineRunEntry';
+import RepetitiveLineOEEReport from './reports/RepetitiveLineOEEReport';
+import MixedModeBUDashboard from './reports/MixedModeBUDashboard';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
@@ -120,6 +124,10 @@ export default function ProductionPage(): JSX.Element {
       case 'demand-forecast-entry': return <DemandForecastEntry />;
       case 'demand-forecast-dashboard': return <DemandForecastDashboard />;
       case 'forecast-vs-actual': return <ForecastVsActual />;
+      // 🆕 Sprint 62 PROD-4.5
+      case 'prod-t-repetitive-line-run-entry': return <RepetitiveLineRunEntry />;
+      case 'prod-r-repetitive-line-oee': return <RepetitiveLineOEEReport />;
+      case 'prod-r-mixed-mode-bu-dashboard': return <MixedModeBUDashboard />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }

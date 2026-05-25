@@ -57,6 +57,9 @@ import { mountProductionReworkListener } from '@/lib/production-rework-listener'
 // ─── NEW · SM.QualiCheck-NCR-Evidence · D-NEW-CJ 4th CONSUMER · INSTITUTIONAL FR PROMOTION THRESHOLD MET ───
 import { QualiCheckNcrEvidenceRegisterPanel } from './transactions/QualiCheckNcrEvidenceRegister';
 import { QualiCheckNcrEvidenceEntryPanel } from './transactions/QualiCheckNcrEvidenceEntry';
+// 🆕 Sprint 62 PROD-4.5 · Theme C + D
+import ScheduleMComplianceDashboard from './reports/ScheduleMComplianceDashboard';
+import CFRPart11AuditTrailViewer from './reports/CFRPart11AuditTrailViewer';
 
 export default function QualiCheckPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<QualiCheckModule>('welcome');
@@ -140,6 +143,9 @@ export default function QualiCheckPage(): JSX.Element {
         return <QualiCheckNcrEvidenceRegisterPanel onNavigate={setActiveModule} />;
       case 'ncr-evidence-entry':
         return <QualiCheckNcrEvidenceEntryPanel onNavigate={setActiveModule} />;
+      // 🆕 Sprint 62 PROD-4.5
+      case 'qc-r-schedule-m-compliance':   return <ScheduleMComplianceDashboard />;
+      case 'qc-r-cfr-part-11-audit-trail': return <CFRPart11AuditTrailViewer />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }
