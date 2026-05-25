@@ -152,6 +152,21 @@ export const MOATS: MoatEntry[] = [
     competitivePositioning: 'Predictive machine condition via telemetry trend regression · SAP S/4 INR 50L+ TCO · no Indian SMB ERP under INR 10L',
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 62 PROD-4.5 · MOAT-37 · 21 CFR Part 11 audit trail at SMB price
+  {
+    id: 'MOAT-37',
+    name: '21 CFR Part 11 Electronic Audit Trail Framework at SMB Price · only Indian SMB ERP with FDA-grade e-signature + tamper-evident audit trail',
+    sprintBanked: 62,
+    compositeBanked: 62,
+    headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/lib/cfr-part-11-engine.ts',
+      'src/types/cfr-part-11.ts',
+      'src/pages/erp/qualicheck/reports/CFRPart11AuditTrailViewer.tsx',
+    ],
+    competitivePositioning: 'No Indian SMB ERP under ₹50L has 21 CFR Part 11 e-signature + audit trail · SAP S/4 has at ₹2-10Cr · Operix at ₹3-8L unlocks pharma SMB beachhead',
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getMoatCount(): number {

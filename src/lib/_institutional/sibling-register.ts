@@ -130,6 +130,17 @@ export const SIBLINGS: SiblingEntry[] = [
     moatsRealized: ['MOAT-35'],
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 62 PROD-4.5 · 38th SIBLING · 21 CFR Part 11 Engine (CAP-28)
+  {
+    id: 'cfr-part-11-engine',
+    name: '21 CFR Part 11 Engine',
+    path: 'src/lib/cfr-part-11-engine.ts',
+    sprintAdded: 62,
+    compositeAdded: 62,
+    functionCount: 9,
+    moatsRealized: ['MOAT-37'],
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSiblingCount(): number {
