@@ -123,6 +123,19 @@ export const SPRINTS: SprintEntry[] = [
     bankDate: '2026-05-24',
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 61 PROD-4 · AI/Predictive composite · 8-sprint A-streak NEW Operix record
+  {
+    sprintNumber: 61,
+    code: 'T-Phase-3.PROD-4',
+    composite: true,
+    grade: 'A composite',
+    headSha: 'TBD_AT_BANK',
+    predecessorSha: '3d7483e7',
+    loc: 1570,
+    newSiblings: ['demand-forecast-engine'],
+    bankDate: new Date().toISOString().slice(0, 10),
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSprintCount(): number {
