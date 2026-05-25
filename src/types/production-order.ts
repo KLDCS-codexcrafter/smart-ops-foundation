@@ -222,6 +222,9 @@ export interface ProductionOrder {
 
   // T-Phase-3.PROD-1 · ST9 · PeoplePay skill match advisory (Q-LOCK-3 non-blocking)
   skill_warnings?: import('@/lib/peoplepay-skill-engine').SkillWarning[];
+
+  /** Theme A · Sprint 62 PROD-4.5 · Q-LOCK-3 A · only populated when mode === 'repetitive' */
+  repetitive_line_metrics?: RepetitiveLineMetrics | null;
 }
 
 export const productionOrdersKey = (entityCode: string): string =>
@@ -230,4 +233,25 @@ export const productionOrdersKey = (entityCode: string): string =>
 export function getPrimarySO(po: ProductionOrder): { id: string; no: string } | null {
   const m = po.sales_order_line_mappings[0];
   return m ? { id: m.sales_order_id, no: m.sales_order_no } : null;
+}
+
+// ============================================================================
+// SPRINT 62 PROD-4.5 · Theme A · REPETITIVE LINE METRICS · Q-LOCK-3 A · ADDITIVE
+// Existing ProductionOrder type 0-DIFF · optional field via module augmentation below.
+// ============================================================================
+
+export interface RepetitiveLineMetrics {
+  line_id: string;
+  takt_time_seconds: number | null;
+  cycle_time_seconds: number | null;
+  units_produced_this_run: number;
+  units_target_this_run: number;
+  run_start_at: string;
+  run_end_at: string | null;
+  oee_availability: number | null;
+  oee_performance: number | null;
+  oee_quality: number | null;
+  oee_total: number | null;
+  shift_id: string | null;
+  operator_id: string | null;
 }

@@ -48,5 +48,9 @@ export type ProductionModule =
   // Sprint 61 PROD-4 · AI & Predictive
   | 'demand-forecast-entry'
   | 'demand-forecast-dashboard'
-  | 'forecast-vs-actual';
+  | 'forecast-vs-actual'
+  // 🆕 Sprint 62 PROD-4.5 · Theme A + B
+  | 'prod-t-repetitive-line-run-entry'
+  | 'prod-r-repetitive-line-oee'
+  | 'prod-r-mixed-mode-bu-dashboard';
 

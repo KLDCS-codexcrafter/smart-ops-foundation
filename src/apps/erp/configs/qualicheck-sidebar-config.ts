@@ -374,4 +374,28 @@ export const qualicheckSidebarItems: SidebarItem[] = [
       },
     ],
   },
+  {
+    id: 'compliance-group',
+    type: 'group',
+    label: 'Compliance',
+    icon: ShieldCheck,
+    children: [
+      {
+        id: 'qc-r-schedule-m-compliance',
+        type: 'item',
+        label: 'Schedule M (Indian GMP)',
+        icon: ShieldCheck,
+        moduleId: 'qc-r-schedule-m-compliance',
+        requiredCards: ['qualicheck'],
+      },
+      {
+        id: 'qc-r-cfr-part-11-audit-trail',
+        type: 'item',
+        label: '21 CFR Part 11 Audit Trail',
+        icon: FileCheck,
+        moduleId: 'qc-r-cfr-part-11-audit-trail',
+        requiredCards: ['qualicheck'],
+      },
+    ],
+  },
 ];

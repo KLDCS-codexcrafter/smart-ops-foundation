@@ -39,13 +39,13 @@ export const CAPABILITIES: Capability[] = [
   { id: 'CAP-19', name: 'Cross-card bridges (sales-production · iot-machine)', state: 'full', lastChangedSprint: 59, evidenceFiles: ['src/lib/sales-production-bridge.ts','src/lib/iot-machine-bridge.ts'] },
   { id: 'CAP-20', name: 'Mobile shop-floor + IoT telemetry', state: 'full', lastChangedSprint: 59, evidenceFiles: ['src/lib/iot-machine-bridge.ts'] },
   { id: 'CAP-21', name: 'Manufacturing mode foundation (per-BU mode tagging)', state: 'full', lastChangedSprint: 57, evidenceFiles: [] },
-  { id: 'CAP-22', name: 'Repetitive manufacturing (rate-based scheduling)', state: 'partial', lastChangedSprint: null, evidenceFiles: [] },
-  { id: 'CAP-23', name: 'Mixed-mode manufacturing (multi-mode BU)', state: 'partial', lastChangedSprint: null, evidenceFiles: [] },
+  { id: 'CAP-22', name: 'Repetitive manufacturing (rate-based scheduling)', state: 'full', lastChangedSprint: 62, evidenceFiles: ['src/lib/production-engine.ts', 'src/pages/erp/production/transactions/RepetitiveLineRunEntry.tsx', 'src/pages/erp/production/reports/RepetitiveLineOEEReport.tsx'] },
+  { id: 'CAP-23', name: 'Mixed-mode manufacturing (multi-mode BU)', state: 'full', lastChangedSprint: 62, evidenceFiles: ['src/lib/entity-setup-service.ts', 'src/pages/erp/production/reports/MixedModeBUDashboard.tsx'] },
   { id: 'CAP-24', name: 'FY-close + period-lock automation', state: 'full', lastChangedSprint: 58, evidenceFiles: [] },
   { id: 'CAP-25', name: 'Real-time predictive machine condition', state: 'full', lastChangedSprint: 61, evidenceFiles: ['src/lib/iot-machine-bridge.ts', 'src/pages/erp/maintainpro/reports/PredictiveMachineHealth.tsx'] },
   { id: 'CAP-26', name: 'AI-driven demand forecast', state: 'full', lastChangedSprint: 61, evidenceFiles: ['src/lib/demand-forecast-engine.ts', 'src/lib/store-hub-engine.ts'] },
   { id: 'CAP-27', name: 'Carbon-aware production planning (world-first)', state: 'absent', lastChangedSprint: null, evidenceFiles: [] },
-  { id: 'CAP-28', name: '21 CFR Part 11 electronic audit trail (pharma)', state: 'absent', lastChangedSprint: null, evidenceFiles: [] },
+  { id: 'CAP-28', name: '21 CFR Part 11 electronic audit trail (pharma)', state: 'full', lastChangedSprint: 62, evidenceFiles: ['src/lib/cfr-part-11-engine.ts', 'src/types/cfr-part-11.ts', 'src/pages/erp/qualicheck/reports/CFRPart11AuditTrailViewer.tsx'] },
 ];
 
 export interface CapabilityScore {

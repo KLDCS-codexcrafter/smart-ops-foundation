@@ -427,3 +427,28 @@ export function persistRecipe(entityCode: string, recipe: Recipe): void {
   }
   lsWrite(recipesKey(entityCode), all);
 }
+
+// ============================================================================
+// SPRINT 62 PROD-4.5 · Theme D · CFR-11 SHIM · Q-LOCK-8 A · ADDITIVE
+// ============================================================================
+
+import { appendAuditTrailEntry as cfrAppendAuditTrailEntry } from '@/lib/cfr-part-11-engine';
+import type { CFRPart11AuditEntry, CFRPart11SignatureInput } from '@/types/cfr-part-11';
+
+export function logRecipeActionWithCFRSig(
+  entityCode: string,
+  recipeId: string,
+  actionType: 'recipe_create' | 'recipe_modify' | 'recipe_approve',
+  description: string,
+  signature: CFRPart11SignatureInput & { user_id: string; user_name: string },
+): CFRPart11AuditEntry {
+  return cfrAppendAuditTrailEntry(
+    entityCode,
+    actionType,
+    'recipe',
+    recipeId,
+    'info',
+    description,
+    signature,
+  );
+}
