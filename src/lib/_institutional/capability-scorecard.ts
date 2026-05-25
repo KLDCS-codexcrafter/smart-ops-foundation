@@ -44,7 +44,7 @@ export const CAPABILITIES: Capability[] = [
   { id: 'CAP-24', name: 'FY-close + period-lock automation', state: 'full', lastChangedSprint: 58, evidenceFiles: [] },
   { id: 'CAP-25', name: 'Real-time predictive machine condition', state: 'full', lastChangedSprint: 61, evidenceFiles: ['src/lib/iot-machine-bridge.ts', 'src/pages/erp/maintainpro/reports/PredictiveMachineHealth.tsx'] },
   { id: 'CAP-26', name: 'AI-driven demand forecast', state: 'full', lastChangedSprint: 61, evidenceFiles: ['src/lib/demand-forecast-engine.ts', 'src/lib/store-hub-engine.ts'] },
-  { id: 'CAP-27', name: 'Carbon-aware production planning (world-first)', state: 'absent', lastChangedSprint: null, evidenceFiles: [] },
+  { id: 'CAP-27', name: 'Carbon-aware production planning (world-first)', state: 'full', lastChangedSprint: 63, evidenceFiles: ['src/lib/carbon-planning-engine.ts', 'src/types/carbon-planning.ts', 'src/pages/erp/production/reports/CarbonAwareProductionPlanner.tsx', 'src/pages/erp/production/reports/ProductionCarbonDashboard.tsx', 'src/pages/erp/maintainpro/reports/ESGEnergyDashboard.tsx'] },
   { id: 'CAP-28', name: '21 CFR Part 11 electronic audit trail (pharma)', state: 'full', lastChangedSprint: 62, evidenceFiles: ['src/lib/cfr-part-11-engine.ts', 'src/types/cfr-part-11.ts', 'src/pages/erp/qualicheck/reports/CFRPart11AuditTrailViewer.tsx'] },
 ];
 
