@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { storeHubShellConfig } from '@/apps/erp/configs/store-hub-shell-config';
-import { supplyxShellConfig } from '@/apps/erp/configs/supplyx-shell-config';
+// supplyx γ-DELETED at T-Phase-3.HK-D14 · shell config removed
 import { docvaultShellConfig } from '@/apps/erp/configs/docvault-shell-config';
 
 describe('Shell retrofit · Q-LOCK-7-A.9 + Q-LOCK-T1-F1 · 3 cards canonical Shell pattern', () => {
