@@ -19,7 +19,7 @@
  *    - dispatch-hub · 'Logistics'     · /erp/logistics · Transporter panel · LR · POD · freight · external party
  *
  * 2. INVENTORY-HUB vs STORE-HUB (related but distinct):
- *    - inventory-hub · 'Main Store Hub'     · /erp/inventory-hub · Heavy 22k+ LOC inventory backbone (renamed via UPRA arc)
+ *    - inventory-hub · 'Inventory Hub'      · /erp/inventory-hub · Heavy 22k+ LOC inventory backbone
  *    - store-hub     · 'Department Stores'  · /erp/store-hub     · Lightweight 1.5k LOC department console
  *
  * 3. PROJX is the orchestrator (NOT the dump):
