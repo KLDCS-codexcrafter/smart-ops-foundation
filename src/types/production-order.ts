@@ -224,7 +224,7 @@ export interface ProductionOrder {
   skill_warnings?: import('@/lib/peoplepay-skill-engine').SkillWarning[];
 
   /** Theme A · Sprint 62 PROD-4.5 · Q-LOCK-3 A · only populated when mode === 'repetitive' */
-  repetitive_line_metrics?: import('@/types/production-order').RepetitiveLineMetrics | null;
+  repetitive_line_metrics?: RepetitiveLineMetrics | null;
 }
 
 export const productionOrdersKey = (entityCode: string): string =>
