@@ -33,15 +33,8 @@ describe('Shell retrofit · Q-LOCK-7-A.9 + Q-LOCK-T1-F1 · 3 cards canonical She
     expect(content).toContain('<Shell');
     expect(content).toContain('storeHubShellConfig');
   });
-  it('Q-LOCK-T1-F1 · SupplyXPage actually consumes Shell', () => {
-    const content = fs.readFileSync(
-      path.join(process.cwd(), 'src/pages/erp/supplyx/SupplyXPage.tsx'),
-      'utf-8',
-    );
-    expect(content).toContain("from '@/shell'");
-    expect(content).toContain('<Shell');
-    expect(content).toContain('supplyxShellConfig');
-  });
+  // SupplyXPage · γ-DELETED at T-Phase-3.HK-D14
+
   it('Q-LOCK-T1-F1 · DocVaultPage actually consumes Shell', () => {
     const content = fs.readFileSync(
       path.join(process.cwd(), 'src/pages/erp/docvault/DocVaultPage.tsx'),
