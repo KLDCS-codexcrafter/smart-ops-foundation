@@ -68,4 +68,7 @@ export type MaintainProModule =
   | 'production-capacity-dashboard'
   // 🆕 Sprint 61 PROD-4 PASS 2 · AI & Predictive
   | 'mp-r-machine-health-monitor'
-  | 'mp-r-predictive-alerts';
+  | 'mp-r-predictive-alerts'
+  // 🆕 Sprint 63 PROD-5 · Theme A · ESG & BRSR
+  | 'esg-energy-dashboard'
+  | 'brsr-compliance-snapshot';
