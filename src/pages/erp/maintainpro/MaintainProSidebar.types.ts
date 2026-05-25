@@ -65,4 +65,7 @@ export type MaintainProModule =
   | 'sla-performance'
   | 'aging-tickets'
   | 'top-reporters'
-  | 'production-capacity-dashboard';
+  | 'production-capacity-dashboard'
+  // 🆕 Sprint 61 PROD-4 PASS 2 · AI & Predictive
+  | 'mp-r-machine-health-monitor'
+  | 'mp-r-predictive-alerts';
