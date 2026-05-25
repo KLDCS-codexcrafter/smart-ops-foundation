@@ -72,7 +72,7 @@ const LANES: Array<{
       'maintainpro',
       'qualicheck',
       'requestx',
-      'supplyx',
+      'vendor-portal',
       'sitex',             // NEW · Tier 1 #12 · site execution · post-production
       'logistics',
     ],

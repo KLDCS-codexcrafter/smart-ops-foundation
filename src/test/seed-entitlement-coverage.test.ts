@@ -31,9 +31,8 @@ describe('A.13.T2 · Demo Seed Coverage Invariant · D-NEW-CT 17th canonical', (
     expect(seeded.size).toBeGreaterThanOrEqual(18);
   });
 
-  it('A.13.T2 fix · 4 missing cards now in seed', () => {
+  it('A.13.T2 fix · 3 missing cards now in seed (supplyx γ-DELETED at D14-HK)', () => {
     expect(seeded.has('store-hub')).toBe(true);
-    expect(seeded.has('supplyx')).toBe(true);
     expect(seeded.has('docvault')).toBe(true);
     expect(seeded.has('engineeringx')).toBe(true);
   });
