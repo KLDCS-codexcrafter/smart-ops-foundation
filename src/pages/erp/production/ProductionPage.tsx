@@ -50,6 +50,10 @@ import { ProcessBatchEntryPanel } from './transactions/ProcessBatchEntry';
 import { RecipeMasterPanel } from './masters/RecipeMaster';
 import { ProcessBatchRegisterPanel } from './reports/ProcessBatchRegister';
 import { ProcessGenealogyTrackerPanel } from './reports/ProcessGenealogyTracker';
+// Sprint 61 PROD-4 · AI & Predictive pages
+import DemandForecastEntry from './transactions/DemandForecastEntry';
+import DemandForecastDashboard from './reports/DemandForecastDashboard';
+import ForecastVsActual from './reports/ForecastVsActual';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
@@ -112,6 +116,10 @@ export default function ProductionPage(): JSX.Element {
       case 'mst-recipe-master': return <RecipeMasterPanel />;
       case 'rpt-process-batch-register': return <ProcessBatchRegisterPanel />;
       case 'rpt-process-genealogy-tracker': return <ProcessGenealogyTrackerPanel />;
+      // Sprint 61 PROD-4 · AI & Predictive
+      case 'demand-forecast-entry': return <DemandForecastEntry />;
+      case 'demand-forecast-dashboard': return <DemandForecastDashboard />;
+      case 'forecast-vs-actual': return <ForecastVsActual />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }

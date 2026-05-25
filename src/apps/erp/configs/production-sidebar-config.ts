@@ -20,6 +20,7 @@ import {
   Gauge, AlertTriangle, Clock, Users, Workflow,
   Wrench, Package, Scale, Hourglass, ArrowDownToLine, Layers, FileText,
   Beaker,
+  LineChart, Target,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -121,6 +122,17 @@ export const productionSidebarItems: SidebarItem[] = [
         icon: AlertTriangle, moduleId: 'rpt-wastage-dashboard', requiredCards: ['production'] },
       { id: 'rpt-scheduling-board', type: 'item', label: 'Scheduling Board',
         icon: CalendarDays, moduleId: 'rpt-scheduling-board', requiredCards: ['production'] },
+    ],
+  },
+  {
+    id: 'ai-predictive-group', type: 'group', label: 'AI & Predictive', icon: LineChart,
+    children: [
+      { id: 'demand-forecast-entry', type: 'item', label: 'Demand Forecast Entry',
+        icon: TrendingUp, moduleId: 'demand-forecast-entry', requiredCards: ['production'] },
+      { id: 'demand-forecast-dashboard', type: 'item', label: 'Demand Forecast Dashboard',
+        icon: BarChart3, moduleId: 'demand-forecast-dashboard', requiredCards: ['production'] },
+      { id: 'forecast-vs-actual', type: 'item', label: 'Forecast vs Actual',
+        icon: Target, moduleId: 'forecast-vs-actual', requiredCards: ['production'] },
     ],
   },
 ];
