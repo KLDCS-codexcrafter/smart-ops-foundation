@@ -196,7 +196,7 @@ export const applications: AppDefinition[] = [
   {
     id: 'store-hub',
     name: 'Department Stores',
-    description: 'Department-level Stores console · receives from Inventory Hub · stock issue to departments, receipt acknowledgments, cycle count status, reorder suggestions, demand forecast. Lightweight operator console (NOT Inventory Hub).',
+    description: 'Department-level Stores console · receives from Main Store Hub · stock issue to departments, receipt acknowledgments, cycle count status, reorder suggestions, demand forecast. Lightweight operator console (NOT Main Store Hub).',
     category: 'Ops Hub',
     route: '/erp/department-store',
     icon: 'Warehouse',
