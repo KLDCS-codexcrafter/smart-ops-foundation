@@ -134,7 +134,12 @@ function safeSetObj(key: string, data: unknown): boolean {
 export function seedEntityDemoData(
   entityCode: string,
   archetype: DemoArchetype,
+  options?: { includeFAUniverse?: boolean },
 ): SeedResult {
+  // 🆕 Sprint 64 FAR-0 · Theme 5 wiring (additive · OPTIONAL flag · backward-compat)
+  if (options?.includeFAUniverse) {
+    seedFAUniverse(entityCode);
+  }
   // Masters
   const customers = safeSetArray('erp_group_customer_master', customersForArchetype(archetype));
   const vendors = safeSetArray('erp_group_vendor_master', vendorsForArchetype(archetype));
