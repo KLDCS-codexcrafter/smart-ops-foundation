@@ -19,8 +19,8 @@
  *    - dispatch-hub · 'Logistics'     · /erp/logistics · Transporter panel · LR · POD · freight · external party
  *
  * 2. INVENTORY-HUB vs STORE-HUB (related but distinct):
- *    - inventory-hub · 'Inventory Hub'      · /erp/inventory-hub · Heavy 22k+ LOC inventory backbone
- *    - store-hub     · 'Department Stores'  · /erp/store-hub     · Lightweight 1.5k LOC department console
+ *    - inventory-hub · 'Main Store Hub'     · /erp/main-store-hub · Heavy 22k+ LOC inventory backbone (renamed via UPRA arc · HK-2)
+ *    - store-hub     · 'Department Stores'  · /erp/department-store · Lightweight 1.5k LOC department console
  *
  * 3. PROJX is the orchestrator (NOT the dump):
  *    - Every transactional type carries `project_centre_id?: string | null` (D-218)
