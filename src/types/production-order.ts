@@ -222,6 +222,9 @@ export interface ProductionOrder {
 
   // T-Phase-3.PROD-1 · ST9 · PeoplePay skill match advisory (Q-LOCK-3 non-blocking)
   skill_warnings?: import('@/lib/peoplepay-skill-engine').SkillWarning[];
+
+  /** Theme A · Sprint 62 PROD-4.5 · Q-LOCK-3 A · only populated when mode === 'repetitive' */
+  repetitive_line_metrics?: import('@/types/production-order').RepetitiveLineMetrics | null;
 }
 
 export const productionOrdersKey = (entityCode: string): string =>
