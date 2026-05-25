@@ -132,6 +132,11 @@ export default function MaintainProPage(): JSX.Element {
       case 'mp-r-machine-health-monitor':
       case 'mp-r-predictive-alerts':
         return <PredictiveMachineHealth />;
+      // 🆕 Sprint 63 PROD-5 · Theme A · ESG & BRSR
+      case 'esg-energy-dashboard':
+        return <ESGEnergyDashboardPanel />;
+      case 'brsr-compliance-snapshot':
+        return <BRSRComplianceSnapshotPanel />;
       default:
         return <MaintainProWelcome onNavigate={setActiveModule} />;
     }
