@@ -51,31 +51,16 @@ describe('Capability scorecard · post-Sprint-61 (CAP-25 + CAP-26 lit)', () => {
   });
 });
 
-describe('Capability scorecard · empirical truth at HEAD 3d7483e7', () => {
-  it('getCapabilityScoreFullOnly returns the empirical full-count framing', () => {
-    // Empirical: 22 'full' entries · narrative target "26/28" deferred to Sprint 61.HK reconciliation
-    expect(getCapabilityScoreFullOnly()).toBe('22/28');
-  });
-
-  it('breakdown is 22 full · 2 partial · 4 absent · 28 total', () => {
-    const score = getCapabilityScore();
-    expect(score.full).toBe(22);
-    expect(score.partial).toBe(2);
-    expect(score.absent).toBe(4);
-    expect(score.total).toBe(28);
-  });
-});
-
 describe('Sprint history · A-streak counter', () => {
-  it('current A-streak is 7 (Sprint 54-60 v2 era)', () => {
-    expect(getCurrentAStreak()).toBe(7);
+  it('current A-streak is 8 (Sprint 54-61 v2 era · NEW Operix record extended)', () => {
+    expect(getCurrentAStreak()).toBe(8);
   });
 
-  it('Sprint 60 is the most recent banked composite', () => {
+  it('Sprint 61 is the most recent banked composite', () => {
     const latest = SPRINTS[SPRINTS.length - 1];
-    expect(latest.sprintNumber).toBe(60);
-    expect(latest.headSha).toBe('3d7483e7');
-    expect(latest.newSiblings.length).toBe(5);
+    expect(latest.sprintNumber).toBe(61);
+    expect(latest.newSiblings.length).toBe(1);
+    expect(latest.newSiblings[0]).toBe('demand-forecast-engine');
   });
 });
 
