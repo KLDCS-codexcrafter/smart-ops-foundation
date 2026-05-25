@@ -23,7 +23,7 @@ const assetTagsKey = (e: string): string => `erp_asset_tags_${e}`;
 // ============================================================================
 
 export interface PhysicalAssetUnit {
-  /** Canonical join ID · stable across all 3 shapes */
+  /** Canonical join ID · stable across all 4 shapes */
   id: string;
   entity_id: string;
   /** FK to AssetUnitRecord (FA accounting layer) · primary source */
@@ -32,10 +32,13 @@ export interface PhysicalAssetUnit {
   asset_tag_id: string | null;
   /** FK to Asset (Pay Hub HR equipment layer) · null if not HR-issued */
   hr_asset_id: string | null;
+  /** 🆕 Sprint 64 FAR-0 · FK to MaintainPro Equipment (4th shape) · null if not maint-tracked */
+  equipment_id?: string | null;
   /** Sync timestamps for each leg */
   fa_synced_at: string;
   tag_synced_at: string | null;
   hr_synced_at: string | null;
+  equipment_synced_at?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -228,10 +231,10 @@ export function syncFromAssetTag(
   return updatePAU(entityCode, pau.id, { asset_tag_id: assetTagId });
 }
 
-/** Find PhysicalAssetUnit by any of 3 IDs */
+/** Find PhysicalAssetUnit by any of 4 IDs (4th shape `equipment_id` added Sprint 64 FAR-0) */
 export function findPhysicalAssetUnit(
   entityCode: string,
-  query: { asset_unit_record_id?: string; asset_tag_id?: string; hr_asset_id?: string },
+  query: { asset_unit_record_id?: string; asset_tag_id?: string; hr_asset_id?: string; equipment_id?: string },
 ): PhysicalAssetUnit | null {
   const all = readPAUs(entityCode);
   if (query.asset_unit_record_id) {
@@ -243,7 +246,41 @@ export function findPhysicalAssetUnit(
   if (query.hr_asset_id) {
     return all.find(p => p.hr_asset_id === query.hr_asset_id) ?? null;
   }
+  if (query.equipment_id) {
+    return all.find(p => p.equipment_id === query.equipment_id) ?? null;
+  }
   return null;
+}
+
+// 🆕 Sprint 64 FAR-0 · Theme 8 · 4-shape unification (D-FAR-v4-28 A · FR-19 ADDITIVE)
+
+/** Find PhysicalAssetUnit by MaintainPro Equipment ID (4th shape lookup) */
+export function findPhysicalAssetUnitByEquipment(
+  entityCode: string,
+  equipmentId: string,
+): PhysicalAssetUnit | null {
+  return readPAUs(entityCode).find(p => p.equipment_id === equipmentId) ?? null;
+}
+
+/** Link MaintainPro Equipment to existing PhysicalAssetUnit · 4-shape unification */
+export function linkEquipmentToPhysicalAssetUnit(
+  entityCode: string,
+  pauId: string,
+  equipmentId: string,
+): PhysicalAssetUnit {
+  const all = readPAUs(entityCode);
+  const idx = all.findIndex(p => p.id === pauId);
+  if (idx < 0) throw new Error(`PhysicalAssetUnit ${pauId} not found in entity ${entityCode}`);
+  const now = new Date().toISOString();
+  const updated: PhysicalAssetUnit = {
+    ...all[idx],
+    equipment_id: equipmentId,
+    equipment_synced_at: now,
+    updated_at: now,
+  };
+  all[idx] = updated;
+  writePAUs(entityCode, all);
+  return updated;
 }
 
 /** List all PhysicalAssetUnits with resolved 3-shape data · verification panel input */
