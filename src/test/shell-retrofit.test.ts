@@ -6,7 +6,7 @@ import { describe, it, expect } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
 import { storeHubShellConfig } from '@/apps/erp/configs/store-hub-shell-config';
-import { supplyxShellConfig } from '@/apps/erp/configs/supplyx-shell-config';
+// supplyx γ-DELETED at T-Phase-3.HK-D14 · shell config removed
 import { docvaultShellConfig } from '@/apps/erp/configs/docvault-shell-config';
 
 describe('Shell retrofit · Q-LOCK-7-A.9 + Q-LOCK-T1-F1 · 3 cards canonical Shell pattern', () => {
@@ -15,11 +15,8 @@ describe('Shell retrofit · Q-LOCK-7-A.9 + Q-LOCK-T1-F1 · 3 cards canonical She
     expect(storeHubShellConfig.title).toContain('Department Stores');
     expect(storeHubShellConfig.routing.landingRoute).toBe('/erp/store-hub');
   });
-  it('supplyx-shell-config has title and breadcrumb root', () => {
-    expect(supplyxShellConfig.title).toBeDefined();
-    expect(supplyxShellConfig.title).toContain('SupplyX');
-    expect(supplyxShellConfig.routing.landingRoute).toBe('/erp/supplyx');
-  });
+  // supplyx-shell-config · γ-DELETED at T-Phase-3.HK-D14 (D-282-REV institutional follow-through)
+
   it('docvault-shell-config has title and breadcrumb root', () => {
     expect(docvaultShellConfig.title).toBeDefined();
     expect(docvaultShellConfig.title).toContain('DocVault');
@@ -36,15 +33,8 @@ describe('Shell retrofit · Q-LOCK-7-A.9 + Q-LOCK-T1-F1 · 3 cards canonical She
     expect(content).toContain('<Shell');
     expect(content).toContain('storeHubShellConfig');
   });
-  it('Q-LOCK-T1-F1 · SupplyXPage actually consumes Shell', () => {
-    const content = fs.readFileSync(
-      path.join(process.cwd(), 'src/pages/erp/supplyx/SupplyXPage.tsx'),
-      'utf-8',
-    );
-    expect(content).toContain("from '@/shell'");
-    expect(content).toContain('<Shell');
-    expect(content).toContain('supplyxShellConfig');
-  });
+  // SupplyXPage · γ-DELETED at T-Phase-3.HK-D14
+
   it('Q-LOCK-T1-F1 · DocVaultPage actually consumes Shell', () => {
     const content = fs.readFileSync(
       path.join(process.cwd(), 'src/pages/erp/docvault/DocVaultPage.tsx'),

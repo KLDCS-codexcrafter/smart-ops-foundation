@@ -154,24 +154,21 @@ describe('T-Phase-1.H.2 · QualiCheck Reverse Naming Migration', () => {
   });
 });
 
-describe('T-Phase-1.H.3 · Inventory Hub naming convention lock-preservation', () => {
-  it('Q-LOCK-4a + Q-LOCK-5a · applications.ts has strengthened Inventory Hub locked comments (D-NEW-CM precedent)', () => {
+describe('T-Phase-2.HK-2 · Main Store Hub rename · post-UPRA arc lock', () => {
+  it('Q-LOCK-4a + Q-LOCK-5a · applications.ts reflects Inventory Hub → Main Store Hub rename (HK-2)', () => {
     const content = readFileSync('src/components/operix-core/applications.ts', 'utf-8');
 
-    // Header NAMING CONVENTIONS section has strengthened Inventory Hub entry
-    expect(content).toMatch(/'Inventory Hub' \(with space\) intentional · do not rename/);
-    expect(content).toMatch(/D-NEW-CM-fincore-naming-canonical pattern.*display preservation/);
+    // HK-2 rename codified: 'Main Store Hub' display name with technical 'inventory-hub' id preserved
+    expect(content).toMatch(/'Main Store Hub' \(display\)/);
+    expect(content).toMatch(/renamed from 'Inventory Hub' via UPRA arc/);
 
-    // Inline comment near card definition has ⚠️ marker (parallel to Fin Core)
-    expect(content).toMatch(/⚠️ Display name 'Inventory Hub' \(with space\) intentional · keep as-is/);
-
-    // Both Fin Core (existing) and Inventory Hub (newly strengthened) lock comments coexist
+    // Fin Core lock comment still present (parallel D-NEW-CM canonical · unaffected by HK-2)
     expect(content).toMatch(/⚠️ Display name 'Fin Core' \(with space\) intentional · keep as-is/);
 
-    // ~39 Inventory Hub instances preserved (sample check via grep · canonical preservation)
+    // Legacy 'Inventory Hub' references preserved in narrative comments + sprint history (≥10)
     const count = parseInt(
       execSync(`grep -rE "Inventory Hub" src/ --include='*.ts' --include='*.tsx' | wc -l`).toString().trim()
     );
-    expect(count).toBeGreaterThanOrEqual(35);
+    expect(count).toBeGreaterThanOrEqual(10);
   });
 });
