@@ -30,7 +30,7 @@ const ACTION_TYPES: CFRPart11ActionType[] = [
 const SEVERITIES: CFRPart11SeverityLevel[] = ['info', 'warning', 'critical'];
 
 export default function CFRPart11AuditTrailViewer(): JSX.Element {
-  const entityCode = useEntityCode();
+  const { entityCode } = useEntityCode();
   const [entries, setEntries] = useState<CFRPart11AuditEntry[]>([]);
   const [actionFilter, setActionFilter] = useState<string>('all');
   const [sevFilter, setSevFilter] = useState<string>('all');

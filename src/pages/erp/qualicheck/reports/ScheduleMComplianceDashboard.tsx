@@ -17,7 +17,7 @@ function scoreInterpretation(score: number): { label: string; tone: 'default' | 
 }
 
 export default function ScheduleMComplianceDashboard(): JSX.Element {
-  const entityCode = useEntityCode();
+  const { entityCode } = useEntityCode();
   const score = useMemo(() => computeScheduleMComplianceScore(entityCode), [entityCode]);
   const interp = scoreInterpretation(score.overall_score);
 

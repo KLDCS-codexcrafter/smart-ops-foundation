@@ -19,7 +19,7 @@ import {
 import type { RepetitiveLineMetrics } from '@/types/production-order';
 
 export default function RepetitiveLineRunEntry(): JSX.Element {
-  const entityCode = useEntityCode();
+  const { entityCode } = useEntityCode();
   const [lineId, setLineId] = useState('LINE-01');
   const [unitsTarget, setUnitsTarget] = useState(1000);
   const [takt, setTakt] = useState<number | ''>('');

@@ -11,7 +11,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 
 export default function RepetitiveLineOEEReport(): JSX.Element {
-  const entityCode = useEntityCode();
+  const { entityCode } = useEntityCode();
   // [JWT] GET /api/production/orders?mode=repetitive
   const { orders } = useProductionOrders();
   const [sortKey] = useState<'oee_total' | 'units'>('oee_total');

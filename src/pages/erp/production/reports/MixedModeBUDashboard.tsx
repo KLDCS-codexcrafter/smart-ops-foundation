@@ -25,8 +25,9 @@ const DEMO_BUS: BUAllocation[] = [
 ];
 
 export default function MixedModeBUDashboard(): JSX.Element {
-  const entityCode = useEntityCode();
-  const mode = useEntityManufacturingMode();
+  const { entityCode } = useEntityCode();
+  const preset = useEntityManufacturingMode(entityCode);
+  const mode = preset.mode;
 
   if (mode !== 'mixed_mode') {
     return (
