@@ -19,7 +19,7 @@
  *    - dispatch-hub · 'Logistics'     · /erp/logistics · Transporter panel · LR · POD · freight · external party
  *
  * 2. INVENTORY-HUB vs STORE-HUB (related but distinct):
- *    - inventory-hub · 'Inventory Hub'      · /erp/inventory-hub · Heavy 22k+ LOC inventory backbone
+ *    - inventory-hub · 'Main Store Hub'     · /erp/inventory-hub · Heavy 22k+ LOC inventory backbone (renamed via UPRA arc)
  *    - store-hub     · 'Department Stores'  · /erp/store-hub     · Lightweight 1.5k LOC department console
  *
  * 3. PROJX is the orchestrator (NOT the dump):
@@ -42,10 +42,10 @@
  *    - 'QualiCheck' (no space · PascalCase) canonical · was 'Qulicheak' (wrong · corrected at H.2)
  *      D-NEW-CN-qualicheck-naming-canonical (CANONICAL · 13th at v16 · canonical correction pattern)
  *      Both technical AND display change · distinguishes from D-NEW-CM display preservation pattern
- *    - 'Inventory Hub' (with space) intentional · do not rename
- *      D-NEW-CM-fincore-naming-canonical pattern (display preservation · technical 'inventory-hub' · display 'Inventory Hub')
+ *    - 'Main Store Hub' (display) · 'inventory-hub' (technical · route /erp/inventory-hub)
+ *      D-NEW-CN-qualicheck-naming-canonical pattern · renamed from 'Inventory Hub' via UPRA arc
  *      Heavy 22k+ LOC platform inventory backbone · NOT to be confused with store-hub (Department Stores · lightweight 1.5k LOC console)
- *      ~39 instances at v17 ALL intentional · DO NOT migrate to 'MainStoreHub' · DO NOT remove space
+ *      Display + technical now decoupled · do NOT revert display to 'Inventory Hub'
  *    - 'Department Stores' (display) · 'store-hub' (technical) · NOT 'Store Hub' duplicate
  *      D-NEW-CM-fincore-naming-canonical pattern (display preservation · same pattern as Inventory Hub)
  *    - 'Dispatch Hub' (operations) · 'Logistics' (transporter)
@@ -125,10 +125,10 @@ export const applications: AppDefinition[] = [
     icon: 'ShoppingCart',
     status: 'active',  // T-Phase-1.A.8.α-a-T1 · Q-LOCK-T1-NEW · Master Plan §51.2 rows 3+4 (Sprint 1.A.3 + 1.A.4 CLOSED) · D-NEW-BB pattern
   },
-  // ⚠️ Display name 'Inventory Hub' (with space) intentional · keep as-is
-  // D-NEW-CM-fincore-naming-canonical pattern (display preservation · parallel to 'Fin Core')
+  // Display name "Main Store Hub" · renamed via UPRA arc · route /erp/inventory-hub
+  // Technical 'inventory-hub' preserved for route stability · display decoupled
   // Heavy 22k+ LOC platform inventory backbone · NOT to be confused with store-hub (Department Stores · lightweight console)
-  // T-Phase-1.H.3 · Q-LOCK-4a + Q-LOCK-5a · lock strengthened (was: 2-line comment · now: explicit ⚠️ + D-NEW-CM cite)
+  // T-Phase-3.HK-D14 · stale 'Inventory Hub' lock-comment retired
   {
     id: 'inventory-hub',
     name: 'Main Store Hub',
@@ -202,15 +202,6 @@ export const applications: AppDefinition[] = [
     route: '/erp/department-store',
     icon: 'Warehouse',
     status: 'active',  // T-Phase-1.A.6.α-b · Q-LOCK-13a · D-NEW-BB pattern (parallel to qualicheck A.5)
-  },
-  {
-    id: 'supplyx',
-    name: 'SupplyX (deprecating)',
-    description: 'DEPRECATED per D-282-REV (Sprint T-Phase-1.A.1 · May 18 2026) · superseded by Vendor Portal card. SupplyX role (internal read-only mirror of Procure360) was redundant · Vendor Portal becomes the canonical tenant-internal vendor programme hub paralleling Distributor Hub. SupplyX file removal in cleanup sprint.',
-    category: 'Ops Hub',
-    route: '/erp/supplyx',
-    icon: 'Truck',
-    status: 'coming_soon',  // D-282-REV · A.1 deprecation · file removal deferred
   },
   {
     id: 'vendor-portal',
