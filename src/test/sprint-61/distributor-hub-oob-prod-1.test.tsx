@@ -1,14 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { DistributorDemandForecastFeedPanel } from '@/pages/erp/distributor-hub/reports/DistributorDemandForecastFeed';
 
 // useEntityCode pulls from ERPCompanyProvider · mock to a deterministic entity
 vi.mock('@/hooks/useEntityCode', () => ({
   useEntityCode: () => ({ entityCode: 'TEST-OOB1', entityId: 'test-oob1' }),
 }));
 
-// listForecasts reads localStorage · default = empty
-import { vi } from 'vitest';
+import { DistributorDemandForecastFeedPanel } from '@/pages/erp/distributor-hub/reports/DistributorDemandForecastFeed';
 
 describe('DistributorDemandForecastFeedPanel · OOB-PROD-1 · MOAT 35 smoke', () => {
   it('renders the OOB-PROD-1 / MOAT 35 header', () => {
