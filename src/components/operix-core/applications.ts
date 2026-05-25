@@ -42,11 +42,12 @@
  *    - 'QualiCheck' (no space · PascalCase) canonical · was 'Qulicheak' (wrong · corrected at H.2)
  *      D-NEW-CN-qualicheck-naming-canonical (CANONICAL · 13th at v16 · canonical correction pattern)
  *      Both technical AND display change · distinguishes from D-NEW-CM display preservation pattern
- *    - 'Inventory Hub' (with space) intentional · do not rename
- *      D-NEW-CM-fincore-naming-canonical pattern · display preservation (parallel to Fin Core)
+ *    - 'Main Store Hub' (display) · 'inventory-hub' (technical · route /erp/main-store-hub)
+ *      D-NEW-CN-qualicheck-naming-canonical pattern · renamed from 'Inventory Hub' via UPRA arc (HK-2)
  *      Heavy 22k+ LOC platform inventory backbone · NOT to be confused with store-hub (Department Stores · lightweight 1.5k LOC console)
+ *      Display + technical now decoupled · do NOT revert display to 'Inventory Hub'
  *    - 'Department Stores' (display) · 'store-hub' (technical) · NOT 'Store Hub' duplicate
- *      D-NEW-CM-fincore-naming-canonical pattern (display preservation · same pattern as Inventory Hub)
+ *      D-NEW-CM-fincore-naming-canonical pattern (display preservation)
  *    - 'Dispatch Hub' (operations) · 'Logistics' (transporter)
  *
  *    INSTITUTIONAL DISCIPLINE: When founder confirms canonical wrong → D-NEW-CN reverse migration pattern.
