@@ -58,6 +58,10 @@ import ForecastVsActual from './reports/ForecastVsActual';
 import RepetitiveLineRunEntry from './transactions/RepetitiveLineRunEntry';
 import RepetitiveLineOEEReport from './reports/RepetitiveLineOEEReport';
 import MixedModeBUDashboard from './reports/MixedModeBUDashboard';
+// 🆕 Sprint 63 PROD-5 · ESG + Carbon + Closeout
+import CarbonAwareProductionPlannerPanel from './reports/CarbonAwareProductionPlanner';
+import ProductionCarbonDashboardPanel from './reports/ProductionCarbonDashboard';
+import Phase3v2ClosureDashboardPanel from './reports/Phase3v2ClosureDashboard';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
@@ -128,6 +132,10 @@ export default function ProductionPage(): JSX.Element {
       case 'prod-t-repetitive-line-run-entry': return <RepetitiveLineRunEntry />;
       case 'prod-r-repetitive-line-oee': return <RepetitiveLineOEEReport />;
       case 'prod-r-mixed-mode-bu-dashboard': return <MixedModeBUDashboard />;
+      // 🆕 Sprint 63 PROD-5 · ESG + Carbon + Closeout
+      case 'carbon-aware-production-planner': return <CarbonAwareProductionPlannerPanel />;
+      case 'production-carbon-dashboard': return <ProductionCarbonDashboardPanel />;
+      case 'phase3v2-closure-dashboard': return <Phase3v2ClosureDashboardPanel />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }

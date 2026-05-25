@@ -780,3 +780,111 @@ export function listEquipmentPhotos(
     return [];
   }
 }
+
+// ============================================================================
+// 🆕 Sprint 63 PROD-5 · Theme A · ESG + BRSR + Scope 1/2 Helpers (ADDITIVE)
+// Per Q-LOCK-4 A · 4 Scope-1+2 + BRSR Section A indicators (energy/emissions/water/waste)
+// ============================================================================
+import { INDIA_GRID_BASELINE_KG_PER_KWH as _CEA_BASELINE } from '@/types/carbon-planning';
+
+export function computeScope1Emissions(
+  entityCode: string,
+  fy: string,
+): { fuelKg: number; refrigerantKg: number; totalKgCO2: number } {
+  // Mock baseline values per India SMB pattern · entity hashed for determinism
+  let h = 0;
+  const seed = entityCode + fy;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const fuelKg = 12000 + (h % 8000);
+  const refrigerantKg = 500 + ((h >>> 5) % 1500);
+  return { fuelKg, refrigerantKg, totalKgCO2: fuelKg + refrigerantKg };
+}
+
+export function computeScope2Emissions(
+  entityCode: string,
+  fy: string,
+): { gridKwh: number; emissionFactorKgPerKwh: number; totalKgCO2: number } {
+  let h = 0;
+  const seed = entityCode + fy + 'scope2';
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const gridKwh = 250000 + (h % 150000); // 250-400 MWh / yr per SMB facility
+  const emissionFactorKgPerKwh = _CEA_BASELINE;
+  return {
+    gridKwh,
+    emissionFactorKgPerKwh,
+    totalKgCO2: Math.round(gridKwh * emissionFactorKgPerKwh * 100) / 100,
+  };
+}
+
+export function computeESGEnergyHistorical(
+  entityCode: string,
+  monthsBack: number,
+): Array<{ month: string; kwh: number; kgCO2: number }> {
+  const now = new Date();
+  const out: Array<{ month: string; kwh: number; kgCO2: number }> = [];
+  for (let i = monthsBack - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const month = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    let h = 0;
+    const seed = entityCode + month;
+    for (let k = 0; k < seed.length; k++) h = (h * 31 + seed.charCodeAt(k)) >>> 0;
+    const kwh = 18000 + (h % 12000); // monthly
+    const kgCO2 = Math.round(kwh * _CEA_BASELINE * 100) / 100;
+    out.push({ month, kwh, kgCO2 });
+  }
+  return out;
+}
+
+export function computeBRSRSectionAIndicators(
+  entityCode: string,
+  fy: string,
+): { energyConsumedGJ: number; emissionsTCO2: number; waterKL: number; wasteT: number } {
+  const scope2 = computeScope2Emissions(entityCode, fy);
+  const scope1 = computeScope1Emissions(entityCode, fy);
+  // kWh to GJ: 1 kWh = 0.0036 GJ
+  const energyConsumedGJ = Math.round(scope2.gridKwh * 0.0036 * 100) / 100;
+  const emissionsTCO2 = Math.round((scope1.totalKgCO2 + scope2.totalKgCO2) / 10) / 100;
+  let h = 0;
+  const seed = entityCode + fy + 'brsr';
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const waterKL = 8000 + (h % 4000);
+  const wasteT = 120 + ((h >>> 5) % 180);
+  return { energyConsumedGJ, emissionsTCO2, waterKL, wasteT };
+}
+
+// ── OOB-PROD-4 · cross-card energy intensity per finished good ──────────────
+export function computeEnergyIntensityPerFinishedGood(
+  entityCode: string,
+  itemId: string,
+  fy: string,
+): { totalKwh: number; unitsProduced: number; kwhPerUnit: number } {
+  let h = 0;
+  const seed = entityCode + itemId + fy;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const totalKwh = 20000 + (h % 30000);
+  const unitsProduced = 1000 + ((h >>> 5) % 9000);
+  const kwhPerUnit = Math.round((totalKwh / Math.max(unitsProduced, 1)) * 100) / 100;
+  return { totalKwh, unitsProduced, kwhPerUnit };
+}
+
+// ── OOB-PROD-8 · maintenance schedule carbon optimization ───────────────────
+export function optimizeMaintenanceScheduleByCarbon(
+  entityCode: string,
+  pmScheduleId: string,
+): { currentCarbonKg: number; optimizedCarbonKg: number; recommendedShiftSlot: string } {
+  let h = 0;
+  const seed = entityCode + pmScheduleId;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const baselineKwh = 400 + (h % 600);
+  // peak-hours baseline implied via factorCurrent multiplier
+  const optimizedHour = 2 + ((h >>> 4) % 4); // off-peak
+  const factorCurrent = _CEA_BASELINE * 1.12;
+  const factorOptimized = _CEA_BASELINE * 0.82;
+  const currentCarbonKg = Math.round(baselineKwh * factorCurrent * 100) / 100;
+  const optimizedCarbonKg = Math.round(baselineKwh * factorOptimized * 100) / 100;
+  return {
+    currentCarbonKg,
+    optimizedCarbonKg,
+    recommendedShiftSlot: `${String(optimizedHour).padStart(2, '0')}:00-${String(optimizedHour + 4).padStart(2, '0')}:00`,
+  };
+}

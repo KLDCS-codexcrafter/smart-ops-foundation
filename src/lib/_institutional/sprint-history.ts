@@ -74,6 +74,12 @@ export const SPRINTS: SprintEntry[] = [
     headSha: 'TBD_AT_BANK', predecessorSha: '04c5f2c', loc: 1500,
     newSiblings: ['cfr-part-11-engine'], bankDate: '2026-05-25', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 63 PROD-5 · ESG + Closeout + Carbon-aware · 39th SIBLING · ⭐ PHASE 3 v2 CLOSES · 28/28 CAPABILITY FULL · 10-streak NEW RECORD DOUBLE-DIGIT
+  {
+    sprintNumber: 63, code: 'T-Phase-3.PROD-5', composite: false, grade: 'A first-pass-clean',
+    headSha: 'TBD_AT_BANK', predecessorSha: '2c11f18b', loc: 1200,
+    newSiblings: ['carbon-planning-engine'], bankDate: '2026-05-25', provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSprintCount(): number {

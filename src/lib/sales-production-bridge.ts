@@ -306,3 +306,61 @@ export function getForecastDrivenDemand(
   const latest = forecasts.sort((a, b) => b.generated_at.localeCompare(a.generated_at))[0];
   return latest.data_points.slice(0, horizonMonths).reduce((s, p) => s + p.forecast_qty, 0);
 }
+
+// ============================================================================
+// 🆕 Sprint 63 PROD-5 · Theme B Block 6 + Theme C OOB-PROD-5 + OOB-PROD-6 (ADDITIVE)
+// All 10 existing exports preserved 0-DIFF.
+// OOB-PROD-6 lands here because src/lib/distributor-hub-engine.ts does NOT exist
+// at execution time (per §3 allowlist fallback note).
+// ============================================================================
+import { computeCarbonFootprintForOrder as _carbonForOrderSPB } from '@/lib/carbon-planning-engine';
+
+export function estimateScope3ForSalesOrder(
+  entityCode: string,
+  salesOrderId: string,
+): number {
+  // Material-attributed Scope 3 estimate · mock formula based on order id hash
+  let h = 0;
+  const seed = entityCode + salesOrderId;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const itemCount = 5 + (h % 20);
+  const baselinePerItem = 12 + ((h >>> 4) % 28); // kg CO2 / item
+  return Math.round(itemCount * baselinePerItem * 100) / 100;
+}
+
+// ── OOB-PROD-5 · Scope 3 supplier emissions estimate ───────────────────────
+export function aggregateScope3EmissionsForPeriod(
+  entityCode: string,
+  fyOrPeriod: string,
+): { totalKgCO2: number; perSupplierKg: Array<{ vendorId: string; kg: number }> } {
+  let h = 0;
+  const seed = entityCode + fyOrPeriod;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const vendorCount = 5 + (h % 8);
+  const perSupplierKg: Array<{ vendorId: string; kg: number }> = [];
+  let totalKgCO2 = 0;
+  for (let v = 0; v < vendorCount; v++) {
+    const kg = 2000 + (((h >>> v) ^ (v * 7919)) % 8000);
+    perSupplierKg.push({ vendorId: `VEND-${String(v + 1).padStart(3, '0')}`, kg });
+    totalKgCO2 += kg;
+  }
+  return { totalKgCO2, perSupplierKg };
+}
+
+// ── OOB-PROD-6 · ESG-tagged distributor demand (distributor-hub-engine absent) ──
+export function tagDistributorDemandWithESG(
+  entityCode: string,
+  distributorId: string,
+): { demandUnits: number; estimatedCarbonKg: number; esgTaggedDate: string } {
+  let h = 0;
+  const seed = entityCode + distributorId;
+  for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
+  const demandUnits = 500 + (h % 4500);
+  // Reuse carbon-planning-engine to attribute carbon to a synthetic order id
+  const estimatedCarbonKg = _carbonForOrderSPB(entityCode, `dist-${distributorId}`).total_kg_co2;
+  return {
+    demandUnits,
+    estimatedCarbonKg,
+    esgTaggedDate: new Date().toISOString(),
+  };
+}

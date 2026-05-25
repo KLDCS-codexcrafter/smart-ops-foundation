@@ -141,6 +141,17 @@ export const SIBLINGS: SiblingEntry[] = [
     moatsRealized: ['MOAT-37'],
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 63 PROD-5 · 39th SIBLING · Carbon Planning Engine (CAP-27 · MOAT-38) · ⭐ PHASE 3 v2 CLOSES
+  {
+    id: 'carbon-planning-engine',
+    name: 'Carbon Planning Engine',
+    path: 'src/lib/carbon-planning-engine.ts',
+    sprintAdded: 63,
+    compositeAdded: 63,
+    functionCount: 8,
+    moatsRealized: ['MOAT-38'],
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSiblingCount(): number {

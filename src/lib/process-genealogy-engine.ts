@@ -348,3 +348,28 @@ export function computeScheduleMComplianceScore(entityCode: string): ScheduleMCo
     generated_at: new Date().toISOString(),
   };
 }
+
+// ============================================================================
+// 🆕 Sprint 63 PROD-5 · Theme B Block 6 · OOB-PROD-7 (ADDITIVE)
+// All existing exports (Sprint 60 + Sprint 62 CFR-11 shim) preserved 0-DIFF.
+// Genealogy carbon trail · delegates to carbon-planning-engine (39th SIBLING).
+// ============================================================================
+import { computeCarbonFootprintForOrder as _carbonForOrderPG } from '@/lib/carbon-planning-engine';
+
+export function getCarbonTrailForBatch(
+  entityCode: string,
+  processBatchId: string,
+): { batchCarbonKg: number; perStepCarbonKg: Array<{ stepId: string; kg: number }> } {
+  let h = 0;
+  for (let i = 0; i < processBatchId.length; i++) h = (h * 31 + processBatchId.charCodeAt(i)) >>> 0;
+  const stepCount = 3 + (h % 5);
+  const perStepCarbonKg: Array<{ stepId: string; kg: number }> = [];
+  let batchCarbonKg = 0;
+  for (let s = 0; s < stepCount; s++) {
+    const stepId = `${processBatchId}-S${s + 1}`;
+    const kg = _carbonForOrderPG(entityCode, stepId).total_kg_co2;
+    perStepCarbonKg.push({ stepId, kg });
+    batchCarbonKg += kg;
+  }
+  return { batchCarbonKg: Math.round(batchCarbonKg * 100) / 100, perStepCarbonKg };
+}

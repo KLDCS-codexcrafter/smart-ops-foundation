@@ -152,4 +152,16 @@ export const productionSidebarItems: SidebarItem[] = [
         icon: Boxes, moduleId: 'prod-r-mixed-mode-bu-dashboard', requiredCards: ['production'] },
     ],
   },
+  // 🆕 Sprint 63 PROD-5 · ESG + Carbon + Closeout
+  {
+    id: 'esg-carbon-group', type: 'group', label: 'ESG & Carbon', icon: Layers,
+    children: [
+      { id: 'carbon-aware-production-planner', type: 'item', label: 'Carbon-Aware Planner',
+        icon: Layers, moduleId: 'carbon-aware-production-planner', requiredCards: ['production'] },
+      { id: 'production-carbon-dashboard', type: 'item', label: 'Production Carbon Dashboard',
+        icon: BarChart3, moduleId: 'production-carbon-dashboard', requiredCards: ['production'] },
+      { id: 'phase3v2-closure-dashboard', type: 'item', label: 'Phase 3 v2 Closure',
+        icon: Target, moduleId: 'phase3v2-closure-dashboard', requiredCards: ['production'] },
+    ],
+  },
 ];

@@ -45,6 +45,9 @@ import { TopReportersByDepartment } from './reports/TopReportersByDepartment';
 import { ProductionCapacityLiveDashboard } from './reports/ProductionCapacityLiveDashboard';
 // Sprint 61 PROD-4 PASS 2 · AI & Predictive
 import PredictiveMachineHealth from './reports/PredictiveMachineHealth';
+// 🆕 Sprint 63 PROD-5 · Theme A · ESG & BRSR
+import ESGEnergyDashboardPanel from './reports/ESGEnergyDashboard';
+import BRSRComplianceSnapshotPanel from './reports/BRSRComplianceSnapshot';
 
 export default function MaintainProPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<MaintainProModule>('welcome');
@@ -129,6 +132,11 @@ export default function MaintainProPage(): JSX.Element {
       case 'mp-r-machine-health-monitor':
       case 'mp-r-predictive-alerts':
         return <PredictiveMachineHealth />;
+      // 🆕 Sprint 63 PROD-5 · Theme A · ESG & BRSR
+      case 'esg-energy-dashboard':
+        return <ESGEnergyDashboardPanel />;
+      case 'brsr-compliance-snapshot':
+        return <BRSRComplianceSnapshotPanel />;
       default:
         return <MaintainProWelcome onNavigate={setActiveModule} />;
     }

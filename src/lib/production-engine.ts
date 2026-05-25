@@ -849,3 +849,32 @@ export function buildRepetitiveLineMetricsShell(
     operator_id: operatorId ?? null,
   };
 }
+
+// ============================================================================
+// 🆕 Sprint 63 PROD-5 · Theme B Block 6 + Theme C OOB-PROD-3 (ADDITIVE)
+// Thin shims delegating to carbon-planning-engine (39th SIBLING).
+// ALLOWED_TRANSITIONS (lines 338-347) ABSOLUTE 0-DIFF.
+// ============================================================================
+import {
+  computeCarbonFootprintForOrder as _carbonForOrder,
+  rankAlternativesByCarbonIntensity as _rankAltCarbon,
+} from '@/lib/carbon-planning-engine';
+
+export function getCarbonFootprintForOrder(
+  entityCode: string,
+  productionOrderId: string,
+): number {
+  return _carbonForOrder(entityCode, productionOrderId).total_kg_co2;
+}
+
+// ── OOB-PROD-3 · production order carbon-cost-aware re-prioritization ──────
+export function reprioritizeOrdersByCarbon(
+  entityCode: string,
+  orderIds: string[],
+): Array<{ orderId: string; priorityRank: number; carbonKg: number }> {
+  return _rankAltCarbon(entityCode, orderIds).map((r) => ({
+    orderId: r.orderId,
+    priorityRank: r.rank,
+    carbonKg: r.intensityKg,
+  }));
+}
