@@ -802,3 +802,50 @@ export function completeProductionOrder(
     return { ...transitioned, linked_test_report_ids: [...transitioned.linked_test_report_ids, insp.id] };
   } catch (e) { console.error('[production-engine] QC auto-create failed', e); return transitioned; }
 }
+
+// ============================================================================
+// SPRINT 62 PROD-4.5 · Theme A · REPETITIVE MODE HELPERS · Q-LOCK-3 A · ADDITIVE
+// Existing 6-state machine + ALLOWED_TRANSITIONS remain 0-DIFF.
+// ============================================================================
+
+import type { RepetitiveLineMetrics } from '@/types/production-order';
+
+export function computeOEETotal(
+  availability: number | null,
+  performance: number | null,
+  quality: number | null,
+): number | null {
+  if (availability == null || performance == null || quality == null) return null;
+  return Math.round((availability * performance * quality) / 10000);
+}
+
+export function computeLineEfficiency(
+  taktTimeSeconds: number | null,
+  cycleTimeSeconds: number | null,
+): number | null {
+  if (taktTimeSeconds == null || cycleTimeSeconds == null || cycleTimeSeconds === 0) return null;
+  return Math.round((taktTimeSeconds / cycleTimeSeconds) * 100);
+}
+
+export function buildRepetitiveLineMetricsShell(
+  lineId: string,
+  unitsTarget: number,
+  shiftId?: string,
+  operatorId?: string,
+): RepetitiveLineMetrics {
+  return {
+    line_id: lineId,
+    takt_time_seconds: null,
+    cycle_time_seconds: null,
+    units_produced_this_run: 0,
+    units_target_this_run: unitsTarget,
+    run_start_at: new Date().toISOString(),
+    run_end_at: null,
+    oee_availability: null,
+    oee_performance: null,
+    oee_quality: null,
+    oee_total: null,
+    shift_id: shiftId ?? null,
+    operator_id: operatorId ?? null,
+  };
+}

@@ -360,3 +360,29 @@ export function persistProcessBatch(entityCode: string, batch: ProcessBatch): vo
   }
   lsWrite(processBatchesKey(entityCode), all);
 }
+
+// ============================================================================
+// SPRINT 62 PROD-4.5 · Theme D · CFR-11 SHIM · Q-LOCK-8 A · ADDITIVE
+// Existing exports remain 0-DIFF · this section ADDS 1 NEW export
+// ============================================================================
+
+import { appendAuditTrailEntry as cfrAppendAuditTrailEntry } from '@/lib/cfr-part-11-engine';
+import type { CFRPart11AuditEntry, CFRPart11SignatureInput } from '@/types/cfr-part-11';
+
+export function logBatchActionWithCFRSig(
+  entityCode: string,
+  batchId: string,
+  actionType: 'batch_release' | 'batch_quarantine',
+  description: string,
+  signature: CFRPart11SignatureInput & { user_id: string; user_name: string },
+): CFRPart11AuditEntry {
+  return cfrAppendAuditTrailEntry(
+    entityCode,
+    actionType,
+    'process_batch',
+    batchId,
+    actionType === 'batch_release' ? 'info' : 'warning',
+    description,
+    signature,
+  );
+}
