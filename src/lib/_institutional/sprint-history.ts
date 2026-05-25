@@ -83,7 +83,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 64 FAR-0 · Demo Seed + Cross-Card-Integrity Schema · Phase 4 FAR Arc OPEN · 6 FAR-CAPs + 4 FK-CAPs schema-staged · 11-streak ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
   {
     sprintNumber: 64, code: 'T-Phase-4.FAR-0', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: '567c140c', loc: 1300,
+    headSha: '<TFIX_HEAD>', predecessorSha: '567c140c', loc: 1300,
     newSiblings: [], bankDate: '2026-05-25', provenance: 'CONFIRMED',
   },
 ];
