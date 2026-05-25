@@ -10,20 +10,20 @@ import { SPRINTS, getSprintCount, getCurrentAStreak } from './sprint-history';
 import { SUB_PORTALS, getSubPortalCount } from './sub-portal-registry';
 
 describe('Institutional registers · cardinality', () => {
-  it('SIBLINGS has 38 entries', () => {
-    expect(getSiblingCount()).toBe(38);
+  it('SIBLINGS has 39 entries', () => {
+    expect(getSiblingCount()).toBe(39);
   });
 
-  it('MOATS has 37 entries', () => {
-    expect(getMoatCount()).toBe(37);
+  it('MOATS has 38 entries', () => {
+    expect(getMoatCount()).toBe(38);
   });
 
   it('CAPABILITIES has 28 entries', () => {
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 62 entries', () => {
-    expect(getSprintCount()).toBe(62);
+  it('SPRINTS has 63 entries', () => {
+    expect(getSprintCount()).toBe(63);
   });
 
   it('SUB_PORTALS has 3 entries', () => {
@@ -31,30 +31,30 @@ describe('Institutional registers · cardinality', () => {
   });
 });
 
-describe('Capability scorecard · post-Sprint-62 (CAP-22 + CAP-23 + CAP-28 lit)', () => {
-  it('getCapabilityScoreFullOnly returns 27/28 after Sprint 62 capability flip', () => {
-    expect(getCapabilityScoreFullOnly()).toBe('27/28');
+describe('Capability scorecard · post-Sprint-63 (CAP-27 lit · Phase 3 v2 CLOSES)', () => {
+  it('getCapabilityScoreFullOnly returns 28/28 after Sprint 63 capability flip', () => {
+    expect(getCapabilityScoreFullOnly()).toBe('28/28');
   });
 
-  it('breakdown is 27 full · 0 partial · 1 absent · 28 total', () => {
+  it('breakdown is 28 full · 0 partial · 0 absent · 28 total', () => {
     const score = getCapabilityScore();
-    expect(score.full).toBe(27);
+    expect(score.full).toBe(28);
     expect(score.partial).toBe(0);
-    expect(score.absent).toBe(1);
+    expect(score.absent).toBe(0);
     expect(score.total).toBe(28);
   });
 });
 
 describe('Sprint history · A-streak counter', () => {
-  it('current A-streak is 9 (Sprint 54-62 v2 era · NEW Operix record extended)', () => {
-    expect(getCurrentAStreak()).toBe(9);
+  it('current A-streak is 10 (Sprint 54-63 v2 era · DOUBLE-DIGIT MILESTONE NEW Operix record)', () => {
+    expect(getCurrentAStreak()).toBe(10);
   });
 
-  it('Sprint 62 is the most recent banked sprint', () => {
+  it('Sprint 63 is the most recent banked sprint', () => {
     const latest = SPRINTS[SPRINTS.length - 1];
-    expect(latest.sprintNumber).toBe(62);
+    expect(latest.sprintNumber).toBe(63);
     expect(latest.newSiblings.length).toBe(1);
-    expect(latest.newSiblings[0]).toBe('cfr-part-11-engine');
+    expect(latest.newSiblings[0]).toBe('carbon-planning-engine');
   });
 });
 
