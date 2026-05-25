@@ -16,6 +16,7 @@
 import type { Voucher, VoucherInventoryLine } from '@/types/voucher';
 import { vouchersKey } from '@/lib/fincore-engine';
 import type { LocationReorderRule } from '@/types/location-reorder-rule';
+import { smoothMonthlyBackSeries } from '@/lib/demand-forecast-engine';
 
 // ============================================================
 // PUBLIC TYPES
