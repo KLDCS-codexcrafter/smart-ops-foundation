@@ -65,6 +65,7 @@ export interface Equipment {
   linked_project_id: string | null;
   linked_drawing_id: string | null;
   linked_bom_id: string | null;
+  fixed_asset_id?: string | null;  // 🆕 Sprint 64 FAR-0 · FK-CAP-3 schema · backward-compat default null
   custodian_user_id: string | null;
   parent_equipment_id: string | null; // OOB-M11 genealogy
 

@@ -16,6 +16,7 @@ export interface FamilyMember {
 export interface EquipmentIssued {
   id: string;
   assetCode: string;
+  asset_id?: string | null;  // 🆕 Sprint 64 FAR-0 · FK-CAP-5 schema · FK → Pay Hub Asset.id · backward-compat default null
   description: string;
   serialNo: string;
   dateIssued: string;

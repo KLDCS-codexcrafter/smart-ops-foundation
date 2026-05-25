@@ -53,6 +53,7 @@ export interface Asset {
   department: string;
   condition: AssetCondition;
   notes: string;
+  fixed_asset_id?: string | null;  // 🆕 Sprint 64 FAR-0 · FK-CAP-4 schema · backward-compat default null
   // Current assignment (mirrors latest open AssetAssignment)
   currentAssigneeId: string;
   currentAssigneeCode: string;

@@ -58,6 +58,7 @@ export interface AssetUnitRecord {
   location: string;
   department: string;
   custodian_name: string;
+  custodian_employee_id?: string | null;  // 🆕 Sprint 64 FAR-0 · FK-CAP-1 schema · backward-compat default null
   status: AssetUnitStatus;
   capital_purchase_voucher_id: string;
   disposal_voucher_id?: string;
