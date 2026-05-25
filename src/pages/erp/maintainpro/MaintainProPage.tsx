@@ -125,6 +125,10 @@ export default function MaintainProPage(): JSX.Element {
         return <TopReportersByDepartment />;
       case 'production-capacity-dashboard':
         return <ProductionCapacityLiveDashboard />;
+      // Sprint 61 PROD-4 PASS 2 · AI & Predictive
+      case 'mp-r-machine-health-monitor':
+      case 'mp-r-predictive-alerts':
+        return <PredictiveMachineHealth />;
       default:
         return <MaintainProWelcome onNavigate={setActiveModule} />;
     }
