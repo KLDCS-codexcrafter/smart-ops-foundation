@@ -16,24 +16,38 @@ import { SPRINTS, getSprintCount, getCurrentAStreak } from './sprint-history';
 import { SUB_PORTALS, getSubPortalCount } from './sub-portal-registry';
 
 describe('Institutional registers · cardinality', () => {
-  it('SIBLINGS has 36 entries', () => {
-    expect(getSiblingCount()).toBe(36);
+  it('SIBLINGS has 37 entries', () => {
+    expect(getSiblingCount()).toBe(37);
   });
 
-  it('MOATS has 34 entries', () => {
-    expect(getMoatCount()).toBe(34);
+  it('MOATS has 36 entries', () => {
+    expect(getMoatCount()).toBe(36);
   });
 
   it('CAPABILITIES has 28 entries', () => {
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 60 entries', () => {
-    expect(getSprintCount()).toBe(60);
+  it('SPRINTS has 61 entries', () => {
+    expect(getSprintCount()).toBe(61);
   });
 
   it('SUB_PORTALS has 3 entries', () => {
     expect(getSubPortalCount()).toBe(3);
+  });
+});
+
+describe('Capability scorecard · post-Sprint-61 (CAP-25 + CAP-26 lit)', () => {
+  it('getCapabilityScoreFullOnly returns 24/28 after Sprint 61 capability flip', () => {
+    expect(getCapabilityScoreFullOnly()).toBe('24/28');
+  });
+
+  it('breakdown is 24 full · 2 partial · 2 absent · 28 total', () => {
+    const score = getCapabilityScore();
+    expect(score.full).toBe(24);
+    expect(score.partial).toBe(2);
+    expect(score.absent).toBe(2);
+    expect(score.total).toBe(28);
   });
 });
 
