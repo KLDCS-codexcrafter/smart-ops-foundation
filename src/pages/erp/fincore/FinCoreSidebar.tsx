@@ -45,6 +45,9 @@ const LIVE_MODULES: FinCoreModule[] = [
   'fc-fa-amc', 'fc-fa-disposal', 'fc-fa-cwip', 'fc-fa-reports',
   // [Sprint 65 FAR-1 · Statutory FA Pack]
   'fc-fa-caro-20', 'fc-fa-msme-capital', 'fc-fa-ind-as-116', 'fc-fa-ledger-pack',
+  // [Sprint 66 FAR-2 · FA Physical-Reality group]
+  'fc-fa-physical-verification', 'fc-fa-calibration-status',
+  'fc-fa-amc-renewal-pipeline', 'fc-fa-vehicle-register',
   // [T10-pre.2d-B] 13 voucher-type registers
   'fc-rpt-sales-register', 'fc-rpt-purchase-register',
   'fc-rpt-receipt-register', 'fc-rpt-payment-register',
