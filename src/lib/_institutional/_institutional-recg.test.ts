@@ -83,10 +83,10 @@ describe('Register-Empirical Coupling Gate (RECG) · FR-101 candidate · Lesson 
       ['FAR-CAP-14', 'src/pages/erp/accounting/capital-assets/AMCWarrantyTracker.tsx', 'Renewal Pipeline'],
       ['FAR-CAP-15', 'src/pages/erp/accounting/capital-assets/FAVehicleRegister.tsx', 'Vehicle'],
       ['FAR-CAP-15', 'src/lib/vehicle-fa-bridge.ts', 'linkVehicleToFA'],
-      // 🆕 Sprint 67 FAR-3 · Block 5 placeholder · PATTERN_CHECKS for FAR-CAP-16/17/18 land in Prompt B Block 14
-      // (Prompt A only adds this comment marker · Prompt B Block 14 populates with actual test cases
-      //  once far-extended-scorecard.ts has FAR-CAP-16 Multi-GAAP / FAR-CAP-17 UOP / FAR-CAP-18 Component
-      //  flipped to FULL with evidenceFiles populated)
+      // 🆕 Sprint 67 FAR-3 · Block 14 · PATTERN_CHECKS for FAR-CAP-16/17/18 (compute engines)
+      ['FAR-CAP-16', 'src/lib/uop-depreciation-engine.ts', 'uop_units_consumed'],
+      ['FAR-CAP-17', 'src/lib/component-depreciation-engine.ts', 'component_breakdown'],
+      ['FAR-CAP-18', 'src/lib/multi-gaap-depreciation-engine.ts', 'IndAS'],
     ];
     for (const [capId, file, pattern] of PATTERN_CHECKS) {
       it(`${capId} · ${file} contains "${pattern}"`, () => {
