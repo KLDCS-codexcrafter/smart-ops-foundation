@@ -310,6 +310,18 @@ export function FinCorePagePanel() {
       case 'fc-fa-calibration-status':    return <FACalibrationStatusReportPanel entityCode={entityCode} />;
       case 'fc-fa-amc-renewal-pipeline':  return <FAAMCRenewalPipelinePanel entityCode={entityCode} />;
       case 'fc-fa-vehicle-register':      return <FAVehicleRegisterPanel entityCode={entityCode} />;
+      // [Sprint 67 FAR-3 · Block 5 · Compute Engine routes · Q-LOCK-9 A]
+      // Prompt B Blocks 10-11 will replace these placeholder divs with the actual panels
+      case 'fc-fa-multi-gaap-report':
+        return <div className="p-6 text-sm text-muted-foreground">Multi-GAAP Depreciation Report (3 Books) · landing in Sprint 67 FAR-3 Prompt B Block 10</div>;
+      case 'fc-fa-uop-report':
+        return <div className="p-6 text-sm text-muted-foreground">UOP Depreciation Report · landing in Sprint 67 FAR-3 Prompt B Block 11</div>;
+      case 'fc-fa-component-report':
+        return <div className="p-6 text-sm text-muted-foreground">Component Depreciation Report (Ind AS 16) · landing in Sprint 67 FAR-3 Prompt B Block 11</div>;
+      case 'fc-fa-opening-migration':
+        return <div className="p-6 text-sm text-muted-foreground">Opening Depreciation Migration Tool · landing in Sprint 67 FAR-3 Prompt B Block 8</div>;
+      case 'fc-fa-excel-import':
+        return <div className="p-6 text-sm text-muted-foreground">Asset Master Excel Import · landing in Sprint 67 FAR-3 Prompt B Block 9</div>;
       // [T10-pre.2d-B] 13 voucher-type registers — all drill back to DayBook pre-filtered.
       case 'fc-rpt-sales-register':            return <SalesRegisterPanel            entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-purchase-register':         return <PurchaseRegisterPanel         entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
