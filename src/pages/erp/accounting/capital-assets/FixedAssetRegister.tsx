@@ -19,6 +19,8 @@ import { Search, Download, Layers } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import type { AssetUnitRecord, AssetUnitStatus, ITActBlock } from '@/types/fixed-asset';
 import { faUnitsKey, IT_ACT_BLOCK_LABELS } from '@/types/fixed-asset';
+import type { Machine } from '@/types/machine';
+import { machinesKey } from '@/types/machine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {
