@@ -99,7 +99,7 @@ export function checkRevaluationDisclosure(entityCode: string): CAROSubRuleResul
 }
 
 /** Sub-rule (e): benami / proceedings under Benami Transactions Act. */
-export function checkBenamiInvestigations(entityCode: string): CAROSubRuleResult {
+export function checkBenamiInvestigations(_entityCode: string): CAROSubRuleResult {
   // No benami flag in schema · default PASS · placeholder for future flag.
   return {
     id: 'e-benami',

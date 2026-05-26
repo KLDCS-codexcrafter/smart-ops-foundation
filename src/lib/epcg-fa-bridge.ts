@@ -90,8 +90,8 @@ export function trackExportFulfillment(
   // Demo bridge: count all Sinha shipping bills as fulfillment evidence.
   return SINHA_SHIPPING_BILLS.map(sb => ({
     shippingBillId: sb.id,
-    shippingBillNo: sb.shipping_bill_no ?? sb.id,
-    date: sb.shipping_bill_date ?? '',
+    shippingBillNo: sb.sb_no ?? sb.id,
+    date: sb.filing_date ?? '',
     fobInr: sb.total_fob_value_inr ?? 0,
     countryOfDestination: sb.lines?.[0]?.country_of_destination ?? '',
   }));
