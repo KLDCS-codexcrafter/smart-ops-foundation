@@ -72,6 +72,11 @@ import { AssetDisposalPanel } from '@/pages/erp/accounting/capital-assets/AssetD
 import { CWIPRegisterPanel } from '@/pages/erp/accounting/capital-assets/CWIPRegister';
 import { FAReportsPanel } from '@/pages/erp/accounting/capital-assets/FAReports';
 import { FixedAssetRegisterPanel } from '@/pages/erp/accounting/capital-assets/FixedAssetRegister';
+// [Sprint 65 FAR-1 · Statutory FA Pack panels]
+import { CARO20DisclosurePanel } from './statutory-fa-pack/CARO20Disclosure';
+import { MSMECapitalBreachesPanel } from './statutory-fa-pack/MSMECapitalBreaches';
+import { IndAS116ROUSchedulePanel } from './statutory-fa-pack/IndAS116ROUSchedule';
+import { FALedgerPackReportPanel } from './statutory-fa-pack/FALedgerPackReport';
 // [T10-pre.2d-B] 13 voucher-type register panels
 import { SalesRegisterPanel } from './registers/SalesRegister';
 import { PurchaseRegisterPanel } from './registers/PurchaseRegister';
@@ -141,6 +146,11 @@ const breadcrumbLabels: Partial<Record<FinCoreModule, string>> = {
   'fc-fa-disposal':     'Asset Disposal',
   'fc-fa-cwip':         'Capital WIP',
   'fc-fa-reports':      'FA Reports',
+  // [Sprint 65 FAR-1]
+  'fc-fa-caro-20':       'CARO 2020 Disclosure (3(i))',
+  'fc-fa-msme-capital':  'MSME Capital Breaches (43B(h))',
+  'fc-fa-ind-as-116':    'Ind AS 116 ROU Schedule',
+  'fc-fa-ledger-pack':   'FA Ledger Pack (Schedule III)',
   // [T10-pre.2d-B] 13 voucher-type registers
   'fc-rpt-sales-register':            'Sales Register',
   'fc-rpt-purchase-register':         'Purchase Register',
@@ -285,6 +295,11 @@ export function FinCorePagePanel() {
       case 'fc-fa-disposal':    return <AssetDisposalPanel entityCode={entityCode} />;
       case 'fc-fa-cwip':        return <CWIPRegisterPanel entityCode={entityCode} />;
       case 'fc-fa-reports':     return <FAReportsPanel entityCode={entityCode} />;
+      // [Sprint 65 FAR-1 · Statutory FA Pack]
+      case 'fc-fa-caro-20':      return <CARO20DisclosurePanel entityCode={entityCode} />;
+      case 'fc-fa-msme-capital': return <MSMECapitalBreachesPanel entityCode={entityCode} />;
+      case 'fc-fa-ind-as-116':   return <IndAS116ROUSchedulePanel entityCode={entityCode} />;
+      case 'fc-fa-ledger-pack':  return <FALedgerPackReportPanel entityCode={entityCode} />;
       // [T10-pre.2d-B] 13 voucher-type registers — all drill back to DayBook pre-filtered.
       case 'fc-rpt-sales-register':            return <SalesRegisterPanel            entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-purchase-register':         return <PurchaseRegisterPanel         entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;

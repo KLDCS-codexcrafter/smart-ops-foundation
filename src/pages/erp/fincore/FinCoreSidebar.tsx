@@ -43,6 +43,8 @@ const LIVE_MODULES: FinCoreModule[] = [
   'fc-audit-dashboard', 'fc-audit-3cd', 'fc-audit-clause44',
   'fc-fa-register', 'fc-fa-master', 'fc-fa-depreciation',
   'fc-fa-amc', 'fc-fa-disposal', 'fc-fa-cwip', 'fc-fa-reports',
+  // [Sprint 65 FAR-1 · Statutory FA Pack]
+  'fc-fa-caro-20', 'fc-fa-msme-capital', 'fc-fa-ind-as-116', 'fc-fa-ledger-pack',
   // [T10-pre.2d-B] 13 voucher-type registers
   'fc-rpt-sales-register', 'fc-rpt-purchase-register',
   'fc-rpt-receipt-register', 'fc-rpt-payment-register',
@@ -171,6 +173,14 @@ const FA_ITEMS: SidebarItem[] = [
   { id: 'fc-fa-reports', label: 'FA Reports', icon: BarChart3 },
 ];
 
+// [Sprint 65 FAR-1 · Statutory FA Pack · Q-LOCK-7 A new sidebar group]
+const STATUTORY_FA_PACK_ITEMS: SidebarItem[] = [
+  { id: 'fc-fa-caro-20',      label: 'CARO 2020 Disclosure',        icon: Shield },
+  { id: 'fc-fa-msme-capital', label: 'MSME Capital Breaches (43B(h))', icon: Shield },
+  { id: 'fc-fa-ind-as-116',   label: 'Ind AS 116 ROU Schedule',     icon: Calculator },
+  { id: 'fc-fa-ledger-pack',  label: 'FA Ledger Pack (Schedule III)', icon: Layers },
+];
+
 const AUDIT_ITEMS: SidebarItem[] = [
   { id: 'fc-audit-dashboard', label: 'Audit Dashboard', icon: LayoutDashboard },
   { id: 'fc-audit-3cd', label: 'Form 3CD', icon: FileText },
@@ -196,6 +206,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
   const [tdsOpen, setTdsOpen] = useState(false);
   const [faOpen, setFaOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
+  const [statFaOpen, setStatFaOpen] = useState(false);
 
   useEffect(() => {
     const txn = ['fc-txn-sales-invoice','fc-txn-purchase-invoice','fc-txn-receipt',
