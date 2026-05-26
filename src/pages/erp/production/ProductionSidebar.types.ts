@@ -56,5 +56,7 @@ export type ProductionModule =
   // 🆕 Sprint 63 PROD-5 · ESG + Carbon + Closeout
   | 'carbon-aware-production-planner'
   | 'production-carbon-dashboard'
-  | 'phase3v2-closure-dashboard';
+  | 'phase3v2-closure-dashboard'
+  // 🆕 Sprint 66 FAR-2 · Block 5 · FK-CAP-6
+  | 'rpt-fa-linked-machines';
 
