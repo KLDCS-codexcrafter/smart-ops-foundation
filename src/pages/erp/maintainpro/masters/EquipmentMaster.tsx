@@ -33,6 +33,7 @@ interface Props {
 
 export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
   const [items, setItems] = useState<Equipment[]>(() =>
     entityCode ? listEquipment(entityCode) : [],
   );
@@ -44,7 +45,20 @@ export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
     make: '',
     model: '',
     location: '',
+    fixed_asset_id: null as string | null,
   });
+
+  // 🆕 Sprint 66 FAR-2 · Block 3 · FK-3 · Plant & Machinery + Furniture FA units for picker
+  const faUnits = useMemo<AssetUnitRecord[]>(() => {
+    if (!entityCode) return [];
+    try {
+      const raw = localStorage.getItem(faUnitsKey(entityCode));
+      const all: AssetUnitRecord[] = raw ? JSON.parse(raw) : [];
+      return all.filter(
+        a => (a.it_act_block === 'Plant & Machinery' || a.it_act_block === 'Furniture & Fixtures') && a.status === 'active',
+      );
+    } catch { return []; }
+  }, [entityCode]);
 
   const handleCreate = (): void => {
     if (!entityCode) {
