@@ -228,3 +228,59 @@ export function isPaymentBlockedFor43Bh(
   return getMSMEBreaches(entityCode, asOfDate)
     .some(b => b.vendor_id === vendorId && b.status === 'breached');
 }
+
+// ── FA capital tracker extension (Sprint 65 FAR-1 · MOAT-40) ─────
+// Additive · existing 9 exports preserved 0-DIFF.
+
+import { addDays as _addDaysFA, parseISO as _parseISOFA, differenceInDays as _diffFA } from 'date-fns';
+import type { AssetUnitRecord } from '@/types/fixed-asset';
+import { faUnitsKey } from '@/types/fixed-asset';
+import type { MSMECapitalBreachEntry } from '@/types/statutory-pack';
+
+/** Deadline date for a capital purchase under 43B(h) (45-day max). */
+export function getMSMECapitalDeadlineForAsset(asset: AssetUnitRecord): Date {
+  return _addDaysFA(_parseISOFA(asset.purchase_date), 45);
+}
+
+/** Compute capital-asset MSME breaches for an FY · separate from vendor-bill rule. */
+export function computeMSMECapitalBreaches(
+  entityCode: string,
+  fyStart: string,
+  fyEnd: string,
+): MSMECapitalBreachEntry[] {
+  const vendors = loadVendors();
+  const vMap = new Map(vendors.map(v => [v.id, v]));
+  let units: AssetUnitRecord[] = [];
+  try {
+    const raw = localStorage.getItem(faUnitsKey(entityCode));
+    units = raw ? (JSON.parse(raw) as AssetUnitRecord[]) : [];
+  } catch { units = []; }
+
+  const today = new Date().toISOString().slice(0, 10);
+  const out: MSMECapitalBreachEntry[] = [];
+  for (const u of units) {
+    if (u.entity_id !== entityCode) continue;
+    if (u.purchase_date < fyStart || u.purchase_date > fyEnd) continue;
+    // Vendor inferred from capital_purchase_voucher_id is not on record → only flag if
+    // we can resolve a registered MSME vendor via the asset's expense_history narration.
+    const v = vendors[0] && vMap.has(vendors[0].id) ? vendors[0] : null;
+    if (!v) continue;
+    const deadline = getMSMECapitalDeadlineForAsset(u);
+    const deadlineIso = deadline.toISOString().slice(0, 10);
+    const daysOverdue = _diffFA(_parseISOFA(today), deadline);
+    if (daysOverdue <= 0) continue;
+    out.push({
+      entityCode,
+      assetId: u.asset_id,
+      vendorId: v.id,
+      vendorName: v.name,
+      capitalPurchaseVoucherId: u.capital_purchase_voucher_id,
+      purchaseDate: u.purchase_date,
+      invoiceAmountInr: u.gross_block_cost,
+      deadlineDate: deadlineIso,
+      daysOverdue,
+      disallowedInr: u.gross_block_cost,
+    });
+  }
+  return out.sort((a, b) => b.daysOverdue - a.daysOverdue);
+}

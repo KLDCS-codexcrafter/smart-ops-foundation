@@ -78,7 +78,8 @@ const ASSET_STEPS = [
   { id: 6, title: 'Audit & Notes',            description: 'Status, description' },
 ];
 
-const ASSET_GROUPS = L3_FINANCIAL_GROUPS.filter(g => ['PPE', 'CWIP', 'INTAN', 'IAWIP', 'INVST', 'CINV'].includes(g.code));
+// Sprint 65 FAR-1 · Q-LOCK-9 A · extended to include FA-related long/short-term loans/advances.
+const ASSET_GROUPS = L3_FINANCIAL_GROUPS.filter(g => ['PPE', 'CWIP', 'INTAN', 'IAWIP', 'INVST', 'CINV', 'LTLA', 'STLA'].includes(g.code));
 
 const ASSET_CATEGORIES: { value: AssetCategory; label: string }[] = [
   { value: 'ppe', label: 'Property, Plant & Equipment' },

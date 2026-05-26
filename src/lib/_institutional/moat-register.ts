@@ -183,6 +183,31 @@ export const MOATS: MoatEntry[] = [
     competitivePositioning: 'Category-defining · only ERP globally offering carbon-aware planning at SMB price · SAP S/4 has partial at ₹2-10Cr · Operix at ₹3-8L TCO 30-300x cheaper',
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 65 FAR-1 · MOAT-39/40/41
+  {
+    id: 'MOAT-39',
+    name: 'CARO 2020 Paragraph 3(i) Auto-Pack · machine-graded compliance disclosure at SMB price',
+    sprintBanked: 65, compositeBanked: 65, headShaBanked: 'TBD_AT_BANK',
+    backingFiles: ['src/lib/caro-2020-engine.ts', 'src/pages/erp/fincore/statutory-fa-pack/CARO20Disclosure.tsx'],
+    competitivePositioning: 'No Indian SMB ERP auto-grades CARO 2020 sub-rules · auditors quote ₹50k-2L per assessment · Operix native',
+    provenance: 'CONFIRMED',
+  },
+  {
+    id: 'MOAT-40',
+    name: 'MSME 43B(h) Capital-Purchase Tracker · 45-day deadline enforcement for fixed assets',
+    sprintBanked: 65, compositeBanked: 65, headShaBanked: 'TBD_AT_BANK',
+    backingFiles: ['src/lib/msme-43bh-engine.ts', 'src/pages/erp/fincore/statutory-fa-pack/MSMECapitalBreaches.tsx'],
+    competitivePositioning: 'Existing 43B(h) products track vendor bills only · Operix extends to capital purchases · prevents disallowance on FA imports',
+    provenance: 'CONFIRMED',
+  },
+  {
+    id: 'MOAT-41',
+    name: 'EPCG FA ↔ EximX Bridge · cross-card export-obligation tracker · 6x rule · 6-year window',
+    sprintBanked: 65, compositeBanked: 65, headShaBanked: 'TBD_AT_BANK',
+    backingFiles: ['src/lib/epcg-fa-bridge.ts'],
+    competitivePositioning: 'EPCG breach = penalty + interest + duty + bank-guarantee invocation · no Indian SMB ERP auto-tracks · Operix unique',
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getMoatCount(): number {

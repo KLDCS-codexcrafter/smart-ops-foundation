@@ -12,20 +12,20 @@ import { FAR_CAPABILITIES, getFARCapabilityCount, getFARCapabilityScoreSchemaSta
 import { FK_CAPABILITIES, getFKCapabilityCount, getFKCapabilityScoreSchemaStaged } from './fk-extended-scorecard';
 
 describe('Institutional registers · cardinality', () => {
-  it('SIBLINGS has 39 entries', () => {
-    expect(getSiblingCount()).toBe(39);
+  it('SIBLINGS has 42 entries', () => {
+    expect(getSiblingCount()).toBe(42);
   });
 
-  it('MOATS has 38 entries', () => {
-    expect(getMoatCount()).toBe(38);
+  it('MOATS has 41 entries', () => {
+    expect(getMoatCount()).toBe(41);
   });
 
   it('CAPABILITIES has 28 entries', () => {
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 64 entries', () => {
-    expect(getSprintCount()).toBe(64);
+  it('SPRINTS has 65 entries', () => {
+    expect(getSprintCount()).toBe(65);
   });
 
   it('SUB_PORTALS has 3 entries', () => {
@@ -33,7 +33,7 @@ describe('Institutional registers · cardinality', () => {
   });
 });
 
-describe('Capability scorecard · post-Sprint-63 (canonical 28/28 ⭐ FULL PRESERVED at Sprint 64 FAR-0)', () => {
+describe('Capability scorecard · post-Sprint-65 (canonical 28/28 ⭐ FULL PRESERVED at Sprint 65 FAR-1)', () => {
   it('getCapabilityScoreFullOnly returns 28/28 · canonical untouched', () => {
     expect(getCapabilityScoreFullOnly()).toBe('28/28');
   });
@@ -47,8 +47,8 @@ describe('Capability scorecard · post-Sprint-63 (canonical 28/28 ⭐ FULL PRESE
   });
 });
 
-describe('FAR + FK extended scorecards · Sprint 64 FAR-0 schema-stage', () => {
-  it('FAR_CAPABILITIES has 24 entries · 6 schema-staged at Sprint 64', () => {
+describe('FAR + FK extended scorecards · Sprint 65 FAR-1 (5 FAR-CAPs flipped to FULL)', () => {
+  it('FAR_CAPABILITIES has 24 entries · 6 schema-staged retained', () => {
     expect(getFARCapabilityCount()).toBe(24);
     expect(getFARCapabilityScoreSchemaStaged()).toBe('6/24');
   });
@@ -56,24 +56,24 @@ describe('FAR + FK extended scorecards · Sprint 64 FAR-0 schema-stage', () => {
     expect(getFKCapabilityCount()).toBe(8);
     expect(getFKCapabilityScoreSchemaStaged()).toBe('4/8');
   });
-  it('Combined score is 38/60 schema-stage', () => {
+  it('Combined score is 43/60 (schema-stage + full active)', () => {
     const canonical = CAPABILITIES.filter(c => c.state === 'full').length;
     const far = FAR_CAPABILITIES.filter(c => c.state === 'schema-staged' || c.state === 'full').length;
     const fk = FK_CAPABILITIES.filter(c => c.state === 'schema-staged' || c.state === 'full').length;
-    expect(`${canonical + far + fk}/60`).toBe('38/60');
+    expect(`${canonical + far + fk}/60`).toBe('43/60');
   });
 });
 
 describe('Sprint history · A-streak counter', () => {
-  it('current A-streak is 11 (Sprint 54-64 v2 era · DOUBLE-DIGIT MILESTONE+1)', () => {
-    expect(getCurrentAStreak()).toBe(11);
+  it('current A-streak is 12 (Sprint 54-65 v2 era · DOUBLE-DIGIT MILESTONE+2)', () => {
+    expect(getCurrentAStreak()).toBe(12);
   });
 
-  it('Sprint 64 FAR-0 is the most recent banked sprint · no new SIBLING', () => {
+  it('Sprint 65 FAR-1 is the most recent banked sprint · 3 new SIBLINGs', () => {
     const latest = SPRINTS[SPRINTS.length - 1];
-    expect(latest.sprintNumber).toBe(64);
-    expect(latest.code).toBe('T-Phase-4.FAR-0');
-    expect(latest.newSiblings.length).toBe(0);
+    expect(latest.sprintNumber).toBe(65);
+    expect(latest.code).toBe('T-Phase-4.FAR-1');
+    expect(latest.newSiblings.length).toBe(3);
   });
 });
 

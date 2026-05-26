@@ -21,6 +21,7 @@ import { faUnitsKey } from '@/types/fixed-asset';
 import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { computeITCReversalOnCapitalSale } from '@/lib/gst-engine';
 
 const ls = <T,>(k: string): T[] => {
   try {
@@ -184,6 +185,21 @@ export function AssetDisposalPanel({ entityCode }: Props) {
                 : `Loss: ₹${(selectedUnit.net_book_value - salePrice).toLocaleString('en-IN')}`}
             </p>
           )}
+          {selectedUnit && salePrice > 0 && saleDate && (() => {
+            const itc = computeITCReversalOnCapitalSale(selectedUnit, salePrice, saleDate);
+            return (
+              <div className="glass-card rounded-lg p-3 text-xs space-y-1 border border-warning/30">
+                <p className="font-semibold flex items-center gap-1.5 text-warning">
+                  GST ITC Reversal · Section 18(6)
+                </p>
+                <div className="grid grid-cols-3 gap-2 font-mono">
+                  <div>ITC@Purchase: ₹{itc.itcAtPurchase.toLocaleString('en-IN')}</div>
+                  <div>Remaining: {itc.remainingMonths}m / 60m</div>
+                  <div>Reversal: <span className="font-bold">₹{itc.reversalAmount.toLocaleString('en-IN')}</span></div>
+                </div>
+              </div>
+            );
+          })()}
           <Button onClick={handleCapitalSale} disabled={!selectedUnit || salePrice <= 0} data-primary>
             <DollarSign className="h-3.5 w-3.5 mr-1" /> Record Sale
           </Button>

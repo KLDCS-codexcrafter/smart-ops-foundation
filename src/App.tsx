@@ -123,6 +123,10 @@ const VoucherTypesMaster = lazy(() => import('./pages/erp/accounting/VoucherType
 const CurrencyMaster = lazy(() => import('./pages/erp/accounting/CurrencyMaster'));
 const TransactionTemplates = lazy(() => import('./pages/erp/accounting/TransactionTemplates'));
 const FinCorePage = lazy(() => import('./pages/erp/fincore/FinCorePage'));
+const CARO20Disclosure = lazy(() => import('./pages/erp/fincore/statutory-fa-pack/CARO20Disclosure'));
+const MSMECapitalBreaches = lazy(() => import('./pages/erp/fincore/statutory-fa-pack/MSMECapitalBreaches'));
+const IndAS116ROUSchedule = lazy(() => import('./pages/erp/fincore/statutory-fa-pack/IndAS116ROUSchedule'));
+const FALedgerPackReport = lazy(() => import('./pages/erp/fincore/statutory-fa-pack/FALedgerPackReport'));
 const AssetCentreMasterPage = lazy(() => import('./pages/erp/fincore/masters/AssetCentreMaster'));
 const VoucherClassMasterPage = lazy(() => import('./pages/erp/fincore/masters/VoucherClassMaster'));
 const ApprovalsPendingPage = lazy(() => import('./pages/erp/fincore/registers/ApprovalsPendingPage'));
@@ -519,6 +523,10 @@ const App = () => (
               <Route path="/erp/fincore/registers/approvals-pending" element={<P><ApprovalsPendingPage /></P>} />
               <Route path="/erp/fincore/registers/cancellation-audit-register" element={<P><CancellationAuditRegister /></P>} />
               <Route path="/erp/fincore/pinned-templates" element={<P><PinnedTemplatesView /></P>} />
+              <Route path="/erp/fincore/statutory-fa-pack/caro-20" element={<P><CARO20Disclosure /></P>} />
+              <Route path="/erp/fincore/statutory-fa-pack/msme-capital" element={<P><MSMECapitalBreaches /></P>} />
+              <Route path="/erp/fincore/statutory-fa-pack/ind-as-116" element={<P><IndAS116ROUSchedule /></P>} />
+              <Route path="/erp/fincore/statutory-fa-pack/fa-ledger-pack" element={<P><FALedgerPackReport /></P>} />
               <Route path="/erp/projx" element={<P><ProjXPage /></P>} />
               <Route path="/erp/projx/masters/project-centres" element={<P><ProjectCentreMasterPage /></P>} />
               <Route path="/erp/projx/documents" element={<P><ProjXPage /></P>} />

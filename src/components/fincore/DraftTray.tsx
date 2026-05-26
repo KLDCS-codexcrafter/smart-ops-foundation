@@ -39,7 +39,9 @@ export type FinCoreModule =
   | 'fc-rpt-stock-adjustment-register' | 'fc-rpt-stock-journal-register'
   | 'fc-rpt-stock-transfer-register'
   // [HK-6 Sprint · 26th + 27th SIBLING consumer panels]
-  | 'fc-bnk-reconciliation-v2' | 'fc-rpt-asset-unification';
+  | 'fc-bnk-reconciliation-v2' | 'fc-rpt-asset-unification'
+  // [Sprint 65 FAR-1 · Statutory FA Pack]
+  | 'fc-fa-caro-20' | 'fc-fa-msme-capital' | 'fc-fa-ind-as-116' | 'fc-fa-ledger-pack';
 
 export interface DraftEntry {
   id: string;
