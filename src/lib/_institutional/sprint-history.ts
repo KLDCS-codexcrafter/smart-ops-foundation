@@ -89,7 +89,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 65 FAR-1 · Indian Statutory Auto-Pack · 40/41/42 SIBLINGs · MOAT-39/40/41 · 12-streak ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐ DOUBLE-DIGIT MILESTONE+2
   {
     sprintNumber: 65, code: 'T-Phase-4.FAR-1', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: '9eeecc23', loc: 1450,
+    headSha: '54433a13ab596c73e992233b340cc894aaa063f6', predecessorSha: '9eeecc23', loc: 1450,
     newSiblings: ['caro-2020-engine', 'ind-as-116-lease-engine', 'epcg-fa-bridge'],
     bankDate: '2026-05-26', provenance: 'CONFIRMED',
   },
