@@ -100,6 +100,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['vehicle-fa-bridge'],
     bankDate: '2026-05-26', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 67 FAR-3 · Compute Engine Best-in-Class · 3 NEW SIBLINGs · MOAT-45/46/47 · 14-streak
+  {
+    sprintNumber: 67, code: 'T-Phase-4.FAR-3', composite: false, grade: 'A first-pass-clean',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'TBD_AT_BANK', loc: 2170,
+    newSiblings: ['multi-gaap-depreciation-engine', 'uop-depreciation-engine', 'component-depreciation-engine'],
+    bankDate: '2026-05-27', provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSprintCount(): number {
