@@ -138,6 +138,8 @@ export default function ProductionPage(): JSX.Element {
       case 'carbon-aware-production-planner': return <CarbonAwareProductionPlannerPanel />;
       case 'production-carbon-dashboard': return <ProductionCarbonDashboardPanel />;
       case 'phase3v2-closure-dashboard': return <Phase3v2ClosureDashboardPanel />;
+      // 🆕 Sprint 66 FAR-2 · Block 5 · FK-CAP-6
+      case 'rpt-fa-linked-machines': return <FALinkedMachinesPanel />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }
