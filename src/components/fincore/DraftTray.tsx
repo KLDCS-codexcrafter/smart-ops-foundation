@@ -44,7 +44,10 @@ export type FinCoreModule =
   | 'fc-fa-caro-20' | 'fc-fa-msme-capital' | 'fc-fa-ind-as-116' | 'fc-fa-ledger-pack'
   // [Sprint 66 FAR-2 · FA Physical-Reality group · Block 9]
   | 'fc-fa-physical-verification' | 'fc-fa-calibration-status'
-  | 'fc-fa-amc-renewal-pipeline' | 'fc-fa-vehicle-register';
+  | 'fc-fa-amc-renewal-pipeline' | 'fc-fa-vehicle-register'
+  // [Sprint 67 FAR-3 · Compute Engine Best-in-Class · Block 5 · Q-LOCK-9 A]
+  | 'fc-fa-multi-gaap-report' | 'fc-fa-uop-report' | 'fc-fa-component-report'
+  | 'fc-fa-opening-migration' | 'fc-fa-excel-import';
 
 export interface DraftEntry {
   id: string;

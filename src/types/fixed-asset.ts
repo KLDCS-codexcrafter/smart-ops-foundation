@@ -35,6 +35,30 @@ export const IT_ACT_BLOCK_LABELS: Record<ITActBlock, string> = {
 
 export type AssetUnitStatus = 'active' | 'cwip' | 'disposed' | 'written_off' | 'transferred';
 
+// 🆕 Sprint 67 FAR-3 · Block 1 · Q-LOCK-2 A · Depreciation method enum
+export type DepreciationMethod =
+  | 'WDV'
+  | 'SLM'
+  | 'UOP'
+  | 'Component'
+  | 'DBM'
+  | 'SYDM'
+  | 'DDBM'
+  | 'SFM'
+  | 'AM'
+  | 'DCFM';
+
+// 🆕 Sprint 67 FAR-3 · Block 1 · Q-LOCK-5 A · Component definition per Ind AS 16
+export interface ComponentDef {
+  component_id: string;
+  component_name: string;
+  cost_allocation: number;
+  useful_life_years: number;
+  salvage_value: number;
+  put_to_use_date: string;
+  depreciation_method?: DepreciationMethod;
+}
+
 export interface AssetUnitRecord {
   id: string;
   entity_id: string;
@@ -65,6 +89,11 @@ export interface AssetUnitRecord {
   warranty_expiry?: string;
   insurance_expiry?: string;
   amc_expiry?: string;
+  // 🆕 Sprint 67 FAR-3 · Block 1 · Q-LOCK-2 A · Multi-GAAP/UOP/Component compute substrate
+  depreciation_method?: DepreciationMethod | null;
+  uop_total_units?: number | null;
+  uop_units_consumed?: number | null;
+  component_breakdown?: ComponentDef[] | null;
   hr_asset_id?: string;
   asset_tag_id?: string;
   expense_history?: Array<{
