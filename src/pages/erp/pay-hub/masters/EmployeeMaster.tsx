@@ -1386,7 +1386,32 @@ export function EmployeeMasterPanel() {
             </div>
             {form.equipmentIssued.map(eq => (
               <div key={eq.id} className="grid grid-cols-6 gap-2 mb-2 items-end">
-                <div><Label className="text-[10px]">Asset Code</Label><Input value={eq.assetCode} onChange={e => updateEq(eq.id, { assetCode: e.target.value })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
+                <div><Label className="text-[10px]">Asset</Label>
+                  <Select
+                    value={eq.asset_id ?? '__none__'}
+                    onValueChange={(v) => {
+                      if (v === '__none__') {
+                        updateEq(eq.id, { asset_id: null });
+                      } else {
+                        const picked = payHubAssets.find(a => a.id === v);
+                        updateEq(eq.id, {
+                          asset_id: v,
+                          assetCode: picked?.assetCode ?? eq.assetCode,
+                        });
+                      }
+                    }}
+                  >
+                    <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Pick asset" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">None</SelectItem>
+                      {payHubAssets
+                        .filter(a => a.status !== 'disposed')
+                        .map(a => (
+                          <SelectItem key={a.id} value={a.id}>{a.assetCode} · {a.name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <div><Label className="text-[10px]">Description</Label><Input value={eq.description} onChange={e => updateEq(eq.id, { description: e.target.value })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
                 <div><Label className="text-[10px]">Serial No</Label><Input value={eq.serialNo} onChange={e => updateEq(eq.id, { serialNo: e.target.value })} className="h-8 text-xs" onKeyDown={onEnterNext} /></div>
                 <div><Label className="text-[10px]">Date Issued</Label><SmartDateInput value={eq.dateIssued} onChange={v => updateEq(eq.id, { dateIssued: v })} className="h-8 text-xs" /></div>
