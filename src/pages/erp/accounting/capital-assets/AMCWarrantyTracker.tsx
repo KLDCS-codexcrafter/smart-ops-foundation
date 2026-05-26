@@ -44,6 +44,22 @@ export function AMCWarrantyTrackerPanel({ entityCode }: Props) {
   const warrantyUnits = useMemo(() => units.filter(u => u.warranty_expiry).sort((a, b) => (a.warranty_expiry ?? '').localeCompare(b.warranty_expiry ?? '')), [units]);
   const amcUnits = useMemo(() => units.filter(u => u.amc_expiry).sort((a, b) => (a.amc_expiry ?? '').localeCompare(b.amc_expiry ?? '')), [units]);
 
+  // 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-8 A · Renewal Pipeline computed count
+  const renewalPipelineRows = useMemo(() => {
+    const rows: Array<{ unit: AssetUnitRecord; type: 'Warranty' | 'AMC'; expires: string; days: number }> = [];
+    units.forEach(u => {
+      if (u.warranty_expiry) {
+        const days = Math.floor((new Date(u.warranty_expiry).getTime() - Date.now()) / 86400000);
+        if (days <= 60) rows.push({ unit: u, type: 'Warranty', expires: u.warranty_expiry, days });
+      }
+      if (u.amc_expiry) {
+        const days = Math.floor((new Date(u.amc_expiry).getTime() - Date.now()) / 86400000);
+        if (days <= 60) rows.push({ unit: u, type: 'AMC', expires: u.amc_expiry, days });
+      }
+    });
+    return rows.sort((a, b) => a.days - b.days);
+  }, [units]);
+
   return (
     <div className="p-6 space-y-4 animate-fade-in">
       <div>
@@ -58,6 +74,10 @@ export function AMCWarrantyTrackerPanel({ entityCode }: Props) {
           <TabsTrigger value="warranty">Warranty ({warrantyUnits.length})</TabsTrigger>
           <TabsTrigger value="amc">AMC ({amcUnits.length})</TabsTrigger>
           <TabsTrigger value="history">Service History</TabsTrigger>
+          {/* 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-6 A · Calibration tab */}
+          <TabsTrigger value="calibration">Calibration</TabsTrigger>
+          {/* 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-8 A · Renewal Pipeline tab */}
+          <TabsTrigger value="renewal">Renewal Pipeline ({renewalPipelineRows.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="warranty">
@@ -125,6 +145,59 @@ export function AMCWarrantyTrackerPanel({ entityCode }: Props) {
         <TabsContent value="history">
           <div className="rounded-xl border border-border p-8 text-center text-muted-foreground text-sm">
             Service history from Expense Booking vouchers tagged to asset units will appear here.
+          </div>
+        </TabsContent>
+
+        {/* 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-6 A · Calibration tab */}
+        <TabsContent value="calibration">
+          <div className="rounded-xl border border-border p-8 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Calibration tracking for fixed assets · derives from MaintainPro service-history
+              bridge calibration_done events when populated. Real calibration data integration
+              deferred to FAR-3 (Compute Engine Best-in-Class) scope per FR-91 honest disclosure.
+            </p>
+            <p className="text-center text-muted-foreground text-sm py-6">
+              No calibration events tracked yet · awaiting FAR-3 maintainpro-service-history-bridge
+              calibration_done event surfacing.
+            </p>
+          </div>
+        </TabsContent>
+
+        {/* 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-8 A · Renewal Pipeline tab */}
+        <TabsContent value="renewal">
+          <div className="rounded-xl border border-border overflow-hidden">
+            <div className="p-3 border-b border-border">
+              <p className="text-xs text-muted-foreground">
+                Cross-asset renewal pipeline · AMC + Warranty items grouped by 60-day visibility.
+              </p>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs">Asset ID</TableHead>
+                  <TableHead className="text-xs">Item</TableHead>
+                  <TableHead className="text-xs">Type</TableHead>
+                  <TableHead className="text-xs">Expires</TableHead>
+                  <TableHead className="text-xs">Days</TableHead>
+                  <TableHead className="text-xs">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {renewalPipelineRows.length === 0 && (
+                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No items in 60-day renewal pipeline.</TableCell></TableRow>
+                )}
+                {renewalPipelineRows.map((row, i) => (
+                  <TableRow key={`${row.unit.id}-${row.type}-${i}`}>
+                    <TableCell className="font-mono text-xs">{row.unit.asset_id}</TableCell>
+                    <TableCell className="text-xs">{row.unit.item_name}</TableCell>
+                    <TableCell className="text-xs">{row.type}</TableCell>
+                    <TableCell className="text-xs font-mono">{row.expires}</TableCell>
+                    <TableCell className="text-xs font-mono">{row.days}d</TableCell>
+                    <TableCell>{expiryBadge(row.expires)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         </TabsContent>
       </Tabs>

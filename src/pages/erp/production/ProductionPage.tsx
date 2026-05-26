@@ -64,6 +64,7 @@ import ProductionCarbonDashboardPanel from './reports/ProductionCarbonDashboard'
 import Phase3v2ClosureDashboardPanel from './reports/Phase3v2ClosureDashboard';
 // 🆕 Sprint 66 FAR-2 · Block 5 · FK-CAP-6
 import FALinkedMachinesPanel from './reports/FALinkedMachinesPanel';
+import { MachineMasterPanel } from '@/pages/erp/masters/MachineMaster';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
@@ -139,6 +140,7 @@ export default function ProductionPage(): JSX.Element {
       case 'production-carbon-dashboard': return <ProductionCarbonDashboardPanel />;
       case 'phase3v2-closure-dashboard': return <Phase3v2ClosureDashboardPanel />;
       // 🆕 Sprint 66 FAR-2 · Block 5 · FK-CAP-6
+      case 'mst-machine-master': return <MachineMasterPanel />;
       case 'rpt-fa-linked-machines': return <FALinkedMachinesPanel />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
