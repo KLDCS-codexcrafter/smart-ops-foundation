@@ -72,6 +72,11 @@ import { AssetDisposalPanel } from '@/pages/erp/accounting/capital-assets/AssetD
 import { CWIPRegisterPanel } from '@/pages/erp/accounting/capital-assets/CWIPRegister';
 import { FAReportsPanel } from '@/pages/erp/accounting/capital-assets/FAReports';
 import { FixedAssetRegisterPanel } from '@/pages/erp/accounting/capital-assets/FixedAssetRegister';
+// [Sprint 66 FAR-2 · Block 9 · FA Physical-Reality panels]
+import { FAPhysicalVerificationPanel } from '@/pages/erp/accounting/capital-assets/FAPhysicalVerification';
+import { FACalibrationStatusReportPanel } from '@/pages/erp/accounting/capital-assets/FACalibrationStatusReport';
+import { FAAMCRenewalPipelinePanel } from '@/pages/erp/accounting/capital-assets/FAAMCRenewalPipeline';
+import { FAVehicleRegisterPanel } from '@/pages/erp/accounting/capital-assets/FAVehicleRegister';
 // [Sprint 65 FAR-1 · Statutory FA Pack panels]
 import { CARO20DisclosurePanel } from './statutory-fa-pack/CARO20Disclosure';
 import { MSMECapitalBreachesPanel } from './statutory-fa-pack/MSMECapitalBreaches';
