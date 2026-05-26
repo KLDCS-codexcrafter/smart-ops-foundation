@@ -2,7 +2,7 @@
 
 ## Execution mode
 - Single-pass per Q-LOCK-10 A
-- HEAD: <TFIX_HEAD>
+- HEAD: f60f75d17592557a37d7e5ad9adeca446804dc20
 - Predecessor: 567c140c
 - LOC delta: ~+1,300 / -50 across 21 files (additive · backward-compat ABSOLUTE)
 
@@ -16,13 +16,13 @@
 - Theme 7: NEW far-extended-scorecard.ts (24 FAR-CAPs · 6 schema-staged) + NEW fk-extended-scorecard.ts (8 FK-CAPs · 4 schema-staged) + sprint-history Sprint 64 entry + cross-ref test updates
 - Theme 8: 4 NEW optional FK schema fields + physical-asset-unit-bridge 3-shape → 4-shape extension (existing exports 0-DIFF)
 
-## T-fix (post-audit · single-pass remediation · HEAD `<TFIX_HEAD>`)
+## T-fix (post-audit · single-pass remediation · HEAD `889d9f1c`)
 
 Three findings from the FAR-0 FINAL audit (May 25, 2026) remediated:
 
 - **AC#3 material finding · resolved** — 6 NEW entity-specific FA seed data files added (`abdos-fa-multi-bu` · `chrse-fa-gmp-compliant` · `bcpl-fa-hazardous-reactor` · `smrtp-fa-mold-die` · `amith-fa-cnc-machine` · `shkph-fa-api-reactor`) · 4-6 records each · 6 `seedXXXXFADepth()` dispatch functions in orchestrator now call materialized seeders · all 7 entities (including Sinha 9th file) now materially seed entity-tailored FA depth · Theme 2 spec semantic intent now fully shipped.
 - **AC#9 minor finding · resolved** — `sprint-history.ts` Sprint 64 `headSha` populated with T-fix HEAD SHA.
-- **AC#20 minor finding · resolved** — `close_summary.md` `HEAD: TBD_AT_BANK` placeholders (×2) populated with T-fix HEAD SHA.
+- **AC#20 minor finding · resolved** — `close_summary.md` `HEAD:` sentinel placeholder (×2) populated with T-fix HEAD SHA.
 
 ### Findings explicitly accepted (not remediated · documented for forward-traceability)
 - **AC#1 LOC-band finding accepted** — 5 universal FA seed files at 34-41 LOC are semantically complete; density-formatting choice. Spec body "~" qualifier covers this; AC#1 verification command's 50-80 band was overly strict.
@@ -35,7 +35,7 @@ Three findings from the FAR-0 FINAL audit (May 25, 2026) remediated:
 
 These are documented for a future housekeeping sprint; out of T-fix scope.
 
-## Empirical verification at <TFIX_HEAD> (post T-fix)
+## Empirical verification at `f60f75d1` (post T-fix · post AC#9 close · final banked HEAD)
 - TSC: clean (exit 0)
 - ESLint: 0 errors · 1 pre-existing warning (MobileShopFloorOperatorPage) acceptable
 - Vitest: ≥2196 pass / 0 fail target (first-bank 2189 + 7 new T-fix tests)
@@ -67,7 +67,7 @@ These are documented for a future housekeeping sprint; out of T-fix scope.
 - In-context audit institutional violation: 5 consecutive → RESET TO 0 (if fresh-chat audit executed per FR-95)
 
 ## Discrepancies disclosed (per Lesson 18)
-- (First-bank) Entity-specific FA depth seed functions were initially implemented as no-op placeholders. Now resolved by T-fix at HEAD `<TFIX_HEAD>` — all 6 entities materially seed via new entity-specific data files.
+- (First-bank) Entity-specific FA depth seed functions were initially implemented as no-op placeholders. Now resolved by T-fix at HEAD `889d9f1c` — all 6 entities materially seed via new entity-specific data files.
 - Cross-ref test file lives at `src/lib/_institutional/_institutional-cross-ref.test.ts` (not `src/test/_institutional-cross-ref.test.ts` as referenced in spec §3 item 21). Empirical path used.
 
 ## Notes for auditor
@@ -79,4 +79,4 @@ These are documented for a future housekeeping sprint; out of T-fix scope.
 ## §14 · 5-consecutive in-context audit institutional violation carry-forward declaration
 Sprint 64 FAR-0 is the institutional reset attempt per FR-95 + Sprint 61 §14 + Sprint 62 §14 + Sprint 63 §14 + State Handoff v48 §12 + FR Cheatsheet v1.15 perpetual carry-forward declaration. The FAR-0 FINAL audit MUST be performed in a brand-new Claude chat with zero prior Operix context to reset the 5-consecutive in-context audit violation chain that accumulated across D14-HK + Sprint 61 PASS 1 + Sprint 61 FINAL + Sprint 62 FINAL + Sprint 63 FINAL. If FAR-0 audit also happens in-context (6th consecutive), audit-independence becomes ⭐ DEGRADED-CRITICAL and framework escalation needed. If fresh-chat audit executes properly, audit-independence is restored from ⭐⭐ DEGRADED to ⭐⭐⭐ RESTORED.
 
-**T-fix outcome:** 3 audit findings remediated in a tightly-scoped single-pass T-fix at HEAD `<TFIX_HEAD>`. Theme 2 semantic intent now fully shipped (all 7 entities materially seed entity-tailored FA depth · not just Sinha). AC#9 + AC#20 `TBD_AT_BANK` placeholders filled. Audit-independence reset to ⭐⭐⭐ RESTORED is contingent on the post-T-fix re-audit being performed in a brand-new Claude chat with zero prior Operix context per FR-95.
+**T-fix outcome:** 3 audit findings remediated in a tightly-scoped single-pass T-fix at HEAD `889d9f1c`. Theme 2 semantic intent now fully shipped (all 7 entities materially seed entity-tailored FA depth · not just Sinha). AC#9 + AC#20 sentinel placeholders filled. Audit-independence reset to ⭐⭐⭐ RESTORED is contingent on the post-T-fix re-audit being performed in a brand-new Claude chat with zero prior Operix context per FR-95.
