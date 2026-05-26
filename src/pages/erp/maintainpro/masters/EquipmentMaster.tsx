@@ -183,6 +183,37 @@ export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
               />
             </div>
+            {/* 🆕 Sprint 66 FAR-2 · Block 3 · FK-3 · Linked Fixed Asset picker (mirror MachineMaster) */}
+            <div className="md:col-span-2">
+              <Label>Linked Fixed Asset (optional)</Label>
+              <Select
+                value={form.fixed_asset_id ?? '__none__'}
+                onValueChange={(v) =>
+                  setForm({ ...form, fixed_asset_id: v === '__none__' ? null : v })
+                }
+              >
+                <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">None</SelectItem>
+                  {faUnits.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.asset_id} · {u.item_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.fixed_asset_id && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => navigate(`/erp/fincore?m=fixed-asset-register&id=${form.fixed_asset_id}`)}
+                >
+                  <Link2 className="h-3 w-3 mr-1" /> View in Fixed Asset Register →
+                </Button>
+              )}
+            </div>
           </div>
           <div className="flex gap-2 justify-end">
             <Button variant="outline" size="sm" onClick={() => setShowForm(false)}>
