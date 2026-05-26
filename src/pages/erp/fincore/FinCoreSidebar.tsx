@@ -368,6 +368,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
         {renderSection('TDS / TCS', TDS_ITEMS, tdsOpen, setTdsOpen)}
         {renderSection('Fixed Assets', FA_ITEMS, faOpen, setFaOpen)}
         {renderSection('Statutory FA Pack', STATUTORY_FA_PACK_ITEMS, statFaOpen, setStatFaOpen)}
+        {renderSection('FA Physical Reality', FA_PHYSICAL_REALITY_ITEMS, physRealityOpen, setPhysRealityOpen)}
         {renderSection('Tax Audit', AUDIT_ITEMS, auditOpen, setAuditOpen)}
       </SidebarContent>
       <SidebarFooter className="p-3">
