@@ -129,6 +129,8 @@ export function CapitalAssetMasterPanel({ entityCode }: Props) {
       asset_id_prefix: idPrefix, asset_id_suffix: idSuffix || fy,
       asset_id_from: idFrom, asset_id_count: idCount,
       location: idLocation, department: idDepartment, custodian_name: idCustodian,
+      // 🆕 Sprint 66 FAR-2 · Block 2 · FK-1 · Create-path FK propagation (AC#3 honored)
+      custodian_employee_id: idCustodianEmployeeId,
       cost_per_unit: cpAssetCost / idCount,
       salvage_value: idSalvage,
       it_act_block: idBlock,

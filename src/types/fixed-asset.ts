@@ -109,6 +109,7 @@ export interface AssetUnitLine {
   location: string;
   department: string;
   custodian_name: string;
+  custodian_employee_id?: string | null;  // 🆕 Sprint 66 FAR-2 Block 2 · FK-1 · Create-path FK propagation (AC#3)
   cost_per_unit: number;
   salvage_value: number;
   it_act_block: ITActBlock;

@@ -4,13 +4,17 @@
  * @sprint      T-Phase-1.A.16a · Block D · Q-LOCK-4 + Q-LOCK-7
  * @whom        Audit Owner
  */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Wrench, ChevronDown, ChevronRight, ShieldCheck } from 'lucide-react';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import { Plus, Wrench, ChevronDown, ChevronRight, ShieldCheck, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
@@ -20,6 +24,8 @@ import {
   isEquipmentInWarranty,
 } from '@/lib/maintainpro-engine';
 import type { Equipment } from '@/types/maintainpro';
+// 🆕 Sprint 66 FAR-2 · Block 3 · FK-3 · Equipment ↔ Fixed Asset picker (mirror MachineMaster)
+import { faUnitsKey, type AssetUnitRecord } from '@/types/fixed-asset';
 
 interface Props {
   onNavigate: (m: string) => void;
@@ -27,6 +33,7 @@ interface Props {
 
 export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
+  const navigate = useNavigate();
   const [items, setItems] = useState<Equipment[]>(() =>
     entityCode ? listEquipment(entityCode) : [],
   );
@@ -38,7 +45,20 @@ export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
     make: '',
     model: '',
     location: '',
+    fixed_asset_id: null as string | null,
   });
+
+  // 🆕 Sprint 66 FAR-2 · Block 3 · FK-3 · Plant & Machinery + Furniture FA units for picker
+  const faUnits = useMemo<AssetUnitRecord[]>(() => {
+    if (!entityCode) return [];
+    try {
+      const raw = localStorage.getItem(faUnitsKey(entityCode));
+      const all: AssetUnitRecord[] = raw ? JSON.parse(raw) : [];
+      return all.filter(
+        a => (a.it_act_block === 'Plant & Machinery' || a.it_act_block === 'Furniture & Fixtures') && a.status === 'active',
+      );
+    } catch { return []; }
+  }, [entityCode]);
 
   const handleCreate = (): void => {
     if (!entityCode) {
@@ -52,6 +72,7 @@ export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
     const created = createEquipment(entityCode, {
       equipment_code: form.equipment_code,
       equipment_name: form.equipment_name,
+      fixed_asset_id: form.fixed_asset_id,
       equipment_class: 'machine',
       category: 'mechanical',
       make: form.make,
@@ -93,7 +114,7 @@ export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
     });
     setItems([...items, created]);
     setShowForm(false);
-    setForm({ equipment_code: '', equipment_name: '', make: '', model: '', location: '' });
+    setForm({ equipment_code: '', equipment_name: '', make: '', model: '', location: '', fixed_asset_id: null });
     toast.success(`Equipment ${created.equipment_code} created`);
   };
 
@@ -161,6 +182,37 @@ export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
               />
+            </div>
+            {/* 🆕 Sprint 66 FAR-2 · Block 3 · FK-3 · Linked Fixed Asset picker (mirror MachineMaster) */}
+            <div className="md:col-span-2">
+              <Label>Linked Fixed Asset (optional)</Label>
+              <Select
+                value={form.fixed_asset_id ?? '__none__'}
+                onValueChange={(v) =>
+                  setForm({ ...form, fixed_asset_id: v === '__none__' ? null : v })
+                }
+              >
+                <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">None</SelectItem>
+                  {faUnits.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.asset_id} · {u.item_name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {form.fixed_asset_id && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => navigate(`/erp/fincore?m=fixed-asset-register&id=${form.fixed_asset_id}`)}
+                >
+                  <Link2 className="h-3 w-3 mr-1" /> View in Fixed Asset Register →
+                </Button>
+              )}
             </div>
           </div>
           <div className="flex gap-2 justify-end">
