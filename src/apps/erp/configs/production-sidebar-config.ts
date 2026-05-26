@@ -164,4 +164,12 @@ export const productionSidebarItems: SidebarItem[] = [
         icon: Target, moduleId: 'phase3v2-closure-dashboard', requiredCards: ['production'] },
     ],
   },
+  // 🆕 Sprint 66 FAR-2 · Block 5 · FK-CAP-6 · Assets cross-card group
+  {
+    id: 'assets-group', type: 'group', label: 'Assets', icon: Boxes,
+    children: [
+      { id: 'rpt-fa-linked-machines', type: 'item', label: 'FA-Linked Machines',
+        icon: Boxes, moduleId: 'rpt-fa-linked-machines', requiredCards: ['production'] },
+    ],
+  },
 ];
