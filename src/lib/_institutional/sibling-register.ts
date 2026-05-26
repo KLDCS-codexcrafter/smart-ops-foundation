@@ -185,17 +185,6 @@ export const SIBLINGS: SiblingEntry[] = [
     moatsRealized: ['MOAT-41'],
     provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 66 FAR-2 · 43rd SIBLING ⭐ · Vehicle ↔ FA Bridge (FAR-CAP-15 · MOAT-44)
-  {
-    id: 'vehicle-fa-bridge',
-    name: 'Vehicle FA Bridge',
-    path: 'src/lib/vehicle-fa-bridge.ts',
-    sprintAdded: 66,
-    compositeAdded: 66,
-    functionCount: 5,
-    moatsRealized: ['MOAT-44'],
-    provenance: 'CONFIRMED',
-  },
 ];
 
 export function getSiblingCount(): number {
