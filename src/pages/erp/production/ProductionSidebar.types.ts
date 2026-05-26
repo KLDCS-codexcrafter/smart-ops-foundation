@@ -58,5 +58,6 @@ export type ProductionModule =
   | 'production-carbon-dashboard'
   | 'phase3v2-closure-dashboard'
   // 🆕 Sprint 66 FAR-2 · Block 5 · FK-CAP-6
+  | 'mst-machine-master'
   | 'rpt-fa-linked-machines';
 
