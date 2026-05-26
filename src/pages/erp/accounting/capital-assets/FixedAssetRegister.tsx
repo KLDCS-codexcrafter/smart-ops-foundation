@@ -157,7 +157,7 @@ export function FixedAssetRegisterPanel({ entityCode }: Props) {
                 </TableRow>
                 {expandedId === u.id && (
                   <TableRow key={`${u.id}-detail`}>
-                    <TableCell colSpan={11} className="bg-muted/30 p-4">
+                    <TableCell colSpan={12} className="bg-muted/30 p-4">
                       <div className="grid grid-cols-4 gap-4 text-xs">
                         <div><span className="text-muted-foreground">Department:</span> {u.department}</div>
                         <div><span className="text-muted-foreground">Salvage:</span> ₹{u.salvage_value.toLocaleString('en-IN')}</div>
