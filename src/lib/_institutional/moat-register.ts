@@ -247,6 +247,43 @@ export const MOATS: MoatEntry[] = [
     competitivePositioning: 'Proactive 60/30/7-day cross-asset renewal pipeline for owned FA AMC + warranty + calibration · ISO/IATF audit-ready · Vehicle-FA bridge closes LEAK-12/13/14',
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 67 FAR-3 · MOAT-45/46/47
+  {
+    id: 'MOAT-45',
+    name: 'Multi-GAAP Parallel Depreciation at SMB Price',
+    sprintBanked: 67, compositeBanked: 67, headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/lib/multi-gaap-depreciation-engine.ts',
+      'src/pages/erp/accounting/capital-assets/MultiGAAPDepreciationReport.tsx',
+      'src/types/depreciation-extended.ts',
+    ],
+    competitivePositioning: 'First Indian SMB ERP to ship 3-book parallel depreciation (IT Act + Companies Act + Ind AS) computing in a single pass with full audit trail · matches SAP S/4 / Oracle FA module compute capability at Rs 3-8L TCO vs Rs 2-15Cr · single AssetUnitRecord drives all 3 books · zero data duplication · 7-year retention compliant.',
+    provenance: 'CONFIRMED',
+  },
+  {
+    id: 'MOAT-46',
+    name: 'UOP Production-Fed Depreciation Bridge',
+    sprintBanked: 67, compositeBanked: 67, headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/lib/uop-depreciation-engine.ts',
+      'src/pages/erp/accounting/capital-assets/UOPDepreciationReport.tsx',
+      'src/lib/production-engine.ts',
+    ],
+    competitivePositioning: 'World-first SMB ERP where Production volume directly feeds Fixed Asset UOP depreciation through bidirectional FK · production_order_id to asset_unit_record_id to uop_units_consumed accumulates per production confirmation · enables per-product asset cost tracking and per-machine TCO at SMB price.',
+    provenance: 'CONFIRMED',
+  },
+  {
+    id: 'MOAT-47',
+    name: 'Component-Level Asset Depreciation (Ind AS 16)',
+    sprintBanked: 67, compositeBanked: 67, headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/lib/component-depreciation-engine.ts',
+      'src/pages/erp/accounting/capital-assets/ComponentDepreciationReport.tsx',
+      'src/types/fixed-asset.ts',
+    ],
+    competitivePositioning: 'Component depreciation per Ind AS 16 paragraph 43-47 with multi-component asset breakdown · enables differentiated useful life per component (engine 7yr / chassis 15yr / electronics 5yr) · ISO/IATF audit-ready · cost-of-component lens · Rs 3-8L TCO vs SAP S/4 EAM Rs 2-15Cr.',
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getMoatCount(): number {

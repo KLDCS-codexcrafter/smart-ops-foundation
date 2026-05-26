@@ -196,6 +196,28 @@ export const SIBLINGS: SiblingEntry[] = [
     moatsRealized: ['MOAT-44'],
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 67 FAR-3 · 44th/45th/46th SIBLINGs · Compute Engine trio
+  {
+    id: 'multi-gaap-depreciation-engine',
+    name: 'Multi-GAAP Depreciation Engine',
+    path: 'src/lib/multi-gaap-depreciation-engine.ts',
+    sprintAdded: 67, compositeAdded: 67, functionCount: 3,
+    moatsRealized: ['MOAT-45'], provenance: 'CONFIRMED',
+  },
+  {
+    id: 'uop-depreciation-engine',
+    name: 'UOP Depreciation Engine',
+    path: 'src/lib/uop-depreciation-engine.ts',
+    sprintAdded: 67, compositeAdded: 67, functionCount: 5,
+    moatsRealized: ['MOAT-46'], provenance: 'CONFIRMED',
+  },
+  {
+    id: 'component-depreciation-engine',
+    name: 'Component Depreciation Engine',
+    path: 'src/lib/component-depreciation-engine.ts',
+    sprintAdded: 67, compositeAdded: 67, functionCount: 2,
+    moatsRealized: ['MOAT-47'], provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSiblingCount(): number {
