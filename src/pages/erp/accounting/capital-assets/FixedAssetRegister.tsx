@@ -43,6 +43,12 @@ interface Props { entityCode: string; }
 
 export function FixedAssetRegisterPanel({ entityCode }: Props) {
   const units = useMemo(() => ls<AssetUnitRecord>(faUnitsKey(entityCode)).filter(u => u.entity_id === entityCode), [entityCode]);
+  const machines = useMemo(() => ls<Machine>(machinesKey(entityCode)), [entityCode]);
+  const linkedCountByAsset = useMemo(() => {
+    const m = new Map<string, number>();
+    machines.forEach(x => { if (x.fixed_asset_id) m.set(x.fixed_asset_id, (m.get(x.fixed_asset_id) ?? 0) + 1); });
+    return m;
+  }, [machines]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<AssetUnitStatus | 'all'>('all');
   const [blockFilter, setBlockFilter] = useState<ITActBlock | 'all'>('all');
