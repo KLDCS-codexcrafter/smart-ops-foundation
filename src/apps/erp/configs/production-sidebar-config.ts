@@ -168,6 +168,8 @@ export const productionSidebarItems: SidebarItem[] = [
   {
     id: 'assets-group', type: 'group', label: 'Assets', icon: Boxes,
     children: [
+      { id: 'mst-machine-master', type: 'item', label: 'Machine Master',
+        icon: Boxes, moduleId: 'mst-machine-master', requiredCards: ['production'] },
       { id: 'rpt-fa-linked-machines', type: 'item', label: 'FA-Linked Machines',
         icon: Boxes, moduleId: 'rpt-fa-linked-machines', requiredCards: ['production'] },
     ],
