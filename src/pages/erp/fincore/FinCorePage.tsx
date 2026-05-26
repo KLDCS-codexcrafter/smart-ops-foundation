@@ -77,6 +77,12 @@ import { FAPhysicalVerificationPanel } from '@/pages/erp/accounting/capital-asse
 import { FACalibrationStatusReportPanel } from '@/pages/erp/accounting/capital-assets/FACalibrationStatusReport';
 import { FAAMCRenewalPipelinePanel } from '@/pages/erp/accounting/capital-assets/FAAMCRenewalPipeline';
 import { FAVehicleRegisterPanel } from '@/pages/erp/accounting/capital-assets/FAVehicleRegister';
+// [Sprint 67 FAR-3 · Block 11 · Compute Engine panels · Q-LOCK-9/10/11 A]
+import { MultiGAAPDepreciationReportPanel } from '@/pages/erp/accounting/capital-assets/MultiGAAPDepreciationReport';
+import { UOPDepreciationReportPanel } from '@/pages/erp/accounting/capital-assets/UOPDepreciationReport';
+import { ComponentDepreciationReportPanel } from '@/pages/erp/accounting/capital-assets/ComponentDepreciationReport';
+import { OpeningDepreciationMigrationToolPanel } from '@/pages/erp/accounting/capital-assets/OpeningDepreciationMigrationTool';
+import { AssetMasterExcelImportPanel } from '@/pages/erp/accounting/capital-assets/AssetMasterExcelImport';
 // [Sprint 65 FAR-1 · Statutory FA Pack panels]
 import { CARO20DisclosurePanel } from './statutory-fa-pack/CARO20Disclosure';
 import { MSMECapitalBreachesPanel } from './statutory-fa-pack/MSMECapitalBreaches';
