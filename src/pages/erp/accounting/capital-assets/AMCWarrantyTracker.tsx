@@ -147,6 +147,59 @@ export function AMCWarrantyTrackerPanel({ entityCode }: Props) {
             Service history from Expense Booking vouchers tagged to asset units will appear here.
           </div>
         </TabsContent>
+
+        {/* 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-6 A · Calibration tab */}
+        <TabsContent value="calibration">
+          <div className="rounded-xl border border-border p-8 space-y-3">
+            <p className="text-xs text-muted-foreground">
+              Calibration tracking for fixed assets · derives from MaintainPro service-history
+              bridge calibration_done events when populated. Real calibration data integration
+              deferred to FAR-3 (Compute Engine Best-in-Class) scope per FR-91 honest disclosure.
+            </p>
+            <p className="text-center text-muted-foreground text-sm py-6">
+              No calibration events tracked yet · awaiting FAR-3 maintainpro-service-history-bridge
+              calibration_done event surfacing.
+            </p>
+          </div>
+        </TabsContent>
+
+        {/* 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-8 A · Renewal Pipeline tab */}
+        <TabsContent value="renewal">
+          <div className="rounded-xl border border-border overflow-hidden">
+            <div className="p-3 border-b border-border">
+              <p className="text-xs text-muted-foreground">
+                Cross-asset renewal pipeline · AMC + Warranty items grouped by 60-day visibility.
+              </p>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-xs">Asset ID</TableHead>
+                  <TableHead className="text-xs">Item</TableHead>
+                  <TableHead className="text-xs">Type</TableHead>
+                  <TableHead className="text-xs">Expires</TableHead>
+                  <TableHead className="text-xs">Days</TableHead>
+                  <TableHead className="text-xs">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {renewalPipelineRows.length === 0 && (
+                  <TableRow><TableCell colSpan={6} className="text-center text-muted-foreground py-8">No items in 60-day renewal pipeline.</TableCell></TableRow>
+                )}
+                {renewalPipelineRows.map((row, i) => (
+                  <TableRow key={`${row.unit.id}-${row.type}-${i}`}>
+                    <TableCell className="font-mono text-xs">{row.unit.asset_id}</TableCell>
+                    <TableCell className="text-xs">{row.unit.item_name}</TableCell>
+                    <TableCell className="text-xs">{row.type}</TableCell>
+                    <TableCell className="text-xs font-mono">{row.expires}</TableCell>
+                    <TableCell className="text-xs font-mono">{row.days}d</TableCell>
+                    <TableCell>{expiryBadge(row.expires)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </TabsContent>
       </Tabs>
     </div>
   );
