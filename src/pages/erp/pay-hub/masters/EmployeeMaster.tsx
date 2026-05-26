@@ -82,6 +82,7 @@ export function EmployeeMasterPanel() {
   const [revisionReason, setRevisionReason] = useState('');
 
   const { employees, stats, createEmployee, updateEmployee, toggleStatus, search: searchFn, yearsOfService } = useEmployees();
+  const { assets: payHubAssets } = useAssetMaster();
   const { machines } = useMachines();
 
   // ── SAM context ─────────────────────────────────────────────────────
