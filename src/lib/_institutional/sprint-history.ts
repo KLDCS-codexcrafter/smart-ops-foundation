@@ -93,6 +93,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['caro-2020-engine', 'ind-as-116-lease-engine', 'epcg-fa-bridge'],
     bankDate: '2026-05-26', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 66 FAR-2 · Cross-Card FK UI · 43rd SIBLING · MOAT-42/43/44 · 13-streak NEW RECORD (baker's-dozen)
+  {
+    sprintNumber: 66, code: 'T-Phase-4.FAR-2', composite: false, grade: 'A first-pass-clean',
+    headSha: '<TFIX_HEAD>', predecessorSha: '0ebfc779', loc: 1850,
+    newSiblings: ['vehicle-fa-bridge'],
+    bankDate: '2026-05-26', provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSprintCount(): number {
