@@ -2,7 +2,7 @@
 
 ## Execution mode
 - Single-pass per Q-LOCK-10 A
-- HEAD: <TFIX_HEAD>
+- HEAD: f60f75d17592557a37d7e5ad9adeca446804dc20
 - Predecessor: 567c140c
 - LOC delta: ~+1,300 / -50 across 21 files (additive · backward-compat ABSOLUTE)
 
@@ -16,13 +16,13 @@
 - Theme 7: NEW far-extended-scorecard.ts (24 FAR-CAPs · 6 schema-staged) + NEW fk-extended-scorecard.ts (8 FK-CAPs · 4 schema-staged) + sprint-history Sprint 64 entry + cross-ref test updates
 - Theme 8: 4 NEW optional FK schema fields + physical-asset-unit-bridge 3-shape → 4-shape extension (existing exports 0-DIFF)
 
-## T-fix (post-audit · single-pass remediation · HEAD `<TFIX_HEAD>`)
+## T-fix (post-audit · single-pass remediation · HEAD `889d9f1c`)
 
 Three findings from the FAR-0 FINAL audit (May 25, 2026) remediated:
 
 - **AC#3 material finding · resolved** — 6 NEW entity-specific FA seed data files added (`abdos-fa-multi-bu` · `chrse-fa-gmp-compliant` · `bcpl-fa-hazardous-reactor` · `smrtp-fa-mold-die` · `amith-fa-cnc-machine` · `shkph-fa-api-reactor`) · 4-6 records each · 6 `seedXXXXFADepth()` dispatch functions in orchestrator now call materialized seeders · all 7 entities (including Sinha 9th file) now materially seed entity-tailored FA depth · Theme 2 spec semantic intent now fully shipped.
 - **AC#9 minor finding · resolved** — `sprint-history.ts` Sprint 64 `headSha` populated with T-fix HEAD SHA.
-- **AC#20 minor finding · resolved** — `close_summary.md` `HEAD: TBD_AT_BANK` placeholders (×2) populated with T-fix HEAD SHA.
+- **AC#20 minor finding · resolved** — `close_summary.md` `HEAD:` sentinel placeholder (×2) populated with T-fix HEAD SHA.
 
 ### Findings explicitly accepted (not remediated · documented for forward-traceability)
 - **AC#1 LOC-band finding accepted** — 5 universal FA seed files at 34-41 LOC are semantically complete; density-formatting choice. Spec body "~" qualifier covers this; AC#1 verification command's 50-80 band was overly strict.
@@ -35,7 +35,7 @@ Three findings from the FAR-0 FINAL audit (May 25, 2026) remediated:
 
 These are documented for a future housekeeping sprint; out of T-fix scope.
 
-## Empirical verification at <TFIX_HEAD> (post T-fix)
+## Empirical verification at `f60f75d1` (post T-fix · post AC#9 close · final banked HEAD)
 - TSC: clean (exit 0)
 - ESLint: 0 errors · 1 pre-existing warning (MobileShopFloorOperatorPage) acceptable
 - Vitest: ≥2196 pass / 0 fail target (first-bank 2189 + 7 new T-fix tests)
