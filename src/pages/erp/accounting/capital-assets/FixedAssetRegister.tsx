@@ -127,6 +127,7 @@ export function FixedAssetRegisterPanel({ entityCode }: Props) {
               <TableHead className="text-xs text-right">NBV</TableHead>
               <TableHead className="text-xs">Location</TableHead>
               <TableHead className="text-xs">Custodian</TableHead>
+              <TableHead className="text-xs text-right">Linked Machines</TableHead>
               <TableHead className="text-xs">Status</TableHead>
             </TableRow>
           </TableHeader>
