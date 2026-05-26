@@ -9,10 +9,10 @@ describe('MultiGAAPDepreciationReport', () => {
   });
 
   it('renders 4 tabs', () => {
-    const { getByText } = render(<MultiGAAPDepreciationReportPanel entityCode="TEST" />);
-    expect(getByText(/IT Act/i)).toBeDefined();
-    expect(getByText(/Companies Act/i)).toBeDefined();
-    expect(getByText(/Ind AS/i)).toBeDefined();
-    expect(getByText(/Reconciliation/i)).toBeDefined();
+    const { getAllByText } = render(<MultiGAAPDepreciationReportPanel entityCode="TEST" />);
+    expect(getAllByText(/IT Act/i).length).toBeGreaterThan(0);
+    expect(getAllByText(/Companies Act/i).length).toBeGreaterThan(0);
+    expect(getAllByText(/Ind AS/i).length).toBeGreaterThan(0);
+    expect(getAllByText(/Reconciliation/i).length).toBeGreaterThan(0);
   });
 });
