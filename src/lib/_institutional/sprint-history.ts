@@ -103,7 +103,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 67 FAR-3 · Compute Engine Best-in-Class · 3 NEW SIBLINGs · MOAT-45/46/47 · 14-streak
   {
     sprintNumber: 67, code: 'T-Phase-4.FAR-3', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'TBD_AT_BANK', loc: 2170,
+    headSha: '01c62d7e6fd1aecd1f26027a9233d286244bf9cd', predecessorSha: 'ad0e1d2d9029d502ac050df8481add0c08501c34', loc: 2170,
     newSiblings: ['multi-gaap-depreciation-engine', 'uop-depreciation-engine', 'component-depreciation-engine'],
     bankDate: '2026-05-27', provenance: 'CONFIRMED',
   },
