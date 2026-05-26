@@ -48,6 +48,9 @@ const LIVE_MODULES: FinCoreModule[] = [
   // [Sprint 66 FAR-2 · FA Physical-Reality group]
   'fc-fa-physical-verification', 'fc-fa-calibration-status',
   'fc-fa-amc-renewal-pipeline', 'fc-fa-vehicle-register',
+  // [Sprint 67 FAR-3 · Compute Engine Best-in-Class group · Block 5 · Q-LOCK-9 A]
+  'fc-fa-multi-gaap-report', 'fc-fa-uop-report', 'fc-fa-component-report',
+  'fc-fa-opening-migration', 'fc-fa-excel-import',
   // [T10-pre.2d-B] 13 voucher-type registers
   'fc-rpt-sales-register', 'fc-rpt-purchase-register',
   'fc-rpt-receipt-register', 'fc-rpt-payment-register',
@@ -192,6 +195,15 @@ const FA_PHYSICAL_REALITY_ITEMS: SidebarItem[] = [
   { id: 'fc-fa-vehicle-register',      label: 'Vehicle Register (FA)', icon: Truck },
 ];
 
+// [Sprint 67 FAR-3 · Compute Engine Best-in-Class group · Block 5 · Q-LOCK-9 A]
+const COMPUTE_ENGINE_ITEMS: SidebarItem[] = [
+  { id: 'fc-fa-multi-gaap-report',  label: 'Multi-GAAP Depreciation (3 Books)', icon: Calculator },
+  { id: 'fc-fa-uop-report',         label: 'UOP Depreciation Report',           icon: Calculator },
+  { id: 'fc-fa-component-report',   label: 'Component Depreciation (Ind AS 16)', icon: Calculator },
+  { id: 'fc-fa-opening-migration',  label: 'Opening Depreciation Migration',    icon: FileText },
+  { id: 'fc-fa-excel-import',       label: 'Asset Master Excel Import',         icon: Layers },
+];
+
 const AUDIT_ITEMS: SidebarItem[] = [
   { id: 'fc-audit-dashboard', label: 'Audit Dashboard', icon: LayoutDashboard },
   { id: 'fc-audit-3cd', label: 'Form 3CD', icon: FileText },
@@ -219,6 +231,8 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
   const [auditOpen, setAuditOpen] = useState(false);
   const [statFaOpen, setStatFaOpen] = useState(false);
   const [physRealityOpen, setPhysRealityOpen] = useState(false);
+  // [Sprint 67 FAR-3 · Compute Engine group state · Block 5]
+  const [computeEngineOpen, setComputeEngineOpen] = useState(false);
 
   useEffect(() => {
     const txn = ['fc-txn-sales-invoice','fc-txn-purchase-invoice','fc-txn-receipt',
@@ -255,6 +269,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
     else if (fa.includes(active)) setFaOpen(true);
     else if (['fc-fa-caro-20','fc-fa-msme-capital','fc-fa-ind-as-116','fc-fa-ledger-pack'].includes(active)) setStatFaOpen(true);
     else if (['fc-fa-physical-verification','fc-fa-calibration-status','fc-fa-amc-renewal-pipeline','fc-fa-vehicle-register'].includes(active)) setPhysRealityOpen(true);
+    else if (['fc-fa-multi-gaap-report','fc-fa-uop-report','fc-fa-component-report','fc-fa-opening-migration','fc-fa-excel-import'].includes(active)) setComputeEngineOpen(true);
     else if (aud.includes(active)) setAuditOpen(true);
   }, [active]);
 
@@ -370,6 +385,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
         {renderSection('Fixed Assets', FA_ITEMS, faOpen, setFaOpen)}
         {renderSection('Statutory FA Pack', STATUTORY_FA_PACK_ITEMS, statFaOpen, setStatFaOpen)}
         {renderSection('FA Physical Reality', FA_PHYSICAL_REALITY_ITEMS, physRealityOpen, setPhysRealityOpen)}
+        {renderSection('Compute Engine (Multi-GAAP)', COMPUTE_ENGINE_ITEMS, computeEngineOpen, setComputeEngineOpen)}
         {renderSection('Tax Audit', AUDIT_ITEMS, auditOpen, setAuditOpen)}
       </SidebarContent>
       <SidebarFooter className="p-3">
