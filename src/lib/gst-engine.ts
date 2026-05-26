@@ -90,3 +90,37 @@ export function resolveGSTRate(
     gstType: 'taxable', source: 'none', warn: true,
   };
 }
+
+// ── ITC Reversal on Capital Sale · Section 18(6) ──────────────────
+// Sprint 65 FAR-1 · LEAK-9 closed · additive · existing 3 exports preserved.
+
+import type { AssetUnitRecord } from '@/types/fixed-asset';
+import { roundTo } from './decimal-helpers';
+
+/**
+ * Proportional ITC reversal on disposal of capital goods per Section 18(6) CGST Act.
+ * Formula: ITC × (remaining months in 60-month window) / 60.
+ * Compares with output tax on transaction value; higher of the two is the liability.
+ */
+export function computeITCReversalOnCapitalSale(
+  asset: AssetUnitRecord,
+  disposalAmount: number,
+  disposalDate: string,
+): { reversalAmount: number; remainingMonths: number; itcAtPurchase: number } {
+  // Assume blended 18% IGST as itcAtPurchase proxy when not separately captured.
+  const ASSUMED_GST_RATE = 18;
+  const itcAtPurchase = roundTo(asset.gross_block_cost * ASSUMED_GST_RATE / 100, 2);
+  const purchase = new Date(asset.put_to_use_date || asset.purchase_date);
+  const disposal = new Date(disposalDate);
+  const monthsUsed = Math.max(0, Math.floor(
+    (disposal.getTime() - purchase.getTime()) / (1000 * 60 * 60 * 24 * 30),
+  ));
+  const remainingMonths = Math.max(0, 60 - monthsUsed);
+  const proportional = roundTo(itcAtPurchase * remainingMonths / 60, 2);
+  const outputTax = roundTo(disposalAmount * ASSUMED_GST_RATE / 100, 2);
+  return {
+    reversalAmount: Math.max(proportional, outputTax),
+    remainingMonths,
+    itcAtPurchase,
+  };
+}
