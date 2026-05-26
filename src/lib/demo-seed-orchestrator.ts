@@ -1135,4 +1135,73 @@ export function seedFAUniverse(entityCode: string): void {
     case 'SHKPH': seedSHKPHFADepth(entityCode); break;
     case 'SINHA': seedSINHAFADepth(entityCode); break;
   }
+
+  // 🆕 Sprint 66 FAR-2 · Block 10 · FK cross-walk after seed
+  crossWalkFKsAfterSeed(entityCode);
+}
+
+/**
+ * 🆕 Sprint 66 FAR-2 Block 10 · ADDITIVE FK cross-walk
+ * Idempotent · EXACT-MATCH only · null on miss (backward-compat default).
+ * Zero-touch: 17-file FR-86 v1.16 §Y preserve list NEVER written.
+ */
+export function crossWalkFKsAfterSeed(entityCode: string): void {
+  type AnyRec = Record<string, unknown>;
+  const readArr = <T,>(k: string): T[] => {
+    try { const raw = localStorage.getItem(k); return raw ? (JSON.parse(raw) as T[]) : []; }
+    catch { return []; }
+  };
+  const writeArr = (k: string, v: unknown[]): void => {
+    try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* ignore quota */ }
+  };
+
+  const faUnitsK = `erp_fa_units_${entityCode}`;
+  const employeesK = `erp_employees_${entityCode}`;
+  const equipmentK = `erp_maintainpro_equipment_${entityCode}`;
+  const payHubAssetsK = 'erp_pay_hub_assets';
+
+  const faUnits = readArr<AnyRec>(faUnitsK);
+  const employees = readArr<AnyRec>(employeesK);
+  const equipment = readArr<AnyRec>(equipmentK);
+  const payHubAssets = readArr<AnyRec>(payHubAssetsK);
+
+  // 1) AssetUnitRecord.custodian_employee_id ← Employee.id matched by displayName
+  let faChanged = false;
+  for (const u of faUnits) {
+    if (u.custodian_employee_id) continue;
+    const cName = (u.custodian_name as string | undefined)?.trim();
+    if (!cName) continue;
+    const emp = employees.find(e => {
+      const dn = ((e.displayName as string) || `${e.firstName ?? ''} ${e.lastName ?? ''}`).trim();
+      return dn === cName;
+    });
+    if (emp) { u.custodian_employee_id = emp.id as string; faChanged = true; }
+  }
+  if (faChanged) writeArr(faUnitsK, faUnits);
+
+  // 2) Equipment.fixed_asset_id ← AssetUnitRecord.id by asset_id code
+  let eqChanged = false;
+  for (const eq of equipment) {
+    if (eq.fixed_asset_id) continue;
+    const code = (eq.assetCode as string | undefined) || (eq.name as string | undefined);
+    if (!code) continue;
+    const match = faUnits.find(u => u.asset_id === code || u.asset_id_suffix === code);
+    if (match) { eq.fixed_asset_id = match.id as string; eqChanged = true; }
+  }
+  if (eqChanged) writeArr(equipmentK, equipment);
+
+  // 3) EquipmentIssued.asset_id ← Pay Hub Asset.id by assetCode
+  let empChanged = false;
+  for (const emp of employees) {
+    const issued = emp.equipmentIssued as AnyRec[] | undefined;
+    if (!Array.isArray(issued)) continue;
+    for (const item of issued) {
+      if (item.asset_id) continue;
+      const ac = item.assetCode as string | undefined;
+      if (!ac) continue;
+      const hit = payHubAssets.find(a => a.assetCode === ac);
+      if (hit) { item.asset_id = hit.id as string; empChanged = true; }
+    }
+  }
+  if (empChanged) writeArr(employeesK, employees);
 }
