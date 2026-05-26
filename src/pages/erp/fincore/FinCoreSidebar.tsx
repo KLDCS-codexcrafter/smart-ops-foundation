@@ -254,6 +254,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
     else if (tds.includes(active)) setTdsOpen(true);
     else if (fa.includes(active)) setFaOpen(true);
     else if (['fc-fa-caro-20','fc-fa-msme-capital','fc-fa-ind-as-116','fc-fa-ledger-pack'].includes(active)) setStatFaOpen(true);
+    else if (['fc-fa-physical-verification','fc-fa-calibration-status','fc-fa-amc-renewal-pipeline','fc-fa-vehicle-register'].includes(active)) setPhysRealityOpen(true);
     else if (aud.includes(active)) setAuditOpen(true);
   }, [active]);
 
