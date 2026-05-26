@@ -208,6 +208,45 @@ export const MOATS: MoatEntry[] = [
     competitivePositioning: 'EPCG breach = penalty + interest + duty + bank-guarantee invocation · no Indian SMB ERP auto-tracks · Operix unique',
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 66 FAR-2 · MOAT-42/43/44
+  {
+    id: 'MOAT-42',
+    name: '4-shape physical-asset unification with FK UI at SMB price',
+    sprintBanked: 66, compositeBanked: 66, headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/lib/physical-asset-unit-bridge.ts',
+      'src/pages/erp/accounting/capital-assets/FixedAssetRegister.tsx',
+      'src/pages/erp/maintainpro/masters/EquipmentMaster.tsx',
+      'src/pages/erp/pay-hub/masters/EmployeeMaster.tsx',
+    ],
+    competitivePositioning: 'World-first SMB ERP where same physical thing (capital asset · QR unit · Pay Hub HR equipment · MaintainPro asset) is one bidirectional FK graph · SAP S/4 EAM ₹2-15Cr · Operix ₹3-8L',
+    provenance: 'CONFIRMED',
+  },
+  {
+    id: 'MOAT-43',
+    name: 'Custodian-Employee FK enforcement with audit-grade transfer trail',
+    sprintBanked: 66, compositeBanked: 66, headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/pages/erp/accounting/capital-assets/CapitalAssetMaster.tsx',
+      'src/types/fixed-asset.ts',
+    ],
+    competitivePositioning: 'Only Indian SMB ERP where custodian cannot drift from Pay Hub Employee master · 7-year retention · Ind AS 115/116 audit-aligned',
+    provenance: 'CONFIRMED',
+  },
+  {
+    id: 'MOAT-44',
+    name: 'Tellicaller-style AMC + Warranty + Calibration renewal for OWN assets at SMB price',
+    sprintBanked: 66, compositeBanked: 66, headShaBanked: 'TBD_AT_BANK',
+    backingFiles: [
+      'src/pages/erp/accounting/capital-assets/AMCWarrantyTracker.tsx',
+      'src/pages/erp/accounting/capital-assets/FAAMCRenewalPipeline.tsx',
+      'src/pages/erp/accounting/capital-assets/FACalibrationStatusReport.tsx',
+      'src/pages/erp/accounting/capital-assets/FAVehicleRegister.tsx',
+      'src/lib/vehicle-fa-bridge.ts',
+    ],
+    competitivePositioning: 'Proactive 60/30/7-day renewal pipeline for owned FA AMC + warranty + calibration · ISO/IATF audit-ready · Vehicle FA bridge to Logistics/Dispatch/Gate-Pass',
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getMoatCount(): number {

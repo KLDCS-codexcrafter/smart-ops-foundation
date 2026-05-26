@@ -1,7 +1,7 @@
 /**
  * @file        src/lib/_institutional/far-extended-scorecard.ts
  * @purpose     24-FAR-CAP scorecard (FAR-extended capabilities) · separate from canonical 28-CAP
- * @sprint      T-Phase-4.FAR-0 · Theme 7 · D-FAR-v4-23 · Q-LOCK-6 A
+ * @sprint      T-Phase-4.FAR-2 · FAR-CAP-12/13/14/15 flipped to FULL
  */
 
 export type FARCapabilityState = 'absent' | 'schema-staged' | 'partial' | 'full';
@@ -23,16 +23,17 @@ export const FAR_CAPABILITIES: FARCapability[] = [
   { id: 'FAR-CAP-4', name: 'Sinha 9th manifest file · FA imported machinery', state: 'schema-staged', lastChangedSprint: 64, evidenceFiles: ['src/data/sinha-fa-imported-machinery-seed-data.ts'], parentTheme: 'far-0-seed' },
   { id: 'FAR-CAP-5', name: 'Cross-card bridge demo data', state: 'schema-staged', lastChangedSprint: 64, evidenceFiles: ['src/lib/demo-seed-orchestrator.ts'], parentTheme: 'far-0-seed' },
   { id: 'FAR-CAP-6', name: 'demo-seed-orchestrator wiring with seedFAUniverse entry point', state: 'schema-staged', lastChangedSprint: 64, evidenceFiles: ['src/lib/demo-seed-orchestrator.ts'], parentTheme: 'far-0-seed' },
-  // FAR-CAP-7..24 absent
+  // FAR-1 statutory (Sprint 65)
   { id: 'FAR-CAP-7', name: 'Indian Statutory Auto-Pack · CARO 2020 + 43B(h) + GST ITC reversal', state: 'full', lastChangedSprint: 65, evidenceFiles: ['src/lib/caro-2020-engine.ts', 'src/lib/msme-43bh-engine.ts', 'src/lib/gst-engine.ts'], parentTheme: 'far-1-statutory' },
   { id: 'FAR-CAP-8', name: 'Schedule III FA disclosure auto-generation', state: 'full', lastChangedSprint: 65, evidenceFiles: ['src/pages/erp/fincore/statutory-fa-pack/FALedgerPackReport.tsx'], parentTheme: 'far-1-statutory' },
   { id: 'FAR-CAP-9', name: 'Ind AS 116 ROU + Ind AS 16 PP&E disclosure', state: 'full', lastChangedSprint: 65, evidenceFiles: ['src/lib/ind-as-116-lease-engine.ts', 'src/pages/erp/fincore/statutory-fa-pack/IndAS116ROUSchedule.tsx'], parentTheme: 'far-1-statutory' },
   { id: 'FAR-CAP-10', name: 'Component accounting (Schedule II)', state: 'full', lastChangedSprint: 65, evidenceFiles: ['src/lib/caro-2020-engine.ts'], parentTheme: 'far-1-statutory' },
   { id: 'FAR-CAP-11', name: 'EPCG export-obligation bridge (FA ↔ EximX)', state: 'full', lastChangedSprint: 65, evidenceFiles: ['src/lib/epcg-fa-bridge.ts'], parentTheme: 'far-2-fk-ui' },
-  { id: 'FAR-CAP-12', name: 'FA Register linked machines reverse-display', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-2-fk-ui' },
-  { id: 'FAR-CAP-13', name: 'Custodian (Employee) picker on FA detail page', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-2-fk-ui' },
-  { id: 'FAR-CAP-14', name: 'Pay Hub Asset ↔ FA bidirectional UI', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-2-fk-ui' },
-  { id: 'FAR-CAP-15', name: 'Production sidebar Machine List + FA-linked report', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-2-fk-ui' },
+  // 🆕 Sprint 66 FAR-2 · 4 flipped to FULL
+  { id: 'FAR-CAP-12', name: 'FA Register linked machines reverse-display', state: 'full', lastChangedSprint: 66, evidenceFiles: ['src/pages/erp/accounting/capital-assets/FixedAssetRegister.tsx'], parentTheme: 'far-2-fk-ui' },
+  { id: 'FAR-CAP-13', name: 'Custodian (Employee) picker on FA detail page', state: 'full', lastChangedSprint: 66, evidenceFiles: ['src/pages/erp/accounting/capital-assets/CapitalAssetMaster.tsx', 'src/pages/erp/accounting/capital-assets/FAPhysicalVerification.tsx'], parentTheme: 'far-2-fk-ui' },
+  { id: 'FAR-CAP-14', name: 'Pay Hub Asset ↔ FA bidirectional UI', state: 'full', lastChangedSprint: 66, evidenceFiles: ['src/pages/erp/pay-hub/masters/EmployeeMaster.tsx', 'src/pages/erp/accounting/capital-assets/FAAMCRenewalPipeline.tsx'], parentTheme: 'far-2-fk-ui' },
+  { id: 'FAR-CAP-15', name: 'Production sidebar Machine List + FA-linked report', state: 'full', lastChangedSprint: 66, evidenceFiles: ['src/apps/erp/configs/production-sidebar-config.ts', 'src/pages/erp/production/reports/FALinkedMachinesPanel.tsx', 'src/lib/vehicle-fa-bridge.ts'], parentTheme: 'far-2-fk-ui' },
   { id: 'FAR-CAP-16', name: 'UOP (units-of-production) depreciation method', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-3-compute' },
   { id: 'FAR-CAP-17', name: 'Campaign-based depreciation (API reactor)', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-3-compute' },
   { id: 'FAR-CAP-18', name: 'Impairment testing engine', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-3-compute' },
