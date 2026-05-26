@@ -241,6 +241,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
     else if (gst.includes(active)) setGstOpen(true);
     else if (tds.includes(active)) setTdsOpen(true);
     else if (fa.includes(active)) setFaOpen(true);
+    else if (['fc-fa-caro-20','fc-fa-msme-capital','fc-fa-ind-as-116','fc-fa-ledger-pack'].includes(active)) setStatFaOpen(true);
     else if (aud.includes(active)) setAuditOpen(true);
   }, [active]);
 
@@ -354,6 +355,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
         {renderSection('GST', GST_ITEMS, gstOpen, setGstOpen)}
         {renderSection('TDS / TCS', TDS_ITEMS, tdsOpen, setTdsOpen)}
         {renderSection('Fixed Assets', FA_ITEMS, faOpen, setFaOpen)}
+        {renderSection('Statutory FA Pack', STATUTORY_FA_PACK_ITEMS, statFaOpen, setStatFaOpen)}
         {renderSection('Tax Audit', AUDIT_ITEMS, auditOpen, setAuditOpen)}
       </SidebarContent>
       <SidebarFooter className="p-3">
