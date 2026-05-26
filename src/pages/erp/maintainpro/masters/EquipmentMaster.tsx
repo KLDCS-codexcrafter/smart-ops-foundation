@@ -4,13 +4,17 @@
  * @sprint      T-Phase-1.A.16a · Block D · Q-LOCK-4 + Q-LOCK-7
  * @whom        Audit Owner
  */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Wrench, ChevronDown, ChevronRight, ShieldCheck } from 'lucide-react';
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select';
+import { Plus, Wrench, ChevronDown, ChevronRight, ShieldCheck, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
@@ -20,6 +24,8 @@ import {
   isEquipmentInWarranty,
 } from '@/lib/maintainpro-engine';
 import type { Equipment } from '@/types/maintainpro';
+// 🆕 Sprint 66 FAR-2 · Block 3 · FK-3 · Equipment ↔ Fixed Asset picker (mirror MachineMaster)
+import { faUnitsKey, type AssetUnitRecord } from '@/types/fixed-asset';
 
 interface Props {
   onNavigate: (m: string) => void;
