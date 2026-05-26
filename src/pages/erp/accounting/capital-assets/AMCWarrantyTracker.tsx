@@ -44,6 +44,22 @@ export function AMCWarrantyTrackerPanel({ entityCode }: Props) {
   const warrantyUnits = useMemo(() => units.filter(u => u.warranty_expiry).sort((a, b) => (a.warranty_expiry ?? '').localeCompare(b.warranty_expiry ?? '')), [units]);
   const amcUnits = useMemo(() => units.filter(u => u.amc_expiry).sort((a, b) => (a.amc_expiry ?? '').localeCompare(b.amc_expiry ?? '')), [units]);
 
+  // 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-8 A · Renewal Pipeline computed count
+  const renewalPipelineRows = useMemo(() => {
+    const rows: Array<{ unit: AssetUnitRecord; type: 'Warranty' | 'AMC'; expires: string; days: number }> = [];
+    units.forEach(u => {
+      if (u.warranty_expiry) {
+        const days = Math.floor((new Date(u.warranty_expiry).getTime() - Date.now()) / 86400000);
+        if (days <= 60) rows.push({ unit: u, type: 'Warranty', expires: u.warranty_expiry, days });
+      }
+      if (u.amc_expiry) {
+        const days = Math.floor((new Date(u.amc_expiry).getTime() - Date.now()) / 86400000);
+        if (days <= 60) rows.push({ unit: u, type: 'AMC', expires: u.amc_expiry, days });
+      }
+    });
+    return rows.sort((a, b) => a.days - b.days);
+  }, [units]);
+
   return (
     <div className="p-6 space-y-4 animate-fade-in">
       <div>
