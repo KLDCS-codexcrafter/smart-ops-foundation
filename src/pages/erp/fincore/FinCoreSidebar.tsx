@@ -184,6 +184,14 @@ const STATUTORY_FA_PACK_ITEMS: SidebarItem[] = [
   { id: 'fc-fa-ledger-pack',  label: 'FA Ledger Pack (Schedule III)', icon: Layers },
 ];
 
+// [Sprint 66 FAR-2 · FA Physical-Reality group · Block 9]
+const FA_PHYSICAL_REALITY_ITEMS: SidebarItem[] = [
+  { id: 'fc-fa-physical-verification', label: 'Physical Verification', icon: Shield },
+  { id: 'fc-fa-calibration-status',    label: 'Calibration Status',    icon: Calculator },
+  { id: 'fc-fa-amc-renewal-pipeline',  label: 'AMC Renewal Pipeline',  icon: Shield },
+  { id: 'fc-fa-vehicle-register',      label: 'Vehicle Register (FA)', icon: Truck },
+];
+
 const AUDIT_ITEMS: SidebarItem[] = [
   { id: 'fc-audit-dashboard', label: 'Audit Dashboard', icon: LayoutDashboard },
   { id: 'fc-audit-3cd', label: 'Form 3CD', icon: FileText },
