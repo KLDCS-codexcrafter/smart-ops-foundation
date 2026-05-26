@@ -21,6 +21,7 @@ import { faUnitsKey } from '@/types/fixed-asset';
 import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { computeITCReversalOnCapitalSale } from '@/lib/gst-engine';
 
 const ls = <T,>(k: string): T[] => {
   try {
