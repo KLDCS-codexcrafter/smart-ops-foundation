@@ -1,7 +1,7 @@
 # FAR-1 (Sprint 65) · Indian Statutory Auto-Pack · Close Summary
 
 ## Bank metadata
-- HEAD: <TFIX_HEAD>
+- HEAD: <TFIX_HEAD_PENDING_HARNESS_FILL> (first-bank HEAD `6abdf106` superseded by T-fix · harness fills real SHA post-commit per v1.16 §12.5.3)
 - Predecessor: 9eeecc23 (Sprint 64 SHA-fill T-fix merge commit)
 - Bank date: 2026-05-26
 - Bank commit count: 1 (single-pass per Q-LOCK-10 A)
