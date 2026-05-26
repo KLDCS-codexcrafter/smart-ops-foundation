@@ -152,6 +152,39 @@ export const SIBLINGS: SiblingEntry[] = [
     moatsRealized: ['MOAT-38'],
     provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 65 FAR-1 · 40th SIBLING · CARO 2020 Engine (MOAT-39)
+  {
+    id: 'caro-2020-engine',
+    name: 'CARO 2020 Engine',
+    path: 'src/lib/caro-2020-engine.ts',
+    sprintAdded: 65,
+    compositeAdded: 65,
+    functionCount: 7,
+    moatsRealized: ['MOAT-39'],
+    provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 65 FAR-1 · 41st SIBLING · Ind AS 116 Lease Engine (FAR-CAP-9)
+  {
+    id: 'ind-as-116-lease-engine',
+    name: 'Ind AS 116 Lease Engine',
+    path: 'src/lib/ind-as-116-lease-engine.ts',
+    sprintAdded: 65,
+    compositeAdded: 65,
+    functionCount: 6,
+    moatsRealized: [],
+    provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 65 FAR-1 · 42nd SIBLING · EPCG FA Bridge (FAR-CAP-11 · MOAT-41)
+  {
+    id: 'epcg-fa-bridge',
+    name: 'EPCG FA Bridge',
+    path: 'src/lib/epcg-fa-bridge.ts',
+    sprintAdded: 65,
+    compositeAdded: 65,
+    functionCount: 5,
+    moatsRealized: ['MOAT-41'],
+    provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSiblingCount(): number {
