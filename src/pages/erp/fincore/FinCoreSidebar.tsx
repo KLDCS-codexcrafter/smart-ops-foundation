@@ -218,6 +218,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
   const [faOpen, setFaOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
   const [statFaOpen, setStatFaOpen] = useState(false);
+  const [physRealityOpen, setPhysRealityOpen] = useState(false);
 
   useEffect(() => {
     const txn = ['fc-txn-sales-invoice','fc-txn-purchase-invoice','fc-txn-receipt',
