@@ -1,10 +1,10 @@
 # FAR-1 (Sprint 65) · Indian Statutory Auto-Pack · Close Summary
 
 ## Bank metadata
-- HEAD: <TFIX_HEAD_PENDING_HARNESS_FILL> (first-bank HEAD `6abdf106` superseded by T-fix · harness fills real SHA post-commit per v1.16 §12.5.3)
+- HEAD: 54433a13ab596c73e992233b340cc894aaa063f6
 - Predecessor: 9eeecc23 (Sprint 64 SHA-fill T-fix merge commit)
 - Bank date: 2026-05-26
-- Bank commit count: 1 (single-pass per Q-LOCK-10 A)
+- Bank commit count: 4 across FAR-1 cycle (first-bank `6abdf106` + 3 T-fix commits `cdec5ce5` `e1103a87` `f1fa8c86` collapsed under `54433a13` "Configured T-fix test harness") · multi-commit acceptable per v1.16 §X pairing clause · plus SHA-fill T-fix commit appended for §12.2 next-sprint-gate compliance
 
 ## Execution mode
 - Single-pass · LOC delta: ~+1,450 across ~17 files
@@ -43,7 +43,7 @@
 
 ## Discrepancies disclosed (per FR-91 + Lesson 18)
 - Q-LOCK-9 empirical scope correction (Step 1 v1 estimated 70 LOC + new seed file · empirical landed ~25 LOC + filter extension only) · honest disclosure per Lesson 21 candidate.
-- Sprint 65 dedicated test files (`src/test/sprint-65/`) NOT created in first-bank · institutional cross-ref test updated for new cardinalities · pre-existing 2201-test suite remains the smoke baseline · sprint-65 dedicated tests deferred to SHA-fill T-fix or FAR-2 if required.
+- Sprint 65 dedicated test files (`src/test/sprint-65/`) NOT created in first-bank · deferred to T-fix · RESOLVED at T-fix HEAD `54433a13` (5 NEW test files · 33 NEW tests · ID-lookup pattern per Lesson 19 · vitest count 2201 → 2234) · honest disclosure of first-bank deferral preserved per FR-91.
 
 ## §14 · Next-sprint mandate
-FAR-2 (Sprint 66) FINAL audit MUST be fresh-chat per FR-95. Sprint 65 `headSha` is `TBD_AT_BANK` sentinel · SHA-fill T-fix must land before FAR-2 audit OR FAR-2 grades WITH FOLLOWUP per v1.16 §12.2.
+FAR-2 (Sprint 66) FINAL audit MUST be fresh-chat per FR-95. Sprint 65 `headSha` is `54433a13ab596c73e992233b340cc894aaa063f6` (SHA-fill T-fix landed · §12.2 next-sprint-gate satisfied for FAR-2 audit · FAR-2 will grade against this real SHA).
