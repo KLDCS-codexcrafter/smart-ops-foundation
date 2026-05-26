@@ -72,6 +72,11 @@ import { AssetDisposalPanel } from '@/pages/erp/accounting/capital-assets/AssetD
 import { CWIPRegisterPanel } from '@/pages/erp/accounting/capital-assets/CWIPRegister';
 import { FAReportsPanel } from '@/pages/erp/accounting/capital-assets/FAReports';
 import { FixedAssetRegisterPanel } from '@/pages/erp/accounting/capital-assets/FixedAssetRegister';
+// [Sprint 66 FAR-2 · Block 9 · FA Physical-Reality panels]
+import { FAPhysicalVerificationPanel } from '@/pages/erp/accounting/capital-assets/FAPhysicalVerification';
+import { FACalibrationStatusReportPanel } from '@/pages/erp/accounting/capital-assets/FACalibrationStatusReport';
+import { FAAMCRenewalPipelinePanel } from '@/pages/erp/accounting/capital-assets/FAAMCRenewalPipeline';
+import { FAVehicleRegisterPanel } from '@/pages/erp/accounting/capital-assets/FAVehicleRegister';
 // [Sprint 65 FAR-1 · Statutory FA Pack panels]
 import { CARO20DisclosurePanel } from './statutory-fa-pack/CARO20Disclosure';
 import { MSMECapitalBreachesPanel } from './statutory-fa-pack/MSMECapitalBreaches';
@@ -300,6 +305,11 @@ export function FinCorePagePanel() {
       case 'fc-fa-msme-capital': return <MSMECapitalBreachesPanel entityCode={entityCode} />;
       case 'fc-fa-ind-as-116':   return <IndAS116ROUSchedulePanel entityCode={entityCode} />;
       case 'fc-fa-ledger-pack':  return <FALedgerPackReportPanel entityCode={entityCode} />;
+      // [Sprint 66 FAR-2 · Block 9 · FA Physical-Reality]
+      case 'fc-fa-physical-verification': return <FAPhysicalVerificationPanel entityCode={entityCode} />;
+      case 'fc-fa-calibration-status':    return <FACalibrationStatusReportPanel entityCode={entityCode} />;
+      case 'fc-fa-amc-renewal-pipeline':  return <FAAMCRenewalPipelinePanel entityCode={entityCode} />;
+      case 'fc-fa-vehicle-register':      return <FAVehicleRegisterPanel entityCode={entityCode} />;
       // [T10-pre.2d-B] 13 voucher-type registers — all drill back to DayBook pre-filtered.
       case 'fc-rpt-sales-register':            return <SalesRegisterPanel            entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-purchase-register':         return <PurchaseRegisterPanel         entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;

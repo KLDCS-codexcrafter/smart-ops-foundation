@@ -45,6 +45,9 @@ const LIVE_MODULES: FinCoreModule[] = [
   'fc-fa-amc', 'fc-fa-disposal', 'fc-fa-cwip', 'fc-fa-reports',
   // [Sprint 65 FAR-1 · Statutory FA Pack]
   'fc-fa-caro-20', 'fc-fa-msme-capital', 'fc-fa-ind-as-116', 'fc-fa-ledger-pack',
+  // [Sprint 66 FAR-2 · FA Physical-Reality group]
+  'fc-fa-physical-verification', 'fc-fa-calibration-status',
+  'fc-fa-amc-renewal-pipeline', 'fc-fa-vehicle-register',
   // [T10-pre.2d-B] 13 voucher-type registers
   'fc-rpt-sales-register', 'fc-rpt-purchase-register',
   'fc-rpt-receipt-register', 'fc-rpt-payment-register',
@@ -181,6 +184,14 @@ const STATUTORY_FA_PACK_ITEMS: SidebarItem[] = [
   { id: 'fc-fa-ledger-pack',  label: 'FA Ledger Pack (Schedule III)', icon: Layers },
 ];
 
+// [Sprint 66 FAR-2 · FA Physical-Reality group · Block 9]
+const FA_PHYSICAL_REALITY_ITEMS: SidebarItem[] = [
+  { id: 'fc-fa-physical-verification', label: 'Physical Verification', icon: Shield },
+  { id: 'fc-fa-calibration-status',    label: 'Calibration Status',    icon: Calculator },
+  { id: 'fc-fa-amc-renewal-pipeline',  label: 'AMC Renewal Pipeline',  icon: Shield },
+  { id: 'fc-fa-vehicle-register',      label: 'Vehicle Register (FA)', icon: Truck },
+];
+
 const AUDIT_ITEMS: SidebarItem[] = [
   { id: 'fc-audit-dashboard', label: 'Audit Dashboard', icon: LayoutDashboard },
   { id: 'fc-audit-3cd', label: 'Form 3CD', icon: FileText },
@@ -207,6 +218,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
   const [faOpen, setFaOpen] = useState(false);
   const [auditOpen, setAuditOpen] = useState(false);
   const [statFaOpen, setStatFaOpen] = useState(false);
+  const [physRealityOpen, setPhysRealityOpen] = useState(false);
 
   useEffect(() => {
     const txn = ['fc-txn-sales-invoice','fc-txn-purchase-invoice','fc-txn-receipt',
@@ -242,6 +254,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
     else if (tds.includes(active)) setTdsOpen(true);
     else if (fa.includes(active)) setFaOpen(true);
     else if (['fc-fa-caro-20','fc-fa-msme-capital','fc-fa-ind-as-116','fc-fa-ledger-pack'].includes(active)) setStatFaOpen(true);
+    else if (['fc-fa-physical-verification','fc-fa-calibration-status','fc-fa-amc-renewal-pipeline','fc-fa-vehicle-register'].includes(active)) setPhysRealityOpen(true);
     else if (aud.includes(active)) setAuditOpen(true);
   }, [active]);
 
@@ -356,6 +369,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
         {renderSection('TDS / TCS', TDS_ITEMS, tdsOpen, setTdsOpen)}
         {renderSection('Fixed Assets', FA_ITEMS, faOpen, setFaOpen)}
         {renderSection('Statutory FA Pack', STATUTORY_FA_PACK_ITEMS, statFaOpen, setStatFaOpen)}
+        {renderSection('FA Physical Reality', FA_PHYSICAL_REALITY_ITEMS, physRealityOpen, setPhysRealityOpen)}
         {renderSection('Tax Audit', AUDIT_ITEMS, auditOpen, setAuditOpen)}
       </SidebarContent>
       <SidebarFooter className="p-3">
