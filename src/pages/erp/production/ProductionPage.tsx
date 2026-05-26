@@ -62,6 +62,8 @@ import MixedModeBUDashboard from './reports/MixedModeBUDashboard';
 import CarbonAwareProductionPlannerPanel from './reports/CarbonAwareProductionPlanner';
 import ProductionCarbonDashboardPanel from './reports/ProductionCarbonDashboard';
 import Phase3v2ClosureDashboardPanel from './reports/Phase3v2ClosureDashboard';
+// 🆕 Sprint 66 FAR-2 · Block 5 · FK-CAP-6
+import FALinkedMachinesPanel from './reports/FALinkedMachinesPanel';
 import type { ProductionModule } from './ProductionSidebar.types';
 
 export default function ProductionPage(): JSX.Element {
