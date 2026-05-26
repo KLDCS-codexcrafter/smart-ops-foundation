@@ -72,6 +72,7 @@ export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
     const created = createEquipment(entityCode, {
       equipment_code: form.equipment_code,
       equipment_name: form.equipment_name,
+      fixed_asset_id: form.fixed_asset_id,
       equipment_class: 'machine',
       category: 'mechanical',
       make: form.make,
