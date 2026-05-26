@@ -687,7 +687,7 @@ export function EmployeeMasterPanel() {
     uf('documents', form.documents.map(d => d.id === id ? { ...d, ...patch } : d));
 
   const addEquipment = () => uf('equipmentIssued', [...form.equipmentIssued, {
-    id: `eq-${Date.now()}`, assetCode: '', description: '', serialNo: '',
+    id: `eq-${Date.now()}`, assetCode: '', asset_id: null, description: '', serialNo: '',
     dateIssued: '', expectedReturn: '', status: 'issued' as const,
   }]);
   const removeEquipment = (id: string) => uf('equipmentIssued', form.equipmentIssued.filter(e => e.id !== id));
