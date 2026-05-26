@@ -1,6 +1,6 @@
 # Sprint 66 · T-Phase-4.FAR-2 · Close Summary
 
-**Bank SHA:** `<TFIX_HEAD>` (founder SHA-fill T-fix per Q-LOCK-14 A · v1.16 §12.5.3 cadence)
+**Bank SHA:** `fc6d521d773ef8fbf5211897c3b991239d786020` (Lovable SHA-fill T-fix per 50-year-architect Path L · §12.5.4 v1.17/v1.18 candidate clarification of Q-LOCK-14 A · v1.16 §12.5.3 cadence)
 **Predecessor SHA:** `0ebfc779` (Prompt A bank · "Completed Sprint 66 v3 Block 5-7")
 **Bank date:** 2026-05-26
 **Grade target:** A first-pass-clean ⭐ (13-streak NEW Operix record · baker's-dozen)
@@ -14,7 +14,7 @@
 | Sprint number | 66 |
 | Code | T-Phase-4.FAR-2 |
 | Composite | false |
-| Bank HEAD | `<TFIX_HEAD>` |
+| Bank HEAD | `fc6d521d773ef8fbf5211897c3b991239d786020` |
 | Predecessor HEAD | `0ebfc779dc5a363283685adc99c68ab5031f133a` |
 | LOC (combined Prompt A + B) | ~1,850 |
 | New SIBLINGs | `vehicle-fa-bridge` (43rd) |

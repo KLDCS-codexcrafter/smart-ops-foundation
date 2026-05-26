@@ -96,7 +96,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 66 FAR-2 · Cross-Card FK UI · 43rd SIBLING · MOAT-42/43/44 · 13-streak NEW RECORD (baker's-dozen)
   {
     sprintNumber: 66, code: 'T-Phase-4.FAR-2', composite: false, grade: 'A first-pass-clean',
-    headSha: '<TFIX_HEAD>', predecessorSha: '0ebfc779', loc: 1850,
+    headSha: 'fc6d521d773ef8fbf5211897c3b991239d786020', predecessorSha: '0ebfc779', loc: 1850,
     newSiblings: ['vehicle-fa-bridge'],
     bankDate: '2026-05-26', provenance: 'CONFIRMED',
   },
