@@ -148,6 +148,9 @@ export function FixedAssetRegisterPanel({ entityCode }: Props) {
                   <TableCell className="text-xs text-right font-mono">₹{u.net_book_value.toLocaleString('en-IN')}</TableCell>
                   <TableCell className="text-xs">{u.location}</TableCell>
                   <TableCell className="text-xs">{u.custodian_name}</TableCell>
+                  <TableCell className="text-xs text-right font-mono">
+                    {linkedCountByAsset.get(u.id) ?? 0}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-[10px] capitalize ${STATUS_BADGES[u.status] || ''}`}>{u.status.replace('_', ' ')}</Badge>
                   </TableCell>
