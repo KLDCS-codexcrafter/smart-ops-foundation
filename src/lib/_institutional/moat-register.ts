@@ -251,7 +251,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-45',
     name: 'Multi-GAAP Parallel Depreciation at SMB Price',
-    sprintBanked: 67, compositeBanked: 67, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 67, compositeBanked: 67, headShaBanked: '01c62d7e6fd1aecd1f26027a9233d286244bf9cd',
     backingFiles: [
       'src/lib/multi-gaap-depreciation-engine.ts',
       'src/pages/erp/accounting/capital-assets/MultiGAAPDepreciationReport.tsx',
@@ -263,7 +263,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-46',
     name: 'UOP Production-Fed Depreciation Bridge',
-    sprintBanked: 67, compositeBanked: 67, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 67, compositeBanked: 67, headShaBanked: '01c62d7e6fd1aecd1f26027a9233d286244bf9cd',
     backingFiles: [
       'src/lib/uop-depreciation-engine.ts',
       'src/pages/erp/accounting/capital-assets/UOPDepreciationReport.tsx',
@@ -275,7 +275,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-47',
     name: 'Component-Level Asset Depreciation (Ind AS 16)',
-    sprintBanked: 67, compositeBanked: 67, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 67, compositeBanked: 67, headShaBanked: '01c62d7e6fd1aecd1f26027a9233d286244bf9cd',
     backingFiles: [
       'src/lib/component-depreciation-engine.ts',
       'src/pages/erp/accounting/capital-assets/ComponentDepreciationReport.tsx',

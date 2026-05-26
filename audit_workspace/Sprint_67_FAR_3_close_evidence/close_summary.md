@@ -1,7 +1,7 @@
 # Sprint 67 · T-Phase-4.FAR-3 · Close Summary
 
-**Bank SHA:** `<TFIX_HEAD>` (Lovable SHA-fill T-fix post-audit · §12.5.4 v1.18 candidate event #2 of 3)
-**Predecessor SHA:** `<PROMPT_A_HEAD>` (Prompt A bank)
+**Bank SHA:** `01c62d7e6fd1aecd1f26027a9233d286244bf9cd` (Lovable SHA-fill T-fix · §12.5.4 v1.18 candidate empirical validation event #2 of 3 · landed on top of FAR-3 BANKED HEAD post-audit per v1.16 §12.5.3 cadence)
+**Predecessor SHA:** `ad0e1d2d9029d502ac050df8481add0c08501c34` (Sprint 66 FAR-2 BANKED + SHA-fill T-fix HEAD · the FAR-3 dispatch predecessor) · Prompt A intermediate HEAD: `5070c7c2944b816561834787932cf495db5e9afb` ("Executed Sprint 67 Prompt A")
 **Bank date:** 2026-05-27
 **Grade target:** A first-pass-clean ⭐ (14-streak post-baker's-dozen)
 
