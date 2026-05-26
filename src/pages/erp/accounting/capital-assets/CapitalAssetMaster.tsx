@@ -33,6 +33,8 @@ import { faUnitsKey, IT_ACT_BLOCK_LABELS } from '@/types/fixed-asset';
 import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// 🆕 Sprint 66 FAR-2 · Block 2 · FK-1 UI · Q-LOCK-1 A · Employee picker (additive)
+import { useEmployees } from '@/hooks/useEmployees';
 
 const ls = <T,>(k: string): T[] => {
   try {
@@ -79,6 +81,8 @@ export function CapitalAssetMasterPanel({ entityCode }: Props) {
   const [idLocation, setIdLocation] = useState('');
   const [idDepartment, setIdDepartment] = useState('');
   const [idCustodian, setIdCustodian] = useState('');
+  // 🆕 Sprint 66 FAR-2 · Block 2 · FK-1 · custodian Employee FK (backward-compat null default)
+  const [idCustodianEmployeeId, setIdCustodianEmployeeId] = useState<string | null>(null);
   const [idBlock, setIdBlock] = useState<ITActBlock>('Plant & Machinery');
   const [idSalvage, setIdSalvage] = useState(0);
   const [idPutToUse, setIdPutToUse] = useState('');
@@ -88,10 +92,14 @@ export function CapitalAssetMasterPanel({ entityCode }: Props) {
   const [trLocation, setTrLocation] = useState('');
   const [trDepartment, setTrDepartment] = useState('');
   const [trCustodian, setTrCustodian] = useState('');
+  // 🆕 Sprint 66 FAR-2 · Block 2 · FK-1 · transfer custodian Employee FK
+  const [trCustodianEmployeeId, setTrCustodianEmployeeId] = useState<string | null>(null);
   // Put To Use dialog
   const [ptuOpen, setPtuOpen] = useState(false);
   const [ptuUnit, setPtuUnit] = useState<AssetUnitRecord | null>(null);
   const [ptuDate, setPtuDate] = useState('');
+  // 🆕 Sprint 66 FAR-2 · Block 2 · FK-1 · Employee directory for picker
+  const { employees } = useEmployees();
 
   const reload = () => setUnits(ls<AssetUnitRecord>(faUnitsKey(entityCode)));
 
@@ -175,12 +183,18 @@ export function CapitalAssetMasterPanel({ entityCode }: Props) {
     if (!transferUnit) return;
     const all = ls<AssetUnitRecord>(faUnitsKey(entityCode));
     const updated = all.map(u => u.id === transferUnit.id ? {
-      ...u, location: trLocation, department: trDepartment, custodian_name: trCustodian, updated_at: new Date().toISOString(),
+      ...u,
+      location: trLocation,
+      department: trDepartment,
+      custodian_name: trCustodian,
+      // 🆕 Sprint 66 FAR-2 · Block 2 · FK-1 · write FK alongside legacy custodian_name (backward-compat)
+      custodian_employee_id: trCustodianEmployeeId,
+      updated_at: new Date().toISOString(),
     } : u);
     // [JWT] PATCH /api/fixed-assets/units/:id/transfer
     ss(faUnitsKey(entityCode), updated);
     toast.success(`${transferUnit.asset_id} transferred`);
-    setTransferOpen(false); setTransferUnit(null); reload();
+    setTransferOpen(false); setTransferUnit(null); setTrCustodianEmployeeId(null); reload();
   };
 
   return (
@@ -392,6 +406,30 @@ export function CapitalAssetMasterPanel({ entityCode }: Props) {
               <Label className="text-xs">Department</Label>
               <Input value={idDepartment} onChange={e => setIdDepartment(e.target.value)} onKeyDown={onEnterNext} />
             </div>
+            {/* 🆕 Sprint 66 FAR-2 · Block 2 · FK-1 picker · pick → fills both fields · clear → leaves text untouched */}
+            <div className="space-y-1.5">
+              <Label className="text-xs">Custodian Employee (optional)</Label>
+              <Select
+                value={idCustodianEmployeeId ?? '__none__'}
+                onValueChange={v => {
+                  if (v === '__none__') {
+                    setIdCustodianEmployeeId(null);
+                  } else {
+                    const emp = employees.find(e => e.id === v);
+                    setIdCustodianEmployeeId(v);
+                    if (emp) setIdCustodian(emp.displayName);
+                  }
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">None</SelectItem>
+                  {employees.filter(e => e.status === 'active').map(e => (
+                    <SelectItem key={e.id} value={e.id}>{e.empCode} · {e.displayName}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Custodian</Label>
               <Input value={idCustodian} onChange={e => setIdCustodian(e.target.value)} onKeyDown={onEnterNext} />
@@ -457,6 +495,30 @@ export function CapitalAssetMasterPanel({ entityCode }: Props) {
             <div className="space-y-1.5">
               <Label className="text-xs">New Department</Label>
               <Input value={trDepartment} onChange={e => setTrDepartment(e.target.value)} onKeyDown={onEnterNext} />
+            </div>
+            {/* 🆕 Sprint 66 FAR-2 · Block 2 · FK-1 picker (transfer) */}
+            <div className="space-y-1.5">
+              <Label className="text-xs">New Custodian Employee (optional)</Label>
+              <Select
+                value={trCustodianEmployeeId ?? '__none__'}
+                onValueChange={v => {
+                  if (v === '__none__') {
+                    setTrCustodianEmployeeId(null);
+                  } else {
+                    const emp = employees.find(e => e.id === v);
+                    setTrCustodianEmployeeId(v);
+                    if (emp) setTrCustodian(emp.displayName);
+                  }
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="__none__">None</SelectItem>
+                  {employees.filter(e => e.status === 'active').map(e => (
+                    <SelectItem key={e.id} value={e.id}>{e.empCode} · {e.displayName}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">New Custodian</Label>
