@@ -212,7 +212,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-42',
     name: '4-shape physical-asset unification with FK UI at SMB price',
-    sprintBanked: 66, compositeBanked: 66, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 66, compositeBanked: 66, headShaBanked: 'fc6d521d773ef8fbf5211897c3b991239d786020',
     backingFiles: [
       'src/lib/physical-asset-unit-bridge.ts',
       'src/pages/erp/accounting/capital-assets/FixedAssetRegister.tsx',
@@ -225,7 +225,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-43',
     name: 'Custodian-Employee FK enforcement with audit-grade transfer trail',
-    sprintBanked: 66, compositeBanked: 66, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 66, compositeBanked: 66, headShaBanked: 'fc6d521d773ef8fbf5211897c3b991239d786020',
     backingFiles: [
       'src/pages/erp/accounting/capital-assets/CapitalAssetMaster.tsx',
       'src/types/fixed-asset.ts',
@@ -236,7 +236,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-44',
     name: 'Tellicaller-style AMC + Warranty + Calibration renewal for OWN assets at SMB price',
-    sprintBanked: 66, compositeBanked: 66, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 66, compositeBanked: 66, headShaBanked: 'fc6d521d773ef8fbf5211897c3b991239d786020',
     backingFiles: [
       'src/pages/erp/accounting/capital-assets/AMCWarrantyTracker.tsx',
       'src/pages/erp/accounting/capital-assets/FAAMCRenewalPipeline.tsx',
