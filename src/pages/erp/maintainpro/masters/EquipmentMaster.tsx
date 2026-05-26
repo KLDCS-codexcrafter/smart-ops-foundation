@@ -114,7 +114,7 @@ export function EquipmentMaster({ onNavigate }: Props): JSX.Element {
     });
     setItems([...items, created]);
     setShowForm(false);
-    setForm({ equipment_code: '', equipment_name: '', make: '', model: '', location: '' });
+    setForm({ equipment_code: '', equipment_name: '', make: '', model: '', location: '', fixed_asset_id: null });
     toast.success(`Equipment ${created.equipment_code} created`);
   };
 
