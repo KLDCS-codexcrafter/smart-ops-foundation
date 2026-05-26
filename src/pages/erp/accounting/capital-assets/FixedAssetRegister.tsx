@@ -19,6 +19,8 @@ import { Search, Download, Layers } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import type { AssetUnitRecord, AssetUnitStatus, ITActBlock } from '@/types/fixed-asset';
 import { faUnitsKey, IT_ACT_BLOCK_LABELS } from '@/types/fixed-asset';
+import type { Machine } from '@/types/machine';
+import { machinesKey } from '@/types/machine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const ls = <T,>(k: string): T[] => {
@@ -41,6 +43,12 @@ interface Props { entityCode: string; }
 
 export function FixedAssetRegisterPanel({ entityCode }: Props) {
   const units = useMemo(() => ls<AssetUnitRecord>(faUnitsKey(entityCode)).filter(u => u.entity_id === entityCode), [entityCode]);
+  const machines = useMemo(() => ls<Machine>(machinesKey(entityCode)), [entityCode]);
+  const linkedCountByAsset = useMemo(() => {
+    const m = new Map<string, number>();
+    machines.forEach(x => { if (x.fixed_asset_id) m.set(x.fixed_asset_id, (m.get(x.fixed_asset_id) ?? 0) + 1); });
+    return m;
+  }, [machines]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<AssetUnitStatus | 'all'>('all');
   const [blockFilter, setBlockFilter] = useState<ITActBlock | 'all'>('all');
@@ -119,12 +127,13 @@ export function FixedAssetRegisterPanel({ entityCode }: Props) {
               <TableHead className="text-xs text-right">NBV</TableHead>
               <TableHead className="text-xs">Location</TableHead>
               <TableHead className="text-xs">Custodian</TableHead>
+              <TableHead className="text-xs text-right">Linked Machines</TableHead>
               <TableHead className="text-xs">Status</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 && (
-              <TableRow><TableCell colSpan={11} className="text-center text-muted-foreground py-8">No asset units found</TableCell></TableRow>
+              <TableRow><TableCell colSpan={12} className="text-center text-muted-foreground py-8">No asset units found</TableCell></TableRow>
             )}
             {filtered.map(u => (
               <>
@@ -139,13 +148,16 @@ export function FixedAssetRegisterPanel({ entityCode }: Props) {
                   <TableCell className="text-xs text-right font-mono">₹{u.net_book_value.toLocaleString('en-IN')}</TableCell>
                   <TableCell className="text-xs">{u.location}</TableCell>
                   <TableCell className="text-xs">{u.custodian_name}</TableCell>
+                  <TableCell className="text-xs text-right font-mono">
+                    {linkedCountByAsset.get(u.id) ?? 0}
+                  </TableCell>
                   <TableCell>
                     <Badge variant="outline" className={`text-[10px] capitalize ${STATUS_BADGES[u.status] || ''}`}>{u.status.replace('_', ' ')}</Badge>
                   </TableCell>
                 </TableRow>
                 {expandedId === u.id && (
                   <TableRow key={`${u.id}-detail`}>
-                    <TableCell colSpan={11} className="bg-muted/30 p-4">
+                    <TableCell colSpan={12} className="bg-muted/30 p-4">
                       <div className="grid grid-cols-4 gap-4 text-xs">
                         <div><span className="text-muted-foreground">Department:</span> {u.department}</div>
                         <div><span className="text-muted-foreground">Salvage:</span> ₹{u.salvage_value.toLocaleString('en-IN')}</div>
