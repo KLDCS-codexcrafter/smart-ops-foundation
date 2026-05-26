@@ -133,7 +133,7 @@ export function FixedAssetRegisterPanel({ entityCode }: Props) {
           </TableHeader>
           <TableBody>
             {filtered.length === 0 && (
-              <TableRow><TableCell colSpan={11} className="text-center text-muted-foreground py-8">No asset units found</TableCell></TableRow>
+              <TableRow><TableCell colSpan={12} className="text-center text-muted-foreground py-8">No asset units found</TableCell></TableRow>
             )}
             {filtered.map(u => (
               <>
