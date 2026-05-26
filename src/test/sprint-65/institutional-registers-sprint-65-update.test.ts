@@ -46,9 +46,9 @@ describe('Sprint 65 FAR-1 · institutional register updates (ID-lookup)', () => 
     }
   });
 
-  it('canonical SIBLINGS preserved (depreciation-engine + physical-asset-unit-bridge ID-lookup)', () => {
-    expect(SIBLINGS.find(s => s.id === 'depreciation-engine')).toBeDefined();
-    expect(SIBLINGS.find(s => s.id === 'physical-asset-unit-bridge')).toBeDefined();
+  it('canonical SIBLINGS preserved (sales-production-bridge + iot-machine-bridge ID-lookup)', () => {
+    expect(SIBLINGS.find(s => s.id === 'sales-production-bridge')).toBeDefined();
+    expect(SIBLINGS.find(s => s.id === 'iot-machine-bridge')).toBeDefined();
   });
 
   it('canonical MOATs preserved · MOAT-39/41 backingFiles cite expected SIBLING engines', () => {
