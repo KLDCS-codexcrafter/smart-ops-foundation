@@ -67,7 +67,7 @@ These are documented for a future housekeeping sprint; out of T-fix scope.
 - In-context audit institutional violation: 5 consecutive → RESET TO 0 (if fresh-chat audit executed per FR-95)
 
 ## Discrepancies disclosed (per Lesson 18)
-- (First-bank) Entity-specific FA depth seed functions were initially implemented as no-op placeholders. Now resolved by T-fix at HEAD `<TFIX_HEAD>` — all 6 entities materially seed via new entity-specific data files.
+- (First-bank) Entity-specific FA depth seed functions were initially implemented as no-op placeholders. Now resolved by T-fix at HEAD `889d9f1c` — all 6 entities materially seed via new entity-specific data files.
 - Cross-ref test file lives at `src/lib/_institutional/_institutional-cross-ref.test.ts` (not `src/test/_institutional-cross-ref.test.ts` as referenced in spec §3 item 21). Empirical path used.
 
 ## Notes for auditor
@@ -79,4 +79,4 @@ These are documented for a future housekeeping sprint; out of T-fix scope.
 ## §14 · 5-consecutive in-context audit institutional violation carry-forward declaration
 Sprint 64 FAR-0 is the institutional reset attempt per FR-95 + Sprint 61 §14 + Sprint 62 §14 + Sprint 63 §14 + State Handoff v48 §12 + FR Cheatsheet v1.15 perpetual carry-forward declaration. The FAR-0 FINAL audit MUST be performed in a brand-new Claude chat with zero prior Operix context to reset the 5-consecutive in-context audit violation chain that accumulated across D14-HK + Sprint 61 PASS 1 + Sprint 61 FINAL + Sprint 62 FINAL + Sprint 63 FINAL. If FAR-0 audit also happens in-context (6th consecutive), audit-independence becomes ⭐ DEGRADED-CRITICAL and framework escalation needed. If fresh-chat audit executes properly, audit-independence is restored from ⭐⭐ DEGRADED to ⭐⭐⭐ RESTORED.
 
-**T-fix outcome:** 3 audit findings remediated in a tightly-scoped single-pass T-fix at HEAD `<TFIX_HEAD>`. Theme 2 semantic intent now fully shipped (all 7 entities materially seed entity-tailored FA depth · not just Sinha). AC#9 + AC#20 `TBD_AT_BANK` placeholders filled. Audit-independence reset to ⭐⭐⭐ RESTORED is contingent on the post-T-fix re-audit being performed in a brand-new Claude chat with zero prior Operix context per FR-95.
+**T-fix outcome:** 3 audit findings remediated in a tightly-scoped single-pass T-fix at HEAD `889d9f1c`. Theme 2 semantic intent now fully shipped (all 7 entities materially seed entity-tailored FA depth · not just Sinha). AC#9 + AC#20 sentinel placeholders filled. Audit-independence reset to ⭐⭐⭐ RESTORED is contingent on the post-T-fix re-audit being performed in a brand-new Claude chat with zero prior Operix context per FR-95.
