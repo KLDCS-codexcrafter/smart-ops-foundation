@@ -74,6 +74,10 @@ export function AMCWarrantyTrackerPanel({ entityCode }: Props) {
           <TabsTrigger value="warranty">Warranty ({warrantyUnits.length})</TabsTrigger>
           <TabsTrigger value="amc">AMC ({amcUnits.length})</TabsTrigger>
           <TabsTrigger value="history">Service History</TabsTrigger>
+          {/* 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-6 A · Calibration tab */}
+          <TabsTrigger value="calibration">Calibration</TabsTrigger>
+          {/* 🆕 Sprint 66 FAR-2 · Block 7 · Q-LOCK-8 A · Renewal Pipeline tab */}
+          <TabsTrigger value="renewal">Renewal Pipeline ({renewalPipelineRows.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="warranty">
