@@ -309,7 +309,7 @@ export function FinCorePagePanel() {
       case 'fc-fa-physical-verification': return <FAPhysicalVerificationPanel entityCode={entityCode} />;
       case 'fc-fa-calibration-status':    return <FACalibrationStatusReportPanel entityCode={entityCode} />;
       case 'fc-fa-amc-renewal-pipeline':  return <FAAMCRenewalPipelinePanel entityCode={entityCode} />;
-      case 'fc-fa-vehicle-register':      return <FAVehicleRegisterPanel entityCode={entityCode} />
+      case 'fc-fa-vehicle-register':      return <FAVehicleRegisterPanel entityCode={entityCode} />;
       // [T10-pre.2d-B] 13 voucher-type registers — all drill back to DayBook pre-filtered.
       case 'fc-rpt-sales-register':            return <SalesRegisterPanel            entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-purchase-register':         return <PurchaseRegisterPanel         entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
