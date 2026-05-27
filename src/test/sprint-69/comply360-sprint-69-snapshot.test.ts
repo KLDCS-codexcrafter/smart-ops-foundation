@@ -16,11 +16,11 @@ import { COMPLIANCE_MODULE_WEIGHTS } from '@/lib/comply360-health-score-engine';
 import { COMPLY360_DEFAULT_ENTITY_PREFS } from '@/lib/cc-compliance-settings';
 
 describe('Sprint 69 · T-Phase-5.A.1.1 · Comply360 Main Arc 1.1 · institutional snapshot (FR-58 + Lesson 24 historical-snapshot)', () => {
-  it('Sprint 69 entry exists in sprint-history with grade A', () => {
+  it('Sprint 69 entry exists in sprint-history with grade A with adaptations', () => {
     const entry = SPRINTS.find((s) => s.sprintNumber === 69);
     expect(entry).toBeDefined();
     expect(entry?.code).toBe('T-Phase-5.A.1.1');
-    expect(entry?.grade).toBe('A');
+    expect(entry?.grade).toBe('A with adaptations');
     expect(entry?.predecessorSha).toBe('9925e6269e53e5a0d30b8e2669fb3fde5398e9fb');
   });
 
