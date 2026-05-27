@@ -72,7 +72,7 @@ export function unlinkRFIDTag(entityCode: string, rfid_tag_id: string): void {
  * Detect custodian drift from RFID location signals over a window.
  */
 export function detectCustodianDrift(
-  entityCode: string,
+  _entityCode: string,
   asset_id: string,
   location_signals: IoTSignal[],
 ): { is_drift: boolean; drift_distance_estimate_m?: number; recommendation: string } {
