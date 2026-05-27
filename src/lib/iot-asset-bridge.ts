@@ -52,7 +52,7 @@ export function ingestIoTSignal(
   asset_id: string,
   signal: IoTSignal,
 ): IoTBridgeState {
-  const unit = findPhysicalAssetUnit(entityCode, asset_id);
+  const unit = findPhysicalAssetUnit(entityCode, { asset_unit_record_id: asset_id });
   const stream = readStream(entityCode, asset_id);
   stream.push(signal);
   // Cap stream at last 500 signals to prevent unbounded growth
@@ -125,7 +125,7 @@ export function listIoTStreamingAssets(entityCode: string): IoTBridgeState[] {
       const last_signal = stream[stream.length - 1];
       const today = new Date().toISOString();
       const signal_count_today = stream.filter((s) => isSameDay(s.timestamp, today)).length;
-      const unit = findPhysicalAssetUnit(entityCode, asset_id);
+      const unit = findPhysicalAssetUnit(entityCode, { asset_unit_record_id: asset_id });
       out.push({
         asset_unit_record_id: unit?.asset_unit_record_id ?? asset_id,
         last_signal,
