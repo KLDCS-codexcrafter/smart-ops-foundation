@@ -47,7 +47,7 @@ describe('Sprint 70a · Block 2 · comply360-gst-aggregator-engine', () => {
     localStorage.setItem(`erp_sales_orders_${ENTITY}`, JSON.stringify([mkSO()]));
     localStorage.setItem(
       `erp_export_pos_${ENTITY}`,
-      JSON.stringify([mkSO({ id: 'ex-1', invoice_no: 'EX/0001', is_export: true, with_payment: true })]),
+      JSON.stringify([mkSO({ id: 'ex-1', invoice_no: 'EX/0001', supply_type: undefined, is_export: true, with_payment: true })]),
     );
     const out = aggregateOutwardSupplies(filter);
     expect(out).toHaveLength(2);
