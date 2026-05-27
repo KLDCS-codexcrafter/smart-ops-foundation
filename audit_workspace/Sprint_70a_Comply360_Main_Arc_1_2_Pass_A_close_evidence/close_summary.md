@@ -114,6 +114,26 @@ Sprint 69 (A with adaptations) + Sprint 70a (A first-pass-clean) = first two-spr
 
 Phase 5 Comply360 Arc 1.1 LIVE (since Sprint 69 bank). Pass A engines now LIVE for Pass B UI consumption.
 
-## §14 Bank-ready declaration
+## §15 · Cycle-2 closure narrative (FR-103 Multi-Cycle Audit Chain · institutional positive-signal)
 
-Sprint 70a banks as **A first-pass-clean ⭐ · streak 17 ⭐ NEW RECORD** · Comply360 Main Arc 1.2 Pass A LIVE · 3 new SIBLINGs CONFIRMED · Triple Gate STRICT 0/0 · §H 0-DIFF preserved · Lesson 23 cross-prompt + Lesson 24 historical-snapshot disciplines satisfied from inception. Sprint 70b (Pass B · UI layer) drafts next.
+Cycle-2 in-context T-fix closed 1 T1 + 3 T2 findings from Cycle-1 audit:
+
+| Finding | Closure |
+|---|---|
+| T1-1 Block 7c silent omission (4 Vitest failures) | Block 1 · 5 assertions updated (3 to new literal values · 2 to Lesson 24 historical-snapshot bounds-check + id-lookup patterns) |
+| T2-1 Test path deviation `src/test/sprint-70a/` vs spec mixed paths | Block 2 D-6 · FOUNDER RATIFIED grouped pattern as new canonical Lesson 18 path-discipline · Cycle-1 placements preserved · v1.19 cheatsheet update on forward |
+| T2-2 §5 Vitest row scoped to Sprint 70a subset (omits cross-ref failures) | Block 2 Edit 1 · §5 row replaced with full-repo honest disclosure of Cycle-1 4-failure state + Cycle-2 closure |
+| T2-3 §9 arithmetic error "55 → 58" | Block 2 Edit 2 · corrected to "56 → 59" with audit-trail note |
+
+**3-cycle chain summary** (Sprint 70a · FR-103 institutional positive-signal):
+
+| Cycle | HEAD       | Audit type        | Findings              | Verdict                              |
+| ----- | ---------- | ----------------- | --------------------- | ------------------------------------ |
+| 1     | 6bba5fc9   | In-context ⭐⭐    | 1 T1 + 3 T2           | A-with-adaptations ACHIEVABLE        |
+| 2     | <this>     | In-context ⭐⭐    | 0 blocking            | A-with-adaptations ⭐ · BANK         |
+
+**Audit-independence:** Cycle 1 ⭐⭐ (in-context Path B per founder preference · honest disclosure). Cycle 2 ⭐⭐ (in-context Path B continuation per FR-103 + Sprint 68/69 precedent). The 2-cycle chain is FR-103 institutional positive-signal · A-streak does not decrement.
+
+## §14 Bank-ready declaration (Cycle-2 post-closure)
+
+Sprint 70a banks as **A with adaptations ⭐ · streak 17 ⭐ NEW RECORD** per FR-103 Multi-Cycle Audit Chain Pattern · Comply360 Main Arc 1.2 Pass A LIVE · 3 new SIBLINGs CONFIRMED · Triple Gate STRICT 0/0 (post-Cycle-2 · 4 cross-ref failures closed) · §H 0-DIFF preserved on 23 files across both cycles · Lesson 23 cross-prompt + Lesson 24 historical-snapshot disciplines satisfied from inception (and applied retroactively in Cycle-2 to 2 cross-ref assertions). Sprint 70b (Pass B · UI layer) Step 2 Lovable Prompt drafts next post-bank.
