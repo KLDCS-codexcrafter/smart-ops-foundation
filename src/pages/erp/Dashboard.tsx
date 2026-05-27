@@ -334,6 +334,17 @@ export default function ErpDashboard() {
       .filter((a): a is AppDefinition => !!a && allowedSet.has(a.id));
   }, [entityCode, userId, allowedCards]);
 
+  // Sprint 69 Cycle-2 · DP-S69-4 · weighted Health Score for FA tile refresh.
+  const complianceObligations = useMemo(() => loadObligations(), []);
+  const complianceHealth = useMemo(
+    () => computeWeightedComplianceHealth(complianceObligations),
+    [complianceObligations],
+  );
+  const faTiles = useMemo(
+    () => buildFATiles(entityCode, complianceHealth),
+    [entityCode, complianceHealth],
+  );
+
   return (
     <div data-keyboard-form className="min-h-screen bg-background overflow-hidden relative">
       {/* Background Orbs */}
@@ -440,7 +451,7 @@ export default function ErpDashboard() {
             );
           }
 
-          const faTiles = buildFATiles(entityCode);
+          // faTiles computed at component scope via useMemo (Sprint 69 Cycle-2 · DP-S69-4)
 
           return (
             <div className="space-y-8">
