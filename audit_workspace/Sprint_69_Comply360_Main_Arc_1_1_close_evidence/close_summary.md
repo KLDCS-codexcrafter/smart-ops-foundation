@@ -52,8 +52,24 @@ Cycle-2 closure of all 5 T1 and 7 T2 findings raised by fresh-chat audit.
 
 4. **T1-D · Role visibility for mega-menus undefined** — Cycle-1 sidebar exposed
    all 23 mega-menus to every role, no DP-S69-6 enforcement.
-   → **Closure:** Block 6 new `comply360-role-config.ts` codifies the 8-role
-   matrix with `canSeeModule` + `filterModulesByRole`. Block 7 unit-tested.
+   → **Closure:** Block 6 new `comply360-role-config.ts` codifies the role matrix
+   with `canSeeModule` + `filterModulesByRole`. Block 7 unit-tested.
+
+   **🔶 HONEST DISCLOSURE (FR-91 · per Cycle-2 audit):** The Cycle-2 T-fix shipped
+   an 8-role *platform-permissioning* taxonomy (super_admin · tenant_admin · finance ·
+   compliance_officer · auditor_external · auditor_internal · hr · view_only).
+   The Step 1 v5 spec called for a 7-role *business-persona* taxonomy (CEO · CFO ·
+   HR · CS · Auditor · Branch · CA Firm) per Bharat_Comply_3602.docx SSOT. The
+   substitution was a sound architectural call to align with platform UserRoles
+   and avoid parallel role models, but the reframe was undisclosed at Cycle-2 close.
+   **Cycle-3 ratification (founder Option A):** 8-role platform taxonomy BLESSED.
+   Step 1 v5.1 (post-Cycle-3) will record the 8 roles as the corrected canonical
+   DP-S69-6 taxonomy. Business-persona layer (CEO/CFO/HR/CS/Auditor/Branch/CA Firm)
+   will be added in Sprint 70+ as a persona-overlay atop the platform roles.
+
+   **🔶 PATH DISCLOSURE:** `comply360-role-config.ts` was placed at `src/lib/`
+   instead of spec's `src/apps/erp/configs/`. Cycle-3 accepts this placement
+   (config-as-code adjacent to engines is institutionally defensible).
 
 5. **T1-E · No per-entity Comply360 prefs surface** — CFO/CS/HR cannot tune
    thresholds without forking master compliance config.
