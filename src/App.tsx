@@ -77,6 +77,11 @@ const ExportHub = lazy(() => import('./pages/bridge/ExportHub'));
 const AuditExplorer = lazy(() => import('./pages/bridge/AuditExplorer'));
 const BridgeSettings = lazy(() => import('./pages/bridge/BridgeSettings'));
 const ErpDashboard = lazy(() => import('./pages/erp/Dashboard'));
+// 🆕 Sprint 68 FAR-4 · Block 14 · FAR-2 deferred Block 9 route supplement · Q-LOCK-12 A
+const FAPhysicalVerificationPage = lazy(() => import('./pages/erp/accounting/capital-assets/FAPhysicalVerification'));
+const FACalibrationStatusReportPage = lazy(() => import('./pages/erp/accounting/capital-assets/FACalibrationStatusReport'));
+const FAAMCRenewalPipelinePage = lazy(() => import('./pages/erp/accounting/capital-assets/FAAMCRenewalPipeline'));
+const FAVehicleRegisterPage = lazy(() => import('./pages/erp/accounting/capital-assets/FAVehicleRegister'));
 const CommandCenterPage = lazy(() => import('./features/command-center/pages/CommandCenterPage'));
 const PayHubPage = lazy(() => import('./features/pay-hub/PayHubPage'));
 const SalesXPage = lazy(() => import('./features/salesx/SalesXPage'));
