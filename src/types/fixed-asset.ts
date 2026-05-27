@@ -2,6 +2,7 @@
  * fixed-asset.ts — Fixed Asset types for FC Sprint 4
  * AssetUnitRecord, DepreciationEntry, ITActBlock, AssetUnitLine, AMCScheduleEntry
  * [JWT] Replace with GET/POST /api/fixed-assets/*
+ * 🆕 Sprint 68 FAR-4 Prompt A · Block 1 · +3 NEW interfaces (IoTSignal · BRSRMetadata · PredictiveMaintenanceSignal) + 8 additive AssetUnitRecord fields (IoT/RFID/AI/BRSR/QR)
  */
 
 export type ITActBlock =
@@ -103,8 +104,45 @@ export interface AssetUnitRecord {
     amount: number;
     description: string;
   }>;
+  // 🆕 Sprint 68 FAR-4 Prompt A · Block 1 · IoT/RFID/AI/BRSR/QR additive fields (all backward-compat optional)
+  iot_signal_payload?: IoTSignal[] | null;          // FAR-4 IoT/RFID stream
+  rfid_tag_id?: string | null;                       // FAR-4 RFID-specific identifier
+  predictive_maintenance_score?: number | null;      // FAR-4 ML 0-1 score
+  next_predicted_failure_date?: string | null;       // FAR-4 ISO 8601 date
+  ai_classification_suggestion?: string | null;      // FAR-4 AI category auto-suggest
+  ai_classification_confidence?: number | null;      // FAR-4 0-1
+  brsr_esg_metadata?: BRSRMetadata | null;           // FAR-4 ESG disclosure substrate
+  qr_payload_url?: string | null;                    // FAR-4 QR cockpit deeplink
   created_at: string;
   updated_at: string;
+}
+
+// 🆕 Sprint 68 FAR-4 Prompt A · Block 1 · IoT sensor signal · powers FAR-CAP-21 + MOAT-49
+export interface IoTSignal {
+  timestamp: string;             // ISO 8601 UTC
+  sensor_type: 'meter' | 'temperature' | 'vibration' | 'location' | 'rfid_proximity';
+  value: number;
+  unit: string;                  // e.g. 'kWh', 'celsius', 'mm/s', 'lat,lng', 'tag_id'
+  source_device_id?: string;
+}
+
+// 🆕 Sprint 68 FAR-4 Prompt A · Block 1 · BRSR/ESG disclosure metadata · powers MOAT-52
+export interface BRSRMetadata {
+  esg_category: 'environment' | 'social' | 'governance' | 'mixed';
+  resource_intensity_score: number;          // 0-100
+  carbon_footprint_kgco2_per_year: number;
+  disclosure_section: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G';
+  last_assessed_date?: string;
+}
+
+// 🆕 Sprint 68 FAR-4 Prompt A · Block 1 · Predictive maintenance composite signal · powers MOAT-51
+// Consumed by FAR-4 Prompt B Block 8 · declared here so AssetUnitRecord can reference at Prompt A.
+export interface PredictiveMaintenanceSignal {
+  score: number;                       // 0-1 · 0 = no failure risk · 1 = imminent failure
+  next_predicted_failure_date?: string;
+  driving_factors: string[];
+  computed_at: string;
+  confidence: number;                  // 0-1
 }
 
 export interface DepreciationEntry {
