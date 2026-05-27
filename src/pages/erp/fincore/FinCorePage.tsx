@@ -87,6 +87,8 @@ import { AssetMasterExcelImportPanel } from '@/pages/erp/accounting/capital-asse
 import { AIFAClassificationPanel } from '@/pages/erp/accounting/capital-assets/AIFAClassificationPanel';
 import { DocumentAIFAPanel } from '@/pages/erp/accounting/capital-assets/DocumentAIFAPanel';
 import { IoTRFIDAssetPanel } from '@/pages/erp/accounting/capital-assets/IoTRFIDAssetPanel';
+// [Sprint 68 FAR-4 · Block 15 · InsightX FA staging panel · Q-LOCK-10 A]
+import { InsightXFAStagingPanel } from '@/pages/erp/accounting/capital-assets/InsightXFAStagingPanel';
 // [Sprint 65 FAR-1 · Statutory FA Pack panels]
 import { CARO20DisclosurePanel } from './statutory-fa-pack/CARO20Disclosure';
 import { MSMECapitalBreachesPanel } from './statutory-fa-pack/MSMECapitalBreaches';
