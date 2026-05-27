@@ -11,9 +11,9 @@ import { SUB_PORTALS, getSubPortalCount } from './sub-portal-registry';
 import { FAR_CAPABILITIES, getFARCapabilityCount, getFARCapabilityScoreSchemaStaged } from './far-extended-scorecard';
 import { FK_CAPABILITIES, getFKCapabilityCount, getFKCapabilityScoreSchemaStaged } from './fk-extended-scorecard';
 
-describe('Institutional registers · cardinality (post-Sprint-69 Comply360 Main Arc 1.1)', () => {
-  it('SIBLINGS has 56 entries', () => {
-    expect(getSiblingCount()).toBe(56);
+describe('Institutional registers · cardinality (post-Sprint-70a Comply360 Main Arc 1.2 Pass A)', () => {
+  it('SIBLINGS has 59 entries', () => {
+    expect(getSiblingCount()).toBe(59);
   });
 
   it('MOATS has 52 entries', () => {
@@ -24,8 +24,8 @@ describe('Institutional registers · cardinality (post-Sprint-69 Comply360 Main 
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 69 entries', () => {
-    expect(getSprintCount()).toBe(69);
+  it('SPRINTS has 70 entries', () => {
+    expect(getSprintCount()).toBe(70);
   });
 
   it('SUB_PORTALS has 3 entries', () => {
@@ -65,15 +65,21 @@ describe('FAR + FK extended scorecards · Sprint 68 FAR-4 (24 FAR-CAPs FULL · 7
 });
 
 describe('Sprint history · A-streak counter', () => {
-  it('current A-streak is 16 (Sprint 54-69 · NEW Operix record ⭐)', () => {
-    expect(getCurrentAStreak()).toBe(16);
+  // Lesson 24 historical-snapshot pattern · bounds-check not equality
+  // (avoids future-sprint stale-snapshot regression · seeds FR-CANDIDATE-CROSS-REF-AUTOUPDATE 2nd validation)
+  it('current A-streak is at least 17 (Sprint 54-70a · NEW Operix record ⭐)', () => {
+    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(17);
   });
 
-  it('Sprint 69 Comply360 Main Arc 1.1 is the most recent banked sprint · 2 new SIBLINGs', () => {
+  it('Sprint 70a Comply360 Main Arc 1.2 Pass A is the most recent banked sprint · 3 new SIBLINGs (Lesson 24 id-lookup)', () => {
+    // Lesson 24 · id-lookup not array-index (future sprints append; index drifts)
+    const s70a = SPRINTS.find((s) => s.sprintNumber === 70 && s.code === 'T-Phase-5.A.1.2-PASS-A');
+    expect(s70a).toBeDefined();
+    expect(s70a?.newSiblings.length).toBe(3);
+    // Also verify it is in fact the most recent at THIS bank time (will become stale at Sprint 70b · documented as Sprint-70a-snapshot)
     const latest = SPRINTS[SPRINTS.length - 1];
-    expect(latest.sprintNumber).toBe(69);
-    expect(latest.code).toBe('T-Phase-5.A.1.1');
-    expect(latest.newSiblings.length).toBe(2);
+    expect(latest.sprintNumber).toBe(70);
+    expect(latest.code).toBe('T-Phase-5.A.1.2-PASS-A');
   });
 });
 
