@@ -45,7 +45,7 @@ describe('Sprint 69 · T-Phase-5.A.1.1 · Comply360 Main Arc 1.1 · institutiona
     const s69 = SIBLINGS.filter((s) => s.sprintAdded === 69);
     expect(s69.length).toBeGreaterThanOrEqual(2);
     for (const sib of s69) {
-      const full = path.join(repoRoot, sib.path);
+      const full = path.join(repoRoot, sib.path ?? '');
       expect(fs.existsSync(full), `${sib.id} backing file missing: ${sib.path}`).toBe(true);
     }
   });
