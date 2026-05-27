@@ -24,7 +24,7 @@ describe('rfid-asset-bridge · registry CRUD', () => {
   it('unlinkRFIDTag removes the record', () => {
     linkRFIDTag(ENTITY, 'asset-2', 'TAG-BBB-002');
     unlinkRFIDTag(ENTITY, 'TAG-BBB-002');
-    expect(findAssetByRFIDTag(ENTITY, 'TAG-BBB-002')).toBeUndefined();
+    expect(findAssetByRFIDTag(ENTITY, 'TAG-BBB-002')).toBeNull();
   });
 
   it('listRFIDTaggedAssets returns linked records', () => {

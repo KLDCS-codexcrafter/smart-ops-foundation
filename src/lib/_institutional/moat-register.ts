@@ -288,7 +288,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-48',
     name: 'AI-Driven FA Category Auto-Classification (rule-based, explainable, taught-keywords)',
-    sprintBanked: 68, compositeBanked: 68, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 68, compositeBanked: 68, headShaBanked: '12fae25b1c0db799a3bc4270abf2d3383c7b7555',
     backingFiles: ['src/lib/ai-fa-classification-engine.ts', 'src/pages/erp/accounting/capital-assets/AIFAClassificationPanel.tsx'],
     competitivePositioning: 'No Indian SMB ERP ships keyword-explainable AI category classification with taught-model loop · Phase 5 ML upgrade path · audit-explainable per Q-LOCK-3 C',
     provenance: 'CONFIRMED',
@@ -296,7 +296,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-49',
     name: 'IoT + RFID Bidirectional FA Bridge (real-time streaming + RFID registry)',
-    sprintBanked: 68, compositeBanked: 68, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 68, compositeBanked: 68, headShaBanked: '12fae25b1c0db799a3bc4270abf2d3383c7b7555',
     backingFiles: ['src/lib/iot-asset-bridge.ts', 'src/lib/rfid-asset-bridge.ts', 'src/pages/erp/accounting/capital-assets/IoTRFIDAssetPanel.tsx'],
     competitivePositioning: 'World-first SMB ERP where IoT meter signals + RFID tag scans feed FA register bidirectionally · UOP depreciation auto-fed · Phase 5 WebSocket upgrade path',
     provenance: 'CONFIRMED',
@@ -304,7 +304,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-50',
     name: 'Document AI FA Invoice Extractor (GST + HSN + FA-specific fields)',
-    sprintBanked: 68, compositeBanked: 68, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 68, compositeBanked: 68, headShaBanked: '12fae25b1c0db799a3bc4270abf2d3383c7b7555',
     backingFiles: ['src/lib/document-ai-fa-engine.ts', 'src/pages/erp/accounting/capital-assets/DocumentAIFAPanel.tsx'],
     competitivePositioning: 'Rule-based PDF invoice extraction with GSTIN checksum + HSN validation + FA-specific field capture (make/model/serial/warranty/capitalization eligibility) · audit-grade · Phase 5 OCR/ML swap-in',
     provenance: 'CONFIRMED',
@@ -312,7 +312,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-51',
     name: 'Predictive Maintenance ML Signal (lookback heuristic · explainable)',
-    sprintBanked: 68, compositeBanked: 68, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 68, compositeBanked: 68, headShaBanked: '12fae25b1c0db799a3bc4270abf2d3383c7b7555',
     backingFiles: ['src/lib/predictive-maintenance-fa-engine.ts'],
     competitivePositioning: 'Inter-failure interval + cost-trend signal with driving-factor explanation · feeds CC FA Health Lane + AMC Renewal Pipeline · Phase 5 gradient-model upgrade path',
     provenance: 'CONFIRMED',
@@ -320,7 +320,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-52',
     name: 'BRSR FA-Specific ESG Disclosure Pack (Sections A-G · IoT-fed carbon footprint)',
-    sprintBanked: 68, compositeBanked: 68, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 68, compositeBanked: 68, headShaBanked: '12fae25b1c0db799a3bc4270abf2d3383c7b7555',
     backingFiles: ['src/lib/brsr-fa-engine.ts', 'src/pages/erp/accounting/capital-assets/BRSRFADisclosurePack.tsx'],
     competitivePositioning: 'First Indian SMB ERP to ship FA-specific BRSR Section A-G disclosure pack with live IoT-meter-fed carbon footprint per asset · SEBI BRSR mandate ready · Rs 3-8L TCO',
     provenance: 'CONFIRMED',
