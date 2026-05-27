@@ -364,3 +364,77 @@ export function updateTellicallerTriggerSettings(
   appendCCSettingsAudit(entityCode, updated_by, 'tellicaller', before, next);
   return next;
 }
+
+// ════════════════════════════════════════════════════════════════════
+// Sprint 69 · T-Phase-5.A.1.1 · Cycle 2 · Block 5 · DP-S69-3 closure
+// Comply360 per-entity preferences (additive · FR-19 SIBLING discipline)
+// ════════════════════════════════════════════════════════════════════
+
+/**
+ * Per-entity Comply360 preferences · additive per FR-19 SIBLING discipline.
+ * Stored under `cc.compliance.entity-prefs.<entity_code>`.
+ *
+ * CFOs / CSs / HRs can customise Comply360 behaviour per entity without
+ * forking the master compliance config.
+ */
+export type Comply360DefaultRole =
+  | 'ceo' | 'cfo' | 'hr' | 'cs' | 'auditor' | 'branch' | 'ca-firm';
+
+export interface Comply360EntityPrefs {
+  entity_code: string;
+  /** null/undefined → use DP-S69-5 ratified defaults. */
+  health_score_weights_override?: Partial<Record<ComplianceModule, number>>;
+  default_role: Comply360DefaultRole;
+  show_statutory_memory_widget: boolean;
+  show_health_score_breakdown: boolean;
+  alert_threshold_overdue: number;       // count · default 3
+  alert_threshold_health_score: number;  // 0-100 · default 60
+  enabled_megamenus: string[];           // sidebar ids · empty = all 23
+  custom_quick_actions?: string[];       // overrides default 8 buttons
+}
+
+export const COMPLY360_DEFAULT_ENTITY_PREFS: Omit<Comply360EntityPrefs, 'entity_code'> = {
+  default_role: 'cfo',
+  show_statutory_memory_widget: true,
+  show_health_score_breakdown: true,
+  alert_threshold_overdue: 3,
+  alert_threshold_health_score: 60,
+  enabled_megamenus: [], // empty = all 23 megamenus enabled
+};
+
+const comply360EntityPrefsKey = (entityCode: string): string =>
+  `cc.compliance.entity-prefs.${entityCode}`;
+
+/**
+ * Load Comply360 prefs for an entity · returns ratified defaults if not yet stored.
+ */
+// [JWT] localStorage — replace with REST GET /api/cc/comply360/entity-prefs/:entity in Phase 2
+export function loadComply360EntityPrefs(entityCode: string): Comply360EntityPrefs {
+  const stored = readOrDefault<Comply360EntityPrefs | null>(
+    comply360EntityPrefsKey(entityCode),
+    null,
+  );
+  if (stored && stored.entity_code === entityCode) return stored;
+  return { entity_code: entityCode, ...COMPLY360_DEFAULT_ENTITY_PREFS };
+}
+
+/**
+ * Persist Comply360 prefs for an entity. Writes to scoped key + audit log.
+ */
+// [JWT] localStorage.setItem — replace with REST POST /api/cc/comply360/entity-prefs in Phase 2
+export function saveComply360EntityPrefs(prefs: Comply360EntityPrefs): void {
+  const before = loadComply360EntityPrefs(prefs.entity_code);
+  writeSettings(comply360EntityPrefsKey(prefs.entity_code), prefs);
+  appendCCSettingsAudit(prefs.entity_code, 'system', 'comply360_entity_prefs', before, prefs);
+}
+
+/**
+ * Reset prefs for an entity · clears override · next load returns ratified defaults.
+ */
+// [JWT] localStorage.removeItem — replace with REST DELETE in Phase 2
+export function resetComply360EntityPrefs(entityCode: string): void {
+  try {
+    localStorage.removeItem(comply360EntityPrefsKey(entityCode));
+  } catch { /* ignore */ }
+}
+
