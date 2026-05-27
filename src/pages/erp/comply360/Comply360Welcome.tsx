@@ -9,7 +9,7 @@ import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart } from 'lucide-react';
 import { loadObligations } from '@/lib/comply360-statutory-memory';
-import { computeComplianceHealth, nextUpcoming } from '@/lib/comply360-health-score-engine';
+import { computeWeightedComplianceHealth, nextUpcoming } from '@/lib/comply360-health-score-engine';
 import { HealthScoreWidget } from './widgets/HealthScoreWidget';
 import { UpcomingFilingsWidget } from './widgets/UpcomingFilingsWidget';
 import { QuickActionsWidget } from './widgets/QuickActionsWidget';
@@ -31,7 +31,7 @@ interface Tile {
 
 export function Comply360Welcome({ onNavigate }: Props): JSX.Element {
   const obligations = useMemo(() => loadObligations(), []);
-  const health = useMemo(() => computeComplianceHealth(obligations), [obligations]);
+  const health = useMemo(() => computeWeightedComplianceHealth(obligations), [obligations]);
   const upcoming = useMemo(() => nextUpcoming(obligations, 5), [obligations]);
 
   // D-S69-4 · 3 hardcoded tiles upgraded to LIVE values (FK-CAP-7 preserved: ROC stays static for FA tile parity)
