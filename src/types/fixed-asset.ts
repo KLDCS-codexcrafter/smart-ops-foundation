@@ -2,6 +2,7 @@
  * fixed-asset.ts — Fixed Asset types for FC Sprint 4
  * AssetUnitRecord, DepreciationEntry, ITActBlock, AssetUnitLine, AMCScheduleEntry
  * [JWT] Replace with GET/POST /api/fixed-assets/*
+ * 🆕 Sprint 68 FAR-4 Prompt A · Block 1 · +3 NEW interfaces (IoTSignal · BRSRMetadata · PredictiveMaintenanceSignal) + 8 additive AssetUnitRecord fields (IoT/RFID/AI/BRSR/QR)
  */
 
 export type ITActBlock =
