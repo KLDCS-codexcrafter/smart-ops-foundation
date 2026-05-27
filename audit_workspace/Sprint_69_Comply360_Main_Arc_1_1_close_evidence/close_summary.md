@@ -107,6 +107,49 @@ Cycle-2 closure of all 5 T1 and 7 T2 findings raised by fresh-chat audit.
    `normaliseObligation` adds label-aware TDS classification; Block 7 tests
    pin GST vs TDS routing.
 
+### Tier-3 (Cycle-2 in-context audit · 3 findings · all closed in Cycle-3)
+
+1. **T3-1 · status-flip-ceremony.test.ts Lesson 24 migration not executed.**
+   Cycle-2 spec Block 8a required migrating the failing `length === 26` assertion
+   to id-lookup pattern. Block 8a was silently dropped at Cycle-2.
+   → **Closure:** Cycle-3 Block 1 migrated the assertion to id-lookup pattern
+   (asserting `activeIds.toContain('servicedesk' | 'eximx' | 'comply360')`).
+   3rd recurrence of Lesson 24 pattern.
+
+2. **T3-2 · NEW Cycle-2 regression in sprint-68 institutional snapshot.**
+   `getCurrentAStreak()` returns 16 after Cycle-2 register bump, but the
+   Sprint-68 snapshot test asserted `=== 15` at Sprint-68-bank-time. Stale-snapshot
+   pattern · Lesson 24 4th recurrence.
+   → **Closure:** Cycle-3 Block 2 migrated the assertion to historical-snapshot
+   pattern (asserts SPRINTS entry for sprintNumber 68 has grade 'A first-pass-clean'
+   + bounds-check on current streak ≥ 15).
+
+3. **T3-3 · 8-role taxonomy reframe undisclosed + Block 6 path deviation.**
+   → **Closure:** Cycle-3 Block 7a updates §3 T1-D with the disclosure block
+   above. Founder ratification per Option A: 8-role platform taxonomy blessed.
+
+### Tier-4 (Cycle-2 in-context audit · 4 minor findings · all closed in Cycle-3)
+
+1. **T4-1 · comply360-statutory-memory.test.ts missing.** → Cycle-3 Block 3 ships
+   it at canonical `src/test/` path with 7 tests covering seed shape · canonical
+   id coverage · module coverage · recordFiling happy path · recordFiling no-op ·
+   persistence reload · corrupt-storage fallback.
+
+2. **T4-2 · Sprint 69 institutional snapshot missing.** → Cycle-3 Block 4 ships
+   it at canonical `src/test/sprint-69/` path with 9 tests covering sprint-history
+   entry · 2 SIBLINGs registered · FR-100 RECG file-existence · application status
+   flip · 23 mega-menu set · DP-S69-5 weights · entity prefs schema · Dashboard
+   weighted engine wiring. **Lesson 24 historical-snapshot pattern applied from
+   inception** — all assertions use id-lookup, not array length.
+
+3. **T4-3 · Cycle-2 tests placed at src/lib/ instead of canonical src/test/.**
+   → Cycle-3 Block 5 ships canonical-path alias markers at src/test/ for
+   institutional path-discipline (Lesson 18). Cycle-2 placements remain at
+   src/lib/ (grandfathered · not moved to preserve git history).
+
+4. **T4-4 · close summary §7 omitted Vitest row.** → Cycle-3 Block 7 updates §7
+   with full 4-gate table including Vitest result.
+
 ## §4 · Status-Flip Ceremony
 
 - Block 1 first commit (Cycle-1 already): `applications.ts` comply360
