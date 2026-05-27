@@ -1,52 +1,99 @@
 /**
  * @file        src/pages/erp/comply360/Comply360Welcome.tsx
- * @purpose     Comply360 home/landing · Host for Block 3 (Sprint 69) Home Dashboard widgets
- * @sprint      Sprint 69 · T-Phase-5.A.1.1 · Block 1 · Q12 widgets land in Block 3
- * @decisions   D-S69-1 (100% native architecture)
- * @iso         Usability
+ * @purpose     Comply360 Home Dashboard · OOB-1 Health Score + OOB-5 Statutory Memory + Mega Search + Quick Actions + LIVE tiles
+ * @sprint      Sprint 69 · T-Phase-5.A.1.1 · Block 3 · Q12 widgets
+ * @decisions   D-S69-1 (100% native) · D-S69-3 (Health Score) · D-S69-4 (LIVE tile refresh · FK-CAP-7 preserved)
+ * @iso         Usability · Maintainability
  */
+import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
-import {
-  Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart,
-} from 'lucide-react';
+import { Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart } from 'lucide-react';
+import { loadObligations } from '@/lib/comply360-statutory-memory';
+import { computeComplianceHealth, nextUpcoming } from '@/lib/comply360-health-score-engine';
+import { HealthScoreWidget } from './widgets/HealthScoreWidget';
+import { UpcomingFilingsWidget } from './widgets/UpcomingFilingsWidget';
+import { QuickActionsWidget } from './widgets/QuickActionsWidget';
+import { StatutoryMemoryWidget } from './widgets/StatutoryMemoryWidget';
+import { MegaSearch } from './widgets/MegaSearch';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 interface Props {
   onNavigate: (m: Comply360Module) => void;
 }
 
-const TILES = [
-  { icon: Calendar,    title: 'Compliance Calendar',  description: '15 modules · due dates · filings tracker. Lands Sprint 78 (Q11).',    target: 'calendar' as Comply360Module },
-  { icon: Receipt,     title: 'Tax & GST',            description: '27 modules · GSTR-1/3B/9 · TDS · TCS · E-invoice. Lands Sprints 70-75.', target: 'tax-gst' as Comply360Module },
-  { icon: Users,       title: 'Payroll & HR',         description: '27 modules · EPF · ESI · PT · LWF · Form 16. Lands Sprints 76-77.',     target: 'payroll' as Comply360Module },
-  { icon: Building,    title: 'ROC / Secretarial',    description: '14 modules · MGT-7 · AOC-4 · DIR-12. Phase 8 P2BB (Q29).',              target: 'roc' as Comply360Module },
-  { icon: Award,       title: 'Licenses & Regulatory',description: '13 modules · factory · trade · drug · pollution. Sprint 79 (Q25).',     target: 'licenses' as Comply360Module },
-  { icon: Leaf,        title: 'ESG / Safety',         description: '12 modules · BRSR · CSR · safety audits. Sprint 79-80 (Q7+Q26).',       target: 'esg' as Comply360Module },
-  { icon: FileBarChart,title: 'Reports & Analytics',  description: '12 modules · D.3 InsightX integration. Phase 8.',                       target: 'reports' as Comply360Module },
-];
+interface Tile {
+  icon: typeof Shield;
+  title: string;
+  description: string;
+  target: Comply360Module;
+  live?: { pending: number; overdue: number };
+}
 
 export function Comply360Welcome({ onNavigate }: Props): JSX.Element {
+  const obligations = useMemo(() => loadObligations(), []);
+  const health = useMemo(() => computeComplianceHealth(obligations), [obligations]);
+  const upcoming = useMemo(() => nextUpcoming(obligations, 5), [obligations]);
+
+  // D-S69-4 · 3 hardcoded tiles upgraded to LIVE values (FK-CAP-7 preserved: ROC stays static for FA tile parity)
+  const moduleStats = useMemo(() => {
+    const acc: Record<string, { pending: number; overdue: number }> = {};
+    for (const o of obligations) {
+      const s = acc[o.module] ?? { pending: 0, overdue: 0 };
+      if (o.status === 'pending') s.pending += 1;
+      if (o.status === 'overdue') s.overdue += 1;
+      acc[o.module] = s;
+    }
+    return acc;
+  }, [obligations]);
+
+  const tiles: Tile[] = [
+    { icon: Calendar,    title: 'Compliance Calendar',  description: '15 modules · due dates · filings tracker. Lands Sprint 78 (Q11).',    target: 'calendar' },
+    // LIVE #1
+    { icon: Receipt,     title: 'Tax & GST',            description: '27 modules · GSTR-1/3B/9 · TDS · TCS · E-invoice.',                   target: 'tax-gst',  live: moduleStats['tax-gst'] },
+    // LIVE #2
+    { icon: Users,       title: 'Payroll & HR',         description: '27 modules · EPF · ESI · PT · LWF · Form 16.',                        target: 'payroll',  live: moduleStats['payroll'] },
+    { icon: Building,    title: 'ROC / Secretarial',    description: '14 modules · MGT-7 · AOC-4 · DIR-12. Phase 8 P2BB (Q29).',            target: 'roc' },
+    // LIVE #3
+    { icon: Award,       title: 'Licenses & Regulatory',description: '13 modules · factory · trade · drug · pollution.',                    target: 'licenses', live: moduleStats['licenses'] },
+    { icon: Leaf,        title: 'ESG / Safety',         description: '12 modules · BRSR · CSR · safety audits. Sprint 79-80.',              target: 'esg' },
+    { icon: FileBarChart,title: 'Reports & Analytics',  description: '12 modules · D.3 InsightX integration. Phase 8.',                     target: 'reports' },
+  ];
+
   return (
     <div className="min-h-screen p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex items-start gap-4">
-        <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-          <Shield className="h-6 w-6 text-emerald-600" />
+        <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center shrink-0">
+          <Shield className="h-6 w-6 text-success" />
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold">Comply360 · India + Global Statutory Compliance</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Sprint 69 scaffolding live. 23 mega-menus · 305 modules per Bharat Comply 360 SSOT. Home Dashboard + Compliance Health Score land in Block 3.
+            23 mega-menus · 305 modules per Bharat Comply 360 SSOT. Sprint 69 lights Home Dashboard, Health Score, Statutory Memory and Mega Search.
           </p>
         </div>
       </div>
-      <Card className="p-6">
-        <h2 className="font-semibold mb-3">Sprint 69 scope (live)</h2>
-        <p className="text-sm text-muted-foreground">
-          Q1 Card scaffolding · Q2 23 mega-menu sidebar · Q12 Home Dashboard host. Compliance Health Score (OOB-1) · Statutory Memory (OOB-5) · Mega Search · Role-based menu · Quick Actions land in Block 3. FA tile refresh (sub-task) in Block 4.
+
+      <MegaSearch filings={obligations} onOpen={onNavigate} />
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <HealthScoreWidget breakdown={health} />
+        <QuickActionsWidget onOpen={onNavigate} />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <UpcomingFilingsWidget filings={upcoming} onOpen={onNavigate} />
+        <StatutoryMemoryWidget filings={obligations} />
+      </div>
+
+      <Card className="p-4">
+        <h2 className="font-semibold text-sm mb-1">Sprint 69 scope (live)</h2>
+        <p className="text-xs text-muted-foreground">
+          Q1 Card scaffolding · Q2 23 mega-menu sidebar · Q12 Home Dashboard · OOB-1 Health Score · OOB-5 Statutory Memory · Mega Search · Quick Actions · FA tile refresh (Block 4).
         </p>
       </Card>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {TILES.map((t) => {
+        {tiles.map((t) => {
           const Icon = t.icon;
           return (
             <Card
@@ -55,10 +102,25 @@ export function Comply360Welcome({ onNavigate }: Props): JSX.Element {
               onClick={() => onNavigate(t.target)}
             >
               <div className="flex items-start gap-3">
-                <Icon className="h-5 w-5 text-emerald-600 mt-0.5" />
-                <div>
-                  <h3 className="font-semibold text-sm">{t.title}</h3>
+                <Icon className="h-5 w-5 text-success mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="font-semibold text-sm">{t.title}</h3>
+                    {t.live && (
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-success/10 text-success">LIVE</span>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground mt-1">{t.description}</p>
+                  {t.live && (
+                    <div className="flex items-center gap-3 mt-2 text-[11px] font-mono">
+                      <span className="text-muted-foreground">
+                        Pending <span className="text-foreground">{t.live.pending}</span>
+                      </span>
+                      <span className="text-muted-foreground">
+                        Overdue <span className={t.live.overdue > 0 ? 'text-warning' : 'text-foreground'}>{t.live.overdue}</span>
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </Card>
