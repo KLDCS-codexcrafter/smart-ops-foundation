@@ -8,7 +8,7 @@ export interface SprintEntry {
   sprintNumber: number;
   code: string;
   composite: boolean;
-  grade: 'A' | 'A first-pass-clean' | 'A composite' | 'B' | 'C' | null;
+  grade: 'A' | 'A first-pass-clean' | 'A composite' | 'A with adaptations' | 'B' | 'C' | null;
   headSha: string | null;
   predecessorSha: string | null;
   loc: number | null;
