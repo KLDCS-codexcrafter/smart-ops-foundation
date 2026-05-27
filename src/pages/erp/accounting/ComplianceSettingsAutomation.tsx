@@ -2272,6 +2272,21 @@ export default function ComplianceSettingsAutomation() {
           <Button variant='ghost' size='icon' onClick={() => navigate(-1)}>
             <ArrowLeft className='h-4 w-4' />
           </Button>
+          {/* [Sprint 68 FAR-4 · Block 10 · Q-LOCK-9 A · Additive FA Health Lane entry · ≤20 LOC] */}
+          <Card className='border-primary/30'>
+            <CardContent className='pt-4 flex items-center justify-between gap-4'>
+              <div className='flex items-center gap-2'>
+                <Shield className='h-4 w-4 text-primary' />
+                <div>
+                  <p className='text-sm font-semibold'>FA Health Lane</p>
+                  <p className='text-xs text-muted-foreground'>Single-pane-of-glass Fixed Asset compliance monitoring</p>
+                </div>
+              </div>
+              <Button size='sm' variant='outline' onClick={() => navigate('/erp/fincore?module=cc-fa-health-lane')}>
+                Open lane
+              </Button>
+            </CardContent>
+          </Card>
           <ComplianceSettingsAutomationPanel />
         </main>
       </div>

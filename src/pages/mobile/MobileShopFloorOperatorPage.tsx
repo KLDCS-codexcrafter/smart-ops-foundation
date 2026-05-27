@@ -4,7 +4,7 @@
  *           Q-LOCK-2 Option A · operator-only · supervisor/manager use web
  */
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Factory, FileText, Wrench, ClipboardCheck, Activity } from 'lucide-react';
+import { ArrowLeft, Factory, FileText, Wrench, ClipboardCheck, Activity, QrCode } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useJobCards } from '@/hooks/useJobCards';
@@ -69,6 +69,8 @@ export default function MobileShopFloorOperatorPage(): JSX.Element {
         <QuickActionCard icon={Wrench} label="Job Card" sub="Clock in/out" onClick={() => navigate('/operix-go/production/job-card')} />
         <QuickActionCard icon={ClipboardCheck} label="Material Issue" sub="Scan barcode" onClick={() => navigate('/operix-go/production/material-issue')} />
         <QuickActionCard icon={Factory} label="Job Work Out" sub="Vendor flow" onClick={() => navigate('/operix-go/production/job-work-out')} />
+        {/* [Sprint 68 FAR-4 · Block 7 · Q-LOCK-6 A · Mobile QR cockpit for FA verification] */}
+        <QuickActionCard icon={QrCode} label="Asset QR Scan" sub="Verify · Reassign" onClick={() => navigate('/mobile/fa-scan')} />
       </div>
 
       <p className="text-[10px] text-muted-foreground text-center pt-2">
