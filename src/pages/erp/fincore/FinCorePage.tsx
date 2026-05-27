@@ -332,6 +332,7 @@ export function FinCorePagePanel() {
       case 'fc-fa-ai-classification':   return <AIFAClassificationPanel entityCode={entityCode} />;
       case 'fc-fa-document-ai':         return <DocumentAIFAPanel entityCode={entityCode} />;
       case 'fc-fa-iot-rfid':            return <IoTRFIDAssetPanel entityCode={entityCode} />;
+      case 'fc-fa-insightx-staging':    return <InsightXFAStagingPanel entityCode={entityCode} />;
       // [T10-pre.2d-B] 13 voucher-type registers — all drill back to DayBook pre-filtered.
       case 'fc-rpt-sales-register':            return <SalesRegisterPanel            entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-purchase-register':         return <PurchaseRegisterPanel         entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
