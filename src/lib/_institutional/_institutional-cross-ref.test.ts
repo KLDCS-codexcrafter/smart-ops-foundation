@@ -12,8 +12,8 @@ import { FAR_CAPABILITIES, getFARCapabilityCount, getFARCapabilityScoreSchemaSta
 import { FK_CAPABILITIES, getFKCapabilityCount, getFKCapabilityScoreSchemaStaged } from './fk-extended-scorecard';
 
 describe('Institutional registers · cardinality (post-Sprint-70a Comply360 Main Arc 1.2 Pass A)', () => {
-  it('SIBLINGS has 56 entries', () => {
-    expect(getSiblingCount()).toBe(56);
+  it('SIBLINGS has 59 entries', () => {
+    expect(getSiblingCount()).toBe(59);
   });
 
   it('MOATS has 52 entries', () => {
