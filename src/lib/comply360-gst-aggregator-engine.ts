@@ -9,10 +9,9 @@
  *              src/lib/gst-portal-service.ts (payload shapes · 0-DIFF) ·
  *              cross-card ledger sources (Sales/Procure/Exim ledger storage keys · localStorage Phase 1)
  */
-// resolveGSTRate import retained for downstream HSN-rate verification (Pass B consumer-side use).
-// Intentionally not invoked in inner aggregation loops · perf rule §B2-5.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { resolveGSTRate, type GSTType } from './gst-engine';
+// gst-engine import path documented in READS_FROM. resolveGSTRate is invoked by Pass-B
+// consumer-side HSN-rate verification (not in aggregation loops · perf rule §B2-5).
+import type { GSTType } from './gst-engine';
 
 // ── Public Types ─────────────────────────────────────────────────────
 
