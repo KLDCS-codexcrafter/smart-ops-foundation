@@ -8,7 +8,7 @@ import { ArrowLeft, Factory, FileText, Wrench, ClipboardCheck, Activity, QrCode 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useJobCards } from '@/hooks/useJobCards';
-import { useMachines } from '@/hooks/useMachines';
+
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listMachinesByHealth } from '@/lib/iot-machine-bridge';
 import { useMemo } from 'react';
