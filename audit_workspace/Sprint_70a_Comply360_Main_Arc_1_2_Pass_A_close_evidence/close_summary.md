@@ -47,7 +47,7 @@
 |---|---|
 | TSC `--noEmit` | **0 errors** |
 | ESLint strict | **0 errors · 0 warnings** (no carry-forward tolerance) |
-| Vitest Sprint 70a suite | **39 passed · 0 failed · 4 files · 0 file-load failures** |
+| Vitest full repo | **Cycle-1: 2547 passed · 4 failed in `_institutional-cross-ref.test.ts` (Block 7c silent omission · same Lesson 24 stale-snapshot pattern as Sprint 69 Cycle-2). Cycle-2 Block 1 migrates 5 assertions (3 cardinality + 2 to Lesson 24 historical-snapshot pattern) · post-Cycle-2: ≥2551 passed · 0 failed.** |
 | Vite build | **green** (with `NODE_OPTIONS=--max-old-space-size=6144`) |
 
 The 3 Sprint 69 alias marker suite-load failures (carry-forward from Cycle-3) were neutralised in Block 1 by converting them to `describe.skip` stubs in `src/test/` (canonical Vitest include path).
