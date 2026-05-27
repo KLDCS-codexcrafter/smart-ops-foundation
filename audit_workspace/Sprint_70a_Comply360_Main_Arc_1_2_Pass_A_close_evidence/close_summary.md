@@ -37,6 +37,10 @@
 4. **D-4 · Doc-Issue section is single-type stub.** Phase 1 returns one tax-invoice range (num=1) across all supplies. Phase 2 (Pass B+) adds cancellation tracking and per-doc-type ranges.
 5. **D-5 · LOC under estimate.** ~1,480 LOC actual vs ~1,475 spec checkpoint — within noise floor. High code density vs spec estimate.
 
+6. **D-6 · Test path deviation · FOUNDER RATIFIED in Cycle-2 as new canonical Lesson 18 grouped pattern.** Step 2 spec called for engine tests at `src/test/comply360-*.test.ts` + Sprint snapshot at `src/test/sprint-70/`. Cycle-1 placed all 4 Sprint 70a tests grouped at `src/test/sprint-70a/`. The grouped pattern is institutionally cleaner (all sprint-NN tests co-located · matches `src/test/sprint-68/` precedent). **Founder ratified the grouped pattern as new canonical Lesson 18 path-discipline for Sprint 70b+ forward** (DP-S70a-T2-1 RATIFY · Cycle-2 audit close turn). Existing Cycle-1 placements stay put · v1.19 cheatsheet records the canonical Lesson 18 update.
+
+7. **D-7 · Block 7c (cross-ref cardinality update) silent omission · closed in Cycle-2 Block 1.** Spec mandated 3 cardinality assertions update + describe-block heading. Cycle-1 executed Blocks 7a + 7b cleanly but silently dropped 7c · same Lesson 24 stale-snapshot pattern as Sprint 69 Cycle-2 Block 8a. Cycle-2 Block 1 migrates ALL 5 stale assertions: 3 to updated literal values (SIBLINGS 59 · SPRINTS 70 · describe-heading) + 2 to Lesson 24 historical-snapshot patterns (A-streak bounds-check + latest-sprint id-lookup). The Lesson 24 migration on assertions 4-5 prevents this exact pattern from recurring at Sprint 71+ banks.
+
 ## §4 §H ABSOLUTE preserve list — 23 files 0-DIFF verification
 
 21 FR-86 §Y files + `src/lib/gst-engine.ts` + `src/lib/gst-portal-service.ts` = 23 files. Verified 0-DIFF vs HEAD `1919be0f`. No reads inside aggregation loops mutate these.
