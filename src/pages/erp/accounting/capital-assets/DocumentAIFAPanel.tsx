@@ -3,7 +3,6 @@
  */
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { extractInvoice, validateGST, type InvoiceExtraction, type GSTValidationResult } from '@/lib/document-ai-fa-engine';
 
