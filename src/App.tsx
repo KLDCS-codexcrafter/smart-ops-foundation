@@ -82,6 +82,9 @@ const FAPhysicalVerificationPage = lazy(() => import('./pages/erp/accounting/cap
 const FACalibrationStatusReportPage = lazy(() => import('./pages/erp/accounting/capital-assets/FACalibrationStatusReport'));
 const FAAMCRenewalPipelinePage = lazy(() => import('./pages/erp/accounting/capital-assets/FAAMCRenewalPipeline'));
 const FAVehicleRegisterPage = lazy(() => import('./pages/erp/accounting/capital-assets/FAVehicleRegister'));
+// [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · F-13 absorption · Mobile FA Scan + EPCG Status]
+const MobileFAScanPage = lazy(() => import('./pages/mobile/MobileFAScanPage'));
+const EPCGStatusReport = lazy(() => import('./pages/erp/fincore/statutory-fa-pack/EPCGStatusReport'));
 const CommandCenterPage = lazy(() => import('./features/command-center/pages/CommandCenterPage'));
 const PayHubPage = lazy(() => import('./features/pay-hub/PayHubPage'));
 const SalesXPage = lazy(() => import('./features/salesx/SalesXPage'));
@@ -700,6 +703,9 @@ const App = () => (
               <Route path="/erp/fa-calibration-status" element={<P><FACalibrationStatusReportPage entityCode="SINHA" /></P>} />
               <Route path="/erp/fa-amc-renewal-pipeline" element={<P><FAAMCRenewalPipelinePage entityCode="SINHA" /></P>} />
               <Route path="/erp/fa-vehicle-register" element={<P><FAVehicleRegisterPage entityCode="SINHA" /></P>} />
+              {/* [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · 2 NEW routes · F-13 + F-DEAD-2 absorption] */}
+              <Route path="/mobile/fa-scan" element={<P><MobileFAScanPage /></P>} />
+              <Route path="/erp/fincore/statutory-fa-pack/epcg-status" element={<P><EPCGStatusReport /></P>} />
               <Route path="/partner" element={<PartnerDashboard />} />
               <Route path="/partner/dashboard" element={<PartnerDashboard />} />
               <Route path="/erp/distributor/login" element={<DistributorLogin />} />

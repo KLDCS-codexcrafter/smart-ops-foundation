@@ -12,6 +12,8 @@ import {
 import { Calculator } from 'lucide-react';
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey } from '@/types/fixed-asset';
+// [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · F-DEAD-1 absorption · service-history-bridge call]
+import { getServiceHistorySummary } from '@/lib/maintainpro-service-history-bridge';
 
 interface CalibrationRecord {
   asset_unit_id: string;
@@ -55,6 +57,20 @@ export function FACalibrationStatusReportPanel({ entityCode }: Props) {
       .sort((a, b) => a.days - b.days);
   }, [units, records]);
 
+  // [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · F-DEAD-1 absorption · bridge data]
+  const bridgeCalibrations = useMemo(() => {
+    let total = 0;
+    let assetsWithEvents = 0;
+    for (const u of units) {
+      const summary = getServiceHistorySummary(entityCode, u.id);
+      if (summary && summary.by_kind.calibration_done.count > 0) {
+        total += summary.by_kind.calibration_done.count;
+        assetsWithEvents += 1;
+      }
+    }
+    return { total, assetsWithEvents };
+  }, [units, entityCode]);
+
   const statusBadge = (days: number) => {
     if (days > 30) return <Badge className="bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30">Current</Badge>;
     if (days > 7) return <Badge className="bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30">Due Soon</Badge>;
@@ -70,6 +86,9 @@ export function FACalibrationStatusReportPanel({ entityCode }: Props) {
         </h2>
         <p className="text-sm text-muted-foreground">
           Cross-asset calibration view · sorted by days-to-due ascending.
+        </p>
+        <p className="text-xs text-muted-foreground mt-1 font-mono">
+          Bridge-sourced calibration events: {bridgeCalibrations.total} across {bridgeCalibrations.assetsWithEvents} asset(s)
         </p>
       </div>
 

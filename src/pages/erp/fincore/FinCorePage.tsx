@@ -89,8 +89,14 @@ import { DocumentAIFAPanel } from '@/pages/erp/accounting/capital-assets/Documen
 import { IoTRFIDAssetPanel } from '@/pages/erp/accounting/capital-assets/IoTRFIDAssetPanel';
 // [Sprint 68 FAR-4 · Block 15 · InsightX FA staging panel · Q-LOCK-10 A]
 import { InsightXFAStagingPanel } from '@/pages/erp/accounting/capital-assets/InsightXFAStagingPanel';
+// [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · F-13 absorption · 3 NEW panel imports]
+import { BRSRFADisclosurePackPanel } from '@/pages/erp/accounting/capital-assets/BRSRFADisclosurePack';
+import { CCFAHealthLanePanel } from '@/pages/erp/accounting/compliance/CCFAHealthLane';
+import { FAAuditTrailViewerPanel } from '@/pages/erp/accounting/capital-assets/FAAuditTrailViewer';
 // [Sprint 65 FAR-1 · Statutory FA Pack panels]
 import { CARO20DisclosurePanel } from './statutory-fa-pack/CARO20Disclosure';
+// [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · F-DEAD-2 absorption · EPCG status panel]
+import { EPCGStatusReportPanel } from './statutory-fa-pack/EPCGStatusReport';
 import { MSMECapitalBreachesPanel } from './statutory-fa-pack/MSMECapitalBreaches';
 import { IndAS116ROUSchedulePanel } from './statutory-fa-pack/IndAS116ROUSchedule';
 import { FALedgerPackReportPanel } from './statutory-fa-pack/FALedgerPackReport';
@@ -333,6 +339,11 @@ export function FinCorePagePanel() {
       case 'fc-fa-document-ai':         return <DocumentAIFAPanel entityCode={entityCode} />;
       case 'fc-fa-iot-rfid':            return <IoTRFIDAssetPanel entityCode={entityCode} />;
       case 'fc-fa-insightx-staging':    return <InsightXFAStagingPanel entityCode={entityCode} />;
+      // [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · 4 NEW cases · F-13 + F-DEAD-2 absorption]
+      case 'fc-fa-brsr-disclosure':     return <BRSRFADisclosurePackPanel entityCode={entityCode} />;
+      case 'fc-cc-fa-health-lane':      return <CCFAHealthLanePanel entityCode={entityCode} />;
+      case 'fc-fa-audit-trail':         return <FAAuditTrailViewerPanel entityCode={entityCode} />;
+      case 'fc-fa-epcg-status':         return <EPCGStatusReportPanel entityCode={entityCode} />;
       // [T10-pre.2d-B] 13 voucher-type registers — all drill back to DayBook pre-filtered.
       case 'fc-rpt-sales-register':            return <SalesRegisterPanel            entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-purchase-register':         return <PurchaseRegisterPanel         entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
