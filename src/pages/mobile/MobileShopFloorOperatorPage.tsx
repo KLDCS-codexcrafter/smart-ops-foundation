@@ -17,7 +17,7 @@ export default function MobileShopFloorOperatorPage(): JSX.Element {
   const navigate = useNavigate();
   const { entityCode } = useEntityCode();
   const { jobCards } = useJobCards();
-  const { machines } = useMachines();
+  
 
   const today = new Date().toISOString().slice(0, 10);
   const todaysCards = jobCards.filter(jc =>
