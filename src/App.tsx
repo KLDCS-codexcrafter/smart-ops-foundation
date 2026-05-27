@@ -695,6 +695,11 @@ const App = () => (
               <Route path="/erp/command-center/errors" element={<P><RecentErrorsPage /></P>} />
               <Route path="/erp" element={<P><ErpDashboard /></P>} />
               <Route path="/erp/dashboard" element={<P><ErpDashboard /></P>} />
+              {/* 🆕 Sprint 68 FAR-4 · Block 14 · FAR-2 deferred Block 9 route supplement · Q-LOCK-12 A */}
+              <Route path="/erp/fa-physical-verification" element={<P><FAPhysicalVerificationPage entityCode="SINHA" /></P>} />
+              <Route path="/erp/fa-calibration-status" element={<P><FACalibrationStatusReportPage entityCode="SINHA" /></P>} />
+              <Route path="/erp/fa-amc-renewal-pipeline" element={<P><FAAMCRenewalPipelinePage entityCode="SINHA" /></P>} />
+              <Route path="/erp/fa-vehicle-register" element={<P><FAVehicleRegisterPage entityCode="SINHA" /></P>} />
               <Route path="/partner" element={<PartnerDashboard />} />
               <Route path="/partner/dashboard" element={<PartnerDashboard />} />
               <Route path="/erp/distributor/login" element={<DistributorLogin />} />
