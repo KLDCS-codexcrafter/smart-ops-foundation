@@ -107,6 +107,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['multi-gaap-depreciation-engine', 'uop-depreciation-engine', 'component-depreciation-engine'],
     bankDate: '2026-05-27', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 68 FAR-4 · AI + IoT + RFID + PM + BRSR + Dashboard + Audit · 8 NEW SIBLINGs · MOAT-48..52 · 15-streak NEW RECORD ⭐ · FAR Arc CLOSES at 60/60
+  {
+    sprintNumber: 68, code: 'T-Phase-4.FAR-4', composite: false, grade: 'A first-pass-clean',
+    headSha: 'TBD_AT_BANK', predecessorSha: '01c62d7e6fd1aecd1f26027a9233d286244bf9cd', loc: 2790,
+    newSiblings: [
+      'ai-fa-classification-engine', 'document-ai-fa-engine',
+      'iot-asset-bridge', 'rfid-asset-bridge',
+      'predictive-maintenance-fa-engine', 'brsr-fa-engine',
+      'fa-audit-trail-engine', 'insightx-fa-staging-engine',
+    ],
+    bankDate: '2026-05-27', provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSprintCount(): number {

@@ -218,6 +218,15 @@ export const SIBLINGS: SiblingEntry[] = [
     sprintAdded: 67, compositeAdded: 67, functionCount: 2,
     moatsRealized: ['MOAT-47'], provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 68 FAR-4 · 47th-54th SIBLINGs · AI + Document AI + IoT + RFID + PM + BRSR + Audit + InsightX
+  { id: 'ai-fa-classification-engine', name: 'AI FA Classification Engine', path: 'src/lib/ai-fa-classification-engine.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 4, moatsRealized: ['MOAT-48'], provenance: 'CONFIRMED' },
+  { id: 'document-ai-fa-engine', name: 'Document AI FA Engine', path: 'src/lib/document-ai-fa-engine.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 4, moatsRealized: ['MOAT-50'], provenance: 'CONFIRMED' },
+  { id: 'iot-asset-bridge', name: 'IoT Asset Bridge', path: 'src/lib/iot-asset-bridge.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 5, moatsRealized: ['MOAT-49'], provenance: 'CONFIRMED' },
+  { id: 'rfid-asset-bridge', name: 'RFID Asset Bridge', path: 'src/lib/rfid-asset-bridge.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 6, moatsRealized: ['MOAT-49'], provenance: 'CONFIRMED' },
+  { id: 'predictive-maintenance-fa-engine', name: 'Predictive Maintenance FA Engine', path: 'src/lib/predictive-maintenance-fa-engine.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 4, moatsRealized: ['MOAT-51'], provenance: 'CONFIRMED' },
+  { id: 'brsr-fa-engine', name: 'BRSR FA Engine', path: 'src/lib/brsr-fa-engine.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 3, moatsRealized: ['MOAT-52'], provenance: 'CONFIRMED' },
+  { id: 'fa-audit-trail-engine', name: 'FA Audit Trail Engine', path: 'src/lib/fa-audit-trail-engine.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'insightx-fa-staging-engine', name: 'InsightX FA Staging Engine', path: 'src/lib/insightx-fa-staging-engine.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 export function getSiblingCount(): number {
