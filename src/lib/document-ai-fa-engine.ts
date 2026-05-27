@@ -81,18 +81,18 @@ export async function extractInvoice(
 ): Promise<InvoiceExtraction> {
   const text = decodeText(pdf_buffer);
   const vendor_gstin = pickMatch(text, /\b([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z])\b/);
-  const invoice_number = pickMatch(text, /(?:invoice\s*(?:no\.?|#|number)\s*[:\-]?\s*)([A-Z0-9\/\-]+)/i);
+  const invoice_number = pickMatch(text, /(?:invoice\s*(?:no\.?|#|number)\s*[:-]?\s*)([A-Z0-9/-]+)/i);
   const invoice_date = pickMatch(text, /(\d{4}-\d{2}-\d{2})/);
-  const total_amount_raw = pickMatch(text, /(?:total|grand\s*total)\s*[:\-]?\s*₹?\s*([0-9,]+(?:\.[0-9]{1,2})?)/i);
+  const total_amount_raw = pickMatch(text, /(?:total|grand\s*total)\s*[:-]?\s*₹?\s*([0-9,]+(?:\.[0-9]{1,2})?)/i);
   const total_amount = total_amount_raw ? Number(total_amount_raw.replace(/,/g, '')) : undefined;
 
   const hsnSet = new Set<string>();
-  for (const m of text.matchAll(/\bHSN\s*[:\-]?\s*([0-9]{4,8})\b/gi)) hsnSet.add(m[1]);
+  for (const m of text.matchAll(/\bHSN\s*[:-]?\s*([0-9]{4,8})\b/gi)) hsnSet.add(m[1]);
 
   const fa_specific_fields: FASpecificFields = {
-    asset_make: pickMatch(text, /(?:make|brand)\s*[:\-]\s*([A-Za-z0-9 \-]+)/i)?.trim(),
-    asset_model: pickMatch(text, /(?:model)\s*[:\-]\s*([A-Za-z0-9 \-]+)/i)?.trim(),
-    serial_number: pickMatch(text, /(?:s\/n|serial(?:\s*no)?)\s*[:\-]\s*([A-Za-z0-9\-]+)/i)?.trim(),
+    asset_make: pickMatch(text, /(?:make|brand)\s*[:-]\s*([A-Za-z0-9 -]+)/i)?.trim(),
+    asset_model: pickMatch(text, /(?:model)\s*[:-]\s*([A-Za-z0-9 -]+)/i)?.trim(),
+    serial_number: pickMatch(text, /(?:s\/n|serial(?:\s*no)?)\s*[:-]\s*([A-Za-z0-9-]+)/i)?.trim(),
     warranty_period_months: ((): number | undefined => {
       const m = text.match(/warranty[^0-9]{0,15}([0-9]{1,3})\s*(year|yr|month|mo)/i);
       if (!m) return undefined;
