@@ -230,6 +230,10 @@ export const SIBLINGS: SiblingEntry[] = [
   // 🆕 Sprint 69 T-Phase-5.A.1.1 · Comply360 Main Arc 1.1 · 2 NEW SIBLINGs · DP-S69-3 (Health Score) + OOB-5 (Statutory Memory) · A with adaptations ⭐ · 16-streak
   { id: 'comply360-health-score-engine', name: 'Comply360 Health Score Engine', path: 'src/lib/comply360-health-score-engine.ts', sprintAdded: 69, compositeAdded: 69, functionCount: 7, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-statutory-memory', name: 'Comply360 Statutory Memory', path: 'src/lib/comply360-statutory-memory.ts', sprintAdded: 69, compositeAdded: 69, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 70a T-Phase-5.A.1.2-PASS-A · Comply360 Main Arc 1.2 · 3 NEW SIBLINGs · DP-S70-1/2/3 (GST aggregator + GSTR builder + IMS) · A first-pass-clean ⭐ · 17-streak NEW RECORD
+  { id: 'comply360-gst-aggregator-engine', name: 'Comply360 GST Aggregator Engine', path: 'src/lib/comply360-gst-aggregator-engine.ts', sprintAdded: 70, compositeAdded: 70, functionCount: 6, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-gstr-builder-engine', name: 'Comply360 GSTR Builder Engine', path: 'src/lib/comply360-gstr-builder-engine.ts', sprintAdded: 70, compositeAdded: 70, functionCount: 6, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-ims-engine', name: 'Comply360 IMS Engine', path: 'src/lib/comply360-ims-engine.ts', sprintAdded: 70, compositeAdded: 70, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 export function getSiblingCount(): number {
