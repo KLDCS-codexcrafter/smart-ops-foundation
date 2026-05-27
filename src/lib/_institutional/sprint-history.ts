@@ -122,8 +122,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 69 T-Phase-5.A.1.1 · Comply360 Main Arc 1.1 · 2-cycle audit chain · graded A with adaptations ⭐ · 16-streak NEW RECORD
   {
     sprintNumber: 69, code: 'T-Phase-5.A.1.1', composite: false, grade: 'A with adaptations',
-    headSha: null, predecessorSha: '9925e6269e53e5a0d30b8e2669fb3fde5398e9fb', loc: 1290,
+    headSha: '1919be0f3820204191b481b00479da49c95c6f3d', predecessorSha: '9925e6269e53e5a0d30b8e2669fb3fde5398e9fb', loc: 1290,
     newSiblings: ['comply360-health-score-engine', 'comply360-statutory-memory'],
+    bankDate: '2026-05-27', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 70a T-Phase-5.A.1.2-PASS-A · Comply360 Main Arc 1.2 · Path α Pass A (engine layer) · graded A first-pass-clean ⭐ · 17-streak NEW RECORD
+  {
+    sprintNumber: 70, code: 'T-Phase-5.A.1.2-PASS-A', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '1919be0f3820204191b481b00479da49c95c6f3d', loc: 1480,
+    newSiblings: ['comply360-gst-aggregator-engine', 'comply360-gstr-builder-engine', 'comply360-ims-engine'],
     bankDate: '2026-05-27', provenance: 'CONFIRMED',
   },
 ];
