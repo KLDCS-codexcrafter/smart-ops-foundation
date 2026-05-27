@@ -149,6 +149,8 @@ const SiteXPage = lazy(() => import('./pages/erp/sitex/SiteXPage'));
 const MaintainProPage = lazy(() => import('./pages/erp/maintainpro/MaintainProPage'));
 // Sprint T-Phase-1.C.1a · ServiceDesk Masters Foundation · 12th card on Shell
 const ServiceDeskPage = lazy(() => import('./pages/erp/servicedesk/ServiceDeskPage'));
+// Sprint 69 · T-Phase-5.A.1.1 · Comply360 Main Arc 1.1 · Block 1 Q1 Card scaffolding
+const Comply360Page = lazy(() => import('./pages/erp/comply360/Comply360Page'));
 const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
 const MobileMaintenanceTechnicianPage = lazy(() => import('./pages/mobile/MobileMaintenanceTechnicianPage'));
 const MobileShopFloorOperatorPage = lazy(() => import('./pages/mobile/MobileShopFloorOperatorPage'));
