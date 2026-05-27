@@ -87,6 +87,8 @@ import { AssetMasterExcelImportPanel } from '@/pages/erp/accounting/capital-asse
 import { AIFAClassificationPanel } from '@/pages/erp/accounting/capital-assets/AIFAClassificationPanel';
 import { DocumentAIFAPanel } from '@/pages/erp/accounting/capital-assets/DocumentAIFAPanel';
 import { IoTRFIDAssetPanel } from '@/pages/erp/accounting/capital-assets/IoTRFIDAssetPanel';
+// [Sprint 68 FAR-4 · Block 15 · InsightX FA staging panel · Q-LOCK-10 A]
+import { InsightXFAStagingPanel } from '@/pages/erp/accounting/capital-assets/InsightXFAStagingPanel';
 // [Sprint 65 FAR-1 · Statutory FA Pack panels]
 import { CARO20DisclosurePanel } from './statutory-fa-pack/CARO20Disclosure';
 import { MSMECapitalBreachesPanel } from './statutory-fa-pack/MSMECapitalBreaches';
@@ -330,6 +332,7 @@ export function FinCorePagePanel() {
       case 'fc-fa-ai-classification':   return <AIFAClassificationPanel entityCode={entityCode} />;
       case 'fc-fa-document-ai':         return <DocumentAIFAPanel entityCode={entityCode} />;
       case 'fc-fa-iot-rfid':            return <IoTRFIDAssetPanel entityCode={entityCode} />;
+      case 'fc-fa-insightx-staging':    return <InsightXFAStagingPanel entityCode={entityCode} />;
       // [T10-pre.2d-B] 13 voucher-type registers — all drill back to DayBook pre-filtered.
       case 'fc-rpt-sales-register':            return <SalesRegisterPanel            entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-purchase-register':         return <PurchaseRegisterPanel         entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;

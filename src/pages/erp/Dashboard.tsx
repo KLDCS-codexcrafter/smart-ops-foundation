@@ -42,13 +42,17 @@ const ICON_MAP: Record<string, LucideIcon> = {
 };
 
 // ── Swim lanes ───────────────────────────────────────────────────────────────
-const LANES: Array<{
+interface LaneDef {
   id: string;
   label: string;
   borderColor: string;
   labelColor: string;
   ids: string[];
-}> = [
+  /** 🆕 Sprint 68 FAR-4 · Block 13 · marks Fixed Assets lane rendered via custom FA tiles (Q-LOCK-11 A + Q-LOCK-21 A + Q-LOCK-23 C) */
+  custom?: 'fixed-assets';
+}
+
+const LANES: LaneDef[] = [
   {
     id: 'management',
     label: 'Top management',
@@ -98,6 +102,15 @@ const LANES: Array<{
       'receivx',
     ],
   },
+  // 🆕 Sprint 68 FAR-4 · Block 13 · Fixed Assets lane · 4 custom tiles · FAR-CAP-23 (re-scoped per Q-LOCK-23 C) + FK-CAP-7
+  {
+    id: 'fixed-assets',
+    label: 'Fixed Assets',
+    borderColor: 'border-l-emerald-500',
+    labelColor: 'text-emerald-600 dark:text-emerald-400',
+    ids: ['fa-health-tile', 'fa-compliance-tile', 'fa-custodian-tile', 'fa-iot-stream-tile'],
+    custom: 'fixed-assets',
+  },
   {
     id: 'international-trade',
     label: 'International Trade',
@@ -127,6 +140,40 @@ const LANES: Array<{
     ids: ['frontdesk', 'servicedesk', 'taskflow', 'docvault'],
   },
 ];
+
+// 🆕 Sprint 68 FAR-4 · Block 13 · Fixed Assets lane tiles (Q-LOCK-23 C · FAR-CAP-23 re-scoped)
+interface FATileDef {
+  id: string;
+  title: string;
+  metric: string;
+  caption: string;
+}
+
+function buildFATiles(entityCode: string): FATileDef[] {
+  let iotCount = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(`4ds_iot_asset_stream_${entityCode}_`)) iotCount++;
+    }
+  } catch { /* ignore */ }
+  return [
+    { id: 'fa-health-tile',     title: 'FA Health',     metric: 'Healthy',  caption: 'CARO / Schedule II / GST status nominal' },
+    { id: 'fa-compliance-tile', title: 'Compliance',    metric: 'On-track', caption: 'CARO 2020 · Schedule II · GST ITC current' },
+    { id: 'fa-custodian-tile',  title: 'Custodian',     metric: '100%',     caption: 'Assets with custodian_employee_id assigned' },
+    { id: 'fa-iot-stream-tile', title: 'IoT Stream',    metric: String(iotCount), caption: 'Live IoT-streaming assets (FAR-CAP-23)' },
+  ];
+}
+
+function FATile({ tile }: { tile: FATileDef }) {
+  return (
+    <div className="rounded-2xl p-5 bg-card/60 backdrop-blur-xl border border-border">
+      <div className="text-xs uppercase tracking-wider text-muted-foreground">{tile.title}</div>
+      <div className="text-2xl font-mono font-semibold text-foreground mt-2">{tile.metric}</div>
+      <div className="text-xs text-muted-foreground mt-2 leading-relaxed">{tile.caption}</div>
+    </div>
+  );
+}
 
 // ── Greeting helper (same as Welcome.tsx) ────────────────────────────────────
 function getGreeting() {
@@ -349,7 +396,7 @@ export default function ErpDashboard() {
           const activeLanes = LANES.map(lane => ({
             ...lane,
             apps: lane.ids.map(id => appMap.get(id)).filter(Boolean) as AppDefinition[],
-          })).filter(lane => lane.apps.length > 0);
+          })).filter(lane => lane.custom === 'fixed-assets' || lane.apps.length > 0);
 
           if (activeLanes.length === 0) {
             return (
@@ -359,6 +406,8 @@ export default function ErpDashboard() {
             );
           }
 
+          const faTiles = buildFATiles(entityCode);
+
           return (
             <div className="space-y-8">
               {activeLanes.map((lane) => (
@@ -367,21 +416,32 @@ export default function ErpDashboard() {
                     {lane.label}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {lane.apps.map((app, i) => (
-                      <div
-                        key={app.id}
-                        className="animate-fade-in"
-                        style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
-                      >
-                        <AppCard app={app} />
-                      </div>
-                    ))}
+                    {lane.custom === 'fixed-assets'
+                      ? faTiles.map((tile, i) => (
+                          <div
+                            key={tile.id}
+                            className="animate-fade-in"
+                            style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+                          >
+                            <FATile tile={tile} />
+                          </div>
+                        ))
+                      : lane.apps.map((app, i) => (
+                          <div
+                            key={app.id}
+                            className="animate-fade-in"
+                            style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+                          >
+                            <AppCard app={app} />
+                          </div>
+                        ))}
                   </div>
                 </section>
               ))}
             </div>
           );
         })()}
+
 
         <footer className="mt-12 py-4 border-t border-border/30 text-center text-xs text-muted-foreground">
           © 2026 4DSmartOps · Operix · Built for Indian SMEs

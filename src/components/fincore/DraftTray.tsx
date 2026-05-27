@@ -49,7 +49,7 @@ export type FinCoreModule =
   | 'fc-fa-multi-gaap-report' | 'fc-fa-uop-report' | 'fc-fa-component-report'
   | 'fc-fa-opening-migration' | 'fc-fa-excel-import'
   // [Sprint 68 FAR-4 · AI/IoT/Mobile/Analytics · Block 5 · Q-LOCK-3/4/5 A]
-  | 'fc-fa-ai-classification' | 'fc-fa-document-ai' | 'fc-fa-iot-rfid';
+  | 'fc-fa-ai-classification' | 'fc-fa-document-ai' | 'fc-fa-iot-rfid' | 'fc-fa-insightx-staging';
 
 export interface DraftEntry {
   id: string;
