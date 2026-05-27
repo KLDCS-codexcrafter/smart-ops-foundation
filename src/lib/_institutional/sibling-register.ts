@@ -227,6 +227,9 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'brsr-fa-engine', name: 'BRSR FA Engine', path: 'src/lib/brsr-fa-engine.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 3, moatsRealized: ['MOAT-52'], provenance: 'CONFIRMED' },
   { id: 'fa-audit-trail-engine', name: 'FA Audit Trail Engine', path: 'src/lib/fa-audit-trail-engine.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'insightx-fa-staging-engine', name: 'InsightX FA Staging Engine', path: 'src/lib/insightx-fa-staging-engine.ts', sprintAdded: 68, compositeAdded: 68, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 69 T-Phase-5.A.1.1 · Comply360 Main Arc 1.1 · 2 NEW SIBLINGs · DP-S69-3 (Health Score) + OOB-5 (Statutory Memory) · A with adaptations ⭐ · 16-streak
+  { id: 'comply360-health-score-engine', name: 'Comply360 Health Score Engine', path: 'src/lib/comply360-health-score-engine.ts', sprintAdded: 69, compositeAdded: 69, functionCount: 7, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-statutory-memory', name: 'Comply360 Statutory Memory', path: 'src/lib/comply360-statutory-memory.ts', sprintAdded: 69, compositeAdded: 69, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 export function getSiblingCount(): number {
