@@ -10,7 +10,7 @@ import {
   FileCheck, FileMinus, Truck, PackageOpen, Package, ShoppingCart, ClipboardList,
   Landmark, Receipt, BarChart3, PieChart, TrendingUp, Scale, Layers,
   Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe, Table2, Factory,
-  Sparkles, Radio,
+  Sparkles, Radio, Ship,
 } from 'lucide-react';
 // Scale and Truck already imported above (re-used for new INV entries).
 import {
@@ -54,6 +54,9 @@ const LIVE_MODULES: FinCoreModule[] = [
   'fc-fa-opening-migration', 'fc-fa-excel-import',
   // [Sprint 68 FAR-4 · AI/IoT/Mobile/Analytics group · Block 5 · Q-LOCK-3/4/5 A]
   'fc-fa-ai-classification', 'fc-fa-document-ai', 'fc-fa-iot-rfid',
+  // [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · 5 NEW live modules · F-13 + F-DEAD-2 + F-DEAD-4 absorption]
+  'fc-fa-brsr-disclosure', 'fc-cc-fa-health-lane', 'fc-fa-audit-trail',
+  'fc-fa-insightx-staging', 'fc-fa-epcg-status',
   // [T10-pre.2d-B] 13 voucher-type registers
   'fc-rpt-sales-register', 'fc-rpt-purchase-register',
   'fc-rpt-receipt-register', 'fc-rpt-payment-register',
@@ -188,6 +191,8 @@ const STATUTORY_FA_PACK_ITEMS: SidebarItem[] = [
   { id: 'fc-fa-msme-capital', label: 'MSME Capital Breaches (43B(h))', icon: Shield },
   { id: 'fc-fa-ind-as-116',   label: 'Ind AS 116 ROU Schedule',     icon: Calculator },
   { id: 'fc-fa-ledger-pack',  label: 'FA Ledger Pack (Schedule III)', icon: Layers },
+  // [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · F-DEAD-2 absorption · EPCG status]
+  { id: 'fc-fa-epcg-status',  label: 'EPCG Status (6x · 6-year)',   icon: Ship },
 ];
 
 // [Sprint 66 FAR-2 · FA Physical-Reality group · Block 9]
@@ -212,6 +217,11 @@ const AI_IOT_FA_PACK_ITEMS: SidebarItem[] = [
   { id: 'fc-fa-ai-classification', label: 'AI FA Classification',     icon: Sparkles },
   { id: 'fc-fa-document-ai',       label: 'Document AI (Invoice→FA)', icon: FileText },
   { id: 'fc-fa-iot-rfid',          label: 'IoT/RFID Asset Tracking',  icon: Radio },
+  // [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · 4 NEW items · F-13 + F-DEAD-4 absorption]
+  { id: 'fc-fa-insightx-staging',  label: 'InsightX FA Staging',      icon: Layers },
+  { id: 'fc-fa-brsr-disclosure',   label: 'BRSR FA Disclosure (ESG)', icon: FileText },
+  { id: 'fc-cc-fa-health-lane',    label: 'CC FA Health Lane',        icon: Shield },
+  { id: 'fc-fa-audit-trail',       label: 'FA Audit Trail Viewer',    icon: FileText },
 ];
 
 const AUDIT_ITEMS: SidebarItem[] = [
@@ -282,7 +292,8 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
     else if (['fc-fa-caro-20','fc-fa-msme-capital','fc-fa-ind-as-116','fc-fa-ledger-pack'].includes(active)) setStatFaOpen(true);
     else if (['fc-fa-physical-verification','fc-fa-calibration-status','fc-fa-amc-renewal-pipeline','fc-fa-vehicle-register'].includes(active)) setPhysRealityOpen(true);
     else if (['fc-fa-multi-gaap-report','fc-fa-uop-report','fc-fa-component-report','fc-fa-opening-migration','fc-fa-excel-import'].includes(active)) setComputeEngineOpen(true);
-    else if (['fc-fa-ai-classification','fc-fa-document-ai','fc-fa-iot-rfid'].includes(active)) setAiIotFaOpen(true);
+    else if (['fc-fa-ai-classification','fc-fa-document-ai','fc-fa-iot-rfid','fc-fa-insightx-staging','fc-fa-brsr-disclosure','fc-cc-fa-health-lane','fc-fa-audit-trail'].includes(active)) setAiIotFaOpen(true);
+    else if (active === 'fc-fa-epcg-status') setStatFaOpen(true);
     else if (aud.includes(active)) setAuditOpen(true);
   }, [active]);
 

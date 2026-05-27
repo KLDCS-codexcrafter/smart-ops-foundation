@@ -204,7 +204,7 @@ export const MOATS: MoatEntry[] = [
     id: 'MOAT-41',
     name: 'EPCG FA ↔ EximX Bridge · cross-card export-obligation tracker · 6x rule · 6-year window',
     sprintBanked: 65, compositeBanked: 65, headShaBanked: 'TBD_AT_BANK',
-    backingFiles: ['src/lib/epcg-fa-bridge.ts'],
+    backingFiles: ['src/lib/epcg-fa-bridge.ts', 'src/pages/erp/fincore/statutory-fa-pack/EPCGStatusReport.tsx'],
     competitivePositioning: 'EPCG breach = penalty + interest + duty + bank-guarantee invocation · no Indian SMB ERP auto-tracks · Operix unique',
     provenance: 'CONFIRMED',
   },
