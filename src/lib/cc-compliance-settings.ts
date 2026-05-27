@@ -9,6 +9,8 @@
  */
 
 import type { SLASeverity } from '@/types/call-type';
+// Sprint 69 Cycle-2 · Block 5 · DP-S69-3 closure (additive Comply360 per-entity prefs)
+import type { ComplianceModule } from './comply360-health-score-engine';
 
 // Group 1 · Risk Engine
 export interface RiskFactorWeights {
