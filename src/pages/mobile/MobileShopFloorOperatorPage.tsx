@@ -8,7 +8,7 @@ import { ArrowLeft, Factory, FileText, Wrench, ClipboardCheck, Activity, QrCode 
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useJobCards } from '@/hooks/useJobCards';
-import { useMachines } from '@/hooks/useMachines';
+
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listMachinesByHealth } from '@/lib/iot-machine-bridge';
 import { useMemo } from 'react';
@@ -17,7 +17,7 @@ export default function MobileShopFloorOperatorPage(): JSX.Element {
   const navigate = useNavigate();
   const { entityCode } = useEntityCode();
   const { jobCards } = useJobCards();
-  const { machines } = useMachines();
+  
 
   const today = new Date().toISOString().slice(0, 10);
   const todaysCards = jobCards.filter(jc =>
@@ -33,7 +33,7 @@ export default function MobileShopFloorOperatorPage(): JSX.Element {
       degraded: healths.filter(h => h.status === 'degraded').length,
       critical: healths.filter(h => h.status === 'critical').length,
     };
-  }, [entityCode, machines]);
+  }, [entityCode]);
 
   return (
     <div className="p-4 max-w-md mx-auto space-y-4">

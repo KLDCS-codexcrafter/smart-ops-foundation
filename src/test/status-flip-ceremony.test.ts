@@ -13,9 +13,16 @@ describe('Status flip ceremony · ServiceDesk → active · MOAT #24', () => {
     expect(sd?.status).toBe('active');
   });
 
-  it('ACTIVE roster count = 26 (was 25 · +1 eximx · MOAT-28 pre-bank)', () => {
+  it('ACTIVE roster includes servicedesk + eximx + comply360 (Lesson 24 historical-snapshot · 3rd recurrence post-Sprint-69 Cycle-3)', () => {
+    // Sprint 56 flip: servicedesk → active (active count was 25)
+    // Sprint EX-1 flip: eximx → active (active count was 26)
+    // Sprint 69 flip: comply360 → active (active count was 27 at Sprint 69 bank · FR-103 chain)
+    // Future flips extend this list; DO NOT assert active.length.
     const active = applications.filter((a) => a.status === 'active');
-    expect(active.length).toBe(26);  // EX-1 flip · eximx joins · ACTIVE 25 → 26
+    const activeIds = active.map((a) => a.id);
+    expect(activeIds).toContain('servicedesk');
+    expect(activeIds).toContain('eximx');
+    expect(activeIds).toContain('comply360');
   });
 
   it('servicedesk route remains /erp/servicedesk', () => {

@@ -22,8 +22,10 @@ export function InsightXFAStagingPanel({ entityCode }: InsightXFAStagingPanelPro
   const [tick, setTick] = useState(0);
   const tables = useMemo(
     () => [stageAssetUnitRecords(entityCode), stageIoTSignals(entityCode)],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional · forces refresh on global storage events
     [entityCode, tick],
   );
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional · forces refresh on global storage events
   const jobs = useMemo(() => listETLJobs(entityCode), [entityCode, tick]);
 
   return (

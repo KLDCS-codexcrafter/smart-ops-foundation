@@ -52,6 +52,7 @@ export function FAVehicleRegisterPanel({ entityCode }: Props) {
     refresh();
     setUnits(ls<AssetUnitRecord>(faUnitsKey(entityCode))
       .filter(u => u.entity_id === entityCode && u.it_act_block === 'Vehicles'));
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- refresh is a stable local closure; entityCode is the true trigger
   }, [entityCode]);
 
   const vehicleAssets = useMemo(() => units, [units]);

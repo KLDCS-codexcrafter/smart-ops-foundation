@@ -73,6 +73,7 @@ function computeSnapshot(entityCode: string): HealthSnapshot {
 
 export function CCFAHealthLanePanel({ entityCode }: Props): JSX.Element {
   const [tick, setTick] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional · forces refresh on global storage events
   const snap = useMemo(() => computeSnapshot(entityCode), [entityCode, tick]);
 
   const custodianPct = snap.total_assets > 0
