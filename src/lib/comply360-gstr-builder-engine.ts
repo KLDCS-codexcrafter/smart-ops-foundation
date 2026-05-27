@@ -260,7 +260,7 @@ function buildExportSection(
 function preflightSupplies(
   supplies: CrossCardSupply[],
   meta: BuildMeta,
-  warnings: BuilderWarning[],
+  _warnings: BuilderWarning[],
   errors: BuilderError[],
 ): void {
   if (!isValidGSTIN(meta.gstin)) {
