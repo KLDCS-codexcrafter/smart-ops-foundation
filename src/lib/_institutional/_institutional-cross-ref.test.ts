@@ -65,15 +65,21 @@ describe('FAR + FK extended scorecards · Sprint 68 FAR-4 (24 FAR-CAPs FULL · 7
 });
 
 describe('Sprint history · A-streak counter', () => {
-  it('current A-streak is 16 (Sprint 54-69 · NEW Operix record ⭐)', () => {
-    expect(getCurrentAStreak()).toBe(16);
+  // Lesson 24 historical-snapshot pattern · bounds-check not equality
+  // (avoids future-sprint stale-snapshot regression · seeds FR-CANDIDATE-CROSS-REF-AUTOUPDATE 2nd validation)
+  it('current A-streak is at least 17 (Sprint 54-70a · NEW Operix record ⭐)', () => {
+    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(17);
   });
 
-  it('Sprint 69 Comply360 Main Arc 1.1 is the most recent banked sprint · 2 new SIBLINGs', () => {
+  it('Sprint 70a Comply360 Main Arc 1.2 Pass A is the most recent banked sprint · 3 new SIBLINGs (Lesson 24 id-lookup)', () => {
+    // Lesson 24 · id-lookup not array-index (future sprints append; index drifts)
+    const s70a = SPRINTS.find((s) => s.sprintNumber === 70 && s.code === 'T-Phase-5.A.1.2-PASS-A');
+    expect(s70a).toBeDefined();
+    expect(s70a?.newSiblings.length).toBe(3);
+    // Also verify it is in fact the most recent at THIS bank time (will become stale at Sprint 70b · documented as Sprint-70a-snapshot)
     const latest = SPRINTS[SPRINTS.length - 1];
-    expect(latest.sprintNumber).toBe(69);
-    expect(latest.code).toBe('T-Phase-5.A.1.1');
-    expect(latest.newSiblings.length).toBe(2);
+    expect(latest.sprintNumber).toBe(70);
+    expect(latest.code).toBe('T-Phase-5.A.1.2-PASS-A');
   });
 });
 
