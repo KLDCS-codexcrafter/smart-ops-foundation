@@ -42,7 +42,7 @@ function computeSnapshot(entityCode: string): HealthSnapshot {
   const records = loadRecords(entityCode);
   let statutory_pass = 0;
   let statutory_fail = 0;
-  let itc_overdue = 0;
+  const itc_overdue = 0;
   let custodian_assigned = 0;
   let custodian_missing = 0;
   let oldest = 0;
