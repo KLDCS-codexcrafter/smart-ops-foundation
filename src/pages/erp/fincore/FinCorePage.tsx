@@ -83,6 +83,10 @@ import { UOPDepreciationReportPanel } from '@/pages/erp/accounting/capital-asset
 import { ComponentDepreciationReportPanel } from '@/pages/erp/accounting/capital-assets/ComponentDepreciationReport';
 import { OpeningDepreciationMigrationToolPanel } from '@/pages/erp/accounting/capital-assets/OpeningDepreciationMigrationTool';
 import { AssetMasterExcelImportPanel } from '@/pages/erp/accounting/capital-assets/AssetMasterExcelImport';
+// [Sprint 68 FAR-4 · Block 5 · AI/IoT/Mobile/Analytics FA panels · Q-LOCK-3/4/5 A]
+import { AIFAClassificationPanel } from '@/pages/erp/accounting/capital-assets/AIFAClassificationPanel';
+import { DocumentAIFAPanel } from '@/pages/erp/accounting/capital-assets/DocumentAIFAPanel';
+import { IoTRFIDAssetPanel } from '@/pages/erp/accounting/capital-assets/IoTRFIDAssetPanel';
 // [Sprint 65 FAR-1 · Statutory FA Pack panels]
 import { CARO20DisclosurePanel } from './statutory-fa-pack/CARO20Disclosure';
 import { MSMECapitalBreachesPanel } from './statutory-fa-pack/MSMECapitalBreaches';
@@ -322,6 +326,10 @@ export function FinCorePagePanel() {
       case 'fc-fa-component-report':    return <ComponentDepreciationReportPanel entityCode={entityCode} />;
       case 'fc-fa-opening-migration':   return <OpeningDepreciationMigrationToolPanel entityCode={entityCode} />;
       case 'fc-fa-excel-import':        return <AssetMasterExcelImportPanel entityCode={entityCode} />;
+      // [Sprint 68 FAR-4 · Block 5 · AI/IoT/Mobile/Analytics FA · Q-LOCK-3/4/5 A]
+      case 'fc-fa-ai-classification':   return <AIFAClassificationPanel entityCode={entityCode} />;
+      case 'fc-fa-document-ai':         return <DocumentAIFAPanel entityCode={entityCode} />;
+      case 'fc-fa-iot-rfid':            return <IoTRFIDAssetPanel entityCode={entityCode} />;
       // [T10-pre.2d-B] 13 voucher-type registers — all drill back to DayBook pre-filtered.
       case 'fc-rpt-sales-register':            return <SalesRegisterPanel            entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-purchase-register':         return <PurchaseRegisterPanel         entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;

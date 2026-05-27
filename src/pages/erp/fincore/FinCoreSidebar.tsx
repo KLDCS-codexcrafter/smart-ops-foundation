@@ -10,6 +10,7 @@ import {
   FileCheck, FileMinus, Truck, PackageOpen, Package, ShoppingCart, ClipboardList,
   Landmark, Receipt, BarChart3, PieChart, TrendingUp, Scale, Layers,
   Shield, ChevronRight, ExternalLink, Calculator, IndianRupee, Globe, Table2, Factory,
+  Sparkles, Radio,
 } from 'lucide-react';
 // Scale and Truck already imported above (re-used for new INV entries).
 import {
@@ -51,6 +52,8 @@ const LIVE_MODULES: FinCoreModule[] = [
   // [Sprint 67 FAR-3 · Compute Engine Best-in-Class group · Block 5 · Q-LOCK-9 A]
   'fc-fa-multi-gaap-report', 'fc-fa-uop-report', 'fc-fa-component-report',
   'fc-fa-opening-migration', 'fc-fa-excel-import',
+  // [Sprint 68 FAR-4 · AI/IoT/Mobile/Analytics group · Block 5 · Q-LOCK-3/4/5 A]
+  'fc-fa-ai-classification', 'fc-fa-document-ai', 'fc-fa-iot-rfid',
   // [T10-pre.2d-B] 13 voucher-type registers
   'fc-rpt-sales-register', 'fc-rpt-purchase-register',
   'fc-rpt-receipt-register', 'fc-rpt-payment-register',
@@ -204,6 +207,13 @@ const COMPUTE_ENGINE_ITEMS: SidebarItem[] = [
   { id: 'fc-fa-excel-import',       label: 'Asset Master Excel Import',         icon: Layers },
 ];
 
+// [Sprint 68 FAR-4 · AI/IoT/Mobile/Analytics group · Block 5 · Q-LOCK-3/4/5 A]
+const AI_IOT_FA_PACK_ITEMS: SidebarItem[] = [
+  { id: 'fc-fa-ai-classification', label: 'AI FA Classification',     icon: Sparkles },
+  { id: 'fc-fa-document-ai',       label: 'Document AI (Invoice→FA)', icon: FileText },
+  { id: 'fc-fa-iot-rfid',          label: 'IoT/RFID Asset Tracking',  icon: Radio },
+];
+
 const AUDIT_ITEMS: SidebarItem[] = [
   { id: 'fc-audit-dashboard', label: 'Audit Dashboard', icon: LayoutDashboard },
   { id: 'fc-audit-3cd', label: 'Form 3CD', icon: FileText },
@@ -233,6 +243,8 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
   const [physRealityOpen, setPhysRealityOpen] = useState(false);
   // [Sprint 67 FAR-3 · Compute Engine group state · Block 5]
   const [computeEngineOpen, setComputeEngineOpen] = useState(false);
+  // [Sprint 68 FAR-4 · AI/IoT/Mobile/Analytics group state · Block 5]
+  const [aiIotFaOpen, setAiIotFaOpen] = useState(false);
 
   useEffect(() => {
     const txn = ['fc-txn-sales-invoice','fc-txn-purchase-invoice','fc-txn-receipt',
@@ -270,6 +282,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
     else if (['fc-fa-caro-20','fc-fa-msme-capital','fc-fa-ind-as-116','fc-fa-ledger-pack'].includes(active)) setStatFaOpen(true);
     else if (['fc-fa-physical-verification','fc-fa-calibration-status','fc-fa-amc-renewal-pipeline','fc-fa-vehicle-register'].includes(active)) setPhysRealityOpen(true);
     else if (['fc-fa-multi-gaap-report','fc-fa-uop-report','fc-fa-component-report','fc-fa-opening-migration','fc-fa-excel-import'].includes(active)) setComputeEngineOpen(true);
+    else if (['fc-fa-ai-classification','fc-fa-document-ai','fc-fa-iot-rfid'].includes(active)) setAiIotFaOpen(true);
     else if (aud.includes(active)) setAuditOpen(true);
   }, [active]);
 
@@ -386,6 +399,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
         {renderSection('Statutory FA Pack', STATUTORY_FA_PACK_ITEMS, statFaOpen, setStatFaOpen)}
         {renderSection('FA Physical Reality', FA_PHYSICAL_REALITY_ITEMS, physRealityOpen, setPhysRealityOpen)}
         {renderSection('Compute Engine (Multi-GAAP)', COMPUTE_ENGINE_ITEMS, computeEngineOpen, setComputeEngineOpen)}
+        {renderSection('AI/IoT/Mobile/Analytics (FA)', AI_IOT_FA_PACK_ITEMS, aiIotFaOpen, setAiIotFaOpen)}
         {renderSection('Tax Audit', AUDIT_ITEMS, auditOpen, setAuditOpen)}
       </SidebarContent>
       <SidebarFooter className="p-3">

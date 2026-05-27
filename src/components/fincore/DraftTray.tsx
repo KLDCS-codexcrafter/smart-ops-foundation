@@ -47,7 +47,9 @@ export type FinCoreModule =
   | 'fc-fa-amc-renewal-pipeline' | 'fc-fa-vehicle-register'
   // [Sprint 67 FAR-3 · Compute Engine Best-in-Class · Block 5 · Q-LOCK-9 A]
   | 'fc-fa-multi-gaap-report' | 'fc-fa-uop-report' | 'fc-fa-component-report'
-  | 'fc-fa-opening-migration' | 'fc-fa-excel-import';
+  | 'fc-fa-opening-migration' | 'fc-fa-excel-import'
+  // [Sprint 68 FAR-4 · AI/IoT/Mobile/Analytics · Block 5 · Q-LOCK-3/4/5 A]
+  | 'fc-fa-ai-classification' | 'fc-fa-document-ai' | 'fc-fa-iot-rfid';
 
 export interface DraftEntry {
   id: string;
