@@ -40,8 +40,14 @@ describe('Sprint 68 FAR-4 · Institutional Register Updates', () => {
     expect(s68?.code).toBe('T-Phase-4.FAR-4');
   });
 
-  it('A-streak advances to 15 (NEW RECORD)', () => {
-    expect(getCurrentAStreak()).toBe(15);
+  it('Sprint 68 advanced A-streak to 15 at bank-time (historical-snapshot · Lesson 24 · 4th recurrence)', () => {
+    // At Sprint 68 BANK TIME (HEAD 137dc4cf), getCurrentAStreak() returned 15.
+    // Cycle-3 Sprint 69 bank advances it to 16; this test pins the Sprint-68-bank value
+    // by inspecting the SPRINTS entry directly · current streak may be ≥ 15.
+    const s68 = SPRINTS.find((s) => s.sprintNumber === 68);
+    expect(s68).toBeDefined();
+    expect(s68?.grade).toBe('A first-pass-clean');
+    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(15);
   });
 
   it('FAR-CAP-19..24 are all FULL', () => {
