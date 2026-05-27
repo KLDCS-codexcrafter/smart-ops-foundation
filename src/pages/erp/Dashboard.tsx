@@ -31,6 +31,12 @@ const CrossCardSearch = lazy(() =>
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useCardEntitlement } from "@/hooks/useCardEntitlement";
 import { topCardsForUser } from "@/lib/card-frequency-tracker";
+// Sprint 69 Cycle-2 · DP-S69-4 · FA tile refresh wires to weighted Health Score engine.
+import {
+  computeWeightedComplianceHealth,
+  type WeightedHealthBreakdown,
+} from "@/lib/comply360-health-score-engine";
+import { loadObligations } from "@/lib/comply360-statutory-memory";
 
 
 // ── Icon lookup map ──────────────────────────────────────────────────────────
@@ -149,7 +155,8 @@ interface FATileDef {
   caption: string;
 }
 
-function buildFATiles(entityCode: string): FATileDef[] {
+function buildFATiles(entityCode: string, health: WeightedHealthBreakdown): FATileDef[] {
+  // IoT count (UNCHANGED · FK-CAP-7 institutional preservation per Sprint 68)
   let iotCount = 0;
   try {
     for (let i = 0; i < localStorage.length; i++) {
@@ -157,11 +164,38 @@ function buildFATiles(entityCode: string): FATileDef[] {
       if (k && k.startsWith(`4ds_iot_asset_stream_${entityCode}_`)) iotCount++;
     }
   } catch { /* ignore */ }
+
+  // FA-relevant sub-scores: mca-roc (CARO/Sch II via ROC) + audit-trail + licenses
+  const roc      = health.modules.find((m) => m.module === 'mca-roc');
+  const audit    = health.modules.find((m) => m.module === 'audit-trail');
+  const licenses = health.modules.find((m) => m.module === 'licenses');
+
+  // FA Health: composite of ROC + audit-trail sub-scores
+  const faHealthRaw = roc && audit
+    ? Math.round((roc.raw_score + audit.raw_score) / 2)
+    : 100;
+  const faHealthLabel =
+    faHealthRaw >= 85 ? 'Healthy'  :
+    faHealthRaw >= 65 ? 'Watch'    :
+    faHealthRaw >= 40 ? 'At Risk'  : 'Critical';
+
+  // Compliance: ROC sub-score band (CARO 2020 / Schedule II / GST ITC)
+  const complianceLabel =
+    !roc                  ? 'On-track'      :
+    roc.raw_score >= 85   ? 'On-track'      :
+    roc.raw_score >= 65   ? 'Minor gaps'    :
+    roc.raw_score >= 40   ? 'Material gaps' : 'Adverse';
+
+  // Custodian: % of FA-relevant obligations not overdue
+  const custTotal   = (roc?.counts.total   ?? 0) + (audit?.counts.total   ?? 0) + (licenses?.counts.total   ?? 0);
+  const custOverdue = (roc?.counts.overdue ?? 0) + (audit?.counts.overdue ?? 0) + (licenses?.counts.overdue ?? 0);
+  const custPct = custTotal === 0 ? 100 : Math.round(((custTotal - custOverdue) / custTotal) * 100);
+
   return [
-    { id: 'fa-health-tile',     title: 'FA Health',     metric: 'Healthy',  caption: 'CARO / Schedule II / GST status nominal' },
-    { id: 'fa-compliance-tile', title: 'Compliance',    metric: 'On-track', caption: 'CARO 2020 · Schedule II · GST ITC current' },
-    { id: 'fa-custodian-tile',  title: 'Custodian',     metric: '100%',     caption: 'Assets with custodian_employee_id assigned' },
-    { id: 'fa-iot-stream-tile', title: 'IoT Stream',    metric: String(iotCount), caption: 'Live IoT-streaming assets (FAR-CAP-23)' },
+    { id: 'fa-health-tile',     title: 'FA Health',  metric: `${faHealthLabel} (${faHealthRaw})`, caption: 'CARO / Schedule II / GST status from Comply360' },
+    { id: 'fa-compliance-tile', title: 'Compliance', metric: complianceLabel,                      caption: 'CARO 2020 · Schedule II · GST ITC (Comply360 ROC sub-score)' },
+    { id: 'fa-custodian-tile',  title: 'Custodian',  metric: `${custPct}%`,                         caption: 'Assets with custodian + on-time filings (Comply360-driven)' },
+    { id: 'fa-iot-stream-tile', title: 'IoT Stream', metric: String(iotCount),                      caption: 'Live IoT-streaming assets (FAR-CAP-23 · FK-CAP-7 preserved)' },
   ];
 }
 
