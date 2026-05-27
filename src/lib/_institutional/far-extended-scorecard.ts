@@ -36,12 +36,13 @@ export const FAR_CAPABILITIES: FARCapability[] = [
   { id: 'FAR-CAP-16', name: 'UOP (units-of-production) depreciation method', state: 'full', lastChangedSprint: 67, evidenceFiles: ['src/lib/uop-depreciation-engine.ts','src/pages/erp/accounting/capital-assets/UOPDepreciationReport.tsx'], parentTheme: 'far-3-compute' },
   { id: 'FAR-CAP-17', name: 'Component-level depreciation (Ind AS 16)', state: 'full', lastChangedSprint: 67, evidenceFiles: ['src/lib/component-depreciation-engine.ts','src/pages/erp/accounting/capital-assets/ComponentDepreciationReport.tsx'], parentTheme: 'far-3-compute' },
   { id: 'FAR-CAP-18', name: 'Multi-GAAP parallel depreciation (3 books)', state: 'full', lastChangedSprint: 67, evidenceFiles: ['src/lib/multi-gaap-depreciation-engine.ts','src/pages/erp/accounting/capital-assets/MultiGAAPDepreciationReport.tsx','src/types/depreciation-extended.ts'], parentTheme: 'far-3-compute' },
-  { id: 'FAR-CAP-19', name: 'Revaluation reserve handler', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-3-compute' },
-  { id: 'FAR-CAP-20', name: 'AI custodian-drift detector', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
-  { id: 'FAR-CAP-21', name: 'IoT meter ingest for UOP depreciation', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
-  { id: 'FAR-CAP-22', name: 'Mobile asset verification (QR scan)', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
-  { id: 'FAR-CAP-23', name: '/erp/dashboard FA card lane (4 tiles)', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
-  { id: 'FAR-CAP-24', name: 'FA audit trail viewer (CFR-11 e-sig integration)', state: 'absent', lastChangedSprint: null, evidenceFiles: [], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
+  // 🆕 Sprint 68 FAR-4 · FAR-CAP-19..24 all flipped to FULL · F-7 absorption: FAR-CAP-19 absorbed via fa-audit-trail-engine 'revaluation' event-type per Q-LOCK-22 A
+  { id: 'FAR-CAP-19', name: 'Revaluation reserve handler (absorbed via audit-trail revaluation event)', state: 'full', lastChangedSprint: 68, evidenceFiles: ['src/lib/fa-audit-trail-engine.ts'], parentTheme: 'far-3-compute' },
+  { id: 'FAR-CAP-20', name: 'AI custodian-drift detector', state: 'full', lastChangedSprint: 68, evidenceFiles: ['src/lib/ai-fa-classification-engine.ts','src/pages/erp/accounting/capital-assets/AIFAClassificationPanel.tsx'], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
+  { id: 'FAR-CAP-21', name: 'IoT meter ingest for UOP depreciation', state: 'full', lastChangedSprint: 68, evidenceFiles: ['src/lib/iot-asset-bridge.ts','src/lib/rfid-asset-bridge.ts','src/pages/erp/accounting/capital-assets/IoTRFIDAssetPanel.tsx'], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
+  { id: 'FAR-CAP-22', name: 'Mobile asset verification (QR scan)', state: 'full', lastChangedSprint: 68, evidenceFiles: ['src/pages/mobile/MobileFAScanPage.tsx'], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
+  { id: 'FAR-CAP-23', name: '/erp/dashboard FA card lane (4 tiles)', state: 'full', lastChangedSprint: 68, evidenceFiles: ['src/pages/erp/Dashboard.tsx'], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
+  { id: 'FAR-CAP-24', name: 'FA audit trail viewer (CFR-11 e-sig integration)', state: 'full', lastChangedSprint: 68, evidenceFiles: ['src/lib/fa-audit-trail-engine.ts','src/pages/erp/accounting/capital-assets/FAAuditTrailViewer.tsx'], parentTheme: 'far-4-ai-iot-mobile-dashboard' },
 ];
 
 export function getFARCapabilityCount(): number {

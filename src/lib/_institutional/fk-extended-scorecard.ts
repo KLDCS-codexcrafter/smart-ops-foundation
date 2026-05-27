@@ -24,7 +24,7 @@ export const FK_CAPABILITIES: FKCapability[] = [
   { id: 'FK-CAP-4', name: 'Pay Hub Asset ↔ Fixed Asset (bidirectional)', state: 'schema-staged', lastChangedSprint: 64, schemaFile: 'src/types/asset-master.ts (fixed_asset_id)', uiClosedAtSprint: null },
   { id: 'FK-CAP-5', name: 'Employee.EquipmentIssued[].asset_id FK', state: 'full', lastChangedSprint: 66, schemaFile: 'src/types/employee.ts (asset_id)', uiClosedAtSprint: 66, evidenceFiles: ['src/pages/erp/pay-hub/masters/EmployeeMaster.tsx'] },
   { id: 'FK-CAP-6', name: 'Production sidebar Machine List + FA-linked Machines report', state: 'full', lastChangedSprint: 66, schemaFile: 'N/A · UI at FAR-2', uiClosedAtSprint: 66, evidenceFiles: ['src/apps/erp/configs/production-sidebar-config.ts','src/pages/erp/production/ProductionPage.tsx','src/pages/erp/production/reports/FALinkedMachinesPanel.tsx'] },
-  { id: 'FK-CAP-7', name: '/erp/dashboard FA card lane (4 tiles)', state: 'absent', lastChangedSprint: null, schemaFile: 'N/A · UI at FAR-4', uiClosedAtSprint: null },
+  { id: 'FK-CAP-7', name: '/erp/dashboard FA card lane (4 tiles)', state: 'full', lastChangedSprint: 68, schemaFile: 'N/A · UI at FAR-4', uiClosedAtSprint: 68, evidenceFiles: ['src/pages/erp/Dashboard.tsx'] },
   { id: 'FK-CAP-8', name: 'FA Register → Linked Machines reverse-display', state: 'full', lastChangedSprint: 66, schemaFile: 'N/A · UI at FAR-2', uiClosedAtSprint: 66, evidenceFiles: ['src/pages/erp/accounting/capital-assets/FixedAssetRegister.tsx'] },
 ];
 

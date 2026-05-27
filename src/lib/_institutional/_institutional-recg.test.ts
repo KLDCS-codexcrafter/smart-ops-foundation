@@ -87,6 +87,14 @@ describe('Register-Empirical Coupling Gate (RECG) · FR-101 candidate · Lesson 
       ['FAR-CAP-16', 'src/lib/uop-depreciation-engine.ts', 'uop_units_consumed'],
       ['FAR-CAP-17', 'src/lib/component-depreciation-engine.ts', 'component_breakdown'],
       ['FAR-CAP-18', 'src/lib/multi-gaap-depreciation-engine.ts', 'IndAS'],
+      // 🆕 Sprint 68 FAR-4 · PATTERN_CHECKS for FAR-CAP-19..24 + FK-CAP-7
+      ['FAR-CAP-19', 'src/lib/fa-audit-trail-engine.ts', 'recordRevaluation'],
+      ['FAR-CAP-20', 'src/lib/ai-fa-classification-engine.ts', 'detectCustodianDrift'],
+      ['FAR-CAP-21', 'src/lib/iot-asset-bridge.ts', 'ingestIoTSignal'],
+      ['FAR-CAP-22', 'src/pages/mobile/MobileFAScanPage.tsx', 'findAssetByRFIDTag'],
+      ['FAR-CAP-23', 'src/pages/erp/Dashboard.tsx', 'fa-health-tile'],
+      ['FAR-CAP-24', 'src/lib/fa-audit-trail-engine.ts', 'appendAuditEvent'],
+      ['FK-CAP-7',   'src/pages/erp/Dashboard.tsx', 'fa-iot-stream-tile'],
     ];
     for (const [capId, file, pattern] of PATTERN_CHECKS) {
       it(`${capId} · ${file} contains "${pattern}"`, () => {
