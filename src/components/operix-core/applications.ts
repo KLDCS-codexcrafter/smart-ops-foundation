@@ -293,7 +293,7 @@ export const applications: AppDefinition[] = [
     category: 'Fin Hub',
     route: '/erp/comply360',
     icon: 'Shield',
-    status: 'wip',  // Sprint 69 · T-Phase-5.A.1.1 · Block 1 first commit · flips → 'active' at Block 4 close
+    status: 'active',  // Sprint 69 · T-Phase-5.A.1.1 · Block 4 final commit · ACs passed (OOB-1 Health Score · OOB-5 Statutory Memory · Q12 Home Dashboard · 3 LIVE tiles)
   },
   {
     id: 'payout',
