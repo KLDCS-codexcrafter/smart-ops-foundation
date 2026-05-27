@@ -96,10 +96,26 @@ describe('Sprint 70a · Block 2 · comply360-gst-aggregator-engine', () => {
     expect(amends[0].source_ref).toBe('so-am');
   });
 
+  const mkSupply = (over: Partial<CrossCardSupply> = {}): CrossCardSupply => ({
+    source_card: 'salesx',
+    source_ref: 's1',
+    entity_id: ENTITY,
+    gstin_supplier: GSTIN,
+    gstin_recipient: '29AAAPL1234C1Z5',
+    invoice_no: 'INV/X',
+    invoice_date: '2026-04-10',
+    hsn_sac: '8471',
+    taxable_value: 100,
+    igst: 18, cgst: 0, sgst: 0, cess: 0,
+    pos_state_code: '29',
+    supply_type: 'b2b',
+    ...over,
+  });
+
   it('groupSuppliesByType buckets all supply types deterministically', () => {
     const supplies: CrossCardSupply[] = [
-      { ...mkSO(), supply_type: 'b2b' } as CrossCardSupply,
-      { ...mkSO({ id: 'x' }), supply_type: 'b2cs' } as CrossCardSupply,
+      mkSupply({ supply_type: 'b2b' }),
+      mkSupply({ source_ref: 'x', supply_type: 'b2cs' }),
     ];
     const g = groupSuppliesByType(supplies);
     expect(g.b2b).toHaveLength(1);
@@ -109,8 +125,8 @@ describe('Sprint 70a · Block 2 · comply360-gst-aggregator-engine', () => {
 
   it('computeTotalTax sums all five tax columns', () => {
     const t = computeTotalTax([
-      { ...mkSO(), taxable_value: 100, igst: 18, cgst: 0, sgst: 0, cess: 1 } as CrossCardSupply,
-      { ...mkSO({ id: 'x' }), taxable_value: 200, igst: 36, cgst: 0, sgst: 0, cess: 2 } as CrossCardSupply,
+      mkSupply({ taxable_value: 100, igst: 18, cess: 1 }),
+      mkSupply({ source_ref: 'x', taxable_value: 200, igst: 36, cess: 2 }),
     ]);
     expect(t.taxable_value).toBe(300);
     expect(t.igst).toBe(54);
@@ -118,11 +134,10 @@ describe('Sprint 70a · Block 2 · comply360-gst-aggregator-engine', () => {
   });
 
   it('deriveHSNRows merges identical hsn+rate rows', () => {
-    const supplies = [
-      { ...mkSO(), hsn_sac: '8471', taxable_value: 100, igst: 18 } as CrossCardSupply,
-      { ...mkSO({ id: '2' }), hsn_sac: '8471', taxable_value: 200, igst: 36 } as CrossCardSupply,
-    ];
-    const rows = deriveHSNRows(supplies);
+    const rows = deriveHSNRows([
+      mkSupply({ hsn_sac: '8471', taxable_value: 100, igst: 18 }),
+      mkSupply({ source_ref: '2', hsn_sac: '8471', taxable_value: 200, igst: 36 }),
+    ]);
     const row = rows.find(r => r.hsn === '8471' && r.rt === 18);
     expect(row?.txval).toBe(300);
     expect(row?.iamt).toBe(54);
