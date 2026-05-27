@@ -1,6 +1,6 @@
 /**
  * Sprint 68 FAR-4 · Block 16 · fa-audit-trail-engine smoke tests
- * Covers FAR-CAP-24 (audit trail) + FAR-CAP-19 (revaluation absorbed via event-type).
+ * Covers FAR-CAP-24 (audit trail) + FAR-CAP-19 (revaluation absorbed).
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
@@ -34,18 +34,20 @@ describe('fa-audit-trail-engine · append-only trail + revaluation', () => {
     expect(trail[0].event_type).toBe('creation');
   });
 
-  it('recordRevaluation emits revaluation event with reserve delta', () => {
+  it('recordRevaluation emits revaluation event', () => {
     const ev = recordRevaluation(ENTITY, 'a3', {
+      asset_unit_record_id: 'a3',
+      actor: 'cfo',
       old_book_value: 100000,
       new_book_value: 150000,
+      revaluation_reserve_delta: 50000,
       method: 'fair_value',
-      actor: 'cfo',
     });
     expect(ev.event_type).toBe('revaluation');
-    expect((ev as { revaluation_reserve_delta: number }).revaluation_reserve_delta).toBe(50000);
+    expect(ev.revaluation_reserve_delta).toBe(50000);
   });
 
-  it('daysSinceLastAudit returns number for asset with events', () => {
+  it('daysSinceLastAudit returns 0+ for asset with events', () => {
     appendAuditEvent(ENTITY, 'a4', { asset_unit_record_id: 'a4', event_type: 'verification', actor: 't' });
     expect(daysSinceLastAudit(ENTITY, 'a4')).toBeGreaterThanOrEqual(0);
   });

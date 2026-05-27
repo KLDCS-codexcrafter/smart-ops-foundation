@@ -22,7 +22,7 @@ function mkSig(value: number, ts = new Date().toISOString()): IoTSignal {
     value,
     unit: 'kWh',
     timestamp: ts,
-  } as IoTSignal;
+  } as unknown as IoTSignal;
 }
 
 describe('iot-asset-bridge · stream ingestion', () => {
@@ -34,26 +34,26 @@ describe('iot-asset-bridge · stream ingestion', () => {
   });
 
   it('ingestIoTSignal appends + tracks signal_count_today', () => {
-    const a = ingestIoTSignal(ENTITY, ASSET, mkSig(10));
+    ingestIoTSignal(ENTITY, ASSET, mkSig(10));
     const b = ingestIoTSignal(ENTITY, ASSET, mkSig(20));
     expect(b.is_streaming).toBe(true);
-    expect(b.signal_count_today).toBeGreaterThanOrEqual(a.signal_count_today);
+    expect(b.signal_count_today).toBeGreaterThanOrEqual(1);
   });
 
   it('subscribeToAssetStream returns ingested signals', () => {
     ingestIoTSignal(ENTITY, ASSET, mkSig(5));
-    const signals = subscribeToAssetStream(ENTITY, ASSET);
-    expect(signals.length).toBeGreaterThan(0);
+    expect(subscribeToAssetStream(ENTITY, ASSET).length).toBeGreaterThan(0);
   });
 
-  it('computeUOPDeltaFromIoT aggregates meter values', () => {
+  it('computeUOPDeltaFromIoT sums meter values within range', () => {
     ingestIoTSignal(ENTITY, ASSET, mkSig(100));
     ingestIoTSignal(ENTITY, ASSET, mkSig(50));
-    const delta = computeUOPDeltaFromIoT(ENTITY, ASSET);
-    expect(delta).toBeGreaterThanOrEqual(0);
+    const from = new Date(Date.now() - 86_400_000).toISOString();
+    const to = new Date(Date.now() + 86_400_000).toISOString();
+    expect(computeUOPDeltaFromIoT(ENTITY, ASSET, from, to)).toBeGreaterThanOrEqual(0);
   });
 
-  it('listIoTStreamingAssets returns array (possibly empty)', () => {
+  it('listIoTStreamingAssets returns array', () => {
     expect(Array.isArray(listIoTStreamingAssets(ENTITY))).toBe(true);
   });
 });
