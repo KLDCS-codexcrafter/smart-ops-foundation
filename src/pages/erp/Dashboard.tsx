@@ -396,7 +396,7 @@ export default function ErpDashboard() {
           const activeLanes = LANES.map(lane => ({
             ...lane,
             apps: lane.ids.map(id => appMap.get(id)).filter(Boolean) as AppDefinition[],
-          })).filter(lane => lane.apps.length > 0);
+          })).filter(lane => lane.custom === 'fixed-assets' || lane.apps.length > 0);
 
           if (activeLanes.length === 0) {
             return (
@@ -406,6 +406,8 @@ export default function ErpDashboard() {
             );
           }
 
+          const faTiles = buildFATiles(entityCode);
+
           return (
             <div className="space-y-8">
               {activeLanes.map((lane) => (
@@ -414,21 +416,32 @@ export default function ErpDashboard() {
                     {lane.label}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {lane.apps.map((app, i) => (
-                      <div
-                        key={app.id}
-                        className="animate-fade-in"
-                        style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
-                      >
-                        <AppCard app={app} />
-                      </div>
-                    ))}
+                    {lane.custom === 'fixed-assets'
+                      ? faTiles.map((tile, i) => (
+                          <div
+                            key={tile.id}
+                            className="animate-fade-in"
+                            style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+                          >
+                            <FATile tile={tile} />
+                          </div>
+                        ))
+                      : lane.apps.map((app, i) => (
+                          <div
+                            key={app.id}
+                            className="animate-fade-in"
+                            style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+                          >
+                            <AppCard app={app} />
+                          </div>
+                        ))}
                   </div>
                 </section>
               ))}
             </div>
           );
         })()}
+
 
         <footer className="mt-12 py-4 border-t border-border/30 text-center text-xs text-muted-foreground">
           © 2026 4DSmartOps · Operix · Built for Indian SMEs
