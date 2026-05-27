@@ -32,5 +32,3 @@ export function Comply360Sidebar({ onSelect }: Comply360SidebarProps): JSX.Eleme
     </nav>
   );
 }
-
-export { comply360SidebarItems };
