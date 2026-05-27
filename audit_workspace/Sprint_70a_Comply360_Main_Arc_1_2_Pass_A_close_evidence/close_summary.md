@@ -95,7 +95,7 @@ None fired during Pass A. The 5 honest disclosures in §3 are scope/architecture
 | `comply360-gstr-builder-engine` | `src/lib/comply360-gstr-builder-engine.ts` | 70 | CONFIRMED |
 | `comply360-ims-engine` | `src/lib/comply360-ims-engine.ts` | 70 | CONFIRMED |
 
-Total SIBLINGs: 55 → **58** (entries 56/57/58).
+Total SIBLINGs: 56 → **59** (entries 57/58/59 are Sprint 70a Pass A). Arithmetic correction from Cycle-1 close summary (was incorrectly stated as "55 → 58").
 
 ## §10 Sprint history delta
 
