@@ -31,6 +31,7 @@ export function FAAuditTrailViewerPanel({ entityCode }: Props): JSX.Element {
     if (!assetId) return [];
     const all = getAuditTrail(entityCode, assetId);
     return filter === 'all' ? all : all.filter(e => e.event_type === filter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional · forces refresh on global storage events
   }, [entityCode, assetId, filter, tick]);
 
   const handleAddRevaluation = (): void => {

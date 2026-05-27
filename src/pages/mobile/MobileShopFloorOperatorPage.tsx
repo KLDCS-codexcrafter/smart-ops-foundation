@@ -33,7 +33,7 @@ export default function MobileShopFloorOperatorPage(): JSX.Element {
       degraded: healths.filter(h => h.status === 'degraded').length,
       critical: healths.filter(h => h.status === 'critical').length,
     };
-  }, [entityCode, machines]);
+  }, [entityCode]);
 
   return (
     <div className="p-4 max-w-md mx-auto space-y-4">
