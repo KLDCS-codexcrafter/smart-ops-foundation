@@ -136,7 +136,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 70b T-Phase-5.A.1.2-PASS-B · Comply360 Main Arc 1.2 · Path α Pass B (UI layer · 4 NATIVE pages + tab-shell + multi-GSTIN hook · PATTERN-S70b-NAVIGATION-CANONICAL ratified) · A with adaptations ⭐ (2-cycle chain) · 18-streak NEW RECORD
   {
     sprintNumber: 70, code: 'T-Phase-5.A.1.2-PASS-B', composite: false, grade: 'A with adaptations',
-    headSha: null, predecessorSha: '9a4ec95dffb03cf35387c553b03c6ef41dd13cc0', loc: 1354,
+    headSha: '16f4ea2b3f320c8f1db8f81e11591b25e01c1bc5', predecessorSha: '9a4ec95dffb03cf35387c553b03c6ef41dd13cc0', loc: 1354,
     newSiblings: ['use-entity-gstins-hook', 'comply360-tax-gst-shell'],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
