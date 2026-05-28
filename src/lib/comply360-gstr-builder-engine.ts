@@ -42,7 +42,11 @@ import {
 
 // ── Public Types ─────────────────────────────────────────────────────
 
-export type GSTRBuilderType = 'gstr-1' | 'gstr-1a' | 'gstr-2b' | 'gstr-3b' | 'gstr-9' | 'gstr-9c';
+export type GSTRBuilderType =
+  | 'gstr-1' | 'gstr-1a' | 'gstr-2b' | 'gstr-3b' | 'gstr-9' | 'gstr-9c'
+  // 🆕 Sprint 75 · Q28 Part 1 · 9 extended forms (DP-S75-2 · in-place extension)
+  | 'gstr-4' | 'gstr-5' | 'gstr-6' | 'gstr-7' | 'gstr-8' | 'gstr-10'
+  | 'cmp-08' | 'itc-03' | 'drc-03';
 
 export interface BuilderWarning {
   code: string;
