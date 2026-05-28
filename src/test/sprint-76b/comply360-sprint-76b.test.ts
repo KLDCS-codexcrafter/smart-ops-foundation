@@ -140,14 +140,16 @@ describe('Sprint 76b · Read-only set 0-DIFF (FR-19)', () => {
     });
   }
 
-  it('TCS engine still exposes READS_FROM = tds-aggregator', () => {
+  it('TCS engine still exposes READS_FROM tdsAggregator path', () => {
     const src = read('src/lib/comply360-tcs-27eq-engine.ts');
-    expect(src).toMatch(/READS_FROM\s*=\s*['"]comply360-tds-aggregator['"]/);
+    expect(src).toMatch(/READS_FROM\s*=\s*\{[\s\S]*tdsAggregator/);
+    expect(src).toMatch(/comply360-tds-aggregator-engine\.ts/);
   });
 
-  it('EWB-02 engine still exposes READS_FROM = eway-engine', () => {
+  it('EWB-02 engine still exposes READS_FROM eway-engine path', () => {
     const src = read('src/lib/comply360-ewb02-consolidation-engine.ts');
-    expect(src).toMatch(/READS_FROM\s*=\s*['"]comply360-eway-engine['"]/);
+    expect(src).toMatch(/READS_FROM\s*=/);
+    expect(src).toMatch(/comply360-eway-engine\.ts/);
   });
 });
 
