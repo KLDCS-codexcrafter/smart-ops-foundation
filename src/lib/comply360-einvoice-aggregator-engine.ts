@@ -187,7 +187,7 @@ export function buildEInvoiceBatch(filter: EInvoiceBatchFilter): EInvoiceBatch {
   const eligible = collectEligibleVouchers(filter);
   const seller = defaultSeller();
   const items: EInvoiceBatchItem[] = eligible.map((e) => {
-    const raw = e.raw as RawVoucherLike;
+    const raw = e.raw as unknown as RawVoucherLike;
     const payload = buildIRNPayload(
       e.raw,
       seller.gstin,
