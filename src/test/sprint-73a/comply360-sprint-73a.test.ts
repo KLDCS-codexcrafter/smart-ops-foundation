@@ -147,7 +147,7 @@ describe('Sprint 73a · institutional snapshot (Lesson 24 id-lookup + bounds-che
     expect(s).toBeDefined();
     expect(s?.grade).toBe('A first-pass-clean');
     expect(s?.newSiblings.length).toBe(4);
-    expect(s?.headSha).toBeNull();
+    expect(s?.headSha).toBe('cc711d90ae26d7b1e8cb68561d8895a8fc069f5f');
     expect(s?.predecessorSha).toBe('cfff1abc0da6a88ec18a87e6ea7af46afea24446');
   });
 
