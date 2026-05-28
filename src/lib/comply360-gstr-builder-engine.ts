@@ -5,6 +5,8 @@
  * @sprint-extended Sprint 71 · T-Phase-5.A.1.3 · buildGSTR3B (DP-S71-1 · in-place)
  * @sprint-extended Sprint 74a · T-Phase-5.A.1.6-PASS-A · buildGSTR9 + buildGSTR9C (DP-S74-2 · in-place)
  * @sprint-extended Sprint 75 · T-Phase-5.A.1.7 · buildGSTR4/5/6/7/8/10 + buildCMP08 + buildITC03 + buildDRC03 (DP-S75-2 · in-place · Record<string,unknown> payload branch)
+ * @sprint-extended Sprint 76a · T-Phase-5.A.1.8-PASS-A · buildITC04 + buildREG01 + buildREG31 (DP-S76-2 · in-place · Record<string,unknown> payload branch)
+
  * @decisions   D-S69-1 (100% native) · DP-S70-2 (GSTR builder engine) · DP-S74-2 (extend in place)
  * @iso         Reliability · Auditability · Maintainability
  * @disciplines FR-19 SIBLING · FR-43 unit tests · FR-91 honest disclosure · Lesson 23 cross-prompt contract
