@@ -67,8 +67,8 @@ describe('FAR + FK extended scorecards · Sprint 68 FAR-4 (24 FAR-CAPs FULL · 7
 
 describe('Sprint history · A-streak counter', () => {
   // Lesson 24 historical-snapshot pattern · bounds-check not equality
-  it('current A-streak is at least 26 (Sprint 54-76a · NEW Operix record ⭐)', () => {
-    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(27);
+  it('current A-streak is at least 28 (Sprint 54-77a · NEW Operix record ⭐)', () => {
+    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(28);
   });
 
 
