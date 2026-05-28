@@ -39,7 +39,7 @@ describe('Sprint 70a · T-Phase-5.A.1.2-PASS-A · Comply360 Main Arc 1.2 · inst
   });
 
   it('Sprint 70 records the 3 Pass-A engine siblings', () => {
-    const entry = SPRINTS.find((s) => s.sprintNumber === SPRINT_70);
+    const entry = SPRINTS.find((s) => s.sprintNumber === SPRINT_70 && s.code === 'T-Phase-5.A.1.2-PASS-A');
     expect(entry?.newSiblings).toEqual(
       expect.arrayContaining([
         'comply360-gst-aggregator-engine',
