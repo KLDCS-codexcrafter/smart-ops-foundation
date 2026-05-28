@@ -296,7 +296,7 @@ describe('Sprint 76a · gstr-builder extensions', () => {
       authorized_signatory_pan: 'AABCA1234C',
     });
     expect(r.valid).toBe(true);
-    expect(r.payload.application_status).toBe('ready_for_submission');
+    expect((r.payload as Record<string, unknown>).application_status).toBe('ready_for_submission');
   });
 
   it('buildREG31 requires SCN reference', () => {
