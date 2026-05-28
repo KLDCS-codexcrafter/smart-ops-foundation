@@ -11,9 +11,9 @@ import { SUB_PORTALS, getSubPortalCount } from './sub-portal-registry';
 import { FAR_CAPABILITIES, getFARCapabilityCount, getFARCapabilityScoreSchemaStaged } from './far-extended-scorecard';
 import { FK_CAPABILITIES, getFKCapabilityCount, getFKCapabilityScoreSchemaStaged } from './fk-extended-scorecard';
 
-describe('Institutional registers · cardinality (post-Sprint-71 Comply360 Main Arc 1.3)', () => {
-  it('SIBLINGS has 63 entries', () => {
-    expect(getSiblingCount()).toBe(63);
+describe('Institutional registers · cardinality (post-Sprint-72 Comply360 Main Arc 1.4)', () => {
+  it('SIBLINGS has 67 entries', () => {
+    expect(getSiblingCount()).toBe(67);
   });
 
   it('MOATS has 52 entries', () => {
@@ -24,8 +24,8 @@ describe('Institutional registers · cardinality (post-Sprint-71 Comply360 Main 
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 72 entries', () => {
-    expect(getSprintCount()).toBe(72);
+  it('SPRINTS has 73 entries', () => {
+    expect(getSprintCount()).toBe(73);
   });
 
   it('SUB_PORTALS has 3 entries', () => {
@@ -66,17 +66,16 @@ describe('FAR + FK extended scorecards · Sprint 68 FAR-4 (24 FAR-CAPs FULL · 7
 
 describe('Sprint history · A-streak counter', () => {
   // Lesson 24 historical-snapshot pattern · bounds-check not equality
-  // (avoids future-sprint stale-snapshot regression · seeds FR-CANDIDATE-CROSS-REF-AUTOUPDATE 2nd validation)
-  it('current A-streak is at least 19 (Sprint 54-71 · NEW Operix record ⭐)', () => {
-    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(19);
+  it('current A-streak is at least 20 (Sprint 54-72 · NEW Operix record ⭐)', () => {
+    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(20);
   });
 
-  it('Sprint 70b Comply360 Main Arc 1.2 Pass B is the most recent banked sprint · 2 new SIBLINGs (Lesson 24 id-lookup)', () => {
+  it('Sprint 72 Comply360 Main Arc 1.4 is the most recent banked sprint · 4 new SIBLINGs (Lesson 24 id-lookup)', () => {
     // Lesson 24 · id-lookup not array-index (future sprints append; index drifts)
-    const s70b = SPRINTS.find((s) => s.sprintNumber === 70 && s.code === 'T-Phase-5.A.1.2-PASS-B');
-    expect(s70b).toBeDefined();
-    expect(s70b?.newSiblings.length).toBe(2);
-    // Sprint 70a (Pass A) entry still present · grade corrected to A-with-adaptations in Cycle-2:
+    const s72 = SPRINTS.find((s) => s.sprintNumber === 72 && s.code === 'T-Phase-5.A.1.4');
+    expect(s72).toBeDefined();
+    expect(s72?.newSiblings.length).toBe(4);
+    // Sprint 70a (Pass A) entry still present · grade ratified to A-with-adaptations:
     const s70a = SPRINTS.find((s) => s.sprintNumber === 70 && s.code === 'T-Phase-5.A.1.2-PASS-A');
     expect(s70a?.grade).toBe('A with adaptations');
   });

@@ -12,6 +12,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { ComingSoonPanel } from '@/components/fincore/ComingSoonPanel';
 import { Comply360Welcome } from './Comply360Welcome';
 import TaxGstPage from './tax-gst/TaxGstPage';
+import TdsPage from './tds/TdsPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -25,6 +26,8 @@ export default function Comply360Page(): JSX.Element {
         return <Comply360Welcome onNavigate={setActiveModule} />;
       case 'tax-gst':
         return <TaxGstPage />;
+      case 'tds':
+        return <TdsPage />;
       // 21 remaining mega-menus · modules light up in Sprints 70-88 per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;
