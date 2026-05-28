@@ -126,12 +126,19 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['comply360-health-score-engine', 'comply360-statutory-memory'],
     bankDate: '2026-05-27', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 70a T-Phase-5.A.1.2-PASS-A · Comply360 Main Arc 1.2 · Path α Pass A (engine layer) · graded A first-pass-clean ⭐ · 17-streak NEW RECORD
+  // 🆕 Sprint 70a T-Phase-5.A.1.2-PASS-A · Comply360 Main Arc 1.2 · Path α Pass A (engine layer) · graded A with adaptations ⭐ (2-cycle chain · grade-updated in Sprint 70b Cycle-2) · 17-streak
   {
-    sprintNumber: 70, code: 'T-Phase-5.A.1.2-PASS-A', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '1919be0f3820204191b481b00479da49c95c6f3d', loc: 1480,
+    sprintNumber: 70, code: 'T-Phase-5.A.1.2-PASS-A', composite: false, grade: 'A with adaptations',
+    headSha: '9a4ec95dffb03cf35387c553b03c6ef41dd13cc0', predecessorSha: '1919be0f3820204191b481b00479da49c95c6f3d', loc: 1480,
     newSiblings: ['comply360-gst-aggregator-engine', 'comply360-gstr-builder-engine', 'comply360-ims-engine'],
     bankDate: '2026-05-27', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 70b T-Phase-5.A.1.2-PASS-B · Comply360 Main Arc 1.2 · Path α Pass B (UI layer · 4 NATIVE pages + tab-shell + multi-GSTIN hook · PATTERN-S70b-NAVIGATION-CANONICAL ratified) · A with adaptations ⭐ (2-cycle chain) · 18-streak NEW RECORD
+  {
+    sprintNumber: 70, code: 'T-Phase-5.A.1.2-PASS-B', composite: false, grade: 'A with adaptations',
+    headSha: null, predecessorSha: '9a4ec95dffb03cf35387c553b03c6ef41dd13cc0', loc: 1354,
+    newSiblings: ['use-entity-gstins-hook', 'comply360-tax-gst-shell'],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
 ];
 
