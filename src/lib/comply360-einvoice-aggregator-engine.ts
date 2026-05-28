@@ -87,7 +87,7 @@ interface RawSeller {
   state_code?: string;
 }
 
-interface RawVoucherLike extends Partial<Voucher> {
+interface RawVoucherLike {
   id?: string;
   voucher_no?: string;
   date?: string;
@@ -102,6 +102,7 @@ interface RawVoucherLike extends Partial<Voucher> {
   net_amount?: number;
   irn?: string | null;
   status?: string;
+  [key: string]: unknown;
 }
 
 function loadVouchers(entityCode: string): RawVoucherLike[] {
