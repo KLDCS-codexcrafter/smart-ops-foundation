@@ -41,6 +41,8 @@ export default function Comply360Page(): JSX.Element {
         return <Section393Page />;
       case 'external-audit':
         return <ExternalAuditPage />;
+      case 'legal':
+        return <LegalNoticesPage />;
       // 18 remaining mega-menus · modules light up in later sprints per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;
