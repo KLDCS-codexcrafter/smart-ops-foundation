@@ -49,7 +49,10 @@ export type GSTRBuilderType =
   | 'gstr-1' | 'gstr-1a' | 'gstr-2b' | 'gstr-3b' | 'gstr-9' | 'gstr-9c'
   // 🆕 Sprint 75 · Q28 Part 1 · 9 extended forms (DP-S75-2 · in-place extension)
   | 'gstr-4' | 'gstr-5' | 'gstr-6' | 'gstr-7' | 'gstr-8' | 'gstr-10'
-  | 'cmp-08' | 'itc-03' | 'drc-03';
+  | 'cmp-08' | 'itc-03' | 'drc-03'
+  // 🆕 Sprint 76a · Q28 Part 2 · ITC-04 (job-work) + REG-01 (registration) + REG-31 (suo-moto cancel response)
+  | 'itc-04' | 'reg-01' | 'reg-31';
+
 
 export interface BuilderWarning {
   code: string;
