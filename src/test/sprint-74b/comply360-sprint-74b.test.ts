@@ -174,13 +174,13 @@ describe('Surface reachability (FR-100 RECG)', () => {
     });
   }
 
-  it('TdsPage wires all 7 sub-tabs', () => {
+  it('TdsPage wires at least the 7 S74b sub-tabs (Lesson 24 bounds-check · future sprints extend)', () => {
     const src = fs.readFileSync(path.join(root, 'src/pages/erp/comply360/tds/TdsPage.tsx'), 'utf8');
     expect(src).toContain('Form16Page');
     expect(src).toContain('Form16APage');
     expect(src).toContain('TdsNoticePage');
     const triggerCount = (src.match(/<TabsTrigger /g) ?? []).length;
-    expect(triggerCount).toBe(7);
+    expect(triggerCount).toBeGreaterThanOrEqual(7);
   });
 });
 
