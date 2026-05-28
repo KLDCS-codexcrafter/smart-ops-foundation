@@ -159,7 +159,7 @@ describe('Sprint 74a · buildGSTR9C engine smoke', () => {
     tbl4: { pt4A: { txval: 1_000_000, iamt: 90_000, camt: 45_000, samt: 45_000, csamt: 0 } },
     tbl5: { pt5A: { txval: 0, iamt: 0, camt: 0, samt: 0, csamt: 0 } },
     tbl6: { pt6A: { txval: 0, iamt: 50_000, camt: 25_000, samt: 25_000, csamt: 0 } },
-    tbl7: { pt7A: { iamt: 0, camt: 0, samt: 0, csamt: 0 } },
+    tbl7: { pt7A: { txval: 0, iamt: 0, camt: 0, samt: 0, csamt: 0 } },
     tbl9: { tax_pay: { txval: 0, iamt: 90_000, camt: 45_000, samt: 45_000, csamt: 0 }, paid_itc: { txval: 0, iamt: 50_000, camt: 25_000, samt: 25_000, csamt: 0 } },
     tbl17: { hsn: {} },
   };
