@@ -37,7 +37,22 @@ export default function ExtendedReturnsPage(): JSX.Element {
           <TabsTrigger value="gstr10">GSTR-10</TabsTrigger>
           <TabsTrigger value="itc03">ITC-03</TabsTrigger>
           <TabsTrigger value="drc03">DRC-03</TabsTrigger>
+          <TabsTrigger value="itc04">ITC-04</TabsTrigger>
+          <TabsTrigger value="reg01">REG-01</TabsTrigger>
+          <TabsTrigger value="reg31">REG-31</TabsTrigger>
         </TabsList>
+        <TabsContent value="gstr4"><GSTR4Page /></TabsContent>
+        <TabsContent value="cmp08"><CMP08Page /></TabsContent>
+        <TabsContent value="gstr5"><GSTR5Page /></TabsContent>
+        <TabsContent value="gstr6"><GSTR6Page /></TabsContent>
+        <TabsContent value="gstr7"><GSTR7Page /></TabsContent>
+        <TabsContent value="gstr8"><GSTR8Page /></TabsContent>
+        <TabsContent value="gstr10"><GSTR10Page /></TabsContent>
+        <TabsContent value="itc03"><ITC03Page /></TabsContent>
+        <TabsContent value="drc03"><DRC03Page /></TabsContent>
+        <TabsContent value="itc04"><ITC04Page /></TabsContent>
+        <TabsContent value="reg01"><REG01Page /></TabsContent>
+        <TabsContent value="reg31"><REG31Page /></TabsContent>
         <TabsContent value="gstr4"><GSTR4Page /></TabsContent>
         <TabsContent value="cmp08"><CMP08Page /></TabsContent>
         <TabsContent value="gstr5"><GSTR5Page /></TabsContent>
