@@ -155,10 +155,11 @@ describe('Sprint 77a · CARO Extended engine (reads caro-2020 §Y FROZEN 0-DIFF)
 });
 
 describe('Sprint 77a · Transfer Pricing engine (reads form-3ceb + form-15ca-15cb 0-DIFF)', () => {
-  it('fresh entity returns 0 snapshots and 0 filings', () => {
+  it('fresh entity returns 0 snapshots and 0 master/cbcr filings', () => {
     const r = buildTransferPricingReport(ENT, FY);
     expect(r.form_3ceb_snapshots).toBe(0);
-    expect(r.form_15ca_filings).toBe(0);
+    expect(r.master_file_filed).toBe(false);
+    expect(r.cbcr_filed).toBe(false);
   });
   it('Equalisation Levy applies 6% rate', () => {
     expect(EQUALISATION_LEVY_RATE_PCT).toBe(6);
