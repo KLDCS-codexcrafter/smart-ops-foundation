@@ -16,8 +16,9 @@ import GSTR9NativePage from './GSTR9NativePage';
 import GSTR9CNativePage from './GSTR9CNativePage';
 import IMSPanelPage from './IMSPanelPage';
 import ReconciliationPanel from './ReconciliationPanel';
+import ExtendedReturnsPage from './extended/ExtendedReturnsPage';
 
-type SubTab = 'gstr1' | 'gstr1a' | 'gstr2b' | 'gstr3b' | 'gstr9' | 'gstr9c' | 'ims' | 'recon';
+type SubTab = 'gstr1' | 'gstr1a' | 'gstr2b' | 'gstr3b' | 'gstr9' | 'gstr9c' | 'ims' | 'recon' | 'extended';
 
 export default function TaxGstPage(): JSX.Element {
   const [tab, setTab] = useState<SubTab>('gstr1');
@@ -33,6 +34,7 @@ export default function TaxGstPage(): JSX.Element {
           <TabsTrigger value="gstr9c">GSTR-9C</TabsTrigger>
           <TabsTrigger value="ims">IMS</TabsTrigger>
           <TabsTrigger value="recon">Reconciliation</TabsTrigger>
+          <TabsTrigger value="extended">Extended Returns</TabsTrigger>
         </TabsList>
         <TabsContent value="gstr1"><GSTR1NativePage /></TabsContent>
         <TabsContent value="gstr1a"><GSTR1ANativePage /></TabsContent>
@@ -42,6 +44,7 @@ export default function TaxGstPage(): JSX.Element {
         <TabsContent value="gstr9c"><GSTR9CNativePage /></TabsContent>
         <TabsContent value="ims"><IMSPanelPage /></TabsContent>
         <TabsContent value="recon"><ReconciliationPanel /></TabsContent>
+        <TabsContent value="extended"><ExtendedReturnsPage /></TabsContent>
       </Tabs>
     </div>
   );
