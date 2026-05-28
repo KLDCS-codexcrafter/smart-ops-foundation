@@ -535,7 +535,238 @@ export function buildGSTR3B(
   };
 }
 
+// ── Public: GSTR-9 (annual return) ───────────────────────────────────
+// @sprint-extended Sprint 74a · T-Phase-5.A.1.6-PASS-A · DP-S74-2
+
+/** FY-scoped meta for annual returns (GSTR-9/9C). */
+export interface BuildAnnualMeta {
+  gstin: string;
+  fy: string; // 'YYYY-YY' e.g. '2024-25'
+  gross_turnover?: number;
+}
+
+/** Internal helper: convert TotalTaxBreakdown → GSTRTaxAmounts shape. */
+function toTaxAmounts(t: TotalTaxBreakdown): GSTRTaxAmounts {
+  return { txval: t.taxable_value, iamt: t.igst, camt: t.cgst, samt: t.sgst, csamt: t.cess };
+}
+
+/** Internal: derive 6-digit HSN summary rows in GSTR-9 tbl17 shape. */
+function deriveGSTR9HSN(supplies: CrossCardSupply[]): Record<string, GSTR9HSNRow> {
+  const map: Record<string, GSTR9HSNRow> = {};
+  for (const s of supplies) {
+    if (!s.hsn_sac) continue;
+    const key = s.hsn_sac;
+    const existing = map[key];
+    if (existing) {
+      existing.qty += s.quantity ?? 0;
+      existing.txval += s.taxable_value;
+      existing.iamt += s.igst;
+      existing.camt += s.cgst;
+      existing.samt += s.sgst;
+      existing.csamt += s.cess;
+    } else {
+      map[key] = {
+        hsn_sc: s.hsn_sac,
+        uqc: s.uqc ?? 'NOS',
+        qty: s.quantity ?? 0,
+        txval: s.taxable_value,
+        iamt: s.igst,
+        camt: s.cgst,
+        samt: s.sgst,
+        csamt: s.cess,
+      };
+    }
+  }
+  return map;
+}
+
+/**
+ * Build GSTR-9 annual return payload from FY-scoped outward + inward supplies.
+ * Consolidates 12 monthly filings into Tables 4–17 per GSTN annual return schema.
+ */
+export function buildGSTR9(
+  outward: CrossCardSupply[],
+  inward: CrossCardSupply[],
+  meta: BuildAnnualMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+
+  if (!isValidGSTIN(meta.gstin)) {
+    pushErr(errors, 'GSTIN_INVALID', `Filer GSTIN ${meta.gstin} fails format check`, []);
+  }
+  if (!/^\d{4}-\d{2}$/.test(meta.fy)) {
+    pushErr(errors, 'FY_INVALID', `FY ${meta.fy} not YYYY-YY`, []);
+  }
+
+  for (const s of [...outward, ...inward]) {
+    if (s.taxable_value < 0) {
+      pushErr(errors, 'AMOUNT_NEGATIVE', `Invoice ${s.invoice_no} taxable_value negative`, [s.invoice_no]);
+    }
+  }
+
+  const outGrouped = groupSuppliesByType(outward);
+  const inGrouped = groupSuppliesByType(inward);
+
+  const taxableOutward = [...outGrouped.b2b, ...outGrouped.b2cl, ...outGrouped.b2cs];
+  const zeroOutward = [
+    ...outGrouped.export_with_pmt, ...outGrouped.export_without_pmt,
+    ...outGrouped.sez_with_pmt, ...outGrouped.sez_without_pmt,
+  ];
+  const rcmInward = inGrouped.rcm;
+
+  const pt4A = toTaxAmounts(computeTotalTax(taxableOutward));    // tbl4 · advances + outward taxable
+  const pt5A = toTaxAmounts(computeTotalTax(zeroOutward));        // tbl5 · exempt/nil/zero-rated
+  const pt6A = toTaxAmounts(computeTotalTax(inward));             // tbl6 · ITC availed
+  const pt6B = toTaxAmounts(computeTotalTax(rcmInward));          // tbl6 · ITC RCM
+  const taxPay = pt4A;                                            // tbl9 · tax payable
+  const paidItc = pt6A;                                           // tbl9 · paid via ITC
+
+  const payload: GSTR9Payload = {
+    gstin: meta.gstin,
+    fy: meta.fy,
+    tbl4: { pt4A },
+    tbl5: { pt5A },
+    tbl6: { pt6A, pt6B },
+    tbl7: { pt7A: { iamt: 0, camt: 0, samt: 0, csamt: 0 } }, // ITC reversal (Phase-1 zeros)
+    tbl9: { tax_pay: taxPay, paid_itc: paidItc },
+    tbl17: { hsn: deriveGSTR9HSN(outward) },
+  };
+
+  if (Object.keys(payload.tbl17.hsn).length === 0) {
+    pushWarn(warnings, 'HSN_MISSING', 'Annual HSN summary empty', []);
+  }
+
+  return {
+    builder: 'gstr-9',
+    payload,
+    valid: errors.length === 0,
+    warnings,
+    errors,
+    totals: computeTotalTax(outward),
+  };
+}
+
+// ── Public: GSTR-9C (annual reconciliation statement) ────────────────
+
+/** Books-side annual totals supplied by the auditor for 9C reconciliation. */
+export interface BooksAnnualTotals {
+  turnover_per_books: number;
+  itc_per_books: number;
+  tax_per_books: number;
+}
+
+/** Auditor metadata embedded in GSTR-9C Part B. */
+export interface AuditorCertification {
+  auditor_name: string;
+  membership_no: string;
+  firm_name: string;
+  certification_date: string;
+}
+
+export interface GSTR9CPayload {
+  gstin: string;
+  fy: string;
+  pt2_reco: {
+    turnover_per_gstr9: number;
+    turnover_per_books: number;
+    variance: number;
+  };
+  pt3_tax_reco: {
+    tax_per_gstr9: number;
+    tax_per_books: number;
+    variance: number;
+  };
+  pt4_itc_reco: {
+    itc_per_gstr9: number;
+    itc_per_books: number;
+    variance: number;
+  };
+  pt5_certification: AuditorCertification;
+}
+
+/**
+ * Build GSTR-9C reconciliation payload from a banked GSTR-9 + auditor books.
+ * Consumed by `comply360-gstr9-reco-engine` for detailed variance flagging.
+ */
+export function buildGSTR9C(
+  gstr9: GSTR9Payload,
+  books: BooksAnnualTotals,
+  auditor: AuditorCertification,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+
+  if (!isValidGSTIN(gstr9.gstin)) {
+    pushErr(errors, 'GSTIN_INVALID', `GSTR-9 GSTIN ${gstr9.gstin} fails format check`, []);
+  }
+  if (!auditor.auditor_name || !auditor.membership_no) {
+    pushErr(errors, 'AUDITOR_MISSING', 'Auditor certification fields incomplete', []);
+  }
+
+  const turnover9 = gstr9.tbl4.pt4A.txval + gstr9.tbl5.pt5A.txval;
+  const tax9 =
+    gstr9.tbl9.tax_pay.iamt + gstr9.tbl9.tax_pay.camt +
+    gstr9.tbl9.tax_pay.samt + gstr9.tbl9.tax_pay.csamt;
+  const itc9 =
+    gstr9.tbl6.pt6A.iamt + gstr9.tbl6.pt6A.camt +
+    gstr9.tbl6.pt6A.samt + gstr9.tbl6.pt6A.csamt;
+
+  const turnoverVariance = books.turnover_per_books - turnover9;
+  const taxVariance = books.tax_per_books - tax9;
+  const itcVariance = books.itc_per_books - itc9;
+
+  // Threshold flag · CBIC tolerates rounding within ₹1; anything larger surfaces.
+  if (Math.abs(turnoverVariance) > 1) {
+    pushWarn(warnings, 'TURNOVER_VARIANCE', `Turnover diverges by ₹${turnoverVariance.toFixed(2)}`, []);
+  }
+  if (Math.abs(taxVariance) > 1) {
+    pushWarn(warnings, 'TAX_VARIANCE', `Tax diverges by ₹${taxVariance.toFixed(2)}`, []);
+  }
+  if (Math.abs(itcVariance) > 1) {
+    pushWarn(warnings, 'ITC_VARIANCE', `ITC diverges by ₹${itcVariance.toFixed(2)}`, []);
+  }
+
+  const payload: GSTR9CPayload = {
+    gstin: gstr9.gstin,
+    fy: gstr9.fy,
+    pt2_reco: {
+      turnover_per_gstr9: turnover9,
+      turnover_per_books: books.turnover_per_books,
+      variance: turnoverVariance,
+    },
+    pt3_tax_reco: {
+      tax_per_gstr9: tax9,
+      tax_per_books: books.tax_per_books,
+      variance: taxVariance,
+    },
+    pt4_itc_reco: {
+      itc_per_gstr9: itc9,
+      itc_per_books: books.itc_per_books,
+      variance: itcVariance,
+    },
+    pt5_certification: auditor,
+  };
+
+  return {
+    builder: 'gstr-9c',
+    payload: payload as unknown as Record<string, unknown>,
+    valid: errors.length === 0,
+    warnings,
+    errors,
+    totals: {
+      taxable_value: turnover9,
+      igst: gstr9.tbl9.tax_pay.iamt,
+      cgst: gstr9.tbl9.tax_pay.camt,
+      sgst: gstr9.tbl9.tax_pay.samt,
+      cess: gstr9.tbl9.tax_pay.csamt,
+    },
+  };
+}
+
 // ── Public: validateGSTR1Payload ─────────────────────────────────────
+
+
 
 export function validateGSTR1Payload(
   payload: GSTR1Payload,
