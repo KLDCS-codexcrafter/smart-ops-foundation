@@ -307,6 +307,15 @@ describe('comply360-eway-engine', () => {
     const v = validateEWayBill(ewb);
     expect(v.ok).toBe(true);
   });
+
+  it('loadEWayBills filter excludes drafts when all=false', () => {
+    const good = buildEWayBill(ENTITY, validPartA(), validPartB());
+    void buildEWayBill(ENTITY, { ...validPartA(), total_invoice_value: 1000 }, validPartB());
+    expect(loadEWayBills(ENTITY, true).length).toBe(2);
+    const live = loadEWayBills(ENTITY, false);
+    expect(live.length).toBe(1);
+    expect(live[0].ewb_no).toBe(good.ewb_no);
+  });
 });
 
 // ── 4. MSME Form 1 engine ────────────────────────────────────────────
