@@ -17,6 +17,7 @@ import EInvoiceEWayPage from './exim/EInvoiceEWayPage';
 import MSMEForm1Page from './vendor/MSMEForm1Page';
 import Section393Page from './roc/Section393Page';
 import ExternalAuditPage from './external-audit/ExternalAuditPage';
+import LegalNoticesPage from './legal/LegalNoticesPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
