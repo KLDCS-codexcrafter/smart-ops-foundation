@@ -20,6 +20,12 @@ import type {
   GSTR1ExpEntry,
   GSTR1HSNRow,
   GSTR1DocIssue,
+  GSTR3BPayload,
+  GSTR3BSupDetails,
+  GSTR3BITCElg,
+  GSTR3BIntrDtls,
+  GSTR3BNilSup,
+  GSTRTaxAmounts,
 } from './gst-portal-service';
 
 import {
@@ -32,7 +38,7 @@ import {
 
 // ── Public Types ─────────────────────────────────────────────────────
 
-export type GSTRBuilderType = 'gstr-1' | 'gstr-1a' | 'gstr-2b';
+export type GSTRBuilderType = 'gstr-1' | 'gstr-1a' | 'gstr-2b' | 'gstr-3b';
 
 export interface BuilderWarning {
   code: string;
