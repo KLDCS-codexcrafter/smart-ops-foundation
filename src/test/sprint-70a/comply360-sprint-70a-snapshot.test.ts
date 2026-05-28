@@ -30,16 +30,16 @@ import {
 const SPRINT_70 = 70;
 
 describe('Sprint 70a · T-Phase-5.A.1.2-PASS-A · Comply360 Main Arc 1.2 · institutional snapshot (FR-58 · Lesson 24)', () => {
-  it('Sprint 70 entry exists in sprint-history with grade A first-pass-clean', () => {
-    const entry = SPRINTS.find((s) => s.sprintNumber === SPRINT_70);
+  it('Sprint 70 entry exists in sprint-history with grade A with adaptations', () => {
+    const entry = SPRINTS.find((s) => s.sprintNumber === SPRINT_70 && s.code === 'T-Phase-5.A.1.2-PASS-A');
     expect(entry).toBeDefined();
     expect(entry?.code).toBe('T-Phase-5.A.1.2-PASS-A');
-    expect(entry?.grade).toBe('A first-pass-clean');
+    expect(entry?.grade).toBe('A with adaptations');
     expect(entry?.predecessorSha).toBe('1919be0f3820204191b481b00479da49c95c6f3d');
   });
 
   it('Sprint 70 records the 3 Pass-A engine siblings', () => {
-    const entry = SPRINTS.find((s) => s.sprintNumber === SPRINT_70);
+    const entry = SPRINTS.find((s) => s.sprintNumber === SPRINT_70 && s.code === 'T-Phase-5.A.1.2-PASS-A');
     expect(entry?.newSiblings).toEqual(
       expect.arrayContaining([
         'comply360-gst-aggregator-engine',
