@@ -174,8 +174,18 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 73b T-Phase-5.A.1.5-PASS-B · Comply360 Main Arc 1.5 · Pass B (UI + nav wiring) · 3 surfaces (exim/vendor/roc) consuming Pass A engines · Main Arc 1.5 COMPLETE · 22-streak NEW RECORD ⭐
   {
     sprintNumber: 73, code: 'T-Phase-5.A.1.5-PASS-B', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'cc711d90ae26d7b1e8cb68561d8895a8fc069f5f', loc: 790,
+    headSha: '8e7dff4fe1c73d48d0869830ea8ab43dc5fcd3d2', predecessorSha: 'cc711d90ae26d7b1e8cb68561d8895a8fc069f5f', loc: 790,
     newSiblings: [],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 74a T-Phase-5.A.1.6-PASS-A · Comply360 Main Arc 1.6 · Pass A (Q19 · GSTR-9/9C + 3CA/3CB/3CD) · 2 NEW SIBLINGs (gstr9-reco + tax-audit-3cd · reads caro-2020 §Y frozen) · Path α split · target 23-streak NEW RECORD ⭐
+  {
+    sprintNumber: 74, code: 'T-Phase-5.A.1.6-PASS-A', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '8e7dff4fe1c73d48d0869830ea8ab43dc5fcd3d2', loc: 1880,
+    newSiblings: [
+      'comply360-gstr9-reco-engine',
+      'comply360-tax-audit-3cd-engine',
+    ],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
