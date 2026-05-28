@@ -550,7 +550,7 @@ function toTaxAmounts(t: TotalTaxBreakdown): GSTRTaxAmounts {
   return { txval: t.taxable_value, iamt: t.igst, camt: t.cgst, samt: t.sgst, csamt: t.cess };
 }
 
-/** Internal: derive 6-digit HSN summary rows in GSTR-9 tbl17 shape. */
+/** Internal: derive HSN summary rows in GSTR-9 tbl17 shape. */
 function deriveGSTR9HSN(supplies: CrossCardSupply[]): Record<string, GSTR9HSNRow> {
   const map: Record<string, GSTR9HSNRow> = {};
   for (const s of supplies) {
@@ -558,7 +558,6 @@ function deriveGSTR9HSN(supplies: CrossCardSupply[]): Record<string, GSTR9HSNRow
     const key = s.hsn_sac;
     const existing = map[key];
     if (existing) {
-      existing.qty += s.quantity ?? 0;
       existing.txval += s.taxable_value;
       existing.iamt += s.igst;
       existing.camt += s.cgst;
@@ -567,8 +566,8 @@ function deriveGSTR9HSN(supplies: CrossCardSupply[]): Record<string, GSTR9HSNRow
     } else {
       map[key] = {
         hsn_sc: s.hsn_sac,
-        uqc: s.uqc ?? 'NOS',
-        qty: s.quantity ?? 0,
+        uqc: 'NOS',
+        qty: 0,
         txval: s.taxable_value,
         iamt: s.igst,
         camt: s.cgst,
@@ -639,7 +638,7 @@ export function buildGSTR9(
 
   return {
     builder: 'gstr-9',
-    payload,
+    payload: payload as unknown as Record<string, unknown>,
     valid: errors.length === 0,
     warnings,
     errors,
