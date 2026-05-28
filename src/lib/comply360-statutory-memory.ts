@@ -42,6 +42,10 @@ const SEED_OBLIGATIONS: FilingObligation[] = [
   { id: 'gstr-3b-apr-reco', label: 'GSTR-3B · Apr 2026 Reconciliation', module: 'tax-gst', due_date: '2026-05-18', status: 'pending' },
   { id: 'ecrs-apr', label: 'ECRS Review · Apr 2026', module: 'tax-gst', due_date: '2026-05-17', status: 'pending' },
   { id: 'cross-return-apr', label: 'Cross-Return Reconciliation · Apr 2026', module: 'tax-gst', due_date: '2026-05-19', status: 'pending' },
+  // 🆕 Sprint 72 · 3 NEW obligations · TDS suite (194Q + SFT + Form 26AS reco) · module `'tds'`
+  { id: 'tds-194q-q4', label: 'TDS 194Q · Q4 FY25-26', module: 'tds', due_date: '2026-05-31', status: 'pending' },
+  { id: 'sft-fy25', label: 'SFT · Form 61A FY24-25', module: 'tds', due_date: '2026-05-31', status: 'pending' },
+  { id: 'form26as-reco-fy25', label: 'Form 26AS Reconciliation · FY24-25', module: 'tds', due_date: '2026-06-15', status: 'pending' },
   { id: 'fact-lic',   label: 'Factory Licence Renewal', module: 'licenses', due_date: '2026-06-30', status: 'pending' },
   { id: 'pollu-cert', label: 'Pollution Consent (CTO)', module: 'licenses', due_date: '2026-07-15', status: 'pending' },
   { id: 'brsr-q4',    label: 'BRSR Q4 · ESG Report',  module: 'esg',      due_date: '2026-06-15', status: 'pending' },
