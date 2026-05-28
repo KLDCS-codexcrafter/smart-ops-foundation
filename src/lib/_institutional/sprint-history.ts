@@ -162,13 +162,20 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 73a T-Phase-5.A.1.5-PASS-A · Comply360 Main Arc 1.5 · Pass A (engine layer) · 4 NEW engines (e-invoice aggregator + e-way + MSME Form 1 + Section 393) · Path α split · 21-streak NEW RECORD ⭐
   {
     sprintNumber: 73, code: 'T-Phase-5.A.1.5-PASS-A', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'cfff1abc0da6a88ec18a87e6ea7af46afea24446', loc: 1150,
+    headSha: 'cc711d90ae26d7b1e8cb68561d8895a8fc069f5f', predecessorSha: 'cfff1abc0da6a88ec18a87e6ea7af46afea24446', loc: 1150,
     newSiblings: [
       'comply360-einvoice-aggregator-engine',
       'comply360-eway-engine',
       'comply360-msme-form1-engine',
       'comply360-section393-engine',
     ],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 73b T-Phase-5.A.1.5-PASS-B · Comply360 Main Arc 1.5 · Pass B (UI + nav wiring) · 3 surfaces (exim/vendor/roc) consuming Pass A engines · Main Arc 1.5 COMPLETE · 22-streak NEW RECORD ⭐
+  {
+    sprintNumber: 73, code: 'T-Phase-5.A.1.5-PASS-B', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'cc711d90ae26d7b1e8cb68561d8895a8fc069f5f', loc: 790,
+    newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
