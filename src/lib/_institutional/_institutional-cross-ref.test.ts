@@ -24,8 +24,8 @@ describe('Institutional registers · cardinality (post-Sprint-76a Comply360 Main
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 79 entries', () => {
-    expect(getSprintCount()).toBe(79);
+  it('SPRINTS has 80 entries', () => {
+    expect(getSprintCount()).toBe(80);
   });
 
 
