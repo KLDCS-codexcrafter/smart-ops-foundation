@@ -66,8 +66,8 @@ describe('FAR + FK extended scorecards · Sprint 68 FAR-4 (24 FAR-CAPs FULL · 7
 
 describe('Sprint history · A-streak counter', () => {
   // Lesson 24 historical-snapshot pattern · bounds-check not equality
-  it('current A-streak is at least 20 (Sprint 54-72 · NEW Operix record ⭐)', () => {
-    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(20);
+  it('current A-streak is at least 22 (Sprint 54-73b · NEW Operix record ⭐)', () => {
+    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(22);
   });
 
   it('Sprint 72 Comply360 Main Arc 1.4 is the most recent banked sprint · 4 new SIBLINGs (Lesson 24 id-lookup)', () => {
