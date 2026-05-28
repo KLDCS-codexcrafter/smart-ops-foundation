@@ -20,6 +20,12 @@ import type {
   GSTR1ExpEntry,
   GSTR1HSNRow,
   GSTR1DocIssue,
+  GSTR3BPayload,
+  GSTR3BSupDetails,
+  GSTR3BITCElg,
+  GSTR3BIntrDtls,
+  GSTR3BNilSup,
+  GSTRTaxAmounts,
 } from './gst-portal-service';
 
 import {
@@ -32,7 +38,7 @@ import {
 
 // ── Public Types ─────────────────────────────────────────────────────
 
-export type GSTRBuilderType = 'gstr-1' | 'gstr-1a' | 'gstr-2b';
+export type GSTRBuilderType = 'gstr-1' | 'gstr-1a' | 'gstr-2b' | 'gstr-3b';
 
 export interface BuilderWarning {
   code: string;
@@ -48,7 +54,7 @@ export interface BuilderError {
 
 export interface GSTRBuilderResult {
   builder: GSTRBuilderType;
-  payload: GSTR1Payload | Record<string, unknown>;
+  payload: GSTR1Payload | GSTR3BPayload | Record<string, unknown>;
   valid: boolean;
   warnings: BuilderWarning[];
   errors: BuilderError[];
@@ -412,6 +418,116 @@ export function buildGSTR2B(
     warnings,
     errors,
     totals,
+  };
+}
+
+// ── Public: GSTR-3B (summary return) ─────────────────────────────────
+
+/**
+ * Build GSTR-3B summary payload from outward + inward aggregations.
+ * @sprint-extended Sprint 71 · T-Phase-5.A.1.3 · buildGSTR3B (DP-S71-1 Option A · engine extended in place)
+ */
+export function buildGSTR3B(
+  outward: CrossCardSupply[],
+  inward: CrossCardSupply[],
+  meta: BuildMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+
+  if (!isValidGSTIN(meta.gstin)) {
+    pushErr(errors, 'GSTIN_INVALID', `Filer GSTIN ${meta.gstin} fails format check`, []);
+  }
+  if (!/^\d{2}-\d{4}$/.test(meta.return_period)) {
+    pushErr(errors, 'DATE_OUT_OF_PERIOD', `Return period ${meta.return_period} not MM-YYYY`, []);
+  }
+  const range = parseReturnPeriod(meta.return_period);
+  const all = [...outward, ...inward];
+  for (const s of all) {
+    if (s.taxable_value < 0) {
+      pushErr(errors, 'AMOUNT_NEGATIVE', `Invoice ${s.invoice_no} taxable_value negative`, [s.invoice_no]);
+    }
+    if (range && !inPeriod(s.invoice_date, range)) {
+      pushErr(errors, 'DATE_OUT_OF_PERIOD',
+        `Invoice ${s.invoice_no} date ${s.invoice_date} outside ${meta.return_period}`, [s.invoice_no]);
+    }
+  }
+
+  const outwardGrouped = groupSuppliesByType(outward);
+  const inwardGrouped = groupSuppliesByType(inward);
+
+  const sumTax = (rows: CrossCardSupply[]): GSTRTaxAmounts => {
+    const t = computeTotalTax(rows);
+    return { txval: t.taxable_value, iamt: t.igst, camt: t.cgst, samt: t.sgst, csamt: t.cess };
+  };
+
+  // 3.1 sup_details
+  const taxableOutward = [
+    ...outwardGrouped.b2b, ...outwardGrouped.b2cl, ...outwardGrouped.b2cs,
+  ];
+  const zeroRated = [
+    ...outwardGrouped.export_with_pmt, ...outwardGrouped.export_without_pmt,
+    ...outwardGrouped.sez_with_pmt, ...outwardGrouped.sez_without_pmt,
+  ];
+  const nilExempt = [
+    ...outwardGrouped.nil_rated, ...outwardGrouped.exempt, ...outwardGrouped.non_gst,
+  ];
+  const rcmInward = inwardGrouped.rcm;
+
+  const sup_details: GSTR3BSupDetails = {
+    osup_det: sumTax(taxableOutward),
+    osup_zero: sumTax(zeroRated),
+    osup_nil_exmp: sumTax(nilExempt),
+    isup_rev: sumTax(rcmInward),
+  };
+
+  // 4 itc_elg
+  const inwardAll = inward;
+  const inwardTax = computeTotalTax(inwardAll);
+  const itc_elg: GSTR3BITCElg = {
+    itc_avl: [{
+      ty: 'OTH',
+      iamt: inwardTax.igst, camt: inwardTax.cgst, samt: inwardTax.sgst, csamt: inwardTax.cess,
+    }],
+    itc_rev: [],
+    itc_net: {
+      iamt: inwardTax.igst, camt: inwardTax.cgst, samt: inwardTax.sgst, csamt: inwardTax.cess,
+    },
+  };
+
+  // 5 nil_sup
+  const nilTotals = sumTax(nilExempt);
+  const nil_sup: GSTR3BNilSup = {
+    nil: {
+      sply_ty: 'INTRA',
+      nil_amt: nilTotals.txval,
+      expt_amt: 0,
+      ngsup_amt: 0,
+    },
+  };
+
+  // 5.1 intr_dtls (Phase-1 zeros)
+  const intr_dtls: GSTR3BIntrDtls = {
+    intr_ltfee: { iamt: 0, camt: 0, samt: 0, csamt: 0 },
+  };
+
+  const payload: GSTR3BPayload = {
+    gstin: meta.gstin,
+    ret_period: meta.return_period,
+    sup_details,
+    inward_sup: { isup_details: [] },
+    itc_elg,
+    intr_dtls,
+    nil_sup,
+  };
+
+  return {
+    builder: 'gstr-3b',
+    payload,
+    valid: errors.length === 0,
+    warnings,
+    errors,
+    totals: computeTotalTax(outward),
   };
 }
 
