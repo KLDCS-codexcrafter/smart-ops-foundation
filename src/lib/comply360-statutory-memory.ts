@@ -38,6 +38,9 @@ const SEED_OBLIGATIONS: FilingObligation[] = [
   { id: 'gstr-1a-apr', label: 'GSTR-1A · Apr 2026 Amendment', module: 'tax-gst', due_date: '2026-06-11', status: 'pending' },
   { id: 'gstr-2b-apr', label: 'GSTR-2B · Apr 2026 Reco',      module: 'tax-gst', due_date: '2026-05-14', status: 'pending' },
   { id: 'ims-apr',     label: 'IMS · Apr 2026 Pre-filing',    module: 'tax-gst', due_date: '2026-05-10', status: 'pending' },
+  // 🆕 Sprint 71 · 2 NEW obligations · GSTR-3B reco + cross-return reconciliation review
+  { id: 'gstr-3b-apr-reco', label: 'GSTR-3B · Apr 2026 Reconciliation', module: 'tax-gst', due_date: '2026-05-18', status: 'pending' },
+  { id: 'cross-return-apr', label: 'Cross-Return Reconciliation · Apr 2026', module: 'tax-gst', due_date: '2026-05-19', status: 'pending' },
   { id: 'fact-lic',   label: 'Factory Licence Renewal', module: 'licenses', due_date: '2026-06-30', status: 'pending' },
   { id: 'pollu-cert', label: 'Pollution Consent (CTO)', module: 'licenses', due_date: '2026-07-15', status: 'pending' },
   { id: 'brsr-q4',    label: 'BRSR Q4 · ESG Report',  module: 'esg',      due_date: '2026-06-15', status: 'pending' },
