@@ -53,7 +53,10 @@ export default function TdsNoticePage(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, tick]);
 
-  const summary = useMemo(() => entityCode ? summarizeNotices(entityCode) : { total: 0, open: 0, outstanding_demand: 0, overdue: 0 }, [entityCode, tick]);
+  const summary = useMemo(() => {
+    return entityCode ? summarizeNotices(entityCode) : { total: 0, open: 0, outstanding_demand: 0, overdue: 0 };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityCode, tick]);
 
   if (!entityId || entityId === 'all') {
     return (
