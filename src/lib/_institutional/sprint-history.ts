@@ -140,6 +140,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['use-entity-gstins-hook', 'comply360-tax-gst-shell'],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 71 T-Phase-5.A.1.3 · Comply360 Main Arc 1.3 · Q3 Part 2 (GSTR-3B + tax-tolerance + ECRS + cross-return recon) · single-pass · 19-streak NEW RECORD
+  {
+    sprintNumber: 71, code: 'T-Phase-5.A.1.3', composite: false, grade: 'A first-pass-clean',
+    headSha: 'TBD_AT_PUSH', predecessorSha: '16f4ea2b3f320c8f1db8f81e11591b25e01c1bc5', loc: 1200,
+    newSiblings: ['comply360-tax-tolerance-engine', 'comply360-ecrs-engine'],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
 ];
 
 export function getSprintCount(): number {
