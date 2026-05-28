@@ -234,6 +234,9 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-gst-aggregator-engine', name: 'Comply360 GST Aggregator Engine', path: 'src/lib/comply360-gst-aggregator-engine.ts', sprintAdded: 70, compositeAdded: 70, functionCount: 6, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-gstr-builder-engine', name: 'Comply360 GSTR Builder Engine', path: 'src/lib/comply360-gstr-builder-engine.ts', sprintAdded: 70, compositeAdded: 70, functionCount: 6, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-ims-engine', name: 'Comply360 IMS Engine', path: 'src/lib/comply360-ims-engine.ts', sprintAdded: 70, compositeAdded: 70, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 70b T-Phase-5.A.1.2-PASS-B · Comply360 Main Arc 1.2 · 2 NEW SIBLINGs (multi-GSTIN hook + tax-gst tab-shell · PATTERN-S70b-NAVIGATION-CANONICAL) · A with adaptations ⭐ · 18-streak NEW RECORD
+  { id: 'use-entity-gstins-hook', name: 'useEntityGSTINs Multi-GSTIN Hook', path: 'src/hooks/useEntityGSTINs.ts', sprintAdded: 70, compositeAdded: 70, functionCount: 1, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-tax-gst-shell', name: 'Comply360 Tax-GST Tab Shell (canonical nav pattern)', path: 'src/pages/erp/comply360/tax-gst/TaxGstPage.tsx', sprintAdded: 70, compositeAdded: 70, functionCount: 1, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 export function getSiblingCount(): number {
