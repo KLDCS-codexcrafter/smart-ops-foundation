@@ -1,8 +1,10 @@
 /**
  * @file        src/lib/comply360-gstr-builder-engine.ts
- * @purpose     Comply360 GSTR builder · produces GSTN-portal-shaped JSON for GSTR-1 / 1A / 2B
+ * @purpose     Comply360 GSTR builder · produces GSTN-portal-shaped JSON for GSTR-1 / 1A / 2B / 3B / 9 / 9C
  * @sprint      Sprint 70a · T-Phase-5.A.1.2-PASS-A · Block 3 · Q-LOCK-3-P1-B
- * @decisions   D-S69-1 (100% native) · DP-S70-2 (GSTR builder engine)
+ * @sprint-extended Sprint 71 · T-Phase-5.A.1.3 · buildGSTR3B (DP-S71-1 · in-place)
+ * @sprint-extended Sprint 74a · T-Phase-5.A.1.6-PASS-A · buildGSTR9 + buildGSTR9C (DP-S74-2 · in-place)
+ * @decisions   D-S69-1 (100% native) · DP-S70-2 (GSTR builder engine) · DP-S74-2 (extend in place)
  * @iso         Reliability · Auditability · Maintainability
  * @disciplines FR-19 SIBLING · FR-43 unit tests · FR-91 honest disclosure · Lesson 23 cross-prompt contract
  * @reads-from  src/lib/gst-portal-service.ts (payload shapes · 0-DIFF) ·
@@ -26,6 +28,8 @@ import type {
   GSTR3BIntrDtls,
   GSTR3BNilSup,
   GSTRTaxAmounts,
+  GSTR9Payload,
+  GSTR9HSNRow,
 } from './gst-portal-service';
 
 import {
@@ -38,7 +42,7 @@ import {
 
 // ── Public Types ─────────────────────────────────────────────────────
 
-export type GSTRBuilderType = 'gstr-1' | 'gstr-1a' | 'gstr-2b' | 'gstr-3b';
+export type GSTRBuilderType = 'gstr-1' | 'gstr-1a' | 'gstr-2b' | 'gstr-3b' | 'gstr-9' | 'gstr-9c';
 
 export interface BuilderWarning {
   code: string;
