@@ -14,6 +14,7 @@ import Form26ASRecoPage from './Form26ASRecoPage';
 import Form16Page from './Form16Page';
 import Form16APage from './Form16APage';
 import TdsNoticePage from './TdsNoticePage';
+import Form27EQPage from './Form27EQPage';
 
 type SubTab = 'tds194q' | 'tds194o' | 'sft' | 'form26as' | 'form16' | 'form16a' | 'notices';
 
