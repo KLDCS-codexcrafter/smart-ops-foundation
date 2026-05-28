@@ -54,7 +54,7 @@ export interface BuilderError {
 
 export interface GSTRBuilderResult {
   builder: GSTRBuilderType;
-  payload: GSTR1Payload | Record<string, unknown>;
+  payload: GSTR1Payload | GSTR3BPayload | Record<string, unknown>;
   valid: boolean;
   warnings: BuilderWarning[];
   errors: BuilderError[];
