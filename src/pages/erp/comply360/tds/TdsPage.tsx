@@ -40,6 +40,7 @@ export default function TdsPage(): JSX.Element {
         <TabsContent value="form16"><Form16Page /></TabsContent>
         <TabsContent value="form16a"><Form16APage /></TabsContent>
         <TabsContent value="notices"><TdsNoticePage /></TabsContent>
+        <TabsContent value="form27eq"><Form27EQPage /></TabsContent>
       </Tabs>
     </div>
   );
