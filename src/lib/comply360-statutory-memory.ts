@@ -46,6 +46,10 @@ const SEED_OBLIGATIONS: FilingObligation[] = [
   { id: 'tds-194q-q4', label: 'TDS 194Q · Q4 FY25-26', module: 'tds', due_date: '2026-05-31', status: 'pending' },
   { id: 'sft-fy25', label: 'SFT · Form 61A FY24-25', module: 'tds', due_date: '2026-05-31', status: 'pending' },
   { id: 'form26as-reco-fy25', label: 'Form 26AS Reconciliation · FY24-25', module: 'tds', due_date: '2026-06-15', status: 'pending' },
+  // 🆕 Sprint 73b Pass B · 3 NEW obligations · MSME Form 1 + E-Way pending + Section 393 disclosure
+  { id: 'msme-form1-h1-fy25', label: 'MSME Form 1 · H1 FY25-26', module: 'vendor', due_date: '2026-10-31', status: 'pending' },
+  { id: 'eway-pending-apr', label: 'E-Way Bill Pending Closures · Apr 2026', module: 'exim', due_date: '2026-05-31', status: 'pending' },
+  { id: 'section393-disclosure-fy25', label: 'Section 393 Arrangements Disclosure · FY24-25', module: 'roc', due_date: '2026-09-30', status: 'pending' },
   { id: 'fact-lic',   label: 'Factory Licence Renewal', module: 'licenses', due_date: '2026-06-30', status: 'pending' },
   { id: 'pollu-cert', label: 'Pollution Consent (CTO)', module: 'licenses', due_date: '2026-07-15', status: 'pending' },
   { id: 'brsr-q4',    label: 'BRSR Q4 · ESG Report',  module: 'esg',      due_date: '2026-06-15', status: 'pending' },

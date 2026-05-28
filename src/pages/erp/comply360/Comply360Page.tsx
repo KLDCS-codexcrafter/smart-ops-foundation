@@ -13,6 +13,9 @@ import { ComingSoonPanel } from '@/components/fincore/ComingSoonPanel';
 import { Comply360Welcome } from './Comply360Welcome';
 import TaxGstPage from './tax-gst/TaxGstPage';
 import TdsPage from './tds/TdsPage';
+import EInvoiceEWayPage from './exim/EInvoiceEWayPage';
+import MSMEForm1Page from './vendor/MSMEForm1Page';
+import Section393Page from './roc/Section393Page';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -28,7 +31,13 @@ export default function Comply360Page(): JSX.Element {
         return <TaxGstPage />;
       case 'tds':
         return <TdsPage />;
-      // 21 remaining mega-menus · modules light up in Sprints 70-88 per Q-LOCK
+      case 'exim':
+        return <EInvoiceEWayPage />;
+      case 'vendor':
+        return <MSMEForm1Page />;
+      case 'roc':
+        return <Section393Page />;
+      // 18 remaining mega-menus · modules light up in later sprints per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;
     }
