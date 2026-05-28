@@ -768,7 +768,412 @@ export function buildGSTR9C(
   };
 }
 
+// ═════════════════════════════════════════════════════════════════════
+// 🆕 Sprint 75 · Q28 Part 1 · 9 Extended GST Form Builders (DP-S75-2)
+// All read comply360-gst-aggregator-engine (0-DIFF · §H frozen).
+// Payload branch = Record<string,unknown> (greenfield · DP-S75-4).
+// ═════════════════════════════════════════════════════════════════════
+
+/** Quarterly composition meta · GSTR-4 / CMP-08. */
+export interface BuildCompositionMeta {
+  gstin: string;
+  fy: string;               // 'YYYY-YY'
+  quarter: 'Q1' | 'Q2' | 'Q3' | 'Q4';
+  turnover_declared?: number;
+}
+
+/** Period meta for monthly/non-resident/ISD/TDS/TCS returns (GSTR-5/6/7/8). */
+export interface BuildPeriodMeta {
+  gstin: string;
+  return_period: string;    // 'MM-YYYY'
+}
+
+/** Cancellation meta · GSTR-10 final return. */
+export interface BuildCancellationMeta {
+  gstin: string;
+  cancellation_order_no: string;
+  cancellation_date: string;     // ISO yyyy-mm-dd
+  effective_date: string;        // ISO yyyy-mm-dd
+}
+
+/** ITC reversal meta · ITC-03. */
+export interface BuildITCReversalMeta {
+  gstin: string;
+  fy: string;
+  reason: 'composition_optin' | 'exempt_supply' | 'cancellation' | 'other';
+  reason_description?: string;
+}
+
+/** Voluntary payment / demand settlement meta · DRC-03. */
+export interface BuildDRC03Meta {
+  gstin: string;
+  cause: 'voluntary' | 'audit' | 'investigation' | 'scn' | 'other';
+  reference_no?: string;
+  payment_date: string;          // ISO yyyy-mm-dd
+}
+
+function commonValidate(
+  gstin: string,
+  errors: BuilderError[],
+  fy?: string,
+  period?: string,
+): void {
+  if (!isValidGSTIN(gstin)) {
+    pushErr(errors, 'GSTIN_INVALID', `Filer GSTIN ${gstin} fails format check`, []);
+  }
+  if (fy !== undefined && !/^\d{4}-\d{2}$/.test(fy)) {
+    pushErr(errors, 'FY_INVALID', `FY ${fy} not YYYY-YY`, []);
+  }
+  if (period !== undefined && !/^\d{2}-\d{4}$/.test(period)) {
+    pushErr(errors, 'PERIOD_INVALID', `Return period ${period} not MM-YYYY`, []);
+  }
+}
+
+function totalsFromBreakdown(t: TotalTaxBreakdown): TotalTaxBreakdown {
+  return { ...t };
+}
+
+// ── GSTR-4 · Composition annual return ───────────────────────────────
+export function buildGSTR4(
+  outward: CrossCardSupply[],
+  inward: CrossCardSupply[],
+  meta: BuildCompositionMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors, meta.fy);
+
+  const outwardTotals = computeTotalTax(outward);
+  const inwardTotals = computeTotalTax(inward);
+  const inGrouped = groupSuppliesByType(inward);
+  const rcmTotals = computeTotalTax(inGrouped.rcm);
+
+  if (meta.turnover_declared !== undefined &&
+      Math.abs(meta.turnover_declared - outwardTotals.taxable_value) > 1) {
+    pushWarn(warnings, 'TURNOVER_VARIANCE',
+      `Declared turnover ${meta.turnover_declared} differs from computed ${outwardTotals.taxable_value}`, []);
+  }
+  if (outward.length === 0) {
+    pushWarn(warnings, 'NO_OUTWARD', 'No outward supplies in FY', []);
+  }
+
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    fy: meta.fy,
+    tbl5_inward_rcm: toTaxAmounts(rcmTotals),
+    tbl6_inward: toTaxAmounts(inwardTotals),
+    tbl6_outward_tax: toTaxAmounts(outwardTotals),
+    tbl7_tds_tcs_credit: { iamt: 0, camt: 0, samt: 0, csamt: 0 },
+  };
+  return {
+    builder: 'gstr-4', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: totalsFromBreakdown(outwardTotals),
+  };
+}
+
+// ── CMP-08 · Composition quarterly payment statement ─────────────────
+export function buildCMP08(
+  outward: CrossCardSupply[],
+  inward: CrossCardSupply[],
+  meta: BuildCompositionMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors, meta.fy);
+
+  const outwardTotals = computeTotalTax(outward);
+  const inGrouped = groupSuppliesByType(inward);
+  const rcmTotals = computeTotalTax(inGrouped.rcm);
+
+  if (outwardTotals.taxable_value === 0) {
+    pushWarn(warnings, 'NIL_RETURN', `Nil CMP-08 for ${meta.quarter}`, []);
+  }
+
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    fy: meta.fy,
+    quarter: meta.quarter,
+    tbl3_outward: toTaxAmounts(outwardTotals),
+    tbl3_inward_rcm: toTaxAmounts(rcmTotals),
+    tax_payable: toTaxAmounts(outwardTotals),
+    interest: 0,
+  };
+  return {
+    builder: 'cmp-08', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: totalsFromBreakdown(outwardTotals),
+  };
+}
+
+// ── GSTR-5 · Non-resident taxable person ─────────────────────────────
+export function buildGSTR5(
+  outward: CrossCardSupply[],
+  imports: CrossCardSupply[],
+  meta: BuildPeriodMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors, undefined, meta.return_period);
+
+  const outwardTotals = computeTotalTax(outward);
+  const importTotals = computeTotalTax(imports);
+
+  if (outward.length === 0 && imports.length === 0) {
+    pushWarn(warnings, 'NIL_RETURN', `Nil GSTR-5 for ${meta.return_period}`, []);
+  }
+
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    ret_period: meta.return_period,
+    tbl3_imports: toTaxAmounts(importTotals),
+    tbl5_outward: toTaxAmounts(outwardTotals),
+    tax_payable: toTaxAmounts(outwardTotals),
+  };
+  return {
+    builder: 'gstr-5', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: totalsFromBreakdown(outwardTotals),
+  };
+}
+
+// ── GSTR-6 · ISD return ──────────────────────────────────────────────
+export function buildGSTR6(
+  inward: CrossCardSupply[],
+  meta: BuildPeriodMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors, undefined, meta.return_period);
+
+  const totals = computeTotalTax(inward);
+  // Distribute proportionally across recipient GSTINs (placeholder · single bucket per recipient).
+  const distMap = new Map<string, TotalTaxBreakdown>();
+  for (const s of inward) {
+    const k = s.gstin_recipient || s.gstin_supplier;
+    const ex = distMap.get(k) ?? { taxable_value: 0, igst: 0, cgst: 0, sgst: 0, cess: 0 };
+    ex.taxable_value += s.taxable_value;
+    ex.igst += s.igst;
+    ex.cgst += s.cgst;
+    ex.sgst += s.sgst;
+    ex.cess += s.cess;
+    distMap.set(k, ex);
+  }
+  if (inward.length === 0) {
+    pushWarn(warnings, 'NIL_RETURN', `Nil GSTR-6 for ${meta.return_period}`, []);
+  }
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    ret_period: meta.return_period,
+    tbl3_itc_received: toTaxAmounts(totals),
+    tbl5_distribution: Array.from(distMap.entries()).map(([recipient_gstin, t]) => ({
+      recipient_gstin, ...toTaxAmounts(t),
+    })),
+  };
+  return {
+    builder: 'gstr-6', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: totalsFromBreakdown(totals),
+  };
+}
+
+// ── GSTR-7 · GST-TDS deductor ────────────────────────────────────────
+export function buildGSTR7(
+  inward: CrossCardSupply[],
+  meta: BuildPeriodMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors, undefined, meta.return_period);
+
+  // GST-TDS = 2% on taxable value (1% CGST + 1% SGST or 2% IGST).
+  const rows = inward.map((s) => {
+    const inter = s.igst > 0;
+    const tds_iamt = inter ? +(s.taxable_value * 0.02).toFixed(2) : 0;
+    const tds_camt = inter ? 0 : +(s.taxable_value * 0.01).toFixed(2);
+    const tds_samt = inter ? 0 : +(s.taxable_value * 0.01).toFixed(2);
+    return {
+      deductee_gstin: s.gstin_recipient || s.gstin_supplier,
+      invoice_no: s.invoice_no,
+      txval: s.taxable_value,
+      iamt: tds_iamt, camt: tds_camt, samt: tds_samt,
+    };
+  });
+  const totals: TotalTaxBreakdown = {
+    taxable_value: rows.reduce((a, r) => a + r.txval, 0),
+    igst: rows.reduce((a, r) => a + r.iamt, 0),
+    cgst: rows.reduce((a, r) => a + r.camt, 0),
+    sgst: rows.reduce((a, r) => a + r.samt, 0),
+    cess: 0,
+  };
+  if (rows.length === 0) {
+    pushWarn(warnings, 'NIL_RETURN', `Nil GSTR-7 for ${meta.return_period}`, []);
+  }
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    ret_period: meta.return_period,
+    tbl3_tds_deductions: rows,
+    tbl4_tds_payable: toTaxAmounts(totals),
+  };
+  return {
+    builder: 'gstr-7', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: totalsFromBreakdown(totals),
+  };
+}
+
+// ── GSTR-8 · E-commerce TCS collector ────────────────────────────────
+export function buildGSTR8(
+  outward: CrossCardSupply[],
+  meta: BuildPeriodMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors, undefined, meta.return_period);
+
+  // TCS = 1% (0.5% CGST + 0.5% SGST or 1% IGST).
+  const rows = outward.map((s) => {
+    const inter = s.igst > 0;
+    return {
+      supplier_gstin: s.gstin_supplier,
+      invoice_no: s.invoice_no,
+      txval: s.taxable_value,
+      iamt: inter ? +(s.taxable_value * 0.01).toFixed(2) : 0,
+      camt: inter ? 0 : +(s.taxable_value * 0.005).toFixed(2),
+      samt: inter ? 0 : +(s.taxable_value * 0.005).toFixed(2),
+    };
+  });
+  const totals: TotalTaxBreakdown = {
+    taxable_value: rows.reduce((a, r) => a + r.txval, 0),
+    igst: rows.reduce((a, r) => a + r.iamt, 0),
+    cgst: rows.reduce((a, r) => a + r.camt, 0),
+    sgst: rows.reduce((a, r) => a + r.samt, 0),
+    cess: 0,
+  };
+  if (rows.length === 0) {
+    pushWarn(warnings, 'NIL_RETURN', `Nil GSTR-8 for ${meta.return_period}`, []);
+  }
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    ret_period: meta.return_period,
+    tbl3_supplies: rows,
+    tbl5_tcs_payable: toTaxAmounts(totals),
+  };
+  return {
+    builder: 'gstr-8', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: totalsFromBreakdown(totals),
+  };
+}
+
+// ── GSTR-10 · Final return on cancellation ───────────────────────────
+export function buildGSTR10(
+  closingStock: CrossCardSupply[],
+  meta: BuildCancellationMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors);
+
+  if (!meta.cancellation_order_no) {
+    pushErr(errors, 'ORDER_MISSING', 'Cancellation order number required', []);
+  }
+  const reversal = computeTotalTax(closingStock);
+  if (closingStock.length === 0) {
+    pushWarn(warnings, 'NO_CLOSING_STOCK', 'No closing stock declared', []);
+  }
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    cancellation_order_no: meta.cancellation_order_no,
+    cancellation_date: toGSTNDate(meta.cancellation_date),
+    effective_date: toGSTNDate(meta.effective_date),
+    tbl8_closing_stock_itc_reversal: toTaxAmounts(reversal),
+    tax_payable: toTaxAmounts(reversal),
+  };
+  return {
+    builder: 'gstr-10', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: totalsFromBreakdown(reversal),
+  };
+}
+
+// ── ITC-03 · ITC reversal (composition opt-in / exempt) ──────────────
+export function buildITC03(
+  reversedSupplies: CrossCardSupply[],
+  meta: BuildITCReversalMeta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors, meta.fy);
+
+  const totals = computeTotalTax(reversedSupplies);
+  if (reversedSupplies.length === 0) {
+    pushWarn(warnings, 'NO_REVERSAL', 'No ITC-bearing supplies to reverse', []);
+  }
+  if (meta.reason === 'other' && !meta.reason_description) {
+    pushWarn(warnings, 'REASON_DESC_MISSING', 'Reason description required when reason=other', []);
+  }
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    fy: meta.fy,
+    reason: meta.reason,
+    reason_description: meta.reason_description ?? '',
+    tbl4_itc_reversal: toTaxAmounts(totals),
+    invoices: reversedSupplies.map((s) => ({
+      invoice_no: s.invoice_no,
+      invoice_date: toGSTNDate(s.invoice_date),
+      txval: s.taxable_value,
+      iamt: s.igst, camt: s.cgst, samt: s.sgst, csamt: s.cess,
+    })),
+  };
+  return {
+    builder: 'itc-03', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: totalsFromBreakdown(totals),
+  };
+}
+
+// ── DRC-03 · Voluntary payment / demand settlement ───────────────────
+export function buildDRC03(
+  amount: { igst: number; cgst: number; sgst: number; cess: number; interest?: number; penalty?: number },
+  meta: BuildDRC03Meta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors);
+
+  const totalTax = amount.igst + amount.cgst + amount.sgst + amount.cess;
+  if (totalTax <= 0 && !(amount.interest || amount.penalty)) {
+    pushErr(errors, 'AMOUNT_ZERO', 'DRC-03 must carry tax/interest/penalty > 0', []);
+  }
+  if (meta.cause === 'scn' && !meta.reference_no) {
+    pushWarn(warnings, 'SCN_REF_MISSING', 'SCN reference recommended when cause=scn', []);
+  }
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    cause: meta.cause,
+    reference_no: meta.reference_no ?? '',
+    payment_date: toGSTNDate(meta.payment_date),
+    tax: {
+      iamt: amount.igst, camt: amount.cgst, samt: amount.sgst, csamt: amount.cess,
+    },
+    interest: amount.interest ?? 0,
+    penalty: amount.penalty ?? 0,
+    total: totalTax + (amount.interest ?? 0) + (amount.penalty ?? 0),
+  };
+  return {
+    builder: 'drc-03', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: {
+      taxable_value: 0,
+      igst: amount.igst, cgst: amount.cgst, sgst: amount.sgst, cess: amount.cess,
+    },
+  };
+}
+
 // ── Public: validateGSTR1Payload ─────────────────────────────────────
+
+
 
 
 
