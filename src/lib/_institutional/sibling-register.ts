@@ -256,7 +256,13 @@ export const SIBLINGS: SiblingEntry[] = [
   // 🆕 Sprint 74b T-Phase-5.A.1.6-PASS-B · Comply360 Main Arc 1.6 · Pass B · 2 NEW SIBLINGs (form16-engine reads S72 tds-aggregator 0-DIFF + tds-notice-engine) · Q20 Form 16/16A + TDS notice · Main Arc 1.6 COMPLETE · target 24-streak NEW RECORD ⭐
   { id: 'comply360-form16-engine', name: 'Comply360 Form 16 / 16A Engine', path: 'src/lib/comply360-form16-engine.ts', sprintAdded: 74, compositeAdded: 74, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-tds-notice-engine', name: 'Comply360 TDS Notice / Demand Engine', path: 'src/lib/comply360-tds-notice-engine.ts', sprintAdded: 74, compositeAdded: 74, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 76a T-Phase-5.A.1.8-PASS-A · Comply360 Main Arc 1.8 · Q28 Part 2 · Pass A (engines) · 4 NEW SIBLINGs (tcs-27eq + ewb02-consolidation + stamp-duty + itr6) · ITC-04/REG-01/REG-31 = builder extensions (NOT SIBLINGs) · tds-aggregator + eway-engine read-only 0-DIFF · target 26-streak NEW RECORD ⭐
+  { id: 'comply360-tcs-27eq-engine', name: 'Comply360 TCS 27EQ Engine', path: 'src/lib/comply360-tcs-27eq-engine.ts', sprintAdded: 76, compositeAdded: 76, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-ewb02-consolidation-engine', name: 'Comply360 EWB-02 Consolidation Engine', path: 'src/lib/comply360-ewb02-consolidation-engine.ts', sprintAdded: 76, compositeAdded: 76, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-stamp-duty-engine', name: 'Comply360 Stamp Duty Engine', path: 'src/lib/comply360-stamp-duty-engine.ts', sprintAdded: 76, compositeAdded: 76, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-itr6-engine', name: 'Comply360 ITR-6 Engine', path: 'src/lib/comply360-itr6-engine.ts', sprintAdded: 76, compositeAdded: 76, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
+
 
 export function getSiblingCount(): number {
   return SIBLINGS.length;
