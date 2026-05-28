@@ -58,6 +58,13 @@ const SEED_OBLIGATIONS: FilingObligation[] = [
   { id: 'form16-fy25',         label: 'Form 16 Issuance · FY24-25',        module: 'tds', due_date: '2026-06-15', status: 'pending' },
   { id: 'form16a-q4',          label: 'Form 16A · Q4 FY25-26',             module: 'tds', due_date: '2026-05-31', status: 'pending' },
   { id: 'tds-notice-tracker',  label: 'TDS Notice Tracker · FY25-26',      module: 'tds', due_date: '2026-06-30', status: 'pending' },
+  // 🆕 Sprint 75 · 6 NEW obligations · Extended GST Forms (Q28 Part 1 · GSTR-4/5/6/7/8 + CMP-08)
+  { id: 'gstr-4-fy2425',  label: 'GSTR-4 · FY24-25 Composition Annual', module: 'tax-gst', due_date: '2026-04-30', status: 'pending' },
+  { id: 'cmp-08-q4',      label: 'CMP-08 · Q4 FY25-26 Composition',     module: 'tax-gst', due_date: '2026-04-18', status: 'pending' },
+  { id: 'gstr-5-apr',     label: 'GSTR-5 · Apr 2026 (Non-Resident)',    module: 'tax-gst', due_date: '2026-05-20', status: 'pending' },
+  { id: 'gstr-6-apr',     label: 'GSTR-6 · Apr 2026 (ISD)',             module: 'tax-gst', due_date: '2026-05-13', status: 'pending' },
+  { id: 'gstr-7-apr',     label: 'GSTR-7 · Apr 2026 (GST-TDS)',         module: 'tax-gst', due_date: '2026-05-10', status: 'pending' },
+  { id: 'gstr-8-apr',     label: 'GSTR-8 · Apr 2026 (E-commerce TCS)',  module: 'tax-gst', due_date: '2026-05-10', status: 'pending' },
   { id: 'fact-lic',   label: 'Factory Licence Renewal', module: 'licenses', due_date: '2026-06-30', status: 'pending' },
   { id: 'pollu-cert', label: 'Pollution Consent (CTO)', module: 'licenses', due_date: '2026-07-15', status: 'pending' },
   { id: 'brsr-q4',    label: 'BRSR Q4 · ESG Report',  module: 'esg',      due_date: '2026-06-15', status: 'pending' },
