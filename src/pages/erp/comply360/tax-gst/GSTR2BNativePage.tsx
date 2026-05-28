@@ -80,6 +80,7 @@ export default function GSTR2BNativePage(): JSX.Element {
       source_invoice_ref: a.source_invoice_ref,
       status: a.status,
     }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityId, returnPeriod, refreshTick]);
 
   const totals = useMemo(() => computeTotalTax(supplies), [supplies]);
