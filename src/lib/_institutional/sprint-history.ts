@@ -198,14 +198,27 @@ export const SPRINTS: SprintEntry[] = [
     ],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 75 T-Phase-5.A.1.7 · Comply360 Main Arc 1.7 · Q28 Part 1 · 9 Extended GST Forms (GSTR-4/5/6/7/8/10 + CMP-08 + ITC-03 + DRC-03) via Extended Returns sub-shell · builders extend gstr-builder-engine in place · target 25-streak ⭐
+  // 🆕 Sprint 75 T-Phase-5.A.1.7 · Comply360 Main Arc 1.7 · Q28 Part 1 · 9 Extended GST Forms (GSTR-4/5/6/7/8/10 + CMP-08 + ITC-03 + DRC-03) via Extended Returns sub-shell · builders extend gstr-builder-engine in place · 25-streak ⭐
   {
     sprintNumber: 75, code: 'T-Phase-5.A.1.7', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '3cbbbcf041e496fab29fc27db28f51b8d7df2c3e', loc: 1600,
+    headSha: '5a83cab349ac5219ddb465cfe82b4831df43c8d3', predecessorSha: '3cbbbcf041e496fab29fc27db28f51b8d7df2c3e', loc: 1600,
     newSiblings: [],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 76a T-Phase-5.A.1.8-PASS-A · Comply360 Main Arc 1.8 · Q28 Part 2 · Pass A (engines) · 4 NEW SIBLINGs (tcs-27eq + ewb02-consolidation + stamp-duty + itr6) · ITC-04/REG-01/REG-31 builders extend gstr-builder in place · target 26-streak NEW RECORD ⭐
+  {
+    sprintNumber: 76, code: 'T-Phase-5.A.1.8-PASS-A', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '5a83cab349ac5219ddb465cfe82b4831df43c8d3', loc: 750,
+    newSiblings: [
+      'comply360-tcs-27eq-engine',
+      'comply360-ewb02-consolidation-engine',
+      'comply360-stamp-duty-engine',
+      'comply360-itr6-engine',
+    ],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
+
 
 export function getSprintCount(): number {
   return SPRINTS.length;
