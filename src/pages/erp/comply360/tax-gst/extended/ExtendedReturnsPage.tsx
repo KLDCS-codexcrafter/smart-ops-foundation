@@ -16,8 +16,11 @@ import GSTR8Page from './GSTR8Page';
 import GSTR10Page from './GSTR10Page';
 import ITC03Page from './ITC03Page';
 import DRC03Page from './DRC03Page';
+import ITC04Page from './ITC04Page';
+import REG01Page from './REG01Page';
+import REG31Page from './REG31Page';
 
-type ExtendedTab = 'gstr4' | 'cmp08' | 'gstr5' | 'gstr6' | 'gstr7' | 'gstr8' | 'gstr10' | 'itc03' | 'drc03';
+type ExtendedTab = 'gstr4' | 'cmp08' | 'gstr5' | 'gstr6' | 'gstr7' | 'gstr8' | 'gstr10' | 'itc03' | 'drc03' | 'itc04' | 'reg01' | 'reg31';
 
 export default function ExtendedReturnsPage(): JSX.Element {
   const [tab, setTab] = useState<ExtendedTab>('gstr4');
