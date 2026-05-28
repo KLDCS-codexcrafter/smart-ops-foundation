@@ -188,14 +188,21 @@ export const SPRINTS: SprintEntry[] = [
     ],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 74b T-Phase-5.A.1.6-PASS-B · Comply360 Main Arc 1.6 · Pass B (Q20 · Form 16/16A + TDS Notice) · 2 NEW SIBLINGs (form16-engine reads S72 tds-aggregator 0-DIFF + tds-notice-engine) · Main Arc 1.6 COMPLETE · target 24-streak NEW RECORD ⭐
+  // 🆕 Sprint 74b T-Phase-5.A.1.6-PASS-B · Comply360 Main Arc 1.6 · Pass B (Q20 · Form 16/16A + TDS Notice) · 2 NEW SIBLINGs (form16-engine reads S72 tds-aggregator 0-DIFF + tds-notice-engine) · Main Arc 1.6 COMPLETE · 24-streak NEW RECORD ⭐
   {
     sprintNumber: 74, code: 'T-Phase-5.A.1.6-PASS-B', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'bd33a56facb36fa0399b9b0cf347770fa16d5cba', loc: 1020,
+    headSha: '3cbbbcf041e496fab29fc27db28f51b8d7df2c3e', predecessorSha: 'bd33a56facb36fa0399b9b0cf347770fa16d5cba', loc: 1020,
     newSiblings: [
       'comply360-form16-engine',
       'comply360-tds-notice-engine',
     ],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 75 T-Phase-5.A.1.7 · Comply360 Main Arc 1.7 · Q28 Part 1 · 9 Extended GST Forms (GSTR-4/5/6/7/8/10 + CMP-08 + ITC-03 + DRC-03) via Extended Returns sub-shell · builders extend gstr-builder-engine in place · target 25-streak ⭐
+  {
+    sprintNumber: 75, code: 'T-Phase-5.A.1.7', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '3cbbbcf041e496fab29fc27db28f51b8d7df2c3e', loc: 1600,
+    newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
