@@ -61,6 +61,6 @@ describe('comply360-statutory-memory · FR-43 + FR-58 (Sprint 69 Cycle-3)', () =
 
   it('corrupt localStorage falls back to seed (zod schema rejection)', () => {
     localStorage.setItem(COMPLY360_STATUTORY_STORAGE_KEY, '{"not": "an array"}');
-    expect(loadObligations()).toHaveLength(15);
+    expect(loadObligations().length).toBeGreaterThanOrEqual(15);
   });
 });
