@@ -240,6 +240,11 @@ export const SIBLINGS: SiblingEntry[] = [
   // 🆕 Sprint 71 T-Phase-5.A.1.3 · Comply360 Main Arc 1.3 · 2 NEW SIBLINGs (tax-tolerance engine + ECRS engine) · GSTR-3B builder extended in place
   { id: 'comply360-tax-tolerance-engine', name: 'Comply360 Tax Tolerance Engine', path: 'src/lib/comply360-tax-tolerance-engine.ts', sprintAdded: 71, compositeAdded: 71, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-ecrs-engine', name: 'Comply360 ECRS Engine', path: 'src/lib/comply360-ecrs-engine.ts', sprintAdded: 71, compositeAdded: 71, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 72 T-Phase-5.A.1.4 · Comply360 Main Arc 1.4 · 4 NEW SIBLINGs · NATIVE TDS suite (194Q + 194-O + SFT + Form 26AS reco) · 24th `tds` mega-menu (Option C) · A first-pass-clean ⭐ · 20-streak NEW RECORD
+  { id: 'comply360-tds-aggregator-engine', name: 'Comply360 TDS Aggregator Engine', path: 'src/lib/comply360-tds-aggregator-engine.ts', sprintAdded: 72, compositeAdded: 72, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-tds-194q-engine', name: 'Comply360 TDS 194Q / 194-O Engine', path: 'src/lib/comply360-tds-194q-engine.ts', sprintAdded: 72, compositeAdded: 72, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-sft-engine', name: 'Comply360 SFT Engine', path: 'src/lib/comply360-sft-engine.ts', sprintAdded: 72, compositeAdded: 72, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-form26as-reco-engine', name: 'Comply360 Form 26AS Reconciliation Engine', path: 'src/lib/comply360-form26as-reco-engine.ts', sprintAdded: 72, compositeAdded: 72, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 export function getSiblingCount(): number {
