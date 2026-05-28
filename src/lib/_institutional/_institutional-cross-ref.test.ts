@@ -11,9 +11,9 @@ import { SUB_PORTALS, getSubPortalCount } from './sub-portal-registry';
 import { FAR_CAPABILITIES, getFARCapabilityCount, getFARCapabilityScoreSchemaStaged } from './far-extended-scorecard';
 import { FK_CAPABILITIES, getFKCapabilityCount, getFKCapabilityScoreSchemaStaged } from './fk-extended-scorecard';
 
-describe('Institutional registers · cardinality (post-Sprint-70b Comply360 Main Arc 1.2 Pass B)', () => {
-  it('SIBLINGS has 61 entries', () => {
-    expect(getSiblingCount()).toBe(61);
+describe('Institutional registers · cardinality (post-Sprint-71 Comply360 Main Arc 1.3)', () => {
+  it('SIBLINGS has 63 entries', () => {
+    expect(getSiblingCount()).toBe(63);
   });
 
   it('MOATS has 52 entries', () => {
@@ -24,8 +24,8 @@ describe('Institutional registers · cardinality (post-Sprint-70b Comply360 Main
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 71 entries', () => {
-    expect(getSprintCount()).toBe(71);
+  it('SPRINTS has 72 entries', () => {
+    expect(getSprintCount()).toBe(72);
   });
 
   it('SUB_PORTALS has 3 entries', () => {
