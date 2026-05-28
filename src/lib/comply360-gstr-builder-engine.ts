@@ -5,6 +5,8 @@
  * @sprint-extended Sprint 71 · T-Phase-5.A.1.3 · buildGSTR3B (DP-S71-1 · in-place)
  * @sprint-extended Sprint 74a · T-Phase-5.A.1.6-PASS-A · buildGSTR9 + buildGSTR9C (DP-S74-2 · in-place)
  * @sprint-extended Sprint 75 · T-Phase-5.A.1.7 · buildGSTR4/5/6/7/8/10 + buildCMP08 + buildITC03 + buildDRC03 (DP-S75-2 · in-place · Record<string,unknown> payload branch)
+ * @sprint-extended Sprint 76a · T-Phase-5.A.1.8-PASS-A · buildITC04 + buildREG01 + buildREG31 (DP-S76-2 · in-place · Record<string,unknown> payload branch)
+
  * @decisions   D-S69-1 (100% native) · DP-S70-2 (GSTR builder engine) · DP-S74-2 (extend in place)
  * @iso         Reliability · Auditability · Maintainability
  * @disciplines FR-19 SIBLING · FR-43 unit tests · FR-91 honest disclosure · Lesson 23 cross-prompt contract
@@ -47,7 +49,10 @@ export type GSTRBuilderType =
   | 'gstr-1' | 'gstr-1a' | 'gstr-2b' | 'gstr-3b' | 'gstr-9' | 'gstr-9c'
   // 🆕 Sprint 75 · Q28 Part 1 · 9 extended forms (DP-S75-2 · in-place extension)
   | 'gstr-4' | 'gstr-5' | 'gstr-6' | 'gstr-7' | 'gstr-8' | 'gstr-10'
-  | 'cmp-08' | 'itc-03' | 'drc-03';
+  | 'cmp-08' | 'itc-03' | 'drc-03'
+  // 🆕 Sprint 76a · Q28 Part 2 · ITC-04 (job-work) + REG-01 (registration) + REG-31 (suo-moto cancel response)
+  | 'itc-04' | 'reg-01' | 'reg-31';
+
 
 export interface BuilderWarning {
   code: string;
@@ -1170,6 +1175,169 @@ export function buildDRC03(
     },
   };
 }
+
+// ═════════════════════════════════════════════════════════════════════
+// 🆕 Sprint 76a · Q28 Part 2 · ITC-04 + REG-01 + REG-31 (DP-S76-2)
+// In-place extension · payload branch = Record<string,unknown> (DP-S75-4 reuse).
+// ═════════════════════════════════════════════════════════════════════
+
+/** Job-work challan meta · ITC-04 (goods sent to / received from job-worker). */
+export interface BuildITC04Meta {
+  gstin: string;
+  fy: string;
+  return_period: string;        // 'MM-YYYY' (half-yearly · Apr-Sep or Oct-Mar)
+}
+
+export interface JobWorkChallan {
+  challan_no: string;
+  challan_date: string;         // ISO yyyy-mm-dd
+  job_worker_gstin?: string;
+  hsn_code: string;
+  description: string;
+  qty_sent: number;
+  qty_received: number;
+  uom: string;
+  taxable_value: number;
+}
+
+/** GST registration application meta · REG-01 (new registration). */
+export interface BuildREG01Meta {
+  legal_name: string;
+  trade_name?: string;
+  pan: string;
+  state_code: string;
+  business_constitution:
+    | 'proprietorship' | 'partnership' | 'llp' | 'private_limited'
+    | 'public_limited' | 'huf' | 'society' | 'trust' | 'others';
+  commencement_date: string;    // ISO yyyy-mm-dd
+  principal_place: string;
+  reason_for_registration: 'voluntary' | 'crossed_threshold' | 'interstate' | 'casual' | 'tds_collector' | 'tcs_collector';
+  authorized_signatory_pan: string;
+}
+
+/** Suo-moto cancellation response meta · REG-31. */
+export interface BuildREG31Meta {
+  gstin: string;
+  scn_reference_no: string;
+  scn_date: string;
+  response_date: string;
+  reply_text: string;
+}
+
+/** Build ITC-04 · job-work goods sent/received (challan-wise · half-yearly). */
+export function buildITC04(
+  challans: JobWorkChallan[],
+  meta: BuildITC04Meta,
+): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors, meta.fy, meta.return_period);
+
+  if (challans.length === 0) {
+    pushWarn(warnings, 'NO_CHALLANS', 'ITC-04 has no job-work challans for the period', []);
+  }
+  for (const c of challans) {
+    if (!c.challan_no) {
+      pushErr(errors, 'CHALLAN_NO_MISSING', 'Job-work challan number missing', [c.challan_no || '(blank)']);
+    }
+    if (c.qty_received > c.qty_sent) {
+      pushWarn(warnings, 'QTY_OVERRECEIPT', `Challan ${c.challan_no} qty_received > qty_sent`, [c.challan_no]);
+    }
+    if (!c.hsn_code || c.hsn_code.length < 4) {
+      pushWarn(warnings, 'HSN_MISSING', `Challan ${c.challan_no} HSN too short`, [c.challan_no]);
+    }
+  }
+
+  const total_taxable = challans.reduce((acc, c) => acc + c.taxable_value, 0);
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    fy: meta.fy,
+    return_period: meta.return_period,
+    tbl4_goods_sent: challans.map((c) => ({
+      challan_no: c.challan_no,
+      challan_date: toGSTNDate(c.challan_date),
+      job_worker_gstin: c.job_worker_gstin ?? '',
+      hsn: c.hsn_code,
+      desc: c.description,
+      qty_sent: c.qty_sent,
+      qty_received: c.qty_received,
+      uom: c.uom,
+      txval: c.taxable_value,
+    })),
+    total_taxable_value: total_taxable,
+  };
+  return {
+    builder: 'itc-04', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: { taxable_value: total_taxable, igst: 0, cgst: 0, sgst: 0, cess: 0 },
+  };
+}
+
+/** Build REG-01 · new GST registration application. */
+export function buildREG01(meta: BuildREG01Meta): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  const PAN_RE = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+
+  if (!meta.legal_name) pushErr(errors, 'LEGAL_NAME_MISSING', 'Legal name required', []);
+  if (!PAN_RE.test(meta.pan)) pushErr(errors, 'PAN_INVALID', `PAN ${meta.pan} fails format check`, []);
+  if (!PAN_RE.test(meta.authorized_signatory_pan)) {
+    pushErr(errors, 'SIGNATORY_PAN_INVALID', 'Authorized signatory PAN invalid', []);
+  }
+  if (!/^[0-9]{2}$/.test(meta.state_code)) {
+    pushErr(errors, 'STATE_CODE_INVALID', `State code ${meta.state_code} must be 2 digits`, []);
+  }
+  if (!meta.principal_place) {
+    pushWarn(warnings, 'PRINCIPAL_PLACE_MISSING', 'Principal place of business not provided', []);
+  }
+
+  const payload: Record<string, unknown> = {
+    legal_name: meta.legal_name,
+    trade_name: meta.trade_name ?? '',
+    pan: meta.pan,
+    state_code: meta.state_code,
+    business_constitution: meta.business_constitution,
+    commencement_date: toGSTNDate(meta.commencement_date),
+    principal_place: meta.principal_place,
+    reason_for_registration: meta.reason_for_registration,
+    authorized_signatory_pan: meta.authorized_signatory_pan,
+    application_status: errors.length === 0 ? 'ready_for_submission' : 'draft',
+  };
+  return {
+    builder: 'reg-01', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: { taxable_value: 0, igst: 0, cgst: 0, sgst: 0, cess: 0 },
+  };
+}
+
+/** Build REG-31 · response to suo-moto cancellation SCN. */
+export function buildREG31(meta: BuildREG31Meta): GSTRBuilderResult {
+  const warnings: BuilderWarning[] = [];
+  const errors: BuilderError[] = [];
+  commonValidate(meta.gstin, errors);
+
+  if (!meta.scn_reference_no) {
+    pushErr(errors, 'SCN_REF_MISSING', 'SCN reference number required for REG-31', []);
+  }
+  if (!meta.reply_text || meta.reply_text.trim().length < 20) {
+    pushWarn(warnings, 'REPLY_TOO_SHORT', 'REG-31 reply text under 20 chars · review before submit', []);
+  }
+
+  const payload: Record<string, unknown> = {
+    gstin: meta.gstin,
+    scn_reference_no: meta.scn_reference_no,
+    scn_date: toGSTNDate(meta.scn_date),
+    response_date: toGSTNDate(meta.response_date),
+    reply_text: meta.reply_text,
+  };
+  return {
+    builder: 'reg-31', payload,
+    valid: errors.length === 0, warnings, errors,
+    totals: { taxable_value: 0, igst: 0, cgst: 0, sgst: 0, cess: 0 },
+  };
+}
+
+
 
 // ── Public: validateGSTR1Payload ─────────────────────────────────────
 

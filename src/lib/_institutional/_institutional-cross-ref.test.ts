@@ -11,9 +11,9 @@ import { SUB_PORTALS, getSubPortalCount } from './sub-portal-registry';
 import { FAR_CAPABILITIES, getFARCapabilityCount, getFARCapabilityScoreSchemaStaged } from './far-extended-scorecard';
 import { FK_CAPABILITIES, getFKCapabilityCount, getFKCapabilityScoreSchemaStaged } from './fk-extended-scorecard';
 
-describe('Institutional registers · cardinality (post-Sprint-75 Comply360 Main Arc 1.7 · Q28 Part 1 · Extended GST Forms)', () => {
-  it('SIBLINGS has 75 entries', () => {
-    expect(getSiblingCount()).toBe(75);
+describe('Institutional registers · cardinality (post-Sprint-76a Comply360 Main Arc 1.8 · Q28 Part 2 · Pass A engines)', () => {
+  it('SIBLINGS has 79 entries', () => {
+    expect(getSiblingCount()).toBe(79);
   });
 
   it('MOATS has 52 entries', () => {
@@ -24,9 +24,10 @@ describe('Institutional registers · cardinality (post-Sprint-75 Comply360 Main 
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 78 entries', () => {
-    expect(getSprintCount()).toBe(78);
+  it('SPRINTS has 79 entries', () => {
+    expect(getSprintCount()).toBe(79);
   });
+
 
   it('SUB_PORTALS has 3 entries', () => {
     expect(getSubPortalCount()).toBe(3);
@@ -66,9 +67,10 @@ describe('FAR + FK extended scorecards · Sprint 68 FAR-4 (24 FAR-CAPs FULL · 7
 
 describe('Sprint history · A-streak counter', () => {
   // Lesson 24 historical-snapshot pattern · bounds-check not equality
-  it('current A-streak is at least 25 (Sprint 54-75 · NEW Operix record ⭐)', () => {
-    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(25);
+  it('current A-streak is at least 26 (Sprint 54-76a · NEW Operix record ⭐)', () => {
+    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(26);
   });
+
 
   it('Sprint 72 Comply360 Main Arc 1.4 is the most recent banked sprint · 4 new SIBLINGs (Lesson 24 id-lookup)', () => {
     // Lesson 24 · id-lookup not array-index (future sprints append; index drifts)
