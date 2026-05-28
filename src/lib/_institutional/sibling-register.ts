@@ -245,6 +245,11 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-tds-194q-engine', name: 'Comply360 TDS 194Q / 194-O Engine', path: 'src/lib/comply360-tds-194q-engine.ts', sprintAdded: 72, compositeAdded: 72, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-sft-engine', name: 'Comply360 SFT Engine', path: 'src/lib/comply360-sft-engine.ts', sprintAdded: 72, compositeAdded: 72, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-form26as-reco-engine', name: 'Comply360 Form 26AS Reconciliation Engine', path: 'src/lib/comply360-form26as-reco-engine.ts', sprintAdded: 72, compositeAdded: 72, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 73a T-Phase-5.A.1.5-PASS-A · Comply360 Main Arc 1.5 · Pass A · 4 NEW SIBLINGs (e-invoice aggregator + e-way + MSME Form 1 + Section 393) · Path α split · A first-pass-clean ⭐ · 21-streak NEW RECORD
+  { id: 'comply360-einvoice-aggregator-engine', name: 'Comply360 E-Invoice Aggregator Engine', path: 'src/lib/comply360-einvoice-aggregator-engine.ts', sprintAdded: 73, compositeAdded: 73, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-eway-engine', name: 'Comply360 E-Way Bill Engine', path: 'src/lib/comply360-eway-engine.ts', sprintAdded: 73, compositeAdded: 73, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-msme-form1-engine', name: 'Comply360 MSME Form 1 Engine', path: 'src/lib/comply360-msme-form1-engine.ts', sprintAdded: 73, compositeAdded: 73, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-section393-engine', name: 'Comply360 Section 393 Arrangements Engine', path: 'src/lib/comply360-section393-engine.ts', sprintAdded: 73, compositeAdded: 73, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 export function getSiblingCount(): number {

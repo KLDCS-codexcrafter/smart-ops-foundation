@@ -150,7 +150,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 72 T-Phase-5.A.1.4 · Comply360 Main Arc 1.4 · Q4 NATIVE TDS suite (194Q + 194-O + SFT + Form 26AS reco · NEW 24th `tds` mega-menu · Option C) · 20-streak NEW RECORD ⭐
   {
     sprintNumber: 72, code: 'T-Phase-5.A.1.4', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '9d47ec68e75552e80363e1656523e6448be02a28', loc: 1710,
+    headSha: 'cfff1abc0da6a88ec18a87e6ea7af46afea24446', predecessorSha: '9d47ec68e75552e80363e1656523e6448be02a28', loc: 1710,
     newSiblings: [
       'comply360-tds-aggregator-engine',
       'comply360-tds-194q-engine',
@@ -158,6 +158,18 @@ export const SPRINTS: SprintEntry[] = [
       'comply360-form26as-reco-engine',
     ],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 73a T-Phase-5.A.1.5-PASS-A · Comply360 Main Arc 1.5 · Pass A (engine layer) · 4 NEW engines (e-invoice aggregator + e-way + MSME Form 1 + Section 393) · Path α split · 21-streak NEW RECORD ⭐
+  {
+    sprintNumber: 73, code: 'T-Phase-5.A.1.5-PASS-A', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'cfff1abc0da6a88ec18a87e6ea7af46afea24446', loc: 1150,
+    newSiblings: [
+      'comply360-einvoice-aggregator-engine',
+      'comply360-eway-engine',
+      'comply360-msme-form1-engine',
+      'comply360-section393-engine',
+    ],
+    bankDate: null, provenance: 'CONFIRMED',
   },
 ];
 
