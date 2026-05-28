@@ -217,11 +217,23 @@ export const SPRINTS: SprintEntry[] = [
     ],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 76b T-Phase-5.A.1.8-PASS-B · Comply360 Main Arc 1.8 · Q28 Part 2 · Pass B (surfaces + legal-mega-menu wiring) · 6 surfaces consuming Pass A engines · legal mega-menu goes live · 0 new SIBLINGs (pages aren't SIBLINGs) · target 27-streak NEW RECORD ⭐
+  // 🆕 Sprint 76b T-Phase-5.A.1.8-PASS-B · Comply360 Main Arc 1.8 · Q28 Part 2 · Pass B (surfaces + legal-mega-menu wiring) · 6 surfaces consuming Pass A engines · legal mega-menu goes live · 0 new SIBLINGs (pages aren't SIBLINGs) · 27-streak NEW RECORD ⭐
   {
     sprintNumber: 76, code: 'T-Phase-5.A.1.8-PASS-B', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '92458e32e09c0770b636c4f5a02b332b18c680e6', loc: 400,
+    headSha: '0ab62e009cfb681ca06e91c7b289387ebf95ee64', predecessorSha: '92458e32e09c0770b636c4f5a02b332b18c680e6', loc: 400,
     newSiblings: [],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 77a T-Phase-5.A.1.9-PASS-A · Comply360 Main Arc 1.9 · Pass A (engines) · 4 NEW SIBLINGs spanning 6 regimes (schedule-m pharma GMP greenfield · brsr-comprehensive reads brsr-fa · caro-extended reads caro-2020 §Y FROZEN · transfer-pricing reads form-3ceb + form-15ca-15cb) · target 28-streak NEW RECORD ⭐
+  {
+    sprintNumber: 77, code: 'T-Phase-5.A.1.9-PASS-A', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '0ab62e009cfb681ca06e91c7b289387ebf95ee64', loc: 800,
+    newSiblings: [
+      'comply360-schedule-m-engine',
+      'comply360-brsr-comprehensive-engine',
+      'comply360-caro-extended-engine',
+      'comply360-transfer-pricing-engine',
+    ],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
