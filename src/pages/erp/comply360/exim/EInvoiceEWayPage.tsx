@@ -9,8 +9,9 @@ import { useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import EInvoicePage from './EInvoicePage';
 import EWayBillPage from './EWayBillPage';
+import EWB02Page from './EWB02Page';
 
-type SubTab = 'einvoice' | 'eway';
+type SubTab = 'einvoice' | 'eway' | 'ewb02';
 
 export default function EInvoiceEWayPage(): JSX.Element {
   const [tab, setTab] = useState<SubTab>('einvoice');
@@ -20,9 +21,11 @@ export default function EInvoiceEWayPage(): JSX.Element {
         <TabsList>
           <TabsTrigger value="einvoice">E-Invoice (IRN)</TabsTrigger>
           <TabsTrigger value="eway">E-Way Bill</TabsTrigger>
+          <TabsTrigger value="ewb02">EWB-02 Consolidated</TabsTrigger>
         </TabsList>
         <TabsContent value="einvoice"><EInvoicePage /></TabsContent>
         <TabsContent value="eway"><EWayBillPage /></TabsContent>
+        <TabsContent value="ewb02"><EWB02Page /></TabsContent>
       </Tabs>
     </div>
   );
