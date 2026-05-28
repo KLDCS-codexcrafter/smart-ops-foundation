@@ -178,13 +178,23 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 74a T-Phase-5.A.1.6-PASS-A · Comply360 Main Arc 1.6 · Pass A (Q19 · GSTR-9/9C + 3CA/3CB/3CD) · 2 NEW SIBLINGs (gstr9-reco + tax-audit-3cd · reads caro-2020 §Y frozen) · Path α split · target 23-streak NEW RECORD ⭐
+  // 🆕 Sprint 74a T-Phase-5.A.1.6-PASS-A · Comply360 Main Arc 1.6 · Pass A (Q19 · GSTR-9/9C + 3CA/3CB/3CD) · 2 NEW SIBLINGs (gstr9-reco + tax-audit-3cd · reads caro-2020 §Y frozen) · Path α split · 23-streak NEW RECORD ⭐
   {
     sprintNumber: 74, code: 'T-Phase-5.A.1.6-PASS-A', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '8e7dff4fe1c73d48d0869830ea8ab43dc5fcd3d2', loc: 1880,
+    headSha: 'bd33a56facb36fa0399b9b0cf347770fa16d5cba', predecessorSha: '8e7dff4fe1c73d48d0869830ea8ab43dc5fcd3d2', loc: 1880,
     newSiblings: [
       'comply360-gstr9-reco-engine',
       'comply360-tax-audit-3cd-engine',
+    ],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 74b T-Phase-5.A.1.6-PASS-B · Comply360 Main Arc 1.6 · Pass B (Q20 · Form 16/16A + TDS Notice) · 2 NEW SIBLINGs (form16-engine reads S72 tds-aggregator 0-DIFF + tds-notice-engine) · Main Arc 1.6 COMPLETE · target 24-streak NEW RECORD ⭐
+  {
+    sprintNumber: 74, code: 'T-Phase-5.A.1.6-PASS-B', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'bd33a56facb36fa0399b9b0cf347770fa16d5cba', loc: 1020,
+    newSiblings: [
+      'comply360-form16-engine',
+      'comply360-tds-notice-engine',
     ],
     bankDate: null, provenance: 'CONFIRMED',
   },

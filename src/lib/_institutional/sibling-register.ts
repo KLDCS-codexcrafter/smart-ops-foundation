@@ -250,9 +250,12 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-eway-engine', name: 'Comply360 E-Way Bill Engine', path: 'src/lib/comply360-eway-engine.ts', sprintAdded: 73, compositeAdded: 73, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-msme-form1-engine', name: 'Comply360 MSME Form 1 Engine', path: 'src/lib/comply360-msme-form1-engine.ts', sprintAdded: 73, compositeAdded: 73, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-section393-engine', name: 'Comply360 Section 393 Arrangements Engine', path: 'src/lib/comply360-section393-engine.ts', sprintAdded: 73, compositeAdded: 73, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
-  // 🆕 Sprint 74a T-Phase-5.A.1.6-PASS-A · Comply360 Main Arc 1.6 · Pass A · 2 NEW SIBLINGs (gstr9-reco + tax-audit-3cd · 3CD reads caro-2020 §Y frozen) · Q19 annual returns + tax audit · target 23-streak NEW RECORD ⭐
+  // 🆕 Sprint 74a T-Phase-5.A.1.6-PASS-A · Comply360 Main Arc 1.6 · Pass A · 2 NEW SIBLINGs (gstr9-reco + tax-audit-3cd · 3CD reads caro-2020 §Y frozen) · Q19 annual returns + tax audit · 23-streak NEW RECORD ⭐
   { id: 'comply360-gstr9-reco-engine', name: 'Comply360 GSTR-9C Reconciliation Engine', path: 'src/lib/comply360-gstr9-reco-engine.ts', sprintAdded: 74, compositeAdded: 74, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-tax-audit-3cd-engine', name: 'Comply360 Tax Audit 3CA/3CB/3CD Engine', path: 'src/lib/comply360-tax-audit-3cd-engine.ts', sprintAdded: 74, compositeAdded: 74, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 74b T-Phase-5.A.1.6-PASS-B · Comply360 Main Arc 1.6 · Pass B · 2 NEW SIBLINGs (form16-engine reads S72 tds-aggregator 0-DIFF + tds-notice-engine) · Q20 Form 16/16A + TDS notice · Main Arc 1.6 COMPLETE · target 24-streak NEW RECORD ⭐
+  { id: 'comply360-form16-engine', name: 'Comply360 Form 16 / 16A Engine', path: 'src/lib/comply360-form16-engine.ts', sprintAdded: 74, compositeAdded: 74, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-tds-notice-engine', name: 'Comply360 TDS Notice / Demand Engine', path: 'src/lib/comply360-tds-notice-engine.ts', sprintAdded: 74, compositeAdded: 74, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 export function getSiblingCount(): number {
