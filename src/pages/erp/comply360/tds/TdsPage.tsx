@@ -16,7 +16,7 @@ import Form16APage from './Form16APage';
 import TdsNoticePage from './TdsNoticePage';
 import Form27EQPage from './Form27EQPage';
 
-type SubTab = 'tds194q' | 'tds194o' | 'sft' | 'form26as' | 'form16' | 'form16a' | 'notices';
+type SubTab = 'tds194q' | 'tds194o' | 'sft' | 'form26as' | 'form16' | 'form16a' | 'notices' | 'form27eq';
 
 export default function TdsPage(): JSX.Element {
   const [tab, setTab] = useState<SubTab>('tds194q');
