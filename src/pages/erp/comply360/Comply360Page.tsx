@@ -16,6 +16,7 @@ import TdsPage from './tds/TdsPage';
 import EInvoiceEWayPage from './exim/EInvoiceEWayPage';
 import MSMEForm1Page from './vendor/MSMEForm1Page';
 import Section393Page from './roc/Section393Page';
+import ExternalAuditPage from './external-audit/ExternalAuditPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -37,6 +38,8 @@ export default function Comply360Page(): JSX.Element {
         return <MSMEForm1Page />;
       case 'roc':
         return <Section393Page />;
+      case 'external-audit':
+        return <ExternalAuditPage />;
       // 18 remaining mega-menus · modules light up in later sprints per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;

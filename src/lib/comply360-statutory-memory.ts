@@ -50,6 +50,10 @@ const SEED_OBLIGATIONS: FilingObligation[] = [
   { id: 'msme-form1-h1-fy25', label: 'MSME Form 1 · H1 FY25-26', module: 'vendor', due_date: '2026-10-31', status: 'pending' },
   { id: 'eway-pending-apr', label: 'E-Way Bill Pending Closures · Apr 2026', module: 'exim', due_date: '2026-05-31', status: 'pending' },
   { id: 'section393-disclosure-fy25', label: 'Section 393 Arrangements Disclosure · FY24-25', module: 'roc', due_date: '2026-09-30', status: 'pending' },
+  // 🆕 Sprint 74a Pass A · 3 NEW obligations · GSTR-9 · GSTR-9C · Tax Audit 3CD (Q19 Annual Returns + Tax Audit)
+  { id: 'gstr-9-fy2425',  label: 'GSTR-9 · FY24-25 Annual Return',         module: 'tax-gst',        due_date: '2026-12-31', status: 'pending' },
+  { id: 'gstr-9c-fy2425', label: 'GSTR-9C · FY24-25 Reconciliation',       module: 'tax-gst',        due_date: '2026-12-31', status: 'pending' },
+  { id: 'tax-audit-3cd-fy2425', label: 'Tax Audit 3CA/3CB/3CD · FY24-25',  module: 'external-audit', due_date: '2026-09-30', status: 'pending' },
   { id: 'fact-lic',   label: 'Factory Licence Renewal', module: 'licenses', due_date: '2026-06-30', status: 'pending' },
   { id: 'pollu-cert', label: 'Pollution Consent (CTO)', module: 'licenses', due_date: '2026-07-15', status: 'pending' },
   { id: 'brsr-q4',    label: 'BRSR Q4 · ESG Report',  module: 'esg',      due_date: '2026-06-15', status: 'pending' },
