@@ -34,6 +34,10 @@ const SEED_OBLIGATIONS: FilingObligation[] = [
   { id: 'mca-aoc4',   label: 'AOC-4 · FY24-25',       module: 'roc',      due_date: '2026-05-30', status: 'pending' },
   { id: 'mca-mgt7',   label: 'MGT-7 · FY24-25',       module: 'roc',      due_date: '2026-05-29', status: 'overdue' },
   { id: 'gst-9-fy25', label: 'GSTR-9 · FY24-25',      module: 'tax-gst',  due_date: '2026-05-25', status: 'pending' },
+  // 🆕 Sprint 70b Pass B · 3 NEW obligations · GSTR-1A · GSTR-2B · IMS pre-filing
+  { id: 'gstr-1a-apr', label: 'GSTR-1A · Apr 2026 Amendment', module: 'tax-gst', due_date: '2026-06-11', status: 'pending' },
+  { id: 'gstr-2b-apr', label: 'GSTR-2B · Apr 2026 Reco',      module: 'tax-gst', due_date: '2026-05-14', status: 'pending' },
+  { id: 'ims-apr',     label: 'IMS · Apr 2026 Pre-filing',    module: 'tax-gst', due_date: '2026-05-10', status: 'pending' },
   { id: 'fact-lic',   label: 'Factory Licence Renewal', module: 'licenses', due_date: '2026-06-30', status: 'pending' },
   { id: 'pollu-cert', label: 'Pollution Consent (CTO)', module: 'licenses', due_date: '2026-07-15', status: 'pending' },
   { id: 'brsr-q4',    label: 'BRSR Q4 · ESG Report',  module: 'esg',      due_date: '2026-06-15', status: 'pending' },
