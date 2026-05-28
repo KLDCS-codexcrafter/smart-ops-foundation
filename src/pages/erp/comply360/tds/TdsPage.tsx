@@ -14,8 +14,9 @@ import Form26ASRecoPage from './Form26ASRecoPage';
 import Form16Page from './Form16Page';
 import Form16APage from './Form16APage';
 import TdsNoticePage from './TdsNoticePage';
+import Form27EQPage from './Form27EQPage';
 
-type SubTab = 'tds194q' | 'tds194o' | 'sft' | 'form26as' | 'form16' | 'form16a' | 'notices';
+type SubTab = 'tds194q' | 'tds194o' | 'sft' | 'form26as' | 'form16' | 'form16a' | 'notices' | 'form27eq';
 
 export default function TdsPage(): JSX.Element {
   const [tab, setTab] = useState<SubTab>('tds194q');
@@ -30,6 +31,7 @@ export default function TdsPage(): JSX.Element {
           <TabsTrigger value="form16">Form 16</TabsTrigger>
           <TabsTrigger value="form16a">Form 16A</TabsTrigger>
           <TabsTrigger value="notices">Notices</TabsTrigger>
+          <TabsTrigger value="form27eq">Form 27EQ</TabsTrigger>
         </TabsList>
         <TabsContent value="tds194q"><TDS194QPage /></TabsContent>
         <TabsContent value="tds194o"><TDS194OPage /></TabsContent>
@@ -38,6 +40,7 @@ export default function TdsPage(): JSX.Element {
         <TabsContent value="form16"><Form16Page /></TabsContent>
         <TabsContent value="form16a"><Form16APage /></TabsContent>
         <TabsContent value="notices"><TdsNoticePage /></TabsContent>
+        <TabsContent value="form27eq"><Form27EQPage /></TabsContent>
       </Tabs>
     </div>
   );

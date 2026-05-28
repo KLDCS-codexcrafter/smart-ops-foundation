@@ -205,16 +205,23 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 76a T-Phase-5.A.1.8-PASS-A · Comply360 Main Arc 1.8 · Q28 Part 2 · Pass A (engines) · 4 NEW SIBLINGs (tcs-27eq + ewb02-consolidation + stamp-duty + itr6) · ITC-04/REG-01/REG-31 builders extend gstr-builder in place · target 26-streak NEW RECORD ⭐
+  // 🆕 Sprint 76a T-Phase-5.A.1.8-PASS-A · Comply360 Main Arc 1.8 · Q28 Part 2 · Pass A (engines) · 4 NEW SIBLINGs (tcs-27eq + ewb02-consolidation + stamp-duty + itr6) · ITC-04/REG-01/REG-31 builders extend gstr-builder in place · 26-streak ⭐
   {
     sprintNumber: 76, code: 'T-Phase-5.A.1.8-PASS-A', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '5a83cab349ac5219ddb465cfe82b4831df43c8d3', loc: 750,
+    headSha: '92458e32e09c0770b636c4f5a02b332b18c680e6', predecessorSha: '5a83cab349ac5219ddb465cfe82b4831df43c8d3', loc: 750,
     newSiblings: [
       'comply360-tcs-27eq-engine',
       'comply360-ewb02-consolidation-engine',
       'comply360-stamp-duty-engine',
       'comply360-itr6-engine',
     ],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 76b T-Phase-5.A.1.8-PASS-B · Comply360 Main Arc 1.8 · Q28 Part 2 · Pass B (surfaces + legal-mega-menu wiring) · 6 surfaces consuming Pass A engines · legal mega-menu goes live · 0 new SIBLINGs (pages aren't SIBLINGs) · target 27-streak NEW RECORD ⭐
+  {
+    sprintNumber: 76, code: 'T-Phase-5.A.1.8-PASS-B', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '92458e32e09c0770b636c4f5a02b332b18c680e6', loc: 400,
+    newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];

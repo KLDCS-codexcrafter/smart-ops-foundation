@@ -24,8 +24,8 @@ describe('Institutional registers · cardinality (post-Sprint-76a Comply360 Main
     expect(CAPABILITIES.length).toBe(28);
   });
 
-  it('SPRINTS has 79 entries', () => {
-    expect(getSprintCount()).toBe(79);
+  it('SPRINTS has 80 entries', () => {
+    expect(getSprintCount()).toBe(80);
   });
 
 
@@ -68,7 +68,7 @@ describe('FAR + FK extended scorecards · Sprint 68 FAR-4 (24 FAR-CAPs FULL · 7
 describe('Sprint history · A-streak counter', () => {
   // Lesson 24 historical-snapshot pattern · bounds-check not equality
   it('current A-streak is at least 26 (Sprint 54-76a · NEW Operix record ⭐)', () => {
-    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(26);
+    expect(getCurrentAStreak()).toBeGreaterThanOrEqual(27);
   });
 
 
