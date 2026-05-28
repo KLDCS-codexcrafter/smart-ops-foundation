@@ -31,6 +31,7 @@ export default function TdsPage(): JSX.Element {
           <TabsTrigger value="form16">Form 16</TabsTrigger>
           <TabsTrigger value="form16a">Form 16A</TabsTrigger>
           <TabsTrigger value="notices">Notices</TabsTrigger>
+          <TabsTrigger value="form27eq">Form 27EQ</TabsTrigger>
         </TabsList>
         <TabsContent value="tds194q"><TDS194QPage /></TabsContent>
         <TabsContent value="tds194o"><TDS194OPage /></TabsContent>
