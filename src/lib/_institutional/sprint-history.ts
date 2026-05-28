@@ -143,8 +143,20 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 71 T-Phase-5.A.1.3 · Comply360 Main Arc 1.3 · Q3 Part 2 (GSTR-3B + tax-tolerance + ECRS + cross-return recon) · single-pass · 19-streak NEW RECORD
   {
     sprintNumber: 71, code: 'T-Phase-5.A.1.3', composite: false, grade: 'A with adaptations',
-    headSha: null, predecessorSha: '16f4ea2b3f320c8f1db8f81e11591b25e01c1bc5', loc: 1200,
+    headSha: '9d47ec68e75552e80363e1656523e6448be02a28', predecessorSha: '16f4ea2b3f320c8f1db8f81e11591b25e01c1bc5', loc: 1200,
     newSiblings: ['comply360-tax-tolerance-engine', 'comply360-ecrs-engine'],
+    bankDate: '2026-05-28', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 72 T-Phase-5.A.1.4 · Comply360 Main Arc 1.4 · Q4 NATIVE TDS suite (194Q + 194-O + SFT + Form 26AS reco · NEW 24th `tds` mega-menu · Option C) · 20-streak NEW RECORD ⭐
+  {
+    sprintNumber: 72, code: 'T-Phase-5.A.1.4', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '9d47ec68e75552e80363e1656523e6448be02a28', loc: 1710,
+    newSiblings: [
+      'comply360-tds-aggregator-engine',
+      'comply360-tds-194q-engine',
+      'comply360-sft-engine',
+      'comply360-form26as-reco-engine',
+    ],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
 ];
