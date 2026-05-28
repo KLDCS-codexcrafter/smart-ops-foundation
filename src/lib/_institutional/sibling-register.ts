@@ -261,6 +261,11 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-ewb02-consolidation-engine', name: 'Comply360 EWB-02 Consolidation Engine', path: 'src/lib/comply360-ewb02-consolidation-engine.ts', sprintAdded: 76, compositeAdded: 76, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-stamp-duty-engine', name: 'Comply360 Stamp Duty Engine', path: 'src/lib/comply360-stamp-duty-engine.ts', sprintAdded: 76, compositeAdded: 76, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-itr6-engine', name: 'Comply360 ITR-6 Engine', path: 'src/lib/comply360-itr6-engine.ts', sprintAdded: 76, compositeAdded: 76, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 77a T-Phase-5.A.1.9-PASS-A · Comply360 Main Arc 1.9 · Pass A (engines) · 4 NEW SIBLINGs spanning 6 regimes (schedule-m greenfield · brsr-comprehensive reads brsr-fa 0-DIFF · caro-extended reads caro-2020 §Y FROZEN 0-DIFF · transfer-pricing reads form-3ceb + form-15ca-15cb 0-DIFF) · target 28-streak NEW RECORD ⭐
+  { id: 'comply360-schedule-m-engine', name: 'Comply360 Schedule M (Pharma GMP) Engine', path: 'src/lib/comply360-schedule-m-engine.ts', sprintAdded: 77, compositeAdded: 77, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-brsr-comprehensive-engine', name: 'Comply360 BRSR Comprehensive (9-Principle) Engine', path: 'src/lib/comply360-brsr-comprehensive-engine.ts', sprintAdded: 77, compositeAdded: 77, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-caro-extended-engine', name: 'Comply360 CARO Extended (Paragraph 3 ii-xxi) Engine', path: 'src/lib/comply360-caro-extended-engine.ts', sprintAdded: 77, compositeAdded: 77, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-transfer-pricing-engine', name: 'Comply360 Transfer Pricing (Master File + CbCR + Equalisation Levy) Engine', path: 'src/lib/comply360-transfer-pricing-engine.ts', sprintAdded: 77, compositeAdded: 77, functionCount: 6, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 
