@@ -18,7 +18,7 @@ export default function GSTR10Page(): JSX.Element {
         const closingStock = aggregateInwardSupplies({ entity_id: entityId, gstin, fy: 'FY2024-25', return_period: '03-2026' });
         return buildGSTR10(closingStock, {
           gstin,
-          cancellation_order_no: 'CNCL/PLACEHOLDER',
+          cancellation_order_no: 'CNCL/2026/00471',
           cancellation_date: '2026-03-31',
           effective_date: '2026-04-01',
         });

@@ -13,11 +13,11 @@ import { SIBLINGS, getSiblingCount } from '@/lib/_institutional/sibling-register
 const read = (rel: string): string => fs.readFileSync(path.join(process.cwd(), rel), 'utf-8');
 
 describe('Sprint 79c · Pass C · atomic 29-redirect sweep', () => {
-  it('sprint-history has Sprint 79c id-lookup entry · grade A · headSha null sentinel', () => {
+  it('sprint-history has Sprint 79c id-lookup entry · grade A · headSha backfilled by S79d (Lesson 24 bounds-check · S79d backfilled e3a0a7d3)', () => {
     const entry = SPRINTS.find(s => s.code === 'T-Phase-5.A.1.11-PASS-C');
     expect(entry).toBeDefined();
     expect(entry?.grade).toMatch(/^A/);
-    expect(entry?.headSha).toBeNull();
+    expect(entry?.headSha).toBe('e3a0a7d36e2f3fc33e1062498d2959f49ee31caf');
     expect(entry?.predecessorSha).toBe('bf1eb97713eb5cfe5a87fecc302673df06b5bc1b');
     expect(entry?.newSiblings).toEqual([]);
   });
