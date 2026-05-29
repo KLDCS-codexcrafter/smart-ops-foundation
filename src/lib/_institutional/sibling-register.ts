@@ -279,6 +279,9 @@ export const SIBLINGS: SiblingEntry[] = [
   // 🆕 Sprint 80a T-Phase-5.B.2.1-PASS-A · Comply360 Floor 2 Audit-Suite OPENS · 2 NEW SIBLINGs (audit-framework · auditor-workspace) · OOB-6/10/12 integrated · target 36-streak ⭐
   { id: 'comply360-audit-framework-engine', name: 'Comply360 Audit Framework (DP-S80-9 · BAP visibility · SA 530 sampling · working papers · findings · FFR · CARO tagging)', path: 'src/lib/comply360-audit-framework-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 14, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-auditor-workspace-engine', name: 'Comply360 Auditor Workspace (OOB-6 · DP-S80-19 · engagement persistence · multi-CA collaboration)', path: 'src/lib/comply360-auditor-workspace-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 7, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 80b T-Phase-5.B.2.1-PASS-B · Comply360 Floor 2 Audit-Suite · Pass B · 2 NEW SIBLINGs (audit-analytics · payroll-audit) · 18 Tally-equivalent procedures + 27 payroll-audit modules across 5 Layers · target 37-streak ⭐
+  { id: 'comply360-audit-analytics-engine', name: 'Comply360 Audit Analytics (DP-S80-10/14 · 18 Tally-equivalent analytical procedures · feeds Statutory/Internal/External Audit)', path: 'src/lib/comply360-audit-analytics-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 9, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-payroll-audit-engine', name: 'Comply360 Payroll Audit (DP-S80-2 · Q23 · 27 modules across 5 Layers · reads PayHub types + storage keys via FR-19 boundary)', path: 'src/lib/comply360-payroll-audit-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
 
 ];
 
