@@ -190,7 +190,7 @@ export const SPRINTS: SprintEntry[] = [
   },
   // 🆕 Sprint 74b T-Phase-5.A.1.6-PASS-B · Comply360 Main Arc 1.6 · Pass B (Q20 · Form 16/16A + TDS Notice) · 2 NEW SIBLINGs (form16-engine reads S72 tds-aggregator 0-DIFF + tds-notice-engine) · Main Arc 1.6 COMPLETE · 24-streak NEW RECORD ⭐
   {
-    sprintNumber: 74, code: 'T-Phase-5.A.1.6-PASS-B', composite: false, grade: 'A first-pass-clean',
+    sprintNumber: 74, code: 'T-Phase-5.A.1.6-PASS-B', composite: false, grade: 'A with adaptations',
     headSha: '3cbbbcf041e496fab29fc27db28f51b8d7df2c3e', predecessorSha: 'bd33a56facb36fa0399b9b0cf347770fa16d5cba', loc: 1020,
     newSiblings: [
       'comply360-form16-engine',
@@ -284,7 +284,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 79c T-Phase-5.A.1.11-PASS-C · Comply360 Main Arc 1.11 · Pass C · ATOMIC 29-redirect sweep + 2 deep-links + Lesson 29 cascade · FLOOR 1 FINALE · 0 new SIBLINGs · target 34-streak ⭐
   {
     sprintNumber: 79, code: 'T-Phase-5.A.1.11-PASS-C', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'bf1eb97713eb5cfe5a87fecc302673df06b5bc1b', loc: 800,
+    headSha: 'e3a0a7d36e2f3fc33e1062498d2959f49ee31caf', predecessorSha: 'bf1eb97713eb5cfe5a87fecc302673df06b5bc1b', loc: 800,
+    newSiblings: [],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 79d T-Phase-5.A.1.11-HYGIENE-D · Comply360 Main Arc 1.11 · Hygiene Pass · FA-tile location fix (cards-only invariant restored) + LedgerPackPage tab-shell promotion (FR-106 10th scenario) + 2 bundled hygiene items · 0 new SIBLINGs · target 35-streak ⭐
+  {
+    sprintNumber: 79, code: 'T-Phase-5.A.1.11-HYGIENE-D', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'e3a0a7d36e2f3fc33e1062498d2959f49ee31caf', loc: 250,
     newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
