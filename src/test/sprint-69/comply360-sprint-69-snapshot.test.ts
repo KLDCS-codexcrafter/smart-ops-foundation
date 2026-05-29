@@ -92,12 +92,13 @@ describe('Sprint 69 · T-Phase-5.A.1.1 · Comply360 Main Arc 1.1 · institutiona
     expect(typeof COMPLY360_DEFAULT_ENTITY_PREFS.alert_threshold_health_score).toBe('number');
   });
 
-  it('Dashboard FA tile refresh imports the weighted health engine (D-S69-4 LIVE)', () => {
-    const dashSrc = fs.readFileSync(
-      path.join(process.cwd(), 'src/pages/erp/Dashboard.tsx'),
+  // Lesson 24 bounds-check · Sprint 79d migrated FA tiles from Dashboard.tsx to /erp/comply360/fixed-assets/FixedAssetsHealthPage.tsx (cards-only invariant restored · DP-S79d-1).
+  it('FA tile refresh imports the weighted health engine (D-S69-4 LIVE · post-S79d location)', () => {
+    const src = fs.readFileSync(
+      path.join(process.cwd(), 'src/pages/erp/comply360/fixed-assets/FixedAssetsHealthPage.tsx'),
       'utf-8',
     );
-    expect(dashSrc).toContain('computeWeightedComplianceHealth');
-    expect(dashSrc).toContain('@/lib/comply360-statutory-memory');
+    expect(src).toContain('computeWeightedComplianceHealth');
+    expect(src).toContain('@/lib/comply360-statutory-memory');
   });
 });

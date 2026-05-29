@@ -92,9 +92,10 @@ describe('Register-Empirical Coupling Gate (RECG) · FR-101 candidate · Lesson 
       ['FAR-CAP-20', 'src/lib/ai-fa-classification-engine.ts', 'detectCustodianDrift'],
       ['FAR-CAP-21', 'src/lib/iot-asset-bridge.ts', 'ingestIoTSignal'],
       ['FAR-CAP-22', 'src/pages/mobile/MobileFAScanPage.tsx', 'findAssetByRFIDTag'],
-      ['FAR-CAP-23', 'src/pages/erp/Dashboard.tsx', 'fa-health-tile'],
+      // Lesson 24 bounds-check · Sprint 79d migrated FA tiles from Dashboard.tsx to /erp/comply360/fixed-assets (cards-only invariant restored).
+      ['FAR-CAP-23', 'src/pages/erp/comply360/fixed-assets/FixedAssetsHealthPage.tsx', 'fa-health-tile'],
       ['FAR-CAP-24', 'src/lib/fa-audit-trail-engine.ts', 'appendAuditEvent'],
-      ['FK-CAP-7',   'src/pages/erp/Dashboard.tsx', 'fa-iot-stream-tile'],
+      ['FK-CAP-7',   'src/pages/erp/comply360/fixed-assets/FixedAssetsHealthPage.tsx', 'fa-iot-stream-tile'],
     ];
     for (const [capId, file, pattern] of PATTERN_CHECKS) {
       it(`${capId} · ${file} contains "${pattern}"`, () => {
