@@ -11,8 +11,10 @@
  * [JWT] Phase 8: GET /api/comply360/audit-trail/aggregate · POST /api/comply360/audit-trail/replay
  */
 import {
-  readAuditTrail, type AuditTrailEntry,
+  readAuditTrail,
 } from './audit-trail-engine';
+import type { AuditTrailEntry } from '@/types/audit-trail';
+
 import {
   readChainForEntity, verifyChainIntegrity, type ChainVerification,
 } from './audit-trail-hash-chain';

@@ -56,16 +56,18 @@ function bucketFor(daysOverdue: number): AgingBucket {
 }
 
 function rowFromBreach(b: MSMEBreach): MSMEVendorRow {
+  const disallowance = b.status === 'breached' ? b.unpaid_amount : 0;
   return {
     vendor_id: b.vendor_id,
     vendor_name: b.vendor_name,
-    msme_status: b.vendor_msme_status,
+    msme_status: b.msme_category,
     aging_bucket: bucketFor(b.days_overdue),
-    outstanding_inr: b.outstanding_inr,
-    disallowance_inr: b.disallowance_inr,
+    outstanding_inr: b.unpaid_amount,
+    disallowance_inr: disallowance,
     days_overdue: b.days_overdue,
   };
 }
+
 
 /**
  * Aggregate MSME view for an entity/FY: vendor rows, disallowance totals,
