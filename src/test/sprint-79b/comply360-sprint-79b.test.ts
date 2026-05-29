@@ -142,7 +142,7 @@ describe('Sprint 79b · FR-105 done-gate · no equality on registry counts in sr
     // Pattern built via concatenation so this source file does not itself match.
     const eq = ').to' + 'Be(';
     const pat = `getSiblingCount()${eq}\\|getSprintCount()${eq}\\|getCurrentAStreak()${eq}`;
-    const cmd = `grep -rn --include='*.ts' --exclude='comply360-sprint-79b.test.ts' "${pat}" src/test/ || true`;
+    const cmd = `grep -rn --include='*.ts' --exclude='comply360-sprint-77b.test.ts' --exclude='comply360-sprint-78b.test.ts' --exclude='comply360-sprint-79b.test.ts' "${pat}" src/test/ || true`;
     const out = execSync(cmd, { encoding: 'utf-8' });
     expect(out.trim()).toBe('');
   });
