@@ -31,12 +31,6 @@ const CrossCardSearch = lazy(() =>
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useCardEntitlement } from "@/hooks/useCardEntitlement";
 import { topCardsForUser } from "@/lib/card-frequency-tracker";
-// Sprint 69 Cycle-2 · DP-S69-4 · FA tile refresh wires to weighted Health Score engine.
-import {
-  computeWeightedComplianceHealth,
-  type WeightedHealthBreakdown,
-} from "@/lib/comply360-health-score-engine";
-import { loadObligations } from "@/lib/comply360-statutory-memory";
 
 
 // ── Icon lookup map ──────────────────────────────────────────────────────────
@@ -54,8 +48,6 @@ interface LaneDef {
   borderColor: string;
   labelColor: string;
   ids: string[];
-  /** 🆕 Sprint 68 FAR-4 · Block 13 · marks Fixed Assets lane rendered via custom FA tiles (Q-LOCK-11 A + Q-LOCK-21 A + Q-LOCK-23 C) */
-  custom?: 'fixed-assets';
 }
 
 const LANES: LaneDef[] = [
@@ -108,15 +100,6 @@ const LANES: LaneDef[] = [
       'receivx',
     ],
   },
-  // 🆕 Sprint 68 FAR-4 · Block 13 · Fixed Assets lane · 4 custom tiles · FAR-CAP-23 (re-scoped per Q-LOCK-23 C) + FK-CAP-7
-  {
-    id: 'fixed-assets',
-    label: 'Fixed Assets',
-    borderColor: 'border-l-emerald-500',
-    labelColor: 'text-emerald-600 dark:text-emerald-400',
-    ids: ['fa-health-tile', 'fa-compliance-tile', 'fa-custodian-tile', 'fa-iot-stream-tile'],
-    custom: 'fixed-assets',
-  },
   {
     id: 'international-trade',
     label: 'International Trade',
@@ -147,67 +130,6 @@ const LANES: LaneDef[] = [
   },
 ];
 
-// 🆕 Sprint 68 FAR-4 · Block 13 · Fixed Assets lane tiles (Q-LOCK-23 C · FAR-CAP-23 re-scoped)
-interface FATileDef {
-  id: string;
-  title: string;
-  metric: string;
-  caption: string;
-}
-
-function buildFATiles(entityCode: string, health: WeightedHealthBreakdown): FATileDef[] {
-  // IoT count (UNCHANGED · FK-CAP-7 institutional preservation per Sprint 68)
-  let iotCount = 0;
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const k = localStorage.key(i);
-      if (k && k.startsWith(`4ds_iot_asset_stream_${entityCode}_`)) iotCount++;
-    }
-  } catch { /* ignore */ }
-
-  // FA-relevant sub-scores: mca-roc (CARO/Sch II via ROC) + audit-trail + licenses
-  const roc      = health.modules.find((m) => m.module === 'mca-roc');
-  const audit    = health.modules.find((m) => m.module === 'audit-trail');
-  const licenses = health.modules.find((m) => m.module === 'licenses');
-
-  // FA Health: composite of ROC + audit-trail sub-scores
-  const faHealthRaw = roc && audit
-    ? Math.round((roc.raw_score + audit.raw_score) / 2)
-    : 100;
-  const faHealthLabel =
-    faHealthRaw >= 85 ? 'Healthy'  :
-    faHealthRaw >= 65 ? 'Watch'    :
-    faHealthRaw >= 40 ? 'At Risk'  : 'Critical';
-
-  // Compliance: ROC sub-score band (CARO 2020 / Schedule II / GST ITC)
-  const complianceLabel =
-    !roc                  ? 'On-track'      :
-    roc.raw_score >= 85   ? 'On-track'      :
-    roc.raw_score >= 65   ? 'Minor gaps'    :
-    roc.raw_score >= 40   ? 'Material gaps' : 'Adverse';
-
-  // Custodian: % of FA-relevant obligations not overdue
-  const custTotal   = (roc?.counts.total   ?? 0) + (audit?.counts.total   ?? 0) + (licenses?.counts.total   ?? 0);
-  const custOverdue = (roc?.counts.overdue ?? 0) + (audit?.counts.overdue ?? 0) + (licenses?.counts.overdue ?? 0);
-  const custPct = custTotal === 0 ? 100 : Math.round(((custTotal - custOverdue) / custTotal) * 100);
-
-  return [
-    { id: 'fa-health-tile',     title: 'FA Health',  metric: `${faHealthLabel} (${faHealthRaw})`, caption: 'CARO / Schedule II / GST status from Comply360' },
-    { id: 'fa-compliance-tile', title: 'Compliance', metric: complianceLabel,                      caption: 'CARO 2020 · Schedule II · GST ITC (Comply360 ROC sub-score)' },
-    { id: 'fa-custodian-tile',  title: 'Custodian',  metric: `${custPct}%`,                         caption: 'Assets with custodian + on-time filings (Comply360-driven)' },
-    { id: 'fa-iot-stream-tile', title: 'IoT Stream', metric: String(iotCount),                      caption: 'Live IoT-streaming assets (FAR-CAP-23 · FK-CAP-7 preserved)' },
-  ];
-}
-
-function FATile({ tile }: { tile: FATileDef }) {
-  return (
-    <div className="rounded-2xl p-5 bg-card/60 backdrop-blur-xl border border-border">
-      <div className="text-xs uppercase tracking-wider text-muted-foreground">{tile.title}</div>
-      <div className="text-2xl font-mono font-semibold text-foreground mt-2">{tile.metric}</div>
-      <div className="text-xs text-muted-foreground mt-2 leading-relaxed">{tile.caption}</div>
-    </div>
-  );
-}
 
 // ── Greeting helper (same as Welcome.tsx) ────────────────────────────────────
 function getGreeting() {
@@ -334,16 +256,6 @@ export default function ErpDashboard() {
       .filter((a): a is AppDefinition => !!a && allowedSet.has(a.id));
   }, [entityCode, userId, allowedCards]);
 
-  // Sprint 69 Cycle-2 · DP-S69-4 · weighted Health Score for FA tile refresh.
-  const complianceObligations = useMemo(() => loadObligations(), []);
-  const complianceHealth = useMemo(
-    () => computeWeightedComplianceHealth(complianceObligations),
-    [complianceObligations],
-  );
-  const faTiles = useMemo(
-    () => buildFATiles(entityCode, complianceHealth),
-    [entityCode, complianceHealth],
-  );
 
   return (
     <div data-keyboard-form className="min-h-screen bg-background overflow-hidden relative">
@@ -441,7 +353,7 @@ export default function ErpDashboard() {
           const activeLanes = LANES.map(lane => ({
             ...lane,
             apps: lane.ids.map(id => appMap.get(id)).filter(Boolean) as AppDefinition[],
-          })).filter(lane => lane.custom === 'fixed-assets' || lane.apps.length > 0);
+          })).filter(lane => lane.apps.length > 0);
 
           if (activeLanes.length === 0) {
             return (
@@ -451,8 +363,6 @@ export default function ErpDashboard() {
             );
           }
 
-          // faTiles computed at component scope via useMemo (Sprint 69 Cycle-2 · DP-S69-4)
-
           return (
             <div className="space-y-8">
               {activeLanes.map((lane) => (
@@ -461,25 +371,15 @@ export default function ErpDashboard() {
                     {lane.label}
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {lane.custom === 'fixed-assets'
-                      ? faTiles.map((tile, i) => (
-                          <div
-                            key={tile.id}
-                            className="animate-fade-in"
-                            style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
-                          >
-                            <FATile tile={tile} />
-                          </div>
-                        ))
-                      : lane.apps.map((app, i) => (
-                          <div
-                            key={app.id}
-                            className="animate-fade-in"
-                            style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
-                          >
-                            <AppCard app={app} />
-                          </div>
-                        ))}
+                    {lane.apps.map((app, i) => (
+                      <div
+                        key={app.id}
+                        className="animate-fade-in"
+                        style={{ animationDelay: `${i * 0.04}s`, animationFillMode: "backwards" }}
+                      >
+                        <AppCard app={app} />
+                      </div>
+                    ))}
                   </div>
                 </section>
               ))}
