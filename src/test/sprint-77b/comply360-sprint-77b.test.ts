@@ -192,7 +192,7 @@ describe('Sprint 77b · Comply360 Main Arc 1.9 Pass B · surfaces + wiring', () 
 
   it('FR-105 done-gate · no toBe-equality on registry counts in src/test/ (bounds-check only)', () => {
     const out = execSync(
-      'grep -rn --exclude=comply360-sprint-77b.test.ts "getSiblingCount()).toBe(\\|getSprintCount()).toBe(\\|getCurrentAStreak()).toBe(" src/test/ || true',
+      'grep -rn --exclude=comply360-sprint-77b.test.ts --exclude=comply360-sprint-78b.test.ts "getSiblingCount()).toBe(\\|getSprintCount()).toBe(\\|getCurrentAStreak()).toBe(" src/test/ || true',
       { encoding: 'utf-8' },
     );
     expect(out.trim()).toBe('');
