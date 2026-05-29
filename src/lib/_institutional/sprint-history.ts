@@ -259,11 +259,23 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 78b T-Phase-5.A.1.10-PASS-B · Comply360 Main Arc 1.10 · Pass B (3 surfaces + home tab-shell + 2 mega-menu wirings) · CalendarPage + StatutoryPaymentsPage + TimeMachinePage + HomePage (Welcome default + Time-Machine sub-tab · FR-106 recursive · Option B) · 0 new SIBLINGs · DP-S78-7 widget data-source rewire (no widget file edits) · Main Arc 1.10 COMPLETE
   {
     sprintNumber: 78, code: 'T-Phase-5.A.1.10-PASS-B', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'd5db78986311ed587c47a343790a0b704fa9ad98', loc: 1100,
+    headSha: 'ebf46f68328143e16e725018c4ab3c89f5d110c7', predecessorSha: 'd5db78986311ed587c47a343790a0b704fa9ad98', loc: 1100,
     newSiblings: [],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 79a T-Phase-5.A.1.11-PASS-A · Comply360 Main Arc 1.11 · Pass A (engines + redirect-target stubs) · 3 NEW SIBLINGs (challan-vault · licenses-registry · esg-aggregator) + 9-11 redirect-target stub pages · FK-CAP-7 reads · 8 new EximX/MaintainPro/SiteX engines joining FR-19 boundary as read-sources · target 32-streak ⭐
+  {
+    sprintNumber: 79, code: 'T-Phase-5.A.1.11-PASS-A', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'ebf46f68328143e16e725018c4ab3c89f5d110c7', loc: 1250,
+    newSiblings: [
+      'comply360-challan-vault-engine',
+      'comply360-licenses-registry-engine',
+      'comply360-esg-aggregator-engine',
+    ],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
+
 
 
 
