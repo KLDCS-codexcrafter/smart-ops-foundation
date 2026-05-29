@@ -238,7 +238,7 @@ export const SPRINTS: SprintEntry[] = [
   },
   // 🆕 Sprint 77b T-Phase-5.A.1.9-PASS-B · Comply360 Main Arc 1.9 · Pass B (5 surfaces + 2 mega-menus LIVE: companies/esg + exim 4th tab Foreign Tax sub-shell + 2 QualiCheck deep-links · Schedule M · CARO Extended · CFR Part 11 deep-link · BRSR Comprehensive · Foreign Tax 5-form) · 0 new SIBLINGs (pages not SIBLINGs) · target 29-streak NEW RECORD ⭐
   {
-    sprintNumber: 77, code: 'T-Phase-5.A.1.9-PASS-B', composite: false, grade: 'A first-pass-clean',
+    sprintNumber: 77, code: 'T-Phase-5.A.1.9-PASS-B', composite: false, grade: 'A with adaptations',
     headSha: null, predecessorSha: 'baffe8f741441f8bf396bc448e0530eb433fc4ff', loc: 1200,
     newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
