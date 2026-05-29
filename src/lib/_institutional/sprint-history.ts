@@ -298,8 +298,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 80a T-Phase-5.B.2.1-PASS-A · Comply360 Floor 2 Audit-Suite OPENS · Foundation Engines Part 1 · 2 NEW SIBLINGs (audit-framework · auditor-workspace) · OOB-6/10/12 integrated · target 36-streak ⭐
   {
     sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-A', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '75cb0b7636d5d5825e8b5a59e7fb12810f061b3e', loc: 1200,
+    headSha: 'd72f3d946a885aa77b9e4655fe7e31191d4c3fd6', predecessorSha: '75cb0b7636d5d5825e8b5a59e7fb12810f061b3e', loc: 1200,
     newSiblings: ['comply360-audit-framework-engine', 'comply360-auditor-workspace-engine'],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 80b T-Phase-5.B.2.1-PASS-B · Comply360 Floor 2 Audit-Suite · Pass B · 2 NEW SIBLINGs (audit-analytics · payroll-audit) · 18 Tally-equivalent procedures + 27 payroll-audit modules across 5 Layers · target 37-streak ⭐
+  {
+    sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-B', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'd72f3d946a885aa77b9e4655fe7e31191d4c3fd6', loc: 1450,
+    newSiblings: ['comply360-audit-analytics-engine', 'comply360-payroll-audit-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
