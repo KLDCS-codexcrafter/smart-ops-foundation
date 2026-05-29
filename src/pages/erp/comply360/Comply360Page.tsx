@@ -11,6 +11,9 @@ import { comply360ShellConfig } from '@/apps/erp/configs/comply360-shell-config'
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { ComingSoonPanel } from '@/components/fincore/ComingSoonPanel';
 import { Comply360Welcome } from './Comply360Welcome';
+import HomePage from './home/HomePage';
+import CalendarPage from './calendar/CalendarPage';
+import StatutoryPaymentsPage from './payments/StatutoryPaymentsPage';
 import TaxGstPage from './tax-gst/TaxGstPage';
 import TdsPage from './tds/TdsPage';
 import EInvoiceEWayPage from './exim/EInvoiceEWayPage';
@@ -30,7 +33,11 @@ export default function Comply360Page(): JSX.Element {
     switch (activeModule) {
       case 'welcome':
       case 'home':
-        return <Comply360Welcome onNavigate={setActiveModule} />;
+        return <HomePage onNavigate={setActiveModule} />;
+      case 'calendar':
+        return <CalendarPage />;
+      case 'payments':
+        return <StatutoryPaymentsPage />;
       case 'tax-gst':
         return <TaxGstPage />;
       case 'tds':
