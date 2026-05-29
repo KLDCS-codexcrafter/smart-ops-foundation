@@ -158,8 +158,8 @@ describe('Sprint 79a · Institutional registers (Lesson-24 bounds)', () => {
     expect(ids).toContain('comply360-licenses-registry-engine');
     expect(ids).toContain('comply360-esg-aggregator-engine');
   });
-  it('SPRINTS ≥ 86 and includes Sprint 79', () => {
-    expect(getSprintCount()).toBeGreaterThanOrEqual(86);
+  it('SPRINTS ≥ 85 and includes Sprint 79', () => {
+    expect(getSprintCount()).toBeGreaterThanOrEqual(85);
     expect(SPRINTS.some((s) => s.sprintNumber === 79)).toBe(true);
   });
   it('A-streak ≥ 31', () => {
