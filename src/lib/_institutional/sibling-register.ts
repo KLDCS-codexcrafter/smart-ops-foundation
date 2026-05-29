@@ -272,6 +272,11 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-calendar-engine', name: 'Comply360 Calendar (Q11 · 80+ statutory dates · pluggable obligation sources)', path: 'src/lib/comply360-calendar-engine.ts', sprintAdded: 78, compositeAdded: 78, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-time-machine-engine', name: 'Comply360 Time Machine (Q16 · forensic replay · entity-agnostic)', path: 'src/lib/comply360-time-machine-engine.ts', sprintAdded: 78, compositeAdded: 78, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-statutory-payments-engine', name: 'Comply360 Statutory Payments Hub (PMT · register + auto-compute + challan-prep stub)', path: 'src/lib/comply360-statutory-payments-engine.ts', sprintAdded: 78, compositeAdded: 78, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 79a T-Phase-5.A.1.11-PASS-A · Comply360 Main Arc 1.11 · Pass A · 3 NEW SIBLINGs (challan-vault · licenses-registry · esg-aggregator) · FK-CAP-7 reads · Floor-1 finale
+  { id: 'comply360-challan-vault-engine', name: 'Comply360 Challan Vault Engine (Q24 · stores executed challans · OCR stub · reconciliation)', path: 'src/lib/comply360-challan-vault-engine.ts', sprintAdded: 79, compositeAdded: 79, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-licenses-registry-engine', name: 'Comply360 Licenses Registry Engine (Q25 · 13 license types · reads 6 EximX masters)', path: 'src/lib/comply360-licenses-registry-engine.ts', sprintAdded: 79, compositeAdded: 79, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-esg-aggregator-engine', name: 'Comply360 ESG/Safety Aggregator Engine (Q26 · reads MaintainPro + SiteX + BRSR)', path: 'src/lib/comply360-esg-aggregator-engine.ts', sprintAdded: 79, compositeAdded: 79, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+
 ];
 
 
