@@ -81,7 +81,8 @@ describe('Sprint 79d · Pass Hygiene · FA-tile location fix + 2 bundled hygiene
   });
 
   it('Hygiene · GSTR10 PLACEHOLDER replaced with realistic value', () => {
-    const out = execSync("grep -rn 'CNCL/PLACEHOLDER' src/ || true", { encoding: 'utf-8' });
+    const needle = 'CNCL/' + 'PLACE' + 'HOLDER';
+    const out = execSync(`grep -rln '${needle}' src/ --exclude='comply360-sprint-79d.test.ts' || true`, { encoding: 'utf-8' });
     expect(out.trim()).toBe('');
   });
   it("Hygiene · S74b grade-label flipped to 'A with adaptations'", () => {
