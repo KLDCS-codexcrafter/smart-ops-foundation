@@ -10,7 +10,6 @@ import { Shell } from '@/shell';
 import { comply360ShellConfig } from '@/apps/erp/configs/comply360-shell-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { ComingSoonPanel } from '@/components/fincore/ComingSoonPanel';
-import { Comply360Welcome } from './Comply360Welcome';
 import HomePage from './home/HomePage';
 import CalendarPage from './calendar/CalendarPage';
 import StatutoryPaymentsPage from './payments/StatutoryPaymentsPage';
