@@ -6,15 +6,16 @@
 import { describe, it, expect } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'child_process';
 import { SPRINTS, getCurrentAStreak } from '@/lib/_institutional/sprint-history';
 
 const read = (rel: string) => fs.readFileSync(path.join(process.cwd(), rel), 'utf-8');
 
 describe('Sprint 77b · Comply360 Main Arc 1.9 Pass B · surfaces + wiring', () => {
-  it('SPRINTS contains Sprint 77b entry (A first-pass-clean, predecessor baffe8f7)', () => {
+  it('SPRINTS contains Sprint 77b entry (A with adaptations, predecessor baffe8f7)', () => {
     const s = SPRINTS.find(x => x.code === 'T-Phase-5.A.1.9-PASS-B');
     expect(s).toBeDefined();
-    expect(s?.grade).toBe('A first-pass-clean');
+    expect(s?.grade).toBe('A with adaptations');
     expect(s?.predecessorSha).toBe('baffe8f741441f8bf396bc448e0530eb433fc4ff');
     expect(s?.newSiblings.length).toBe(0); // pages aren't SIBLINGs
   });
@@ -190,7 +191,6 @@ describe('Sprint 77b · Comply360 Main Arc 1.9 Pass B · surfaces + wiring', () 
   });
 
   it('FR-105 done-gate · no toBe-equality on registry counts in src/test/ (bounds-check only)', () => {
-    const { execSync } = require('child_process') as typeof import('child_process');
     const out = execSync(
       'grep -rn --exclude=comply360-sprint-77b.test.ts "getSiblingCount()).toBe(\\|getSprintCount()).toBe(\\|getCurrentAStreak()).toBe(" src/test/ || true',
       { encoding: 'utf-8' },
