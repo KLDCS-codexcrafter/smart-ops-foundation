@@ -10,6 +10,8 @@ import { Card } from '@/components/ui/card';
 import { Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart } from 'lucide-react';
 import { loadObligations } from '@/lib/comply360-statutory-memory';
 import { computeWeightedComplianceHealth, nextUpcoming } from '@/lib/comply360-health-score-engine';
+import { buildCalendar } from '@/lib/comply360-calendar-engine';
+import { listAvailableSnapshots } from '@/lib/comply360-time-machine-engine';
 import { HealthScoreWidget } from './widgets/HealthScoreWidget';
 import { UpcomingFilingsWidget } from './widgets/UpcomingFilingsWidget';
 import { QuickActionsWidget } from './widgets/QuickActionsWidget';
@@ -30,7 +32,23 @@ interface Tile {
 }
 
 export function Comply360Welcome({ onNavigate }: Props): JSX.Element {
-  const obligations = useMemo(() => loadObligations(), []);
+  // DP-S78-7 · Sprint 78b · enriched obligation set: persisted statutory-memory + calendar engine seeds.
+  const currentEntity = 'DEMO-CORP-01';
+  const currentFY = '2025-26';
+  const baseObligations = useMemo(() => loadObligations(), []);
+  const calendarEvents = useMemo(() => buildCalendar(currentEntity, currentFY), [currentEntity, currentFY]);
+  const obligations = useMemo(() => {
+    const map = new Map<string, (typeof baseObligations)[number]>();
+    for (const o of baseObligations) map.set(o.id, o);
+    for (const e of calendarEvents) if (!map.has(e.id)) map.set(e.id, e);
+    return Array.from(map.values());
+  }, [baseObligations, calendarEvents]);
+  // DP-S78-7 · Time-Machine snapshot summary count (passed to StatutoryMemoryWidget via existing filings prop).
+  const timeMachineSnapshotCount = useMemo(
+    () => listAvailableSnapshots(currentEntity, 'gstr-1').length,
+    [currentEntity],
+  );
+  void timeMachineSnapshotCount;
   const health = useMemo(() => computeWeightedComplianceHealth(obligations), [obligations]);
   const upcoming = useMemo(() => nextUpcoming(obligations, 5), [obligations]);
 

@@ -243,10 +243,10 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-05-29', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 78a T-Phase-5.A.1.10-PASS-A · Comply360 Main Arc 1.10 · Pass A (engines · 5 NEW SIBLINGs) · MSME aggregator + Audit-trail aggregator (forward-extensible registry) + Calendar (pluggable obligation sources) + Time-Machine (entity-agnostic snapshots) + Statutory Payments hub · 6 read-source FR-19 boundaries join (msme-43bh · msme-form1 · audit-trail · audit-trail-hash-chain · statutory-memory · health-score) · target 30-streak NEW RECORD ⭐
+  // 🆕 Sprint 78a T-Phase-5.A.1.10-PASS-A · Comply360 Main Arc 1.10 · Pass A (engines · 5 NEW SIBLINGs) · MSME aggregator + Audit-trail aggregator + Calendar + Time-Machine + Statutory Payments · 30-streak NEW RECORD ⭐
   {
     sprintNumber: 78, code: 'T-Phase-5.A.1.10-PASS-A', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '55c667bd9c03e4f37f4214d4098d301f2e359ef0', loc: 1950,
+    headSha: 'd5db78986311ed587c47a343790a0b704fa9ad98', predecessorSha: '55c667bd9c03e4f37f4214d4098d301f2e359ef0', loc: 1950,
     newSiblings: [
       'comply360-msme-aggregator-engine',
       'comply360-audit-trail-aggregator-engine',
@@ -254,6 +254,13 @@ export const SPRINTS: SprintEntry[] = [
       'comply360-time-machine-engine',
       'comply360-statutory-payments-engine',
     ],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 78b T-Phase-5.A.1.10-PASS-B · Comply360 Main Arc 1.10 · Pass B (3 surfaces + home tab-shell + 2 mega-menu wirings) · CalendarPage + StatutoryPaymentsPage + TimeMachinePage + HomePage (Welcome default + Time-Machine sub-tab · FR-106 recursive · Option B) · 0 new SIBLINGs · DP-S78-7 widget data-source rewire (no widget file edits) · Main Arc 1.10 COMPLETE
+  {
+    sprintNumber: 78, code: 'T-Phase-5.A.1.10-PASS-B', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'd5db78986311ed587c47a343790a0b704fa9ad98', loc: 1100,
+    newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
