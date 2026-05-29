@@ -84,6 +84,9 @@ export function aggregateESGSafety(entity_code: string, fy: string): ESGSafetyAg
   const water_kl = equipment.length * 85;
   const waste_t = Number((equipment.length * 0.42).toFixed(2));
 
+  // Safety surface counts · derived from active-site count (FK-CAP-7 read · S81/82
+  // will swap to authoritative PTW/JSA/Toolbox/Incidents engines when SiteX
+  // ships those storage layers · today getSiteContext exposes activity only).
   let ptw_open = 0;
   let ptw_closed = 0;
   let jsa_count = 0;
@@ -91,14 +94,15 @@ export function aggregateESGSafety(entity_code: string, fy: string): ESGSafetyAg
   let incidents_count = 0;
   for (const site of sites) {
     const ctx = getSiteContext(entity_code, site.id);
-    if (ctx) {
-      ptw_open += ctx.openPTWs ?? 0;
-      ptw_closed += ctx.closedPTWs ?? 0;
-      jsa_count += ctx.jsaCount ?? 0;
-      toolbox_count += ctx.toolboxCount ?? 0;
-      incidents_count += ctx.incidentsCount ?? 0;
+    if (ctx.isActive) {
+      ptw_open += 2;
+      ptw_closed += 8;
+      jsa_count += 4;
+      toolbox_count += 12;
+      incidents_count += 1;
     }
   }
+
 
   // LTIFR realistic for Indian discrete-manufacturing SME baseline.
   const ltifr = sites.length > 0 ? Number((incidents_count * 0.7 / sites.length).toFixed(2)) : 0;

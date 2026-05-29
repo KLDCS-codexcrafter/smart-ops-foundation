@@ -100,33 +100,33 @@ export function classifyExpiry(license: LicenseRecord, now: Date = new Date()): 
 export function aggregateLicenses(entity_code: string): LicenseRegistryView {
   const records: LicenseRecord[] = [];
 
-  // IEC (EximX)
-  for (const iec of listIECs(entity_code)) {
+  // IEC (EximX) · scope by entity_id
+  for (const iec of listIECs(entity_code).filter((i) => i.entity_id === entity_code)) {
     const bucket = classifyIECValidity(iec);
     records.push({
       id: `LIC-IEC-${iec.id}`,
       entity_code,
       license_type: 'iec',
-      license_number: iec.iec_number ?? iec.id,
-      issued_date: iec.issued_on ?? '',
-      expiry_date: iec.valid_until ?? '',
+      license_number: iec.iec_number,
+      issued_date: iec.issue_date,
+      expiry_date: iec.validity,
       status: bucket === 'valid' ? 'active' : bucket === 'expiring-90d' ? 'expiring-90d' : 'expired',
       issuing_authority: 'DGFT',
     });
   }
 
-  // LUT (EximX)
-  for (const lut of listLUTs(entity_code)) {
+  // LUT (EximX) · scope by entity_id
+  for (const lut of listLUTs(entity_code).filter((l) => l.entity_id === entity_code)) {
     const bucket = classifyLUTExpiry(lut);
     records.push({
       id: `LIC-LUT-${lut.id}`,
       entity_code,
       license_type: 'lut',
-      license_number: lut.arn ?? lut.id,
-      issued_date: lut.filed_on ?? '',
-      expiry_date: lut.valid_until ?? '',
+      license_number: lut.lut_number,
+      issued_date: lut.validity_from,
+      expiry_date: lut.validity_to,
       status: bucket === 'expired' ? 'expired' : bucket === 'expiring' || bucket === 'renewal-due' ? 'expiring-90d' : 'active',
-      issuing_authority: 'GSTN',
+      issuing_authority: lut.authority,
     });
   }
 
@@ -153,16 +153,18 @@ export function aggregateLicenses(entity_code: string): LicenseRegistryView {
   // FTA preferences (EximX)
   for (const pref of loadFTAPreferences(entity_code)) {
     records.push({
-      id: `LIC-FTA-${pref.id ?? pref.fta_code ?? 'unknown'}`,
+      id: `LIC-FTA-${pref.id}`,
       entity_code,
       license_type: 'fta-cert',
-      license_number: pref.coo_number ?? pref.fta_code ?? '',
-      issued_date: pref.issued_on ?? '',
-      expiry_date: pref.valid_until ?? '',
+      license_number: pref.notification_ref,
+      issued_date: pref.effective_from,
+      expiry_date: pref.effective_until ?? '',
       status: 'active',
       issuing_authority: 'DGFT/Issuing Authority',
+      metadata: { agreement: pref.agreement, cth_code: pref.cth_code },
     });
   }
+
 
   // Local-store license types (the 9 non-EximX types)
   records.push(...readLocal(entity_code));
