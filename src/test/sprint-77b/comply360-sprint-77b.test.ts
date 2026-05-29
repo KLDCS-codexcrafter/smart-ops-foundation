@@ -181,6 +181,7 @@ describe('Sprint 77b · Comply360 Main Arc 1.9 Pass B · surfaces + wiring', () 
     expect(tp).toContain('export const MASTER_FILE_REVENUE_THRESHOLD_INR');
     expect(tp).toContain('export const CBCR_PARENT_REVENUE_THRESHOLD_INR');
     expect(tp).toContain('export const EQUALISATION_LEVY_RATE_PCT');
+  });
 
   it('EsgPage shell wires BRSR sub-tab', () => {
     const src = read('src/pages/erp/comply360/esg/EsgPage.tsx');
@@ -203,4 +204,4 @@ describe('Sprint 77b · Comply360 Main Arc 1.9 Pass B · surfaces + wiring', () 
     }
   });
 });
-});
+
