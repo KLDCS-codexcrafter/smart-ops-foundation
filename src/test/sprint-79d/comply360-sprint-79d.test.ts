@@ -4,7 +4,8 @@
 import { describe, it, expect } from 'vitest';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
-import { SPRINTS, getSprintCount, getCurrentAStreak, getSiblingCount } from '@/lib/_institutional/sprint-history';
+import { SPRINTS, getSprintCount, getCurrentAStreak } from '@/lib/_institutional/sprint-history';
+import { getSiblingCount } from '@/lib/_institutional/sibling-register';
 
 describe('Sprint 79d · Pass Hygiene · FA-tile location fix + 2 bundled hygiene items', () => {
   it('Sprint 79d entry exists with code T-Phase-5.A.1.11-HYGIENE-D', () => {
