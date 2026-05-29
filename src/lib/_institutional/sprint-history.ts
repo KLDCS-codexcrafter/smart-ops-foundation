@@ -224,16 +224,23 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-05-28', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 77a T-Phase-5.A.1.9-PASS-A · Comply360 Main Arc 1.9 · Pass A (engines) · 4 NEW SIBLINGs spanning 6 regimes (schedule-m pharma GMP greenfield · brsr-comprehensive reads brsr-fa · caro-extended reads caro-2020 §Y FROZEN · transfer-pricing reads form-3ceb + form-15ca-15cb) · target 28-streak NEW RECORD ⭐
+  // 🆕 Sprint 77a T-Phase-5.A.1.9-PASS-A · Comply360 Main Arc 1.9 · Pass A (engines) · 4 NEW SIBLINGs spanning 6 regimes (schedule-m pharma GMP greenfield · brsr-comprehensive reads brsr-fa · caro-extended reads caro-2020 §Y FROZEN · transfer-pricing reads form-3ceb + form-15ca-15cb) · 28-streak NEW RECORD ⭐
   {
     sprintNumber: 77, code: 'T-Phase-5.A.1.9-PASS-A', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '0ab62e009cfb681ca06e91c7b289387ebf95ee64', loc: 800,
+    headSha: 'baffe8f741441f8bf396bc448e0530eb433fc4ff', predecessorSha: '0ab62e009cfb681ca06e91c7b289387ebf95ee64', loc: 800,
     newSiblings: [
       'comply360-schedule-m-engine',
       'comply360-brsr-comprehensive-engine',
       'comply360-caro-extended-engine',
       'comply360-transfer-pricing-engine',
     ],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 77b T-Phase-5.A.1.9-PASS-B · Comply360 Main Arc 1.9 · Pass B (5 surfaces + 2 mega-menus LIVE: companies/esg + exim 4th tab Foreign Tax sub-shell + 2 QualiCheck deep-links · Schedule M · CARO Extended · CFR Part 11 deep-link · BRSR Comprehensive · Foreign Tax 5-form) · 0 new SIBLINGs (pages not SIBLINGs) · target 29-streak NEW RECORD ⭐
+  {
+    sprintNumber: 77, code: 'T-Phase-5.A.1.9-PASS-B', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'baffe8f741441f8bf396bc448e0530eb433fc4ff', loc: 1200,
+    newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];

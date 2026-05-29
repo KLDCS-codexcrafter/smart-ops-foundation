@@ -18,6 +18,8 @@ import MSMEForm1Page from './vendor/MSMEForm1Page';
 import Section393Page from './roc/Section393Page';
 import ExternalAuditPage from './external-audit/ExternalAuditPage';
 import LegalNoticesPage from './legal/LegalNoticesPage';
+import CompaniesEntitiesPage from './companies/CompaniesEntitiesPage';
+import EsgPage from './esg/EsgPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -43,6 +45,10 @@ export default function Comply360Page(): JSX.Element {
         return <ExternalAuditPage />;
       case 'legal':
         return <LegalNoticesPage />;
+      case 'companies':
+        return <CompaniesEntitiesPage />;
+      case 'esg':
+        return <EsgPage />;
       // 18 remaining mega-menus · modules light up in later sprints per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;

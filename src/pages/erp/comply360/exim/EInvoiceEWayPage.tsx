@@ -10,8 +10,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import EInvoicePage from './EInvoicePage';
 import EWayBillPage from './EWayBillPage';
 import EWB02Page from './EWB02Page';
+import ForeignTaxPage from './foreign-tax/ForeignTaxPage';
 
-type SubTab = 'einvoice' | 'eway' | 'ewb02';
+type SubTab = 'einvoice' | 'eway' | 'ewb02' | 'foreigntax';
 
 export default function EInvoiceEWayPage(): JSX.Element {
   const [tab, setTab] = useState<SubTab>('einvoice');
@@ -22,10 +23,12 @@ export default function EInvoiceEWayPage(): JSX.Element {
           <TabsTrigger value="einvoice">E-Invoice (IRN)</TabsTrigger>
           <TabsTrigger value="eway">E-Way Bill</TabsTrigger>
           <TabsTrigger value="ewb02">EWB-02 Consolidated</TabsTrigger>
+          <TabsTrigger value="foreigntax">Foreign Tax</TabsTrigger>
         </TabsList>
         <TabsContent value="einvoice"><EInvoicePage /></TabsContent>
         <TabsContent value="eway"><EWayBillPage /></TabsContent>
         <TabsContent value="ewb02"><EWB02Page /></TabsContent>
+        <TabsContent value="foreigntax"><ForeignTaxPage /></TabsContent>
       </Tabs>
     </div>
   );
