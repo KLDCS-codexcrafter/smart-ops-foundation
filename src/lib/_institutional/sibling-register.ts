@@ -276,6 +276,9 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-challan-vault-engine', name: 'Comply360 Challan Vault Engine (Q24 · stores executed challans · OCR stub · reconciliation)', path: 'src/lib/comply360-challan-vault-engine.ts', sprintAdded: 79, compositeAdded: 79, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-licenses-registry-engine', name: 'Comply360 Licenses Registry Engine (Q25 · 13 license types · reads 6 EximX masters)', path: 'src/lib/comply360-licenses-registry-engine.ts', sprintAdded: 79, compositeAdded: 79, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-esg-aggregator-engine', name: 'Comply360 ESG/Safety Aggregator Engine (Q26 · reads MaintainPro + SiteX + BRSR)', path: 'src/lib/comply360-esg-aggregator-engine.ts', sprintAdded: 79, compositeAdded: 79, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 80a T-Phase-5.B.2.1-PASS-A · Comply360 Floor 2 Audit-Suite OPENS · 2 NEW SIBLINGs (audit-framework · auditor-workspace) · OOB-6/10/12 integrated · target 36-streak ⭐
+  { id: 'comply360-audit-framework-engine', name: 'Comply360 Audit Framework (DP-S80-9 · BAP visibility · SA 530 sampling · working papers · findings · FFR · CARO tagging)', path: 'src/lib/comply360-audit-framework-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 14, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-auditor-workspace-engine', name: 'Comply360 Auditor Workspace (OOB-6 · DP-S80-19 · engagement persistence · multi-CA collaboration)', path: 'src/lib/comply360-auditor-workspace-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 7, moatsRealized: [], provenance: 'CONFIRMED' },
 
 ];
 

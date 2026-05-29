@@ -291,8 +291,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 79d T-Phase-5.A.1.11-HYGIENE-D · Comply360 Main Arc 1.11 · Hygiene Pass · FA-tile location fix (cards-only invariant restored) + LedgerPackPage tab-shell promotion (FR-106 10th scenario) + 2 bundled hygiene items · 0 new SIBLINGs · target 35-streak ⭐
   {
     sprintNumber: 79, code: 'T-Phase-5.A.1.11-HYGIENE-D', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'e3a0a7d36e2f3fc33e1062498d2959f49ee31caf', loc: 250,
+    headSha: '75cb0b7636d5d5825e8b5a59e7fb12810f061b3e', predecessorSha: 'e3a0a7d36e2f3fc33e1062498d2959f49ee31caf', loc: 250,
     newSiblings: [],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 80a T-Phase-5.B.2.1-PASS-A · Comply360 Floor 2 Audit-Suite OPENS · Foundation Engines Part 1 · 2 NEW SIBLINGs (audit-framework · auditor-workspace) · OOB-6/10/12 integrated · target 36-streak ⭐
+  {
+    sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-A', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '75cb0b7636d5d5825e8b5a59e7fb12810f061b3e', loc: 1200,
+    newSiblings: ['comply360-audit-framework-engine', 'comply360-auditor-workspace-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
