@@ -689,6 +689,36 @@ const App = () => (
               <Route path="/erp/inventory-hub/item-rates" element={<Navigate to="/erp/main-store-hub/item-rates" replace />} />
               <Route path="/erp/inventory-hub/price-lists" element={<Navigate to="/erp/main-store-hub/price-lists" replace />} />
               <Route path="/erp/inventory-hub/reorder-alerts" element={<Navigate to="/erp/main-store-hub/reorder-alerts" replace />} />
+              {/* Sprint 79c · T-Phase-5.A.1.11-PASS-C · Atomic 29-redirect sweep · card routes → Comply360 native targets · all use replace prop (browser-history correctness · DP-S79-3) · Form3CEB target = actual S77b path (DP-S79-4 Option A) · FA-redirect lock (DP-S79-5) */}
+              <Route path="/erp/fincore/reports/gst/GSTR1" element={<Navigate to="/erp/comply360/tax-gst/gstr-1" replace />} />
+              <Route path="/erp/fincore/reports/gst/GSTR3B" element={<Navigate to="/erp/comply360/tax-gst/gstr-3b" replace />} />
+              <Route path="/erp/fincore/reports/gst/GSTR9" element={<Navigate to="/erp/comply360/tax-gst/gstr-9" replace />} />
+              <Route path="/erp/fincore/reports/gst/GSTR2Register" element={<Navigate to="/erp/comply360/tax-gst/gstr-2b" replace />} />
+              <Route path="/erp/fincore/reports/gst/ITCRegister" element={<Navigate to="/erp/comply360/tax-gst/itc-register" replace />} />
+              <Route path="/erp/fincore/reports/gst/RCMRegister" element={<Navigate to="/erp/comply360/tax-gst/rcm-register" replace />} />
+              <Route path="/erp/fincore/reports/gst/RCMComplianceReport" element={<Navigate to="/erp/comply360/tax-gst/rcm-compliance" replace />} />
+              <Route path="/erp/fincore/reports/gst/Clause44Report" element={<Navigate to="/erp/comply360/tax-gst/clause-44" replace />} />
+              <Route path="/erp/fincore/reports/gst/RecoPanel" element={<Navigate to="/erp/comply360/tax-gst/reconciliation" replace />} />
+              <Route path="/erp/fincore/reports/Form24Q" element={<Navigate to="/erp/comply360/tax-gst/form-24q" replace />} />
+              <Route path="/erp/fincore/reports/Form26Q" element={<Navigate to="/erp/comply360/tax-gst/form-26q" replace />} />
+              <Route path="/erp/fincore/reports/Form27Q" element={<Navigate to="/erp/comply360/tax-gst/form-27q" replace />} />
+              <Route path="/erp/fincore/reports/Form26AS" element={<Navigate to="/erp/comply360/tax-gst/form-26as" replace />} />
+              <Route path="/erp/fincore/reports/Form3CD" element={<Navigate to="/erp/comply360/tax-gst/form-3cd" replace />} />
+              <Route path="/erp/fincore/reports/TDSAdvance" element={<Navigate to="/erp/comply360/tax-gst/tds-advance" replace />} />
+              <Route path="/erp/fincore/reports/TDSAnalyticsReport" element={<Navigate to="/erp/comply360/tax-gst/tds-analytics" replace />} />
+              <Route path="/erp/fincore/reports/AuditDashboard" element={<Navigate to="/erp/comply360/internal-audit/dashboard" replace />} />
+              <Route path="/erp/fincore/reports/AuditTrailReport" element={<Navigate to="/erp/comply360/internal-audit/audit-trail" replace />} />
+              <Route path="/erp/fincore/statutory-fa-pack/CARO20Disclosure" element={<Navigate to="/erp/comply360/companies/caro-2020" replace />} />
+              <Route path="/erp/fincore/statutory-fa-pack/IndAS116ROUSchedule" element={<Navigate to="/erp/comply360/companies/ind-as-116" replace />} />
+              <Route path="/erp/fincore/statutory-fa-pack/MSMECapitalBreaches" element={<Navigate to="/erp/comply360/vendor/msme-breaches" replace />} />
+              <Route path="/erp/fincore/statutory-fa-pack/EPCGStatusReport" element={<Navigate to="/erp/comply360/exim/epcg-status" replace />} />
+              <Route path="/erp/fincore/statutory-fa-pack/FALedgerPackReport" element={<Navigate to="/erp/comply360/fixed-assets/ledger-pack" replace />} />
+              <Route path="/erp/pay-hub/transactions/StatutoryReturns" element={<Navigate to="/erp/comply360/payroll/statutory-returns" replace />} />
+              <Route path="/erp/eximx/compliance/CAROTARRoOMatrix" element={<Navigate to="/erp/comply360/exim/carotar-roo" replace />} />
+              <Route path="/erp/eximx/compliance/EWSDashboard" element={<Navigate to="/erp/comply360/exim/ews-dashboard" replace />} />
+              <Route path="/erp/eximx/compliance/AEOBenefitsDashboard" element={<Navigate to="/erp/comply360/exim/aeo-benefits" replace />} />
+              <Route path="/erp/eximx/compliance/Form3CEBDashboard" element={<Navigate to="/erp/comply360/exim/foreign-tax/form-3ceb" replace />} />
+              <Route path="/erp/vendor-portal/panels/Msme43BhTrackerPanel" element={<Navigate to="/erp/comply360/vendor/msme-43bh-tracker" replace />} />
               <Route path="/erp/command-center" element={<P><CommandCenterPage /></P>} />
               <Route path="/erp/pay-hub" element={<P><PayHubPage /></P>} />
               <Route path="/erp/salesx" element={<P><SalesXPage /></P>} />
