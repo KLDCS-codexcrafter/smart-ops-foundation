@@ -22,6 +22,8 @@ import ExternalAuditPage from './external-audit/ExternalAuditPage';
 import LegalNoticesPage from './legal/LegalNoticesPage';
 import CompaniesEntitiesPage from './companies/CompaniesEntitiesPage';
 import EsgPage from './esg/EsgPage';
+import ChallanVaultPage from './challan-vault/ChallanVaultPage';
+import LicensesPage from './licenses/LicensesPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
