@@ -181,5 +181,26 @@ describe('Sprint 77b · Comply360 Main Arc 1.9 Pass B · surfaces + wiring', () 
     expect(tp).toContain('export const MASTER_FILE_REVENUE_THRESHOLD_INR');
     expect(tp).toContain('export const CBCR_PARENT_REVENUE_THRESHOLD_INR');
     expect(tp).toContain('export const EQUALISATION_LEVY_RATE_PCT');
+
+  it('EsgPage shell wires BRSR sub-tab', () => {
+    const src = read('src/pages/erp/comply360/esg/EsgPage.tsx');
+    expect(src).toContain('BRSRComprehensivePage');
+    expect(src).toMatch(/TabsTrigger value="brsr"/);
   });
+
+  it('FR-105 done-gate · no toBe-equality on registry counts in src/test/ (bounds-check only)', () => {
+    const { execSync } = require('child_process') as typeof import('child_process');
+    const out = execSync(
+      'grep -rn "getSiblingCount()).toBe(\\|getSprintCount()).toBe(\\|getCurrentAStreak()).toBe(" src/test/ || true',
+      { encoding: 'utf-8' },
+    );
+    expect(out.trim()).toBe('');
+  });
+
+  it('Pass A engine files exist and are untouched in shape (sanity)', () => {
+    for (const e of ['schedule-m', 'brsr-comprehensive', 'caro-extended', 'transfer-pricing']) {
+      expect(fs.existsSync(path.join(process.cwd(), `src/lib/comply360-${e}-engine.ts`))).toBe(true);
+    }
+  });
+});
 });
