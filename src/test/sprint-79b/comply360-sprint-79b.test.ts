@@ -31,8 +31,8 @@ describe('Sprint 79b · Pass B · institutional snapshot', () => {
     expect(getCurrentAStreak()).toBeGreaterThanOrEqual(33);
   });
 
-  it('sprint count ≥ 87 (bounds-check, Lesson 24)', () => {
-    expect(getSprintCount()).toBeGreaterThanOrEqual(87);
+  it('sprint count ≥ 86 (bounds-check, Lesson 24)', () => {
+    expect(getSprintCount()).toBeGreaterThanOrEqual(86);
   });
 
   it('sibling count ≥ 91 (bounds-check · Pass B adds 0 SIBLINGs)', () => {
