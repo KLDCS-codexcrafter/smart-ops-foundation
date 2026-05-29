@@ -22,6 +22,8 @@ import ExternalAuditPage from './external-audit/ExternalAuditPage';
 import LegalNoticesPage from './legal/LegalNoticesPage';
 import CompaniesEntitiesPage from './companies/CompaniesEntitiesPage';
 import EsgPage from './esg/EsgPage';
+import ChallanVaultPage from './challan-vault/ChallanVaultPage';
+import LicensesPage from './licenses/LicensesPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -55,6 +57,10 @@ export default function Comply360Page(): JSX.Element {
         return <CompaniesEntitiesPage />;
       case 'esg':
         return <EsgPage />;
+      case 'challan-vault':
+        return <ChallanVaultPage />;
+      case 'licenses':
+        return <LicensesPage />;
       // 18 remaining mega-menus · modules light up in later sprints per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;
