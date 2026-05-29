@@ -98,6 +98,14 @@ export default function ScheduleMPage(): JSX.Element {
           >
             <ExternalLink className="h-4 w-4 mr-1" /> Open in QualiCheck
           </Button>
+          {/* Sprint 79c · Pass C · CORR-5 deep-link button · operational dashboard stays in QualiCheck */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => { window.location.href = '/erp/qualicheck/reports/ScheduleMComplianceDashboard'; }}
+          >
+            <ExternalLink className="h-4 w-4 mr-1" /> View Detailed Audit Trail
+          </Button>
         </div>
       </div>
 

@@ -41,13 +41,24 @@ export default function CFRPart11DeeplinkPage(): JSX.Element {
               <Badge variant="secondary"><Database className="h-3 w-3 mr-1" />Audit trail</Badge>
             </div>
           </div>
-          <Button
-            size="lg"
-            onClick={() => navigate('/erp/qualicheck?module=qc-r-cfr-part-11-audit-trail')}
-          >
-            <ExternalLink className="h-4 w-4 mr-2" />
-            Open Full Audit Trail in QualiCheck
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              size="lg"
+              onClick={() => navigate('/erp/qualicheck?module=qc-r-cfr-part-11-audit-trail')}
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Open Full Audit Trail in QualiCheck
+            </Button>
+            {/* Sprint 79c · Pass C · CORR-5 deep-link button · operational viewer stays in QualiCheck */}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => { window.location.href = '/erp/qualicheck/reports/CFRPart11AuditTrailViewer'; }}
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              View Detailed Audit Trail
+            </Button>
+          </div>
         </div>
       </Card>
 

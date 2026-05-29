@@ -277,7 +277,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 79b T-Phase-5.A.1.11-PASS-B · Comply360 Main Arc 1.11 · Pass B (3 main surfaces + 2 router cases + EsgPage 3rd tab · FR-106 9th scenario) · 0 new SIBLINGs · target 33-streak ⭐
   {
     sprintNumber: 79, code: 'T-Phase-5.A.1.11-PASS-B', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '99a163a8c4fbfb966fd651d5afbc88f381a6a2ab', loc: 1400,
+    headSha: 'bf1eb97713eb5cfe5a87fecc302673df06b5bc1b', predecessorSha: '99a163a8c4fbfb966fd651d5afbc88f381a6a2ab', loc: 1400,
+    newSiblings: [],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 79c T-Phase-5.A.1.11-PASS-C · Comply360 Main Arc 1.11 · Pass C · ATOMIC 29-redirect sweep + 2 deep-links + Lesson 29 cascade · FLOOR 1 FINALE · 0 new SIBLINGs · target 34-streak ⭐
+  {
+    sprintNumber: 79, code: 'T-Phase-5.A.1.11-PASS-C', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'bf1eb97713eb5cfe5a87fecc302673df06b5bc1b', loc: 800,
     newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
