@@ -38,7 +38,7 @@ describe('Sprint 79b · Pass B · institutional snapshot', () => {
   it('sibling count ≥ 91 (bounds-check · Pass B adds 0 SIBLINGs)', () => {
     expect(getSiblingCount()).toBeGreaterThanOrEqual(91);
     // 3 S79a engines remain registered · not duplicated
-    expect(SIBLINGS.filter((s) => s === 'comply360-challan-vault-engine').length).toBe(1);
+    expect(SIBLINGS.filter((s) => s.id === 'comply360-challan-vault-engine').length).toBe(1);
   });
 });
 
