@@ -266,6 +266,12 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-brsr-comprehensive-engine', name: 'Comply360 BRSR Comprehensive (9-Principle) Engine', path: 'src/lib/comply360-brsr-comprehensive-engine.ts', sprintAdded: 77, compositeAdded: 77, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-caro-extended-engine', name: 'Comply360 CARO Extended (Paragraph 3 ii-xxi) Engine', path: 'src/lib/comply360-caro-extended-engine.ts', sprintAdded: 77, compositeAdded: 77, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-transfer-pricing-engine', name: 'Comply360 Transfer Pricing (Master File + CbCR + Equalisation Levy) Engine', path: 'src/lib/comply360-transfer-pricing-engine.ts', sprintAdded: 77, compositeAdded: 77, functionCount: 6, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 78a T-Phase-5.A.1.10-PASS-A · Comply360 Main Arc 1.10 · Pass A (5 NEW · forward-extensible Floor 2-4 APIs)
+  { id: 'comply360-msme-aggregator-engine', name: 'Comply360 MSME Aggregator (Q9 · 43Bh + Form 1 + OOB-8 ApprovalRisk)', path: 'src/lib/comply360-msme-aggregator-engine.ts', sprintAdded: 78, compositeAdded: 78, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-audit-trail-aggregator-engine', name: 'Comply360 Audit Trail Aggregator (Q10 · registry · entity-agnostic snapshots)', path: 'src/lib/comply360-audit-trail-aggregator-engine.ts', sprintAdded: 78, compositeAdded: 78, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-calendar-engine', name: 'Comply360 Calendar (Q11 · 80+ statutory dates · pluggable obligation sources)', path: 'src/lib/comply360-calendar-engine.ts', sprintAdded: 78, compositeAdded: 78, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-time-machine-engine', name: 'Comply360 Time Machine (Q16 · forensic replay · entity-agnostic)', path: 'src/lib/comply360-time-machine-engine.ts', sprintAdded: 78, compositeAdded: 78, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-statutory-payments-engine', name: 'Comply360 Statutory Payments Hub (PMT · register + auto-compute + challan-prep stub)', path: 'src/lib/comply360-statutory-payments-engine.ts', sprintAdded: 78, compositeAdded: 78, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 

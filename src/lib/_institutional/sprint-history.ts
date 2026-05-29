@@ -236,14 +236,28 @@ export const SPRINTS: SprintEntry[] = [
     ],
     bankDate: '2026-05-29', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 77b T-Phase-5.A.1.9-PASS-B · Comply360 Main Arc 1.9 · Pass B (5 surfaces + 2 mega-menus LIVE: companies/esg + exim 4th tab Foreign Tax sub-shell + 2 QualiCheck deep-links · Schedule M · CARO Extended · CFR Part 11 deep-link · BRSR Comprehensive · Foreign Tax 5-form) · 0 new SIBLINGs (pages not SIBLINGs) · target 29-streak NEW RECORD ⭐
+  // 🆕 Sprint 77b T-Phase-5.A.1.9-PASS-B · Comply360 Main Arc 1.9 · Pass B (5 surfaces + 2 mega-menus LIVE: companies/esg + exim 4th tab Foreign Tax sub-shell + 2 QualiCheck deep-links · Schedule M · CARO Extended · CFR Part 11 deep-link · BRSR Comprehensive · Foreign Tax 5-form) · 0 new SIBLINGs (pages not SIBLINGs) · 29-streak ⭐
   {
     sprintNumber: 77, code: 'T-Phase-5.A.1.9-PASS-B', composite: false, grade: 'A with adaptations',
-    headSha: null, predecessorSha: 'baffe8f741441f8bf396bc448e0530eb433fc4ff', loc: 1200,
+    headSha: '55c667bd9c03e4f37f4214d4098d301f2e359ef0', predecessorSha: 'baffe8f741441f8bf396bc448e0530eb433fc4ff', loc: 1200,
     newSiblings: [],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 78a T-Phase-5.A.1.10-PASS-A · Comply360 Main Arc 1.10 · Pass A (engines · 5 NEW SIBLINGs) · MSME aggregator + Audit-trail aggregator (forward-extensible registry) + Calendar (pluggable obligation sources) + Time-Machine (entity-agnostic snapshots) + Statutory Payments hub · 6 read-source FR-19 boundaries join (msme-43bh · msme-form1 · audit-trail · audit-trail-hash-chain · statutory-memory · health-score) · target 30-streak NEW RECORD ⭐
+  {
+    sprintNumber: 78, code: 'T-Phase-5.A.1.10-PASS-A', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '55c667bd9c03e4f37f4214d4098d301f2e359ef0', loc: 1950,
+    newSiblings: [
+      'comply360-msme-aggregator-engine',
+      'comply360-audit-trail-aggregator-engine',
+      'comply360-calendar-engine',
+      'comply360-time-machine-engine',
+      'comply360-statutory-payments-engine',
+    ],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
+
 
 
 export function getSprintCount(): number {
