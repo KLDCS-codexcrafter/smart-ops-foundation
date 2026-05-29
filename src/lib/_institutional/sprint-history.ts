@@ -266,12 +266,19 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 79a T-Phase-5.A.1.11-PASS-A · Comply360 Main Arc 1.11 · Pass A (engines + redirect-target stubs) · 3 NEW SIBLINGs (challan-vault · licenses-registry · esg-aggregator) + 9-11 redirect-target stub pages · FK-CAP-7 reads · 8 new EximX/MaintainPro/SiteX engines joining FR-19 boundary as read-sources · target 32-streak ⭐
   {
     sprintNumber: 79, code: 'T-Phase-5.A.1.11-PASS-A', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'ebf46f68328143e16e725018c4ab3c89f5d110c7', loc: 1250,
+    headSha: '99a163a8c4fbfb966fd651d5afbc88f381a6a2ab', predecessorSha: 'ebf46f68328143e16e725018c4ab3c89f5d110c7', loc: 1250,
     newSiblings: [
       'comply360-challan-vault-engine',
       'comply360-licenses-registry-engine',
       'comply360-esg-aggregator-engine',
     ],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 79b T-Phase-5.A.1.11-PASS-B · Comply360 Main Arc 1.11 · Pass B (3 main surfaces + 2 router cases + EsgPage 3rd tab · FR-106 9th scenario) · 0 new SIBLINGs · target 33-streak ⭐
+  {
+    sprintNumber: 79.5, code: 'T-Phase-5.A.1.11-PASS-B', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '99a163a8c4fbfb966fd651d5afbc88f381a6a2ab', loc: 1400,
+    newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
