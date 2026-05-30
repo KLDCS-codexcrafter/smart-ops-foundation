@@ -56,7 +56,7 @@ describe('Sprint 80e · Audit Replay Engine (OOB-3)', () => {
       entity_type: 'voucher', entity_id: 'V-T-001',
       entity_code: 'OPERIX-DEMO', initiated_by_bap: 'mr-b-auditor-1',
     });
-    expect(s.session_id).toBeTruthy();
+    expect(s.id).toBeTruthy();
     expect(s.total_frames).toBe(s.frames.length);
     expect(s.frames.every((f) => typeof f.timestamp === 'string')).toBe(true);
   });
@@ -67,7 +67,7 @@ describe('Sprint 80e · Audit Replay Engine (OOB-3)', () => {
     });
     const list = listReplaySessions({ entity_type: 'voucher', entity_id: 'V-T-002' });
     expect(list.length).toBeGreaterThan(0);
-    expect(getReplaySession(s.session_id)).not.toBeNull();
+    expect(getReplaySession(s.id)).not.toBeNull();
   });
   it('computeDownstreamImpact returns a non-negative count', () => {
     const n = computeDownstreamImpact('voucher', 'V-T-001', 'OPERIX-DEMO');
@@ -78,14 +78,14 @@ describe('Sprint 80e · Audit Replay Engine (OOB-3)', () => {
 describe('Sprint 80e · Cross-Card Lineage Engine (OOB-11)', () => {
   it('builds a lineage chain from a finding id', () => {
     const c = buildLineageChain({ finding_id: 'F-T-001', initiated_by_bap: 'mr-b-auditor-1' });
-    expect(c.chain_id).toBeTruthy();
+    expect(c.id).toBeTruthy();
     expect(c.node_count).toBe(c.nodes.length);
     expect(c.termination_reason).toBeTruthy();
   });
   it('lists and retrieves chains by id', () => {
     const c = buildLineageChain({ finding_id: 'F-T-002', initiated_by_bap: 'mr-b-auditor-1' });
     expect(listLineageChains('F-T-002').length).toBeGreaterThan(0);
-    expect(getLineageChain(c.chain_id)).not.toBeNull();
+    expect(getLineageChain(c.id)).not.toBeNull();
   });
   it('findUpstreamReferences returns an array', () => {
     const refs = findUpstreamReferences('finding', 'F-T-001');
