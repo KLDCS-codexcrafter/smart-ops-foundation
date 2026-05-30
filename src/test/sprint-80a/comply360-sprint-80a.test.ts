@@ -61,11 +61,10 @@ describe('Sprint 80a · T-Phase-5.B.2.1-PASS-A · Foundation Engines Part 1', ()
   it('comply360-auditor-workspace-engine.ts exists', () => {
     expect(fs.existsSync('src/lib/comply360-auditor-workspace-engine.ts')).toBe(true);
   });
-  it('S79a payroll/StatutoryReturnsPage stub STILL EXISTS (S80c fills · S80a 0-DIFF)', () => {
+  // Lesson 24: Sprint 80c · adjusted post-DP-S79-2 stub-fill at S80c · stub text correctly removed · S80a's 0-DIFF mandate on this file ended at S80c per canonical stub-fill schedule.
+  it('S79a payroll/StatutoryReturnsPage exists (was stub at S80a · filled at S80c · DP-S79-2 1 of 11 closed)', () => {
     const path = 'src/pages/erp/comply360/payroll/StatutoryReturnsPage.tsx';
     expect(fs.existsSync(path)).toBe(true);
-    const src = fs.readFileSync(path, 'utf-8');
-    expect(src).toContain('Stub · Pass B/C wires surface + redirects.');
   });
 
   // ── READS_FROM canon (v1.22 mandatory) ───────────────────────────────
