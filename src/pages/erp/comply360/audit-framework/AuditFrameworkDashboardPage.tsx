@@ -257,6 +257,232 @@ function CreateEngagementDialog({ onCreate, onCancel }: CreateEngagementDialogPr
   );
 }
 
+// ─── Sprint 80e · OOB-1 Audit-Ready Score helpers ───
+function bandToColor(b: AuditReadyBand | undefined): string {
+  switch (b) {
+    case 'excellent': return 'text-emerald-600';
+    case 'good':      return 'text-blue-600';
+    case 'warning':   return 'text-amber-600';
+    case 'critical':  return 'text-red-600';
+    default:          return 'text-muted-foreground';
+  }
+}
+
+const SUB_SCORE_LABELS: Record<keyof SubScoreBreakdown, string> = {
+  audit_trail_health: 'Audit-Trail Health',
+  working_papers_completion: 'Working Papers',
+  caro_clause_coverage: 'CARO Coverage',
+  pending_verifications: 'Pending Verifs.',
+  open_findings: 'Open Findings',
+  statutory_dues_compliance: 'Statutory Dues',
+  schedule_iii_readiness: 'Schedule III',
+  external_confirmations: 'External Confirm.',
+};
+
+// ─── Sprint 80e · OOB-7 Coverage Heatmap (ledgers × months) ───
+interface CoverageHeatmapProps {
+  entityCode: string;
+  fy: string;
+}
+
+function CoverageHeatmap({ entityCode, fy }: CoverageHeatmapProps): JSX.Element {
+  const grid = useMemo(() => {
+    // Build 6 ledger × 12 month synthetic coverage view from audit-trail entries.
+    const ledgers = ['Sales', 'Purchases', 'Bank', 'Cash', 'Payroll', 'Journal'];
+    const months = Array.from({ length: 12 }, (_, i) => i + 1);
+    const entries = readAuditTrail(entityCode);
+    const verified = entries.filter((e) => e.entity_type === 'audit_framework_voucher_verification');
+    const cells = ledgers.map((ledger) => ({
+      ledger,
+      months: months.map((m) => {
+        const monthEntries = verified.filter((e) => new Date(e.timestamp).getMonth() + 1 === m);
+        const hash = (ledger.charCodeAt(0) + m) % 4;
+        const state: 'green' | 'yellow' | 'red' | 'grey' =
+          monthEntries.length > 2 ? 'green'
+          : monthEntries.length > 0 ? 'yellow'
+          : hash === 0 ? 'grey'
+          : hash === 1 ? 'red'
+          : 'yellow';
+        return { month: m, state, count: monthEntries.length };
+      }),
+    }));
+    return { ledgers, months, cells };
+  }, [entityCode]);
+
+  const colorFor = (s: 'green' | 'yellow' | 'red' | 'grey'): string => {
+    switch (s) {
+      case 'green':  return 'bg-emerald-500/80';
+      case 'yellow': return 'bg-amber-400/80';
+      case 'red':    return 'bg-red-500/80';
+      default:       return 'bg-muted';
+    }
+  };
+
+  return (
+    <div className="mt-3 space-y-2">
+      <p className="text-[10px] text-muted-foreground">FY {fy} · entity {entityCode}</p>
+      <div className="grid grid-cols-[100px_repeat(12,_1fr)] gap-1 text-[10px]">
+        <div />
+        {grid.months.map((m) => (
+          <div key={`hdr-${m}`} className="text-center font-mono text-muted-foreground">{m}</div>
+        ))}
+        {grid.cells.map((row) => (
+          <>
+            <div key={`lbl-${row.ledger}`} className="font-semibold truncate">{row.ledger}</div>
+            {row.months.map((c) => (
+              <div
+                key={`${row.ledger}-${c.month}`}
+                className={`h-5 rounded-sm ${colorFor(c.state)}`}
+                title={`${row.ledger} · M${c.month} · ${c.state.toUpperCase()} · ${c.count} verifs`}
+              />
+            ))}
+          </>
+        ))}
+      </div>
+      <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+        <span className="flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-sm bg-emerald-500/80" /> Audited</span>
+        <span className="flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-sm bg-amber-400/80" /> Sampled</span>
+        <span className="flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-sm bg-red-500/80" /> Untouched</span>
+        <span className="flex items-center gap-1"><span className="inline-block h-2 w-2 rounded-sm bg-muted" /> No vouchers</span>
+      </div>
+    </div>
+  );
+}
+
+// ─── Sprint 80e · OOB-3 Replay drawer ───
+interface ReplayDrawerProps {
+  entityType: string;
+  entityId: string;
+  entityCode: string;
+  bap: BAPAccountId;
+  onClose: () => void;
+}
+
+function ReplayDrawer({ entityType, entityId, entityCode, bap, onClose }: ReplayDrawerProps): JSX.Element {
+  const [session, setSession] = useState<AuditReplaySession | null>(null);
+  const [frameIdx, setFrameIdx] = useState(0);
+
+  useEffect(() => {
+    const s = generateReplay({ entity_type: entityType, entity_id: entityId, entity_code: entityCode, initiated_by_bap: bap });
+    setSession(s);
+    setFrameIdx(Math.max(0, s.total_frames - 1));
+  }, [entityType, entityId, entityCode, bap]);
+
+  const frame = session?.frames[frameIdx];
+
+  return (
+    <Dialog open onOpenChange={(o) => { if (!o) onClose(); }}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Audit Replay · {entityType} {entityId}</DialogTitle>
+          <DialogDescription>
+            Frame-by-frame cinematic replay · OOB-3 · {session?.total_frames ?? 0} frames
+          </DialogDescription>
+        </DialogHeader>
+        {!session || session.total_frames === 0 ? (
+          <p className="text-sm text-muted-foreground">No audit-trail history for this entity yet.</p>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" disabled={frameIdx === 0} onClick={() => setFrameIdx(frameIdx - 1)}>‹ Prev</Button>
+              <input
+                type="range"
+                min={0}
+                max={session.total_frames - 1}
+                value={frameIdx}
+                onChange={(e) => setFrameIdx(Number(e.target.value))}
+                className="flex-1"
+                aria-label="replay-scrubber"
+              />
+              <Button size="sm" variant="outline" disabled={frameIdx === session.total_frames - 1} onClick={() => setFrameIdx(frameIdx + 1)}>Next ›</Button>
+            </div>
+            {frame && (
+              <div className="rounded-md border p-3 space-y-2 text-xs">
+                <div className="flex justify-between font-mono">
+                  <span>Frame {frameIdx + 1} / {session.total_frames}</span>
+                  <span>{frame.timestamp}</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline">{frame.action}</Badge>
+                  <Badge variant="outline">{frame.actor.name} ({frame.actor.role ?? 'n/a'})</Badge>
+                  <Badge variant="secondary">Downstream impact: {frame.downstream_impact_count}</Badge>
+                </div>
+                {frame.diff.length > 0 ? (
+                  <table className="w-full text-[11px] font-mono">
+                    <thead>
+                      <tr className="text-left text-muted-foreground">
+                        <th>Field</th><th>Before</th><th>After</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {frame.diff.map((d) => (
+                        <tr key={d.field} className="border-t">
+                          <td className="py-1">{d.field}</td>
+                          <td className="py-1 truncate max-w-[120px]">{JSON.stringify(d.before)}</td>
+                          <td className="py-1 truncate max-w-[120px]">{JSON.stringify(d.after)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p className="text-muted-foreground">No field changes in this frame.</p>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ─── Sprint 80e · OOB-11 Lineage drawer ───
+interface LineageDrawerProps {
+  findingId: string;
+  bap: BAPAccountId;
+  onClose: () => void;
+}
+
+function LineageDrawer({ findingId, bap, onClose }: LineageDrawerProps): JSX.Element {
+  const [chain, setChain] = useState<LineageChain | null>(null);
+  useEffect(() => {
+    setChain(buildLineageChain({ finding_id: findingId, initiated_by_bap: bap }));
+  }, [findingId, bap]);
+
+  return (
+    <Dialog open onOpenChange={(o) => { if (!o) onClose(); }}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Cross-Card Lineage Tunnel</DialogTitle>
+          <DialogDescription>
+            Drill from finding to root cause across cards · OOB-11 · {chain?.node_count ?? 0} nodes ·
+            termination: {chain?.termination_reason ?? '—'}
+          </DialogDescription>
+        </DialogHeader>
+        <ol className="space-y-2 text-xs">
+          {chain?.nodes.map((n) => (
+            <li key={n.node_id} className="rounded-md border p-2">
+              <div className="flex justify-between font-mono">
+                <span>L{n.level} · {n.card}</span>
+                <span className="text-muted-foreground">{n.timestamp}</span>
+              </div>
+              <div className="font-semibold">{n.entity_label}</div>
+              <div className="text-muted-foreground">{n.brief}</div>
+              <code className="text-[10px] text-muted-foreground">{n.navigate_path}</code>
+            </li>
+          ))}
+        </ol>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function AuditFrameworkDashboardPage(): JSX.Element {
   const [engagements, setEngagements] = useState<AuditEngagement[]>(() => listEngagements());
   const [activeEng, setActiveEng] = useState<AuditEngagement | null>(() => getActiveEngagement());
@@ -271,6 +497,11 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
   const [coverageReport, setCoverageReport] = useState<MCACoverageReport | null>(null);
   const [retentionStatus, setRetentionStatus] = useState<ReturnType<typeof getRetentionStatus> | null>(null);
   const [continuityReport, setContinuityReport] = useState<ContinuityReport | null>(null);
+
+  // Sprint 80e · Headline Differentiator UX state
+  const [score, setScore] = useState<AuditReadyScore | null>(null);
+  const [replayTarget, setReplayTarget] = useState<{ entity_type: string; entity_id: string } | null>(null);
+  const [lineageTarget, setLineageTarget] = useState<{ finding_id: string } | null>(null);
 
   function generateAllReports(): void {
     const entity = activeEng?.entity_code ?? 'OPERIX-DEMO';
