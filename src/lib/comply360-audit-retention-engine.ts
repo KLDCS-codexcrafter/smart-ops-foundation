@@ -87,7 +87,7 @@ export function exportToColdStorage(
 ): { record: ColdStorageExportRecord; blob: Blob } {
   const entries = readAuditTrail(input.entity_code);
   const chain = readChainForEntity(input.entity_code);
-  const chain_head_hash = chain.length > 0 ? (chain[chain.length - 1].hash ?? null) : null;
+  const chain_head_hash = chain.length > 0 ? (chain[chain.length - 1].chain_hash ?? null) : null;
   const exported_at = new Date().toISOString();
   const payload = {
     schema_version: '1.0',
