@@ -291,7 +291,7 @@ function CoverageHeatmap({ entityCode, fy }: CoverageHeatmapProps): JSX.Element 
     const ledgers = ['Sales', 'Purchases', 'Bank', 'Cash', 'Payroll', 'Journal'];
     const months = Array.from({ length: 12 }, (_, i) => i + 1);
     const entries = readAuditTrail(entityCode);
-    const verified = entries.filter((e) => e.entity_type === 'audit_framework_voucher_verification');
+    const verified = entries.filter((e) => (e.entity_type as string) === 'audit_framework_voucher_verification');
     const cells = ledgers.map((ledger) => ({
       ledger,
       months: months.map((m) => {
