@@ -76,6 +76,9 @@ export interface AuditTrailEntry {
 
   /** Source module — for filterability (e.g. 'inventory', 'fincore', 'salesx', 'payhub') */
   source_module: string;
+
+  /** Sprint 80d · MCA Rule 11(g)(c) · Section 128(5) 8-year retention timestamp (ISO) */
+  retention_until?: string;
 }
 
 /** Append-only storage key */
