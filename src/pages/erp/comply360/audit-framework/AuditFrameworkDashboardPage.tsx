@@ -845,6 +845,49 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
         </section>
       )}
 
+      {/* Sprint 80e · OOB-3 Audit Replay + OOB-11 Cross-Card Lineage launchers */}
+      <section className="rounded-lg border bg-muted/40 p-4 space-y-2">
+        <h2 className="font-semibold text-base">Headline Differentiators (S80e)</h2>
+        <p className="text-xs text-muted-foreground">
+          OOB-3 Audit Replay (cinematic frame-by-frame) · OOB-11 Cross-Card Lineage Tunnel
+          (drill from finding to root cause across modules).
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setReplayTarget({ entity_type: 'voucher', entity_id: 'V-DEMO-001' })}
+          >
+            Replay Sample Voucher
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setLineageTarget({ finding_id: 'F-DEMO-001' })}
+          >
+            Trace Sample Finding Lineage
+          </Button>
+        </div>
+      </section>
+
+      {replayTarget && (
+        <ReplayDrawer
+          entityType={replayTarget.entity_type}
+          entityId={replayTarget.entity_id}
+          entityCode={activeEng?.entity_code ?? 'OPERIX-DEMO'}
+          bap={activeBAP}
+          onClose={() => setReplayTarget(null)}
+        />
+      )}
+
+      {lineageTarget && (
+        <LineageDrawer
+          findingId={lineageTarget.finding_id}
+          bap={activeBAP}
+          onClose={() => setLineageTarget(null)}
+        />
+      )}
+
       {showCreate && (
         <CreateEngagementDialog onCreate={handleCreated} onCancel={() => setShowCreate(false)} />
       )}
