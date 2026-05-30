@@ -45,6 +45,21 @@ import {
   type AuditEngagement,
   type EngagementType,
 } from '@/lib/comply360-auditor-workspace-engine';
+import { MCA_RULE_3_1_COMPLIANCE } from '@/lib/audit-trail-engine';
+import {
+  generateCoverageReport,
+  exportCoverageReportJson,
+  type MCACoverageReport,
+} from '@/lib/comply360-mca-coverage-engine';
+import {
+  exportToColdStorage,
+  getRetentionStatus,
+} from '@/lib/comply360-audit-retention-engine';
+import {
+  generateContinuityReport,
+  type ContinuityReport,
+} from '@/lib/comply360-audit-continuity-engine';
+import { verifyChainIntegrity } from '@/lib/audit-trail-hash-chain';
 
 const BAP_OPTIONS: { id: BAPAccountId; label: string }[] = [
   { id: 'mr-a-client', label: 'Mr A · Client' },
@@ -237,6 +252,57 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
   const [showSampling, setShowSampling] = useState(false);
   const [pendingProcedure, setPendingProcedure] = useState<AnalyticsProcedureCode | null>(null);
 
+  // Sprint 80d · MCA Rule 11(g) Self-Verify state
+  const [coverageReport, setCoverageReport] = useState<MCACoverageReport | null>(null);
+  const [retentionStatus, setRetentionStatus] = useState<ReturnType<typeof getRetentionStatus> | null>(null);
+  const [continuityReport, setContinuityReport] = useState<ContinuityReport | null>(null);
+
+  function generateAllReports(): void {
+    const entity = activeEng?.entity_code ?? 'OPERIX-DEMO';
+    const fy = activeEng?.fy ?? 'FY 2025-26';
+    setCoverageReport(generateCoverageReport());
+    setRetentionStatus(getRetentionStatus(entity));
+    setContinuityReport(generateContinuityReport(entity, fy));
+    toast.success('MCA Rule 11(g) self-verify refreshed');
+  }
+
+  function handleExportToColdStorage(): void {
+    const entity = activeEng?.entity_code ?? 'OPERIX-DEMO';
+    const fy = activeEng?.fy ?? 'FY 2025-26';
+    const { record, blob } = exportToColdStorage({
+      entity_code: entity, fy, triggered_by_bap: activeBAP,
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cold-storage-${entity}-${fy.replace(/\s+/g, '_')}-${record.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setRetentionStatus(getRetentionStatus(entity));
+    toast.success(`Exported ${record.entries_count} entries to cold-storage`);
+  }
+
+  async function handleVerifyProof(): Promise<void> {
+    const entity = activeEng?.entity_code ?? 'OPERIX-DEMO';
+    try {
+      const v = await verifyChainIntegrity(entity);
+      toast.success(`Cryptographic proof: ${v.ok ? 'VERIFIED' : 'BROKEN'}`);
+    } catch {
+      toast.error('Verification unavailable');
+    }
+  }
+
+  function handleDownloadCoverage(): void {
+    if (!coverageReport) return;
+    const blob = exportCoverageReportJson(coverageReport);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mca-coverage-${coverageReport.report_id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const hasEngagement = activeEng !== null;
 
   const totalProcedures = ANALYTICS_PROCEDURES.length;
@@ -393,13 +459,37 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
           />
         ))}
 
-        {/* 19th tile · STUB · S80d fills (MCA Rule 11(g) Self-Verify) */}
-        <Card className="border-2 border-dashed opacity-60">
-          <CardHeader className="pb-2"><CardTitle className="text-sm">MCA Rule 11(g) Self-Verify</CardTitle></CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground">
-              S80d fills this tile (Cannot-Disable + Coverage + Retention status)
-            </p>
+        {/* 19th tile · MCA Rule 11(g) Self-Verify · S80d fills (Cannot-Disable + Coverage + Retention + Continuity) */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">MCA Rule 11(g) Self-Verify</CardTitle>
+            <CardDescription className="text-xs">4-question architectural framework</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="space-y-1 text-xs">
+              <div className="flex justify-between">
+                <span>(a) Cannot Disable</span>
+                <span className="font-mono">{MCA_RULE_3_1_COMPLIANCE.cannot_be_disabled ? 'PASS' : 'FAIL'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>(b) Coverage</span>
+                <span className="font-mono">{coverageReport ? `${coverageReport.coverage_percentage.toFixed(1)}%` : '—'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>(c) 8-Year Retention</span>
+                <span className="font-mono">{retentionStatus?.retention_compliant ? 'PASS' : retentionStatus ? 'WARN' : '—'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>(d) Continuity</span>
+                <span className="font-mono">{continuityReport?.operated_throughout_year_verdict ?? '—'}</span>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" onClick={generateAllReports}>Refresh status</Button>
+              {coverageReport && (
+                <Button size="sm" variant="ghost" onClick={handleDownloadCoverage}>Download JSON</Button>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -412,6 +502,33 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
             </p>
           </CardContent>
         </Card>
+      </section>
+
+      {/* Cold-Storage Export section · S80d · MCA Rule 11(g)(c) workflow */}
+      <section className="rounded-lg border bg-muted/40 p-4 space-y-2">
+        <h2 className="font-semibold text-base">MCA Rule 11(g)(c) · 8-Year Cold-Storage Export</h2>
+        <p className="text-xs text-muted-foreground">
+          Quarterly export of audit-trail to encrypted JSON for 8-year retention per Section 128(5).
+        </p>
+        {retentionStatus && (
+          <p className="text-xs">
+            Entries: <span className="font-mono">{retentionStatus.total_entries}</span> ·
+            Oldest: <span className="font-mono">{retentionStatus.oldest_entry_date ?? '—'}</span> ·
+            Exports: <span className="font-mono">{retentionStatus.exports_performed}</span> ·
+            Warnings: <span className="font-mono">{retentionStatus.warnings_pending}</span>
+          </p>
+        )}
+        <div className="flex gap-2 flex-wrap">
+          <Button size="sm" onClick={handleExportToColdStorage}>Export Current FY to Cold-Storage</Button>
+          <Button size="sm" variant="outline" onClick={handleVerifyProof}>
+            Verify Cryptographic Proof (OOB-8)
+          </Button>
+          {coverageReport && (
+            <Badge variant="outline" className="text-[10px]">
+              Cryptographically verifiable · {coverageReport.mca_compliance_verdict}
+            </Badge>
+          )}
+        </div>
       </section>
 
       {recentRuns.length > 0 && (

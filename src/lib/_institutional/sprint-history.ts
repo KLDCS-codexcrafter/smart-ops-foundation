@@ -309,11 +309,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['comply360-audit-analytics-engine', 'comply360-payroll-audit-engine'],
     bankDate: '2026-05-29', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 80c T-Phase-5.B.2.1-PASS-C · Comply360 Floor 2 Audit-Suite · Pass C · Surface-only · AuditFrameworkDashboardPage (18-tile grid + 2 stub) + StatutoryReturnsPage 6-tab fill · DP-S79-2 stub 1 of 11 closed · FR-106 11th scenario · 0 new SIBLINGs · target 38-streak ⭐
+  // 🆕 Sprint 80c T-Phase-5.B.2.1-PASS-C · Cycle-2 hotfix banked · grade B (Lesson 29 cascade · 2 stub-text assertions surgically converted in hotfix · streak resets)
   {
-    sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-C', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'b0550dc9d7bd6cbedb9d1ca32dfcd39fd713480a', loc: 1400,
+    sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-C', composite: false, grade: 'B',
+    headSha: 'e989adb608cc3c19500df8e4e580ced362b2db78', predecessorSha: 'b0550dc9d7bd6cbedb9d1ca32dfcd39fd713480a', loc: 1400,
     newSiblings: [],
+    bankDate: '2026-05-30', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 80d T-Phase-5.B.2.1-PASS-D · Comply360 Floor 2 Audit-Suite · Pass D · MCA Rule 11(g) Hardening · 3 NEW SIBLINGs (mca-coverage · audit-retention · audit-continuity) · DP-S80-24/25/26/27 · OOB-8 + 4 MCA-hardening DPs · target 1-streak (post cycle-2 reset · 37 holds as record)
+  {
+    sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-D', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'e989adb608cc3c19500df8e4e580ced362b2db78', loc: 1400,
+    newSiblings: ['comply360-mca-coverage-engine', 'comply360-audit-retention-engine', 'comply360-audit-continuity-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];

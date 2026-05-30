@@ -39,7 +39,10 @@ export type AuditEntityType =
   | 'material_issue_note' | 'production_confirmation'
   | 'stock_issue' | 'stock_receipt_ack'
   | 'customer_voucher_in' | 'customer_voucher_out'
-  | 'transporter_invoice';
+  | 'transporter_invoice'
+  // Sprint 80d · MCA Rule 11(g) Hardening · 4 new audit entity types
+  | 'mca_coverage_report' | 'audit_retention_export'
+  | 'audit_retention_warning_ack' | 'audit_continuity_report';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
@@ -73,6 +76,9 @@ export interface AuditTrailEntry {
 
   /** Source module — for filterability (e.g. 'inventory', 'fincore', 'salesx', 'payhub') */
   source_module: string;
+
+  /** Sprint 80d · MCA Rule 11(g)(c) · Section 128(5) 8-year retention timestamp (ISO) */
+  retention_until?: string;
 }
 
 /** Append-only storage key */
