@@ -8,4 +8,5 @@ export type Comply360Module =
   | 'home' | 'calendar' | 'companies' | 'tax-gst' | 'tds' | 'payroll' | 'payments'
   | 'challan-vault' | 'roc' | 'fixed-assets' | 'internal-audit' | 'external-audit'
   | 'exim' | 'vendor' | 'licenses' | 'esg' | 'legal' | 'finance-hub'
+  | 'audit-framework'  // NEW · S80c · Statutory Audit Dashboard
   | 'reports' | 'ai-center' | 'docs' | 'integrations' | 'workflow' | 'admin';
