@@ -666,7 +666,7 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
           ) : (
             <div className="space-y-2">
               <div className="flex items-baseline gap-3">
-                <span className={`font-mono text-4xl ${bandToColor(score.band)}`}>{score.composite_score}</span>
+                <span className={`font-mono text-4xl ${bandToColor(score.band)}`}>{score.overall_score}</span>
                 <Badge variant="outline" className={bandToColor(score.band)}>{score.band.toUpperCase()}</Badge>
                 <span className="text-xs text-muted-foreground font-mono">{score.computed_at}</span>
               </div>
