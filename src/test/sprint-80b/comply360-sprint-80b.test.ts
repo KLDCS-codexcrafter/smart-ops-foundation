@@ -77,10 +77,10 @@ describe('Sprint 80b · T-Phase-5.B.2.1-PASS-B · Foundation Engines Part 2', ()
   it('comply360-payroll-audit-engine.ts exists', () => {
     expect(fs.existsSync('src/lib/comply360-payroll-audit-engine.ts')).toBe(true);
   });
-  it('S79a payroll/StatutoryReturnsPage stub STILL EXISTS unchanged', () => {
+  // Lesson 24: Sprint 80c · adjusted post-DP-S79-2 stub-fill at S80c · stub text correctly removed · S80b's 0-DIFF mandate on this file ended at S80c per canonical stub-fill schedule.
+  it('S79a payroll/StatutoryReturnsPage exists (was stub at S80b · filled at S80c · DP-S79-2 1 of 11 closed)', () => {
     const path = 'src/pages/erp/comply360/payroll/StatutoryReturnsPage.tsx';
     expect(fs.existsSync(path)).toBe(true);
-    expect(fs.readFileSync(path, 'utf-8')).toContain('Stub · Pass B/C wires surface + redirects.');
   });
   it('S80a engines still present (0-DIFF anchor)', () => {
     expect(fs.existsSync('src/lib/comply360-audit-framework-engine.ts')).toBe(true);
