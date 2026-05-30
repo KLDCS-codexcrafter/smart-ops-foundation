@@ -305,8 +305,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 80b T-Phase-5.B.2.1-PASS-B · Comply360 Floor 2 Audit-Suite · Pass B · 2 NEW SIBLINGs (audit-analytics · payroll-audit) · 18 Tally-equivalent procedures + 27 payroll-audit modules across 5 Layers · target 37-streak ⭐
   {
     sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-B', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'd72f3d946a885aa77b9e4655fe7e31191d4c3fd6', loc: 1450,
+    headSha: 'b0550dc9d7bd6cbedb9d1ca32dfcd39fd713480a', predecessorSha: 'd72f3d946a885aa77b9e4655fe7e31191d4c3fd6', loc: 1450,
     newSiblings: ['comply360-audit-analytics-engine', 'comply360-payroll-audit-engine'],
+    bankDate: '2026-05-29', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 80c T-Phase-5.B.2.1-PASS-C · Comply360 Floor 2 Audit-Suite · Pass C · Surface-only · AuditFrameworkDashboardPage (18-tile grid + 2 stub) + StatutoryReturnsPage 6-tab fill · DP-S79-2 stub 1 of 11 closed · FR-106 11th scenario · 0 new SIBLINGs · target 38-streak ⭐
+  {
+    sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-C', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'b0550dc9d7bd6cbedb9d1ca32dfcd39fd713480a', loc: 1400,
+    newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
