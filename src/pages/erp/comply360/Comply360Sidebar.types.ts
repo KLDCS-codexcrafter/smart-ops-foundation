@@ -9,4 +9,5 @@ export type Comply360Module =
   | 'challan-vault' | 'roc' | 'fixed-assets' | 'internal-audit' | 'external-audit'
   | 'exim' | 'vendor' | 'licenses' | 'esg' | 'legal' | 'finance-hub'
   | 'audit-framework'  // NEW · S80c · Statutory Audit Dashboard
+  | 'rule-11g'         // NEW · S80f · MCA Rule 11(g) Auditor Report Generator
   | 'reports' | 'ai-center' | 'docs' | 'integrations' | 'workflow' | 'admin';
