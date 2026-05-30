@@ -290,6 +290,9 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-audit-replay-engine', name: 'Comply360 Audit Replay Engine (OOB-3 · cinematic frame-by-frame replay · diffs + downstream impact)', path: 'src/lib/comply360-audit-replay-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-cross-card-lineage-engine', name: 'Comply360 Cross-Card Lineage Engine (OOB-11 · drill from finding to root-cause across modules)', path: 'src/lib/comply360-cross-card-lineage-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-audit-ready-score-engine', name: 'Comply360 Audit-Ready Score Engine (OOB-1 · composite 0-100 across 8 sub-scores · band classification)', path: 'src/lib/comply360-audit-ready-score-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 80f T-Phase-5.B.2.1-PASS-F · Comply360 Floor 2 Audit-Suite FINALE · THE HEADLINE · 2 NEW SIBLINGs (rule-11g-report · nlp-audit-ask-stub) + Rule11gReportPage + AuditorShareLinkPage + OOB-2/4/5/9 + 16 of 16 OOBs · target 3-streak ⭐
+  { id: 'comply360-rule-11g-report-engine', name: 'Comply360 Rule 11(g) Report Engine (THE HEADLINE · auto-generates ICAI 4-question audit-readiness report · aggregates 8 S80 engines · CARO Pre-Flight + Audit Calendar Pre-Pop helpers)', path: 'src/lib/comply360-rule-11g-report-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 7, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-nlp-audit-ask-engine', name: 'Comply360 NLP Audit-Ask Engine (OOB-2 · DP-S80-23 · Phase 5 pattern-match stub · S87 promotes to LLM-driven)', path: 'src/lib/comply360-nlp-audit-ask-engine.ts', sprintAdded: 80, compositeAdded: 80, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
 
 ];
 

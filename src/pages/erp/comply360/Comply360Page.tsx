@@ -27,6 +27,7 @@ import LicensesPage from './licenses/LicensesPage';
 import LedgerPackPage from './fixed-assets/LedgerPackPage';
 import StatutoryReturnsPage from './payroll/StatutoryReturnsPage';
 import AuditFrameworkDashboardPage from './audit-framework/AuditFrameworkDashboardPage';
+import Rule11gReportPage from './rule-11g/Rule11gReportPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -70,6 +71,8 @@ export default function Comply360Page(): JSX.Element {
         return <StatutoryReturnsPage />;
       case 'audit-framework':
         return <AuditFrameworkDashboardPage />;
+      case 'rule-11g':
+        return <Rule11gReportPage />;
       // remaining mega-menus · modules light up in later sprints per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;
