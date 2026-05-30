@@ -26,7 +26,7 @@ import {
 import {
   generateAuditorShareToken,
   verifyAuditorShareToken,
-} from '@/pages/erp/comply360/audit-framework/AuditorShareLinkPage';
+} from '@/pages/erp/comply360/audit-framework/share-token-helpers';
 import type { Comply360Module } from '@/pages/erp/comply360/Comply360Sidebar.types';
 
 const SRC = (p: string): string => path.resolve(__dirname, '../../..', p);
