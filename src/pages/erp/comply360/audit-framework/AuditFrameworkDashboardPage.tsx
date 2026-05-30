@@ -327,8 +327,8 @@ function CoverageHeatmap({ entityCode, fy }: CoverageHeatmapProps): JSX.Element 
           <div key={`hdr-${m}`} className="text-center font-mono text-muted-foreground">{m}</div>
         ))}
         {grid.cells.map((row) => (
-          <>
-            <div key={`lbl-${row.ledger}`} className="font-semibold truncate">{row.ledger}</div>
+          <Fragment key={`row-${row.ledger}`}>
+            <div className="font-semibold truncate">{row.ledger}</div>
             {row.months.map((c) => (
               <div
                 key={`${row.ledger}-${c.month}`}
@@ -336,7 +336,7 @@ function CoverageHeatmap({ entityCode, fy }: CoverageHeatmapProps): JSX.Element 
                 title={`${row.ledger} · M${c.month} · ${c.state.toUpperCase()} · ${c.count} verifs`}
               />
             ))}
-          </>
+          </Fragment>
         ))}
       </div>
       <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
