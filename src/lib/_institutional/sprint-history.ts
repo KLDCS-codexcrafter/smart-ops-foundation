@@ -331,11 +331,24 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['comply360-audit-replay-engine', 'comply360-cross-card-lineage-engine', 'comply360-audit-ready-score-engine'],
     bankDate: '2026-05-30', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 80f T-Phase-5.B.2.1-PASS-F · Comply360 Floor 2 Audit-Suite FINALE · THE HEADLINE · Rule 11(g) Auditor Report Generator + OOB-2/4/5/9 + S80 arc close-summary · 16 of 16 OOBs DELIVERED · target 3-streak ⭐
+  // 🆕 Sprint 80f T-Phase-5.B.2.1-PASS-F · Comply360 Floor 2 Audit-Suite FINALE · THE HEADLINE · Rule 11(g) Auditor Report Generator + OOB-2/4/5/9 + S80 arc close-summary · 16 of 16 OOBs DELIVERED · target 3-streak ⭐ · S80f-hotfix SHA backfilled @ S81a
   {
     sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-F', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '5d7be7d999f313420cb69ec9da74843dc95998a0', loc: 1400,
+    headSha: '5e99848664e6f9defecbcd5e6a2c5398214d8e9e',
+    predecessorSha: '5d7be7d999f313420cb69ec9da74843dc95998a0', loc: 1400,
     newSiblings: ['comply360-rule-11g-report-engine', 'comply360-nlp-audit-ask-engine'],
+    bankDate: '2026-05-30', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 81a T-Phase-5.B.2.2-PASS-A · Comply360 Floor 2 Internal Audit Arc 2.2 OPENS · 4 NEW SIBLINGs (internal-audit + ia-risk-register + ia-walkthrough + ia-control-testing) · 8 of 12 Q17 modules · target 4-streak ⭐
+  {
+    sprintNumber: 81, code: 'T-Phase-5.B.2.2-PASS-A', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '5e99848664e6f9defecbcd5e6a2c5398214d8e9e', loc: 1500,
+    newSiblings: [
+      'comply360-internal-audit-engine',
+      'comply360-ia-risk-register-engine',
+      'comply360-ia-walkthrough-engine',
+      'comply360-ia-control-testing-engine',
+    ],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
