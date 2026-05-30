@@ -326,8 +326,16 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 80e T-Phase-5.B.2.1-PASS-E · Comply360 Floor 2 Audit-Suite · Pass E · Headline Differentiator UX · 3 NEW SIBLINGs (audit-replay · cross-card-lineage · audit-ready-score) + OOB-7 Coverage Heatmap surface · target 2-streak ⭐
   {
     sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-E', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '5f8ee0210cfbc4245d5b76c69775e439065ead7f', loc: 1400,
+    headSha: '5d7be7d999f313420cb69ec9da74843dc95998a0',
+    predecessorSha: '5f8ee0210cfbc4245d5b76c69775e439065ead7f', loc: 1400,
     newSiblings: ['comply360-audit-replay-engine', 'comply360-cross-card-lineage-engine', 'comply360-audit-ready-score-engine'],
+    bankDate: '2026-05-30', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 80f T-Phase-5.B.2.1-PASS-F · Comply360 Floor 2 Audit-Suite FINALE · THE HEADLINE · Rule 11(g) Auditor Report Generator + OOB-2/4/5/9 + S80 arc close-summary · 16 of 16 OOBs DELIVERED · target 3-streak ⭐
+  {
+    sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-F', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '5d7be7d999f313420cb69ec9da74843dc95998a0', loc: 1400,
+    newSiblings: ['comply360-rule-11g-report-engine', 'comply360-nlp-audit-ask-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
