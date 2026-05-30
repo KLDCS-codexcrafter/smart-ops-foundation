@@ -151,7 +151,7 @@ describe('Sprint 81a · T-Phase-5.B.2.2-PASS-A · Internal Audit Foundation Engi
       engagement_id: 'eng-3', audit_period_start: '2025-04-01', audit_period_end: '2026-03-31',
       scope_areas: ['IT'], objectives: ['IT audit'], authored_by_bap: 'mr-b-auditor-1',
     });
-    const trail = readAuditTrail(ENTITY).filter((e) => e.entity_type === 'ia_engagement_plan');
+    const trail = readAuditTrail(ENTITY).filter((e) => (e.entity_type as string) === 'ia_engagement_plan');
     expect(trail.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -212,7 +212,7 @@ describe('Sprint 81a · T-Phase-5.B.2.2-PASS-A · Internal Audit Foundation Engi
       residual_likelihood: 2, residual_impact: 2, responsible_bap: null,
       authored_by_bap: 'mr-b-auditor-1', linked_finding_ids: [],
     });
-    const trail = readAuditTrail(ENTITY).filter((e) => e.entity_type === 'ia_risk_register_entry');
+    const trail = readAuditTrail(ENTITY).filter((e) => (e.entity_type as string) === 'ia_risk_register_entry');
     expect(trail.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -278,7 +278,7 @@ describe('Sprint 81a · T-Phase-5.B.2.2-PASS-A · Internal Audit Foundation Engi
       engagement_id: 'eng-w3', process_name: 'R2R', entity_type: 'voucher',
       entity_id: 'v-3', entity_code: ENTITY, documented_by_bap: 'mr-b-auditor-1',
     });
-    const trail = readAuditTrail(ENTITY).filter((e) => e.entity_type === 'ia_walkthrough_doc');
+    const trail = readAuditTrail(ENTITY).filter((e) => (e.entity_type as string) === 'ia_walkthrough_doc');
     expect(trail.length).toBeGreaterThanOrEqual(1);
   });
 
@@ -339,7 +339,7 @@ describe('Sprint 81a · T-Phase-5.B.2.2-PASS-A · Internal Audit Foundation Engi
       sample_size_tested: 1, exceptions_count: 0, observations: '',
       tested_by_bap: 'mr-b-auditor-1',
     });
-    const trail = readAuditTrail(ENTITY).filter((e) => e.entity_type === 'ia_control_test');
+    const trail = readAuditTrail(ENTITY).filter((e) => (e.entity_type as string) === 'ia_control_test');
     expect(trail.length).toBeGreaterThanOrEqual(2); // define + run
   });
 
