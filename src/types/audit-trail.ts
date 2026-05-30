@@ -39,7 +39,10 @@ export type AuditEntityType =
   | 'material_issue_note' | 'production_confirmation'
   | 'stock_issue' | 'stock_receipt_ack'
   | 'customer_voucher_in' | 'customer_voucher_out'
-  | 'transporter_invoice';
+  | 'transporter_invoice'
+  // Sprint 80d · MCA Rule 11(g) Hardening · 4 new audit entity types
+  | 'mca_coverage_report' | 'audit_retention_export'
+  | 'audit_retention_warning_ack' | 'audit_continuity_report';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
