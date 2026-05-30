@@ -751,13 +751,17 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
           </CardContent>
         </Card>
 
-        {/* 20th tile · STUB · S80e fills (Audit Coverage Heatmap) */}
-        <Card className="border-2 border-dashed opacity-60">
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Audit Coverage Heatmap</CardTitle></CardHeader>
+        {/* 20th tile · S80e FILLS · OOB-7 Audit Coverage Heatmap (ledgers x months) */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Audit Coverage Heatmap</CardTitle>
+            <CardDescription className="text-xs">OOB-7 · ledgers × months</CardDescription>
+          </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">
-              S80e fills this tile (ledgers x months coverage matrix)
-            </p>
+            <CoverageHeatmap
+              entityCode={activeEng?.entity_code ?? 'OPERIX-DEMO'}
+              fy={activeEng?.fy ?? 'FY 2025-26'}
+            />
           </CardContent>
         </Card>
       </section>
