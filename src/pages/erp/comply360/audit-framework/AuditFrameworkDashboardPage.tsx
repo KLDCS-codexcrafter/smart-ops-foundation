@@ -252,6 +252,57 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
   const [showSampling, setShowSampling] = useState(false);
   const [pendingProcedure, setPendingProcedure] = useState<AnalyticsProcedureCode | null>(null);
 
+  // Sprint 80d · MCA Rule 11(g) Self-Verify state
+  const [coverageReport, setCoverageReport] = useState<MCACoverageReport | null>(null);
+  const [retentionStatus, setRetentionStatus] = useState<ReturnType<typeof getRetentionStatus> | null>(null);
+  const [continuityReport, setContinuityReport] = useState<ContinuityReport | null>(null);
+
+  function generateAllReports(): void {
+    const entity = activeEng?.entity_code ?? 'OPERIX-DEMO';
+    const fy = activeEng?.fy ?? 'FY 2025-26';
+    setCoverageReport(generateCoverageReport());
+    setRetentionStatus(getRetentionStatus(entity));
+    setContinuityReport(generateContinuityReport(entity, fy));
+    toast.success('MCA Rule 11(g) self-verify refreshed');
+  }
+
+  function handleExportToColdStorage(): void {
+    const entity = activeEng?.entity_code ?? 'OPERIX-DEMO';
+    const fy = activeEng?.fy ?? 'FY 2025-26';
+    const { record, blob } = exportToColdStorage({
+      entity_code: entity, fy, triggered_by_bap: activeBAP,
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cold-storage-${entity}-${fy.replace(/\s+/g, '_')}-${record.id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setRetentionStatus(getRetentionStatus(entity));
+    toast.success(`Exported ${record.entries_count} entries to cold-storage`);
+  }
+
+  async function handleVerifyProof(): Promise<void> {
+    const entity = activeEng?.entity_code ?? 'OPERIX-DEMO';
+    try {
+      const v = await verifyChainIntegrity(entity);
+      toast.success(`Cryptographic proof: ${v.ok ? 'VERIFIED' : 'BROKEN'}`);
+    } catch {
+      toast.error('Verification unavailable');
+    }
+  }
+
+  function handleDownloadCoverage(): void {
+    if (!coverageReport) return;
+    const blob = exportCoverageReportJson(coverageReport);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mca-coverage-${coverageReport.report_id}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   const hasEngagement = activeEng !== null;
 
   const totalProcedures = ANALYTICS_PROCEDURES.length;
