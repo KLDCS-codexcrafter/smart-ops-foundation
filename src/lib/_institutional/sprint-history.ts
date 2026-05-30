@@ -316,11 +316,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-05-30', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 80d T-Phase-5.B.2.1-PASS-D · Comply360 Floor 2 Audit-Suite · Pass D · MCA Rule 11(g) Hardening · 3 NEW SIBLINGs (mca-coverage · audit-retention · audit-continuity) · DP-S80-24/25/26/27 · OOB-8 + 4 MCA-hardening DPs · target 1-streak (post cycle-2 reset · 37 holds as record)
+  // 🆕 Sprint 80d T-Phase-5.B.2.1-PASS-D · Comply360 Floor 2 Audit-Suite · Pass D · MCA Rule 11(g) Hardening · 3 NEW SIBLINGs (mca-coverage · audit-retention · audit-continuity) · DP-S80-24/25/26/27 · OOB-8 + 4 MCA-hardening DPs · 1-streak (post cycle-2 reset · 37 holds as record)
   {
     sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-D', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'e989adb608cc3c19500df8e4e580ced362b2db78', loc: 1400,
+    headSha: '5f8ee0210cfbc4245d5b76c69775e439065ead7f', predecessorSha: 'e989adb608cc3c19500df8e4e580ced362b2db78', loc: 1400,
     newSiblings: ['comply360-mca-coverage-engine', 'comply360-audit-retention-engine', 'comply360-audit-continuity-engine'],
+    bankDate: '2026-05-30', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 80e T-Phase-5.B.2.1-PASS-E · Comply360 Floor 2 Audit-Suite · Pass E · Headline Differentiator UX · 3 NEW SIBLINGs (audit-replay · cross-card-lineage · audit-ready-score) + OOB-7 Coverage Heatmap surface · target 2-streak ⭐
+  {
+    sprintNumber: 80, code: 'T-Phase-5.B.2.1-PASS-E', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '5f8ee0210cfbc4245d5b76c69775e439065ead7f', loc: 1400,
+    newSiblings: ['comply360-audit-replay-engine', 'comply360-cross-card-lineage-engine', 'comply360-audit-ready-score-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
