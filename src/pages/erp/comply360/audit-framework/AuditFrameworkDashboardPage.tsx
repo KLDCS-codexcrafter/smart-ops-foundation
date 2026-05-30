@@ -11,7 +11,7 @@
  * @ooblbl      OOB-6 Workspace picker integrated · OOB-10 SA 530 Sampling Justification UI prompt
  * [JWT] Phase 8: dashboard data feeds via /api/comply360/audit-framework/dashboard
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -45,7 +45,7 @@ import {
   type AuditEngagement,
   type EngagementType,
 } from '@/lib/comply360-auditor-workspace-engine';
-import { MCA_RULE_3_1_COMPLIANCE } from '@/lib/audit-trail-engine';
+import { MCA_RULE_3_1_COMPLIANCE, readAuditTrail } from '@/lib/audit-trail-engine';
 import {
   generateCoverageReport,
   exportCoverageReportJson,
@@ -60,6 +60,21 @@ import {
   type ContinuityReport,
 } from '@/lib/comply360-audit-continuity-engine';
 import { verifyChainIntegrity } from '@/lib/audit-trail-hash-chain';
+// ─── Sprint 80e · Headline Differentiator UX engines ───
+import {
+  computeAuditReadyScore,
+  type AuditReadyScore,
+  type AuditReadyBand,
+  type SubScoreBreakdown,
+} from '@/lib/comply360-audit-ready-score-engine';
+import {
+  generateReplay,
+  type AuditReplaySession,
+} from '@/lib/comply360-audit-replay-engine';
+import {
+  buildLineageChain,
+  type LineageChain,
+} from '@/lib/comply360-cross-card-lineage-engine';
 
 const BAP_OPTIONS: { id: BAPAccountId; label: string }[] = [
   { id: 'mr-a-client', label: 'Mr A · Client' },
