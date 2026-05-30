@@ -45,6 +45,21 @@ import {
   type AuditEngagement,
   type EngagementType,
 } from '@/lib/comply360-auditor-workspace-engine';
+import { MCA_RULE_3_1_COMPLIANCE } from '@/lib/audit-trail-engine';
+import {
+  generateCoverageReport,
+  exportCoverageReportJson,
+  type MCACoverageReport,
+} from '@/lib/comply360-mca-coverage-engine';
+import {
+  exportToColdStorage,
+  getRetentionStatus,
+} from '@/lib/comply360-audit-retention-engine';
+import {
+  generateContinuityReport,
+  type ContinuityReport,
+} from '@/lib/comply360-audit-continuity-engine';
+import { verifyChainIntegrity } from '@/lib/audit-trail-hash-chain';
 
 const BAP_OPTIONS: { id: BAPAccountId; label: string }[] = [
   { id: 'mr-a-client', label: 'Mr A · Client' },
