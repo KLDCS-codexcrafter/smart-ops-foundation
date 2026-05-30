@@ -549,6 +549,18 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
     URL.revokeObjectURL(url);
   }
 
+  // Sprint 80e · refresh Audit-Ready Score
+  function refreshScore(): void {
+    const entity = activeEng?.entity_code ?? 'OPERIX-DEMO';
+    const fy = activeEng?.fy ?? 'FY 2025-26';
+    setScore(computeAuditReadyScore(entity, fy));
+  }
+
+  useEffect(() => {
+    refreshScore();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeEng?.entity_code, activeEng?.fy]);
+
   const hasEngagement = activeEng !== null;
 
   const totalProcedures = ANALYTICS_PROCEDURES.length;
