@@ -84,7 +84,7 @@ function classify(name: string): EngineCoverageEvidence {
 export function generateCoverageReport(): MCACoverageReport {
   const per_engine_evidence: EngineCoverageEvidence[] = SIBLINGS.map((s) => {
     const ev = classify(s.id);
-    return { ...ev, engine_path: s.path };
+    return { ...ev, engine_path: s.path ?? '' };
   });
   const total = per_engine_evidence.length;
   const full = per_engine_evidence.filter((e) => e.coverage_verdict === 'FULL').length;
