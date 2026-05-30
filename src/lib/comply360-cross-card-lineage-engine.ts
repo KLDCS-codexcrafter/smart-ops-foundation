@@ -2,7 +2,7 @@
  * @file        src/lib/comply360-cross-card-lineage-engine.ts
  * @sibling     NEW @ Sprint 80e · Comply360 Floor 2 Audit-Suite · Pass E · OOB-11 · DP-S80-21
  * @realizes    Cross-Card Audit Lineage Tunnel · drill-through any audit finding
- *              to its root cause across PayHub · FineCore · Comply360 · etc.
+ *              to its root cause across PayHub · FinCore · Comply360 · etc.
  *              CATEGORY-DEFINING DIFFERENTIATOR · makes S78a's cross-card moat
  *              customer-visible.
  * @reads-from  comply360-audit-framework-engine (S80a · findings register)

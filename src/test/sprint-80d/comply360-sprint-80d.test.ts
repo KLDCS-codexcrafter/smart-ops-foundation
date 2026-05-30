@@ -268,8 +268,10 @@ describe('Sprint 80d · T-Phase-5.B.2.1-PASS-D · MCA Rule 11(g) Hardening', () 
   it('AuditFrameworkDashboardPage has Cold-Storage Export section', () => {
     expect(fs.readFileSync(DASH, 'utf-8')).toContain('8-Year Cold-Storage Export');
   });
-  it('AuditFrameworkDashboardPage 20th tile (Audit Coverage Heatmap) still STUB · S80e owns', () => {
-    expect(fs.readFileSync(DASH, 'utf-8')).toContain('S80e fills this tile');
+  it('AuditFrameworkDashboardPage 20th tile (Audit Coverage Heatmap) exists', () => {
+    // Lesson 24 · S80e filled the 20th tile · stub-text assertion converted to existence-only
+    expect(fs.existsSync(DASH)).toBe(true);
+    expect(fs.readFileSync(DASH, 'utf-8')).toContain('Audit Coverage Heatmap');
   });
 
   // ─── §H 0-DIFF anchors (existence checks · Lesson 24) ───

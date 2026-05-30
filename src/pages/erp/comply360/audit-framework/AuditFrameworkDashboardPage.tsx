@@ -11,7 +11,7 @@
  * @ooblbl      OOB-6 Workspace picker integrated · OOB-10 SA 530 Sampling Justification UI prompt
  * [JWT] Phase 8: dashboard data feeds via /api/comply360/audit-framework/dashboard
  */
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -327,8 +327,8 @@ function CoverageHeatmap({ entityCode, fy }: CoverageHeatmapProps): JSX.Element 
           <div key={`hdr-${m}`} className="text-center font-mono text-muted-foreground">{m}</div>
         ))}
         {grid.cells.map((row) => (
-          <>
-            <div key={`lbl-${row.ledger}`} className="font-semibold truncate">{row.ledger}</div>
+          <Fragment key={`row-${row.ledger}`}>
+            <div className="font-semibold truncate">{row.ledger}</div>
             {row.months.map((c) => (
               <div
                 key={`${row.ledger}-${c.month}`}
@@ -336,7 +336,7 @@ function CoverageHeatmap({ entityCode, fy }: CoverageHeatmapProps): JSX.Element 
                 title={`${row.ledger} · M${c.month} · ${c.state.toUpperCase()} · ${c.count} verifs`}
               />
             ))}
-          </>
+          </Fragment>
         ))}
       </div>
       <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
@@ -649,6 +649,40 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
         </p>
       </header>
 
+      {/* Sprint 80e · OOB-1 Audit-Ready Score banner */}
+      <Card className="glass-card">
+        <CardHeader className="pb-2 flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-sm">Audit-Ready Score (OOB-1)</CardTitle>
+            <CardDescription className="text-xs">
+              Composite 0–100 across 8 sub-scores · updated on engagement change
+            </CardDescription>
+          </div>
+          <Button size="sm" variant="outline" onClick={refreshScore}>Recompute</Button>
+        </CardHeader>
+        <CardContent>
+          {!score ? (
+            <p className="text-xs text-muted-foreground">No score yet · select an engagement.</p>
+          ) : (
+            <div className="space-y-2">
+              <div className="flex items-baseline gap-3">
+                <span className={`font-mono text-4xl ${bandToColor(score.band)}`}>{score.overall_score}</span>
+                <Badge variant="outline" className={bandToColor(score.band)}>{score.band.toUpperCase()}</Badge>
+                <span className="text-xs text-muted-foreground font-mono">{score.computed_at}</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {(Object.keys(SUB_SCORE_LABELS) as Array<keyof SubScoreBreakdown>).map((k) => (
+                  <div key={k} className="rounded-md border p-2 text-xs">
+                    <div className="text-muted-foreground">{SUB_SCORE_LABELS[k]}</div>
+                    <div className="font-mono text-lg">{score.sub_scores[k]}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* OOB-6 Workspace picker + BAP picker */}
       <section className="grid grid-cols-1 md:grid-cols-4 gap-3">
         <Card>
@@ -751,13 +785,17 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
           </CardContent>
         </Card>
 
-        {/* 20th tile · STUB · S80e fills (Audit Coverage Heatmap) */}
-        <Card className="border-2 border-dashed opacity-60">
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Audit Coverage Heatmap</CardTitle></CardHeader>
+        {/* 20th tile · S80e FILLS · OOB-7 Audit Coverage Heatmap (ledgers x months) */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm">Audit Coverage Heatmap</CardTitle>
+            <CardDescription className="text-xs">OOB-7 · ledgers × months</CardDescription>
+          </CardHeader>
           <CardContent>
-            <p className="text-xs text-muted-foreground">
-              S80e fills this tile (ledgers x months coverage matrix)
-            </p>
+            <CoverageHeatmap
+              entityCode={activeEng?.entity_code ?? 'OPERIX-DEMO'}
+              fy={activeEng?.fy ?? 'FY 2025-26'}
+            />
           </CardContent>
         </Card>
       </section>
@@ -805,6 +843,49 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
             </CardContent>
           </Card>
         </section>
+      )}
+
+      {/* Sprint 80e · OOB-3 Audit Replay + OOB-11 Cross-Card Lineage launchers */}
+      <section className="rounded-lg border bg-muted/40 p-4 space-y-2">
+        <h2 className="font-semibold text-base">Headline Differentiators (S80e)</h2>
+        <p className="text-xs text-muted-foreground">
+          OOB-3 Audit Replay (cinematic frame-by-frame) · OOB-11 Cross-Card Lineage Tunnel
+          (drill from finding to root cause across modules).
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setReplayTarget({ entity_type: 'voucher', entity_id: 'V-DEMO-001' })}
+          >
+            Replay Sample Voucher
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setLineageTarget({ finding_id: 'F-DEMO-001' })}
+          >
+            Trace Sample Finding Lineage
+          </Button>
+        </div>
+      </section>
+
+      {replayTarget && (
+        <ReplayDrawer
+          entityType={replayTarget.entity_type}
+          entityId={replayTarget.entity_id}
+          entityCode={activeEng?.entity_code ?? 'OPERIX-DEMO'}
+          bap={activeBAP}
+          onClose={() => setReplayTarget(null)}
+        />
+      )}
+
+      {lineageTarget && (
+        <LineageDrawer
+          findingId={lineageTarget.finding_id}
+          bap={activeBAP}
+          onClose={() => setLineageTarget(null)}
+        />
       )}
 
       {showCreate && (
