@@ -88,6 +88,10 @@ export function logAudit(opts: {
   reason?: string | null;
   sourceModule: string;
 }): AuditTrailEntry {
+  // ─── MCA Rule 3(1) runtime guard · Sprint 80d · DP-S80-24 ───
+  if ((AUDIT_TRAIL_DISABLED as boolean)) {
+    throw new Error('MCA Rule 3(1) violation: AUDIT_TRAIL_DISABLED cannot be true · audit-trail feature cannot be disabled at runtime');
+  }
   const user = getCurrentUser();
   const entry: AuditTrailEntry = {
     id: makeAuditId(),
@@ -104,6 +108,7 @@ export function logAudit(opts: {
     after_state: opts.afterState,
     reason: opts.reason ?? null,
     source_module: opts.sourceModule,
+    retention_until: computeRetentionUntil(),
   };
 
   const key = auditTrailKey(entry.entity_id);
