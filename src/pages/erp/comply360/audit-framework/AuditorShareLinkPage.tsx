@@ -20,9 +20,8 @@ import {
   type ShareTokenPayload,
 } from './share-token-helpers';
 
-// Re-export so existing test imports continue working.
-export { generateAuditorShareToken, verifyAuditorShareToken };
-export type { ShareTokenPayload, StoredShareToken };
+
+
 
 function loadStoredTokens(): StoredShareToken[] {
   try {
