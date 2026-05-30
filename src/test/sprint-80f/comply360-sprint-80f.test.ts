@@ -273,7 +273,12 @@ describe('Sprint 80f · T-Phase-5.B.2.1-PASS-F · Rule 11(g) Auditor Report Gene
   it('ESLint STRICT 0/0 · explicit exit code (Lesson 30 v1.22 canon · 28-sprint carry)', () => {
     let exitCode = 0;
     try {
-      execSync('pnpm lint 2>&1', { stdio: 'pipe' });
+      // Resolve runner: prefer pnpm (founder env), fall back to npx (sandbox).
+      const runner = (() => {
+        try { execSync('command -v pnpm', { stdio: 'pipe' }); return 'pnpm lint'; }
+        catch { return 'npx eslint .'; }
+      })();
+      execSync(`${runner} 2>&1`, { stdio: 'pipe' });
     } catch (e) {
       exitCode = (e as { status?: number }).status ?? 1;
     }
