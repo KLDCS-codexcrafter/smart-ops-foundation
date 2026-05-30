@@ -137,7 +137,7 @@ function SamplingJustificationDialog({ procedureCode, onConfirm, onCancel }: Sam
             />
           </div>
           <div>
-            <Label htmlFor="justification">Justification (>= 10 chars)</Label>
+            <Label htmlFor="justification">Justification (min 10 chars)</Label>
             <Textarea
               id="justification"
               value={justification}
