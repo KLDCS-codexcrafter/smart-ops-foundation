@@ -5,13 +5,15 @@
  * @decisions   D-S69-1 (100% native) · D-S69-3 (Health Score) · D-S69-4 (LIVE tile refresh · FK-CAP-7 preserved)
  * @iso         Usability · Maintainability
  */
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart, Sparkles, Database, Compass } from 'lucide-react';
 import { loadObligations } from '@/lib/comply360-statutory-memory';
 import { computeWeightedComplianceHealth, nextUpcoming } from '@/lib/comply360-health-score-engine';
 import { buildCalendar } from '@/lib/comply360-calendar-engine';
 import { listAvailableSnapshots } from '@/lib/comply360-time-machine-engine';
+import { applyDemoSeed, isDemoSeeded, getDemoSeedStats } from '@/lib/comply360-demo-seed-engine';
 import { HealthScoreWidget } from './widgets/HealthScoreWidget';
 import { UpcomingFilingsWidget } from './widgets/UpcomingFilingsWidget';
 import { QuickActionsWidget } from './widgets/QuickActionsWidget';
