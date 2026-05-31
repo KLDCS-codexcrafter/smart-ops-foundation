@@ -166,13 +166,14 @@ export default function InternalAuditDashboardPage(): JSX.Element {
       </section>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="engagements">Engagements</TabsTrigger>
           <TabsTrigger value="risk-heatmap">Risk Heat-Map</TabsTrigger>
           <TabsTrigger value="issue-log">Issue Log</TabsTrigger>
           <TabsTrigger value="control-effectiveness">Control Effectiveness</TabsTrigger>
           <TabsTrigger value="maturity">Maturity Detail</TabsTrigger>
+          <TabsTrigger value="mock-audit">Mock Audit</TabsTrigger>
         </TabsList>
 
         {/* Tab 1 · Overview · Q17 Modules 9-12 surfaced as tiles */}
