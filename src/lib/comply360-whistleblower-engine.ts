@@ -184,7 +184,7 @@ export function resolveEscalation(escalation_id: string, response: string, actio
   }
   logAudit({
     entityCode: activeEntityCode(), action: 'update', entityType: AUD('audit_committee_escalation'),
-    recordId: escalation_id, recordLabel: `Resolve escalation ${escalation_id}`,
+    recordId: escalation_id, recordLabel: `Resolve escalation ${escalation_id} · by ${by_bap}`,
     beforeState: before as unknown as Record<string, unknown>,
     afterState: all[idx] as unknown as Record<string, unknown>,
     sourceModule: 'comply360-whistleblower-engine',
