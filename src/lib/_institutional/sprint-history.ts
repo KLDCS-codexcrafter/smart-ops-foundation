@@ -409,7 +409,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 84 T-Phase-5.C.3.2 · Comply360 Floor 3 ROC-Suite Arc 3.2 · Q29 Part 2 · 5 NEW SIBLINGs · 10-streak ⭐ target · FLOOR 3 PASS 2 COMPLETE
   {
     sprintNumber: 84, code: 'T-Phase-5.C.3.2', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'b52dadcf80f8575eb92b804ba33770fd22698ffe', loc: 2100,
+    headSha: 'TBD_AT_BANK', predecessorSha: 'b52dadcf80f8575eb92b804ba33770fd22698ffe', loc: 2100,
     newSiblings: [
       'comply360-event-filings-engine',
       'comply360-xbrl-builder-engine',
@@ -417,7 +417,7 @@ export const SPRINTS: SprintEntry[] = [
       'comply360-schedule-v-engine',
       'comply360-schedule-vii-engine',
     ],
-    bankDate: null, provenance: 'CONFIRMED',
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
 ];
 
