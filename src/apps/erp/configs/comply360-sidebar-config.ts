@@ -10,7 +10,7 @@ import {
   Home, Calendar, Building, Receipt, Users, Wallet, Archive, Scroll,
   Package, Search, Shield, Globe, Truck, Award, Leaf, Gavel,
   BarChart3, FileBarChart, Sparkles, Folder, Plug, Workflow, Settings,
-  Percent,
+  Percent, ShieldAlert,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -24,6 +24,7 @@ export const comply360SidebarItems: SidebarItem[] = [
   { id: 'payments',       type: 'group', label: 'Statutory Payments',             icon: Wallet,       keyboard: 'c y', children: [] },
   { id: 'challan-vault',  type: 'group', label: 'Challan Vault',                  icon: Archive,      keyboard: 'c v', children: [] },
   { id: 'roc',            type: 'group', label: 'ROC / Secretarial',              icon: Scroll,       keyboard: 'c r', children: [] },
+  { id: 'whistleblower',  type: 'group', label: 'Whistleblower / Vigil Mechanism', icon: ShieldAlert,  keyboard: 'c w', children: [] },
   { id: 'fixed-assets',   type: 'group', label: 'Fixed Assets',                   icon: Package,      keyboard: 'c f', children: [] },
   { id: 'internal-audit', type: 'group', label: 'Internal Audit',                 icon: Search,       keyboard: 'c i', children: [] },
   { id: 'external-audit', type: 'group', label: 'External Audit',                 icon: Shield,       keyboard: 'c x', children: [] },

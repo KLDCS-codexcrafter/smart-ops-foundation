@@ -29,6 +29,7 @@ import StatutoryReturnsPage from './payroll/StatutoryReturnsPage';
 import AuditFrameworkDashboardPage from './audit-framework/AuditFrameworkDashboardPage';
 import Rule11gReportPage from './rule-11g/Rule11gReportPage';
 import InternalAuditDashboardPage from './internal-audit/DashboardPage';
+import WhistleblowerPage from './whistleblower/WhistleblowerPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -54,6 +55,8 @@ export default function Comply360Page(): JSX.Element {
         return <MSMEForm1Page />;
       case 'roc':
         return <Section393Page />;
+      case 'whistleblower':
+        return <WhistleblowerPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':
