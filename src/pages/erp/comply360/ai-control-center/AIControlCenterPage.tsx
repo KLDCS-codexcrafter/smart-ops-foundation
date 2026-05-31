@@ -4,7 +4,7 @@
  * @sprint      Sprint 87 · T-Phase-5.D.4.2 · DP-S87-14 · FLOOR 4 CLOSES
  * @note        Fixed grid-cols-4 (with multi-row wrap) avoids dynamic class generation for the 11-module list.
  */
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
