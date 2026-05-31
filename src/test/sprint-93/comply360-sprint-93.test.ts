@@ -28,7 +28,7 @@ import {
   recordCLRAEngagement, listCLRAEngagements,
   registerShop, listShops,
   fileForm21, listForm21,
-  recordOSHCheckup, listOSHCheckups,
+  recordOSHCheckup,
   getLabourTier2ComplianceSummary,
   READS_FROM as LT2_RF,
 } from '@/lib/comply360-labour-tier2-engine';
