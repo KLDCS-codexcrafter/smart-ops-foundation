@@ -89,8 +89,9 @@ describe('Sprint 81a · T-Phase-5.B.2.2-PASS-A · Internal Audit Foundation Engi
   it('comply360-ia-control-testing-engine.ts exists', () => {
     expect(fs.existsSync(SRC('src/lib/comply360-ia-control-testing-engine.ts'))).toBe(true);
   });
-  it('S79a stubs internal-audit/AuditTrailPage + DashboardPage STILL EXIST as stubs', () => {
-    expect(fs.existsSync(SRC('src/pages/erp/comply360/internal-audit/AuditTrailPage.tsx'))).toBe(true);
+  // Lesson 24: Sprint 81b · AuditTrailPage renamed → AuditTrailExplorerPage (DP-S81-6) and DashboardPage promoted (DP-S81-5). Original "STILL EXIST as stubs" assertion converted to forward-compatible existence checks on the new files.
+  it('internal-audit dashboard + audit-trail explorer pages exist (post S81b stub-fill)', () => {
+    expect(fs.existsSync(SRC('src/pages/erp/comply360/internal-audit/AuditTrailExplorerPage.tsx'))).toBe(true);
     expect(fs.existsSync(SRC('src/pages/erp/comply360/internal-audit/DashboardPage.tsx'))).toBe(true);
   });
   it('All S80 engines still present (0-DIFF anchor)', () => {
