@@ -296,6 +296,11 @@ export default function InternalAuditDashboardPage(): JSX.Element {
         <TabsContent value="mock-audit">
           <MockAuditRunPanel engagementId={engagement.id} bap={bap} />
         </TabsContent>
+
+        {/* Tab 8 · Reports & Handoff · S81d · S81 ARC CLOSES */}
+        <TabsContent value="reports-handoff">
+          <ReportsHandoffPanel engagementId={engagement.id} fy={engagement.fy} bap={bap} />
+        </TabsContent>
       </Tabs>
     </div>
   );
