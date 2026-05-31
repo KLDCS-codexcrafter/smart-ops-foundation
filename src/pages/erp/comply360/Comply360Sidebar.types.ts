@@ -7,6 +7,7 @@ export type Comply360Module =
   | 'welcome'
   | 'home' | 'calendar' | 'companies' | 'tax-gst' | 'tds' | 'payroll' | 'payments'
   | 'challan-vault' | 'roc' | 'whistleblower' | 'fixed-assets' | 'internal-audit' | 'external-audit'
+  | 'labour-codes' | 'posh' | 'gig-workers'   // 🆕 S86 v1 · Sector-Pack · Labour/HR section
   | 'exim' | 'vendor' | 'licenses' | 'esg' | 'legal' | 'finance-hub'
   | 'audit-framework'  // NEW · S80c · Statutory Audit Dashboard
   | 'rule-11g'         // NEW · S80f · MCA Rule 11(g) Auditor Report Generator
