@@ -55,6 +55,8 @@ export default function Comply360Page(): JSX.Element {
         return <MSMEForm1Page />;
       case 'roc':
         return <Section393Page />;
+      case 'whistleblower':
+        return <WhistleblowerPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':

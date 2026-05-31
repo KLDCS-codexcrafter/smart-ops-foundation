@@ -59,6 +59,18 @@ import {
   recordCSRActivity, listCSRActivities, computeCSRSpendAllocation, getCSRThematicAreas, type CSRThematicArea,
 } from '@/lib/comply360-schedule-vii-engine';
 import { getActiveBAPAccount, type BAPAccountId } from '@/lib/comply360-audit-framework-engine';
+// S85 Floor 3 Pass 3 imports
+import {
+  formCSRCommittee, listCSRCommittees, registerImplementingAgency, listImplementingAgencies,
+  createCSR1Filing, listCSR1Filings, createCSR2Filing, listCSR2Filings,
+} from '@/lib/comply360-csr-engine';
+import {
+  recordMeeting, recordAttendance, recordVoting, listMeetings, type MeetingType,
+} from '@/lib/comply360-meetings-engine';
+import {
+  appointCostAuditor, createCRAFormFiling, recordCostAuditReport, listCostAuditorAppointments,
+  listCRAFormFilings, listCostAuditReports, type CRAFormType,
+} from '@/lib/comply360-cost-audit-engine';
 
 const SCHEMES: ArrangementScheme[] = [
   'amalgamation', 'merger', 'demerger', 'compromise-with-creditors',
@@ -242,7 +254,8 @@ function InnerSurface(): JSX.Element {
 }
 
 type SubTab = 'section393' | 'dir3-kyc' | 'aoc4' | 'mgt7' | 'adt1' | 'dsc-vault' | 'statutory-registers'
-            | 'event-filings' | 'xbrl-builder' | 'schedule-iv-v' | 'schedule-vii';
+            | 'event-filings' | 'xbrl-builder' | 'schedule-iv-v' | 'schedule-vii'
+            | 'csr-framework' | 'meetings' | 'cost-audit';
 
 export default function Section393Page(): JSX.Element {
   const [tab, setTab] = useState<SubTab>('section393');
@@ -250,7 +263,7 @@ export default function Section393Page(): JSX.Element {
   return (
     <div className="p-4">
       <Tabs value={tab} onValueChange={(v) => setTab(v as SubTab)}>
-        <TabsList className="grid w-full grid-cols-11">
+        <TabsList className="grid w-full grid-cols-14">
           <TabsTrigger value="section393">Section 393</TabsTrigger>
           <TabsTrigger value="dir3-kyc">DIR-3 KYC</TabsTrigger>
           <TabsTrigger value="aoc4">AOC-4</TabsTrigger>
@@ -262,6 +275,9 @@ export default function Section393Page(): JSX.Element {
           <TabsTrigger value="xbrl-builder">XBRL Builder</TabsTrigger>
           <TabsTrigger value="schedule-iv-v">Schedule IV/V</TabsTrigger>
           <TabsTrigger value="schedule-vii">Schedule VII (CSR)</TabsTrigger>
+          <TabsTrigger value="csr-framework">CSR Framework</TabsTrigger>
+          <TabsTrigger value="meetings">AGM/Board</TabsTrigger>
+          <TabsTrigger value="cost-audit">Cost Audit</TabsTrigger>
         </TabsList>
         <TabsContent value="section393"><InnerSurface /></TabsContent>
         <TabsContent value="dir3-kyc"><DIR3KYCPanel bap={bap} /></TabsContent>
@@ -274,6 +290,9 @@ export default function Section393Page(): JSX.Element {
         <TabsContent value="xbrl-builder"><XBRLBuilderPanel bap={bap} /></TabsContent>
         <TabsContent value="schedule-iv-v"><ScheduleIVVPanel bap={bap} /></TabsContent>
         <TabsContent value="schedule-vii"><ScheduleVIIPanel bap={bap} /></TabsContent>
+        <TabsContent value="csr-framework"><CSRFrameworkPanel bap={bap} /></TabsContent>
+        <TabsContent value="meetings"><MeetingsPanel bap={bap} /></TabsContent>
+        <TabsContent value="cost-audit"><CostAuditPanel bap={bap} /></TabsContent>
       </Tabs>
     </div>
   );
