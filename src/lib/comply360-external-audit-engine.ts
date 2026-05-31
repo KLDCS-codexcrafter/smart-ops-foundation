@@ -439,7 +439,9 @@ export function compileFinalAuditPack(opts: {
 
   // persist without the blob (blob is regenerated on read · localStorage cannot hold Blob)
   const all = readJson<Array<Omit<FinalAuditPack, 'audit_pack_blob'> & { blob_text: string }>>(PACK_KEY, []);
-  all.push({ ...pack, blob_text: blobText, audit_pack_blob: undefined as never });
+  const { audit_pack_blob: _omit, ...packNoBlob } = pack;
+  void _omit;
+  all.push({ ...packNoBlob, blob_text: blobText });
   writeJson(PACK_KEY, all);
 
   logAudit({
@@ -454,7 +456,7 @@ export function compileFinalAuditPack(opts: {
   });
 
   // best-effort score linkage (informational)
-  try { computeAuditReadyScore({ entity_code, fy: opts.fy }); } catch { /* optional */ }
+  try { computeAuditReadyScore(entity_code, opts.fy); } catch { /* optional */ }
 
   return pack;
 }
