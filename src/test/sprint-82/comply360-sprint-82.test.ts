@@ -165,13 +165,18 @@ describe('Sprint 82 · T-Phase-5.B.2.3 · External Audit + Survival Kit + DSC + 
     const bap = getActiveBAPAccount();
     const rep = generateAuditReport({
       engagement_id: ENG, opinion_type: 'unmodified',
-      report_date: '2026-04-30', generated_by_bap: bap,
-    } as Parameters<typeof generateAuditReport>[0]);
+      basis_for_opinion: 'Audit conducted per SAs',
+      emphasis_of_matter: [], other_matter_paragraphs: [],
+      key_audit_matters: [], generated_by_bap: bap,
+    });
     expect(rep.id).toBeTruthy();
   });
   it('compileFinalAuditPack composes and lists final pack', () => {
     const bap = getActiveBAPAccount();
-    const pack = compileFinalAuditPack({ engagement_id: ENG, compiled_by_bap: bap });
+    const pack = compileFinalAuditPack({
+      engagement_id: ENG, fy: 'FY2025-26', entity_name: 'Operix Demo Pvt Ltd',
+      generated_by_bap: bap,
+    });
     expect(pack.id).toBeTruthy();
     expect(listFinalAuditPacks(ENG).length).toBeGreaterThanOrEqual(1);
     expect(getFinalAuditPack(pack.id)?.id).toBe(pack.id);
@@ -444,7 +449,10 @@ describe('Sprint 82 · T-Phase-5.B.2.3 · External Audit + Survival Kit + DSC + 
       audit_assertion: 'occurrence', inherent_risk: 'medium', control_risk: 'low',
       detection_risk: 'low', audit_response: 'Test', authored_by_bap: bap,
     });
-    const pack = compileFinalAuditPack({ engagement_id: ENG, compiled_by_bap: bap });
+    const pack = compileFinalAuditPack({
+      engagement_id: ENG, fy: 'FY2025-26', entity_name: 'Operix Demo Pvt Ltd',
+      generated_by_bap: bap,
+    });
     expect(pack.id).toBeTruthy();
   });
 });
