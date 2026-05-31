@@ -26,6 +26,23 @@ import {
   type NCLTStatus,
 } from '@/lib/comply360-section393-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
+// S83 Floor 3 ROC-Suite imports
+import {
+  createDirectorMaster, listDirectors, generateDIR3KYCDraft, listDIR3KYCFilings, getUpcomingDIR3Deadlines,
+} from '@/lib/comply360-dir3-kyc-engine';
+import {
+  createAOC4Filing, listAOC4Filings, computeAOC4Fee, type AOC4FilingType,
+} from '@/lib/comply360-aoc4-engine';
+import {
+  createMGT7Filing, listMGT7Filings, determineMGT7Variant,
+} from '@/lib/comply360-mgt7-engine';
+import {
+  createADT1Filing, listADT1Filings, addDSCVaultEntry, listDSCVaultEntries,
+} from '@/lib/comply360-adt1-engine';
+import {
+  recordRegisterEntry, listRegisterEntries, getRegisterTypes, type StatutoryRegisterType,
+} from '@/lib/comply360-statutory-registers-engine';
+import { getActiveBAPAccount, type BAPAccountId } from '@/lib/comply360-audit-framework-engine';
 
 const SCHEMES: ArrangementScheme[] = [
   'amalgamation', 'merger', 'demerger', 'compromise-with-creditors',
