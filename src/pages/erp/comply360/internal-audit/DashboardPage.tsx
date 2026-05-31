@@ -418,8 +418,8 @@ function RiskHeatmapView({ heatmap, riskCount }: { heatmap: RiskHeatmap | null; 
           <div key={`hdr-${i}`} className="text-center font-mono text-muted-foreground">I{i}</div>
         ))}
         {likelihoods.map((l) => (
-          <>
-            <div key={`row-${l}`} className="text-center font-mono text-muted-foreground self-center">L{l}</div>
+          <Fragment key={`row-${l}`}>
+            <div className="text-center font-mono text-muted-foreground self-center">L{l}</div>
             {impacts.map((i) => {
               const c = cellFor(l, i);
               const rating = c?.rating ?? 'Low';
@@ -433,7 +433,7 @@ function RiskHeatmapView({ heatmap, riskCount }: { heatmap: RiskHeatmap | null; 
                 </div>
               );
             })}
-          </>
+          </Fragment>
         ))}
       </div>
     </Card>
