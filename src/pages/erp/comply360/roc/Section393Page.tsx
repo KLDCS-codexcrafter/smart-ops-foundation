@@ -258,8 +258,11 @@ export default function Section393Page(): JSX.Element {
 
 function DIR3KYCPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
   const [tick, setTick] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const directors = useMemo(() => listDirectors(), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const filings = useMemo(() => listDIR3KYCFilings(), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const upcoming = useMemo(() => getUpcomingDIR3Deadlines(60), [tick]);
   const fy = `${new Date().getFullYear()}-${String((new Date().getFullYear() + 1) % 100).padStart(2, '0')}`;
   const addDemoDirector = (): void => {
@@ -329,6 +332,7 @@ function DIR3KYCPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
 function AOC4Panel({ bap }: { bap: BAPAccountId }): JSX.Element {
   const [tick, setTick] = useState(0);
   const [variant, setVariant] = useState<AOC4FilingType>('standalone');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const filings = useMemo(() => listAOC4Filings(), [tick]);
   const fy = `${new Date().getFullYear() - 1}-${String(new Date().getFullYear() % 100).padStart(2, '0')}`;
   const addDemo = (): void => {
@@ -385,6 +389,7 @@ function AOC4Panel({ bap }: { bap: BAPAccountId }): JSX.Element {
 
 function MGT7Panel({ bap }: { bap: BAPAccountId }): JSX.Element {
   const [tick, setTick] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const filings = useMemo(() => listMGT7Filings(), [tick]);
   const fy = `${new Date().getFullYear() - 1}-${String(new Date().getFullYear() % 100).padStart(2, '0')}`;
   const addDemo = (): void => {
@@ -426,6 +431,7 @@ function MGT7Panel({ bap }: { bap: BAPAccountId }): JSX.Element {
 
 function ADT1Panel({ bap }: { bap: BAPAccountId }): JSX.Element {
   const [tick, setTick] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const filings = useMemo(() => listADT1Filings(), [tick]);
   const fy = `${new Date().getFullYear() - 1}-${String(new Date().getFullYear() % 100).padStart(2, '0')}`;
   const addDemo = (): void => {
@@ -466,6 +472,7 @@ function ADT1Panel({ bap }: { bap: BAPAccountId }): JSX.Element {
 
 function DSCVaultPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
   const [tick, setTick] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const entries = useMemo(() => listDSCVaultEntries(), [tick]);
   const addDemo = (): void => {
     addDSCVaultEntry({
@@ -505,6 +512,7 @@ function StatutoryRegistersPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
   const types = useMemo(() => getRegisterTypes(), []);
   const [active, setActive] = useState<StatutoryRegisterType>(types[0].register_type);
   const [tick, setTick] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const entries = useMemo(() => listRegisterEntries(active, { is_active: true }), [active, tick]);
   const addDemo = (): void => {
     recordRegisterEntry({
