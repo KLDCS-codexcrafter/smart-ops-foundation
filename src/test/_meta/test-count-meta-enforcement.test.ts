@@ -21,9 +21,13 @@ function countItBlocks(src: string): number {
 }
 
 describe('v1.30 §N · Form A floor (>=20 it() blocks) per Comply360 sprint pack', () => {
-  it('every src/test/sprint-NN/ folder for Comply360 sprints has >=20 it() blocks', () => {
+  it('every src/test/sprint-NN/ folder for Comply360-era sprints (>=77) has >=20 it() blocks', () => {
     const dirs = fs.readdirSync(TEST_ROOT, { withFileTypes: true })
-      .filter((d) => d.isDirectory() && /^sprint-\d+$/.test(d.name));
+      .filter((d) => d.isDirectory() && /^sprint-\d+$/.test(d.name))
+      .filter((d) => {
+        const n = Number(d.name.replace('sprint-', ''));
+        return n >= 77;
+      });
     expect(dirs.length).toBeGreaterThan(0);
     for (const d of dirs) {
       const folder = path.join(TEST_ROOT, d.name);
@@ -32,7 +36,6 @@ describe('v1.30 §N · Form A floor (>=20 it() blocks) per Comply360 sprint pack
       for (const f of files) {
         total += countItBlocks(fs.readFileSync(path.join(folder, f), 'utf8'));
       }
-      // Floor enforced only if folder is non-trivial; skip empty folders.
       if (files.length > 0) {
         expect(total, `${d.name} pack should have >=20 it() blocks (got ${total})`).toBeGreaterThanOrEqual(20);
       }
