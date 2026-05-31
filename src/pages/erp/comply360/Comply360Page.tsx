@@ -87,6 +87,10 @@ export default function Comply360Page(): JSX.Element {
         return <AIControlCenterPage />;
       case 'cfo-pitch-deck':
         return <CFOPitchDeckPage />;
+      case 'fire-safety':
+        return <FireSafetyDashboardPage />;
+      case 'industrial-safety':
+        return <IndustrialSafetyDashboardPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':
