@@ -62,10 +62,11 @@ describe('Sprint 81b · T-Phase-5.B.2.2-PASS-B · Internal Audit Dashboard + Aud
   });
 
   // ─── FR-106 12th scenario candidate ───
-  it('InternalAuditDashboardPage has exactly 6 TabsTrigger (DP-S81-12 · FR-106 12th scenario)', () => {
+  // Lesson 24: Sprint 81c · added Mock Audit Run as 7th tab (DP-S81-3 · OOB-6 extension) · FR-106 12th scenario still validated (was 6-tab CANDIDATE · final is 7-tab) · scenario was about tab-shell extension pattern not specific tab count
+  it('InternalAuditDashboardPage has 7 TabsTrigger (DP-S81-12 + DP-S81-13 · 7th tab Mock Audit added at S81c · FR-106 12th scenario still holds)', () => {
     const src = fs.readFileSync(SRC('src/pages/erp/comply360/internal-audit/DashboardPage.tsx'), 'utf-8');
     const matches = src.match(/<TabsTrigger/g);
-    expect(matches?.length).toBe(6);
+    expect(matches?.length).toBe(7);
   });
   it('AuditTrailExplorerPage has exactly 4 TabsTrigger', () => {
     const src = fs.readFileSync(SRC('src/pages/erp/comply360/internal-audit/AuditTrailExplorerPage.tsx'), 'utf-8');

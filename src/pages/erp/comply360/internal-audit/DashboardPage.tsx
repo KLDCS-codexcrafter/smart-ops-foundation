@@ -21,6 +21,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { runMockAudit, type MockAuditRun } from '@/lib/comply360-mock-audit-simulator-engine';
+import { generateRecommendations, type IARecommendation } from '@/lib/comply360-ia-recommendation-engine';
 import {
   listEngagementPlans,
   listAuditUniverse,
@@ -164,13 +166,14 @@ export default function InternalAuditDashboardPage(): JSX.Element {
       </section>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-7">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="engagements">Engagements</TabsTrigger>
           <TabsTrigger value="risk-heatmap">Risk Heat-Map</TabsTrigger>
           <TabsTrigger value="issue-log">Issue Log</TabsTrigger>
           <TabsTrigger value="control-effectiveness">Control Effectiveness</TabsTrigger>
           <TabsTrigger value="maturity">Maturity Detail</TabsTrigger>
+          <TabsTrigger value="mock-audit">Mock Audit</TabsTrigger>
         </TabsList>
 
         {/* Tab 1 · Overview · Q17 Modules 9-12 surfaced as tiles */}
@@ -273,6 +276,11 @@ export default function InternalAuditDashboardPage(): JSX.Element {
               <div className="font-mono text-3xl font-bold">{maturityPct}% · {maturityBand}</div>
             </div>
           </Card>
+        </TabsContent>
+
+        {/* Tab 7 · Mock Audit Run · S81c DP-S81-3 · DP-S81-10 · OOB-6 extension */}
+        <TabsContent value="mock-audit">
+          <MockAuditRunPanel engagementId={engagement.id} bap={bap} />
         </TabsContent>
       </Tabs>
     </div>
@@ -439,3 +447,107 @@ function RiskHeatmapView({ heatmap, riskCount }: { heatmap: RiskHeatmap | null; 
     </Card>
   );
 }
+
+// ── Tab 7 · Mock Audit Run Panel · S81c DP-S81-3 · DP-S81-10 · OOB-6 extension ──
+function MockAuditRunPanel({ engagementId, bap }: { engagementId: string; bap: BAPAccountId }): JSX.Element {
+  const [run, setRun] = useState<MockAuditRun | null>(null);
+  const [recs, setRecs] = useState<IARecommendation[]>([]);
+  const [busy, setBusy] = useState(false);
+
+  const handleRun = (): void => {
+    setBusy(true);
+    try {
+      const r = runMockAudit({ engagement_id: engagementId, initiated_by_bap: bap });
+      setRun(r);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const handleRecs = (): void => {
+    setRecs(generateRecommendations({ engagement_id: engagementId, max_recommendations: 10 }));
+  };
+  const handleDownload = (): void => {
+    if (!run) return;
+    const blob = new Blob([JSON.stringify(run, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `mock-audit-${run.id}.json`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <Card className="p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-semibold">Mock Audit Simulator</h3>
+          <p className="text-xs text-muted-foreground">
+            Orchestrates 18 analytics procedures + 27 payroll modules + Audit-Ready Score.
+          </p>
+        </div>
+        <Button onClick={handleRun} disabled={busy}>
+          {busy ? 'Running…' : 'Run Mock Audit'}
+        </Button>
+      </div>
+      {run && (
+        <div className="space-y-3">
+          <div className="rounded-md border p-3 flex items-center justify-between">
+            <div>
+              <div className="text-xs text-muted-foreground uppercase">Engagement Readiness</div>
+              <div className="font-mono text-4xl font-bold">{run.readiness_percentage}%</div>
+              <Badge>{run.readiness_band}</Badge>
+            </div>
+            <div className="text-sm text-right space-y-1">
+              <div>Analytics: {run.analytics_procedures_run} ({run.analytics_procedures_with_exceptions} excp.)</div>
+              <div>Payroll: {run.payroll_modules_run} ({run.payroll_modules_with_exceptions} excp.)</div>
+              <div>Findings: {run.open_findings_count} (C:{run.critical_findings_count} · H:{run.high_findings_count})</div>
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-3">
+            <Card className="p-3">
+              <h4 className="font-semibold text-sm mb-2">Expected Auditor Questions ({run.expected_questions.length})</h4>
+              <ul className="text-xs space-y-1 max-h-48 overflow-auto">
+                {run.expected_questions.map((q) => (
+                  <li key={q.id} className="border-b pb-1">
+                    <Badge>{q.priority}</Badge> {q.question_text}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+            <Card className="p-3">
+              <h4 className="font-semibold text-sm mb-2">Likely Findings ({run.likely_findings.length})</h4>
+              <ul className="text-xs space-y-1 max-h-48 overflow-auto">
+                {run.likely_findings.map((f) => (
+                  <li key={f.id} className="border-b pb-1">
+                    <Badge>{f.severity}</Badge> {f.description}
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          </div>
+          <Card className="p-3 text-xs">
+            <h4 className="font-semibold text-sm mb-2">Mock Engagement Letter Response</h4>
+            <div>Scope: <Badge>{run.mock_engagement_letter_response.scope_acceptance}</Badge></div>
+            <div>Estimated hours: <span className="font-mono">{run.mock_engagement_letter_response.estimated_audit_hours}</span></div>
+            <div>Fee range: <span className="font-mono">₹{run.mock_engagement_letter_response.estimated_fee_range_inr.min.toLocaleString('en-IN')} – ₹{run.mock_engagement_letter_response.estimated_fee_range_inr.max.toLocaleString('en-IN')}</span></div>
+            <div>Completion: <span className="font-mono">{run.mock_engagement_letter_response.proposed_completion_weeks}w</span></div>
+          </Card>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={handleDownload}>Download JSON</Button>
+            <Button size="sm" variant="outline" onClick={handleRecs}>Generate IA Recommendations</Button>
+          </div>
+          {recs.length > 0 && (
+            <Card className="p-3">
+              <h4 className="font-semibold text-sm mb-2">IA Recommendations ({recs.length})</h4>
+              <ul className="text-xs space-y-1">
+                {recs.map((r) => (
+                  <li key={r.id}><Badge>{r.priority}</Badge> {r.recommendation_text}</li>
+                ))}
+              </ul>
+            </Card>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+
