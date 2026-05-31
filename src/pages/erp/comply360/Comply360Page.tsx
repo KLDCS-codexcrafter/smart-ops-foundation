@@ -74,6 +74,8 @@ export default function Comply360Page(): JSX.Element {
         return <AuditFrameworkDashboardPage />;
       case 'rule-11g':
         return <Rule11gReportPage />;
+      case 'internal-audit':
+        return <InternalAuditDashboardPage />;
       // remaining mega-menus · modules light up in later sprints per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;
