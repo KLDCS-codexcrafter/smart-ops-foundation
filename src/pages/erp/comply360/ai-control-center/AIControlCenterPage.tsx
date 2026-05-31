@@ -41,14 +41,7 @@ export default function AIControlCenterPage(): JSX.Element {
         <TabsContent value="modules">
           <div className="p-6 grid grid-cols-4 gap-3">
             {modules.map((m) => (
-              <Card key={m.module_type} className="p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-sm">{m.label}</span>
-                  {m.oob_ref && <Badge variant="secondary">{m.oob_ref}</Badge>}
-                </div>
-                <div className="text-xs text-muted-foreground">{m.description}</div>
-                <div className="mt-2 text-xs font-mono">runs: {listAIModuleExecutions({ module_type: m.module_type }).length}</div>
-              </Card>
+              <AIModuleCard key={m.module_type} module={m} runs={listAIModuleExecutions({ module_type: m.module_type }).length} />
             ))}
           </div>
         </TabsContent>
