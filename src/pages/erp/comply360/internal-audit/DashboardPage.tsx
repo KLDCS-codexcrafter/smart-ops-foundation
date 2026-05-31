@@ -277,6 +277,11 @@ export default function InternalAuditDashboardPage(): JSX.Element {
             </div>
           </Card>
         </TabsContent>
+
+        {/* Tab 7 · Mock Audit Run · S81c DP-S81-3 · DP-S81-10 · OOB-6 extension */}
+        <TabsContent value="mock-audit">
+          <MockAuditRunPanel engagementId={engagement.id} bap={bap} />
+        </TabsContent>
       </Tabs>
     </div>
   );
