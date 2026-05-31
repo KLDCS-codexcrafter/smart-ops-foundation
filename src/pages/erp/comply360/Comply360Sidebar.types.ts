@@ -14,4 +14,5 @@ export type Comply360Module =
   | 'audit-framework'  // NEW · S80c · Statutory Audit Dashboard
   | 'rule-11g'         // NEW · S80f · MCA Rule 11(g) Auditor Report Generator
   | 'fire-safety' | 'industrial-safety'    // 🆕 S89 · Floor 5 OPENS · Fire Safety + Industrial Safety
+  | 'environmental'                         // 🆕 S90 · Floor 5.2 · Environmental Compliance Pt 1
   | 'reports' | 'ai-center' | 'docs' | 'integrations' | 'workflow' | 'admin';

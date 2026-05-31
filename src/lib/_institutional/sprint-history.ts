@@ -466,8 +466,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 89 T-Phase-5.F.5.1 · Comply360 Floor 5 Comprehensive Compliance Arc 5.1 · FLOOR 5 OPENS · Q33 Fire Safety + Industrial Safety · 2 NEW SIBLINGs + 2 NEW PAGES · 15-streak ⭐
   {
     sprintNumber: 89, code: 'T-Phase-5.F.5.1', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: '58d4246140ac2ac9681dfafab59cd5209ef7c381', loc: 1800,
+    headSha: '59b67d976e9afd8b89f3fda5aed408cb400fe0a0', predecessorSha: '58d4246140ac2ac9681dfafab59cd5209ef7c381', loc: 1800,
     newSiblings: ['comply360-fire-safety-engine', 'comply360-industrial-safety-engine'],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 90 T-Phase-5.F.5.2 · Comply360 Floor 5.2 · Environmental Compliance Pt 1 · Q34 · 2 NEW SIBLINGs + 2 NEW PAGES · 16-streak ⭐
+  {
+    sprintNumber: 90, code: 'T-Phase-5.F.5.2', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '59b67d976e9afd8b89f3fda5aed408cb400fe0a0', loc: 1400,
+    newSiblings: ['comply360-environmental-engine', 'comply360-eia-engine'],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
 ];

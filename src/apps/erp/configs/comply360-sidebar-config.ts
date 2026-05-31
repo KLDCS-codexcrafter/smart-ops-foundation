@@ -12,7 +12,7 @@ import {
   BarChart3, FileBarChart, Sparkles, Folder, Plug, Workflow, Settings,
   Percent, ShieldAlert, HardHat, UserCheck, Bike,
   Landmark, TrendingUp, Building2, Globe2, Brain, Presentation,
-  Flame, Wrench,
+  Flame, Wrench, TreePine,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -57,4 +57,6 @@ export const comply360SidebarItems: SidebarItem[] = [
   // DESIGN-DECISION-FLAG: spec said keyboard 'c F' · 'c F' already taken by sector-fema · used 'c Y' instead
   { id: 'fire-safety',       type: 'group', label: 'Fire Safety',                     icon: Flame,        keyboard: 'c Y', children: [] },
   { id: 'industrial-safety', type: 'group', label: 'Industrial Safety',               icon: Wrench,       keyboard: 'c I', children: [] },
+  // 🆕 Sprint 90 · Floor 5.2 · Environmental Compliance Pt 1
+  { id: 'environmental',     type: 'group', label: 'Environmental Compliance',        icon: TreePine,     keyboard: 'c E', children: [] },
 ];
