@@ -356,7 +356,7 @@ export function tearDownSampleEngagement(run_id: string, by_bap: BAPAccountId): 
   writeJson(RUNS_KEY, all);
   logAudit({
     entityCode: activeEntityCode(),
-    action: 'delete',
+    action: 'cancel',
     entityType: AUD('sample_engagement_seed_run'),
     recordId: run_id,
     recordLabel: `Sample engagement seed tear-down by ${by_bap}`,
