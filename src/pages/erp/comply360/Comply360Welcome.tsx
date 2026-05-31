@@ -79,6 +79,14 @@ export function Comply360Welcome({ onNavigate }: Props): JSX.Element {
     { icon: FileBarChart,title: 'Reports & Analytics',  description: '12 modules · D.3 InsightX integration. Phase 8.',                     target: 'reports' },
   ];
 
+  // Sprint 88 · DP-S88 · demo seed + first-impression extension
+  const [seedStats, setSeedStats] = useState(() => getDemoSeedStats());
+  const seeded = isDemoSeeded();
+  const handleApplySeed = (): void => {
+    applyDemoSeed();
+    setSeedStats(getDemoSeedStats());
+  };
+
   return (
     <div className="min-h-screen p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex items-start gap-4">
