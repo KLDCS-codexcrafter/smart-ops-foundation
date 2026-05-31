@@ -53,4 +53,8 @@ export const comply360SidebarItems: SidebarItem[] = [
   { id: 'sector-fema',       type: 'group', label: 'FEMA Sector-Pack',                icon: Globe2,       keyboard: 'c F', children: [] },
   { id: 'ai-control-center', type: 'group', label: 'AI Control Center (OOB-2/9)',     icon: Brain,        keyboard: 'c A', children: [] },
   { id: 'cfo-pitch-deck',    type: 'group', label: 'CFO Pitch Deck (OOB-3)',          icon: Presentation, keyboard: 'c D', children: [] },
+  // 🆕 Sprint 89 · Floor 5 OPENS · Fire Safety + Industrial Safety
+  // DESIGN-DECISION-FLAG: spec said keyboard 'c F' · 'c F' already taken by sector-fema · used 'c Y' instead
+  { id: 'fire-safety',       type: 'group', label: 'Fire Safety',                     icon: Flame,        keyboard: 'c Y', children: [] },
+  { id: 'industrial-safety', type: 'group', label: 'Industrial Safety',               icon: Wrench,       keyboard: 'c I', children: [] },
 ];
