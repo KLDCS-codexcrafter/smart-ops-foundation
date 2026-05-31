@@ -379,16 +379,29 @@ export const SPRINTS: SprintEntry[] = [
     ],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 82 T-Phase-5.B.2.3 · Comply360 Floor 2 FINALE · External Audit + Survival Kit + DSC + Legal & Notices · 5 NEW SIBLINGs · FLOOR 2 OFFICIALLY CLOSES · target 8-streak ⭐
+  // 🆕 Sprint 82 T-Phase-5.B.2.3 · Comply360 Floor 2 FINALE · External Audit + Survival Kit + DSC + Legal & Notices · 5 NEW SIBLINGs · FLOOR 2 OFFICIALLY CLOSES · 8-streak ⭐
   {
     sprintNumber: 82, code: 'T-Phase-5.B.2.3', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '99cd1525a3b03780de2267b6c32576e5a63eca3d', loc: 1800,
+    headSha: '6f9573e1db36beb25e376fa88d144e7a06ab9072', predecessorSha: '99cd1525a3b03780de2267b6c32576e5a63eca3d', loc: 1800,
     newSiblings: [
       'comply360-external-audit-engine',
       'comply360-external-confirmation-engine',
       'comply360-survival-kit-engine',
       'comply360-dsc-engine',
       'comply360-legal-notices-engine',
+    ],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 83 T-Phase-5.C.3.1 · Comply360 Floor 3 ROC-Suite Arc 3.1 OPENS · Q29 Part 1 · 5 NEW SIBLINGs · target 9-streak ⭐ · SPRINT #100 MILESTONE
+  {
+    sprintNumber: 83, code: 'T-Phase-5.C.3.1', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '6f9573e1db36beb25e376fa88d144e7a06ab9072', loc: 2400,
+    newSiblings: [
+      'comply360-dir3-kyc-engine',
+      'comply360-aoc4-engine',
+      'comply360-mgt7-engine',
+      'comply360-adt1-engine',
+      'comply360-statutory-registers-engine',
     ],
     bankDate: null, provenance: 'CONFIRMED',
   },
