@@ -47,6 +47,8 @@ import DPDPDashboardPage from './dpdp/DPDPDashboardPage';
 import CyberSecurityDashboardPage from './cyber-security/CyberSecurityDashboardPage';
 import QualityStandardsDashboardPage from './quality-standards/QualityStandardsDashboardPage';
 import LabourTier2DashboardPage from './labour-tier2/LabourTier2DashboardPage';
+import MCATier2DashboardPage from './mca-tier2/MCATier2DashboardPage';
+import LegalIPRDashboardPage from './legal-ipr/LegalIPRDashboardPage';
 import { Comply360Breadcrumb } from './_shared/Comply360Breadcrumb';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
@@ -109,6 +111,10 @@ export default function Comply360Page(): JSX.Element {
         return <QualityStandardsDashboardPage />;
       case 'labour-tier2':
         return <LabourTier2DashboardPage />;
+      case 'mca-tier2':
+        return <MCATier2DashboardPage />;
+      case 'legal-ipr':
+        return <LegalIPRDashboardPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':

@@ -494,8 +494,21 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 93 T-Phase-5.F.5.5 · Comply360 Floor 5.5 · Quality + Labour Tier-2 · Q37 · 2 NEW SIBLINGs + 2 NEW PAGES · 19-streak ⭐
   {
     sprintNumber: 93, code: 'T-Phase-5.F.5.5', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '98f820391f5bab0193a2195a0562c4cf06eda75b', loc: 1300,
+    headSha: '29e3c6d9946283d821cd257ac1c7b1562f676479', predecessorSha: '98f820391f5bab0193a2195a0562c4cf06eda75b', loc: 1300,
     newSiblings: ['comply360-quality-standards-engine', 'comply360-labour-tier2-engine'],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 94 T-Phase-5.F.5.6 · Comply360 Floor 5.6 CAPSTONE · CLOSES FLOOR 5 · Q38 MCA T2 + PMLA + IPR + Legal Contracts + GST/IT/Exim T2 · 5 NEW SIBLINGs + 2 NEW PAGES · 20-streak ⭐ · 161/161 obligations native 100%
+  {
+    sprintNumber: 94, code: 'T-Phase-5.F.5.6', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '29e3c6d9946283d821cd257ac1c7b1562f676479', loc: 2400,
+    newSiblings: [
+      'comply360-mca-tier2-engine',
+      'comply360-pmla-engine',
+      'comply360-ipr-engine',
+      'comply360-legal-contracts-engine',
+      'comply360-tier2-extensions-engine',
+    ],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
 ];
