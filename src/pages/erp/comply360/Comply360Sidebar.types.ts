@@ -6,7 +6,7 @@
 export type Comply360Module =
   | 'welcome'
   | 'home' | 'calendar' | 'companies' | 'tax-gst' | 'tds' | 'payroll' | 'payments'
-  | 'challan-vault' | 'roc' | 'fixed-assets' | 'internal-audit' | 'external-audit'
+  | 'challan-vault' | 'roc' | 'whistleblower' | 'fixed-assets' | 'internal-audit' | 'external-audit'
   | 'exim' | 'vendor' | 'licenses' | 'esg' | 'legal' | 'finance-hub'
   | 'audit-framework'  // NEW · S80c · Statutory Audit Dashboard
   | 'rule-11g'         // NEW · S80f · MCA Rule 11(g) Auditor Report Generator

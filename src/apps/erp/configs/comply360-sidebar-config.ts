@@ -10,7 +10,7 @@ import {
   Home, Calendar, Building, Receipt, Users, Wallet, Archive, Scroll,
   Package, Search, Shield, Globe, Truck, Award, Leaf, Gavel,
   BarChart3, FileBarChart, Sparkles, Folder, Plug, Workflow, Settings,
-  Percent,
+  Percent, ShieldAlert,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
