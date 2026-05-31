@@ -181,7 +181,7 @@ export function generateRecommendations(opts: {
         id: uid('rec'),
         engagement_id: opts.engagement_id,
         category: 'risk_review',
-        recommendation_text: `Review risk entry "${r.risk_title}" (last reviewed > 90 days ago).`,
+        recommendation_text: `Review risk entry "${r.risk_code}" (last reviewed > 90 days ago).`,
         priority: 'medium',
         trigger_pattern: 'risk_review_overdue',
         evidence_refs: [r.id],
