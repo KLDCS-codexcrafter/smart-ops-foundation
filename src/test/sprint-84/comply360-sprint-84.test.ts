@@ -267,9 +267,9 @@ describe('Sprint 84 · T-Phase-5.C.3.2 · Q29 Part 2 ROC-Suite · FLOOR 3 PASS 2
       expect(src).toContain(`value="${v}"`);
     }
   });
-  it('Section393Page grid-cols-11', () => {
+  it('Section393Page grid-cols (S85 expanded 11→14)', () => {
     const src = fs.readFileSync(SRC('src/pages/erp/comply360/roc/Section393Page.tsx'), 'utf-8');
-    expect(src).toContain('grid-cols-11');
+    expect(src).toContain('grid-cols-14');
   });
 
   // ESLint STRICT · v1.24 environment-adaptive runner (Lesson 35)
