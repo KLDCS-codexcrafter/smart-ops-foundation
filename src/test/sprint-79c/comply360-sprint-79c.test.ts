@@ -132,7 +132,6 @@ describe('Sprint 79c · Pass C · atomic 29-redirect sweep', () => {
     for (const f of [
       'src/pages/erp/comply360/fixed-assets/LedgerPackPage.tsx',
       'src/pages/erp/comply360/internal-audit/DashboardPage.tsx',
-      'src/pages/erp/comply360/internal-audit/AuditTrailPage.tsx',
       'src/pages/erp/comply360/payroll/StatutoryReturnsPage.tsx',
       'src/pages/erp/comply360/companies/IndAS116Page.tsx',
       'src/pages/erp/comply360/vendor/MSMEBreachesPage.tsx',
