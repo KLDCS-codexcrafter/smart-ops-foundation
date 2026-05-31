@@ -241,7 +241,8 @@ function InnerSurface(): JSX.Element {
   );
 }
 
-type SubTab = 'section393' | 'dir3-kyc' | 'aoc4' | 'mgt7' | 'adt1' | 'dsc-vault' | 'statutory-registers';
+type SubTab = 'section393' | 'dir3-kyc' | 'aoc4' | 'mgt7' | 'adt1' | 'dsc-vault' | 'statutory-registers'
+            | 'event-filings' | 'xbrl-builder' | 'schedule-iv-v' | 'schedule-vii';
 
 export default function Section393Page(): JSX.Element {
   const [tab, setTab] = useState<SubTab>('section393');
@@ -249,7 +250,7 @@ export default function Section393Page(): JSX.Element {
   return (
     <div className="p-4">
       <Tabs value={tab} onValueChange={(v) => setTab(v as SubTab)}>
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-11">
           <TabsTrigger value="section393">Section 393</TabsTrigger>
           <TabsTrigger value="dir3-kyc">DIR-3 KYC</TabsTrigger>
           <TabsTrigger value="aoc4">AOC-4</TabsTrigger>
@@ -257,6 +258,10 @@ export default function Section393Page(): JSX.Element {
           <TabsTrigger value="adt1">ADT-1</TabsTrigger>
           <TabsTrigger value="dsc-vault">DSC Vault</TabsTrigger>
           <TabsTrigger value="statutory-registers">Statutory Registers</TabsTrigger>
+          <TabsTrigger value="event-filings">Event Filings</TabsTrigger>
+          <TabsTrigger value="xbrl-builder">XBRL Builder</TabsTrigger>
+          <TabsTrigger value="schedule-iv-v">Schedule IV/V</TabsTrigger>
+          <TabsTrigger value="schedule-vii">Schedule VII (CSR)</TabsTrigger>
         </TabsList>
         <TabsContent value="section393"><InnerSurface /></TabsContent>
         <TabsContent value="dir3-kyc"><DIR3KYCPanel bap={bap} /></TabsContent>
@@ -265,6 +270,10 @@ export default function Section393Page(): JSX.Element {
         <TabsContent value="adt1"><ADT1Panel bap={bap} /></TabsContent>
         <TabsContent value="dsc-vault"><DSCVaultPanel bap={bap} /></TabsContent>
         <TabsContent value="statutory-registers"><StatutoryRegistersPanel bap={bap} /></TabsContent>
+        <TabsContent value="event-filings"><EventFilingsPanel bap={bap} /></TabsContent>
+        <TabsContent value="xbrl-builder"><XBRLBuilderPanel bap={bap} /></TabsContent>
+        <TabsContent value="schedule-iv-v"><ScheduleIVVPanel bap={bap} /></TabsContent>
+        <TabsContent value="schedule-vii"><ScheduleVIIPanel bap={bap} /></TabsContent>
       </Tabs>
     </div>
   );
