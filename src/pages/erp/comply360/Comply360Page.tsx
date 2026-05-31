@@ -45,6 +45,8 @@ import EnvironmentalDashboardPage from './environmental/EnvironmentalDashboardPa
 import WasteManagementDashboardPage from './waste-management/WasteManagementDashboardPage';
 import DPDPDashboardPage from './dpdp/DPDPDashboardPage';
 import CyberSecurityDashboardPage from './cyber-security/CyberSecurityDashboardPage';
+import QualityStandardsDashboardPage from './quality-standards/QualityStandardsDashboardPage';
+import LabourTier2DashboardPage from './labour-tier2/LabourTier2DashboardPage';
 import { Comply360Breadcrumb } from './_shared/Comply360Breadcrumb';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
@@ -103,6 +105,10 @@ export default function Comply360Page(): JSX.Element {
         return <DPDPDashboardPage />;
       case 'cyber-security':
         return <CyberSecurityDashboardPage />;
+      case 'quality-standards':
+        return <QualityStandardsDashboardPage />;
+      case 'labour-tier2':
+        return <LabourTier2DashboardPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':

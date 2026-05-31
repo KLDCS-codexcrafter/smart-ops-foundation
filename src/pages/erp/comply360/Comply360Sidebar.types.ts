@@ -17,4 +17,5 @@ export type Comply360Module =
   | 'environmental'                         // 🆕 S90 · Floor 5.2 · Environmental Compliance Pt 1
   | 'waste-management'                      // 🆕 S91 · Floor 5.3 · Waste Management (6 sub-regimes)
   | 'dpdp' | 'cyber-security'               // 🆕 S92 · Floor 5.4 · DPDP Act 2023 + Cyber Security CERT-In
+  | 'quality-standards' | 'labour-tier2'    // 🆕 S93 · Floor 5.5 · Quality/Standards + Labour Tier-2
   | 'reports' | 'ai-center' | 'docs' | 'integrations' | 'workflow' | 'admin';
