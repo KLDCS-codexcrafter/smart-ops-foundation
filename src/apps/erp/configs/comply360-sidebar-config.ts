@@ -12,7 +12,7 @@ import {
   BarChart3, FileBarChart, Sparkles, Folder, Plug, Workflow, Settings,
   Percent, ShieldAlert, HardHat, UserCheck, Bike,
   Landmark, TrendingUp, Building2, Globe2, Brain, Presentation,
-  Flame, Wrench,
+  Flame, Wrench, TreePine,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
