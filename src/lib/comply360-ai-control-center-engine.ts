@@ -102,8 +102,8 @@ export function executeAIModule(
     summary = `NLP audit-ask intents available: ${getQueryPatterns().length}`;
   } else if (input.module_type === 'mock_audit_simulator') {
     const pct = computeReadinessPercentage({
-      green_filings: 8, amber_filings: 2, red_filings: 0,
-      hash_chain_verified: true, audit_trail_coverage: 95,
+      audit_ready_score: 80, control_effectiveness: 75,
+      open_critical_findings: 0, open_high_findings: 1, analytics_exception_rate: 5,
     });
     summary = `Mock audit readiness ${pct}% · band ${mapReadinessBand(pct)}`;
   }
@@ -244,8 +244,8 @@ export function getAIModules(): Array<{ module_type: AIModuleType; label: string
   ];
 }
 
-registerAuditEntityType({ id: 'ai_module_execution', module: 'ai-control', label: 'AI · Module Execution' });
-registerAuditEntityType({ id: 'compliance_roi_calculation', module: 'ai-control', label: 'AI · Compliance ROI (OOB-2)' });
-registerAuditEntityType({ id: 'ai_tutor_session', module: 'ai-control', label: 'AI · Tutor Session (OOB-9)' });
-registerAuditEntityType({ id: 'ai_recommendation', module: 'ai-control', label: 'AI · Recommendation' });
-registerAuditEntityType({ id: 'ai_module_status_change', module: 'ai-control', label: 'AI · Module Status Change' });
+registerAuditEntityType({ id: 'ai_module_execution', module: 'other', label: 'AI · Module Execution' });
+registerAuditEntityType({ id: 'compliance_roi_calculation', module: 'other', label: 'AI · Compliance ROI (OOB-2)' });
+registerAuditEntityType({ id: 'ai_tutor_session', module: 'other', label: 'AI · Tutor Session (OOB-9)' });
+registerAuditEntityType({ id: 'ai_recommendation', module: 'other', label: 'AI · Recommendation' });
+registerAuditEntityType({ id: 'ai_module_status_change', module: 'other', label: 'AI · Module Status Change' });
