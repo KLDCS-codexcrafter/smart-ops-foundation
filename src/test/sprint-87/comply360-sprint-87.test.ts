@@ -136,39 +136,51 @@ describe('Sprint 87 · T-Phase-5.D.4.2 · Q31 Sector-Pack + Q27b AI Control Cent
     expect(l.id).toBeDefined();
     expect(listLoanAccounts().length).toBe(1);
     recordALMReport({
-      fy: '2026-27', as_of_date: '2026-06-30',
-      bucket: '31_90_days', inflow_inr: 5_000_000, outflow_inr: 4_000_000,
-      gap_inr: 1_000_000, cumulative_gap_inr: 1_000_000, recorded_by_bap: BAP,
+      fy: '2026-27', report_date: '2026-06-30',
+      buckets: {
+        '1_7_days':     { assets_inr: 1_000_000, liabilities_inr: 800_000, gap_inr: 200_000, cumulative_gap_inr: 200_000 },
+        '8_14_days':    { assets_inr: 500_000,   liabilities_inr: 600_000, gap_inr: -100_000, cumulative_gap_inr: 100_000 },
+        '15_30_days':   { assets_inr: 0, liabilities_inr: 0, gap_inr: 0, cumulative_gap_inr: 100_000 },
+        '31_90_days':   { assets_inr: 0, liabilities_inr: 0, gap_inr: 0, cumulative_gap_inr: 100_000 },
+        '91_180_days':  { assets_inr: 0, liabilities_inr: 0, gap_inr: 0, cumulative_gap_inr: 100_000 },
+        '181_365_days': { assets_inr: 0, liabilities_inr: 0, gap_inr: 0, cumulative_gap_inr: 100_000 },
+        '1_3_years':    { assets_inr: 0, liabilities_inr: 0, gap_inr: 0, cumulative_gap_inr: 100_000 },
+        '3_5_years':    { assets_inr: 0, liabilities_inr: 0, gap_inr: 0, cumulative_gap_inr: 100_000 },
+        'over_5_years': { assets_inr: 0, liabilities_inr: 0, gap_inr: 0, cumulative_gap_inr: 100_000 },
+      },
+      recorded_by_bap: BAP,
     });
     expect(listALMReports({ fy: '2026-27' }).length).toBe(1);
     const lcr = computeLCR({
-      fy: '2026-27', as_of_date: '2026-06-30',
-      hqla_inr: 10_000_000, net_cash_outflow_inr: 8_000_000, recorded_by_bap: BAP,
+      fy: '2026-27', quarter: 'Q1',
+      hqla_inr: 10_000_000, net_cash_outflow_inr: 8_000_000,
+      recorded_by_bap: BAP,
     });
-    expect(lcr.lcr_pct).toBeCloseTo(125, 0);
+    expect(lcr.lcr_ratio).toBeCloseTo(1.25, 2);
+    expect(lcr.is_compliant).toBe(true);
     expect(listLCRCalculations({ fy: '2026-27' }).length).toBe(1);
   });
 
   // ── SEBI LODR ─────────────────────────────────────────────────────
   it('SEBI · quarterly filing + audit committee + material disclosure', () => {
     createQuarterlyFiling({
-      fy: '2026-27', quarter: 'Q1', filing_due_date: '2026-08-14',
-      revenue_inr: 100_000_000, profit_after_tax_inr: 10_000_000, eps_inr: 12.5,
-      prepared_by_bap: BAP,
+      fy: '2026-27', quarter: 'Q1', filing_deadline: '2026-08-14',
+      reg33_data: { revenue_inr: 100_000_000, pat_inr: 10_000_000, eps_inr: 12.5, qualifications: [] },
+      recorded_by_bap: BAP,
     });
     expect(listQuarterlyFilings({ fy: '2026-27' }).length).toBe(1);
     const comp = recordAuditCommitteeComposition({
       fy: '2026-27', composition_date: '2026-04-01',
-      total_members: 3, independent_directors_count: 2, chairperson_is_independent: true,
-      members_with_financial_literacy: 3, recorded_by_bap: BAP,
+      member_count: 3, independent_director_count: 2, is_chairman_independent: true,
+      meetings_held_count: 4, recorded_by_bap: BAP,
     });
     expect(verifyAuditCommitteeCompliance(comp.id).is_compliant).toBe(true);
     expect(listAuditCommitteeCompositions({ fy: '2026-27' }).length).toBe(1);
     expect(typeof getAuditCommitteeMeetingsForFY('2026-27')).toBe('number');
     recordMaterialDisclosure({
-      fy: '2026-27', event_date: '2026-05-01', disclosure_date: '2026-05-01',
+      fy: '2026-27', event_date: '2026-05-01T00:00:00Z', disclosure_date: '2026-05-01T06:00:00Z',
       category: 'financial', event_summary: 'Q1 results approved',
-      hours_to_disclosure: 6, recorded_by_bap: BAP,
+      recorded_by_bap: BAP,
     });
     expect(listMaterialDisclosures({ fy: '2026-27', category: 'financial' }).length).toBe(1);
   });
@@ -176,7 +188,8 @@ describe('Sprint 87 · T-Phase-5.D.4.2 · Q31 Sector-Pack + Q27b AI Control Cent
   // ── RERA ──────────────────────────────────────────────────────────
   it('RERA · project registration + QPR', () => {
     const p = registerRERAProject({
-      project_name: 'Sunrise Heights', state_rera_authority: 'MahaRERA',
+      project_name: 'Sunrise Heights', rera_registration_no: null,
+      state_rera_authority: 'MahaRERA',
       promoter_name: 'Operix Realty', project_type: 'residential',
       total_units: 120, total_area_sqft: 250_000,
       estimated_completion_date: '2028-12-31', recorded_by_bap: BAP,
@@ -185,7 +198,8 @@ describe('Sprint 87 · T-Phase-5.D.4.2 · Q31 Sector-Pack + Q27b AI Control Cent
     recordQuarterlyProgress({
       project_id: p.id, fy: '2026-27', quarter: 'Q1',
       reporting_date: '2026-06-30',
-      construction_progress_pct: 25, units_booked: 30, amount_collected_inr: 50_000_000,
+      physical_progress_pct: 25, financial_progress_pct: 30,
+      units_sold: 30, units_remaining: 90, receivables_inr: 50_000_000,
       recorded_by_bap: BAP,
     });
     expect(listProgressReports({ project_id: p.id, fy: '2026-27' }).length).toBe(1);
@@ -194,19 +208,25 @@ describe('Sprint 87 · T-Phase-5.D.4.2 · Q31 Sector-Pack + Q27b AI Control Cent
   // ── FEMA ──────────────────────────────────────────────────────────
   it('FEMA · FC-GPR + FC-TRS + Annual Return + mark filed', () => {
     const g = createFCGPRFiling({
-      transaction_date: '2026-04-15', investor_name: 'XYZ Holdings LLC',
-      investor_country: 'United States', amount_usd: 1_000_000, amount_inr: 83_000_000,
-      shares_allotted: 1_000_000, prepared_by_bap: BAP,
+      filing_date: '2026-04-15', investor_name: 'XYZ Holdings LLC',
+      investor_country: 'United States',
+      investment_amount_inr: 83_000_000, investment_amount_usd: 1_000_000,
+      shares_allotted: 1_000_000, share_price_inr: 83,
+      filing_deadline: '2026-05-15',
+      recorded_by_bap: BAP,
     });
     expect(listFCGPRFilings().length).toBe(1);
     createFCTRSFiling({
-      transaction_date: '2026-05-01', transferor_name: 'A', transferee_name: 'B',
-      shares_transferred: 50_000, consideration_inr: 5_000_000, prepared_by_bap: BAP,
+      filing_date: '2026-05-01', transferor_name: 'A', transferee_name: 'B',
+      shares_transferred: 50_000, transfer_price_inr: 5_000_000,
+      is_resident_to_non_resident: true, filing_deadline: '2026-06-30',
+      recorded_by_bap: BAP,
     });
     expect(listFCTRSFilings().length).toBe(1);
     createAnnualReturn({
-      fy: '2026-27', total_foreign_liabilities_inr: 100_000_000,
-      total_foreign_assets_inr: 20_000_000, prepared_by_bap: BAP,
+      fy: '2026-27', total_foreign_equity_inr: 80_000_000,
+      total_foreign_debt_inr: 20_000_000, filing_deadline: '2026-07-15',
+      recorded_by_bap: BAP,
     });
     expect(listAnnualReturns({ fy: '2026-27' }).length).toBe(1);
     markFilingFiled('fc_gpr', g.id, BAP);
