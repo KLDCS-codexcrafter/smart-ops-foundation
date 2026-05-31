@@ -89,12 +89,12 @@ export function generateRecommendations(opts: {
   const plans = listEngagementPlans(opts.engagement_id);
   const plannedAreas = new Set<string>(plans.flatMap((p) => p.scope_areas));
   for (const r of risks) {
-    if ((r.inherent_rating === 'Critical' || r.inherent_rating === 'High') && !plannedAreas.has(r.process_area)) {
+    if ((r.inherent_rating === 'Critical' || r.inherent_rating === 'High') && !plannedAreas.has(r.risk_category)) {
       out.push({
         id: uid('rec'),
         engagement_id: opts.engagement_id,
         category: 'audit_program_assignment',
-        recommendation_text: `Assign an audit program for high inherent risk in ${r.process_area}.`,
+        recommendation_text: `Assign an audit program for high inherent risk in ${r.risk_category}.`,
         priority: r.inherent_rating === 'Critical' ? 'critical' : 'high',
         trigger_pattern: 'high_inherent_risk_no_audit_program',
         evidence_refs: [r.id],
