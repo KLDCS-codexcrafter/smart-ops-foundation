@@ -339,6 +339,8 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-sector-fema-engine', name: 'Comply360 FEMA Sector-Pack Engine (DP-S87-4 · FEMA 1999 · FC-GPR + FC-TRS + Annual Foreign Liabilities Return)', path: 'src/lib/comply360-sector-fema-engine.ts', sprintAdded: 87, compositeAdded: 87, functionCount: 7, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-ai-control-center-engine', name: 'Comply360 AI Control Center Engine (DP-S87-6/7/8/9 · OOB-2 Compliance ROI + OOB-9 AI Tutor + 11-module orchestrator · USE-SITE READS S80c nlp-audit-ask + S81d mock-audit-simulator)', path: 'src/lib/comply360-ai-control-center-engine.ts', sprintAdded: 87, compositeAdded: 87, functionCount: 10, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-cfo-pitch-deck-engine', name: 'Comply360 CFO Pitch Deck Engine (DP-S87-5 · OOB-3 FUNCTIONAL · jspdf 6-section CFO compliance pitch deck · USE-SITE READS S87 ai-control-center ROI)', path: 'src/lib/comply360-cfo-pitch-deck-engine.ts', sprintAdded: 87, compositeAdded: 87, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 88 T-Phase-5.E.5.0 · Comply360 Polish Slot · 1 NEW SIBLING · 15th USE-SITE READ MAXIMUM SCALE application (reads across Floor 1-4 engines · idempotent + clearable demo data seeder)
+  { id: 'comply360-demo-seed-engine', name: 'Comply360 Demo Seed Engine (DP-S88 · idempotent + clearable demo seeder · 15th USE-SITE READ application at MAXIMUM SCALE · seeds obligations + loan accounts + RERA projects + AI ROI samples for first-impression demo)', path: 'src/lib/comply360-demo-seed-engine.ts', sprintAdded: 88, compositeAdded: 88, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 

@@ -4,7 +4,7 @@
  * @sprint      Sprint 87 · T-Phase-5.D.4.2 · DP-S87-14 · FLOOR 4 CLOSES
  * @note        Fixed grid-cols-4 (with multi-row wrap) avoids dynamic class generation for the 11-module list.
  */
-import { useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -41,14 +41,7 @@ export default function AIControlCenterPage(): JSX.Element {
         <TabsContent value="modules">
           <div className="p-6 grid grid-cols-4 gap-3">
             {modules.map((m) => (
-              <Card key={m.module_type} className="p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-semibold text-sm">{m.label}</span>
-                  {m.oob_ref && <Badge variant="secondary">{m.oob_ref}</Badge>}
-                </div>
-                <div className="text-xs text-muted-foreground">{m.description}</div>
-                <div className="mt-2 text-xs font-mono">runs: {listAIModuleExecutions({ module_type: m.module_type }).length}</div>
-              </Card>
+              <AIModuleCard key={m.module_type} module={m} runs={listAIModuleExecutions({ module_type: m.module_type }).length} />
             ))}
           </div>
         </TabsContent>
@@ -77,3 +70,22 @@ export default function AIControlCenterPage(): JSX.Element {
     </div>
   );
 }
+
+// DP-S88-3 · React.memo perf refactor · functional logic 0-DIFF
+interface AIModuleCardProps {
+  module: { module_type: string; label: string; description: string; oob_ref: string | null };
+  runs: number;
+}
+
+const AIModuleCard = memo(function AIModuleCard({ module: m, runs }: AIModuleCardProps): JSX.Element {
+  return (
+    <Card className="p-3">
+      <div className="flex items-center justify-between mb-1">
+        <span className="font-semibold text-sm">{m.label}</span>
+        {m.oob_ref && <Badge variant="secondary">{m.oob_ref}</Badge>}
+      </div>
+      <div className="text-xs text-muted-foreground">{m.description}</div>
+      <div className="mt-2 text-xs font-mono">runs: {runs}</div>
+    </Card>
+  );
+});

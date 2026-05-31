@@ -39,6 +39,7 @@ import SectorRERAPage from './sector-rera/SectorRERAPage';
 import SectorFEMAPage from './sector-fema/SectorFEMAPage';
 import AIControlCenterPage from './ai-control-center/AIControlCenterPage';
 import CFOPitchDeckPage from './cfo-pitch-deck/CFOPitchDeckPage';
+import { Comply360Breadcrumb } from './_shared/Comply360Breadcrumb';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -122,6 +123,7 @@ export default function Comply360Page(): JSX.Element {
         if (item.id) setActiveModule(item.id as Comply360Module);
       }}
     >
+      <Comply360Breadcrumb activeModule={activeModule} onNavigate={setActiveModule} />
       {renderModule()}
     </Shell>
   );

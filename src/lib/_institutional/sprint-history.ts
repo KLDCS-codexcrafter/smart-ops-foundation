@@ -422,7 +422,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 85 T-Phase-5.C.3.3 · Comply360 Floor 3 ROC-Suite Arc 3.3 · Q29 Part 3 · 4 NEW SIBLINGs + 1 NEW PAGE · OOB-7 STANDALONE · FLOOR 3 CLOSES
   {
     sprintNumber: 85, code: 'T-Phase-5.C.3.3', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'f6389fc933515d4125fd7682f3caa53e390d71b5', loc: 1500,
+    headSha: '7fa57f626caa6df61a0acc1afa171abba32e4016', predecessorSha: 'f6389fc933515d4125fd7682f3caa53e390d71b5', loc: 1500,
     newSiblings: [
       'comply360-csr-engine',
       'comply360-meetings-engine',
@@ -434,7 +434,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 86 T-Phase-5.D.4.1 · Comply360 Floor 4 Sector-Pack Arc 4.1 OPENS · Q30 Labour Codes 2026 + POSH + Gig Workers · 3 NEW SIBLINGs + 3 NEW PAGES · 12-streak ⭐
   {
     sprintNumber: 86, code: 'T-Phase-5.D.4.1', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: '7fa57f626caa6df61a0acc1afa171abba32e4016', loc: 1400,
+    headSha: '4aa2a8e71ab35666ff2d1471771ff65c940705e9', predecessorSha: '7fa57f626caa6df61a0acc1afa171abba32e4016', loc: 1400,
     newSiblings: [
       'comply360-labour-codes-engine',
       'comply360-posh-engine',
@@ -445,7 +445,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 87 T-Phase-5.D.4.2 · Comply360 Floor 4 Sector-Pack Arc 4.2 CLOSES · Q31 Sector-Specific + Q27b AI Control Center + OOB-2/3/9 · 6 NEW SIBLINGs + 6 NEW PAGES · 13-streak ⭐
   {
     sprintNumber: 87, code: 'T-Phase-5.D.4.2', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: '4aa2a8e71ab35666ff2d1471771ff65c940705e9', loc: 1900,
+    headSha: '31fb49a09d97dddbef0f6604f6eae5e26c8dc94d', predecessorSha: '4aa2a8e71ab35666ff2d1471771ff65c940705e9', loc: 1900,
     newSiblings: [
       'comply360-sector-nbfc-engine',
       'comply360-sector-sebi-lodr-engine',
@@ -454,6 +454,13 @@ export const SPRINTS: SprintEntry[] = [
       'comply360-ai-control-center-engine',
       'comply360-cfo-pitch-deck-engine',
     ],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 88 T-Phase-5.E.5.0 · Comply360 Polish Slot · POLISH SLOT closes · PHASE 5 ENDGAME OPENS · TRIPLE SHA backfill + cross-mega-menu nav polish + perf tuning + demo-seed-engine (15th USE-SITE READ MAXIMUM SCALE) + v1.30 §M/§N enforcement helpers · streak 14 ⭐
+  {
+    sprintNumber: 88, code: 'T-Phase-5.E.5.0', composite: false, grade: 'A first-pass-clean',
+    headSha: 'TBD_AT_BANK', predecessorSha: '31fb49a09d97dddbef0f6604f6eae5e26c8dc94d', loc: 650,
+    newSiblings: ['comply360-demo-seed-engine'],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
 ];
