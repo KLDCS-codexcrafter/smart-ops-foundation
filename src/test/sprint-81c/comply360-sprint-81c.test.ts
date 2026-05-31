@@ -125,12 +125,7 @@ describe('Sprint 81c · T-Phase-5.B.2.2-PASS-C · Mock Audit Simulator + Walkthr
     expect(qs.some((q) => q.category === 'CARO')).toBe(true);
   });
   it('runMockAudit · produces a run with readiness_percentage and band', () => {
-    const eng = createEngagement({
-      client_entity_code: 'OPERIX-DEMO',
-      fy: '2025-26',
-      engagement_type: 'statutory_audit',
-      lead_bap: getActiveBAPAccount(),
-    });
+    const eng = createEngagement({ name: 'Mock', type: 'statutory_audit', fy: '2025-26', entity_code: 'OPERIX-DEMO', ca_firm_name: 'X & Co' });
     const run = runMockAudit({
       engagement_id: eng.id, initiated_by_bap: getActiveBAPAccount(),
     });
@@ -143,19 +138,13 @@ describe('Sprint 81c · T-Phase-5.B.2.2-PASS-C · Mock Audit Simulator + Walkthr
     expect(run.mock_engagement_letter_response.estimated_audit_hours).toBeGreaterThan(0);
   });
   it('listMockAuditRuns + getMockAuditRun roundtrip', () => {
-    const eng = createEngagement({
-      client_entity_code: 'OPERIX-DEMO', fy: '2025-26',
-      engagement_type: 'statutory_audit', lead_bap: getActiveBAPAccount(),
-    });
+    const eng = createEngagement({ name: 'Mock', type: 'statutory_audit', fy: '2025-26', entity_code: 'OPERIX-DEMO', ca_firm_name: 'X & Co' });
     const run = runMockAudit({ engagement_id: eng.id, initiated_by_bap: getActiveBAPAccount() });
     expect(listMockAuditRuns(eng.id)).toHaveLength(1);
     expect(getMockAuditRun(run.id)?.id).toBe(run.id);
   });
   it('exportMockAuditRunJson · returns a Blob', () => {
-    const eng = createEngagement({
-      client_entity_code: 'OPERIX-DEMO', fy: '2025-26',
-      engagement_type: 'statutory_audit', lead_bap: getActiveBAPAccount(),
-    });
+    const eng = createEngagement({ name: 'Mock', type: 'statutory_audit', fy: '2025-26', entity_code: 'OPERIX-DEMO', ca_firm_name: 'X & Co' });
     const run = runMockAudit({ engagement_id: eng.id, initiated_by_bap: getActiveBAPAccount() });
     const blob = exportMockAuditRunJson(run);
     expect(blob).toBeInstanceOf(Blob);
@@ -181,10 +170,7 @@ describe('Sprint 81c · T-Phase-5.B.2.2-PASS-C · Mock Audit Simulator + Walkthr
     expect(inferProcessName('xyz_unknown').process_name).toBe('Custom');
   });
   it('autoGenerateWalkthrough · creates record and persists', () => {
-    const eng = createEngagement({
-      client_entity_code: 'OPERIX-DEMO', fy: '2025-26',
-      engagement_type: 'statutory_audit', lead_bap: getActiveBAPAccount(),
-    });
+    const eng = createEngagement({ name: 'Mock', type: 'statutory_audit', fy: '2025-26', entity_code: 'OPERIX-DEMO', ca_firm_name: 'X & Co' });
     const res = autoGenerateWalkthrough({
       engagement_id: eng.id,
       process_name: 'Procure-to-Pay',
@@ -198,10 +184,7 @@ describe('Sprint 81c · T-Phase-5.B.2.2-PASS-C · Mock Audit Simulator + Walkthr
     expect(listAutoWalkthroughs(eng.id)).toHaveLength(1);
   });
   it('batchAutoGenerateWalkthroughs · processes multiple entities', () => {
-    const eng = createEngagement({
-      client_entity_code: 'OPERIX-DEMO', fy: '2025-26',
-      engagement_type: 'statutory_audit', lead_bap: getActiveBAPAccount(),
-    });
+    const eng = createEngagement({ name: 'Mock', type: 'statutory_audit', fy: '2025-26', entity_code: 'OPERIX-DEMO', ca_firm_name: 'X & Co' });
     const results = batchAutoGenerateWalkthroughs({
       engagement_id: eng.id,
       entities: [
@@ -216,26 +199,17 @@ describe('Sprint 81c · T-Phase-5.B.2.2-PASS-C · Mock Audit Simulator + Walkthr
 
   // ─── IA Recommendation ───
   it('generateRecommendations · returns array (catch-all maturity rule fires)', () => {
-    const eng = createEngagement({
-      client_entity_code: 'OPERIX-DEMO', fy: '2025-26',
-      engagement_type: 'statutory_audit', lead_bap: getActiveBAPAccount(),
-    });
+    const eng = createEngagement({ name: 'Mock', type: 'statutory_audit', fy: '2025-26', entity_code: 'OPERIX-DEMO', ca_firm_name: 'X & Co' });
     const recs = generateRecommendations({ engagement_id: eng.id });
     expect(Array.isArray(recs)).toBe(true);
   });
   it('generateRecommendations · respects max_recommendations cap', () => {
-    const eng = createEngagement({
-      client_entity_code: 'OPERIX-DEMO', fy: '2025-26',
-      engagement_type: 'statutory_audit', lead_bap: getActiveBAPAccount(),
-    });
+    const eng = createEngagement({ name: 'Mock', type: 'statutory_audit', fy: '2025-26', entity_code: 'OPERIX-DEMO', ca_firm_name: 'X & Co' });
     const recs = generateRecommendations({ engagement_id: eng.id, max_recommendations: 2 });
     expect(recs.length).toBeLessThanOrEqual(2);
   });
   it('listRecommendations · returns previously generated entries', () => {
-    const eng = createEngagement({
-      client_entity_code: 'OPERIX-DEMO', fy: '2025-26',
-      engagement_type: 'statutory_audit', lead_bap: getActiveBAPAccount(),
-    });
+    const eng = createEngagement({ name: 'Mock', type: 'statutory_audit', fy: '2025-26', entity_code: 'OPERIX-DEMO', ca_firm_name: 'X & Co' });
     generateRecommendations({ engagement_id: eng.id });
     const list = listRecommendations(eng.id);
     expect(Array.isArray(list)).toBe(true);
