@@ -10,7 +10,7 @@ import {
   Home, Calendar, Building, Receipt, Users, Wallet, Archive, Scroll,
   Package, Search, Shield, Globe, Truck, Award, Leaf, Gavel,
   BarChart3, FileBarChart, Sparkles, Folder, Plug, Workflow, Settings,
-  Percent, ShieldAlert,
+  Percent, ShieldAlert, HardHat, UserCheck, Bike,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -40,4 +40,8 @@ export const comply360SidebarItems: SidebarItem[] = [
   { id: 'integrations',   type: 'group', label: 'Integrations',                   icon: Plug,         keyboard: 'c j', children: [] },
   { id: 'workflow',       type: 'group', label: 'Workflow Center',                icon: Workflow,     keyboard: 'c k', children: [] },
   { id: 'admin',          type: 'group', label: 'Admin & Settings',               icon: Settings,     keyboard: 'c z', children: [] },
+  // 🆕 Sprint 86 · Floor 4 Sector-Pack · Labour/HR section
+  { id: 'labour-codes',   type: 'group', label: 'Labour Codes 2026',              icon: HardHat,      keyboard: 'c L', children: [] },
+  { id: 'posh',           type: 'group', label: 'POSH Act 2013',                  icon: UserCheck,    keyboard: 'c P', children: [] },
+  { id: 'gig-workers',    type: 'group', label: 'Gig Workers Social Security',    icon: Bike,         keyboard: 'c G', children: [] },
 ];

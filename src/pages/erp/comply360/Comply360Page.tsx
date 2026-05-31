@@ -30,6 +30,9 @@ import AuditFrameworkDashboardPage from './audit-framework/AuditFrameworkDashboa
 import Rule11gReportPage from './rule-11g/Rule11gReportPage';
 import InternalAuditDashboardPage from './internal-audit/DashboardPage';
 import WhistleblowerPage from './whistleblower/WhistleblowerPage';
+import LabourCodesPage from './labour-codes/LabourCodesPage';
+import POSHPage from './posh/POSHPage';
+import GigWorkersPage from './gig-workers/GigWorkersPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -57,6 +60,12 @@ export default function Comply360Page(): JSX.Element {
         return <Section393Page />;
       case 'whistleblower':
         return <WhistleblowerPage />;
+      case 'labour-codes':
+        return <LabourCodesPage />;
+      case 'posh':
+        return <POSHPage />;
+      case 'gig-workers':
+        return <GigWorkersPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':

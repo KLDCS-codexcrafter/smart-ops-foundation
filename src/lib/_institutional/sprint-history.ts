@@ -431,6 +431,17 @@ export const SPRINTS: SprintEntry[] = [
     ],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 86 T-Phase-5.D.4.1 · Comply360 Floor 4 Sector-Pack Arc 4.1 OPENS · Q30 Labour Codes 2026 + POSH + Gig Workers · 3 NEW SIBLINGs + 3 NEW PAGES · 12-streak ⭐
+  {
+    sprintNumber: 86, code: 'T-Phase-5.D.4.1', composite: false, grade: 'A first-pass-clean',
+    headSha: 'TBD_AT_BANK', predecessorSha: '7fa57f626caa6df61a0acc1afa171abba32e4016', loc: 1400,
+    newSiblings: [
+      'comply360-labour-codes-engine',
+      'comply360-posh-engine',
+      'comply360-gig-workers-engine',
+    ],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
 ];
 
 
