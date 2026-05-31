@@ -302,7 +302,11 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-mock-audit-simulator-engine', name: 'Comply360 Mock Audit Simulator Engine (DP-S81-3 · DP-S81-10 · THE OPERATIONALIZATION HEADLINE · OOB-6 extension · Big-4 grade engagement readiness checker · orchestrates 18 analytics + 27 payroll modules + Audit-Ready Score + expected External Auditor questions + likely findings + mock engagement letter)', path: 'src/lib/comply360-mock-audit-simulator-engine.ts', sprintAdded: 81, compositeAdded: 81, functionCount: 8, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-walkthrough-automation-engine', name: 'Comply360 Walkthrough Automation Engine (extends S81a ia-walkthrough · heuristic process-name inference + control-gap detection · batch auto-generation for Mock Audit pre-population)', path: 'src/lib/comply360-walkthrough-automation-engine.ts', sprintAdded: 81, compositeAdded: 81, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-ia-recommendation-engine', name: 'Comply360 IA Recommendation Engine (DP-S81-11 · Phase 5 pattern-match STUB · 7 heuristic patterns · S87 promotes to LLM-driven · AI-ready foundation)', path: 'src/lib/comply360-ia-recommendation-engine.ts', sprintAdded: 81, compositeAdded: 81, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 81d T-Phase-5.B.2.2-PASS-D · Comply360 Floor 2 Internal Audit Arc 2.2 FINALE · 2 NEW SIBLINGs (sample-engagement-seed · ia-external-handoff) · S81 ARC CLOSES · target 7-streak ⭐
+  { id: 'comply360-sample-engagement-seed', name: 'Comply360 Sample Engagement Seed (idempotent demo-ready IA engagement seeder · plan + universe + risks + walkthroughs + control tests + issues)', path: 'src/lib/comply360-sample-engagement-seed.ts', sprintAdded: 81, compositeAdded: 81, functionCount: 6, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-ia-external-handoff-engine', name: 'Comply360 IA → External Audit Handoff Engine (S81 ARC CLOSER · bundles Rule 11(g) + IA summary + Mock Audit + Audit-Ready Score · Quarterly AC Reports · pre-populated External Audit working papers)', path: 'src/lib/comply360-ia-external-handoff-engine.ts', sprintAdded: 81, compositeAdded: 81, functionCount: 5, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
+
 
 
 export function getSiblingCount(): number {
