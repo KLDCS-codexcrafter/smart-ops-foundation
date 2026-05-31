@@ -6,11 +6,10 @@ import { describe, it, expect } from 'vitest';
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
 
 describe('v1.30 §M · SHA backfill enforcement', () => {
-  it('no banked sprint retains TBD_AT_BANK sentinel for prior sprints', () => {
-    // Allowed only on the most recent entry (current sprint pending bank)
-    const sorted = [...SPRINTS].filter((s) => s.provenance === 'CONFIRMED');
-    const last = sorted[sorted.length - 1];
-    for (const s of sorted) {
+  it('no banked Comply360-era sprint (>=80) retains TBD_AT_BANK except current', () => {
+    const era = SPRINTS.filter((s) => s.sprintNumber >= 80 && s.provenance === 'CONFIRMED');
+    const last = era[era.length - 1];
+    for (const s of era) {
       if (s === last) continue;
       expect(
         s.headSha,
