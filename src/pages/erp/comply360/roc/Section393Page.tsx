@@ -583,3 +583,288 @@ function StatutoryRegistersPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
     </div>
   );
 }
+
+// ───────── S84 Inline Panels ─────────
+
+const EVENT_FILING_TYPES: EventFilingType[] = ['MGT_14', 'DIR_12', 'CHG_1', 'CHG_4', 'INC_22', 'INC_28'];
+
+function EventFilingsPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
+  const [tick, setTick] = useState(0);
+  const [filingType, setFilingType] = useState<EventFilingType>('MGT_14');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const filings = useMemo(() => listEventFilings(), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const upcoming = useMemo(() => getUpcomingEventDeadlines(30), [tick]);
+  const fy = `${new Date().getFullYear()}-${String((new Date().getFullYear() + 1) % 100).padStart(2, '0')}`;
+  const addDemo = (): void => {
+    const eventDate = new Date().toISOString().slice(0, 10);
+    let payload: Parameters<typeof createEventFiling>[0]['payload'];
+    if (filingType === 'MGT_14') {
+      payload = { kind: 'MGT_14', resolution_type: 'special', resolution_text: 'Demo special resolution', meeting_date: eventDate, attached_documents: [] };
+    } else if (filingType === 'DIR_12') {
+      payload = { kind: 'DIR_12', director_id: 'demo-dir', change_type: 'appointment', effective_date: eventDate, reason: 'Demo appointment' };
+    } else if (filingType === 'CHG_1') {
+      payload = { kind: 'CHG_1', charge_type: 'first', charge_amount_inr: 1000000, chargee_name: 'Demo Bank', property_description: 'Plant & Machinery', registry_entry_id: null };
+    } else if (filingType === 'CHG_4') {
+      payload = { kind: 'CHG_4', original_chg1_filing_id: 'demo-chg1', satisfaction_date: eventDate, satisfaction_evidence_ref: 'REF-001' };
+    } else if (filingType === 'INC_22') {
+      payload = { kind: 'INC_22', old_registered_office_address: 'Old', new_registered_office_address: 'New', change_type: 'intra_state', effective_date: eventDate };
+    } else {
+      payload = { kind: 'INC_28', court_or_tribunal: 'NCLT Mumbai', order_number: 'O-001', order_date: eventDate, order_summary: 'Demo order' };
+    }
+    createEventFiling({ filing_type: filingType, event_date: eventDate, fy, payload, dsc_signed_by: null, prepared_by_bap: bap });
+    toast.success(`${filingType} event filing drafted`); setTick((t) => t + 1);
+  };
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-xl font-semibold">Event-Based ROC Filings</h2>
+        <div className="flex gap-2">
+          <Select value={filingType} onValueChange={(v) => setFilingType(v as EventFilingType)}>
+            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {EVENT_FILING_TYPES.map((t) => <SelectItem key={t} value={t}>{t.replace('_', '-')}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Button onClick={addDemo}><Plus className="h-4 w-4 mr-1" /> New Filing</Button>
+        </div>
+      </div>
+      {upcoming.length > 0 && (
+        <Card className="p-3 border-warning">
+          <p className="text-sm"><strong>{upcoming.length}</strong> upcoming event filing deadlines (next 30 days)</p>
+        </Card>
+      )}
+      <Card className="p-4">
+        <Table>
+          <TableHeader><TableRow><TableHead>Type</TableHead><TableHead>Event Date</TableHead><TableHead>Deadline</TableHead><TableHead>Status</TableHead><TableHead className="text-right">Fee</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {filings.length === 0 && (<TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-6">No event filings</TableCell></TableRow>)}
+            {filings.map((f) => (
+              <TableRow key={f.id}>
+                <TableCell><Badge variant="secondary">{f.filing_type.replace('_', '-')}</Badge></TableCell>
+                <TableCell className="font-mono text-xs">{f.event_date}</TableCell>
+                <TableCell className="font-mono text-xs">{f.filing_deadline}</TableCell>
+                <TableCell><Badge>{f.filing_status}</Badge></TableCell>
+                <TableCell className="text-right font-mono">₹{f.filing_fee_inr + f.late_fee_inr}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
+  );
+}
+
+function XBRLBuilderPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
+  const [tick, setTick] = useState(0);
+  const [taxonomy, setTaxonomy] = useState<SchedIIITaxonomyVersion>('C_Indian_GAAP_2024');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const xbrlFilings = useMemo(() => listAOC4Filings({ filing_type: 'xbrl' }), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const outputs = useMemo(() => listXBRLOutputs(), [tick]);
+  const handleBuild = (aoc4Id: string): void => {
+    const out = buildXBRL({ aoc4_xbrl_id: aoc4Id, taxonomy_version: taxonomy, generated_by_bap: bap });
+    validateXBRL(out.id);
+    toast.success('iXBRL output built + validated');
+    setTick((t) => t + 1);
+  };
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-xl font-semibold">iXBRL Builder · Schedule III Taxonomy</h2>
+        <Select value={taxonomy} onValueChange={(v) => setTaxonomy(v as SchedIIITaxonomyVersion)}>
+          <SelectTrigger className="w-56"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="C_Indian_GAAP_2024">Indian GAAP 2024</SelectItem>
+            <SelectItem value="C_IndAS_2024">Ind AS 2024</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <Card className="p-4">
+        <h3 className="text-sm font-semibold mb-2">AOC-4 XBRL Filings</h3>
+        <Table>
+          <TableHeader><TableRow><TableHead>FY</TableHead><TableHead>Capital</TableHead><TableHead className="text-right">Action</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {xbrlFilings.length === 0 && (<TableRow><TableCell colSpan={3} className="text-center text-muted-foreground py-6">No AOC-4 XBRL filings — create one in the AOC-4 tab</TableCell></TableRow>)}
+            {xbrlFilings.map((f) => (
+              <TableRow key={f.id}>
+                <TableCell>{f.fy}</TableCell>
+                <TableCell className="font-mono text-xs">₹{f.paid_up_capital_inr}</TableCell>
+                <TableCell className="text-right">
+                  <Button size="sm" variant="outline" onClick={() => handleBuild(f.id)}>Build iXBRL</Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+      <Card className="p-4">
+        <h3 className="text-sm font-semibold mb-2">iXBRL Outputs ({outputs.length})</h3>
+        <Table>
+          <TableHeader><TableRow><TableHead>Taxonomy</TableHead><TableHead>Elements</TableHead><TableHead>Size</TableHead><TableHead>Generated</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {outputs.map((o) => (
+              <TableRow key={o.id}>
+                <TableCell><Badge variant="secondary">{o.taxonomy_version}</Badge></TableCell>
+                <TableCell className="font-mono text-xs">{o.total_elements_resolved}</TableCell>
+                <TableCell className="font-mono text-xs">{o.size_bytes} B</TableCell>
+                <TableCell className="font-mono text-xs">{o.generated_at.slice(0, 19)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
+  );
+}
+
+const MANAGERIAL_ROLES: ManagerialRole[] = ['Whole_Time_Director', 'Managing_Director', 'Manager'];
+
+function ScheduleIVVPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
+  const [tick, setTick] = useState(0);
+  const [role, setRole] = useState<ManagerialRole>('Managing_Director');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const idrEntries = useMemo(() => listScheduleIVEntries(), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const remunerations = useMemo(() => listRemunerations(), [tick]);
+  const fy = `${new Date().getFullYear() - 1}-${String(new Date().getFullYear() % 100).padStart(2, '0')}`;
+  const sampleLimit = computeRemunerationLimit({ net_profit_inr: 1000000000, num_managerial_personnel: 1 });
+  const addIDR = (): void => {
+    registerIndependentDirector({
+      director_id: `dir-${Date.now()}`, din: `0000${Math.floor(1000 + Math.random() * 9000)}`,
+      appointment_date: new Date().toISOString().slice(0, 10),
+      meets_section_149_6_criteria: true,
+      criteria_evidence: {
+        no_pecuniary_relationship: true, not_promoter: true, not_kmp_relative: true,
+        no_material_pecuniary_3yr: true, professional_qualification: true,
+        no_employee_3yr: true, integrity_expertise_experience: true,
+      },
+      recorded_by_bap: bap,
+    });
+    toast.success('Independent Director registered'); setTick((t) => t + 1);
+  };
+  const addRem = (): void => {
+    try {
+      recordRemuneration({
+        director_id: 'demo-dir', role, fy,
+        base_salary_inr: 5000000, perquisites_inr: 1000000, commission_inr: 500000,
+        net_profit_inr: 100000000, approved_by_resolution: null, resolution_type: null,
+        recorded_by_bap: bap,
+      });
+      toast.success('Remuneration recorded'); setTick((t) => t + 1);
+    } catch { /* director may not exist */ }
+  };
+  return (
+    <div className="p-6 space-y-4">
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">Schedule IV · Independent Directors</h2>
+          <Button onClick={addIDR}><Plus className="h-4 w-4 mr-1" /> Register IDR</Button>
+        </div>
+        <Table>
+          <TableHeader><TableRow><TableHead>DIN</TableHead><TableHead>Appointed</TableHead><TableHead>Reappt Due</TableHead><TableHead>149(6)</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {idrEntries.length === 0 && (<TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-6">No independent directors</TableCell></TableRow>)}
+            {idrEntries.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell className="font-mono text-xs">{r.din}</TableCell>
+                <TableCell className="font-mono text-xs">{r.appointment_date}</TableCell>
+                <TableCell className="font-mono text-xs">{r.reappointment_due_date}</TableCell>
+                <TableCell><Badge>{r.meets_section_149_6_criteria ? 'OK' : 'PENDING'}</Badge></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+      <Card className="p-4">
+        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+          <h2 className="text-lg font-semibold">Schedule V · Managerial Remuneration</h2>
+          <div className="flex gap-2">
+            <Select value={role} onValueChange={(v) => setRole(v as ManagerialRole)}>
+              <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {MANAGERIAL_ROLES.map((r) => <SelectItem key={r} value={r}>{r.replace('_', ' ')}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Button onClick={addRem}><Plus className="h-4 w-4 mr-1" /> Record</Button>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mb-2">Indicative limits at ₹100cr net profit · 1 MD: overall ₹{sampleLimit.overall_limit_inr} · per-person ₹{sampleLimit.per_person_limit_inr}</p>
+        <Table>
+          <TableHeader><TableRow><TableHead>Role</TableHead><TableHead>FY</TableHead><TableHead className="text-right">Total</TableHead><TableHead className="text-right">% Profit</TableHead><TableHead>Limit OK</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {remunerations.length === 0 && (<TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-6">No remuneration records</TableCell></TableRow>)}
+            {remunerations.map((r) => (
+              <TableRow key={r.id}>
+                <TableCell><Badge variant="secondary">{r.role.replace('_', ' ')}</Badge></TableCell>
+                <TableCell>{r.fy}</TableCell>
+                <TableCell className="text-right font-mono">₹{r.total_remuneration_inr}</TableCell>
+                <TableCell className="text-right font-mono">{r.remuneration_pct_of_profit.toFixed(2)}%</TableCell>
+                <TableCell><Badge>{r.is_within_limit ? 'OK' : 'EXCEEDS'}</Badge></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
+  );
+}
+
+function ScheduleVIIPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
+  const [tick, setTick] = useState(0);
+  const [area, setArea] = useState<CSRThematicArea>('education');
+  const areas = useMemo(() => getCSRThematicAreas(), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const activities = useMemo(() => listCSRActivities(), [tick]);
+  const fy = `${new Date().getFullYear() - 1}-${String(new Date().getFullYear() % 100).padStart(2, '0')}`;
+  const sampleAlloc = useMemo(
+    () => computeCSRSpendAllocation({ fy, three_year_avg_net_profit_inr: 60000000, actual_spend_inr: 1000000 }),
+    [fy],
+  );
+  const addActivity = (): void => {
+    recordCSRActivity({
+      activity_name: `Demo ${area}`, thematic_area: area, description: 'Demo CSR activity',
+      location: 'Mumbai', fy, budget_allocated_inr: 500000, amount_spent_inr: 250000,
+      implementation_partner: null, recorded_by_bap: bap,
+    });
+    toast.success('CSR Activity recorded'); setTick((t) => t + 1);
+  };
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-xl font-semibold">Schedule VII · CSR (11 Thematic Areas)</h2>
+        <div className="flex gap-2">
+          <Select value={area} onValueChange={(v) => setArea(v as CSRThematicArea)}>
+            <SelectTrigger className="w-72"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {areas.map((a) => <SelectItem key={a.thematic_area} value={a.thematic_area}>{a.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Button onClick={addActivity}><Plus className="h-4 w-4 mr-1" /> Add Activity</Button>
+        </div>
+      </div>
+      <Card className="p-3 text-sm">
+        Sample Section 135 allocation (3-yr avg ₹6cr net profit): Required ₹{sampleAlloc.required_csr_spend_inr} ·
+        Actual ₹{sampleAlloc.actual_spend_inr} · Shortfall ₹{sampleAlloc.shortfall_inr} ·
+        135 applicable: <Badge>{sampleAlloc.is_section_135_applicable ? 'YES' : 'NO'}</Badge>
+      </Card>
+      <Card className="p-4">
+        <Table>
+          <TableHeader><TableRow><TableHead>Activity</TableHead><TableHead>Area</TableHead><TableHead>Location</TableHead><TableHead className="text-right">Budget</TableHead><TableHead className="text-right">Spent</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {activities.length === 0 && (<TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-6">No CSR activities</TableCell></TableRow>)}
+            {activities.map((a) => (
+              <TableRow key={a.id}>
+                <TableCell>{a.activity_name}</TableCell>
+                <TableCell><Badge variant="secondary">{a.thematic_area}</Badge></TableCell>
+                <TableCell>{a.location}</TableCell>
+                <TableCell className="text-right font-mono">₹{a.budget_allocated_inr}</TableCell>
+                <TableCell className="text-right font-mono">₹{a.amount_spent_inr}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
+  );
+}
