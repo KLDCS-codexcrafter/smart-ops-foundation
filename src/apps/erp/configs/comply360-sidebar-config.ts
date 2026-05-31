@@ -12,7 +12,7 @@ import {
   BarChart3, FileBarChart, Sparkles, Folder, Plug, Workflow, Settings,
   Percent, ShieldAlert, HardHat, UserCheck, Bike,
   Landmark, TrendingUp, Building2, Globe2, Brain, Presentation,
-  Flame, Wrench, TreePine, Recycle, Lock, BadgeCheck,
+  Flame, Wrench, TreePine, Recycle, Lock, BadgeCheck, Briefcase, Copyright,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -67,4 +67,7 @@ export const comply360SidebarItems: SidebarItem[] = [
   // 🆕 Sprint 93 · Floor 5.5 · Quality + Labour Tier-2 (Q37)
   { id: 'quality-standards', type: 'group', label: 'Quality & Standards',             icon: BadgeCheck,   keyboard: 'c Q', children: [] },
   { id: 'labour-tier2',      type: 'group', label: 'Labour Tier-2',                   icon: HardHat,      keyboard: 'c T', children: [] },
+  // 🆕 Sprint 94 · Floor 5.6 CAPSTONE · CLOSES FLOOR 5 · MCA T2 + Legal/IPR (Q38)
+  { id: 'mca-tier2',         type: 'group', label: 'MCA Tier-2 + PMLA',               icon: Briefcase,    keyboard: 'c M', children: [] },
+  { id: 'legal-ipr',         type: 'group', label: 'Legal Contracts + IPR',           icon: Copyright,    keyboard: 'c K', children: [] },
 ];
