@@ -49,6 +49,18 @@ import {
   getActiveBAPAccount,
   type BAPAccountId,
 } from '@/lib/comply360-audit-framework-engine';
+import {
+  seedSampleEngagement,
+  listSampleEngagementSeedRuns,
+  type SampleEngagementSeedRun,
+} from '@/lib/comply360-sample-engagement-seed';
+import {
+  generateExternalHandoffPackage,
+  exportHandoffPackageJsonBundle,
+  listExternalHandoffPackages,
+  generateQuarterlyAuditCommitteeReport,
+  type IAExternalHandoffPackage,
+} from '@/lib/comply360-ia-external-handoff-engine';
 
 type MaturityBand = 'Optimised' | 'Managed' | 'Defined' | 'Initial';
 
@@ -166,7 +178,7 @@ export default function InternalAuditDashboardPage(): JSX.Element {
       </section>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="engagements">Engagements</TabsTrigger>
           <TabsTrigger value="risk-heatmap">Risk Heat-Map</TabsTrigger>
@@ -174,6 +186,7 @@ export default function InternalAuditDashboardPage(): JSX.Element {
           <TabsTrigger value="control-effectiveness">Control Effectiveness</TabsTrigger>
           <TabsTrigger value="maturity">Maturity Detail</TabsTrigger>
           <TabsTrigger value="mock-audit">Mock Audit</TabsTrigger>
+          <TabsTrigger value="reports-handoff">Reports &amp; Handoff</TabsTrigger>
         </TabsList>
 
         {/* Tab 1 · Overview · Q17 Modules 9-12 surfaced as tiles */}
@@ -182,9 +195,10 @@ export default function InternalAuditDashboardPage(): JSX.Element {
             <MAPTrackerTile issues={issues} />
             <QuarterlyACReportsTile engagement={engagement} />
             <IAMaturityDetailTile maturity={maturity} />
-            <AuditPlanCalendarTile universe={universe} />
+            <AuditPlanCalendarTile universe={universe} bap={bap} />
           </div>
         </TabsContent>
+
 
         {/* Tab 2 · Engagements */}
         <TabsContent value="engagements">
@@ -282,6 +296,11 @@ export default function InternalAuditDashboardPage(): JSX.Element {
         <TabsContent value="mock-audit">
           <MockAuditRunPanel engagementId={engagement.id} bap={bap} />
         </TabsContent>
+
+        {/* Tab 8 · Reports & Handoff · S81d · S81 ARC CLOSES */}
+        <TabsContent value="reports-handoff">
+          <ReportsHandoffPanel engagementId={engagement.id} fy={engagement.fy} bap={bap} />
+        </TabsContent>
       </Tabs>
     </div>
   );
@@ -371,16 +390,22 @@ function IAMaturityDetailTile({ maturity }: { maturity: ReturnType<typeof getEng
   );
 }
 
-// ── Q17 Module 12 · Audit Plan Calendar tile ──
-function AuditPlanCalendarTile({ universe }: { universe: ReturnType<typeof listAuditUniverse> }): JSX.Element {
+// ── Q17 Module 12 · Audit Plan Calendar tile (S81d · resource allocation refinement · DP-S81-12) ──
+function AuditPlanCalendarTile({ universe, bap }: { universe: ReturnType<typeof listAuditUniverse>; bap: BAPAccountId }): JSX.Element {
   const upcoming = [...universe]
     .filter((u) => u.next_due_at !== null)
     .sort((a, b) => (a.next_due_at ?? '').localeCompare(b.next_due_at ?? ''))
     .slice(0, 4);
+  const ownedByMe = universe.filter((u) => u.responsible_bap === bap).length;
+  const ownersDistinct = new Set(universe.map((u) => u.responsible_bap).filter((b) => b !== null)).size;
   return (
     <Card className="p-4 space-y-2">
       <h3 className="font-semibold text-sm">Audit Plan Calendar · Q17 Module 12</h3>
-      <p className="text-xs text-muted-foreground">Upcoming audits (next-due)</p>
+      <p className="text-xs text-muted-foreground">Upcoming audits + resource allocation</p>
+      <div className="text-xs flex justify-between border-b pb-1">
+        <span>Active BAP load · <span className="font-mono">{ownedByMe}</span></span>
+        <span>Distinct owners · <span className="font-mono">{ownersDistinct}</span></span>
+      </div>
       {upcoming.length === 0
         ? <p className="text-xs text-muted-foreground">No scheduled audits in universe.</p>
         : (
@@ -388,7 +413,7 @@ function AuditPlanCalendarTile({ universe }: { universe: ReturnType<typeof listA
             {upcoming.map((u) => (
               <li key={u.id} className="flex items-center justify-between">
                 <span className="truncate">{u.area_name}</span>
-                <span className="font-mono">{u.next_due_at}</span>
+                <span className="font-mono">{u.next_due_at} · {u.responsible_bap ?? '—'}</span>
               </li>
             ))}
           </ul>
