@@ -41,6 +41,7 @@ import AIControlCenterPage from './ai-control-center/AIControlCenterPage';
 import CFOPitchDeckPage from './cfo-pitch-deck/CFOPitchDeckPage';
 import FireSafetyDashboardPage from './fire-safety/FireSafetyDashboardPage';
 import IndustrialSafetyDashboardPage from './industrial-safety/IndustrialSafetyDashboardPage';
+import EnvironmentalDashboardPage from './environmental/EnvironmentalDashboardPage';
 import { Comply360Breadcrumb } from './_shared/Comply360Breadcrumb';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
