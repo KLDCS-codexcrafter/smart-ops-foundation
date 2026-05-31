@@ -354,8 +354,19 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 81b T-Phase-5.B.2.2-PASS-B · Internal Audit Dashboard + AuditTrailExplorer + 2 DP-S79-2 stub fills · FR-106 12th scenario · surface-only pass · 0 new SIBLINGs · target 5-streak ⭐
   {
     sprintNumber: 81, code: 'T-Phase-5.B.2.2-PASS-B', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '200b178466d111b10682e64066240f9d9e551cb5', loc: 1400,
+    headSha: '39f7dfdd0bb7c1760ff09db49c3fba55532fbb04', predecessorSha: '200b178466d111b10682e64066240f9d9e551cb5', loc: 1400,
     newSiblings: [],
+    bankDate: '2026-05-30', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 81c T-Phase-5.B.2.2-PASS-C · Mock Audit Simulator + Walkthrough Automation + IA Recommendation · 3 NEW SIBLINGs · 7th IA Dashboard tab · OOB-6 extension · target 6-streak ⭐
+  {
+    sprintNumber: 81, code: 'T-Phase-5.B.2.2-PASS-C', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '39f7dfdd0bb7c1760ff09db49c3fba55532fbb04', loc: 1500,
+    newSiblings: [
+      'comply360-mock-audit-simulator-engine',
+      'comply360-walkthrough-automation-engine',
+      'comply360-ia-recommendation-engine',
+    ],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
