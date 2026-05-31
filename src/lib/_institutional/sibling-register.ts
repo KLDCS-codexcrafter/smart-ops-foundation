@@ -341,6 +341,9 @@ export const SIBLINGS: SiblingEntry[] = [
   { id: 'comply360-cfo-pitch-deck-engine', name: 'Comply360 CFO Pitch Deck Engine (DP-S87-5 · OOB-3 FUNCTIONAL · jspdf 6-section CFO compliance pitch deck · USE-SITE READS S87 ai-control-center ROI)', path: 'src/lib/comply360-cfo-pitch-deck-engine.ts', sprintAdded: 87, compositeAdded: 87, functionCount: 4, moatsRealized: [], provenance: 'CONFIRMED' },
   // 🆕 Sprint 88 T-Phase-5.E.5.0 · Comply360 Polish Slot · 1 NEW SIBLING · 15th USE-SITE READ MAXIMUM SCALE application (reads across Floor 1-4 engines · idempotent + clearable demo data seeder)
   { id: 'comply360-demo-seed-engine', name: 'Comply360 Demo Seed Engine (DP-S88 · idempotent + clearable demo seeder · 15th USE-SITE READ application at MAXIMUM SCALE · seeds obligations + loan accounts + RERA projects + AI ROI samples for first-impression demo)', path: 'src/lib/comply360-demo-seed-engine.ts', sprintAdded: 88, compositeAdded: 88, functionCount: 3, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 89 T-Phase-5.F.5.1 · Comply360 Floor 5.1 · FLOOR 5 OPENS · 2 NEW SIBLINGs · 15-streak ⭐ target
+  { id: 'comply360-fire-safety-engine', name: 'Comply360 Fire Safety Engine (DP-F5-1 · Q33 · NBC 2025 Part 4 framework · Fire NOC + Audit + Equipment AMC + Drills + Building Fire Certificate · 16th USE-SITE READ application MAXIMUM SCALE)', path: 'src/lib/comply360-fire-safety-engine.ts', sprintAdded: 89, compositeAdded: 89, functionCount: 12, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-industrial-safety-engine', name: 'Comply360 Industrial Safety Engine (DP-F5-1 · Q33 · PESO + Boiler Act 1923 + SMPV 1981 + Electrical Safety CEA + Lift Act · 17th USE-SITE READ application MAXIMUM SCALE)', path: 'src/lib/comply360-industrial-safety-engine.ts', sprintAdded: 89, compositeAdded: 89, functionCount: 12, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 

@@ -459,8 +459,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 88 T-Phase-5.E.5.0 · Comply360 Polish Slot · POLISH SLOT closes · PHASE 5 ENDGAME OPENS · TRIPLE SHA backfill + cross-mega-menu nav polish + perf tuning + demo-seed-engine (15th USE-SITE READ MAXIMUM SCALE) + v1.30 §M/§N enforcement helpers · streak 14 ⭐
   {
     sprintNumber: 88, code: 'T-Phase-5.E.5.0', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: '31fb49a09d97dddbef0f6604f6eae5e26c8dc94d', loc: 650,
+    headSha: '58d4246140ac2ac9681dfafab59cd5209ef7c381', predecessorSha: '31fb49a09d97dddbef0f6604f6eae5e26c8dc94d', loc: 650,
     newSiblings: ['comply360-demo-seed-engine'],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 89 T-Phase-5.F.5.1 · Comply360 Floor 5 Comprehensive Compliance Arc 5.1 · FLOOR 5 OPENS · Q33 Fire Safety + Industrial Safety · 2 NEW SIBLINGs + 2 NEW PAGES · 15-streak ⭐
+  {
+    sprintNumber: 89, code: 'T-Phase-5.F.5.1', composite: false, grade: 'A first-pass-clean',
+    headSha: 'TBD_AT_BANK', predecessorSha: '58d4246140ac2ac9681dfafab59cd5209ef7c381', loc: 1800,
+    newSiblings: ['comply360-fire-safety-engine', 'comply360-industrial-safety-engine'],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
 ];

@@ -39,6 +39,8 @@ import SectorRERAPage from './sector-rera/SectorRERAPage';
 import SectorFEMAPage from './sector-fema/SectorFEMAPage';
 import AIControlCenterPage from './ai-control-center/AIControlCenterPage';
 import CFOPitchDeckPage from './cfo-pitch-deck/CFOPitchDeckPage';
+import FireSafetyDashboardPage from './fire-safety/FireSafetyDashboardPage';
+import IndustrialSafetyDashboardPage from './industrial-safety/IndustrialSafetyDashboardPage';
 import { Comply360Breadcrumb } from './_shared/Comply360Breadcrumb';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
@@ -85,6 +87,10 @@ export default function Comply360Page(): JSX.Element {
         return <AIControlCenterPage />;
       case 'cfo-pitch-deck':
         return <CFOPitchDeckPage />;
+      case 'fire-safety':
+        return <FireSafetyDashboardPage />;
+      case 'industrial-safety':
+        return <IndustrialSafetyDashboardPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':
