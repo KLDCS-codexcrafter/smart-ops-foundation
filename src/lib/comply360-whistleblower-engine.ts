@@ -119,7 +119,7 @@ export function assignInvestigator(complaint_id: string, investigator_director_i
   writeJson(C_KEY, all);
   logAudit({
     entityCode: activeEntityCode(), action: 'update', entityType: AUD('whistleblower_complaint'),
-    recordId: complaint_id, recordLabel: `Assign investigator ${investigator_director_id}`,
+    recordId: complaint_id, recordLabel: `Assign investigator ${investigator_director_id} · by ${by_bap}`,
     beforeState: before as unknown as Record<string, unknown>,
     afterState: all[idx] as unknown as Record<string, unknown>,
     sourceModule: 'comply360-whistleblower-engine',
