@@ -42,6 +42,7 @@ import CFOPitchDeckPage from './cfo-pitch-deck/CFOPitchDeckPage';
 import FireSafetyDashboardPage from './fire-safety/FireSafetyDashboardPage';
 import IndustrialSafetyDashboardPage from './industrial-safety/IndustrialSafetyDashboardPage';
 import EnvironmentalDashboardPage from './environmental/EnvironmentalDashboardPage';
+import WasteManagementDashboardPage from './waste-management/WasteManagementDashboardPage';
 import { Comply360Breadcrumb } from './_shared/Comply360Breadcrumb';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
@@ -94,6 +95,8 @@ export default function Comply360Page(): JSX.Element {
         return <IndustrialSafetyDashboardPage />;
       case 'environmental':
         return <EnvironmentalDashboardPage />;
+      case 'waste-management':
+        return <WasteManagementDashboardPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':

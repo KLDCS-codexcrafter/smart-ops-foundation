@@ -473,8 +473,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 90 T-Phase-5.F.5.2 · Comply360 Floor 5.2 · Environmental Compliance Pt 1 · Q34 · 2 NEW SIBLINGs + 2 NEW PAGES · 16-streak ⭐
   {
     sprintNumber: 90, code: 'T-Phase-5.F.5.2', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '59b67d976e9afd8b89f3fda5aed408cb400fe0a0', loc: 1400,
+    headSha: '72aff23747e52e1945829ff68963e148d655a012', predecessorSha: '59b67d976e9afd8b89f3fda5aed408cb400fe0a0', loc: 1400,
     newSiblings: ['comply360-environmental-engine', 'comply360-eia-engine'],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 91 T-Phase-5.F.5.3 · Comply360 Floor 5.3 · Waste Management · Q35 · 1 NEW SIBLING (6 sub-regimes) + 1 NEW PAGE · 17-streak ⭐
+  {
+    sprintNumber: 91, code: 'T-Phase-5.F.5.3', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '72aff23747e52e1945829ff68963e148d655a012', loc: 1500,
+    newSiblings: ['comply360-waste-management-engine'],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
 ];
