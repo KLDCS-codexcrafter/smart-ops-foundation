@@ -135,6 +135,7 @@ describe('Sprint 83 · T-Phase-5.C.3.1 · Q29 Part 1 ROC-Suite · FLOOR 3 OPENS'
   });
   it('computeAOC4Fee uses MCA slab', () => {
     expect(computeAOC4Fee(50000, 0).filing_fee_inr).toBe(200);
+    // Lesson 24: Sprint 83 hotfix · input 20000000 (₹2cr) was in ≥₹1Cr slab returning 600 · changed to 5000000 (₹50L) which correctly exercises the ₹25L-<₹1Cr slab returning 500
     expect(computeAOC4Fee(5000000, 0).filing_fee_inr).toBe(500);
     expect(computeAOC4Fee(200000000, 0).filing_fee_inr).toBe(600);
   });
