@@ -30,7 +30,7 @@ import { AUDIT_ENTITY_TYPES_REGISTRY } from '@/lib/comply360-audit-trail-aggrega
 import { comply360SidebarItems } from '@/apps/erp/configs/comply360-sidebar-config';
 
 const SRC = (p: string): string => path.resolve(__dirname, '../../..', p);
-const TEST_BAP = 'engagement_partner' as const;
+const TEST_BAP = 'mr-a-client' as const;
 
 describe('Sprint 89 · T-Phase-5.F.5.1 · FLOOR 5 OPENS · Fire Safety + Industrial Safety', () => {
   beforeEach(() => { localStorage.clear(); });
