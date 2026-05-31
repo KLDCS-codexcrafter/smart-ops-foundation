@@ -887,3 +887,194 @@ function ScheduleVIIPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
     </div>
   );
 }
+
+// ───────── S85 Inline Panels ─────────
+
+const MEETING_TYPES: MeetingType[] = ['AGM', 'EGM', 'Board', 'Audit_Committee', 'CSR_Committee', 'Nomination_Committee'];
+const CRA_TYPES: CRAFormType[] = ['CRA_1', 'CRA_2', 'CRA_3', 'CRA_4'];
+
+function CSRFrameworkPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
+  const [tick, setTick] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const committees = useMemo(() => listCSRCommittees(), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const agencies = useMemo(() => listImplementingAgencies(), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const f1 = useMemo(() => listCSR1Filings(), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const f2 = useMemo(() => listCSR2Filings(), [tick]);
+  const fy = `${new Date().getFullYear() - 1}-${String(new Date().getFullYear() % 100).padStart(2, '0')}`;
+  const addCommittee = (): void => {
+    formCSRCommittee({ fy, director_ids: ['d1', 'd2', 'd3'], chairperson_director_id: 'd1', formed_by_bap: bap });
+    toast.success('CSR Committee formed'); setTick((t) => t + 1);
+  };
+  const addAgency = (): void => {
+    registerImplementingAgency({
+      agency_name: 'Demo NGO', agency_type: 'section_8_company',
+      csr1_registration_no: `CSR${Math.floor(100000 + Math.random() * 900000)}`,
+      pan: 'AAAAA1234A', registered_by_bap: bap,
+    });
+    toast.success('Implementing Agency registered'); setTick((t) => t + 1);
+  };
+  const addF1 = (): void => {
+    if (agencies.length === 0) { toast.error('Register an agency first'); return; }
+    createCSR1Filing({ agency_id: agencies[0].id, fy, prepared_by_bap: bap });
+    toast.success('CSR-1 drafted'); setTick((t) => t + 1);
+  };
+  const addF2 = (): void => {
+    createCSR2Filing({ fy, required_spend_inr: 1000000, actual_spend_inr: 800000, prepared_by_bap: bap });
+    toast.success('CSR-2 drafted'); setTick((t) => t + 1);
+  };
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 className="text-xl font-semibold">CSR Framework (Section 135)</h2>
+        <div className="flex gap-2">
+          <Button onClick={addCommittee} variant="outline"><Plus className="h-4 w-4 mr-1" />Committee</Button>
+          <Button onClick={addAgency} variant="outline"><Plus className="h-4 w-4 mr-1" />Agency</Button>
+          <Button onClick={addF1} variant="outline"><Plus className="h-4 w-4 mr-1" />CSR-1</Button>
+          <Button onClick={addF2}><Plus className="h-4 w-4 mr-1" />CSR-2</Button>
+        </div>
+      </div>
+      <Card className="p-3"><p className="text-sm">Committees: <strong>{committees.length}</strong> · Agencies: <strong>{agencies.length}</strong> · CSR-1: <strong>{f1.length}</strong> · CSR-2: <strong>{f2.length}</strong></p></Card>
+      <Card className="p-4">
+        <h3 className="text-sm font-semibold mb-2">CSR-2 Filings</h3>
+        <Table>
+          <TableHeader><TableRow><TableHead>FY</TableHead><TableHead className="text-right">Required</TableHead><TableHead className="text-right">Actual</TableHead><TableHead className="text-right">Shortfall</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {f2.length === 0 && (<TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-6">No CSR-2 filings</TableCell></TableRow>)}
+            {f2.map((f) => (
+              <TableRow key={f.id}>
+                <TableCell>{f.fy}</TableCell>
+                <TableCell className="text-right font-mono">₹{f.required_spend_inr}</TableCell>
+                <TableCell className="text-right font-mono">₹{f.actual_spend_inr}</TableCell>
+                <TableCell className="text-right font-mono">₹{f.shortfall_inr}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
+  );
+}
+
+function MeetingsPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
+  const [tick, setTick] = useState(0);
+  const [mtype, setMtype] = useState<MeetingType>('Board');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const meetings = useMemo(() => listMeetings(), [tick]);
+  const fy = `${new Date().getFullYear() - 1}-${String(new Date().getFullYear() % 100).padStart(2, '0')}`;
+  const addDemo = (): void => {
+    const m = recordMeeting({
+      meeting_type: mtype, fy,
+      meeting_date: new Date().toISOString().slice(0, 10),
+      meeting_number: `${mtype}-${meetings.length + 1}`,
+      agenda_items: ['Demo agenda'], minutes_summary: 'Demo minutes',
+      required_quorum: 3, attendees_count: 4, recorded_by_bap: bap,
+    });
+    recordAttendance({ meeting_id: m.id, director_id: 'd1', attendance_mode: 'in_person' });
+    recordVoting({
+      meeting_id: m.id, resolution_text: 'Demo resolution',
+      voting_method: 'voice_vote', ayes: 3, nays: 1, abstain: 0,
+    });
+    toast.success(`${mtype} meeting recorded`); setTick((t) => t + 1);
+  };
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 className="text-xl font-semibold">Meetings · AGM / EGM / Board / Committees</h2>
+        <div className="flex gap-2">
+          <Select value={mtype} onValueChange={(v) => setMtype(v as MeetingType)}>
+            <SelectTrigger className="w-52"><SelectValue /></SelectTrigger>
+            <SelectContent>{MEETING_TYPES.map((t) => <SelectItem key={t} value={t}>{t.replace(/_/g, ' ')}</SelectItem>)}</SelectContent>
+          </Select>
+          <Button onClick={addDemo}><Plus className="h-4 w-4 mr-1" />Record Meeting</Button>
+        </div>
+      </div>
+      <Card className="p-4">
+        <Table>
+          <TableHeader><TableRow><TableHead>Type</TableHead><TableHead>Date</TableHead><TableHead>Number</TableHead><TableHead className="text-right">Attendees</TableHead><TableHead>Quorum</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {meetings.length === 0 && (<TableRow><TableCell colSpan={5} className="text-center text-muted-foreground py-6">No meetings</TableCell></TableRow>)}
+            {meetings.map((m) => (
+              <TableRow key={m.id}>
+                <TableCell><Badge variant="secondary">{m.meeting_type.replace(/_/g, ' ')}</Badge></TableCell>
+                <TableCell className="font-mono text-xs">{m.meeting_date}</TableCell>
+                <TableCell className="font-mono text-xs">{m.meeting_number}</TableCell>
+                <TableCell className="text-right font-mono">{m.attendees_count}/{m.required_quorum}</TableCell>
+                <TableCell><Badge>{m.is_quorum_met ? 'MET' : 'NO'}</Badge></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
+  );
+}
+
+function CostAuditPanel({ bap }: { bap: BAPAccountId }): JSX.Element {
+  const [tick, setTick] = useState(0);
+  const [cra, setCra] = useState<CRAFormType>('CRA_1');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const appts = useMemo(() => listCostAuditorAppointments(), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const filings = useMemo(() => listCRAFormFilings(), [tick]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const reports = useMemo(() => listCostAuditReports(), [tick]);
+  const fy = `${new Date().getFullYear() - 1}-${String(new Date().getFullYear() % 100).padStart(2, '0')}`;
+  const addAppt = (): void => {
+    appointCostAuditor({
+      fy, appointment_type: 'first_appointment',
+      cost_auditor_name: 'Demo Cost Auditor',
+      icmai_membership_no: `M${Math.floor(10000 + Math.random() * 90000)}`,
+      firm_registration_no: 'FRN-12345', appointment_date: new Date().toISOString().slice(0, 10),
+      term_years: 1, prepared_by_bap: bap,
+    });
+    toast.success('Cost Auditor appointed'); setTick((t) => t + 1);
+  };
+  const addFiling = (): void => {
+    createCRAFormFiling({ form_type: cra, fy, appointment_id: appts[0]?.id ?? null, prepared_by_bap: bap });
+    toast.success(`${cra} drafted`); setTick((t) => t + 1);
+  };
+  const addReport = (): void => {
+    if (appts.length === 0) { toast.error('Appoint a cost auditor first'); return; }
+    recordCostAuditReport({
+      fy, appointment_id: appts[0].id, total_cost_inr: 50000000,
+      adverse_findings: false, findings_summary: 'Clean report', recorded_by_bap: bap,
+    });
+    toast.success('Cost Audit Report recorded'); setTick((t) => t + 1);
+  };
+  return (
+    <div className="p-6 space-y-4">
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <h2 className="text-xl font-semibold">Cost Audit (Section 148)</h2>
+        <div className="flex gap-2">
+          <Select value={cra} onValueChange={(v) => setCra(v as CRAFormType)}>
+            <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+            <SelectContent>{CRA_TYPES.map((t) => <SelectItem key={t} value={t}>{t.replace('_', '-')}</SelectItem>)}</SelectContent>
+          </Select>
+          <Button onClick={addAppt} variant="outline"><Plus className="h-4 w-4 mr-1" />Appoint</Button>
+          <Button onClick={addFiling} variant="outline"><Plus className="h-4 w-4 mr-1" />{cra.replace('_', '-')}</Button>
+          <Button onClick={addReport}><Plus className="h-4 w-4 mr-1" />Report</Button>
+        </div>
+      </div>
+      <Card className="p-3"><p className="text-sm">Appointments: <strong>{appts.length}</strong> · CRA Filings: <strong>{filings.length}</strong> · Reports: <strong>{reports.length}</strong></p></Card>
+      <Card className="p-4">
+        <Table>
+          <TableHeader><TableRow><TableHead>FY</TableHead><TableHead>Auditor</TableHead><TableHead>ICMAI</TableHead><TableHead>Type</TableHead></TableRow></TableHeader>
+          <TableBody>
+            {appts.length === 0 && (<TableRow><TableCell colSpan={4} className="text-center text-muted-foreground py-6">No appointments</TableCell></TableRow>)}
+            {appts.map((a) => (
+              <TableRow key={a.id}>
+                <TableCell>{a.fy}</TableCell>
+                <TableCell>{a.cost_auditor_name}</TableCell>
+                <TableCell className="font-mono text-xs">{a.icmai_membership_no}</TableCell>
+                <TableCell><Badge variant="secondary">{a.appointment_type}</Badge></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </div>
+  );
+}
