@@ -135,7 +135,7 @@ describe('Sprint 83 · T-Phase-5.C.3.1 · Q29 Part 1 ROC-Suite · FLOOR 3 OPENS'
   });
   it('computeAOC4Fee uses MCA slab', () => {
     expect(computeAOC4Fee(50000, 0).filing_fee_inr).toBe(200);
-    expect(computeAOC4Fee(20000000, 0).filing_fee_inr).toBe(500);
+    expect(computeAOC4Fee(5000000, 0).filing_fee_inr).toBe(500);
     expect(computeAOC4Fee(200000000, 0).filing_fee_inr).toBe(600);
   });
   it('mapXBRLTaxonomyEntry roundtrip', () => {
