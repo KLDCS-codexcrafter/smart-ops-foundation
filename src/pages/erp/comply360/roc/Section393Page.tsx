@@ -42,6 +42,25 @@ import {
 import {
   recordRegisterEntry, listRegisterEntries, getRegisterTypes, type StatutoryRegisterType,
 } from '@/lib/comply360-statutory-registers-engine';
+import {
+  recordRegisterEntry, listRegisterEntries, getRegisterTypes, type StatutoryRegisterType,
+} from '@/lib/comply360-statutory-registers-engine';
+// S84 Floor 3 Pass 2 imports
+import {
+  createEventFiling, listEventFilings, getUpcomingEventDeadlines, type EventFilingType,
+} from '@/lib/comply360-event-filings-engine';
+import {
+  buildXBRL, validateXBRL, listXBRLOutputs, type SchedIIITaxonomyVersion,
+} from '@/lib/comply360-xbrl-builder-engine';
+import {
+  registerIndependentDirector, listRegisterEntries as listScheduleIVEntries,
+} from '@/lib/comply360-schedule-iv-engine';
+import {
+  recordRemuneration, listRemunerations, computeRemunerationLimit, type ManagerialRole,
+} from '@/lib/comply360-schedule-v-engine';
+import {
+  recordCSRActivity, listCSRActivities, computeCSRSpendAllocation, getCSRThematicAreas, type CSRThematicArea,
+} from '@/lib/comply360-schedule-vii-engine';
 import { getActiveBAPAccount, type BAPAccountId } from '@/lib/comply360-audit-framework-engine';
 
 const SCHEMES: ArrangementScheme[] = [
