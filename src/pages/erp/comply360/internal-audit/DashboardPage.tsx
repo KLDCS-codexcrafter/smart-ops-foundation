@@ -178,7 +178,7 @@ export default function InternalAuditDashboardPage(): JSX.Element {
       </section>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-7">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="engagements">Engagements</TabsTrigger>
           <TabsTrigger value="risk-heatmap">Risk Heat-Map</TabsTrigger>
@@ -186,6 +186,7 @@ export default function InternalAuditDashboardPage(): JSX.Element {
           <TabsTrigger value="control-effectiveness">Control Effectiveness</TabsTrigger>
           <TabsTrigger value="maturity">Maturity Detail</TabsTrigger>
           <TabsTrigger value="mock-audit">Mock Audit</TabsTrigger>
+          <TabsTrigger value="reports-handoff">Reports &amp; Handoff</TabsTrigger>
         </TabsList>
 
         {/* Tab 1 · Overview · Q17 Modules 9-12 surfaced as tiles */}
@@ -194,9 +195,10 @@ export default function InternalAuditDashboardPage(): JSX.Element {
             <MAPTrackerTile issues={issues} />
             <QuarterlyACReportsTile engagement={engagement} />
             <IAMaturityDetailTile maturity={maturity} />
-            <AuditPlanCalendarTile universe={universe} />
+            <AuditPlanCalendarTile universe={universe} bap={bap} />
           </div>
         </TabsContent>
+
 
         {/* Tab 2 · Engagements */}
         <TabsContent value="engagements">
