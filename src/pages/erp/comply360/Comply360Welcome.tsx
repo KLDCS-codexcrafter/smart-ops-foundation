@@ -113,6 +113,54 @@ export function Comply360Welcome({ onNavigate }: Props): JSX.Element {
         <StatutoryMemoryWidget filings={obligations} />
       </div>
 
+      {/* Sprint 88 · DP-S88 · What's new + tour + demo seed + quick stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card className="p-4">
+          <div className="flex items-start gap-3">
+            <Sparkles className="h-5 w-5 text-primary mt-0.5" />
+            <div className="flex-1">
+              <h2 className="font-semibold text-sm">What&apos;s new · Sprint 88 Polish Slot</h2>
+              <ul className="text-xs text-muted-foreground mt-1 space-y-0.5 list-disc list-inside">
+                <li>28 mega-menus · 12 First-Class Standalone Pages · cross-menu breadcrumb</li>
+                <li>NBFC · SEBI LODR · RERA · FEMA Sector-Packs live (Floor 4)</li>
+                <li>AI Control Center · CFO Pitch Deck PDF · ROI &amp; Tutor (OOB-2/3/9)</li>
+              </ul>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-start gap-3">
+            <Database className="h-5 w-5 text-success mt-0.5" />
+            <div className="flex-1">
+              <h2 className="font-semibold text-sm">Demo data seed</h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                One-click idempotent seed across Floor 4 engines (NBFC loans · RERA projects · AI ROI sample).
+              </p>
+              <div className="mt-2 flex items-center gap-3 text-[11px] font-mono text-muted-foreground">
+                <span>NBFC <span className="text-foreground">{seedStats.nbfcLoans}</span></span>
+                <span>RERA <span className="text-foreground">{seedStats.reraProjects}</span></span>
+                <span>ROI <span className="text-foreground">{seedStats.aiROIs}</span></span>
+              </div>
+              <Button size="sm" variant="outline" className="mt-3" onClick={handleApplySeed}>
+                {seeded ? 'Demo seed applied' : 'Apply demo seed'}
+              </Button>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <Card className="p-4">
+        <div className="flex items-start gap-3">
+          <Compass className="h-5 w-5 text-primary mt-0.5" />
+          <div className="flex-1">
+            <h2 className="font-semibold text-sm">28 mega-menu tour</h2>
+            <p className="text-xs text-muted-foreground mt-1">
+              Use the sidebar (or keyboard <span className="font-mono">c &lt;letter&gt;</span> shortcuts) to walk through Tax &amp; GST, TDS, ROC, Internal Audit, External Audit, Sector-Packs and AI Control Center.
+            </p>
+          </div>
+        </div>
+      </Card>
+
       <Card className="p-4">
         <h2 className="font-semibold text-sm mb-1">Sprint 69 scope (live)</h2>
         <p className="text-xs text-muted-foreground">
