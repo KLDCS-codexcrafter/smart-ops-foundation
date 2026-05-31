@@ -365,7 +365,7 @@ export function runMockAudit(input: RunMockAuditInput): MockAuditRun {
   const analyticsTotal = analyticsCatalog.length;
 
   const payrollRuns = listPayrollAuditRuns(input.engagement_id);
-  const payrollExceptions = payrollRuns.filter((r) => r.layer_findings_total > 0).length;
+  const payrollExceptions = payrollRuns.filter((r) => r.findings_raised > 0).length;
   const payrollTotal = PAYROLL_AUDIT_MODULES.length;
 
   const ctrl = computeControlEffectivenessSummary(input.engagement_id);
