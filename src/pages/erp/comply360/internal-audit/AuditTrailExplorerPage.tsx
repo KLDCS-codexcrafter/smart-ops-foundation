@@ -22,8 +22,8 @@ import { Input } from '@/components/ui/input';
 import {
   readAuditTrail,
   MCA_RULE_3_1_COMPLIANCE,
-  type AuditTrailEntry,
 } from '@/lib/audit-trail-engine';
+import type { AuditTrailEntry } from '@/types/audit-trail';
 import { verifyChainIntegrity, type ChainVerification } from '@/lib/audit-trail-hash-chain';
 import {
   aggregateAuditTrail,
