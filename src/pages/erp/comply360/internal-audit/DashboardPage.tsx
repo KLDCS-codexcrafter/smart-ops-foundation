@@ -390,16 +390,22 @@ function IAMaturityDetailTile({ maturity }: { maturity: ReturnType<typeof getEng
   );
 }
 
-// ── Q17 Module 12 · Audit Plan Calendar tile ──
-function AuditPlanCalendarTile({ universe }: { universe: ReturnType<typeof listAuditUniverse> }): JSX.Element {
+// ── Q17 Module 12 · Audit Plan Calendar tile (S81d · resource allocation refinement · DP-S81-12) ──
+function AuditPlanCalendarTile({ universe, bap }: { universe: ReturnType<typeof listAuditUniverse>; bap: BAPAccountId }): JSX.Element {
   const upcoming = [...universe]
     .filter((u) => u.next_due_at !== null)
     .sort((a, b) => (a.next_due_at ?? '').localeCompare(b.next_due_at ?? ''))
     .slice(0, 4);
+  const ownedByMe = universe.filter((u) => u.responsible_bap === bap).length;
+  const ownersDistinct = new Set(universe.map((u) => u.responsible_bap).filter((b) => b !== null)).size;
   return (
     <Card className="p-4 space-y-2">
       <h3 className="font-semibold text-sm">Audit Plan Calendar · Q17 Module 12</h3>
-      <p className="text-xs text-muted-foreground">Upcoming audits (next-due)</p>
+      <p className="text-xs text-muted-foreground">Upcoming audits + resource allocation</p>
+      <div className="text-xs flex justify-between border-b pb-1">
+        <span>Active BAP load · <span className="font-mono">{ownedByMe}</span></span>
+        <span>Distinct owners · <span className="font-mono">{ownersDistinct}</span></span>
+      </div>
       {upcoming.length === 0
         ? <p className="text-xs text-muted-foreground">No scheduled audits in universe.</p>
         : (
@@ -407,7 +413,7 @@ function AuditPlanCalendarTile({ universe }: { universe: ReturnType<typeof listA
             {upcoming.map((u) => (
               <li key={u.id} className="flex items-center justify-between">
                 <span className="truncate">{u.area_name}</span>
-                <span className="font-mono">{u.next_due_at}</span>
+                <span className="font-mono">{u.next_due_at} · {u.responsible_bap ?? '—'}</span>
               </li>
             ))}
           </ul>
