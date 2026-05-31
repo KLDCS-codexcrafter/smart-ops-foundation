@@ -122,7 +122,7 @@ export function assignInvestigator(complaint_id: string, investigator_director_i
     recordId: complaint_id, recordLabel: `Assign investigator ${investigator_director_id}`,
     beforeState: before as unknown as Record<string, unknown>,
     afterState: all[idx] as unknown as Record<string, unknown>,
-    sourceModule: 'comply360-whistleblower-engine', performedByBap: by_bap,
+    sourceModule: 'comply360-whistleblower-engine',
   });
   return all[idx];
 }
@@ -187,7 +187,7 @@ export function resolveEscalation(escalation_id: string, response: string, actio
     recordId: escalation_id, recordLabel: `Resolve escalation ${escalation_id}`,
     beforeState: before as unknown as Record<string, unknown>,
     afterState: all[idx] as unknown as Record<string, unknown>,
-    sourceModule: 'comply360-whistleblower-engine', performedByBap: by_bap,
+    sourceModule: 'comply360-whistleblower-engine',
   });
   return all[idx];
 }
