@@ -123,6 +123,7 @@ export default function Comply360Page(): JSX.Element {
         if (item.id) setActiveModule(item.id as Comply360Module);
       }}
     >
+      <Comply360Breadcrumb activeModule={activeModule} onNavigate={setActiveModule} />
       {renderModule()}
     </Shell>
   );
