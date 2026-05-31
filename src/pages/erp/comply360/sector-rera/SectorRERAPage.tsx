@@ -48,7 +48,7 @@ function ProjectsPanel(): JSX.Element {
           {projects.map((p) => (
             <TableRow key={p.id}>
               <TableCell>{p.project_name}</TableCell>
-              <TableCell><Badge variant="secondary">{p.project_status}</Badge></TableCell>
+              <TableCell><Badge variant="secondary">{p.status}</Badge></TableCell>
               <TableCell className="font-mono text-xs">{p.state_rera_authority}</TableCell>
             </TableRow>
           ))}

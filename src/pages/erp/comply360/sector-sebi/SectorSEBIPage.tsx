@@ -92,7 +92,7 @@ function Reg30Panel(): JSX.Element {
           {disclosures.map((d) => (
             <TableRow key={d.id}>
               <TableCell>{d.category}</TableCell>
-              <TableCell>{d.disclosure_compliance}</TableCell>
+              <TableCell>{d.compliance}</TableCell>
             </TableRow>
           ))}
         </TableBody>
