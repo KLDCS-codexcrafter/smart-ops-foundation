@@ -70,3 +70,22 @@ export default function AIControlCenterPage(): JSX.Element {
     </div>
   );
 }
+
+// DP-S88-3 · React.memo perf refactor · functional logic 0-DIFF
+interface AIModuleCardProps {
+  module: { module_type: string; label: string; description: string; oob_ref: string | null };
+  runs: number;
+}
+
+const AIModuleCard = memo(function AIModuleCard({ module: m, runs }: AIModuleCardProps): JSX.Element {
+  return (
+    <Card className="p-3">
+      <div className="flex items-center justify-between mb-1">
+        <span className="font-semibold text-sm">{m.label}</span>
+        {m.oob_ref && <Badge variant="secondary">{m.oob_ref}</Badge>}
+      </div>
+      <div className="text-xs text-muted-foreground">{m.description}</div>
+      <div className="mt-2 text-xs font-mono">runs: {runs}</div>
+    </Card>
+  );
+});
