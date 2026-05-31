@@ -12,7 +12,7 @@ import {
   BarChart3, FileBarChart, Sparkles, Folder, Plug, Workflow, Settings,
   Percent, ShieldAlert, HardHat, UserCheck, Bike,
   Landmark, TrendingUp, Building2, Globe2, Brain, Presentation,
-  Flame, Wrench, TreePine, Recycle,
+  Flame, Wrench, TreePine, Recycle, Lock,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -61,4 +61,7 @@ export const comply360SidebarItems: SidebarItem[] = [
   { id: 'environmental',     type: 'group', label: 'Environmental Compliance',        icon: TreePine,     keyboard: 'c E', children: [] },
   // 🆕 Sprint 91 · Floor 5.3 · Waste Management (6 sub-regimes consolidated)
   { id: 'waste-management',  type: 'group', label: 'Waste Management',                icon: Recycle,      keyboard: 'c W', children: [] },
+  // 🆕 Sprint 92 · Floor 5.4 · DPDP Act 2023 + Cyber Security (CERT-In Directions 2022)
+  { id: 'dpdp',              type: 'group', label: 'DPDP Act 2023',                   icon: Lock,         keyboard: 'c B', children: [] },
+  { id: 'cyber-security',    type: 'group', label: 'Cyber Security (CERT-In)',        icon: ShieldAlert,  keyboard: 'c X', children: [] },
 ];

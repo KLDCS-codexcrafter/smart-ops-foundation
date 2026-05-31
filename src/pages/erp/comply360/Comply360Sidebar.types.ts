@@ -16,4 +16,5 @@ export type Comply360Module =
   | 'fire-safety' | 'industrial-safety'    // 🆕 S89 · Floor 5 OPENS · Fire Safety + Industrial Safety
   | 'environmental'                         // 🆕 S90 · Floor 5.2 · Environmental Compliance Pt 1
   | 'waste-management'                      // 🆕 S91 · Floor 5.3 · Waste Management (6 sub-regimes)
+  | 'dpdp' | 'cyber-security'               // 🆕 S92 · Floor 5.4 · DPDP Act 2023 + Cyber Security CERT-In
   | 'reports' | 'ai-center' | 'docs' | 'integrations' | 'workflow' | 'admin';

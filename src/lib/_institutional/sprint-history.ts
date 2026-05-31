@@ -480,8 +480,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 91 T-Phase-5.F.5.3 · Comply360 Floor 5.3 · Waste Management · Q35 · 1 NEW SIBLING (6 sub-regimes) + 1 NEW PAGE · 17-streak ⭐
   {
     sprintNumber: 91, code: 'T-Phase-5.F.5.3', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '72aff23747e52e1945829ff68963e148d655a012', loc: 1500,
+    headSha: 'fa305a277b8a2b1005fbbddea3a5d72fc88ad853', predecessorSha: '72aff23747e52e1945829ff68963e148d655a012', loc: 1500,
     newSiblings: ['comply360-waste-management-engine'],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 92 T-Phase-5.F.5.4 · Comply360 Floor 5.4 · DPDP Act 2023 + Cyber Security · Q36 · 2 NEW SIBLINGs + 2 NEW PAGES · 18-streak ⭐
+  {
+    sprintNumber: 92, code: 'T-Phase-5.F.5.4', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'fa305a277b8a2b1005fbbddea3a5d72fc88ad853', loc: 1200,
+    newSiblings: ['comply360-dpdp-engine', 'comply360-cyber-security-engine'],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
 ];
