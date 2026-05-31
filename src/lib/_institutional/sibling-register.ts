@@ -347,6 +347,8 @@ export const SIBLINGS: SiblingEntry[] = [
   // 🆕 Sprint 90 T-Phase-5.F.5.2 · Comply360 Floor 5.2 · Environmental Compliance Pt 1 · Q34 · 2 NEW SIBLINGs · 16-streak ⭐ target
   { id: 'comply360-environmental-engine', name: 'Comply360 Environmental Engine (DP-F5-1 · Q34 · EP Act 1986 + Air Act 1981 CTE/CTO + Water Act 1974 CTE/CTO + Form 5 + Form V · 18th USE-SITE READ application MAXIMUM SCALE)', path: 'src/lib/comply360-environmental-engine.ts', sprintAdded: 90, compositeAdded: 90, functionCount: 10, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-eia-engine', name: 'Comply360 EIA Engine (DP-F5-1 · Q34 · EIA 2006 Notification + CRZ 2019 + public consultation log · 19th USE-SITE READ application MAXIMUM SCALE)', path: 'src/lib/comply360-eia-engine.ts', sprintAdded: 90, compositeAdded: 90, functionCount: 6, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 91 T-Phase-5.F.5.3 · Comply360 Floor 5.3 · Waste Management · Q35 · 1 NEW SIBLING (6 sub-regimes consolidated) · 17-streak ⭐ target
+  { id: 'comply360-waste-management-engine', name: 'Comply360 Waste Management Engine (DP-F5-1 · Q35 · 6 sub-regimes consolidated: Hazardous Waste Rules 2016 + E-Waste Rules 2022 + Plastic Waste Rules 2022 + Battery Waste Rules 2022 + Bio-Medical Waste Rules + EPR Consolidated · 20th USE-SITE READ application MAXIMUM SCALE)', path: 'src/lib/comply360-waste-management-engine.ts', sprintAdded: 91, compositeAdded: 91, functionCount: 22, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 
