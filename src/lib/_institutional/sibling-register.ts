@@ -344,6 +344,9 @@ export const SIBLINGS: SiblingEntry[] = [
   // 🆕 Sprint 89 T-Phase-5.F.5.1 · Comply360 Floor 5.1 · FLOOR 5 OPENS · 2 NEW SIBLINGs · 15-streak ⭐ target
   { id: 'comply360-fire-safety-engine', name: 'Comply360 Fire Safety Engine (DP-F5-1 · Q33 · NBC 2025 Part 4 framework · Fire NOC + Audit + Equipment AMC + Drills + Building Fire Certificate · 16th USE-SITE READ application MAXIMUM SCALE)', path: 'src/lib/comply360-fire-safety-engine.ts', sprintAdded: 89, compositeAdded: 89, functionCount: 12, moatsRealized: [], provenance: 'CONFIRMED' },
   { id: 'comply360-industrial-safety-engine', name: 'Comply360 Industrial Safety Engine (DP-F5-1 · Q33 · PESO + Boiler Act 1923 + SMPV 1981 + Electrical Safety CEA + Lift Act · 17th USE-SITE READ application MAXIMUM SCALE)', path: 'src/lib/comply360-industrial-safety-engine.ts', sprintAdded: 89, compositeAdded: 89, functionCount: 12, moatsRealized: [], provenance: 'CONFIRMED' },
+  // 🆕 Sprint 90 T-Phase-5.F.5.2 · Comply360 Floor 5.2 · Environmental Compliance Pt 1 · Q34 · 2 NEW SIBLINGs · 16-streak ⭐ target
+  { id: 'comply360-environmental-engine', name: 'Comply360 Environmental Engine (DP-F5-1 · Q34 · EP Act 1986 + Air Act 1981 CTE/CTO + Water Act 1974 CTE/CTO + Form 5 + Form V · 18th USE-SITE READ application MAXIMUM SCALE)', path: 'src/lib/comply360-environmental-engine.ts', sprintAdded: 90, compositeAdded: 90, functionCount: 10, moatsRealized: [], provenance: 'CONFIRMED' },
+  { id: 'comply360-eia-engine', name: 'Comply360 EIA Engine (DP-F5-1 · Q34 · EIA 2006 Notification + CRZ 2019 + public consultation log · 19th USE-SITE READ application MAXIMUM SCALE)', path: 'src/lib/comply360-eia-engine.ts', sprintAdded: 90, compositeAdded: 90, functionCount: 6, moatsRealized: [], provenance: 'CONFIRMED' },
 ];
 
 
