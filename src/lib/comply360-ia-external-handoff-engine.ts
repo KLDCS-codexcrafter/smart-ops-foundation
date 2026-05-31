@@ -187,7 +187,7 @@ export function generateExternalHandoffPackage(opts: {
 
   // S80e Audit-Ready Score
   const ars = computeAuditReadyScore(entity_code, fy);
-  const arBand = getScoreBand(ars.total_score);
+  const arBand = getScoreBand(ars.overall_score);
 
   // Pre-population
   const caroPct = Math.min(
@@ -198,7 +198,7 @@ export function generateExternalHandoffPackage(opts: {
   // Hours saved heuristic
   const hoursSaved = (walkthroughs.length * 2)
     + (controlRuns.length * 1.5)
-    + (ars.total_score >= 80 ? 40 : 0);
+    + (ars.overall_score >= 80 ? 40 : 0);
   const feeSavings = {
     min: Math.round(hoursSaved * 2000),
     max: Math.round(hoursSaved * 5000),
@@ -229,7 +229,7 @@ export function generateExternalHandoffPackage(opts: {
     latest_mock_audit_run_id: latestRunId,
     mock_audit_readiness_percentage: mockPct,
     mock_audit_readiness_band: mockBand,
-    audit_ready_score: ars.total_score,
+    audit_ready_score: ars.overall_score,
     audit_ready_band: arBand,
     pre_populated_for_external: {
       findings_register_count: findings.length,
