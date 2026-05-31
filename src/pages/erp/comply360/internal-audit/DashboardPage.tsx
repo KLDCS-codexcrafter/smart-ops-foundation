@@ -21,6 +21,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { runMockAudit, type MockAuditRun } from '@/lib/comply360-mock-audit-simulator-engine';
+import { generateRecommendations, type IARecommendation } from '@/lib/comply360-ia-recommendation-engine';
 import {
   listEngagementPlans,
   listAuditUniverse,
