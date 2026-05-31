@@ -576,3 +576,136 @@ function MockAuditRunPanel({ engagementId, bap }: { engagementId: string; bap: B
   );
 }
 
+// ── Tab 8 · Reports & Handoff Panel · S81d · S81 ARC CLOSES ──
+function ReportsHandoffPanel({
+  engagementId, fy, bap,
+}: { engagementId: string; fy: string; bap: BAPAccountId }): JSX.Element {
+  const [pkg, setPkg] = useState<IAExternalHandoffPackage | null>(null);
+  const [seeded, setSeeded] = useState<SampleEngagementSeedRun[]>(() => listSampleEngagementSeedRuns());
+  const [history, setHistory] = useState<IAExternalHandoffPackage[]>(
+    () => listExternalHandoffPackages(engagementId),
+  );
+
+  const handleGenerate = (): void => {
+    const p = generateExternalHandoffPackage({
+      engagement_id: engagementId,
+      generated_by_bap: bap,
+    });
+    setPkg(p);
+    setHistory(listExternalHandoffPackages(engagementId));
+  };
+  const handleDownload = (): void => {
+    if (!pkg) return;
+    const { blob, filename_suggested } = exportHandoffPackageJsonBundle(pkg);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename_suggested; a.click();
+    URL.revokeObjectURL(url);
+  };
+  const handleSeed = (): void => {
+    seedSampleEngagement({ seeded_by_bap: bap });
+    setSeeded(listSampleEngagementSeedRuns());
+  };
+  const handleQuarterly = (q: 'Q1' | 'Q2' | 'Q3' | 'Q4'): void => {
+    const r = generateQuarterlyAuditCommitteeReport({
+      engagement_id: engagementId, fy, quarter: q, generated_by_bap: bap,
+    });
+    const url = URL.createObjectURL(r.export_blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `AC-Report-${fy.replace(/\s+/g, '-')}-${q}.json`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <Card className="p-4 space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="font-semibold">IA → External Audit Handoff</h3>
+          <p className="text-xs text-muted-foreground">
+            Sprint 81d · S81 ARC CLOSES · bundles Rule 11(g) + IA summary + Mock Audit results + Audit-Ready Score
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" onClick={handleSeed}>Seed Sample Engagement</Button>
+          <Button onClick={handleGenerate}>Generate Handoff Package</Button>
+        </div>
+      </div>
+
+      {seeded.length > 0 && (
+        <div className="text-xs text-muted-foreground">
+          Sample seed runs: <span className="font-mono">{seeded.length}</span>
+        </div>
+      )}
+
+      {pkg && (
+        <div className="space-y-3">
+          <div className="rounded-md border p-3 grid md:grid-cols-3 gap-3 text-sm">
+            <div>
+              <div className="text-xs text-muted-foreground uppercase">Audit-Ready Score</div>
+              <div className="font-mono text-3xl font-bold">{pkg.audit_ready_score}</div>
+              <Badge>{pkg.audit_ready_band}</Badge>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground uppercase">Rule 11(g) Verdict</div>
+              <div className="font-mono text-xl font-bold">{pkg.rule_11g_overall_verdict}</div>
+              <div className="text-xs text-muted-foreground">Report {pkg.rule_11g_report_id}</div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground uppercase">Mock Audit Readiness</div>
+              <div className="font-mono text-xl font-bold">
+                {pkg.mock_audit_readiness_percentage ?? '—'}{pkg.mock_audit_readiness_percentage !== null ? '%' : ''}
+              </div>
+              <div className="text-xs text-muted-foreground">{pkg.mock_audit_readiness_band ?? 'no run'}</div>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-3">
+            <Card className="p-3 text-xs space-y-1">
+              <h4 className="font-semibold text-sm mb-1">IA Engagement Summary</h4>
+              <div>Universe areas: <span className="font-mono">{pkg.ia_engagement_summary.audit_universe_areas_audited}</span></div>
+              <div>Risks: <span className="font-mono">{pkg.ia_engagement_summary.risk_register_total_risks}</span> (C:{pkg.ia_engagement_summary.risk_register_critical_count} · H:{pkg.ia_engagement_summary.risk_register_high_count})</div>
+              <div>Programs executed: <span className="font-mono">{pkg.ia_engagement_summary.audit_programs_executed}</span></div>
+              <div>Walkthroughs: <span className="font-mono">{pkg.ia_engagement_summary.walkthroughs_documented}</span></div>
+              <div>Control tests: <span className="font-mono">{pkg.ia_engagement_summary.control_tests_executed}</span> · eff <span className="font-mono">{pkg.ia_engagement_summary.control_effectiveness_percentage}%</span></div>
+              <div>Open IA issues: <span className="font-mono">{pkg.ia_engagement_summary.open_ia_issues}</span></div>
+            </Card>
+            <Card className="p-3 text-xs space-y-1">
+              <h4 className="font-semibold text-sm mb-1">Pre-Populated for External</h4>
+              <div>Findings register: <span className="font-mono">{pkg.pre_populated_for_external.findings_register_count}</span></div>
+              <div>Walkthrough docs: <span className="font-mono">{pkg.pre_populated_for_external.walkthrough_docs_count}</span></div>
+              <div>Control worksheets: <span className="font-mono">{pkg.pre_populated_for_external.control_test_worksheets_count}</span></div>
+              <div>CARO clause coverage: <span className="font-mono">{pkg.pre_populated_for_external.caro_clause_coverage_pct}%</span></div>
+              <div className="pt-2 border-t">
+                <div>Est. external audit hours saved: <span className="font-mono">{pkg.estimated_external_audit_hours_saved}</span></div>
+                <div>Fee savings: <span className="font-mono">₹{pkg.estimated_external_audit_fee_savings_inr.min.toLocaleString('en-IN')} – ₹{pkg.estimated_external_audit_fee_savings_inr.max.toLocaleString('en-IN')}</span></div>
+              </div>
+            </Card>
+          </div>
+
+          <div className="flex gap-2 flex-wrap">
+            <Button size="sm" variant="outline" onClick={handleDownload}>Download Handoff JSON</Button>
+            {(['Q1', 'Q2', 'Q3', 'Q4'] as const).map((q) => (
+              <Button key={q} size="sm" variant="outline" onClick={() => handleQuarterly(q)}>AC Report · {q}</Button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {history.length > 0 && (
+        <div className="pt-2 border-t">
+          <h4 className="font-semibold text-sm mb-1">Previous Handoff Packages ({history.length})</h4>
+          <ul className="text-xs space-y-1 max-h-32 overflow-auto">
+            {history.map((h) => (
+              <li key={h.id} className="flex justify-between border-b pb-1">
+                <span className="font-mono">{h.id}</span>
+                <span>{h.generated_at.slice(0, 19).replace('T', ' ')} · {h.rule_11g_overall_verdict}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+

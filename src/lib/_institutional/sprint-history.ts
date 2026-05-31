@@ -358,18 +358,29 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-05-30', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 81c T-Phase-5.B.2.2-PASS-C · Mock Audit Simulator + Walkthrough Automation + IA Recommendation · 3 NEW SIBLINGs · 7th IA Dashboard tab · OOB-6 extension · target 6-streak ⭐
+  // 🆕 Sprint 81c T-Phase-5.B.2.2-PASS-C · Mock Audit Simulator + Walkthrough Automation + IA Recommendation · 3 NEW SIBLINGs · 7th IA Dashboard tab · OOB-6 extension · A first-pass-clean ⭐
   {
     sprintNumber: 81, code: 'T-Phase-5.B.2.2-PASS-C', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '39f7dfdd0bb7c1760ff09db49c3fba55532fbb04', loc: 1500,
+    headSha: 'e4b4180e53494fb937804d0918a6cbeca784244a', predecessorSha: '39f7dfdd0bb7c1760ff09db49c3fba55532fbb04', loc: 1500,
     newSiblings: [
       'comply360-mock-audit-simulator-engine',
       'comply360-walkthrough-automation-engine',
       'comply360-ia-recommendation-engine',
     ],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 81d T-Phase-5.B.2.2-PASS-D · Sample Engagement Seed + IA → External Audit Handoff + S81 ARC CLOSE-SUMMARY · 2 NEW SIBLINGs · 8th IA Dashboard tab · S81 ARC CLOSES · target 7-streak ⭐
+  {
+    sprintNumber: 81, code: 'T-Phase-5.B.2.2-PASS-D', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'e4b4180e53494fb937804d0918a6cbeca784244a', loc: 1400,
+    newSiblings: [
+      'comply360-sample-engagement-seed',
+      'comply360-ia-external-handoff-engine',
+    ],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
+
 
 
 
