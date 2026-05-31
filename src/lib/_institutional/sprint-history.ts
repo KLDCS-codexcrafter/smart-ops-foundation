@@ -339,16 +339,23 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['comply360-rule-11g-report-engine', 'comply360-nlp-audit-ask-engine'],
     bankDate: '2026-05-30', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 81a T-Phase-5.B.2.2-PASS-A · Comply360 Floor 2 Internal Audit Arc 2.2 OPENS · 4 NEW SIBLINGs (internal-audit + ia-risk-register + ia-walkthrough + ia-control-testing) · 8 of 12 Q17 modules · target 4-streak ⭐
+  // 🆕 Sprint 81a T-Phase-5.B.2.2-PASS-A · Comply360 Floor 2 Internal Audit Arc 2.2 OPENS · 4 NEW SIBLINGs (internal-audit + ia-risk-register + ia-walkthrough + ia-control-testing) · 8 of 12 Q17 modules · re-graded A first-pass-clean post Cycle-2 hotfix
   {
     sprintNumber: 81, code: 'T-Phase-5.B.2.2-PASS-A', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '5e99848664e6f9defecbcd5e6a2c5398214d8e9e', loc: 1500,
+    headSha: '200b178466d111b10682e64066240f9d9e551cb5', predecessorSha: '5e99848664e6f9defecbcd5e6a2c5398214d8e9e', loc: 1500,
     newSiblings: [
       'comply360-internal-audit-engine',
       'comply360-ia-risk-register-engine',
       'comply360-ia-walkthrough-engine',
       'comply360-ia-control-testing-engine',
     ],
+    bankDate: '2026-05-30', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 81b T-Phase-5.B.2.2-PASS-B · Internal Audit Dashboard + AuditTrailExplorer + 2 DP-S79-2 stub fills · FR-106 12th scenario · surface-only pass · 0 new SIBLINGs · target 5-streak ⭐
+  {
+    sprintNumber: 81, code: 'T-Phase-5.B.2.2-PASS-B', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '200b178466d111b10682e64066240f9d9e551cb5', loc: 1400,
+    newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
