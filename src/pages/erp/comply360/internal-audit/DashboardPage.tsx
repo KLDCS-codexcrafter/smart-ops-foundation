@@ -49,6 +49,18 @@ import {
   getActiveBAPAccount,
   type BAPAccountId,
 } from '@/lib/comply360-audit-framework-engine';
+import {
+  seedSampleEngagement,
+  listSampleEngagementSeedRuns,
+  type SampleEngagementSeedRun,
+} from '@/lib/comply360-sample-engagement-seed';
+import {
+  generateExternalHandoffPackage,
+  exportHandoffPackageJsonBundle,
+  listExternalHandoffPackages,
+  generateQuarterlyAuditCommitteeReport,
+  type IAExternalHandoffPackage,
+} from '@/lib/comply360-ia-external-handoff-engine';
 
 type MaturityBand = 'Optimised' | 'Managed' | 'Defined' | 'Initial';
 
