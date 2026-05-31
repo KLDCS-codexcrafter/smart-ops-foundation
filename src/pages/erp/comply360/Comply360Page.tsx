@@ -33,6 +33,12 @@ import WhistleblowerPage from './whistleblower/WhistleblowerPage';
 import LabourCodesPage from './labour-codes/LabourCodesPage';
 import POSHPage from './posh/POSHPage';
 import GigWorkersPage from './gig-workers/GigWorkersPage';
+import SectorNBFCPage from './sector-nbfc/SectorNBFCPage';
+import SectorSEBIPage from './sector-sebi/SectorSEBIPage';
+import SectorRERAPage from './sector-rera/SectorRERAPage';
+import SectorFEMAPage from './sector-fema/SectorFEMAPage';
+import AIControlCenterPage from './ai-control-center/AIControlCenterPage';
+import CFOPitchDeckPage from './cfo-pitch-deck/CFOPitchDeckPage';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
 export default function Comply360Page(): JSX.Element {
@@ -66,6 +72,18 @@ export default function Comply360Page(): JSX.Element {
         return <POSHPage />;
       case 'gig-workers':
         return <GigWorkersPage />;
+      case 'sector-nbfc':
+        return <SectorNBFCPage />;
+      case 'sector-sebi':
+        return <SectorSEBIPage />;
+      case 'sector-rera':
+        return <SectorRERAPage />;
+      case 'sector-fema':
+        return <SectorFEMAPage />;
+      case 'ai-control-center':
+        return <AIControlCenterPage />;
+      case 'cfo-pitch-deck':
+        return <CFOPitchDeckPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':

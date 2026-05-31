@@ -8,6 +8,8 @@ export type Comply360Module =
   | 'home' | 'calendar' | 'companies' | 'tax-gst' | 'tds' | 'payroll' | 'payments'
   | 'challan-vault' | 'roc' | 'whistleblower' | 'fixed-assets' | 'internal-audit' | 'external-audit'
   | 'labour-codes' | 'posh' | 'gig-workers'   // 🆕 S86 v1 · Sector-Pack · Labour/HR section
+  | 'sector-nbfc' | 'sector-sebi' | 'sector-rera' | 'sector-fema'  // 🆕 S87 · Sector-Pack regulatory
+  | 'ai-control-center' | 'cfo-pitch-deck'    // 🆕 S87 · AI Control Center + CFO Deck OOB-3
   | 'exim' | 'vendor' | 'licenses' | 'esg' | 'legal' | 'finance-hub'
   | 'audit-framework'  // NEW · S80c · Statutory Audit Dashboard
   | 'rule-11g'         // NEW · S80f · MCA Rule 11(g) Auditor Report Generator
