@@ -369,13 +369,26 @@ export const SPRINTS: SprintEntry[] = [
     ],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 81d T-Phase-5.B.2.2-PASS-D · Sample Engagement Seed + IA → External Audit Handoff + S81 ARC CLOSE-SUMMARY · 2 NEW SIBLINGs · 8th IA Dashboard tab · S81 ARC CLOSES · target 7-streak ⭐
+  // 🆕 Sprint 81d T-Phase-5.B.2.2-PASS-D · Sample Engagement Seed + IA → External Audit Handoff + S81 ARC CLOSE-SUMMARY · 2 NEW SIBLINGs · 8th IA Dashboard tab · S81 ARC CLOSES · streak 7 ⭐
   {
     sprintNumber: 81, code: 'T-Phase-5.B.2.2-PASS-D', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'e4b4180e53494fb937804d0918a6cbeca784244a', loc: 1400,
+    headSha: '99cd1525a3b03780de2267b6c32576e5a63eca3d', predecessorSha: 'e4b4180e53494fb937804d0918a6cbeca784244a', loc: 1400,
     newSiblings: [
       'comply360-sample-engagement-seed',
       'comply360-ia-external-handoff-engine',
+    ],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 82 T-Phase-5.B.2.3 · Comply360 Floor 2 FINALE · External Audit + Survival Kit + DSC + Legal & Notices · 5 NEW SIBLINGs · FLOOR 2 OFFICIALLY CLOSES · target 8-streak ⭐
+  {
+    sprintNumber: 82, code: 'T-Phase-5.B.2.3', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '99cd1525a3b03780de2267b6c32576e5a63eca3d', loc: 1800,
+    newSiblings: [
+      'comply360-external-audit-engine',
+      'comply360-external-confirmation-engine',
+      'comply360-survival-kit-engine',
+      'comply360-dsc-engine',
+      'comply360-legal-notices-engine',
     ],
     bankDate: null, provenance: 'CONFIRMED',
   },
