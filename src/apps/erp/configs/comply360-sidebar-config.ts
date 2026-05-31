@@ -12,7 +12,7 @@ import {
   BarChart3, FileBarChart, Sparkles, Folder, Plug, Workflow, Settings,
   Percent, ShieldAlert, HardHat, UserCheck, Bike,
   Landmark, TrendingUp, Building2, Globe2, Brain, Presentation,
-  Flame, Wrench, TreePine, Recycle, Lock,
+  Flame, Wrench, TreePine, Recycle, Lock, BadgeCheck,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -64,4 +64,7 @@ export const comply360SidebarItems: SidebarItem[] = [
   // 🆕 Sprint 92 · Floor 5.4 · DPDP Act 2023 + Cyber Security (CERT-In Directions 2022)
   { id: 'dpdp',              type: 'group', label: 'DPDP Act 2023',                   icon: Lock,         keyboard: 'c B', children: [] },
   { id: 'cyber-security',    type: 'group', label: 'Cyber Security (CERT-In)',        icon: ShieldAlert,  keyboard: 'c X', children: [] },
+  // 🆕 Sprint 93 · Floor 5.5 · Quality + Labour Tier-2 (Q37)
+  { id: 'quality-standards', type: 'group', label: 'Quality & Standards',             icon: BadgeCheck,   keyboard: 'c Q', children: [] },
+  { id: 'labour-tier2',      type: 'group', label: 'Labour Tier-2',                   icon: HardHat,      keyboard: 'c T', children: [] },
 ];

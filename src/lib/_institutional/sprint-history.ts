@@ -487,8 +487,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 92 T-Phase-5.F.5.4 · Comply360 Floor 5.4 · DPDP Act 2023 + Cyber Security · Q36 · 2 NEW SIBLINGs + 2 NEW PAGES · 18-streak ⭐
   {
     sprintNumber: 92, code: 'T-Phase-5.F.5.4', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'fa305a277b8a2b1005fbbddea3a5d72fc88ad853', loc: 1200,
+    headSha: '98f820391f5bab0193a2195a0562c4cf06eda75b', predecessorSha: 'fa305a277b8a2b1005fbbddea3a5d72fc88ad853', loc: 1200,
     newSiblings: ['comply360-dpdp-engine', 'comply360-cyber-security-engine'],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 93 T-Phase-5.F.5.5 · Comply360 Floor 5.5 · Quality + Labour Tier-2 · Q37 · 2 NEW SIBLINGs + 2 NEW PAGES · 19-streak ⭐
+  {
+    sprintNumber: 93, code: 'T-Phase-5.F.5.5', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: '98f820391f5bab0193a2195a0562c4cf06eda75b', loc: 1300,
+    newSiblings: ['comply360-quality-standards-engine', 'comply360-labour-tier2-engine'],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
 ];
