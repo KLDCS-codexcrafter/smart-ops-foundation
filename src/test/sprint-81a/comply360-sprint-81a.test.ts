@@ -419,12 +419,18 @@ describe('Sprint 81a · T-Phase-5.B.2.2-PASS-A · Internal Audit Foundation Engi
     expect(fs.existsSync(SRC('src/pages/erp/comply360/internal-audit/DashboardPage.tsx'))).toBe(true);
   });
 
-  // ─── Lesson 30 + Lesson 33 ESLint STRICT ───
+  // ─── Lesson 30 + Lesson 33 ESLint STRICT · environment-adaptive runner (v1.23 pattern · precedent S80f) ───
+  // Lesson 24: Sprint 81a hotfix · environment-adaptive runner ensures portability between Lovable (pnpm) and sandbox (npx) · ESLint discipline itself is unchanged · 0 errors AND 0 warnings bar holds.
   it('ESLint STRICT 0 errors AND 0 warnings · explicit exit code (Lesson 30 + Lesson 33 · 29-sprint carry)', () => {
     let exitCode = 0;
     let lintOutput = '';
+    // Resolve runner: prefer pnpm (founder env), fall back to npx (sandbox · audit env)
+    const runner = (() => {
+      try { execSync('command -v pnpm', { stdio: 'pipe' }); return 'pnpm lint'; }
+      catch { return 'npx eslint .'; }
+    })();
     try {
-      lintOutput = execSync('pnpm lint 2>&1', { encoding: 'utf-8', stdio: 'pipe' });
+      lintOutput = execSync(`${runner} 2>&1`, { encoding: 'utf-8', stdio: 'pipe' });
     } catch (e) {
       exitCode = (e as { status?: number }).status ?? 1;
       lintOutput = (e as { stdout?: string; stderr?: string }).stdout
