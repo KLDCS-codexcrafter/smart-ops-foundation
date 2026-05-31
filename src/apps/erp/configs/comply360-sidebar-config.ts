@@ -11,6 +11,7 @@ import {
   Package, Search, Shield, Globe, Truck, Award, Leaf, Gavel,
   BarChart3, FileBarChart, Sparkles, Folder, Plug, Workflow, Settings,
   Percent, ShieldAlert, HardHat, UserCheck, Bike,
+  Landmark, TrendingUp, Building2, Globe2, Brain, Presentation,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -44,4 +45,11 @@ export const comply360SidebarItems: SidebarItem[] = [
   { id: 'labour-codes',   type: 'group', label: 'Labour Codes 2026',              icon: HardHat,      keyboard: 'c L', children: [] },
   { id: 'posh',           type: 'group', label: 'POSH Act 2013',                  icon: UserCheck,    keyboard: 'c P', children: [] },
   { id: 'gig-workers',    type: 'group', label: 'Gig Workers Social Security',    icon: Bike,         keyboard: 'c G', children: [] },
+  // 🆕 Sprint 87 · Floor 4 Sector-Pack · Regulatory section + AI Control Center + CFO Deck (OOB-3)
+  { id: 'sector-nbfc',       type: 'group', label: 'NBFC Sector-Pack',                icon: Landmark,     keyboard: 'c N', children: [] },
+  { id: 'sector-sebi',       type: 'group', label: 'SEBI LODR Sector-Pack',           icon: TrendingUp,   keyboard: 'c S', children: [] },
+  { id: 'sector-rera',       type: 'group', label: 'RERA Sector-Pack',                icon: Building2,    keyboard: 'c R', children: [] },
+  { id: 'sector-fema',       type: 'group', label: 'FEMA Sector-Pack',                icon: Globe2,       keyboard: 'c F', children: [] },
+  { id: 'ai-control-center', type: 'group', label: 'AI Control Center (OOB-2/9)',     icon: Brain,        keyboard: 'c A', children: [] },
+  { id: 'cfo-pitch-deck',    type: 'group', label: 'CFO Pitch Deck (OOB-3)',          icon: Presentation, keyboard: 'c D', children: [] },
 ];
