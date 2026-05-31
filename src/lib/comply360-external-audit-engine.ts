@@ -367,10 +367,21 @@ export function compileFinalAuditPack(opts: {
   let form_3cd_id: string | null = null;
   if (include3cd) {
     try {
-      const auditor = { firm: 'Demo CA', frn: '000000W', member: 'CA Demo', mno: '000000' };
-      const entity = { name: opts.entity_name, pan: 'AAAAA0000A', address: 'India' };
-      const f3cd = build3CD(auditor, entity, opts.fy);
-      form_3cd_id = f3cd.id;
+      const entity = {
+        entity_code,
+        pan: 'AAAAA0000A',
+        legal_name: opts.entity_name,
+        fy_start: `${opts.fy.slice(0, 4)}-04-01`,
+        fy_end: `${(parseInt(opts.fy.slice(0, 4), 10) + 1)}-03-31`,
+      };
+      const auditor = {
+        auditor_name: 'CA Demo',
+        membership_no: '000000',
+        firm_name: 'Demo CA Firm',
+        audit_date: new Date().toISOString().slice(0, 10),
+      };
+      const f3cd = build3CD(entity, auditor);
+      form_3cd_id = `form3cd_${f3cd.generated_at}`;
     } catch { form_3cd_id = null; }
   }
 
