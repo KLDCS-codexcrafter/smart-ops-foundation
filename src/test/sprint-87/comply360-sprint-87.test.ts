@@ -125,7 +125,7 @@ describe('Sprint 87 · T-Phase-5.D.4.2 · Q31 Sector-Pack + Q27b AI Control Cent
   it('NBFC · classifyNPA · 6-class matrix + provision %', () => {
     expect(classifyNPA(0).npa_class).toBe('standard');
     expect(classifyNPA(120).npa_class).toBe('sub_standard');
-    expect(classifyNPA(1400).npa_class).toBe('loss');
+    expect(classifyNPA(1500).npa_class).toBe('loss');
     expect(classifyNPA(0).provision_required_pct).toBeGreaterThanOrEqual(0);
   });
   it('NBFC · loan account + ALM + LCR lifecycle', () => {

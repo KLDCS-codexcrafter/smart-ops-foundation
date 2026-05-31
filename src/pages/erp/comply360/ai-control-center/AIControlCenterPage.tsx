@@ -2,7 +2,7 @@
  * @file        src/pages/erp/comply360/ai-control-center/AIControlCenterPage.tsx
  * @purpose     AI Control Center · 11-module orchestrator · OOB-2 ROI + OOB-9 Tutor
  * @sprint      Sprint 87 · T-Phase-5.D.4.2 · DP-S87-14 · FLOOR 4 CLOSES
- * @note        Uses fixed grid-cols-4 (with multi-row wrap) to avoid dynamic grid-cols-11 (not in tailwind safelist).
+ * @note        Fixed grid-cols-4 (with multi-row wrap) avoids dynamic class generation for the 11-module list.
  */
 import { useMemo, useState } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
