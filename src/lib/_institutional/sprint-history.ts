@@ -422,7 +422,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 85 T-Phase-5.C.3.3 · Comply360 Floor 3 ROC-Suite Arc 3.3 · Q29 Part 3 · 4 NEW SIBLINGs + 1 NEW PAGE · OOB-7 STANDALONE · FLOOR 3 CLOSES
   {
     sprintNumber: 85, code: 'T-Phase-5.C.3.3', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'f6389fc933515d4125fd7682f3caa53e390d71b5', loc: 1500,
+    headSha: '7fa57f626caa6df61a0acc1afa171abba32e4016', predecessorSha: 'f6389fc933515d4125fd7682f3caa53e390d71b5', loc: 1500,
     newSiblings: [
       'comply360-csr-engine',
       'comply360-meetings-engine',
