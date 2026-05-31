@@ -107,8 +107,8 @@ export function buildXBRL(opts: { aoc4_xbrl_id: string; taxonomy_version: SchedI
     `  <xbrli:context id="ctx-${fy}"><xbrli:entity><xbrli:identifier scheme="http://www.mca.gov.in">${activeEntityCode()}</xbrli:identifier></xbrli:entity><xbrli:period><xbrli:startDate>${fy}-04-01</xbrli:startDate><xbrli:endDate>${fy}-03-31</xbrli:endDate></xbrli:period></xbrli:context>`,
   ];
   for (const el of elements) {
-    const mapped = mappings.find((m) => m.taxonomy_element_code === el.element_code);
-    const value = mapped ? String(mapped.value) : '0';
+    const mapped = mappings.find((m) => m.schedule_iii_element_code === el.element_code);
+    const value = mapped ? String(mapped.mapped_value_inr) : '0';
     xmlParts.push(`  <${el.element_code} contextRef="ctx-${fy}" unitRef="INR" decimals="0">${value}</${el.element_code}>`);
   }
   xmlParts.push(`</xbrli:xbrl>`);
