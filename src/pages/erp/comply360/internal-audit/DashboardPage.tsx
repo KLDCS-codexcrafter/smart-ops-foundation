@@ -16,7 +16,7 @@
  *              comply360-audit-ready-score-engine (S80e · pattern reference for Maturity Score)
  * @previous-author-history  Sprint 79a · T-Phase-5.A.1.11-PASS-A · DP-S79-2 redirect-target stub
  */
-import { useMemo, useState } from 'react';
+import { Fragment, useMemo, useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
