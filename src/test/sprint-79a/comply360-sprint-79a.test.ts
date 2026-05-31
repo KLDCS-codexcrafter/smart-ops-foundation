@@ -133,7 +133,6 @@ describe('Sprint 79a · Redirect-target stub pages (DP-S79-2)', () => {
   const stubs = [
     'src/pages/erp/comply360/fixed-assets/LedgerPackPage.tsx',
     'src/pages/erp/comply360/internal-audit/DashboardPage.tsx',
-    'src/pages/erp/comply360/internal-audit/AuditTrailPage.tsx',
     'src/pages/erp/comply360/payroll/StatutoryReturnsPage.tsx',
     'src/pages/erp/comply360/companies/IndAS116Page.tsx',
     'src/pages/erp/comply360/vendor/MSMEBreachesPage.tsx',
