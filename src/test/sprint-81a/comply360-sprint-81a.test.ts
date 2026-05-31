@@ -89,8 +89,9 @@ describe('Sprint 81a · T-Phase-5.B.2.2-PASS-A · Internal Audit Foundation Engi
   it('comply360-ia-control-testing-engine.ts exists', () => {
     expect(fs.existsSync(SRC('src/lib/comply360-ia-control-testing-engine.ts'))).toBe(true);
   });
-  it('S79a stubs internal-audit/AuditTrailPage + DashboardPage STILL EXIST as stubs', () => {
-    expect(fs.existsSync(SRC('src/pages/erp/comply360/internal-audit/AuditTrailPage.tsx'))).toBe(true);
+  // Lesson 24: Sprint 81b · AuditTrailPage renamed → AuditTrailExplorerPage (DP-S81-6) and DashboardPage promoted (DP-S81-5). Original "STILL EXIST as stubs" assertion converted to forward-compatible existence checks on the new files.
+  it('internal-audit dashboard + audit-trail explorer pages exist (post S81b stub-fill)', () => {
+    expect(fs.existsSync(SRC('src/pages/erp/comply360/internal-audit/AuditTrailExplorerPage.tsx'))).toBe(true);
     expect(fs.existsSync(SRC('src/pages/erp/comply360/internal-audit/DashboardPage.tsx'))).toBe(true);
   });
   it('All S80 engines still present (0-DIFF anchor)', () => {
@@ -411,11 +412,11 @@ describe('Sprint 81a · T-Phase-5.B.2.2-PASS-A · Internal Audit Foundation Engi
     const src = fs.readFileSync(SRC('src/lib/audit-trail-engine.ts'), 'utf-8');
     expect(src).toContain('AUDIT_TRAIL_DISABLED');
   });
-  it('internal-audit/AuditTrailPage.tsx still S79a stub (S81b fills)', () => {
-    const src = fs.readFileSync(SRC('src/pages/erp/comply360/internal-audit/AuditTrailPage.tsx'), 'utf-8');
-    expect(src).toContain('Stub');
+  // Lesson 24: Sprint 81b · adjusted post-DP-S79-2 stub-fill at S81b · AuditTrailPage renamed → AuditTrailExplorerPage (DP-S81-6); DashboardPage promoted (DP-S81-5). Original S81a assertions converted to existence checks on the new file names.
+  it('internal-audit/AuditTrailExplorerPage.tsx exists (was AuditTrailPage stub at S81a · filled + renamed at S81b · DP-S79-2 stub 4 of 11 closed)', () => {
+    expect(fs.existsSync(SRC('src/pages/erp/comply360/internal-audit/AuditTrailExplorerPage.tsx'))).toBe(true);
   });
-  it('internal-audit/DashboardPage.tsx still S79a stub (S81b fills)', () => {
+  it('internal-audit/DashboardPage.tsx exists (S79a stub promoted at S81b · DP-S79-2 stub 3 of 11 closed)', () => {
     expect(fs.existsSync(SRC('src/pages/erp/comply360/internal-audit/DashboardPage.tsx'))).toBe(true);
   });
 
