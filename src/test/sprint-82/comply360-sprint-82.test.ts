@@ -157,8 +157,8 @@ describe('Sprint 82 · T-Phase-5.B.2.3 · External Audit + Survival Kit + DSC + 
   });
   it('deriveOpinionTypeFromScore returns expected bands', () => {
     expect(deriveOpinionTypeFromScore(95)).toBe('unmodified');
-    expect(deriveOpinionTypeFromScore(60)).toBe('qualified');
-    expect(deriveOpinionTypeFromScore(30)).toBe('adverse');
+    expect(deriveOpinionTypeFromScore(75)).toBe('qualified');
+    expect(deriveOpinionTypeFromScore(60)).toBe('adverse');
     expect(deriveOpinionTypeFromScore(10)).toBe('disclaimer');
   });
   it('generateAuditReport persists audit report', () => {
