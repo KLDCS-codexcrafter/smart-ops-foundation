@@ -154,7 +154,6 @@ describe('Sprint 87 · T-Phase-5.D.4.2 · Q31 Sector-Pack + Q27b AI Control Cent
     const lcr = computeLCR({
       fy: '2026-27', quarter: 'Q1',
       hqla_inr: 10_000_000, net_cash_outflow_inr: 8_000_000,
-      recorded_by_bap: BAP,
     });
     expect(lcr.lcr_ratio).toBeCloseTo(1.25, 2);
     expect(lcr.is_compliant).toBe(true);
