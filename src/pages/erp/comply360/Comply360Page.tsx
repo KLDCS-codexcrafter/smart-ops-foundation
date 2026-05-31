@@ -92,6 +92,8 @@ export default function Comply360Page(): JSX.Element {
         return <FireSafetyDashboardPage />;
       case 'industrial-safety':
         return <IndustrialSafetyDashboardPage />;
+      case 'environmental':
+        return <EnvironmentalDashboardPage />;
       case 'external-audit':
         return <ExternalAuditPage />;
       case 'legal':
