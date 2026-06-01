@@ -167,6 +167,10 @@ export type TierScopeRegisteredHook = (payload: {
   scope_name: string;
   tier: 'subsidiary' | 'branch' | 'division' | 'department' | 'project' | 'site';
   parent_scope?: { tier: string; id: string };
+  /** Project tier only — division/department cost-centre linkage. */
+  cost_centre?: { division_id: string | null; department_id: string | null };
+  /** Subsidiary/branch only — ISO state code for Master DNA inheritance. */
+  target_state_code?: string;
 }) => void;
 
 const tierScopeHooks: TierScopeRegisteredHook[] = [];
