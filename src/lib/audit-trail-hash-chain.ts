@@ -92,6 +92,19 @@ export interface ChainVerification {
   reason: string | null;
 }
 
+/**
+ * Sprint 102 · T-Phase-6.A.1.1 · DP-A1-2 — Fire-and-forget safe wrapper.
+ * Wraps appendAuditEntry with `.catch` so an underlying rejection can never
+ * surface as an unhandled promise rejection in calling UI/engine flows.
+ * §H 0-DIFF: pure additive export · appendAuditEntry signature unchanged.
+ */
+export function appendAuditEntrySafe(input: AppendAuditInput): void {
+  appendAuditEntry(input).catch((err) => {
+    // swallow → audit append must never break the calling UI/engine flow
+    console.error('[audit-hash-chain] append failed (non-fatal):', err);
+  });
+}
+
 export async function verifyChainIntegrity(entityCode: string): Promise<ChainVerification> {
   const chain = loadChain(entityCode);
   let prev = GENESIS;

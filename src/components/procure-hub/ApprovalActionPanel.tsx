@@ -17,7 +17,7 @@ import { CheckCircle2 } from 'lucide-react';
 import { APPROVAL_MATRIX } from '@/types/requisition-common';
 import { tierFor } from '@/lib/approval-tier-helper';
 import { ApprovalTimelinePanel } from '@/components/uth/ApprovalTimelinePanel';
-import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import { appendAuditEntrySafe } from '@/lib/audit-trail-hash-chain';
 import { toast } from 'sonner';
 
 export interface ApprovalRecord {
@@ -58,7 +58,7 @@ export function ApprovalActionPanel({
   const isFullyApproved = pendingRoles.length === 0;
 
   const handleApprove = (): void => {
-    void appendAuditEntry({
+    appendAuditEntrySafe({
       entityCode,
       entityId,
       voucherId: enquiryId,
@@ -66,7 +66,7 @@ export function ApprovalActionPanel({
       action: 'enquiry.approve',
       actorUserId: 'mock-user',
       payload: { tier, role: currentUserRole, enquiry_no: enquiryNo },
-    }).catch(() => { /* best-effort */ });
+    });
     onApprove(tier, currentUserRole);
     toast.success(`Approved as ${currentUserRole}`);
   };
@@ -76,7 +76,7 @@ export function ApprovalActionPanel({
       toast.error('Reason required');
       return;
     }
-    void appendAuditEntry({
+    appendAuditEntrySafe({
       entityCode,
       entityId,
       voucherId: enquiryId,
@@ -84,7 +84,7 @@ export function ApprovalActionPanel({
       action: 'enquiry.reject',
       actorUserId: 'mock-user',
       payload: { reason: rejectReason, role: currentUserRole, enquiry_no: enquiryNo },
-    }).catch(() => { /* best-effort */ });
+    });
     onReject(rejectReason);
     toast.info(`Rejected: ${rejectReason}`);
     setRejectReason('');

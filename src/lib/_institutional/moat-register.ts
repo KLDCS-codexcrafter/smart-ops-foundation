@@ -130,7 +130,7 @@ export const MOATS: MoatEntry[] = [
     name: 'OOB-PROD-1 · Distributor Demand Forecast Feed · enterprise-grade demand sensing at SMB price',
     sprintBanked: 61,
     compositeBanked: 61,
-    headShaBanked: 'TBD_AT_BANK',
+    headShaBanked: '04c5f2cb1c5791cab00a2107421376f01246962a',
     backingFiles: [
       'src/lib/demand-forecast-engine.ts',
       'src/pages/erp/distributor-hub/reports/DistributorDemandForecastFeed.tsx',
@@ -144,7 +144,7 @@ export const MOATS: MoatEntry[] = [
     name: 'OOB-PROD-2 · Predictive Machine Condition · SAP S/4 capability at SMB price',
     sprintBanked: 61,
     compositeBanked: 61,
-    headShaBanked: 'TBD_AT_BANK',
+    headShaBanked: '04c5f2cb1c5791cab00a2107421376f01246962a',
     backingFiles: [
       'src/lib/iot-machine-bridge.ts',
       'src/pages/erp/maintainpro/reports/PredictiveMachineHealth.tsx',
@@ -158,7 +158,7 @@ export const MOATS: MoatEntry[] = [
     name: '21 CFR Part 11 Electronic Audit Trail Framework at SMB Price · only Indian SMB ERP with FDA-grade e-signature + tamper-evident audit trail',
     sprintBanked: 62,
     compositeBanked: 62,
-    headShaBanked: 'TBD_AT_BANK',
+    headShaBanked: '2c11f18ba29d601ab3b01e4836084e51753605b0',
     backingFiles: [
       'src/lib/cfr-part-11-engine.ts',
       'src/types/cfr-part-11.ts',
@@ -173,7 +173,7 @@ export const MOATS: MoatEntry[] = [
     name: 'World-First Carbon-Aware Production Planning at SMB Price',
     sprintBanked: 63,
     compositeBanked: 63,
-    headShaBanked: 'TBD_AT_BANK',
+    headShaBanked: '567c140c5cfc78096ec0b8a6972667eae4494c4d',
     backingFiles: [
       'src/lib/carbon-planning-engine.ts',
       'src/types/carbon-planning.ts',
@@ -187,7 +187,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-39',
     name: 'CARO 2020 Paragraph 3(i) Auto-Pack · machine-graded compliance disclosure at SMB price',
-    sprintBanked: 65, compositeBanked: 65, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 65, compositeBanked: 65, headShaBanked: '54433a13ab596c73e992233b340cc894aaa063f6',
     backingFiles: ['src/lib/caro-2020-engine.ts', 'src/pages/erp/fincore/statutory-fa-pack/CARO20Disclosure.tsx'],
     competitivePositioning: 'No Indian SMB ERP auto-grades CARO 2020 sub-rules · auditors quote ₹50k-2L per assessment · Operix native',
     provenance: 'CONFIRMED',
@@ -195,7 +195,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-40',
     name: 'MSME 43B(h) Capital-Purchase Tracker · 45-day deadline enforcement for fixed assets',
-    sprintBanked: 65, compositeBanked: 65, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 65, compositeBanked: 65, headShaBanked: '54433a13ab596c73e992233b340cc894aaa063f6',
     backingFiles: ['src/lib/msme-43bh-engine.ts', 'src/pages/erp/fincore/statutory-fa-pack/MSMECapitalBreaches.tsx'],
     competitivePositioning: 'Existing 43B(h) products track vendor bills only · Operix extends to capital purchases · prevents disallowance on FA imports',
     provenance: 'CONFIRMED',
@@ -203,7 +203,7 @@ export const MOATS: MoatEntry[] = [
   {
     id: 'MOAT-41',
     name: 'EPCG FA ↔ EximX Bridge · cross-card export-obligation tracker · 6x rule · 6-year window',
-    sprintBanked: 65, compositeBanked: 65, headShaBanked: 'TBD_AT_BANK',
+    sprintBanked: 65, compositeBanked: 65, headShaBanked: '54433a13ab596c73e992233b340cc894aaa063f6',
     backingFiles: ['src/lib/epcg-fa-bridge.ts', 'src/pages/erp/fincore/statutory-fa-pack/EPCGStatusReport.tsx'],
     competitivePositioning: 'EPCG breach = penalty + interest + duty + bank-guarantee invocation · no Indian SMB ERP auto-tracks · Operix unique',
     provenance: 'CONFIRMED',

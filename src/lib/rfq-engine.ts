@@ -5,7 +5,7 @@
  */
 import { rfqsKey, type RFQ, type RFQSendChannel, type RFQStatus } from '@/types/rfq';
 import { generateRFQTokenUrl, notifyVendorRFQ, type VendorNotifyTarget } from './vendor-rfq-notify';
-import { appendAuditEntry } from './audit-trail-hash-chain';
+import { appendAuditEntrySafe } from './audit-trail-hash-chain';
 import { publishProcurementPulse } from './procurement-pulse-stub';
 import { getQuotationsByRfq } from './vendor-quotation-engine';
 
@@ -135,7 +135,7 @@ export async function sendRfq(
   );
   if (result) {
     // FIX-1 · D-247 hash chain · D-262 fire-and-forget
-    void appendAuditEntry({
+    appendAuditEntrySafe({
       entityCode,
       entityId: result.entity_id,
       voucherId: result.id,
@@ -143,7 +143,7 @@ export async function sendRfq(
       action: 'rfq.sent',
       actorUserId,
       payload: { rfq_no: result.rfq_no, vendor_id: result.vendor_id, channels },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'info',
@@ -166,7 +166,7 @@ export function captureQuotation(
   );
   if (result) {
     // FIX-1 · D-247 hash chain · D-262 fire-and-forget
-    void appendAuditEntry({
+    appendAuditEntrySafe({
       entityCode,
       entityId: result.entity_id,
       voucherId: result.id,
@@ -174,7 +174,7 @@ export function captureQuotation(
       action: 'rfq.quoted',
       actorUserId,
       payload: { vendor_quotation_id: vendorQuotationId },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'info',
@@ -197,7 +197,7 @@ export function declineRfq(
   );
   if (result) {
     // FIX-1 · D-247 hash chain · D-262 fire-and-forget
-    void appendAuditEntry({
+    appendAuditEntrySafe({
       entityCode,
       entityId: result.entity_id,
       voucherId: result.id,
@@ -205,7 +205,7 @@ export function declineRfq(
       action: 'rfq.declined',
       actorUserId,
       payload: { reason },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'warning',
