@@ -556,8 +556,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 100 T-Phase-6.A.0.5 · Arc 0 Master Data Foundation · 9 Cross-Company Reports (Tally TDL Mechanism A native) + Master Visibility Heatmap (#26) + 💡 Idea 5 Master Access Matrix + 💡 Idea 6 Inter-Dept Approval Bridge (ORCHESTRATOR · §P-exemption · bridges approval-matrix-engine + approval-workflow-engine · 0-DIFF on both) + 💡 Idea 8 Cost-Centre Cross-Stitch · 4 NEW SIBLINGs + 1 NEW Standalone Page (#26) · 2 new audit types under 'mca-roc' (master_access_change/cost_centre_cross_stitch) · cross-company-reports-engine is READ-ONLY (no new audit type) · idea-6 routes audit through approval-workflow-engine (no new audit type · §P) · 26-streak ⭐ target · §L DESIGN-DECISION-FLAGs: idea-6 §P orchestrator-exemption · access-matrix vs field-lock boundary · 9-report owner_company tagging
   {
     sprintNumber: 100, code: 'T-Phase-6.A.0.5', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '570e30eda07d466e96ebbf612f2773f698ec6d40', loc: 1300,
+    headSha: '000fc0685870cd13f2eb9be811c9438baced74c6', predecessorSha: '570e30eda07d466e96ebbf612f2773f698ec6d40', loc: 1300,
     newSiblings: ['cross-company-reports-engine', 'idea-5-master-access-matrix-engine', 'idea-6-inter-dept-approval-bridge-engine', 'idea-8-cost-centre-cross-stitch-engine'],
+    bankDate: '2026-06-01', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 101 T-Phase-6.A.0.6 · 🏁 ARC 0 CAPSTONE · Sleeping-Master Detector (idea-9) + Cross-Entity Reorder (idea-10 ORCHESTRATOR · USE-SITE READS reorder-indent-bridge + stock engines · 0-DIFF FR-44) + Compliance-Aware Master Save (idea-12 ORCHESTRATOR · USE-SITE READS gstin-validator + india-validations + hsn-resolver · 0-DIFF FR-44) + Master Lifecycle Wizard (#27) · 3 NEW SIBLINGs + 1 NEW Standalone Page (#27) · 1 NEW shared audit type under 'mca-roc' (master_lifecycle_event with action discriminator: sleeping_flagged / cross_entity_reorder / compliance_block) · completes all 12 deep ideas · 27-streak ⭐ target · §L DESIGN-DECISION-FLAGs: idea-10/idea-12 orchestrator boundaries (FR-44 no-dup of reorder/validators) · idea-9 usage-derivation via voucher localStorage walk · shared master_lifecycle_event rationale (one type · action discriminator)
+  {
+    sprintNumber: 101, code: 'T-Phase-6.A.0.6', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '000fc0685870cd13f2eb9be811c9438baced74c6', loc: 1000,
+    newSiblings: ['idea-9-sleeping-master-detector-engine', 'idea-10-cross-entity-reorder-engine', 'idea-12-compliance-aware-master-save-engine'],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
 ];
