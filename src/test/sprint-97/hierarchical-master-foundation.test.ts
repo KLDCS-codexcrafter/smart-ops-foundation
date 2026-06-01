@@ -183,11 +183,11 @@ describe('Sprint 97 · Master DNA · state + TDS + place-of-supply adjustments',
   it('adjusts gst_state_code to target state', () => {
     const r = inheritWithDna({
       master_type: 'vendor',
-      source_snapshot: { id: 'v1', gst_state_code: '29' },
+      source_snapshot: { id: 'v1', gst_state_code: '27' }, // MH source, KA target
       target_state_code: 'KA',
       target_entity: E,
     });
-    expect(r.adjustments.some((a) => a.field === 'gst_state_code')).toBe(true);
+    expect(r.adjustments.some((a) => a.field === 'gst_state_code' && a.to === '29')).toBe(true);
   });
 
   it('adjusts place_of_supply to target state code', () => {
@@ -267,8 +267,8 @@ describe('Sprint 97 · Audit emission · mca-roc module', () => {
   });
 
   it('both new audit types are registered under mca-roc module', () => {
-    expect(AUDIT_ENTITY_TYPES_REGISTRY).toHaveProperty('hierarchical_ledger_created');
-    expect(AUDIT_ENTITY_TYPES_REGISTRY).toHaveProperty('master_dna_inheritance');
+    expect(AUDIT_ENTITY_TYPES_REGISTRY.some((t) => t.id === 'hierarchical_ledger_created')).toBe(true);
+    expect(AUDIT_ENTITY_TYPES_REGISTRY.some((t) => t.id === 'master_dna_inheritance')).toBe(true);
   });
 });
 
