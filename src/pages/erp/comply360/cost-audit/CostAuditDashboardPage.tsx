@@ -133,8 +133,12 @@ export default function CostAuditDashboardPage(): JSX.Element {
             Standalone Page #28 · reads <span className="font-mono">comply360-cost-audit-engine</span> · CRA-1/2/3/4 tracker · §148(3) cooling-off
           </p>
         </div>
-        <Badge variant={applicability.applicable ? 'default' : 'secondary'}>
-          {applicability.applicable ? '§148 Applicable' : '§148 Not Applicable'}
+        <Badge variant={applicability.cost_audit_required ? 'default' : 'secondary'}>
+          {applicability.cost_audit_required
+            ? '§148 Audit Required'
+            : applicability.cost_records_required
+              ? '§148 Records Only'
+              : '§148 Not Applicable'}
         </Badge>
       </header>
 
