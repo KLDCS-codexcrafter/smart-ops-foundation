@@ -108,7 +108,7 @@ describe('Sprint 98 · Block 3 · field-lock-metadata-engine', () => {
     _clearFieldLockRulesForTests();
     loadFieldLockRules();
     const next = upsertRule({
-      rule: { master_type: 'item', field_path: 'sku', field_label: 'SKU', mode: 'locked' },
+      rule: { master_type: 'item', field_path: 'sku', field_label: 'SKU', mode: 'locked', updated_by: 't1' },
       actor: 't1', entity_code: 'TEST',
     });
     expect(next.id).toBeTruthy();
@@ -119,7 +119,7 @@ describe('Sprint 98 · Block 3 · field-lock-metadata-engine', () => {
     _clearFieldLockRulesForTests();
     loadFieldLockRules();
     upsertRule({
-      rule: { master_type: 'item', field_path: 'hsn_code', field_label: 'HSN', mode: 'locked' },
+      rule: { master_type: 'item', field_path: 'hsn_code', field_label: 'HSN', mode: 'locked', updated_by: 't1' },
       actor: 't1', entity_code: 'TEST',
     });
     expect(getRule('item', 'hsn_code')?.mode).toBe('locked');
@@ -129,7 +129,7 @@ describe('Sprint 98 · Block 3 · field-lock-metadata-engine', () => {
     _clearFieldLockRulesForTests();
     loadFieldLockRules();
     const r = upsertRule({
-      rule: { master_type: 'item', field_path: 'tmp', field_label: 'tmp', mode: 'locked' },
+      rule: { master_type: 'item', field_path: 'tmp', field_label: 'tmp', mode: 'locked', updated_by: 't1' },
       actor: 't1', entity_code: 'TEST',
     });
     expect(deleteRule({ rule_id: r.id, actor: 't1', entity_code: 'TEST' })).toBe(true);
