@@ -539,6 +539,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['hierarchical-ledger-engine', 'idea-2-master-dna-engine'],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint 98 T-Phase-6.A.0.3 · Arc 0 continuation · Master Data Governance · 3 NEW SIBLINGs (field-lock-metadata-engine, idea-3-conflict-resolution-engine, idea-11-sync-throttle-engine) · 1 new audit type under 'mca-roc' (field_lock_rule_change) · DP-PH6-NEW-24 ratified ACCEPT group-shared model · Voucher-Type-only replication adapter · 24-streak ⭐ target · §L DESIGN-DECISION-FLAGs: group-shared storage tiers · stub→real merge UI mid-sprint · Stock Category deferred · Lesson 24 bounds-check on sibling-count test
+  {
+    sprintNumber: 98, code: 'T-Phase-6.A.0.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '6eec46a164c9d9cf9e015c49b70da0b48d26c649', loc: 1050,
+    newSiblings: ['field-lock-metadata-engine', 'idea-3-conflict-resolution-engine', 'idea-11-sync-throttle-engine'],
+    bankDate: '2026-06-01', provenance: 'CONFIRMED',
+  },
 ];
 
 
