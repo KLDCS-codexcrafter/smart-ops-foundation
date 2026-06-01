@@ -71,13 +71,13 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 62 PROD-4.5 · Repetitive + Mixed-Mode + GMP Schedule M + 21 CFR Part 11 · 38th SIBLING
   {
     sprintNumber: 62, code: 'T-Phase-3.PROD-4.5', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: '04c5f2c', loc: 1500,
+    headSha: '2c11f18ba29d601ab3b01e4836084e51753605b0', predecessorSha: '04c5f2c', loc: 1500,
     newSiblings: ['cfr-part-11-engine'], bankDate: '2026-05-25', provenance: 'CONFIRMED',
   },
   // 🆕 Sprint 63 PROD-5 · ESG + Closeout + Carbon-aware · 39th SIBLING · ⭐ PHASE 3 v2 CLOSES · 28/28 CAPABILITY FULL · 10-streak NEW RECORD DOUBLE-DIGIT
   {
     sprintNumber: 63, code: 'T-Phase-3.PROD-5', composite: false, grade: 'A first-pass-clean',
-    headSha: 'TBD_AT_BANK', predecessorSha: '2c11f18b', loc: 1200,
+    headSha: '567c140c5cfc78096ec0b8a6972667eae4494c4d', predecessorSha: '2c11f18b', loc: 1200,
     newSiblings: ['carbon-planning-engine'], bankDate: '2026-05-25', provenance: 'CONFIRMED',
   },
   // 🆕 Sprint 64 FAR-0 · Demo Seed + Cross-Card-Integrity Schema · Phase 4 FAR Arc OPEN · 6 FAR-CAPs + 4 FK-CAPs schema-staged · 11-streak ⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐⭐
