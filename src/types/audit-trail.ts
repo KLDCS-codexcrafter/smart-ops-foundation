@@ -45,7 +45,9 @@ export type AuditEntityType =
   | 'audit_retention_warning_ack' | 'audit_continuity_report'
   // Sprint 96 · T-Phase-6.A.0.1 · Arc 0 Master Data Foundation · 4 new audit entity types (module: 'mca-roc')
   | 'master_replication_event' | 'master_conflict_resolution'
-  | 'master_sync_run' | 'master_version_change';
+  | 'master_sync_run' | 'master_version_change'
+  // Sprint 97 · T-Phase-6.A.0.2 · 7-tier hierarchical ledger + Master DNA · 2 new audit entity types (module: 'mca-roc')
+  | 'hierarchical_ledger_created' | 'master_dna_inheritance';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
