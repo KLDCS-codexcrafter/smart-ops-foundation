@@ -22,21 +22,9 @@ import {
 } from '@/lib/master-replication-engine';
 import { ALL_CROSS_CO_REPORTS } from '@/lib/cross-company-reports-engine';
 
-type CellState = 'green' | 'yellow' | 'red';
+import { classifyCell, type HeatmapCellState } from './classifyCell';
 
-/** Heatmap colour logic — pure for testability.
- *  - red    : missing in target entity
- *  - yellow : present + a per-entity override exists for any field
- *  - green  : present and fully synced
- */
-export function classifyCell(input: {
-  present: boolean;
-  hasOverride: boolean;
-}): CellState {
-  if (!input.present) return 'red';
-  if (input.hasOverride) return 'yellow';
-  return 'green';
-}
+type CellState = HeatmapCellState;
 
 function readEntityMaster(entityCode: string, mt: MasterType): unknown[] {
   try {

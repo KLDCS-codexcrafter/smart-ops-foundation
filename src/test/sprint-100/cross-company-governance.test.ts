@@ -39,7 +39,7 @@ import {
 } from '@/lib/idea-8-cost-centre-cross-stitch-engine';
 import { SIBLINGS, getSiblingCount } from '@/lib/_institutional/sibling-register';
 import { readAuditTrail } from '@/lib/audit-trail-engine';
-import { classifyCell } from '@/features/master-visibility/MasterVisibilityHeatmapPage';
+import { classifyCell } from '@/features/master-visibility/classifyCell';
 
 beforeEach(() => {
   localStorage.clear();
@@ -318,8 +318,8 @@ describe('Block 7 · institutional integrity', () => {
   it('idea-8-cost-centre-cross-stitch-engine registered exactly once', () => {
     expect(SIBLINGS.filter((s) => s.id === 'idea-8-cost-centre-cross-stitch-engine').length).toBe(1);
   });
-  it('comply360-tier2 unchanged (still 1)', () => {
-    const matches = SIBLINGS.filter((s) => /comply360-.*tier2/.test(s.id));
+  it('comply360-tier2-extensions-engine sibling count unchanged (still 1)', () => {
+    const matches = SIBLINGS.filter((s) => s.id === 'comply360-tier2-extensions-engine');
     expect(matches.length).toBe(1);
   });
 });
