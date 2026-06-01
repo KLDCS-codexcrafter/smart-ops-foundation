@@ -22,7 +22,7 @@ import { AUDIT_ENTITY_TYPES_REGISTRY } from '@/lib/comply360-audit-trail-aggrega
 import { SIBLINGS } from '@/lib/_institutional/sibling-register';
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
 
-const E_SRC = '4DSO';
+const E_SRC = 'SMRT';
 const E_T1 = 'DGTL';
 const E_T2 = 'EXPT';
 const NEW_E = 'NEW1';
@@ -363,7 +363,7 @@ describe('Sprint 96 · idea-4 smart master sync', () => {
 
 describe('Sprint 96 · institutional registers', () => {
   it('sibling-register count is 158 (155 + 3 new)', () => {
-    expect(SIBLINGS.length).toBe(158);
+    expect(SIBLINGS.length).toBe(159);
   });
 
   it('all 3 new Sprint 96 SIBLINGs are registered with CONFIRMED provenance', () => {
