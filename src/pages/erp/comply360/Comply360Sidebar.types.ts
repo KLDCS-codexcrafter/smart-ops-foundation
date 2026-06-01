@@ -19,4 +19,6 @@ export type Comply360Module =
   | 'dpdp' | 'cyber-security'               // 🆕 S92 · Floor 5.4 · DPDP Act 2023 + Cyber Security CERT-In
   | 'quality-standards' | 'labour-tier2'    // 🆕 S93 · Floor 5.5 · Quality/Standards + Labour Tier-2
   | 'mca-tier2' | 'legal-ipr'               // 🆕 S94 · Floor 5.6 CAPSTONE · CLOSES FLOOR 5
+  | 'cost-audit' | 'meetings' | 'survival-kit' | 'csr'  // 🆕 S103 · Arc 1 UX surfacing · 4 new dashboards (CSR rescoped SURFACE→BUILD)
+  | 'form-15ca' | 'schedule-m'              // 🆕 S103 · Arc 1 surfaced (Form 15CA + Schedule M canonical)
   | 'reports' | 'ai-center' | 'docs' | 'integrations' | 'workflow' | 'admin';
