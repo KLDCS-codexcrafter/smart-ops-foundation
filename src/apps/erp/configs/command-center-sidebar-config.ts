@@ -304,6 +304,8 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'mdg-field-lock-rules', requiredCards: ['command-center'] },
       { id: 'mdg-conflict-resolution', type: 'item', label: 'Master Conflict Resolution', icon: Lock,
         moduleId: 'mdg-conflict-resolution', requiredCards: ['command-center'] },
+      { id: 'mdg-sync-throttle', type: 'item', label: 'Sync Throttle Inspector', icon: Lock,
+        moduleId: 'mdg-sync-throttle', requiredCards: ['command-center'] },
     ],
   },
   {
