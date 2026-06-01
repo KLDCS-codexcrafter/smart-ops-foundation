@@ -55,8 +55,12 @@ export type AuditEntityType =
   // Sprint 100 · T-Phase-6.A.0.5 · Master access matrix + cost-centre cross-stitch · 2 new audit entity types (module: 'mca-roc')
   | 'master_access_change' | 'cost_centre_cross_stitch'
   // Sprint 101 · T-Phase-6.A.0.6 · Master Lifecycle (Arc 0 Capstone) · 1 NEW shared audit entity type (module: 'mca-roc')
+  // Sprint 101 · T-Phase-6.A.0.6 · Master Lifecycle (Arc 0 Capstone) · 1 NEW shared audit entity type (module: 'mca-roc')
   // Action discriminator carried via AuditTrailEntry.reason / record_label: sleeping_flagged | cross_entity_reorder | compliance_block
-  | 'master_lifecycle_event';
+  | 'master_lifecycle_event'
+  // Sprint 105 · T-Phase-6.C.1.1 · Arc 2 OPENER · Pillar C.1 Intercompany Foundation · 1 NEW audit entity type (module: 'mca-roc')
+  // Logged on every upsert/update of GroupStructureNode (ownership %, relationship, consolidation method)
+  | 'group_structure_change';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

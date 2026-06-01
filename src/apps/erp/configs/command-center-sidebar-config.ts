@@ -95,6 +95,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // Sprint 101 · T-Phase-6.A.0.6 · 🏁 Arc 0 Capstone · Standalone Page #27
       { id: 'fincore-master-lifecycle-wizard', type: 'item', label: 'Master Lifecycle Wizard', icon: Layers,
         moduleId: 'fincore-master-lifecycle-wizard', requiredCards: ['command-center'] },
+      // 🎬 Sprint 105 · T-Phase-6.C.1.1 · Arc 2 OPENER · Standalone Page #34
+      { id: 'fincore-intercompany-group-structure', type: 'item', label: 'Intercompany Group Structure', icon: Network,
+        moduleId: 'fincore-intercompany-group-structure', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },

@@ -581,11 +581,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
-  // 🏁 Sprint 104 T-Phase-6.A.1.3 · Arc 1 CAPSTONE · Cost Audit §148 applicability engine extension (ADDITIVE · determineCostAuditApplicability + product/service table) + CostAuditDashboardPage update + UX-surfacing closure (2 genuine orphans: audit-framework + rule-11g) · sibling-register UNCHANGED (172) · ZERO new audit types · ZERO new engines · §L: CRA Rules 2014 thresholds — records ₹35 cr (Rule 3 uniform) · audit aggregate ₹25 cr regulated / ₹35 cr non-regulated with overall gate ₹50 cr / ₹100 cr (Rule 4) · 30-streak ⭐ target · headSha TBD_AT_BANK (backfills at S105 Block 1)
+  // 🏁 Sprint 104 T-Phase-6.A.1.3 · Arc 1 CAPSTONE · Cost Audit §148 applicability engine extension (ADDITIVE · determineCostAuditApplicability + product/service table) + CostAuditDashboardPage update + UX-surfacing closure (2 genuine orphans: audit-framework + rule-11g) · sibling-register UNCHANGED (172) · ZERO new audit types · ZERO new engines · §L: CRA Rules 2014 thresholds — records ₹35 cr (Rule 3 uniform) · audit aggregate ₹25 cr regulated / ₹35 cr non-regulated with overall gate ₹50 cr / ₹100 cr (Rule 4) · 30-streak ⭐ target · headSha backfilled at S105 Block 1
   {
     sprintNumber: 104, code: 'T-Phase-6.A.1.3', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '327b7bdebaeea5347cdecf4f964e6292de6af322', loc: 600,
+    headSha: 'e59f1ecf246f4891d5efdd248b1b19aee8c921ef', predecessorSha: '327b7bdebaeea5347cdecf4f964e6292de6af322', loc: 600,
     newSiblings: [],
+    bankDate: '2026-06-01', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 105 T-Phase-6.C.1.1 · ARC 2 OPENER · Pillar C.1 Intercompany Foundation · NEW SIBLING intercompany-group-structure-engine (WRAPS §H-frozen mock-entities via loadEntities · side-store erp_group_structure · ownership% · JV · 3 Ind AS consolidation methods full/proportional/equity · DP-A2-1 side-store wrap · DP-A2-9 scope wall vs Arc 3) + NEW Standalone Page #34 IntercompanyGroupStructurePage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type group_structure_change under 'mca-roc' · 31-streak ⭐ target · §L: side-store-wrap decision · Ind AS 110/111/28 thresholds · Arc 3 scope wall (NO consolidation/elimination/multi-currency) · headSha TBD_AT_BANK (backfills at S106 Block 1)
+  {
+    sprintNumber: 105, code: 'T-Phase-6.C.1.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'e59f1ecf246f4891d5efdd248b1b19aee8c921ef', loc: 1100,
+    newSiblings: ['intercompany-group-structure-engine'],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
 ];
