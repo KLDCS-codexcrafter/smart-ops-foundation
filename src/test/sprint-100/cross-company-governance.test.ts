@@ -81,22 +81,22 @@ describe('Block 2 · cross-company-reports-engine · 9 reports + owner_company t
     expect(all).toHaveLength(9);
   });
   it('multi_company_cash_book runs and returns totals.row_count', () => {
-    seedVoucher('SOPS', 'V1', 'cash_payment', 1000);
+    seedVoucher('SMRT', 'V1', 'cash_payment', 1000);
     const r = runCrossCoReport({ report: 'multi_company_cash_book' });
     expect(r.totals).toHaveProperty('row_count');
   });
   it('multi_company_bank_book runs and aggregates bank voucher rows', () => {
-    seedVoucher('SOPS', 'V2', 'bank_payment', 2500);
+    seedVoucher('SMRT', 'V2', 'bank_payment', 2500);
     const r = runCrossCoReport({ report: 'multi_company_bank_book' });
     expect(r.totals.grand_total).toBeGreaterThan(0);
   });
   it('group_sales_register filters by sales/invoice voucher types', () => {
-    seedVoucher('SOPS', 'V3', 'sales_invoice', 5000);
+    seedVoucher('SMRT', 'V3', 'sales_invoice', 5000);
     const r = runCrossCoReport({ report: 'group_sales_register' });
     expect(r.rows.length).toBeGreaterThan(0);
   });
   it('group_purchase_register filters by purchase/bill voucher types', () => {
-    seedVoucher('SOPS', 'V4', 'purchase_bill', 7500);
+    seedVoucher('SMRT', 'V4', 'purchase_bill', 7500);
     const r = runCrossCoReport({ report: 'group_purchase_register' });
     expect(r.rows.length).toBeGreaterThan(0);
   });
@@ -110,23 +110,23 @@ describe('Block 2 · cross-company-reports-engine · 9 reports + owner_company t
     expect(r.totals).toHaveProperty('grand_total');
   });
   it('multi_company_graph aggregates per company', () => {
-    seedVoucher('SOPS', 'V5', 'sales_invoice', 100);
+    seedVoucher('SMRT', 'V5', 'sales_invoice', 100);
     const r = runCrossCoReport({ report: 'multi_company_graph' });
     expect(r.rows.every((row) => 'owner_company' in row)).toBe(true);
   });
   it('multi_company_group_comparison returns sales/purchase/cash/bank per company', () => {
-    seedVoucher('SOPS', 'V6', 'sales_invoice', 100);
+    seedVoucher('SMRT', 'V6', 'sales_invoice', 100);
     const r = runCrossCoReport({ report: 'multi_company_group_comparison' });
     expect(r.totals).toHaveProperty('sales_total');
   });
   it('multi_company_ledger_voucher carries owner_company on every row (drill back)', () => {
-    seedVoucher('SOPS', 'V7', 'sales_invoice', 100);
+    seedVoucher('SMRT', 'V7', 'sales_invoice', 100);
     const r = runCrossCoReport({ report: 'multi_company_ledger_voucher' });
     expect(r.rows.length).toBeGreaterThan(0);
     expect(r.rows.every((row) => typeof row.owner_company === 'string')).toBe(true);
   });
   it('every report row carries owner_company tag', () => {
-    seedVoucher('SOPS', 'V8', 'sales_invoice', 100);
+    seedVoucher('SMRT', 'V8', 'sales_invoice', 100);
     const all = runAllReports();
     for (const result of all) {
       for (const row of result.rows) {
@@ -148,8 +148,8 @@ describe('Block 2 · cross-company-reports-engine · 9 reports + owner_company t
     expect(src).toContain('vouchersKey');
   });
   it('from_date/to_date filtering scopes voucher iteration', () => {
-    seedVoucher('SOPS', 'V9', 'sales_invoice', 100, '2025-01-01');
-    seedVoucher('SOPS', 'V10', 'sales_invoice', 100, '2026-04-01');
+    seedVoucher('SMRT', 'V9', 'sales_invoice', 100, '2025-01-01');
+    seedVoucher('SMRT', 'V10', 'sales_invoice', 100, '2026-04-01');
     const r = runCrossCoReport({ report: 'group_sales_register', from_date: '2026-01-01', to_date: '2026-12-31' });
     expect(r.rows.length).toBe(1);
   });
@@ -185,31 +185,31 @@ describe('Block 4 · idea-5 master-access-matrix-engine', () => {
     expect(DEFAULT_ACCESS_RULES.length).toBeGreaterThan(0);
   });
   it('hq_finance defaults to edit on customer master', () => {
-    expect(getAccess({ master_type: 'customer', entity_code: 'SOPS', role: 'hq_finance' })).toBe('edit');
+    expect(getAccess({ master_type: 'customer', entity_code: 'SMRT', role: 'hq_finance' })).toBe('edit');
   });
   it('branch_manager defaults to view on customer master', () => {
-    expect(getAccess({ master_type: 'customer', entity_code: 'SOPS', role: 'branch_manager' })).toBe('view');
+    expect(getAccess({ master_type: 'customer', entity_code: 'SMRT', role: 'branch_manager' })).toBe('view');
   });
   it('project_manager defaults to view_request_approval', () => {
-    expect(getAccess({ master_type: 'item', entity_code: 'SOPS', role: 'project_manager' })).toBe('view_request_approval');
+    expect(getAccess({ master_type: 'item', entity_code: 'SMRT', role: 'project_manager' })).toBe('view_request_approval');
   });
   it('setAccessRule persists and supersedes default', () => {
-    setAccessRule({ master_type: 'customer', entity_code: 'SOPS', role: 'branch_manager', permission: 'edit' });
-    expect(getAccess({ master_type: 'customer', entity_code: 'SOPS', role: 'branch_manager' })).toBe('edit');
+    setAccessRule({ master_type: 'customer', entity_code: 'SMRT', role: 'branch_manager', permission: 'edit' });
+    expect(getAccess({ master_type: 'customer', entity_code: 'SMRT', role: 'branch_manager' })).toBe('edit');
   });
   it('setAccessRule writes master_access_change audit', () => {
-    setAccessRule({ master_type: 'vendor', entity_code: 'SOPS', role: 'branch_manager', permission: 'edit' });
-    const audit = readAuditTrail('SOPS');
+    setAccessRule({ master_type: 'vendor', entity_code: 'SMRT', role: 'branch_manager', permission: 'edit' });
+    const audit = readAuditTrail('SMRT');
     expect(audit.some((a) => a.entity_type === 'master_access_change')).toBe(true);
   });
   it('field_overrides additive — TDS section editable even when row permission is view', () => {
     setAccessRule({
-      master_type: 'customer', entity_code: 'SOPS', role: 'branch_manager',
+      master_type: 'customer', entity_code: 'SMRT', role: 'branch_manager',
       permission: 'view',
       field_overrides: [{ field: 'tds_section_override', permission: 'edit' }],
     });
-    expect(getFieldAccess({ master_type: 'customer', entity_code: 'SOPS', role: 'branch_manager', field: 'tds_section_override' })).toBe('edit');
-    expect(getFieldAccess({ master_type: 'customer', entity_code: 'SOPS', role: 'branch_manager', field: 'name' })).toBe('view');
+    expect(getFieldAccess({ master_type: 'customer', entity_code: 'SMRT', role: 'branch_manager', field: 'tds_section_override' })).toBe('edit');
+    expect(getFieldAccess({ master_type: 'customer', entity_code: 'SMRT', role: 'branch_manager', field: 'name' })).toBe('view');
   });
   it('listAccessRules returns stored + defaults', () => {
     expect(listAccessRules().length).toBeGreaterThanOrEqual(DEFAULT_ACCESS_RULES.length);
@@ -275,29 +275,29 @@ describe('Block 5 · idea-6 inter-dept-approval-bridge (ORCHESTRATOR · §P)', (
 // ── Block 6 · idea-8-cost-centre-cross-stitch-engine ──
 describe('Block 6 · idea-8 cost-centre-cross-stitch', () => {
   it('buildCrossStitch reads ProjectCentre.division_id and department_id', () => {
-    seedProjectCentre('SOPS', 'pc-1', 'Hyderabad EPC', 'div-A', 'dept-7');
+    seedProjectCentre('SMRT', 'pc-1', 'Hyderabad EPC', 'div-A', 'dept-7');
     const link = buildCrossStitch('pc-1');
     expect(link).not.toBeNull();
     expect(link!.division_id).toBe('div-A');
     expect(link!.department_id).toBe('dept-7');
   });
   it('cost_centre_id equals project_id (PROJECT-ONLY · locked)', () => {
-    seedProjectCentre('SOPS', 'pc-2', 'Mumbai AMC', null, null);
+    seedProjectCentre('SMRT', 'pc-2', 'Mumbai AMC', null, null);
     const link = buildCrossStitch('pc-2');
     expect(link!.cost_centre_id).toBe('pc-2');
   });
   it('buildCrossStitch writes cost_centre_cross_stitch audit', () => {
-    seedProjectCentre('SOPS', 'pc-3', 'Pune Service', null, null);
+    seedProjectCentre('SMRT', 'pc-3', 'Pune Service', null, null);
     buildCrossStitch('pc-3');
-    const audit = readAuditTrail('SOPS');
+    const audit = readAuditTrail('SMRT');
     expect(audit.some((a) => a.entity_type === 'cost_centre_cross_stitch')).toBe(true);
   });
   it('buildCrossStitch returns null for unknown project', () => {
     expect(buildCrossStitch('does-not-exist')).toBeNull();
   });
   it('listCrossStitches filters inactive project centres', () => {
-    seedProjectCentre('SOPS', 'pc-4', 'X', null, null);
-    expect(listCrossStitches('SOPS').length).toBe(1);
+    seedProjectCentre('SMRT', 'pc-4', 'X', null, null);
+    expect(listCrossStitches('SMRT').length).toBe(1);
   });
 });
 
