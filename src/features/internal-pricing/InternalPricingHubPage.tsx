@@ -40,7 +40,7 @@ function ScopeBadge({ scope }: { scope: InternalPricingRule['from_scope'] }) {
 }
 
 export default function InternalPricingHubPage() {
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
   const rules = listPricingRules();
   const audits = listTPAudits();
   const auditByRule = new Map<string, TPAuditRecord>();
