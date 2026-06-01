@@ -152,3 +152,38 @@ export function inheritManufacturingModeFromParent(
   const parentMode = getEntityManufacturingMode(parentEntityCode);
   applyManufacturingModeToEntity(entityCode, parentMode);
 }
+
+// ─── Sprint 97 · T-Phase-6.A.0.2 · Additive hooks (no behavior change to existing) ───
+
+/**
+ * Hook fired AFTER a new tier scope (subsidiary/branch/division/department/project/site)
+ * is registered. Callers may use this to trigger hierarchical ledger auto-creation
+ * or Master DNA inheritance. Implementation is intentionally a thin pass-through so
+ * the entity-setup-service stays decoupled from those engines.
+ */
+export type TierScopeRegisteredHook = (payload: {
+  entity_code: string;
+  scope_id: string;
+  scope_name: string;
+  tier: 'subsidiary' | 'branch' | 'division' | 'department' | 'project' | 'site';
+  parent_scope?: { tier: string; id: string };
+}) => void;
+
+const tierScopeHooks: TierScopeRegisteredHook[] = [];
+
+export function onTierScopeRegistered(hook: TierScopeRegisteredHook): () => void {
+  tierScopeHooks.push(hook);
+  return () => {
+    const idx = tierScopeHooks.indexOf(hook);
+    if (idx >= 0) tierScopeHooks.splice(idx, 1);
+  };
+}
+
+export function emitTierScopeRegistered(
+  payload: Parameters<TierScopeRegisteredHook>[0],
+): void {
+  for (const h of tierScopeHooks) {
+    try { h(payload); } catch { /* hook isolation · never break entity setup */ }
+  }
+}
+
