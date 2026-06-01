@@ -49,6 +49,13 @@ import QualityStandardsDashboardPage from './quality-standards/QualityStandardsD
 import LabourTier2DashboardPage from './labour-tier2/LabourTier2DashboardPage';
 import MCATier2DashboardPage from './mca-tier2/MCATier2DashboardPage';
 import LegalIPRDashboardPage from './legal-ipr/LegalIPRDashboardPage';
+// 🆕 Sprint 103 · T-Phase-6.A.1.2 · Arc 1 UX surfacing
+import CostAuditDashboardPage from './cost-audit/CostAuditDashboardPage';
+import MeetingsDashboardPage from './meetings/MeetingsDashboardPage';
+import SurvivalKitDashboardPage from './survival-kit/SurvivalKitDashboardPage';
+import CSRDashboardPage from './csr/CSRDashboardPage';
+import Form15CAPage from './exim/foreign-tax/Form15CAPage';
+import ScheduleMPage from './companies/ScheduleMPage';
 import { Comply360Breadcrumb } from './_shared/Comply360Breadcrumb';
 import type { Comply360Module } from './Comply360Sidebar.types';
 
@@ -137,6 +144,19 @@ export default function Comply360Page(): JSX.Element {
         return <Rule11gReportPage />;
       case 'internal-audit':
         return <InternalAuditDashboardPage />;
+      // 🆕 Sprint 103 · Arc 1 UX surfacing · 4 NEW + 2 SURFACED
+      case 'cost-audit':
+        return <CostAuditDashboardPage />;
+      case 'meetings':
+        return <MeetingsDashboardPage />;
+      case 'survival-kit':
+        return <SurvivalKitDashboardPage />;
+      case 'csr':
+        return <CSRDashboardPage />;
+      case 'form-15ca':
+        return <Form15CAPage />;
+      case 'schedule-m':
+        return <ScheduleMPage />;
       // remaining mega-menus · modules light up in later sprints per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;

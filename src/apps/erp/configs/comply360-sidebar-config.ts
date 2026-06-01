@@ -13,6 +13,7 @@ import {
   Percent, ShieldAlert, HardHat, UserCheck, Bike,
   Landmark, TrendingUp, Building2, Globe2, Brain, Presentation,
   Flame, Wrench, TreePine, Recycle, Lock, BadgeCheck, Briefcase, Copyright,
+  Scale, Users2, LifeBuoy, HeartHandshake, FileText, FlaskConical,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -69,4 +70,11 @@ export const comply360SidebarItems: SidebarItem[] = [
   // 🆕 Sprint 94 · Floor 5.6 CAPSTONE · CLOSES FLOOR 5 · MCA T2 + Legal/IPR (Q38)
   { id: 'mca-tier2',         type: 'item', label: 'MCA Tier-2 + PMLA',               icon: Briefcase,    keyboard: 'c M' },
   { id: 'legal-ipr',         type: 'item', label: 'Legal Contracts + IPR',           icon: Copyright,    keyboard: 'c K' },
+  // 🆕 Sprint 103 · T-Phase-6.A.1.2 · Arc 1 UX surfacing · 4 NEW dashboards + 2 SURFACED
+  { id: 'cost-audit',        type: 'item', label: 'Cost Audit · §148',               icon: Scale,        keyboard: 'c U' },
+  { id: 'meetings',          type: 'item', label: 'Meetings · Board · AGM · EGM',    icon: Users2,       keyboard: 'c J' },
+  { id: 'survival-kit',      type: 'item', label: 'Auditor Survival Kit',            icon: LifeBuoy,     keyboard: 'c V' },
+  { id: 'csr',               type: 'item', label: 'CSR · Section 135',               icon: HeartHandshake, keyboard: 'c H' },
+  { id: 'form-15ca',         type: 'item', label: 'Form 15CA / 15CB',                icon: FileText,     keyboard: 'c 5' },
+  { id: 'schedule-m',        type: 'item', label: 'Schedule M · Pharma GMP',         icon: FlaskConical, keyboard: 'c 7' },
 ];

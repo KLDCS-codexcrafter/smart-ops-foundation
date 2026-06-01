@@ -8,7 +8,7 @@
 import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart, Sparkles, Database, Compass, Flame, Wrench, TreePine, Recycle, Lock, ShieldAlert, BadgeCheck, HardHat, Briefcase, Copyright } from 'lucide-react';
+import { Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart, Sparkles, Database, Compass, Flame, Wrench, TreePine, Recycle, Lock, ShieldAlert, BadgeCheck, HardHat, Briefcase, Copyright, Scale, Users2, LifeBuoy, HeartHandshake, FileText, FlaskConical } from 'lucide-react';
 import { loadObligations } from '@/lib/comply360-statutory-memory';
 import { computeWeightedComplianceHealth, nextUpcoming } from '@/lib/comply360-health-score-engine';
 import { buildCalendar } from '@/lib/comply360-calendar-engine';
@@ -88,6 +88,13 @@ export function Comply360Welcome({ onNavigate }: Props): JSX.Element {
     { icon: HardHat,     title: 'Labour Tier-2',             description: 'Q37 · Bonus · Maternity · CLRA · Factories Form 21 · OSH.',      target: 'labour-tier2' },
     { icon: Briefcase,   title: 'MCA Tier-2 + PMLA',         description: 'Q38 · CSR-2 · Sec 135 · Sec 204 MR-3 · PMLA STR/CTR/FIU-IND.',   target: 'mca-tier2' },
     { icon: Copyright,   title: 'Legal Contracts + IPR',     description: 'Q38 · Vendor/NDA · TM/Patent · Tier-2 GST/IT/Exim extensions.',  target: 'legal-ipr' },
+    // 🆕 Sprint 103 · Arc 1 UX surfacing · 4 NEW dashboards + 2 SURFACED
+    { icon: Scale,        title: 'Cost Audit · §148',         description: 'S103 · CRA-1/2/3/4 tracker · ICMAI cost auditor · §148(3) cooling-off.', target: 'cost-audit' },
+    { icon: Users2,       title: 'Meetings · Board / AGM',    description: 'S103 · Board · AGM · EGM · committees · quorum · voting · MGT-7 context.', target: 'meetings' },
+    { icon: LifeBuoy,     title: 'Auditor Survival Kit',      description: 'S103 · OOB-4 · readiness % · pre-audit checklist · auditor Q&A.', target: 'survival-kit' },
+    { icon: HeartHandshake,title:'CSR · Section 135',         description: 'S103 · CSR Committee · CSR-1 agencies · CSR-2 spend · Schedule VII.', target: 'csr' },
+    { icon: FileText,     title: 'Form 15CA / 15CB',          description: 'S103 surfaced · CBDT Part A/B/C/D classifier · CA digital signature.', target: 'form-15ca' },
+    { icon: FlaskConical, title: 'Schedule M · Pharma GMP',   description: 'S103 surfaced · Drugs & Cosmetics Rules · GMP findings · QualiCheck deep-link.', target: 'schedule-m' },
   ];
 
   // Sprint 88 · DP-S88 · demo seed + first-impression extension
