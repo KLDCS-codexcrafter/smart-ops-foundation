@@ -95,6 +95,9 @@ export function Comply360Welcome({ onNavigate }: Props): JSX.Element {
     { icon: HeartHandshake,title:'CSR · Section 135',         description: 'S103 · CSR Committee · CSR-1 agencies · CSR-2 spend · Schedule VII.', target: 'csr' },
     { icon: FileText,     title: 'Form 15CA / 15CB',          description: 'S103 surfaced · CBDT Part A/B/C/D classifier · CA digital signature.', target: 'form-15ca' },
     { icon: FlaskConical, title: 'Schedule M · Pharma GMP',   description: 'S103 surfaced · Drugs & Cosmetics Rules · GMP findings · QualiCheck deep-link.', target: 'schedule-m' },
+    // 🆕 Sprint 104 · Arc 1 CAPSTONE · UX-surfacing closure (2 orphans)
+    { icon: Shield,       title: 'Statutory Audit Framework', description: 'S104 surfaced · CARO + IFC + audit-framework BAP routing · ICAI standards.', target: 'audit-framework' },
+    { icon: FileBarChart, title: 'MCA Rule 11(g) · Auditor',  description: 'S104 surfaced · auditor report generator · Rule 11(g) audit-trail confirmation.', target: 'rule-11g' },
   ];
 
   // Sprint 88 · DP-S88 · demo seed + first-impression extension

@@ -77,4 +77,7 @@ export const comply360SidebarItems: SidebarItem[] = [
   { id: 'csr',               type: 'item', label: 'CSR · Section 135',               icon: HeartHandshake, keyboard: 'c H' },
   { id: 'form-15ca',         type: 'item', label: 'Form 15CA / 15CB',                icon: FileText,     keyboard: 'c 5' },
   { id: 'schedule-m',        type: 'item', label: 'Schedule M · Pharma GMP',         icon: FlaskConical, keyboard: 'c 7' },
+  // 🆕 Sprint 104 · T-Phase-6.A.1.3 · Arc 1 CAPSTONE · UX-surfacing closure (2 genuine orphans)
+  { id: 'audit-framework',   type: 'item', label: 'Statutory Audit Framework',       icon: Shield,       keyboard: 'c 8' },
+  { id: 'rule-11g',          type: 'item', label: 'MCA Rule 11(g) · Auditor Report', icon: FileBarChart, keyboard: 'c 9' },
 ];

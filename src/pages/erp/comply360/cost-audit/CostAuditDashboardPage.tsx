@@ -9,39 +9,26 @@
 import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Scale, FileCheck2, Gavel, Sparkles } from 'lucide-react';
+import { Scale, FileCheck2, Gavel, Sparkles, Layers, Plus } from 'lucide-react';
 import {
   listCostAuditorAppointments,
   listCRAFormFilings,
   listCostAuditReports,
   isCostAuditorEligible,
   appointCostAuditor,
+  determineCostAuditApplicability,
+  listCostProductServices,
+  upsertCostProductService,
   type CRAFormType,
+  type CostProductServiceEntry,
 } from '@/lib/comply360-cost-audit-engine';
 
 const FY_CURRENT = '2025-26';
 const FY_PRIOR = '2024-25';
 const FORM_TYPES: CRAFormType[] = ['CRA_1', 'CRA_2', 'CRA_3', 'CRA_4'];
-
-/** §148 applicability (declarative — engine remains 0-DIFF; thresholds per Companies (Cost Records & Audit) Rules 2014). */
-function evaluateSection148Applicability(input: {
-  netWorthInr: number;
-  turnoverInr: number;
-  regulatedSector: boolean;
-}): { applicable: boolean; reasons: string[] } {
-  const reasons: string[] = [];
-  if (input.regulatedSector && input.turnoverInr >= 5_00_00_000) {
-    reasons.push('Regulated sector · turnover ≥ ₹5 Cr (CRA Rule 3 Table A)');
-  }
-  if (!input.regulatedSector && input.turnoverInr >= 35_00_00_000) {
-    reasons.push('Non-regulated sector · turnover ≥ ₹35 Cr (CRA Rule 3 Table B)');
-  }
-  if (input.netWorthInr >= 500_00_00_000) {
-    reasons.push('Net-worth ≥ ₹500 Cr');
-  }
-  return { applicable: reasons.length > 0, reasons };
-}
 
 function daysUntil(iso: string): number {
   const ms = new Date(iso).getTime() - Date.now();
@@ -89,15 +76,34 @@ export default function CostAuditDashboardPage(): JSX.Element {
     return { deadlineIso: deadline.toISOString(), daysLeft: daysUntil(deadline.toISOString()) };
   }, [appointmentsFy]);
 
+  // §148 applicability state (engine-backed · DP-A1-5)
+  const [psRows, setPsRows] = useState<CostProductServiceEntry[]>(() => listCostProductServices(FY_CURRENT));
+  const [psDraft, setPsDraft] = useState<CostProductServiceEntry>({ ceta_heading: '', description: '', turnover: 0 });
+  const [industry, setIndustry] = useState<'regulated' | 'non_regulated' | 'exempt'>('non_regulated');
+  const [overallTurnover, setOverallTurnover] = useState<number>(120_00_00_000);
+
+  const aggregateTurnover = useMemo(
+    () => psRows.reduce((s, r) => s + (Number.isFinite(r.turnover) ? r.turnover : 0), 0),
+    [psRows],
+  );
+
   const applicability = useMemo(
     () =>
-      evaluateSection148Applicability({
-        netWorthInr: 75_00_00_000,
-        turnoverInr: 42_00_00_000,
-        regulatedSector: false,
+      determineCostAuditApplicability({
+        fy: FY_CURRENT,
+        industry_category: industry,
+        overall_turnover: overallTurnover,
+        aggregate_product_service_turnover: aggregateTurnover,
       }),
-    [],
+    [industry, overallTurnover, aggregateTurnover],
   );
+
+  const handleAddProductService = (): void => {
+    if (!psDraft.ceta_heading.trim()) return;
+    upsertCostProductService(FY_CURRENT, psDraft);
+    setPsRows(listCostProductServices(FY_CURRENT));
+    setPsDraft({ ceta_heading: '', description: '', turnover: 0 });
+  };
 
   const handleSeedDemoAppointment = (): void => {
     // [JWT] POST /api/comply360/cost-audit/appointments — wraps engine.appointCostAuditor
@@ -127,8 +133,12 @@ export default function CostAuditDashboardPage(): JSX.Element {
             Standalone Page #28 · reads <span className="font-mono">comply360-cost-audit-engine</span> · CRA-1/2/3/4 tracker · §148(3) cooling-off
           </p>
         </div>
-        <Badge variant={applicability.applicable ? 'default' : 'secondary'}>
-          {applicability.applicable ? '§148 Applicable' : '§148 Not Applicable'}
+        <Badge variant={applicability.cost_audit_required ? 'default' : 'secondary'}>
+          {applicability.cost_audit_required
+            ? '§148 Audit Required'
+            : applicability.cost_records_required
+              ? '§148 Records Only'
+              : '§148 Not Applicable'}
         </Badge>
       </header>
 
@@ -159,6 +169,7 @@ export default function CostAuditDashboardPage(): JSX.Element {
           <TabsTrigger value="appointments">Appointments</TabsTrigger>
           <TabsTrigger value="filings">CRA filings</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsTrigger value="applicability">§148 Applicability</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-3">
@@ -166,11 +177,20 @@ export default function CostAuditDashboardPage(): JSX.Element {
             <h2 className="font-semibold text-sm flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> §148 applicability
             </h2>
-            <ul className="text-xs text-muted-foreground mt-2 space-y-1 list-disc list-inside">
-              {applicability.reasons.length > 0
-                ? applicability.reasons.map((r) => <li key={r}>{r}</li>)
-                : <li>Below all CRA Rule 3 thresholds for the modelled entity.</li>}
-            </ul>
+            <div className="text-xs text-muted-foreground mt-2 space-y-1">
+              <div>
+                Table: <span className="font-mono">{applicability.table}</span>
+                {' · '}Records:{' '}
+                <span className={applicability.cost_records_required ? 'text-warning' : ''}>
+                  {applicability.cost_records_required ? 'REQUIRED' : 'not required'}
+                </span>
+                {' · '}Audit:{' '}
+                <span className={applicability.cost_audit_required ? 'text-warning' : ''}>
+                  {applicability.cost_audit_required ? 'REQUIRED' : 'not required'}
+                </span>
+              </div>
+              <div className="text-[11px]">{applicability.reason}</div>
+            </div>
           </Card>
 
           <Card className="p-4">
@@ -264,6 +284,115 @@ export default function CostAuditDashboardPage(): JSX.Element {
                 ))}
               </ul>
             )}
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="applicability" className="space-y-3">
+          <Card className="p-4 space-y-3">
+            <h2 className="font-semibold text-sm flex items-center gap-2">
+              <Layers className="h-4 w-4 text-primary" /> CRA Rules 2014 · §148 inputs
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] text-muted-foreground">Industry category</label>
+                <select
+                  className="w-full h-9 rounded-md border border-input bg-background px-2 text-xs"
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value as typeof industry)}
+                >
+                  <option value="regulated">Regulated (Table A)</option>
+                  <option value="non_regulated">Non-regulated (Table B)</option>
+                  <option value="exempt">Exempt</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[11px] text-muted-foreground">Overall turnover (₹)</label>
+                <Input
+                  type="number"
+                  value={overallTurnover}
+                  onChange={(e) => setOverallTurnover(Math.max(0, Number(e.target.value)))}
+                  className="font-mono text-xs"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[11px] text-muted-foreground">Aggregate product/service (₹ · derived)</label>
+                <div className="h-9 rounded-md border border-input bg-muted px-2 flex items-center font-mono text-xs">
+                  {aggregateTurnover.toLocaleString('en-IN')}
+                </div>
+              </div>
+            </div>
+            <div className="rounded-md border border-border p-3 text-xs space-y-1">
+              <div>
+                Table: <span className="font-mono">{applicability.table}</span>
+              </div>
+              <div>
+                Records threshold:{' '}
+                <span className="font-mono">₹{applicability.thresholds_applied.records_threshold.toLocaleString('en-IN')}</span>
+                {' · '}Audit threshold:{' '}
+                <span className="font-mono">₹{applicability.thresholds_applied.audit_threshold.toLocaleString('en-IN')}</span>
+              </div>
+              <div>
+                Cost records: <Badge variant={applicability.cost_records_required ? 'default' : 'secondary'}>
+                  {applicability.cost_records_required ? 'REQUIRED' : 'Not required'}
+                </Badge>
+                {' · '}Cost audit: <Badge variant={applicability.cost_audit_required ? 'default' : 'secondary'}>
+                  {applicability.cost_audit_required ? 'REQUIRED' : 'Not required'}
+                </Badge>
+              </div>
+              <div className="text-muted-foreground">{applicability.reason}</div>
+            </div>
+          </Card>
+
+          <Card className="p-4 space-y-3">
+            <h2 className="font-semibold text-sm flex items-center gap-2">
+              <Layers className="h-4 w-4 text-primary" /> Product / service turnover table (FY {FY_CURRENT})
+            </h2>
+            {psRows.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No product/service entries yet.</p>
+            ) : (
+              <table className="w-full text-xs">
+                <thead className="text-muted-foreground">
+                  <tr>
+                    <th className="text-left p-2">CETA heading</th>
+                    <th className="text-left p-2">Description</th>
+                    <th className="text-right p-2">Turnover (₹)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {psRows.map((r) => (
+                    <tr key={r.ceta_heading} className="border-t border-border">
+                      <td className="p-2 font-mono">{r.ceta_heading}</td>
+                      <td className="p-2">{r.description}</td>
+                      <td className="p-2 text-right font-mono">{r.turnover.toLocaleString('en-IN')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+              <Input
+                placeholder="CETA heading"
+                value={psDraft.ceta_heading}
+                onChange={(e) => setPsDraft({ ...psDraft, ceta_heading: e.target.value })}
+                className="text-xs"
+              />
+              <Input
+                placeholder="Description"
+                value={psDraft.description}
+                onChange={(e) => setPsDraft({ ...psDraft, description: e.target.value })}
+                className="text-xs md:col-span-2"
+              />
+              <Input
+                type="number"
+                placeholder="Turnover (₹)"
+                value={psDraft.turnover || ''}
+                onChange={(e) => setPsDraft({ ...psDraft, turnover: Math.max(0, Number(e.target.value)) })}
+                className="text-xs font-mono"
+              />
+            </div>
+            <Button size="sm" variant="outline" onClick={handleAddProductService} className="gap-1">
+              <Plus className="h-3 w-3" /> Upsert product / service
+            </Button>
           </Card>
         </TabsContent>
       </Tabs>
