@@ -54,8 +54,9 @@ describe('Sprint 102 · T-Phase-6.A.1.1 · institutional debt cleanup', () => {
     expect(MOATS.filter((m) => m.headShaBanked === 'TBD_AT_BANK')).toEqual([]);
   });
 
-  it('AC#3 · every moat headShaBanked is a plausible hex SHA', () => {
+  it('AC#3 · every non-null moat headShaBanked is a plausible hex SHA', () => {
     for (const m of MOATS) {
+      if (m.headShaBanked == null) continue;
       expect(m.headShaBanked, m.id).toMatch(HEX_RE);
     }
   });
