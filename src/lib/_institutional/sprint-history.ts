@@ -521,7 +521,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🛠️ Sprint 95.1 HOTFIX T-Phase-5.F.5.7-Final-HOTFIX · cycle-2 correction · sidebar inactivity (44 entries type:'group'→'item') + v1.30 §N enforcement restored · streak 21 ⭐ HOLD per institutional hotfix-grace canon (Lesson 35 v1.24)
   {
     sprintNumber: 95.1, code: 'T-Phase-5.F.5.7-Final-HOTFIX', composite: false, grade: 'C',
-    headSha: null, predecessorSha: 'c11d640efc435449411d9f89c9de84fb11422cc9', loc: 110,
+    headSha: '5b84d631820b1df077ef564c1bff4281da666676', predecessorSha: 'c11d640efc435449411d9f89c9de84fb11422cc9', loc: 110,
     newSiblings: [],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
