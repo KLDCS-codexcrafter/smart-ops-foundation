@@ -363,3 +363,145 @@ export function _clearEntityMasterCacheForTests(entity_code: string): void {
     }
   } catch { /* ignore */ }
 }
+
+// ═════════════════════════════════════════════════════════════════════
+// §L MASTER STORAGE MODEL · Sprint 98 · DP-PH6-NEW-24 RATIFIED
+// ─────────────────────────────────────────────────────────────────────
+// The 6 canonical masters live under three storage models. Replication
+// ("Create In All Company?") is semantically meaningful ONLY for the
+// entity-scoped tier. The shared tiers are already present in all entities
+// by construction — wiring replication for them would be a no-op.
+//
+//   GLOBAL (single key · shared across entities · replication N/A):
+//     · Item         → erp_inventory_items
+//     · Stock Group  → erp_stock_groups
+//
+//   GROUP-level (shared across entities of one group · replication N/A):
+//     · Customer     → erp_group_customer_master
+//     · Vendor       → erp_group_vendor_master
+//     · Ledger       → erp_group_ledger_definitions
+//
+//   ENTITY-SCOPED (per-entity key · replicable):
+//     · Voucher Type → erp_voucher_types_<entityCode>
+//       (template seed: erp_voucher_types_template ; legacy: erp_voucher_types)
+//
+//   ABSENT (no dedicated store / type / hook in repo):
+//     · Stock Category → deferred to a future task.
+//
+// Block 2 wires prompt-on-save replication for Voucher Type ONLY via the
+// adapter below. The MasterType union, ALL_MASTER_TYPES, and every
+// existing export above are 0-DIFF.
+// ═════════════════════════════════════════════════════════════════════
+
+const voucherTypeEntityKey = (entity_code: string): string =>
+  entity_code ? `erp_voucher_types_${entity_code}` : 'erp_voucher_types_template';
+
+/**
+ * Prompt-on-save gate for Voucher Type · reuses the preference store
+ * (master_type = 'voucher_type'). Returns the same shape as
+ * promptCreateInAll for UI parity.
+ */
+export function promptCreateVoucherTypeInAll(input: {
+  current_entity: string;
+}): { should_prompt: boolean; default_answer: boolean; preference: MasterReplicationPreference } {
+  return promptCreateInAll({ master_type: 'voucher_type', current_entity: input.current_entity });
+}
+
+/**
+ * Replicate one voucher-type record from source entity → sibling entities.
+ * Writes into the canonical per-entity key (`erp_voucher_types_<code>`)
+ * used by useVoucherTypes, NOT the generic `erp_<entity>_master_voucher_type`
+ * store. De-duplicated by `id`. Conflicts (same id · diverging fields)
+ * skip the target and emit `master_conflict_resolution` audit entries —
+ * no new audit type is introduced in Block 2.
+ */
+export function replicateVoucherTypeToAllEntities(input: {
+  voucher_type: Record<string, unknown>;
+  source_entity: string;
+  respect_preferences: boolean;
+}): ReplicationResult {
+  const run_id = newRunId();
+  const targets = siblingEntities(input.source_entity);
+  const targets_succeeded: string[] = [];
+  const targets_skipped: { entity_code: string; reason: 'conflict' | 'preference_off' }[] = [];
+  const allConflicts: MasterConflict[] = [];
+
+  const stamped: Record<string, unknown> = {
+    ...input.voucher_type,
+    owner_company: input.source_entity,
+  };
+  const key = getMasterKey(stamped);
+
+  for (const target of targets) {
+    if (input.respect_preferences) {
+      const targetPref = getPreference(target, 'voucher_type');
+      if (targetPref.mode === 'never_replicate') {
+        targets_skipped.push({ entity_code: target, reason: 'preference_off' });
+        continue;
+      }
+    }
+    const existing = safeRead<Record<string, unknown>[]>(voucherTypeEntityKey(target), []);
+    const collision = existing.find((m) => getMasterKey(m) === key);
+    if (collision) {
+      const conflicts: MasterConflict[] = [];
+      for (const field of Object.keys(stamped)) {
+        if (field === 'owner_company' || field === 'updated_at' || field === 'created_at') continue;
+        const src = stamped[field];
+        const tgt = (collision as Record<string, unknown>)[field];
+        if (JSON.stringify(src) !== JSON.stringify(tgt)) {
+          conflicts.push({
+            master_type: 'voucher_type',
+            source_entity: input.source_entity,
+            target_entity: target,
+            field, source_value: src, existing_value: tgt, resolution: 'pending',
+          });
+        }
+      }
+      if (conflicts.length > 0) {
+        allConflicts.push(...conflicts);
+        targets_skipped.push({ entity_code: target, reason: 'conflict' });
+        for (const c of conflicts) {
+          logAudit({
+            entityCode: target,
+            action: 'create',
+            entityType: 'master_conflict_resolution',
+            recordId: `${run_id}_${c.field}`,
+            recordLabel: `Conflict voucher_type/${key} field=${c.field}`,
+            beforeState: { existing: c.existing_value },
+            afterState: { proposed: c.source_value, resolution: 'pending' },
+            sourceModule: 'master-replication-engine',
+          });
+        }
+        continue;
+      }
+      targets_succeeded.push(target); // idempotent (identical)
+      continue;
+    }
+    safeWrite(voucherTypeEntityKey(target), [...existing, stamped]);
+    targets_succeeded.push(target);
+  }
+
+  const result: ReplicationResult = {
+    master_type: 'voucher_type',
+    source_entity: input.source_entity,
+    targets_attempted: targets,
+    targets_succeeded,
+    targets_skipped,
+    conflicts: allConflicts,
+    run_id,
+  };
+
+  logAudit({
+    entityCode: input.source_entity,
+    action: 'create',
+    entityType: 'master_replication_event',
+    recordId: run_id,
+    recordLabel: `Replicate voucher_type/${key} → ${targets.length} sibling(s)`,
+    beforeState: null,
+    afterState: { result },
+    sourceModule: 'master-replication-engine',
+  });
+
+  return result;
+}
+

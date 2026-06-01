@@ -298,6 +298,15 @@ export const commandCenterSidebarItems: SidebarItem[] = [
     ],
   },
   {
+    id: 'governance-group', type: 'group', label: 'Master Data Governance', icon: Lock,
+    children: [
+      { id: 'mdg-field-lock-rules', type: 'item', label: 'Field Lock Rules', icon: Lock,
+        moduleId: 'mdg-field-lock-rules', requiredCards: ['command-center'] },
+      { id: 'mdg-conflict-resolution', type: 'item', label: 'Master Conflict Resolution', icon: Lock,
+        moduleId: 'mdg-conflict-resolution', requiredCards: ['command-center'] },
+    ],
+  },
+  {
     id: 'console-group', type: 'group', label: 'Security Console', icon: Lock,
     children: [
       { id: 'console', type: 'item', label: 'Security Console', icon: Lock,
