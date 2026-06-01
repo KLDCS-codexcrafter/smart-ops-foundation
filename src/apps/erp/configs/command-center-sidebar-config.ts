@@ -29,7 +29,7 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'foundation', requiredCards: ['command-center'] },
       { id: 'geography', type: 'item', label: 'Geography', icon: Globe,
         moduleId: 'geography', requiredCards: ['command-center'] },
-      { id: 'org-structure', type: 'item', label: 'Business Units', icon: Network,
+      { id: 'org-structure', type: 'item', label: 'Org Structure', icon: Network,
         moduleId: 'org-structure', requiredCards: ['command-center'] },
       { id: 'fincore-business-unit', type: 'item', label: 'Business Units Master', icon: Layers,
         moduleId: 'fincore-business-unit', requiredCards: ['command-center'] },
