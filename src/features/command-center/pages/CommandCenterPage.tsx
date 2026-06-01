@@ -121,6 +121,10 @@ import { PinnedTemplatesPanel } from '@/pages/erp/requestx/masters/PinnedTemplat
 // Sprint 97 · T-Phase-6.A.0.2 · Hierarchical Ledger Tree (Standalone Page #24)
 import HierarchicalLedgerTreePage from '@/features/hierarchical-ledger/HierarchicalLedgerTreePage';
 
+// Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
+import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
+import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
+
 
 // Sprint T-Phase-1.3-3-PlantOps-pre-1 · Plant Operations masters
 import { FactoryMasterPanel } from '@/pages/erp/masters/FactoryMaster';
@@ -241,7 +245,10 @@ export type CommandCenterModule =
   | 'plant-ops-work-center-master'
   | 'plant-ops-machine-master'
   // T-Phase-3.PROD-1 · ST6 · Production Lane (Q-LOCK-9 standalone tab)
-  | 'production';
+  | 'production'
+  // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance
+  | 'mdg-field-lock-rules'
+  | 'mdg-conflict-resolution';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -278,6 +285,7 @@ export default function CommandCenterPage() {
       'distributor-credit-refs', 'distributor-dispute-refs',
       'plant-ops-factory-master', 'plant-ops-work-center-master', 'plant-ops-machine-master',
       'production',
+      'mdg-field-lock-rules', 'mdg-conflict-resolution',
     ].includes(hash)) {
       return hash as CommandCenterModule;
     }
@@ -440,6 +448,10 @@ export default function CommandCenterPage() {
 
       // Stage 1 — People Core
       case 'ph-employee':   return <EmployeeMasterPanel />;
+
+      // Sprint 98 · Master Data Governance
+      case 'mdg-field-lock-rules':    return <FieldLockRulesPanel />;
+      case 'mdg-conflict-resolution': return <MasterConflictResolutionPanel />;
 
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
