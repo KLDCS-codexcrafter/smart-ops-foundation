@@ -34,10 +34,10 @@ export default function CSRDashboardPage(): JSX.Element {
   const csr2 = useMemo(() => listCSR2Filings({ fy: FY }), []);
   const themes = useMemo(() => getCSRThematicAreas(), []);
 
-  // §135 applicability probe — modelled entity (net-worth/turnover/profit in INR per Companies Act 2013).
+  // §135 applicability probe — modelled entity (per Companies Act 2013).
   const applicability = useMemo(
     () => checkSection135Applicability({
-      net_worth_inr: 600_00_00_000,
+      networth_inr: 600_00_00_000,
       turnover_inr: 1100_00_00_000,
       net_profit_inr: 6_00_00_000,
     }),
@@ -58,8 +58,8 @@ export default function CSRDashboardPage(): JSX.Element {
             Standalone Page #31 · reads <span className="font-mono">comply360-csr-engine</span> · Committee · CSR-1 · CSR-2 · Schedule VII
           </p>
         </div>
-        <Badge variant={applicability.applicable ? 'default' : 'secondary'}>
-          {applicability.applicable ? '§135 Applicable' : '§135 Not Applicable'}
+        <Badge variant={applicability.is_applicable ? 'default' : 'secondary'}>
+          {applicability.is_applicable ? '§135 Applicable' : '§135 Not Applicable'}
         </Badge>
       </header>
 
@@ -98,13 +98,11 @@ export default function CSRDashboardPage(): JSX.Element {
               <Coins className="h-4 w-4 text-primary" /> §135 applicability
             </h2>
             <ul className="text-xs text-muted-foreground mt-2 space-y-1 list-disc list-inside">
-              {applicability.reasons.length > 0
-                ? applicability.reasons.map((r) => <li key={r}>{r}</li>)
+              {applicability.triggered_thresholds.length > 0
+                ? applicability.triggered_thresholds.map((r) => <li key={r} className="font-mono">{r}</li>)
                 : <li>Below all §135 thresholds for the modelled entity.</li>}
-              {applicability.applicable && (
-                <li className="font-mono">
-                  Required spend (2% avg net profit, last 3 FY): {inr(applicability.required_spend_inr ?? 0)}
-                </li>
+              {applicability.is_applicable && (
+                <li>Required spend: 2% of average net profit (last 3 FY) per §135(5).</li>
               )}
             </ul>
           </Card>
@@ -113,7 +111,7 @@ export default function CSRDashboardPage(): JSX.Element {
             <h2 className="font-semibold text-sm">Schedule VII thematic areas ({themes.length})</h2>
             <div className="flex flex-wrap gap-1.5 mt-2">
               {themes.slice(0, 12).map((t) => (
-                <Badge key={t.id} variant="outline" className="text-[10px] font-mono">{t.code} · {t.label}</Badge>
+                <Badge key={t.thematic_area} variant="outline" className="text-[10px] font-mono">{t.section_135_schedule_vii_ref} · {t.label}</Badge>
               ))}
             </div>
           </Card>
