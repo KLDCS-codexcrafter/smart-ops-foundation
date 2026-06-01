@@ -406,9 +406,9 @@ describe('Sprint 101 · institutional · sibling-register + audit type + page wi
     expect(s?.headSha).toBe('000fc0685870cd13f2eb9be811c9438baced74c6');
   });
 
-  it('S101 entry carries TBD_AT_BANK headSha', () => {
+  it('S101 entry headSha backfilled to e91e813d…', () => {
     const s = SPRINTS.find((s) => s.sprintNumber === 101);
-    expect(s?.headSha).toBe('TBD_AT_BANK');
+    expect(s?.headSha).toBe('e91e813d02075dee90f1e934a83a7b69e4ff843b');
   });
 
   it('only ONE new audit type added (master_lifecycle_event)', () => {
