@@ -99,8 +99,8 @@ export default function MasterVisibilityHeatmapPage() {
       replicateToAllEntities({
         master_type: mt,
         source_entity: present.shortCode,
-        record_id: 'BULK_SYNC_MISSING',
-        record: { id: 'BULK_SYNC_MISSING' },
+        master_record: { id: 'BULK_SYNC_MISSING' },
+        respect_preferences: true,
       });
       toast.success(`Sync triggered for ${mt}`);
       setTick((t) => t + 1);
