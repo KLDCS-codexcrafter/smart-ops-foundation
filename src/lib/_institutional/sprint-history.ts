@@ -563,8 +563,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 101 T-Phase-6.A.0.6 · 🏁 ARC 0 CAPSTONE · Sleeping-Master Detector (idea-9) + Cross-Entity Reorder (idea-10 ORCHESTRATOR · USE-SITE READS reorder-indent-bridge + stock engines · 0-DIFF FR-44) + Compliance-Aware Master Save (idea-12 ORCHESTRATOR · USE-SITE READS gstin-validator + india-validations + hsn-resolver · 0-DIFF FR-44) + Master Lifecycle Wizard (#27) · 3 NEW SIBLINGs + 1 NEW Standalone Page (#27) · 1 NEW shared audit type under 'mca-roc' (master_lifecycle_event with action discriminator: sleeping_flagged / cross_entity_reorder / compliance_block) · completes all 12 deep ideas · 27-streak ⭐ target · §L DESIGN-DECISION-FLAGs: idea-10/idea-12 orchestrator boundaries (FR-44 no-dup of reorder/validators) · idea-9 usage-derivation via voucher localStorage walk · shared master_lifecycle_event rationale (one type · action discriminator)
   {
     sprintNumber: 101, code: 'T-Phase-6.A.0.6', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '000fc0685870cd13f2eb9be811c9438baced74c6', loc: 1000,
+    headSha: 'e91e813d02075dee90f1e934a83a7b69e4ff843b', predecessorSha: '000fc0685870cd13f2eb9be811c9438baced74c6', loc: 1000,
     newSiblings: ['idea-9-sleeping-master-detector-engine', 'idea-10-cross-entity-reorder-engine', 'idea-12-compliance-aware-master-save-engine'],
+    bankDate: '2026-06-01', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 102 T-Phase-6.A.1.1 · 🎬 ARC 1 OPENER · Institutional debt cleanup · hash-chain unhandled-rejection guard (5 fire-and-forget sites safe-wrapped via NEW appendAuditEntrySafe export · §H 0-DIFF API preserved) + 9 stale TBD_AT_BANK backfills (S62/S63 sprint-history + 7 moat-register entries banked at S61×2/S62/S63/S65×3) + meta-guard strengthened (only latest sprint may be TBD · moat-register zero-TBD) · ZERO new SIBLINGs · ZERO new audit types · ZERO new pages · 28-streak ⭐ target · §L DESIGN-DECISION-FLAGs: §H-preserving call-site fix (not engine surgery) · honest-partial SHA recovery via git log mining
+  {
+    sprintNumber: 102, code: 'T-Phase-6.A.1.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'e91e813d02075dee90f1e934a83a7b69e4ff843b', loc: 130,
+    newSiblings: [],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
 ];
