@@ -49,7 +49,9 @@ export type AuditEntityType =
   // Sprint 97 · T-Phase-6.A.0.2 · 7-tier hierarchical ledger + Master DNA · 2 new audit entity types (module: 'mca-roc')
   | 'hierarchical_ledger_created' | 'master_dna_inheritance'
   // Sprint 98 · T-Phase-6.A.0.3 · Field-Lock Metadata · 1 new audit entity type (module: 'mca-roc')
-  | 'field_lock_rule_change';
+  | 'field_lock_rule_change'
+  // Sprint 99 · T-Phase-6.A.0.4 · Inter-scope pricing + TP audit · 2 new audit entity types (module: 'mca-roc')
+  | 'pricing_rule_change' | 'transfer_pricing_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

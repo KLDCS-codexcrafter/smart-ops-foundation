@@ -87,6 +87,8 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'fincore-asset-centres', requiredCards: ['command-center'] },
       { id: 'fincore-ledger-tree', type: 'item', label: 'Hierarchical Ledger Tree', icon: Network,
         moduleId: 'fincore-ledger-tree', requiredCards: ['command-center'] },
+      { id: 'fincore-internal-pricing-hub', type: 'item', label: 'Internal Pricing Hub', icon: Layers,
+        moduleId: 'fincore-internal-pricing-hub', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
