@@ -8,6 +8,8 @@ import { useState, useCallback } from 'react';
 import type { ProjectCentre } from '@/types/projx/project-centre';
 import { projectCentresKey, PROJECT_CENTRE_SEQ_KEY } from '@/types/projx/project-centre';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// Sprint 97 T1 · Block 1 — emit tier-scope-registered for hierarchical ledger auto-creation.
+import { emitTierScopeRegistered } from '@/lib/entity-setup-service';
 
 function ls<T>(key: string): T[] {
   try {
@@ -51,6 +53,10 @@ export function useProjectCentres(entityCode: string = DEFAULT_ENTITY_SHORTCODE)
     ss(key, all);
     setCentres(all);
     // [JWT] POST /api/projx/project-centres
+    emitTierScopeRegistered({
+      entity_code: entityCode, tier: 'project', scope_id: pc.id, scope_name: pc.name,
+      cost_centre: { division_id: pc.division_id, department_id: pc.department_id },
+    });
     return pc;
   }, [key, entityCode]);
 
