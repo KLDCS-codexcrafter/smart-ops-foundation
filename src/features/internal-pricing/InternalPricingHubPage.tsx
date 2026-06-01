@@ -6,7 +6,7 @@
  * @writes      none directly (delegates to engines)
  * @sprint      T-Phase-6.A.0.4 · Sprint 99 · Block 4
  */
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Sparkles, FileCheck2, ShieldAlert, ShieldCheck, Layers } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
