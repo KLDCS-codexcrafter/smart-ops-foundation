@@ -150,3 +150,113 @@ export function isCostAuditorEligible(icmai_membership_no: string, proposed_fy: 
 registerAuditEntityType({ id: 'cost_auditor_appointment', module: 'mca-roc', label: 'Cost Auditor Appointment (S 148)' });
 registerAuditEntityType({ id: 'cra_form_filing', module: 'mca-roc', label: 'CRA Form Filing' });
 registerAuditEntityType({ id: 'cost_audit_report', module: 'mca-roc', label: 'Cost Audit Report' });
+
+/* ────────────────────────────────────────────────────────────────────────────
+ * Sprint 104 · T-Phase-6.A.1.3 · DP-A1-5 — §148 applicability (ADDITIVE)
+ * Companies (Cost Records and Audit) Rules 2014 · Rule 3 (records) + Rule 4 (audit)
+ * 0-DIFF: existing 9 exports untouched · no new SIBLING · no new audit type.
+ * Source: MCA notification G.S.R. 425(E) dated 30-Jun-2014 (Rules 3 & 4).
+ * ──────────────────────────────────────────────────────────────────────────── */
+
+export type CostAuditTable = 'A_regulated' | 'B_non_regulated' | 'none';
+
+export interface CostAuditApplicability {
+  fy: string;
+  cost_records_required: boolean;
+  cost_audit_required: boolean;
+  table: CostAuditTable;
+  overall_turnover: number;
+  aggregate_product_service_turnover: number;
+  thresholds_applied: { records_threshold: number; audit_threshold: number };
+  reason: string;
+}
+
+export interface CostProductServiceEntry {
+  ceta_heading: string;
+  description: string;
+  turnover: number;
+}
+
+const PS_KEY = 'erp_cost_product_services';
+// Rule 3 records threshold (overall turnover) — uniform ₹35 cr for both tables.
+const RECORDS_THRESHOLD_INR = 35_00_00_000;
+// Rule 4 audit thresholds (aggregate product/service turnover).
+const AUDIT_THRESHOLD_REGULATED_INR = 25_00_00_000;
+const AUDIT_THRESHOLD_NON_REGULATED_INR = 35_00_00_000;
+// Overall turnover gate for cost audit (Rule 4 entry condition).
+const AUDIT_OVERALL_GATE_REGULATED_INR = 50_00_00_000;
+const AUDIT_OVERALL_GATE_NON_REGULATED_INR = 100_00_00_000;
+
+export function determineCostAuditApplicability(input: {
+  fy: string;
+  industry_category: 'regulated' | 'non_regulated' | 'exempt';
+  overall_turnover: number;
+  aggregate_product_service_turnover: number;
+}): CostAuditApplicability {
+  const overall = Math.max(0, Math.floor(input.overall_turnover));
+  const aggregate = Math.max(0, Math.floor(input.aggregate_product_service_turnover));
+
+  if (input.industry_category === 'exempt') {
+    return {
+      fy: input.fy,
+      cost_records_required: false,
+      cost_audit_required: false,
+      table: 'none',
+      overall_turnover: overall,
+      aggregate_product_service_turnover: aggregate,
+      thresholds_applied: { records_threshold: 0, audit_threshold: 0 },
+      reason: 'Exempt industry · CRA Rules 2014 do not apply (Rule 2 exclusions).',
+    };
+  }
+
+  const regulated = input.industry_category === 'regulated';
+  const table: CostAuditTable = regulated ? 'A_regulated' : 'B_non_regulated';
+  const audit_threshold = regulated ? AUDIT_THRESHOLD_REGULATED_INR : AUDIT_THRESHOLD_NON_REGULATED_INR;
+  const overall_gate = regulated ? AUDIT_OVERALL_GATE_REGULATED_INR : AUDIT_OVERALL_GATE_NON_REGULATED_INR;
+
+  const records_required = overall >= RECORDS_THRESHOLD_INR;
+  const audit_required = records_required && overall >= overall_gate && aggregate >= audit_threshold;
+
+  let reason: string;
+  if (!records_required) {
+    reason = `Overall turnover \u20B9${overall.toLocaleString('en-IN')} below Rule 3 threshold \u20B9${RECORDS_THRESHOLD_INR.toLocaleString('en-IN')} \u00B7 no cost records required.`;
+  } else if (!audit_required) {
+    reason = `Cost records required (Rule 3 \u00B7 Table ${regulated ? 'A' : 'B'}) \u00B7 cost audit NOT required \u2014 overall \u20B9${overall.toLocaleString('en-IN')} vs gate \u20B9${overall_gate.toLocaleString('en-IN')} / aggregate \u20B9${aggregate.toLocaleString('en-IN')} vs Rule 4 \u20B9${audit_threshold.toLocaleString('en-IN')}.`;
+  } else {
+    reason = `Cost records + cost audit BOTH required (Rule 3 + Rule 4 \u00B7 Table ${regulated ? 'A' : 'B'}) \u00B7 aggregate \u20B9${aggregate.toLocaleString('en-IN')} \u2265 \u20B9${audit_threshold.toLocaleString('en-IN')}.`;
+  }
+
+  return {
+    fy: input.fy,
+    cost_records_required: records_required,
+    cost_audit_required: audit_required,
+    table,
+    overall_turnover: overall,
+    aggregate_product_service_turnover: aggregate,
+    thresholds_applied: { records_threshold: RECORDS_THRESHOLD_INR, audit_threshold },
+    reason,
+  };
+}
+
+interface ProductServiceStore { [fy: string]: CostProductServiceEntry[] }
+
+export function listCostProductServices(fy: string): CostProductServiceEntry[] {
+  const store = readJson<ProductServiceStore>(PS_KEY, {});
+  return store[fy] ?? [];
+}
+
+export function upsertCostProductService(fy: string, entry: CostProductServiceEntry): void {
+  if (!entry.ceta_heading) throw new Error('CETA heading is required');
+  const store = readJson<ProductServiceStore>(PS_KEY, {});
+  const rows = store[fy] ?? [];
+  const idx = rows.findIndex((r) => r.ceta_heading === entry.ceta_heading);
+  const next: CostProductServiceEntry = {
+    ceta_heading: entry.ceta_heading,
+    description: entry.description,
+    turnover: Math.max(0, Math.floor(entry.turnover)),
+  };
+  if (idx >= 0) rows[idx] = next;
+  else rows.push(next);
+  store[fy] = rows;
+  writeJson(PS_KEY, store);
+}
