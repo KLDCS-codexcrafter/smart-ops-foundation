@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Gauge, RefreshCw } from 'lucide-react';
 import { getBucketState, DEFAULT_POLICY } from '@/lib/idea-11-sync-throttle-engine';
 import { ALL_MASTER_TYPES, type MasterType } from '@/lib/master-replication-engine';
-import { mockEntities } from '@/data/mock-entities';
+import { MOCK_ENTITIES } from '@/data/mock-entities';
 
 interface Row {
   entity_code: string;
@@ -25,7 +25,7 @@ export function SyncThrottlePanel() {
   const [tick, setTick] = useState(0);
 
   const entityCodes = useMemo(
-    () => Array.from(new Set(mockEntities.map((e) => e.shortCode))),
+    () => Array.from(new Set(MOCK_ENTITIES.map((e) => e.shortCode))),
     [],
   );
 
