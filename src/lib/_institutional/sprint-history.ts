@@ -570,7 +570,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 102 T-Phase-6.A.1.1 · 🎬 ARC 1 OPENER · Institutional debt cleanup · hash-chain unhandled-rejection guard (5 fire-and-forget sites safe-wrapped via NEW appendAuditEntrySafe export · §H 0-DIFF API preserved) + 9 stale TBD_AT_BANK backfills (S62/S63 sprint-history + 7 moat-register entries banked at S61×2/S62/S63/S65×3) + meta-guard strengthened (only latest sprint may be TBD · moat-register zero-TBD) · ZERO new SIBLINGs · ZERO new audit types · ZERO new pages · 28-streak ⭐ target · §L DESIGN-DECISION-FLAGs: §H-preserving call-site fix (not engine surgery) · honest-partial SHA recovery via git log mining
   {
     sprintNumber: 102, code: 'T-Phase-6.A.1.1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'e91e813d02075dee90f1e934a83a7b69e4ff843b', loc: 130,
+    headSha: 'ba5a81b75132577a7599d6ff0945d0ded2662db5', predecessorSha: 'e91e813d02075dee90f1e934a83a7b69e4ff843b', loc: 130,
     newSiblings: [],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
