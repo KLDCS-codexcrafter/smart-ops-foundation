@@ -362,8 +362,8 @@ describe('Sprint 96 · idea-4 smart master sync', () => {
 });
 
 describe('Sprint 96 · institutional registers', () => {
-  it('sibling-register count is 158 (155 + 3 new)', () => {
-    expect(SIBLINGS.length).toBe(159);
+  it('sibling-register count is 158 (155 + 3 new, post-T1 dedup)', () => {
+    expect(SIBLINGS.length).toBe(158);
   });
 
   it('all 3 new Sprint 96 SIBLINGs are registered with CONFIRMED provenance', () => {
