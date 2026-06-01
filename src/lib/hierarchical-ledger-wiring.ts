@@ -46,6 +46,7 @@ const ledgerHook: TierScopeRegisteredHook = (payload) => {
     parent_scope: payload.parent_scope as
       | { tier: HierarchyTier; id: string }
       | undefined,
+    cost_centre: payload.tier === 'project' ? payload.cost_centre : undefined,
     entity_code: payload.entity_code,
   });
 };
@@ -53,17 +54,11 @@ const ledgerHook: TierScopeRegisteredHook = (payload) => {
 /** Hook: cascade Master DNA inheritance for tier scopes that own state. */
 const dnaHook: TierScopeRegisteredHook = (payload) => {
   if (!DNA_TIERS.includes(payload.tier as HierarchyTier)) return;
-  const stateCode = (payload as unknown as {
-    target_state_code?: string;
-  }).target_state_code;
-  if (!stateCode) return;
+  if (!payload.target_state_code) return;
   inheritWithDna({
     master_type: 'entity',
-    source_snapshot: {
-      id: payload.scope_id,
-      name: payload.scope_name,
-    },
-    target_state_code: stateCode,
+    source_snapshot: { id: payload.scope_id, name: payload.scope_name },
+    target_state_code: payload.target_state_code,
     target_entity: payload.entity_code,
   });
 };

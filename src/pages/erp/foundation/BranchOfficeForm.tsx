@@ -182,10 +182,24 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
         created_at: (existing.find(r => r.id === currentId) as { created_at?: string } | undefined)?.created_at ?? new Date().toISOString(),
       };
       const idx = existing.findIndex(r => r.id === currentId);
+      const isNew = idx < 0;
       if (idx >= 0) existing[idx] = record; else existing.push(record);
       // [JWT] POST /api/foundation/branch-offices
       localStorage.setItem('erp_branch_offices', JSON.stringify(existing));
       /* [JWT] POST or PATCH /api/foundation/branch-offices */
+      // Sprint 97 T1 · Block 1 — emit tier-scope-registered for branches (NEW only).
+      if (isNew) {
+        import('@/lib/entity-setup-service').then(({ emitTierScopeRegistered }) => {
+          const stateCode = (record as Record<string, unknown>).stateCode as string | undefined;
+          emitTierScopeRegistered({
+            entity_code: String((record as Record<string, unknown>).shortCode ?? currentId),
+            tier: 'branch',
+            scope_id: currentId,
+            scope_name: String((record as Record<string, unknown>).name ?? 'Branch'),
+            target_state_code: stateCode,
+          });
+        }).catch(() => { /* hook isolation */ });
+      }
       toast.success('Branch Office saved', { description: '[JWT] Will persist to database.' });
       setSetupOpen(true);
     }, 800);
