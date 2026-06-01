@@ -538,6 +538,8 @@ export function getSprintCount(): number {
 export function getCurrentAStreak(): number {
   let streak = 0;
   for (let i = SPRINTS.length - 1; i >= 0; i--) {
+    // Skip hotfix entries (non-integer sprintNumbers) per institutional hotfix-grace canon
+    if (!Number.isInteger(SPRINTS[i].sprintNumber)) continue;
     const g = SPRINTS[i].grade;
     if (g && g.startsWith('A')) streak++;
     else break;
