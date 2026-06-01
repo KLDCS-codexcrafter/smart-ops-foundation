@@ -549,8 +549,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 99 T-Phase-6.A.0.4 · Arc 0 Master Data Foundation · 4 inter-scope price lists (6 rule_types · 7 pricing methods) + 💡 Idea 7 TP-Audit Orchestrator (THE MOAT) · 2 NEW SIBLINGs (internal-pricing-engine, idea-7-transfer-pricing-audit-engine) + 1 NEW Standalone Page (#25 InternalPricingHubPage) · 2 new audit types under 'mca-roc' (pricing_rule_change/transfer_pricing_event) · effective-dating via idea-1 (no reimpl) · §H 0-DIFF on comply360-transfer-pricing-engine + tp-benchmarking-engine + form-3ceb-engine (USE-SITE READS only · FR-44 separation) · 25-streak ⭐ target · §L DESIGN-DECISION-FLAGs: idea-7 orchestrator boundary vs comply360-transfer-pricing-engine (no-dup) · pricing_rule virtual MasterType cast for idea-1 reuse · thresholdBasis conservative annualised stand-in
   {
     sprintNumber: 99, code: 'T-Phase-6.A.0.4', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'd5788478255ca369982786ee87d0351b76e3e81a', loc: 1050,
+    headSha: '570e30eda07d466e96ebbf612f2773f698ec6d40', predecessorSha: 'd5788478255ca369982786ee87d0351b76e3e81a', loc: 1050,
     newSiblings: ['internal-pricing-engine', 'idea-7-transfer-pricing-audit-engine'],
+    bankDate: '2026-06-01', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 100 T-Phase-6.A.0.5 · Arc 0 Master Data Foundation · 9 Cross-Company Reports (Tally TDL Mechanism A native) + Master Visibility Heatmap (#26) + 💡 Idea 5 Master Access Matrix + 💡 Idea 6 Inter-Dept Approval Bridge (ORCHESTRATOR · §P-exemption · bridges approval-matrix-engine + approval-workflow-engine · 0-DIFF on both) + 💡 Idea 8 Cost-Centre Cross-Stitch · 4 NEW SIBLINGs + 1 NEW Standalone Page (#26) · 2 new audit types under 'mca-roc' (master_access_change/cost_centre_cross_stitch) · cross-company-reports-engine is READ-ONLY (no new audit type) · idea-6 routes audit through approval-workflow-engine (no new audit type · §P) · 26-streak ⭐ target · §L DESIGN-DECISION-FLAGs: idea-6 §P orchestrator-exemption · access-matrix vs field-lock boundary · 9-report owner_company tagging
+  {
+    sprintNumber: 100, code: 'T-Phase-6.A.0.5', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '570e30eda07d466e96ebbf612f2773f698ec6d40', loc: 1300,
+    newSiblings: ['cross-company-reports-engine', 'idea-5-master-access-matrix-engine', 'idea-6-inter-dept-approval-bridge-engine', 'idea-8-cost-centre-cross-stitch-engine'],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
 ];
