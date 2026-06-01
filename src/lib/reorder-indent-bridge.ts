@@ -10,7 +10,7 @@
 import type { ReorderSuggestion } from '@/lib/store-hub-engine';
 import { createMaterialIndent, type CreateMaterialIndentInput } from '@/lib/request-engine';
 import type { MaterialIndent, MaterialIndentLine, Priority, IndentCategory } from '@/types/material-indent';
-import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import { appendAuditEntrySafe } from '@/lib/audit-trail-hash-chain';
 
 export interface PromoteReorderToIndentInput {
   suggestion: ReorderSuggestion;
@@ -119,7 +119,7 @@ export function promoteReorderToIndent(
     } catch { /* silent */ }
 
     // Fire audit (async · fire-and-forget)
-    void appendAuditEntry({
+    appendAuditEntrySafe({
       entityCode,
       entityId: entityCode,
       voucherId: indent.id,

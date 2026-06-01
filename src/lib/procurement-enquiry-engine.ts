@@ -12,7 +12,7 @@ import {
   type ItemVendorMatchPair,
 } from '@/types/procurement-enquiry';
 import { materialIndentsKey, type MaterialIndent } from '@/types/material-indent';
-import { appendAuditEntry } from './audit-trail-hash-chain';
+import { appendAuditEntrySafe } from './audit-trail-hash-chain';
 import { publishProcurementPulse } from './procurement-pulse-stub';
 
 function totalEnquiryValue(e: ProcurementEnquiry): number {
@@ -112,7 +112,7 @@ export function createEnquiry(input: CreateEnquiryInput, entityCode: string): Pr
   };
   writeEnquiries(entityCode, [enquiry, ...list]);
   // FIX-1 · D-247 hash chain · D-262 fire-and-forget
-  void appendAuditEntry({
+  appendAuditEntrySafe({
     entityCode,
     entityId: input.entity_id,
     voucherId: enquiry.id,
@@ -125,7 +125,7 @@ export function createEnquiry(input: CreateEnquiryInput, entityCode: string): Pr
       vendor_mode: enquiry.vendor_mode,
       source_indent_ids: enquiry.source_indent_ids,
     },
-  }).catch(() => { /* best-effort · forensic chain */ });
+  });
   // FIX-3 · D-248 procurement-pulse emit
   publishProcurementPulse({
     severity: 'info',
@@ -208,7 +208,7 @@ export function transitionEnquiryStatus(
   const result = updateEnquiry(id, { status }, entityCode);
   if (result && status === 'approved') {
     // FIX-1 · D-247 hash chain · D-262 fire-and-forget
-    void appendAuditEntry({
+    appendAuditEntrySafe({
       entityCode,
       entityId: result.entity_id,
       voucherId: result.id,
@@ -216,7 +216,7 @@ export function transitionEnquiryStatus(
       action: 'enquiry.approved',
       actorUserId,
       payload: { approver_user_id: actorUserId, tier: result.standalone_approval_tier },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'info',
@@ -269,7 +269,7 @@ export function awardQuotations(
   );
   if (result) {
     // FIX-1 · D-247 hash chain · D-262 fire-and-forget
-    void appendAuditEntry({
+    appendAuditEntrySafe({
       entityCode,
       entityId: result.entity_id,
       voucherId: result.id,
@@ -277,7 +277,7 @@ export function awardQuotations(
       action: 'enquiry.awarded',
       actorUserId: awardedByUserId,
       payload: { winning_quotation_ids: winningQuotationIds },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'info',
