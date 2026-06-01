@@ -241,9 +241,9 @@ describe('Sprint 104 · institutional register invariants', () => {
     const s103 = SPRINTS.find((s) => s.sprintNumber === 103 && s.code === 'T-Phase-6.A.1.2');
     expect(s103?.headSha).toBe('327b7bdebaeea5347cdecf4f964e6292de6af322');
   });
-  it('S104 entry appended with TBD_AT_BANK sentinel', () => {
+  it('S104 entry headSha backfilled to e59f1ecf…', () => {
     const s104 = SPRINTS.find((s) => s.sprintNumber === 104 && s.code === 'T-Phase-6.A.1.3');
-    expect(s104?.headSha).toBe('TBD_AT_BANK');
+    expect(s104?.headSha).toBe('e59f1ecf246f4891d5efdd248b1b19aee8c921ef');
     expect(s104?.newSiblings).toEqual([]);
     expect(s104?.predecessorSha).toBe('327b7bdebaeea5347cdecf4f964e6292de6af322');
   });
