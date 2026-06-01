@@ -111,4 +111,27 @@ describe('Sprint 95 · T-Phase-5.F.5.7-Final · Phase 5 CLOSE CEREMONY · FINAL 
     expect(fs.existsSync(SRC('src/shell/sidebar/ShellSidebar.tsx'))).toBe(true);
     expect(fs.existsSync(SRC('src/shell/utils/filterSidebarByMatrix.ts'))).toBe(true);
   });
+
+  // ─── S95 HOTFIX · Sidebar inactivity correction (3 new assertions · cycle-2) ───
+  it('All 44 sidebar entries are type:item (post-hotfix · navigable canonical pattern)', async () => {
+    const mod = await import('@/apps/erp/configs/comply360-sidebar-config');
+    expect(mod.comply360SidebarItems.length).toBe(44);
+    const allItem = mod.comply360SidebarItems.every((i) => i.type === 'item');
+    expect(allItem).toBe(true);
+  });
+  it('Sidebar entries no longer have children:[] field (group-pattern eliminated)', async () => {
+    const mod = await import('@/apps/erp/configs/comply360-sidebar-config');
+    const hasChildren = mod.comply360SidebarItems.some(
+      (i) => 'children' in i && Array.isArray((i as { children?: unknown[] }).children),
+    );
+    expect(hasChildren).toBe(false);
+  });
+  it('Sidebar navigation contract preserved (id-based setActiveModule · 44 ids stable)', async () => {
+    const mod = await import('@/apps/erp/configs/comply360-sidebar-config');
+    const ids = mod.comply360SidebarItems.map((i) => i.id);
+    expect(new Set(ids).size).toBe(44);
+    expect(ids).toContain('mca-tier2');
+    expect(ids).toContain('legal-ipr');
+    expect(ids).toContain('home');
+  });
 });
