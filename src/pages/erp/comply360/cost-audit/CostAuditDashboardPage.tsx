@@ -9,39 +9,26 @@
 import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Scale, FileCheck2, Gavel, Sparkles } from 'lucide-react';
+import { Scale, FileCheck2, Gavel, Sparkles, Layers, Plus } from 'lucide-react';
 import {
   listCostAuditorAppointments,
   listCRAFormFilings,
   listCostAuditReports,
   isCostAuditorEligible,
   appointCostAuditor,
+  determineCostAuditApplicability,
+  listCostProductServices,
+  upsertCostProductService,
   type CRAFormType,
+  type CostProductServiceEntry,
 } from '@/lib/comply360-cost-audit-engine';
 
 const FY_CURRENT = '2025-26';
 const FY_PRIOR = '2024-25';
 const FORM_TYPES: CRAFormType[] = ['CRA_1', 'CRA_2', 'CRA_3', 'CRA_4'];
-
-/** §148 applicability (declarative — engine remains 0-DIFF; thresholds per Companies (Cost Records & Audit) Rules 2014). */
-function evaluateSection148Applicability(input: {
-  netWorthInr: number;
-  turnoverInr: number;
-  regulatedSector: boolean;
-}): { applicable: boolean; reasons: string[] } {
-  const reasons: string[] = [];
-  if (input.regulatedSector && input.turnoverInr >= 5_00_00_000) {
-    reasons.push('Regulated sector · turnover ≥ ₹5 Cr (CRA Rule 3 Table A)');
-  }
-  if (!input.regulatedSector && input.turnoverInr >= 35_00_00_000) {
-    reasons.push('Non-regulated sector · turnover ≥ ₹35 Cr (CRA Rule 3 Table B)');
-  }
-  if (input.netWorthInr >= 500_00_00_000) {
-    reasons.push('Net-worth ≥ ₹500 Cr');
-  }
-  return { applicable: reasons.length > 0, reasons };
-}
 
 function daysUntil(iso: string): number {
   const ms = new Date(iso).getTime() - Date.now();
