@@ -125,7 +125,7 @@ export function createEnquiry(input: CreateEnquiryInput, entityCode: string): Pr
       vendor_mode: enquiry.vendor_mode,
       source_indent_ids: enquiry.source_indent_ids,
     },
-  }).catch(() => { /* best-effort · forensic chain */ });
+  });
   // FIX-3 · D-248 procurement-pulse emit
   publishProcurementPulse({
     severity: 'info',
@@ -216,7 +216,7 @@ export function transitionEnquiryStatus(
       action: 'enquiry.approved',
       actorUserId,
       payload: { approver_user_id: actorUserId, tier: result.standalone_approval_tier },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'info',
@@ -277,7 +277,7 @@ export function awardQuotations(
       action: 'enquiry.awarded',
       actorUserId: awardedByUserId,
       payload: { winning_quotation_ids: winningQuotationIds },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'info',

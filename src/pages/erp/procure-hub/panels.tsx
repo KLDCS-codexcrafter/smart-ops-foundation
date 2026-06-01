@@ -459,7 +459,7 @@ export function ProcurementEnquiryEntryPanel(): JSX.Element {
       action: 'enquiry.cancel',
       actorUserId: 'mock-user',
       payload: { lines: lines.length, total: totalEstimatedValue },
-    }).catch(() => { /* best-effort */ });
+    });
     mount.clearDraft();
     setLines([emptyEnquiryLine(1)]);
     setNotes('');

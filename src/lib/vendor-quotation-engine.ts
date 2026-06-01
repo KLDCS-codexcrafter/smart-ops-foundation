@@ -137,7 +137,7 @@ export function submitQuotation(input: SubmitQuotationInput, entityCode: string)
       vendor_id: q.vendor_id,
       total_after_tax: q.total_after_tax,
     },
-  }).catch(() => { /* best-effort · forensic chain */ });
+  });
   // FIX-3 · D-248 procurement-pulse emit
   publishProcurementPulse({
     severity: 'info',
