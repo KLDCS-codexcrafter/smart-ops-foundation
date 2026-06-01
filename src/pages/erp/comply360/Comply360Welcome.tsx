@@ -8,7 +8,7 @@
 import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart, Sparkles, Database, Compass } from 'lucide-react';
+import { Shield, Receipt, Users, Building, Award, Leaf, Calendar, FileBarChart, Sparkles, Database, Compass, Flame, Wrench, TreePine, Recycle, Lock, ShieldAlert, BadgeCheck, HardHat, Briefcase, Copyright } from 'lucide-react';
 import { loadObligations } from '@/lib/comply360-statutory-memory';
 import { computeWeightedComplianceHealth, nextUpcoming } from '@/lib/comply360-health-score-engine';
 import { buildCalendar } from '@/lib/comply360-calendar-engine';
