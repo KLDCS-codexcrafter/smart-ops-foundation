@@ -77,6 +77,17 @@ export function Comply360Welcome({ onNavigate }: Props): JSX.Element {
     { icon: Award,       title: 'Licenses & Regulatory',description: '13 modules · factory · trade · drug · pollution.',                    target: 'licenses', live: moduleStats['licenses'] },
     { icon: Leaf,        title: 'ESG / Safety',         description: '12 modules · BRSR · CSR · safety audits. Sprint 79-80.',              target: 'esg' },
     { icon: FileBarChart,title: 'Reports & Analytics',  description: '12 modules · D.3 InsightX integration. Phase 8.',                     target: 'reports' },
+    // 🆕 S95 · DP-S95-16A · Floor 5 Welcome tile navigation fix · 10 NEW tiles:
+    { icon: Flame,       title: 'Fire Safety',               description: 'Q33 · NBC compliance · drills · extinguishers · NOC tracker.',  target: 'fire-safety' },
+    { icon: Wrench,      title: 'Industrial Safety',         description: 'Q33 · Factories Act safety officer · accidents · audits.',       target: 'industrial-safety' },
+    { icon: TreePine,    title: 'Environmental Compliance',  description: 'Q34 · CPCB consents · BRSR · emissions · EIA workflow.',         target: 'environmental' },
+    { icon: Recycle,     title: 'Waste Management',          description: 'Q35 · 6 sub-regimes · Hazardous + Plastic + e-Waste + Solid.',   target: 'waste-management' },
+    { icon: Lock,        title: 'DPDP Act 2023',             description: 'Q36 · Privacy Policy · Data Principal rights · 72hr Breach.',    target: 'dpdp' },
+    { icon: ShieldAlert, title: 'Cyber Security (CERT-In)',  description: 'Q36 · 6hr incident reporting · Vulnerability · Access Control.', target: 'cyber-security' },
+    { icon: BadgeCheck,  title: 'Quality & Standards',       description: 'Q37 · Schedule H · FSSAI · BIS · ISO 9001/14001/27001/45001.',   target: 'quality-standards' },
+    { icon: HardHat,     title: 'Labour Tier-2',             description: 'Q37 · Bonus · Maternity · CLRA · Factories Form 21 · OSH.',      target: 'labour-tier2' },
+    { icon: Briefcase,   title: 'MCA Tier-2 + PMLA',         description: 'Q38 · CSR-2 · Sec 135 · Sec 204 MR-3 · PMLA STR/CTR/FIU-IND.',   target: 'mca-tier2' },
+    { icon: Copyright,   title: 'Legal Contracts + IPR',     description: 'Q38 · Vendor/NDA · TM/Patent · Tier-2 GST/IT/Exim extensions.',  target: 'legal-ipr' },
   ];
 
   // Sprint 88 · DP-S88 · demo seed + first-impression extension
