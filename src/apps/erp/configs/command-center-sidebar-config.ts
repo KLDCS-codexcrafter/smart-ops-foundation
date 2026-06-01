@@ -89,6 +89,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'fincore-ledger-tree', requiredCards: ['command-center'] },
       { id: 'fincore-internal-pricing-hub', type: 'item', label: 'Internal Pricing Hub', icon: Layers,
         moduleId: 'fincore-internal-pricing-hub', requiredCards: ['command-center'] },
+      // Sprint 100 · T-Phase-6.A.0.5 · Standalone Page #26
+      { id: 'fincore-master-visibility-heatmap', type: 'item', label: 'Master Visibility Heatmap', icon: Layers,
+        moduleId: 'fincore-master-visibility-heatmap', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
