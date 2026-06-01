@@ -127,6 +127,9 @@ import InternalPricingHubPage from '@/features/internal-pricing/InternalPricingH
 // Sprint 100 · T-Phase-6.A.0.5 · Master Visibility Heatmap (Standalone Page #26)
 import MasterVisibilityHeatmapPage from '@/features/master-visibility/MasterVisibilityHeatmapPage';
 
+// Sprint 101 · T-Phase-6.A.0.6 · Master Lifecycle Wizard (Standalone Page #27 · 🏁 Arc 0 Capstone)
+import MasterLifecycleWizardPage from '@/features/master-lifecycle/MasterLifecycleWizardPage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
@@ -174,6 +177,7 @@ export type CommandCenterModule =
   | 'fincore-ledger-tree'
   | 'fincore-internal-pricing-hub'
   | 'fincore-master-visibility-heatmap'
+  | 'fincore-master-lifecycle-wizard'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -273,7 +277,7 @@ export default function CommandCenterPage() {
       'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings', 'fincore-production-config',
       'org-structure',
       'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency', 'fincore-transaction-templates',
-      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'projx-project-centres',
+      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -374,6 +378,7 @@ export default function CommandCenterPage() {
       case 'fincore-ledger-tree': return <HierarchicalLedgerTreePage />;
       case 'fincore-internal-pricing-hub': return <InternalPricingHubPage />;
       case 'fincore-master-visibility-heatmap': return <MasterVisibilityHeatmapPage />;
+      case 'fincore-master-lifecycle-wizard': return <MasterLifecycleWizardPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -540,6 +545,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-ledger-tree': 'Hierarchical Ledger Tree',
     'fincore-internal-pricing-hub': 'Internal Pricing Hub',
     'fincore-master-visibility-heatmap': 'Master Visibility Heatmap',
+    'fincore-master-lifecycle-wizard': 'Master Lifecycle Wizard',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',

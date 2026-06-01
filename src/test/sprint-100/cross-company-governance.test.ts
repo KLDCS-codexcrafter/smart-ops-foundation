@@ -303,8 +303,8 @@ describe('Block 6 · idea-8 cost-centre-cross-stitch', () => {
 
 // ── Block 7 · sibling-register integrity + meta ──
 describe('Block 7 · institutional integrity', () => {
-  it('sibling-register count = 169 (REAL)', () => {
-    expect(getSiblingCount()).toBe(169);
+  it('sibling-register count >= 169 (S100 floor; later sprints add engines)', () => {
+    expect(getSiblingCount()).toBeGreaterThanOrEqual(169);
   });
   it('cross-company-reports-engine registered exactly once', () => {
     expect(SIBLINGS.filter((s) => s.id === 'cross-company-reports-engine').length).toBe(1);

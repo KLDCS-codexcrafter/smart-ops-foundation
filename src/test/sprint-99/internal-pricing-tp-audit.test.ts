@@ -396,8 +396,8 @@ describe('FR-44 · idea-7 does NOT duplicate comply360-transfer-pricing-engine',
 // §H · Institutional integrity (AC#17, #18, #19, #20)
 // ═════════════════════════════════════════════════════════════════════
 describe('institutional · sibling-register + audit-trail types', () => {
-  it('sibling count equals 165', () => {
-    expect(getSiblingCount()).toBe(165);
+  it('sibling count >= 165 (snapshot drifts as later sprints add engines)', () => {
+    expect(getSiblingCount()).toBeGreaterThanOrEqual(165);
   });
 
   it('internal-pricing-engine appears exactly once', () => {

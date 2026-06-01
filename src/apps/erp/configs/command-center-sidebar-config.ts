@@ -92,6 +92,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // Sprint 100 · T-Phase-6.A.0.5 · Standalone Page #26
       { id: 'fincore-master-visibility-heatmap', type: 'item', label: 'Master Visibility Heatmap', icon: Layers,
         moduleId: 'fincore-master-visibility-heatmap', requiredCards: ['command-center'] },
+      // Sprint 101 · T-Phase-6.A.0.6 · 🏁 Arc 0 Capstone · Standalone Page #27
+      { id: 'fincore-master-lifecycle-wizard', type: 'item', label: 'Master Lifecycle Wizard', icon: Layers,
+        moduleId: 'fincore-master-lifecycle-wizard', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
