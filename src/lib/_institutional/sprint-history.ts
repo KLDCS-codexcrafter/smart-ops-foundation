@@ -501,7 +501,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 94 T-Phase-5.F.5.6 · Comply360 Floor 5.6 CAPSTONE · CLOSES FLOOR 5 · Q38 MCA T2 + PMLA + IPR + Legal Contracts + GST/IT/Exim T2 · 5 NEW SIBLINGs + 2 NEW PAGES · 20-streak ⭐ · 161/161 obligations native 100%
   {
     sprintNumber: 94, code: 'T-Phase-5.F.5.6', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '29e3c6d9946283d821cd257ac1c7b1562f676479', loc: 2400,
+    headSha: 'df1b9b713fdda0ba687177f103d0c94c0433914c', predecessorSha: '29e3c6d9946283d821cd257ac1c7b1562f676479', loc: 1710,
     newSiblings: [
       'comply360-mca-tier2-engine',
       'comply360-pmla-engine',
@@ -509,6 +509,13 @@ export const SPRINTS: SprintEntry[] = [
       'comply360-legal-contracts-engine',
       'comply360-tier2-extensions-engine',
     ],
+    bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 95 T-Phase-5.F.5.7-Final · Comply360 Phase 5 CLOSE CEREMONY · final polish · Floor 5 Welcome tile navigation fix + S94 SHA backfill + Phase 5 Close-Ceremony Declaration · 21-streak ⭐ · CLOSES PHASE 5 · 161/161 obligations native 100%
+  {
+    sprintNumber: 95, code: 'T-Phase-5.F.5.7-Final', composite: false, grade: 'A first-pass-clean',
+    headSha: null, predecessorSha: 'df1b9b713fdda0ba687177f103d0c94c0433914c', loc: 400,
+    newSiblings: [],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
   },
 ];
