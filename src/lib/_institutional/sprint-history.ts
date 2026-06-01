@@ -588,12 +588,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 105 T-Phase-6.C.1.1 · ARC 2 OPENER · Pillar C.1 Intercompany Foundation · NEW SIBLING intercompany-group-structure-engine (WRAPS §H-frozen mock-entities via loadEntities · side-store erp_group_structure · ownership% · JV · 3 Ind AS consolidation methods full/proportional/equity · DP-A2-1 side-store wrap · DP-A2-9 scope wall vs Arc 3) + NEW Standalone Page #34 IntercompanyGroupStructurePage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type group_structure_change under 'mca-roc' · 31-streak ⭐ target · §L: side-store-wrap decision · Ind AS 110/111/28 thresholds · Arc 3 scope wall (NO consolidation/elimination/multi-currency) · headSha TBD_AT_BANK (backfills at S106 Block 1)
+  // 🎬 Sprint 105 T-Phase-6.C.1.1 · ARC 2 OPENER · Pillar C.1 Intercompany Foundation · NEW SIBLING intercompany-group-structure-engine (WRAPS §H-frozen mock-entities via loadEntities · side-store erp_group_structure · ownership% · JV · 3 Ind AS consolidation methods full/proportional/equity · DP-A2-1 side-store wrap · DP-A2-9 scope wall vs Arc 3) + NEW Standalone Page #34 IntercompanyGroupStructurePage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type group_structure_change under 'mca-roc' · 31-streak ⭐ target · §L: side-store-wrap decision · Ind AS 110/111/28 thresholds · Arc 3 scope wall (NO consolidation/elimination/multi-currency) · headSha backfilled at S106 Block 1
   {
     sprintNumber: 105, code: 'T-Phase-6.C.1.1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'e59f1ecf246f4891d5efdd248b1b19aee8c921ef', loc: 1100,
+    headSha: 'f75081139fe8b4df9c41e72d8c753c647e37e5b7', predecessorSha: 'e59f1ecf246f4891d5efdd248b1b19aee8c921ef', loc: 1100,
     newSiblings: ['intercompany-group-structure-engine'],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
+  },
+  // 🏁 Sprint 106 T-Phase-6.C.1.2 · Intercompany Transaction Backbone · headSha TBD_AT_BANK (backfills at S107 Block 1)
+  {
+    sprintNumber: 106, code: 'T-Phase-6.C.1.2', composite: false, grade: null,
+    headSha: 'TBD_AT_BANK', predecessorSha: 'f75081139fe8b4df9c41e72d8c753c647e37e5b7', loc: null,
+    newSiblings: [], bankDate: null, provenance: 'PENDING_BACKFILL',
   },
 ];
 
