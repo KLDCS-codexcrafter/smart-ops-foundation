@@ -521,8 +521,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🛠️ Sprint 95.1 HOTFIX T-Phase-5.F.5.7-Final-HOTFIX · cycle-2 correction · sidebar inactivity (44 entries type:'group'→'item') + v1.30 §N enforcement restored · streak 21 ⭐ HOLD per institutional hotfix-grace canon (Lesson 35 v1.24)
   {
     sprintNumber: 95.1, code: 'T-Phase-5.F.5.7-Final-HOTFIX', composite: false, grade: 'C',
-    headSha: null, predecessorSha: 'c11d640efc435449411d9f89c9de84fb11422cc9', loc: 110,
+    headSha: '5b84d631820b1df077ef564c1bff4281da666676', predecessorSha: 'c11d640efc435449411d9f89c9de84fb11422cc9', loc: 110,
     newSiblings: [],
+    bankDate: '2026-06-01', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint 96 T-Phase-6.A.0.1 · Arc 0 Master Data Foundation KICKOFF · Tally TDL Mechanism A native + Idea 1 Time-Travel Masters + Idea 4 Smart Master Sync · 3 NEW SIBLINGs · 4 new audit types under 'mca-roc' (master_replication_event/master_conflict_resolution/master_sync_run/master_version_change) · §H 0-DIFF on entity-setup-service + mock-entities + ComplianceModule · 22-streak ⭐ target · first-pass-clean A (provisional · audit confirms)
+  {
+    sprintNumber: 96, code: 'T-Phase-6.A.0.1', composite: false, grade: 'A first-pass-clean',
+    headSha: 'TBD_AT_BANK', predecessorSha: '5b84d631820b1df077ef564c1bff4281da666676', loc: 1200,
+    newSiblings: ['master-replication-engine', 'idea-1-time-travel-masters-engine', 'idea-4-smart-master-sync-engine'],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
 ];
