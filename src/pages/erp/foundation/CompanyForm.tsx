@@ -341,10 +341,27 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
         created_at: (existing.find(r => r.id === currentId) as { created_at?: string } | undefined)?.created_at ?? new Date().toISOString(),
       };
       const idx = existing.findIndex(r => r.id === currentId);
+      const isNew = idx < 0;
       if (idx >= 0) existing[idx] = record; else existing.push(record);
       // [JWT] POST /api/foundation/entities
       localStorage.setItem(storageKey, JSON.stringify(existing));
       /* [JWT] POST or PATCH /api/foundation/companies or /api/foundation/subsidiaries */
+
+      // Sprint 97 T1 · Block 1 — emit tier-scope-registered for subsidiaries (NEW only).
+      if (isNew && entityType === 'subsidiary') {
+        // Lazy-import to avoid pulling the wiring graph into form-render path.
+        import('@/lib/entity-setup-service').then(({ emitTierScopeRegistered }) => {
+          const stateCode = (gstRegs?.[0] as unknown as Record<string, unknown> | undefined)?.stateCode as string | undefined;
+          emitTierScopeRegistered({
+            entity_code: String((record as Record<string, unknown>).shortCode ?? currentId),
+            tier: 'subsidiary',
+            scope_id: currentId,
+            scope_name: String((record as Record<string, unknown>).legalEntityName ?? 'Subsidiary'),
+            parent_scope: { tier: 'parent', id: 'parent-root' },
+            target_state_code: stateCode,
+          });
+        }).catch(() => { /* hook isolation */ });
+      }
 
       // Auto-create forex ledgers + voucher type when multi-currency is enabled
       if ((form as Record<string, unknown>).enableMultiCurrency) {

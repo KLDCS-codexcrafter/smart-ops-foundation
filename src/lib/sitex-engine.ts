@@ -35,6 +35,19 @@ export function createSite(entityCode: string, site: SiteMaster): SiteMaster {
   const sites = listSites(entityCode);
   sites.push(site);
   localStorage.setItem(siteMastersKey(entityCode), JSON.stringify(sites));
+  // Sprint 97 T1 · Block 1 — emit tier-scope-registered for hierarchical ledger auto-creation.
+  // Lazy-import to avoid circular dep through hierarchical-ledger-wiring.
+  import('@/lib/entity-setup-service').then(({ emitTierScopeRegistered }) => {
+    emitTierScopeRegistered({
+      entity_code: entityCode,
+      tier: 'site',
+      scope_id: site.id,
+      scope_name: site.site_name,
+      parent_scope: site.project_id
+        ? { tier: 'project', id: site.project_id }
+        : (site.branch_id ? { tier: 'branch', id: site.branch_id } : undefined),
+    });
+  }).catch(() => { /* hook isolation */ });
   return site;
 }
 

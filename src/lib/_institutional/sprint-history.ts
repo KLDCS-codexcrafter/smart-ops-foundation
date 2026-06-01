@@ -532,10 +532,10 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['master-replication-engine', 'idea-1-time-travel-masters-engine', 'idea-4-smart-master-sync-engine'],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint 97 T-Phase-6.A.0.2 · Arc 0 continuation · 7-tier Hierarchical Ledger + Master DNA · 2 NEW SIBLINGs + 1 NEW Standalone Page (#24 HierarchicalLedgerTreePage) · 2 new audit types under 'mca-roc' (hierarchical_ledger_created/master_dna_inheritance) · createBDLedgers PRIVATELY reimplemented inside hierarchical-ledger-engine · 23-streak ⭐ target · §L DESIGN-DECISION-FLAGs: 7-tier ordering · L4/L5 nesting · createBDLedgers reimpl
+  // 🆕 Sprint 97 T-Phase-6.A.0.2 · Arc 0 continuation · 7-tier Hierarchical Ledger + Master DNA · 2 NEW SIBLINGs + 1 NEW Standalone Page (#24 HierarchicalLedgerTreePage) · 2 new audit types under 'mca-roc' (hierarchical_ledger_created/master_dna_inheritance) · createBDLedgers PRIVATELY reimplemented inside hierarchical-ledger-engine · 23-streak ⭐ target · §L DESIGN-DECISION-FLAGs: 7-tier ordering · L4/L5 nesting · createBDLedgers reimpl · T1 surfaced at audit (no test pack + unwired hooks · resolved in T-Phase-6.A.0.2-T1)
   {
-    sprintNumber: 97, code: 'T-Phase-6.A.0.2', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: '7f0cee2d900ace3f91ade9327b8d0641f0738322', loc: 1090,
+    sprintNumber: 97, code: 'T-Phase-6.A.0.2', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '7f0cee2d900ace3f91ade9327b8d0641f0738322', loc: 1090,
     newSiblings: ['hierarchical-ledger-engine', 'idea-2-master-dna-engine'],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
