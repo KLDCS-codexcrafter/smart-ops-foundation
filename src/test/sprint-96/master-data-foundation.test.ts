@@ -362,8 +362,8 @@ describe('Sprint 96 · idea-4 smart master sync', () => {
 });
 
 describe('Sprint 96 · institutional registers', () => {
-  it('sibling-register count is 158 (155 + 3 new, post-T1 dedup)', () => {
-    expect(SIBLINGS.length).toBe(158);
+  it('sibling-register count is 160 (158 + 2 new in S97, post-T1 dedup)', () => {
+    expect(SIBLINGS.length).toBe(160);
   });
 
   it('all 3 new Sprint 96 SIBLINGs are registered with CONFIRMED provenance', () => {
@@ -379,11 +379,11 @@ describe('Sprint 96 · institutional registers', () => {
     expect(s951?.headSha).toBe('5b84d631820b1df077ef564c1bff4281da666676');
   });
 
-  it('sprint-history S96 entry exists with TBD_AT_BANK sentinel', () => {
+  it('sprint-history S96 entry exists with backfilled headSha (post-S97 Block 0)', () => {
     const s96 = SPRINTS.find((s) => s.sprintNumber === 96);
     expect(s96).toBeDefined();
     expect(s96?.code).toBe('T-Phase-6.A.0.1');
-    expect(s96?.headSha).toBe('TBD_AT_BANK');
+    expect(s96?.headSha).toBe('7f0cee2d900ace3f91ade9327b8d0641f0738322');
     expect(s96?.predecessorSha).toBe('5b84d631820b1df077ef564c1bff4281da666676');
     expect(s96?.newSiblings.length).toBe(3);
   });

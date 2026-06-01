@@ -118,6 +118,10 @@ import { RequestXVoucherTypesMasterPanel } from '@/pages/erp/requestx/masters/Re
 import { ApprovalMatrixTemplatesPanel } from '@/pages/erp/requestx/masters/ApprovalMatrixTemplates';
 import { PinnedTemplatesPanel } from '@/pages/erp/requestx/masters/PinnedTemplatesPanel';
 
+// Sprint 97 · T-Phase-6.A.0.2 · Hierarchical Ledger Tree (Standalone Page #24)
+import HierarchicalLedgerTreePage from '@/features/hierarchical-ledger/HierarchicalLedgerTreePage';
+
+
 // Sprint T-Phase-1.3-3-PlantOps-pre-1 · Plant Operations masters
 import { FactoryMasterPanel } from '@/pages/erp/masters/FactoryMaster';
 import { WorkCenterMasterPanel } from '@/pages/erp/masters/WorkCenterMaster';
@@ -156,6 +160,7 @@ export type CommandCenterModule =
   | 'fincore-asset-centres'
   | 'fincore-voucher-class'
   | 'projx-project-centres'
+  | 'fincore-ledger-tree'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -251,7 +256,7 @@ export default function CommandCenterPage() {
       'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings', 'fincore-production-config',
       'org-structure',
       'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency', 'fincore-transaction-templates',
-      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'projx-project-centres',
+      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -348,6 +353,7 @@ export default function CommandCenterPage() {
       case 'fincore-asset-centres': return <AssetCentreMasterPanel />;
       case 'fincore-voucher-class': return <VoucherClassMasterPage />;
       case 'projx-project-centres': return <ProjectCentreMasterPanel />;
+      case 'fincore-ledger-tree': return <HierarchicalLedgerTreePage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -506,6 +512,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-production-config': 'Production Configuration',
     'fincore-asset-centres': 'Asset Centre Master',
     'projx-project-centres': 'Project Centre Master',
+    'fincore-ledger-tree': 'Hierarchical Ledger Tree',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
