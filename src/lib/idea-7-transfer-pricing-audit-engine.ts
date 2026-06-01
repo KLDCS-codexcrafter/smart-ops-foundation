@@ -7,8 +7,8 @@
  *                · tp-benchmarking-engine.recommendALPMethod / isAboveThreshold
  *                · form-3ceb-engine.buildForm3CEBSnapshot / saveForm3CEBSnapshot
  *              Does NOT reimplement ALP / 3CEB / international filings.
- *              comply360-transfer-pricing-engine (Master File 3CEAA · CbCR ·
- *              Equalisation Levy) is a SEPARATE concern — untouched (FR-44).
+ *              International filing concerns (handled by comply360 sibling) are a
+ *              SEPARATE module — untouched here (FR-44 no-duplication).
  * @audit       Owns + logs `transfer_pricing_event` (module: 'mca-roc').
  * @sprint      T-Phase-6.A.0.4 · Block 3
  * [JWT] Phase 8: POST /api/tp-audit · GET /api/tp-audit
