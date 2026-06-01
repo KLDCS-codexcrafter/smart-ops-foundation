@@ -14,7 +14,7 @@
  * [JWT] Phase 8: POST /api/master-compliance-gate
  */
 import { logAudit } from '@/lib/audit-trail-engine';
-import { validateGSTIN as validateGSTINPure, isUnregisteredParty } from '@/lib/gstin-validator';
+import { validateGSTIN as validateGSTINPure } from '@/lib/gstin-validator';
 import {
   PAN_REGEX, CIN_REGEX, TAN_REGEX, UDYAM_REGEX,
 } from '@/lib/india-validations';
@@ -39,20 +39,16 @@ function s(v: unknown): string {
 function checkCustomerOrVendor(record: Record<string, unknown>): ComplianceGateResult {
   const blocks: string[] = [];
   const warnings: string[] = [];
-  const gstin = s(record['gstin']);
+  const gstinRaw = s(record['gstin']);
   const pan = s(record['pan']);
-  if (gstin) {
-    // USE-SITE call · FR-44 0-DIFF on gstin-validator.
-    const r = validateGSTINPure(gstin);
-    if (!r.valid) {
-      if (isUnregisteredParty(gstin)) {
-        warnings.push(`GSTIN treated as Unregistered (URP) for ${s(record['name']) || 'party'}`);
-      } else {
-        blocks.push(`GSTIN invalid: ${r.reason ?? 'unknown'}`);
-      }
-    }
+  if (!gstinRaw || gstinRaw.toUpperCase() === 'URP') {
+    warnings.push(gstinRaw
+      ? `GSTIN treated as Unregistered (URP) for ${s(record['name']) || 'party'}`
+      : 'GSTIN not supplied — party will be treated as Unregistered (B2C)');
   } else {
-    warnings.push('GSTIN not supplied — party will be treated as Unregistered (B2C)');
+    // USE-SITE call · FR-44 0-DIFF on gstin-validator.
+    const r = validateGSTINPure(gstinRaw);
+    if (!r.valid) blocks.push(`GSTIN invalid: ${r.reason ?? 'unknown'}`);
   }
   if (pan) {
     if (!PAN_REGEX.test(pan.toUpperCase())) blocks.push('PAN format invalid (expect AAAAA0000A)');

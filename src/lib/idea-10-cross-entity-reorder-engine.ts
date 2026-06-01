@@ -84,15 +84,27 @@ export function suggestCrossEntityReorder(input: {
   threshold_qty: number;
   requesting_entity?: string;
 }): CrossEntityReorderSuggestion[] {
-  const entities = loadEntities();
-  const requesting = input.requesting_entity ?? entities[0]?.shortCode ?? '';
-  const inventory = entities.map((e) => {
-    const rows = readStock(e.shortCode);
+  const seeded = new Set<string>();
+  if (typeof localStorage !== 'undefined') {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      const m = k.match(/^erp_([^_]+)_stock_balances$/) ?? k.match(/^erp_stock_balances_(.+)$/);
+      if (m) seeded.add(m[1]);
+    }
+  }
+  const entityCodes = new Set<string>([
+    ...seeded,
+    ...loadEntities().map((e) => e.shortCode),
+  ]);
+  if (input.requesting_entity) entityCodes.add(input.requesting_entity);
+  const inventory = Array.from(entityCodes).map((entity_code) => {
+    const rows = readStock(entity_code);
     const hit = rows.find((r) => itemKey(r) === input.item_key);
-    return { entity_code: e.shortCode, available: hit ? itemAvailable(hit) : 0 };
+    return { entity_code, available: hit ? itemAvailable(hit) : 0 };
   });
-  const short = inventory.find((r) => r.entity_code === requesting && r.available < input.threshold_qty)
-    ?? inventory.find((r) => r.available < input.threshold_qty);
+  const requesting = input.requesting_entity ?? inventory[0]?.entity_code ?? '';
+  const short = inventory.find((r) => r.entity_code === requesting && r.available < input.threshold_qty);
   if (!short) return [];
   const shortQty = input.threshold_qty - short.available;
   const surplus = inventory
