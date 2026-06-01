@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import type { Division, Department } from '@/types/org-structure';
 import { DIVISIONS_KEY, DEPARTMENTS_KEY } from '@/types/org-structure';
 import { resolvePreset, type OrgPresetPackage } from '@/data/org-presets';
+// Sprint 97 T1 · Block 1 — emit tier-scope-registered for hierarchical ledger auto-creation.
+import { emitTierScopeRegistered } from '@/lib/entity-setup-service';
 
 // ── Loaders ──────────────────────────────────────────────────────────────
 
@@ -61,6 +63,9 @@ export function useOrgStructure() {
     setDivisions(updated); saveDivisions(updated);
     toast.success(`Division '${d.name}' created`);
     // [JWT] POST /api/foundation/divisions
+    emitTierScopeRegistered({
+      entity_code: 'GLOBAL', tier: 'division', scope_id: d.id, scope_name: d.name,
+    });
     return d;
   };
 
@@ -96,6 +101,10 @@ export function useOrgStructure() {
     setDepartments(updated); saveDepartments(updated);
     toast.success(`Department '${d.name}' created`);
     // [JWT] POST /api/foundation/departments
+    emitTierScopeRegistered({
+      entity_code: 'GLOBAL', tier: 'department', scope_id: d.id, scope_name: d.name,
+      parent_scope: d.division_id ? { tier: 'division', id: d.division_id } : undefined,
+    });
     return d;
   };
 
