@@ -51,7 +51,9 @@ export type AuditEntityType =
   // Sprint 98 · T-Phase-6.A.0.3 · Field-Lock Metadata · 1 new audit entity type (module: 'mca-roc')
   | 'field_lock_rule_change'
   // Sprint 99 · T-Phase-6.A.0.4 · Inter-scope pricing + TP audit · 2 new audit entity types (module: 'mca-roc')
-  | 'pricing_rule_change' | 'transfer_pricing_event';
+  | 'pricing_rule_change' | 'transfer_pricing_event'
+  // Sprint 100 · T-Phase-6.A.0.5 · Master access matrix + cost-centre cross-stitch · 2 new audit entity types (module: 'mca-roc')
+  | 'master_access_change' | 'cost_centre_cross_stitch';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
