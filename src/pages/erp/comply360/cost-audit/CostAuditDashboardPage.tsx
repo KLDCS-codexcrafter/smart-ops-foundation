@@ -110,7 +110,7 @@ export default function CostAuditDashboardPage(): JSX.Element {
       firm_registration_no: 'FRN-CMA-001',
       appointment_date: new Date().toISOString().slice(0, 10),
       term_years: 1,
-      prepared_by_bap: 'CFO',
+      prepared_by_bap: 'mr-a-client',
     });
     // Page is a snapshot — refresh prompts user re-mount; engine state is authoritative.
   };
