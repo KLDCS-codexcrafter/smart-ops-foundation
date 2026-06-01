@@ -351,7 +351,7 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
       if (isNew && entityType === 'subsidiary') {
         // Lazy-import to avoid pulling the wiring graph into form-render path.
         import('@/lib/entity-setup-service').then(({ emitTierScopeRegistered }) => {
-          const stateCode = (gstRegs?.[0] as Record<string, unknown> | undefined)?.stateCode as string | undefined;
+          const stateCode = (gstRegs?.[0] as unknown as Record<string, unknown> | undefined)?.stateCode as string | undefined;
           emitTierScopeRegistered({
             entity_code: String((record as Record<string, unknown>).shortCode ?? currentId),
             tier: 'subsidiary',
