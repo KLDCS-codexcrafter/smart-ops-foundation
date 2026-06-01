@@ -76,15 +76,34 @@ export default function CostAuditDashboardPage(): JSX.Element {
     return { deadlineIso: deadline.toISOString(), daysLeft: daysUntil(deadline.toISOString()) };
   }, [appointmentsFy]);
 
+  // §148 applicability state (engine-backed · DP-A1-5)
+  const [psRows, setPsRows] = useState<CostProductServiceEntry[]>(() => listCostProductServices(FY_CURRENT));
+  const [psDraft, setPsDraft] = useState<CostProductServiceEntry>({ ceta_heading: '', description: '', turnover: 0 });
+  const [industry, setIndustry] = useState<'regulated' | 'non_regulated' | 'exempt'>('non_regulated');
+  const [overallTurnover, setOverallTurnover] = useState<number>(120_00_00_000);
+
+  const aggregateTurnover = useMemo(
+    () => psRows.reduce((s, r) => s + (Number.isFinite(r.turnover) ? r.turnover : 0), 0),
+    [psRows],
+  );
+
   const applicability = useMemo(
     () =>
-      evaluateSection148Applicability({
-        netWorthInr: 75_00_00_000,
-        turnoverInr: 42_00_00_000,
-        regulatedSector: false,
+      determineCostAuditApplicability({
+        fy: FY_CURRENT,
+        industry_category: industry,
+        overall_turnover: overallTurnover,
+        aggregate_product_service_turnover: aggregateTurnover,
       }),
-    [],
+    [industry, overallTurnover, aggregateTurnover],
   );
+
+  const handleAddProductService = (): void => {
+    if (!psDraft.ceta_heading.trim()) return;
+    upsertCostProductService(FY_CURRENT, psDraft);
+    setPsRows(listCostProductServices(FY_CURRENT));
+    setPsDraft({ ceta_heading: '', description: '', turnover: 0 });
+  };
 
   const handleSeedDemoAppointment = (): void => {
     // [JWT] POST /api/comply360/cost-audit/appointments — wraps engine.appointCostAuditor
