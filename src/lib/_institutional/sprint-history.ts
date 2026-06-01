@@ -514,9 +514,16 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 95 T-Phase-5.F.5.7-Final · Comply360 Phase 5 CLOSE CEREMONY · final polish · Floor 5 Welcome tile navigation fix + S94 SHA backfill + Phase 5 Close-Ceremony Declaration · 21-streak ⭐ · CLOSES PHASE 5 · 161/161 obligations native 100%
   {
     sprintNumber: 95, code: 'T-Phase-5.F.5.7-Final', composite: false, grade: 'A first-pass-clean',
-    headSha: null, predecessorSha: 'df1b9b713fdda0ba687177f103d0c94c0433914c', loc: 400,
+    headSha: 'c11d640efc435449411d9f89c9de84fb11422cc9', predecessorSha: 'df1b9b713fdda0ba687177f103d0c94c0433914c', loc: 400,
     newSiblings: [],
     bankDate: '2026-05-31', provenance: 'CONFIRMED',
+  },
+  // 🛠️ Sprint 95.1 HOTFIX T-Phase-5.F.5.7-Final-HOTFIX · cycle-2 correction · sidebar inactivity (44 entries type:'group'→'item') + v1.30 §N enforcement restored · streak 21 ⭐ HOLD per institutional hotfix-grace canon (Lesson 35 v1.24)
+  {
+    sprintNumber: 95.1, code: 'T-Phase-5.F.5.7-Final-HOTFIX', composite: false, grade: 'C',
+    headSha: null, predecessorSha: 'c11d640efc435449411d9f89c9de84fb11422cc9', loc: 110,
+    newSiblings: [],
+    bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
 ];
 
@@ -531,6 +538,8 @@ export function getSprintCount(): number {
 export function getCurrentAStreak(): number {
   let streak = 0;
   for (let i = SPRINTS.length - 1; i >= 0; i--) {
+    // Skip hotfix entries (non-integer sprintNumbers) per institutional hotfix-grace canon
+    if (!Number.isInteger(SPRINTS[i].sprintNumber)) continue;
     const g = SPRINTS[i].grade;
     if (g && g.startsWith('A')) streak++;
     else break;

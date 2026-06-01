@@ -39,22 +39,42 @@ describe('Sprint 95 · T-Phase-5.F.5.7-Final · Phase 5 CLOSE CEREMONY · FINAL 
     expect(getSiblingCount()).toBeGreaterThanOrEqual(155);
   });
 
-  // ─── DP-S95-16A · Floor 5 Welcome tile navigation fix (11 tests) ───
+  // ─── DP-S95-16A · Floor 5 Welcome tile navigation fix (11 tests · expanded per v1.30 §N) ───
   it('Comply360Welcome has >= 17 tile entries (was 7 + 10 Floor 5 tiles)', () => {
     const src = readWelcome();
     const matches = src.match(/target:\s*'[a-z0-9-]+'/g) ?? [];
     expect(matches.length).toBeGreaterThanOrEqual(17);
   });
-  const floor5Targets = [
-    'fire-safety', 'industrial-safety', 'environmental', 'waste-management',
-    'dpdp', 'cyber-security', 'quality-standards', 'labour-tier2',
-    'mca-tier2', 'legal-ipr',
-  ] as const;
-  for (const target of floor5Targets) {
-    it(`Comply360Welcome tiles include ${target} target`, () => {
-      expect(readWelcome()).toContain(`target: '${target}'`);
-    });
-  }
+  it('Comply360Welcome tile fire-safety target present', () => {
+    expect(readWelcome()).toContain("target: 'fire-safety'");
+  });
+  it('Comply360Welcome tile industrial-safety target present', () => {
+    expect(readWelcome()).toContain("target: 'industrial-safety'");
+  });
+  it('Comply360Welcome tile environmental target present', () => {
+    expect(readWelcome()).toContain("target: 'environmental'");
+  });
+  it('Comply360Welcome tile waste-management target present', () => {
+    expect(readWelcome()).toContain("target: 'waste-management'");
+  });
+  it('Comply360Welcome tile dpdp target present', () => {
+    expect(readWelcome()).toContain("target: 'dpdp'");
+  });
+  it('Comply360Welcome tile cyber-security target present', () => {
+    expect(readWelcome()).toContain("target: 'cyber-security'");
+  });
+  it('Comply360Welcome tile quality-standards target present', () => {
+    expect(readWelcome()).toContain("target: 'quality-standards'");
+  });
+  it('Comply360Welcome tile labour-tier2 target present', () => {
+    expect(readWelcome()).toContain("target: 'labour-tier2'");
+  });
+  it('Comply360Welcome tile mca-tier2 target present', () => {
+    expect(readWelcome()).toContain("target: 'mca-tier2'");
+  });
+  it('Comply360Welcome tile legal-ipr target present', () => {
+    expect(readWelcome()).toContain("target: 'legal-ipr'");
+  });
 
   // ─── Phase 5 milestone assertions (3) ───
   it('Phase 5 close-ceremony declaration file exists', () => {
@@ -90,5 +110,28 @@ describe('Sprint 95 · T-Phase-5.F.5.7-Final · Phase 5 CLOSE CEREMONY · FINAL 
   it('Shell infrastructure unchanged (DP-S95-16A Option A · ShellSidebar present)', () => {
     expect(fs.existsSync(SRC('src/shell/sidebar/ShellSidebar.tsx'))).toBe(true);
     expect(fs.existsSync(SRC('src/shell/utils/filterSidebarByMatrix.ts'))).toBe(true);
+  });
+
+  // ─── S95 HOTFIX · Sidebar inactivity correction (3 new assertions · cycle-2) ───
+  it('All 44 sidebar entries are type:item (post-hotfix · navigable canonical pattern)', async () => {
+    const mod = await import('@/apps/erp/configs/comply360-sidebar-config');
+    expect(mod.comply360SidebarItems.length).toBe(44);
+    const allItem = mod.comply360SidebarItems.every((i) => i.type === 'item');
+    expect(allItem).toBe(true);
+  });
+  it('Sidebar entries no longer have children:[] field (group-pattern eliminated)', async () => {
+    const mod = await import('@/apps/erp/configs/comply360-sidebar-config');
+    const hasChildren = mod.comply360SidebarItems.some(
+      (i) => 'children' in i && Array.isArray((i as { children?: unknown[] }).children),
+    );
+    expect(hasChildren).toBe(false);
+  });
+  it('Sidebar navigation contract preserved (id-based setActiveModule · 44 ids stable)', async () => {
+    const mod = await import('@/apps/erp/configs/comply360-sidebar-config');
+    const ids = mod.comply360SidebarItems.map((i) => i.id);
+    expect(new Set(ids).size).toBe(44);
+    expect(ids).toContain('mca-tier2');
+    expect(ids).toContain('legal-ipr');
+    expect(ids).toContain('home');
   });
 });
