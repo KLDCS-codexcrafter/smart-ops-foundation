@@ -169,6 +169,7 @@ export default function CostAuditDashboardPage(): JSX.Element {
           <TabsTrigger value="appointments">Appointments</TabsTrigger>
           <TabsTrigger value="filings">CRA filings</TabsTrigger>
           <TabsTrigger value="reports">Reports</TabsTrigger>
+          <TabsTrigger value="applicability">§148 Applicability</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-3">
@@ -176,11 +177,20 @@ export default function CostAuditDashboardPage(): JSX.Element {
             <h2 className="font-semibold text-sm flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> §148 applicability
             </h2>
-            <ul className="text-xs text-muted-foreground mt-2 space-y-1 list-disc list-inside">
-              {applicability.reasons.length > 0
-                ? applicability.reasons.map((r) => <li key={r}>{r}</li>)
-                : <li>Below all CRA Rule 3 thresholds for the modelled entity.</li>}
-            </ul>
+            <div className="text-xs text-muted-foreground mt-2 space-y-1">
+              <div>
+                Table: <span className="font-mono">{applicability.table}</span>
+                {' · '}Records:{' '}
+                <span className={applicability.cost_records_required ? 'text-warning' : ''}>
+                  {applicability.cost_records_required ? 'REQUIRED' : 'not required'}
+                </span>
+                {' · '}Audit:{' '}
+                <span className={applicability.cost_audit_required ? 'text-warning' : ''}>
+                  {applicability.cost_audit_required ? 'REQUIRED' : 'not required'}
+                </span>
+              </div>
+              <div className="text-[11px]">{applicability.reason}</div>
+            </div>
           </Card>
 
           <Card className="p-4">
