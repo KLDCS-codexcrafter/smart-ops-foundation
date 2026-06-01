@@ -577,7 +577,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint 103 T-Phase-6.A.1.2 · Arc 1 UX surfacing · 4 NEW Standalone Pages (#28 Cost Audit §148 · #29 Meetings Board/AGM/EGM · #30 Auditor Survival Kit OOB-4 · #31 CSR §135 · CSR rescoped SURFACE→BUILD per FR-1 decision) + 2 SURFACED (Form 15CA · Schedule M canonical · QualiCheck variant kept untouched) · USE-SITE READS · engines 0-DIFF (cost-audit · meetings · survival-kit · csr) · ZERO new SIBLINGs · ZERO new audit types · 29-streak ⭐ target · §L DESIGN-DECISION-FLAGs: CSR rescope rationale (pre-flight false-positive on TDSAnalyticsReport substring match) · built-vs-surfaced boundary · Schedule M canonical choice · TP-skip (transfer-pricing not in S103 charter)
   {
     sprintNumber: 103, code: 'T-Phase-6.A.1.2', composite: false, grade: 'A',
-    headSha: null, predecessorSha: 'ba5a81b75132577a7599d6ff0945d0ded2662db5', loc: 950,
+    headSha: '327b7bdebaeea5347cdecf4f964e6292de6af322', predecessorSha: 'ba5a81b75132577a7599d6ff0945d0ded2662db5', loc: 950,
+    newSiblings: [],
+    bankDate: '2026-06-01', provenance: 'CONFIRMED',
+  },
+  // 🏁 Sprint 104 T-Phase-6.A.1.3 · Arc 1 CAPSTONE · Cost Audit §148 applicability engine extension (ADDITIVE · determineCostAuditApplicability + product/service table) + CostAuditDashboardPage update + UX-surfacing closure (2 genuine orphans: audit-framework + rule-11g) · sibling-register UNCHANGED (172) · ZERO new audit types · ZERO new engines · §L: CRA Rules 2014 thresholds — records ₹35 cr (Rule 3 uniform) · audit aggregate ₹25 cr regulated / ₹35 cr non-regulated with overall gate ₹50 cr / ₹100 cr (Rule 4) · 30-streak ⭐ target · headSha TBD_AT_BANK (backfills at S105 Block 1)
+  {
+    sprintNumber: 104, code: 'T-Phase-6.A.1.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '327b7bdebaeea5347cdecf4f964e6292de6af322', loc: 600,
     newSiblings: [],
     bankDate: '2026-06-01', provenance: 'CONFIRMED',
   },
