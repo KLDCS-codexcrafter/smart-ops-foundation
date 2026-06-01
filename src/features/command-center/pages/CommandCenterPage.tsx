@@ -496,7 +496,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     foundation: 'Entity Management',
     geography: 'Geography',
     production: 'Production Lane',
-    'org-structure': 'Business Units',
+    'org-structure': 'Org Structure',
     console: 'Security Console',
     'fincore-hub': 'Finance & Compliance Hub',
     'fincore-ledgers': 'Ledger Master',
