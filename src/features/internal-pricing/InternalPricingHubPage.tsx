@@ -6,7 +6,7 @@
  * @writes      none directly (delegates to engines)
  * @sprint      T-Phase-6.A.0.4 · Sprint 99 · Block 4
  */
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Sparkles, FileCheck2, ShieldAlert, ShieldCheck, Layers } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -40,14 +40,12 @@ function ScopeBadge({ scope }: { scope: InternalPricingRule['from_scope'] }) {
 }
 
 export default function InternalPricingHubPage() {
-  const [tick, setTick] = useState(0);
-  const rules = useMemo(() => listPricingRules(), [tick]);
-  const audits = useMemo(() => listTPAudits(), [tick]);
-  const auditByRule = useMemo(() => {
-    const m = new Map<string, TPAuditRecord>();
-    audits.forEach((a) => m.set(a.pricing_rule_id, a));
-    return m;
-  }, [audits]);
+  const [, setTick] = useState(0);
+  const rules = listPricingRules();
+  const audits = listTPAudits();
+  const auditByRule = new Map<string, TPAuditRecord>();
+  audits.forEach((a) => auditByRule.set(a.pricing_rule_id, a));
+
 
   const handleGenerate = (ruleId: string) => {
     try {
