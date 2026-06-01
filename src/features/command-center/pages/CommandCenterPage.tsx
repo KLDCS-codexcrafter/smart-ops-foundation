@@ -124,6 +124,7 @@ import HierarchicalLedgerTreePage from '@/features/hierarchical-ledger/Hierarchi
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
+import { SyncThrottlePanel } from '../modules/SyncThrottlePanel';
 
 
 // Sprint T-Phase-1.3-3-PlantOps-pre-1 · Plant Operations masters
@@ -248,7 +249,8 @@ export type CommandCenterModule =
   | 'production'
   // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance
   | 'mdg-field-lock-rules'
-  | 'mdg-conflict-resolution';
+  | 'mdg-conflict-resolution'
+  | 'mdg-sync-throttle';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -285,7 +287,7 @@ export default function CommandCenterPage() {
       'distributor-credit-refs', 'distributor-dispute-refs',
       'plant-ops-factory-master', 'plant-ops-work-center-master', 'plant-ops-machine-master',
       'production',
-      'mdg-field-lock-rules', 'mdg-conflict-resolution',
+      'mdg-field-lock-rules', 'mdg-conflict-resolution', 'mdg-sync-throttle',
     ].includes(hash)) {
       return hash as CommandCenterModule;
     }
@@ -452,6 +454,7 @@ export default function CommandCenterPage() {
       // Sprint 98 · Master Data Governance
       case 'mdg-field-lock-rules':    return <FieldLockRulesPanel />;
       case 'mdg-conflict-resolution': return <MasterConflictResolutionPanel />;
+      case 'mdg-sync-throttle':       return <SyncThrottlePanel />;
 
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
