@@ -286,6 +286,115 @@ export default function CostAuditDashboardPage(): JSX.Element {
             )}
           </Card>
         </TabsContent>
+
+        <TabsContent value="applicability" className="space-y-3">
+          <Card className="p-4 space-y-3">
+            <h2 className="font-semibold text-sm flex items-center gap-2">
+              <Layers className="h-4 w-4 text-primary" /> CRA Rules 2014 · §148 inputs
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div className="space-y-1">
+                <label className="text-[11px] text-muted-foreground">Industry category</label>
+                <select
+                  className="w-full h-9 rounded-md border border-input bg-background px-2 text-xs"
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value as typeof industry)}
+                >
+                  <option value="regulated">Regulated (Table A)</option>
+                  <option value="non_regulated">Non-regulated (Table B)</option>
+                  <option value="exempt">Exempt</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[11px] text-muted-foreground">Overall turnover (₹)</label>
+                <Input
+                  type="number"
+                  value={overallTurnover}
+                  onChange={(e) => setOverallTurnover(Math.max(0, Number(e.target.value)))}
+                  className="font-mono text-xs"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[11px] text-muted-foreground">Aggregate product/service (₹ · derived)</label>
+                <div className="h-9 rounded-md border border-input bg-muted px-2 flex items-center font-mono text-xs">
+                  {aggregateTurnover.toLocaleString('en-IN')}
+                </div>
+              </div>
+            </div>
+            <div className="rounded-md border border-border p-3 text-xs space-y-1">
+              <div>
+                Table: <span className="font-mono">{applicability.table}</span>
+              </div>
+              <div>
+                Records threshold:{' '}
+                <span className="font-mono">₹{applicability.thresholds_applied.records_threshold.toLocaleString('en-IN')}</span>
+                {' · '}Audit threshold:{' '}
+                <span className="font-mono">₹{applicability.thresholds_applied.audit_threshold.toLocaleString('en-IN')}</span>
+              </div>
+              <div>
+                Cost records: <Badge variant={applicability.cost_records_required ? 'default' : 'secondary'}>
+                  {applicability.cost_records_required ? 'REQUIRED' : 'Not required'}
+                </Badge>
+                {' · '}Cost audit: <Badge variant={applicability.cost_audit_required ? 'default' : 'secondary'}>
+                  {applicability.cost_audit_required ? 'REQUIRED' : 'Not required'}
+                </Badge>
+              </div>
+              <div className="text-muted-foreground">{applicability.reason}</div>
+            </div>
+          </Card>
+
+          <Card className="p-4 space-y-3">
+            <h2 className="font-semibold text-sm flex items-center gap-2">
+              <Layers className="h-4 w-4 text-primary" /> Product / service turnover table (FY {FY_CURRENT})
+            </h2>
+            {psRows.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No product/service entries yet.</p>
+            ) : (
+              <table className="w-full text-xs">
+                <thead className="text-muted-foreground">
+                  <tr>
+                    <th className="text-left p-2">CETA heading</th>
+                    <th className="text-left p-2">Description</th>
+                    <th className="text-right p-2">Turnover (₹)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {psRows.map((r) => (
+                    <tr key={r.ceta_heading} className="border-t border-border">
+                      <td className="p-2 font-mono">{r.ceta_heading}</td>
+                      <td className="p-2">{r.description}</td>
+                      <td className="p-2 text-right font-mono">{r.turnover.toLocaleString('en-IN')}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
+              <Input
+                placeholder="CETA heading"
+                value={psDraft.ceta_heading}
+                onChange={(e) => setPsDraft({ ...psDraft, ceta_heading: e.target.value })}
+                className="text-xs"
+              />
+              <Input
+                placeholder="Description"
+                value={psDraft.description}
+                onChange={(e) => setPsDraft({ ...psDraft, description: e.target.value })}
+                className="text-xs md:col-span-2"
+              />
+              <Input
+                type="number"
+                placeholder="Turnover (₹)"
+                value={psDraft.turnover || ''}
+                onChange={(e) => setPsDraft({ ...psDraft, turnover: Math.max(0, Number(e.target.value)) })}
+                className="text-xs font-mono"
+              />
+            </div>
+            <Button size="sm" variant="outline" onClick={handleAddProductService} className="gap-1">
+              <Plus className="h-3 w-3" /> Upsert product / service
+            </Button>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
