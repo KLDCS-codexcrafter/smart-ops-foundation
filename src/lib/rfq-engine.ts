@@ -143,7 +143,7 @@ export async function sendRfq(
       action: 'rfq.sent',
       actorUserId,
       payload: { rfq_no: result.rfq_no, vendor_id: result.vendor_id, channels },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'info',
@@ -174,7 +174,7 @@ export function captureQuotation(
       action: 'rfq.quoted',
       actorUserId,
       payload: { vendor_quotation_id: vendorQuotationId },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'info',
@@ -205,7 +205,7 @@ export function declineRfq(
       action: 'rfq.declined',
       actorUserId,
       payload: { reason },
-    }).catch(() => { /* best-effort · forensic chain */ });
+    });
     // FIX-3 · D-248 procurement-pulse emit
     publishProcurementPulse({
       severity: 'warning',

@@ -66,7 +66,7 @@ export function ApprovalActionPanel({
       action: 'enquiry.approve',
       actorUserId: 'mock-user',
       payload: { tier, role: currentUserRole, enquiry_no: enquiryNo },
-    }).catch(() => { /* best-effort */ });
+    });
     onApprove(tier, currentUserRole);
     toast.success(`Approved as ${currentUserRole}`);
   };
@@ -84,7 +84,7 @@ export function ApprovalActionPanel({
       action: 'enquiry.reject',
       actorUserId: 'mock-user',
       payload: { reason: rejectReason, role: currentUserRole, enquiry_no: enquiryNo },
-    }).catch(() => { /* best-effort */ });
+    });
     onReject(rejectReason);
     toast.info(`Rejected: ${rejectReason}`);
     setRejectReason('');
