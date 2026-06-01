@@ -89,7 +89,7 @@ export function suggestCrossEntityReorder(input: {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (!k) continue;
-      const m = k.match(/^erp_([^_]+)_stock_balances$/) ?? k.match(/^erp_stock_balances_(.+)$/);
+      const m = k.match(/^erp_(.+)_stock_balances$/) ?? k.match(/^erp_stock_balances_(.+)$/);
       if (m) seeded.add(m[1]);
     }
   }
