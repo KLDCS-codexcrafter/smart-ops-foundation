@@ -10,7 +10,7 @@ import {
   type VendorQuotationStatus,
   type QuotationSubmissionSource,
 } from '@/types/vendor-quotation';
-import { appendAuditEntry } from './audit-trail-hash-chain';
+import { appendAuditEntrySafe } from './audit-trail-hash-chain';
 import { publishProcurementPulse } from './procurement-pulse-stub';
 // Precision Arc · Stage 3 · Block 1 — money math on contract.
 import { dAdd, dSub, dMul, dPct, dSum, roundTo, resolveMoneyPrecision } from './decimal-helpers';
@@ -124,7 +124,7 @@ export function submitQuotation(input: SubmitQuotationInput, entityCode: string)
   };
   writeQ(entityCode, [q, ...list]);
   // FIX-1 · D-247 hash chain · D-262 fire-and-forget
-  void appendAuditEntry({
+  appendAuditEntrySafe({
     entityCode,
     entityId: input.entity_id,
     voucherId: q.id,

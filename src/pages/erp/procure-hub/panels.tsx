@@ -61,7 +61,7 @@ import { resolveInvoiceTolerance } from '@/lib/pi-tolerance-helper';
 import { ProcurementLineageBreadcrumb } from '@/components/procurement/ProcurementLineageBreadcrumb';
 // Block H · D-278 · ALL 12 Card #2.7 mounts
 import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
-import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import { appendAuditEntry, appendAuditEntrySafe } from '@/lib/audit-trail-hash-chain';
 import { useFormKeyboardShortcuts } from '@/hooks/useFormKeyboardShortcuts';
 import { useSprint27d1Mount } from '@/hooks/useSprint27d1Mount';
 import { Sprint27d2Mount } from '@/components/uth/Sprint27d2Mount';
@@ -452,7 +452,7 @@ export function ProcurementEnquiryEntryPanel(): JSX.Element {
 
   const handleCancel = (): void => {
     // mount #10 · audit trail on cancel
-    void appendAuditEntry({
+    appendAuditEntrySafe({
       entityCode, entityId,
       voucherId: 'enquiry-pending',
       voucherKind: 'procurement_enquiry',
