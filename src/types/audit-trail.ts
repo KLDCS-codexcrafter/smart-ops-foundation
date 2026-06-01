@@ -42,7 +42,10 @@ export type AuditEntityType =
   | 'transporter_invoice'
   // Sprint 80d · MCA Rule 11(g) Hardening · 4 new audit entity types
   | 'mca_coverage_report' | 'audit_retention_export'
-  | 'audit_retention_warning_ack' | 'audit_continuity_report';
+  | 'audit_retention_warning_ack' | 'audit_continuity_report'
+  // Sprint 96 · T-Phase-6.A.0.1 · Arc 0 Master Data Foundation · 4 new audit entity types (module: 'mca-roc')
+  | 'master_replication_event' | 'master_conflict_resolution'
+  | 'master_sync_run' | 'master_version_change';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
