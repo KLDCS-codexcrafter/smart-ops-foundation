@@ -210,11 +210,13 @@ describe('Sprint 115 · Phase-6 Close Ceremony doc §A vs §B', () => {
   it('ceremony has §B · Narrative Claims section', () => {
     expect(ceremonySrc).toMatch(/§B · Narrative Claims/);
   });
-  it('ceremony flags 16/16 OOBs as narrative', () => {
-    expect(ceremonySrc).toMatch(/16\/16[\s\S]{0,200}narrative/i);
+  it('ceremony §B section explicitly references the 16/16 OOBs claim', () => {
+    const sectionB = ceremonySrc.split('§B · Narrative Claims')[1] ?? '';
+    expect(sectionB).toMatch(/16\/16/);
   });
-  it('ceremony flags 29 bridges as narrative', () => {
-    expect(ceremonySrc).toMatch(/29[\s\S]{0,200}narrative/i);
+  it('ceremony §B section explicitly references the 29 inter-dept bridges claim', () => {
+    const sectionB = ceremonySrc.split('§B · Narrative Claims')[1] ?? '';
+    expect(sectionB).toMatch(/29 inter-dept bridges/);
   });
   it('ceremony references the 5-arc journey', () => {
     expect(ceremonySrc).toMatch(/5-Arc Journey/i);
