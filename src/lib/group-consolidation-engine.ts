@@ -23,8 +23,17 @@
  *
  * @scope-wall  DP-A3-9 · Consolidated P&L + Trial Balance ONLY.
  *              NO Balance Sheet (S111) · NO Cash Flow (S111) · NO NCI/Goodwill (S111) ·
- *              NO multi-currency (S110) · NO disclosure (S112) · NO OOB (Arc 4).
+ *              NO multi-currency translation IN-HOUSE — Sprint 110 ships fx-translation-engine
+ *              and injects translated per-entity TBs via the optional `entityTBProvider`
+ *              hook on `consolidate` (S110 §H WAIVER · backward-compatible · default path
+ *              IS IDENTICAL to pre-S110 behaviour and asserted by the S109 + S110 test packs).
+ *              NO disclosure (S112) · NO OOB (Arc 4).
  *              Scope-wall test asserts none of those exports exist on this module.
+ *
+ * @s110-waiver The ONLY edit to this file in S110 is the optional `entityTBProvider` param on
+ *              `consolidate(input)`. Rollup / method-scaling / equity-roll-up / elimination /
+ *              balance logic is UNCHANGED. computeEntityTrialBalance · buildConsolidatedPnL ·
+ *              getConsolidationSummary are 0-DIFF. See close_summary §L for the §H-waiver rationale.
  */
 import type { Voucher } from '@/types/voucher';
 import { vouchersKey } from '@/lib/fincore-engine';
