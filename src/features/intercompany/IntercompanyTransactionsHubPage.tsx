@@ -58,6 +58,7 @@ function statusVariant(s: IntercompanyTransaction['status']): 'default' | 'secon
 export default function IntercompanyTransactionsHubPage() {
   const [tick, setTick] = useState(0);
   const entities = useMemo(() => loadEntities(), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional refresh trigger
   const groupNodes = useMemo(() => listGroupStructure(), [tick]);
   const groupIds = new Set(groupNodes.map((n) => n.entity_id));
 
@@ -77,6 +78,7 @@ export default function IntercompanyTransactionsHubPage() {
 
   const txns = useMemo(() => listICTransactions().sort(
     (a, b) => b.created_at.localeCompare(a.created_at),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional refresh trigger
   ), [tick]);
 
   const onChange = <K extends keyof DraftState>(k: K, v: DraftState[K]) => {

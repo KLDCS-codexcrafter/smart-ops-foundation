@@ -35,6 +35,7 @@ import {
   postVoucher, generateVoucherNo, vouchersKey,
 } from '@/lib/fincore-engine';
 import { getGroupStructure } from '@/lib/intercompany-group-structure-engine';
+import { loadEntities } from '@/data/mock-entities';
 import type { Voucher, VoucherLedgerLine } from '@/types/voucher';
 import type { VoucherBaseType } from '@/types/voucher-type';
 
@@ -405,13 +406,23 @@ export function postICTransaction(ic_txn_id: string): IntercompanyTransaction {
     const from_scope: PricingScope = { entity_id: txn.from_entity };
     const to_scope: PricingScope = { entity_id: txn.to_entity };
     // USE-SITE READ · internal-pricing-engine.resolvePrice
-    const resolved = resolvePrice({
+    // Try as_of_date first (idea-1 time-travel); fall back to current snapshot
+    // when no historical version was registered (typical for direct-seeded rules).
+    let resolved = resolvePrice({
       rule_type: 'inter_entity',
       from_scope,
       to_scope,
       item_key: txn.item_key ?? 'ALL',
       as_of_date: txn.txn_date,
     });
+    if (!resolved) {
+      resolved = resolvePrice({
+        rule_type: 'inter_entity',
+        from_scope,
+        to_scope,
+        item_key: txn.item_key ?? 'ALL',
+      });
+    }
     if (resolved) {
       pricing_rule_id = resolved.rule_id;
       const qty = txn.quantity ?? 1;
@@ -444,9 +455,16 @@ export function postICTransaction(ic_txn_id: string): IntercompanyTransaction {
   assertBalanced(pair.fromLines);
   assertBalanced(pair.toLines);
 
-  const fromVchNo = generateVoucherNo(pair.fromPrefix, txn.from_entity);
+  // Resolve entity IDs → shortCodes (fincore.postVoucher keys vouchers by code).
+  const entities = loadEntities();
+  const codeOf = (id: string): string =>
+    entities.find((e) => e.id === id)?.shortCode ?? id;
+  const fromCode = codeOf(txn.from_entity);
+  const toCode = codeOf(txn.to_entity);
+
+  const fromVchNo = generateVoucherNo(pair.fromPrefix, fromCode);
   const fromVch = buildVoucher({
-    entityCode: txn.from_entity,
+    entityCode: fromCode,
     voucherNo: fromVchNo,
     baseType: pair.fromBaseType,
     typeName: pair.fromTypeName,
@@ -456,11 +474,11 @@ export function postICTransaction(ic_txn_id: string): IntercompanyTransaction {
     narration: `IC ${txn.txn_type} · source · counterparty=${txn.to_entity}`,
   });
   // USE-SITE READ · fincore-engine.postVoucher (source entity)
-  postVoucher(fromVch, txn.from_entity);
+  postVoucher(fromVch, fromCode);
 
-  const toVchNo = generateVoucherNo(pair.toPrefix, txn.to_entity);
+  const toVchNo = generateVoucherNo(pair.toPrefix, toCode);
   const toVch = buildVoucher({
-    entityCode: txn.to_entity,
+    entityCode: toCode,
     voucherNo: toVchNo,
     baseType: pair.toBaseType,
     typeName: pair.toTypeName,
@@ -470,7 +488,7 @@ export function postICTransaction(ic_txn_id: string): IntercompanyTransaction {
     narration: `IC ${txn.txn_type} · counterparty · source=${txn.from_entity}`,
   });
   // USE-SITE READ · fincore-engine.postVoucher (counterparty entity)
-  postVoucher(toVch, txn.to_entity);
+  postVoucher(toVch, toCode);
 
   txn.from_voucher_id = fromVch.id;
   txn.from_voucher_no = fromVchNo;
