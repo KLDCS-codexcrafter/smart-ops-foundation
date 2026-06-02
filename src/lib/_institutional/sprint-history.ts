@@ -672,11 +672,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['org-planning-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 117 T-Phase-7.D.0.2 · Arc D.0 · Workforce Planning · 1 NEW SIBLID workforce-planning-engine (headcount projection · hiring/attrition · permanent-vs-contract mix · workforce cost-vs-AOP — intra-arc S116 linkage) + NEW Standalone Page #44 WorkforcePlanningPage (sidebar type:'item' + CC case + requiredCards:['fpa-planning'] · NOT a sibling) + 1 new audit type workforce_plan_event under 'mca-roc' (ComplianceModule UNTOUCHED) · FR-44 REUSES org-structure (Division/Department) + capacity-planning-engine (capacity context) + org-planning-engine listStrategicTargets (cost_target lookup — intra-arc) + contract-manpower/employee types (mix source) · all 0-DIFF · SCOPE WALL DP-D0-7: workforce projection only — NO OKR (S118) · NO org-design (S119) · NO budget/forecast (D.1) · NO performance-mgmt / compensation-planning (deferred to later HR arc) · LEAN-BEHAVIORAL TEST POSTURE held · 40-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S118 Block 1)
+  // 🎬 Sprint 117 T-Phase-7.D.0.2 · Arc D.0 · Workforce Planning · 1 NEW SIBLID workforce-planning-engine · NEW Standalone Page #44 WorkforcePlanningPage · 1 new audit type workforce_plan_event under 'mca-roc' · 40-streak ⭐ target · headSha 8171ba36 (backfilled at S118 Block 1)
   {
     sprintNumber: 117, code: 'T-Phase-7.D.0.2', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '8f5d4cf710fc614fd49b5c07958029204aeddb0e', loc: 1200,
+    headSha: '8171ba36ac3d3419b9169cc114f9c3bd2a07d00d', predecessorSha: '8f5d4cf710fc614fd49b5c07958029204aeddb0e', loc: 1200,
     newSiblings: ['workforce-planning-engine'],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 118 T-Phase-7.D.0.3 · Arc D.0 · OKR/KPI Framework + Org-Cost Allocation · 1 NEW SIBLID okr-kpi-engine (objective/key-result cascade corporate→division→department · linked_target_id ties OKRs to S116 StrategicTarget · KR progress_pct clamp 0–100 · org-cost allocation across entities with shares sum-to-100% via dEq · FR-44 REUSES org-structure (Division/Department · DIVISIONS_KEY/DEPARTMENTS_KEY) + org-planning-engine (listStrategicTargets · CascadeLevel) + intercompany-group-structure-engine (listGroupStructure · ownership_pct) + internal-pricing-engine (overhead_allocation_pct pattern · read-only reuse) — reimplements none, all 4 stay 0-DIFF) + NEW Standalone Page #45 OKRFrameworkPage (sidebar type:'item' + CC case + requiredCards:['fpa-planning'] · NOT a sibling) + 1 new audit type okr_cascade_event under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL: OKR + org-cost ONLY — NO org-design/succession (S119) · NO budget/forecast/scenario (D.1) · LEAN-BEHAVIORAL TEST POSTURE held · 41-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S119 Block 1)
+  {
+    sprintNumber: 118, code: 'T-Phase-7.D.0.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '8171ba36ac3d3419b9169cc114f9c3bd2a07d00d', loc: 1300,
+    newSiblings: ['okr-kpi-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
