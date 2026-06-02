@@ -157,6 +157,9 @@ import WorkpaperAutoPopPage from '@/features/workpaper-autopop/WorkpaperAutoPopP
 // 🏁 Sprint 115 · T-Phase-6.C.3.1-CLOSE · Inter-Department Governance (Standalone Page #42 · Pillar C.3)
 import InterDeptGovernancePage from '@/features/inter-dept-governance/InterDeptGovernancePage';
 
+// 🎬 Sprint 116 · T-Phase-7.D.0.1 · AOP & Strategic Plan (Standalone Page #43 · Pillar D.0)
+import AOPStrategicPlanPage from '@/features/fpa-planning/AOPStrategicPlanPage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
