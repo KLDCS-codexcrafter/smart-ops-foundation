@@ -616,11 +616,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['intercompany-matching-engine', 'group-eliminations-engine'],
     bankDate: '2026-06-02', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 109 T-Phase-6.C.2.1 · 🎬 ARC 3 OPENER · Pillar C.2 Group Consolidation · 1 NEW SIBLING group-consolidation-engine (FR-44 ORCHESTRATION SPINE · walks fincore per-entity vouchers + applies 3 Ind AS methods full/proportional/equity from group-structure + SUBTRACTS Arc 2 generateEliminations · MIRRORS ProfitLoss.tsx ledger_group_code→P&L/BS classification via reportUtils getL1Code/getL2Code · NO re-post/re-eliminate/re-derive) + NEW Standalone Page #37 GroupConsolidationPage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type group_consolidation_run under 'mca-roc' · SCOPE WALL DP-A3-9: Consolidated P&L + TB ONLY · 35-streak ⭐ target · headSha backfilled at S110 Block 1
+  // 🎬 Sprint 109 T-Phase-6.C.2.1 · 🎬 ARC 3 OPENER · Pillar C.2 Group Consolidation · 1 NEW SIBLING group-consolidation-engine (FR-44 ORCHESTRATION SPINE · walks fincore per-entity vouchers + applies 3 Ind AS methods full/proportional/equity from group-structure + SUBTRACTS Arc 2 generateEliminations · MIRRORS ProfitLoss.tsx ledger_group_code→P&L/BS classification via reportUtils getL1Code/getL2Code · NO re-post/re-eliminate/re-derive) + NEW Standalone Page #37 GroupConsolidationPage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type group_consolidation_run under 'mca-roc' · SCOPE WALL DP-A3-9: Consolidated P&L + TB ONLY · 35-streak ⭐ target · headSha backfilled at S110 Block 1 (Pass-B final 49690f03)
   {
     sprintNumber: 109, code: 'T-Phase-6.C.2.1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'd621d0a52ed50a40ca01cc562c2919cdca176bbb', loc: 1500,
+    headSha: '49690f03daa4eb9a42b0279930879b8bf2c3d7e4', predecessorSha: 'd621d0a52ed50a40ca01cc562c2919cdca176bbb', loc: 1500,
     newSiblings: ['group-consolidation-engine'],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 110 T-Phase-6.C.2.2 · Arc 3 · Pillar C.2 · Multi-Currency Translation (Ind AS 21 / IAS 21 Current Rate method) · 1 NEW SIBLING fx-translation-engine (closing→BS · average→P&L · historical→equity · FCTR residual→OCI · REUSES dual-rate-engine.loadForexRates + currency master + idea-1 getMasterAsOf · DISTINCT from fx-what-if-engine simulator — FR-44 wall · §H WAIVER S110-only: ONE optional param entityTBProvider added to group-consolidation-engine.consolidate · default path 0-DIFF) + NEW Standalone Page #38 MultiCurrencyTranslationPage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type fx_translation_run under 'mca-roc' · SCOPE WALL DP-A3-9: translation ONLY · NO BS/CF (S111) · NO NCI/Goodwill (S111) · NO disclosure (S112) · NO scenario simulation (fx-what-if 0-DIFF) · 36-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S111 Block 1)
+  {
+    sprintNumber: 110, code: 'T-Phase-6.C.2.2', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '49690f03daa4eb9a42b0279930879b8bf2c3d7e4', loc: 1500,
+    newSiblings: ['fx-translation-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
