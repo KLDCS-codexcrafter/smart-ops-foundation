@@ -182,7 +182,20 @@ export type AuditEntityType =
   // SCOPE WALL DP-D1-9: budgeting only — NO forecasting (S121) · NO scenario (S122-123)
   // · NO costing / driver / ABC (S124-125).
   // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
-  | 'budget_event';
+  | 'budget_event'
+  // Sprint 121 · T-Phase-7.D.1.2 · Arc D.1 · FP&A Forecasting (module: 'mca-roc')
+  // 'forecast_event' — logged by fpa-forecasting-engine on generateFPAForecast /
+  // getForecastVsBudget. Carries forecast_id (composite of fy + target + method +
+  // scope_id) + heuristic method used + horizon + confidence_note + forecast-vs-budget
+  // linkage (read from S120 fpa-budgeting-engine listBudgets).
+  // FR-44: engine REUSES demand-forecast-engine (demand history) + fpa-budgeting-engine
+  // (S120 plan baseline) + group-consolidation-engine.buildConsolidatedPnL (S109 actuals
+  // source for revenue / cash history); reimplements none.
+  // DP-D1-5 / DP-P7-6 HONEST AI: explainable heuristics + declared ML-interface seam
+  // (ForecastModelHook) — NO live ML training, NO new runtime deps (§O).
+  // SCOPE WALL DP-D1-9: forecasting only — NO scenario planning (S122-123) · NO
+  // costing / driver / ABC (S124-125). ComplianceModule UNTOUCHED. No other audit type.
+  | 'forecast_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
