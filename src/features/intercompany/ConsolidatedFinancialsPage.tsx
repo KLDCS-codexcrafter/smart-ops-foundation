@@ -1,15 +1,18 @@
 /**
  * @file        ConsolidatedFinancialsPage.tsx
  * @purpose     Standalone Page #39 — Consolidated Financials (BS + CF + NCI + Goodwill).
- *              FY selector · 4 tabs · Schedule III shape · Ind AS 7 cash flow ·
- *              Ind AS 110 NCI · Ind AS 103 Goodwill + Ind AS 36 impairment FLAG.
- * @reads       consolidated-balance-sheet-engine + consolidated-cash-flow-engine.
- * @sprint      T-Phase-6.C.2.3 · Sprint 111 · Arc 3 · Block 5
- * @scope-wall  DP-A3-9 · BS+CF+NCI+Goodwill ONLY · NO disclosure (S112) · NO XBRL (Arc 4).
+ *              S112 EXTENSION: Disclosure Pack tab (Schedule III + Ind AS 110) +
+ *              Export PDF/XBRL buttons (consolidation-disclosure-engine).
+ * @reads       consolidated-balance-sheet-engine · consolidated-cash-flow-engine ·
+ *              consolidation-disclosure-engine (S112 NEW).
+ * @sprint      T-Phase-6.C.2.3 · Sprint 111 · EXTENDED Sprint 112 · Arc 3 · Block 5
+ * @scope-wall  DP-A3-9 · disclosure assembly + PDF/XBRL ONLY · NO new financial computation ·
+ *              NO OOB · NO Pillar-C.3 (Arc 4).
  * NOT A SIBLING — First-Class Standalone Page that READS engines via their published API.
  */
 import { useMemo, useState } from 'react';
-import { Building2, CheckCircle2, AlertTriangle, RefreshCw, Play } from 'lucide-react';
+import { Building2, CheckCircle2, AlertTriangle, RefreshCw, Play, FileDown, FileCode2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -26,6 +29,11 @@ import {
 import {
   buildCashFlow, loadConsolidatedCashFlow, type ConsolidatedCashFlow,
 } from '@/lib/consolidated-cash-flow-engine';
+import {
+  buildDisclosurePack, loadDisclosurePack,
+  exportDisclosureXBRL, exportDisclosurePDF,
+  type ConsolidationDisclosurePack,
+} from '@/lib/consolidation-disclosure-engine';
 
 const fmtINR = (n: number) =>
   `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
