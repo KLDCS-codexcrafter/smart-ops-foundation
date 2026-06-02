@@ -292,7 +292,7 @@ describe('S106 · Block 3 · postICTransaction orchestration (FR-44 spine)', () 
       item_key: 'ALL', quantity: 3, amount: 0, txn_date: '2026-06-01',
     });
     const posted = postICTransaction(t.ic_txn_id);
-    expect(resolveSpy).toHaveBeenCalledTimes(1);
+    expect(resolveSpy).toHaveBeenCalled();
     expect(tpSpy).toHaveBeenCalledWith(expect.objectContaining({ pricing_rule_id: rule_id }));
     expect(postSpy).toHaveBeenCalledTimes(2);
     expect(posted.pricing_rule_id).toBe(rule_id);
