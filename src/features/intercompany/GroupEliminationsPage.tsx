@@ -60,7 +60,7 @@ export default function GroupEliminationsPage() {
   const [selectedType, setSelectedType] = useState<EliminationType | null>(null);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional refresh trigger
-  const matchResults = useMemo<ICMatchResult[]>(() => runICMatching(), [tick]);
+  useMemo<ICMatchResult[]>(() => runICMatching(), [tick]);
   // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional refresh trigger
   const matchSummary = useMemo<ICMatchSummary>(() => getMatchSummary(), [tick]);
   // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional refresh trigger
