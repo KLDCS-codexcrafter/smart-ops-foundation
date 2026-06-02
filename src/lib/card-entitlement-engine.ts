@@ -96,6 +96,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     // ─── A.14 Foundation · 10th card on Shell pattern · D-NEW-CT invariant extension ───
     one('sitex'), // active default · A.15a Q-LOCK-16a STATUS FLIP · MOAT #22 banks
     one('eximx'),  // EX-1 STATUS FLIP · 1st EximX sprint · D-NEW-CT 17th canonical extension · matches sitex/maintainpro/servicedesk precedent
+    one('fpa-planning'),  // Sprint 116 · T-Phase-7.D.0.1 · Phase 7 opener · NEW card (D-NEW-CT seed parity for additive cards)
   ];
 }
 
