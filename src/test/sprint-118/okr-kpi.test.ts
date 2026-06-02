@@ -82,6 +82,7 @@ function seedGroup() {
       parent_entity_id: null,
       relationship: 'parent',
       ownership_pct: 100,
+      consolidation_method: 'full',
       effective_from: '2026-04-01',
     });
     upsertGroupStructure({
@@ -89,6 +90,7 @@ function seedGroup() {
       parent_entity_id: entities[0].id,
       relationship: 'subsidiary',
       ownership_pct: 60,
+      consolidation_method: 'full',
       effective_from: '2026-04-01',
     });
   }
