@@ -147,7 +147,18 @@ export type AuditEntityType =
   // SCOPE WALL DP-D0-7: workforce projection only — NO OKR (S118) · NO org-design (S119) ·
   // NO budget/forecast (D.1) · NO performance-mgmt / compensation-planning (deferred).
   // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
-  | 'workforce_plan_event';
+  | 'workforce_plan_event'
+  // Sprint 118 · T-Phase-7.D.0.3 · Arc D.0 · OKR/KPI Framework + Org-Cost Allocation (module: 'mca-roc')
+  // 'okr_cascade_event' — logged by okr-kpi-engine on upsertObjective / upsertKeyResult /
+  // allocateOrgCost. Carries fy + level + scope_id + title + (optional) linked_target_id +
+  // progress_pct (clamped 0..100) for KRs + cost_pool + total_amount + entity shares.
+  // FR-44: engine REUSES org-structure (Division/Department) + org-planning-engine
+  // (listStrategicTargets · CascadeLevel) + intercompany-group-structure-engine
+  // (listGroupStructure · ownership_pct) + internal-pricing-engine (overhead_allocation_pct
+  // pattern · read-only); reimplements none, all 4 stay 0-DIFF.
+  // SCOPE WALL: OKR + org-cost only — NO org-design/succession (S119) · NO
+  // budget/forecast/scenario (D.1). ComplianceModule UNTOUCHED. No other audit type added.
+  | 'okr_cascade_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
