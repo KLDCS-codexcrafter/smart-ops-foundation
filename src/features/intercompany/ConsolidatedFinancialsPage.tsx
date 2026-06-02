@@ -129,6 +129,7 @@ export default function ConsolidatedFinancialsPage() {
           <TabsTrigger value="cf">Cash Flow</TabsTrigger>
           <TabsTrigger value="nci">NCI</TabsTrigger>
           <TabsTrigger value="gw">Goodwill</TabsTrigger>
+          <TabsTrigger value="disclosure">Disclosure Pack</TabsTrigger>
         </TabsList>
 
         <TabsContent value="bs">
