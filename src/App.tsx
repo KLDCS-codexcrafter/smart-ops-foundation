@@ -551,6 +551,8 @@ const App = () => (
               {/* Sprint T-Phase-1.C.1a · ServiceDesk Masters Foundation · 12th card on Shell */}
               <Route path="/erp/servicedesk" element={<P><ServiceDeskPage /></P>} />
               <Route path="/erp/comply360" element={<P><Comply360Page /></P>} />
+              {/* Sprint 116 · T-Phase-7.D.0.1 · 🎬 Phase 7 opener · FP&A / Planning card landing */}
+              <Route path="/erp/fpa-planning" element={<P><FpaPlanningPage /></P>} />
               <Route path="/erp/fincore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
               <Route path="/erp/fincore/receipt-print" element={<P><ReceiptPrint /></P>} />
               <Route path="/erp/fincore/payment-print" element={<P><PaymentPrint /></P>} />
