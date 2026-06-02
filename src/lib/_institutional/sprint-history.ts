@@ -633,7 +633,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint 111 T-Phase-6.C.2.3 · Arc 3 · Pillar C.2 · Consolidated BS + CF + NCI + Goodwill · 2 NEW SIBLINGs consolidated-balance-sheet-engine + consolidated-cash-flow-engine (FR-44 ORCHESTRATION SPINE · reuses S110 consolidateWithTranslation + S109 consolidate · NO re-roll/re-translate/re-eliminate) + NEW Standalone Page #39 ConsolidatedFinancialsPage (BS/CF/NCI/Goodwill tabs · sidebar type:'item' + CC case · NOT a sibling) + 2 new audit types (consolidated_balance_sheet_run + consolidated_cash_flow_run) under 'mca-roc' · Ind AS 110 NCI = (100−ownership_pct)% × sub net assets · Ind AS 103 Goodwill from capital_infusion IC-INVEST listICTransactions vs ownership_pct × acquisition (optional engine-local `acquisition?` param · current-net-assets fallback §L-flagged) · Ind AS 36 impairment FLAG only (NOT DCF) · §L equity = L1 CE only + FCTR-OCI + NCI synthetics (SR is L2 under CE; no separate L1 'SR' exists in finframe-seed) · §L cash-flow-engine 0-DIFF (treasury projector with no Ind AS 7 partitioning to reuse; classifier implemented ENGINE-LOCAL · FR-44 clean · no §H waiver) · SCOPE WALL DP-A3-9: BS+CF+NCI+Goodwill ONLY · NO disclosure (S112) · NO XBRL/OOB (Arc 4) · 37-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S112 Block 1)
   {
     sprintNumber: 111, code: 'T-Phase-6.C.2.3', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'd247e08cdb840605129296409a18c1202d748592', loc: 1500,
+    headSha: '3f00b9813e36e28fbea99ad2a6a1ca5f4427e5dd', predecessorSha: 'd247e08cdb840605129296409a18c1202d748592', loc: 1500,
     newSiblings: ['consolidated-balance-sheet-engine', 'consolidated-cash-flow-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
