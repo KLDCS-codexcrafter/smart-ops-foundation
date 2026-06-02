@@ -39,7 +39,7 @@ import {
   listStrategicTargets,
   type StrategicTarget,
 } from '@/lib/org-planning-engine';
-import { aggregateCapacity } from '@/lib/capacity-planning-engine';
+import { computeBottleneckHeatmap } from '@/lib/capacity-planning-engine';
 import { dAdd, dSub, dMul, round2 } from '@/lib/decimal-helpers';
 import { logAudit } from '@/lib/audit-trail-engine';
 
