@@ -55,11 +55,12 @@ export type UserRole =
 export const ROLE_DEFAULT_CARDS: Record<UserRole, CardId[]> = {
   super_admin: [],
   tenant_admin: [],
-  finance: ['fincore', 'receivx', 'payout', 'insightx', 'command-center'],
+  // Sprint 116 · T-Phase-7.D.0.1 · finance + hr get 'fpa-planning' visibility (DP-D0-1)
+  finance: ['fincore', 'receivx', 'payout', 'insightx', 'command-center', 'fpa-planning'],
   sales: ['salesx', 'distributor-hub', 'customer-hub', 'insightx'],
   operations: ['procure360', 'inventory-hub', 'production', 'qualicheck', 'gateflow',
     'maintainpro', 'requestx', 'logistics', 'dispatch-hub'],
-  hr: ['peoplepay', 'insightx'],
+  hr: ['peoplepay', 'insightx', 'fpa-planning'],
   support: ['servicedesk'],
   view_only: ['insightx'],
 };
