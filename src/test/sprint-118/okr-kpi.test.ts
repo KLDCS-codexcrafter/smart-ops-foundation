@@ -77,14 +77,14 @@ function seedTree() {
 function seedGroup() {
   const entities = loadEntities();
   if (entities.length >= 2) {
-    upsertGroupStructureNode({
+    upsertGroupStructure({
       entity_id: entities[0].id,
       parent_entity_id: null,
       relationship: 'parent',
       ownership_pct: 100,
       effective_from: '2026-04-01',
     });
-    upsertGroupStructureNode({
+    upsertGroupStructure({
       entity_id: entities[1].id,
       parent_entity_id: entities[0].id,
       relationship: 'subsidiary',
