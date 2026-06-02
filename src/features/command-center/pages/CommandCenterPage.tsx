@@ -237,6 +237,7 @@ export type CommandCenterModule =
   | 'fpa-planning-org-design'
   | 'fpa-planning-budgeting'
   | 'fpa-planning-forecasting'
+  | 'fpa-planning-scenario'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
