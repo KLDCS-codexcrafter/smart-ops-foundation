@@ -73,6 +73,8 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'webstorex':       '/erp/webstorex',
   'comply360':       '/erp/comply360',
   'vendor-portal':   '/erp/vendor-portal',
+  'fpa-planning':    '/erp/fpa-planning',  // Sprint 116 · T-Phase-7.D.0.1 · Phase 7 opener · new card landing
+
 };
 
 /**
