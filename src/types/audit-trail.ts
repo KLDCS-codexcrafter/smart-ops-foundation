@@ -136,7 +136,18 @@ export type AuditEntityType =
   // for entities) and reimplements NEITHER (both stay 0-DIFF). SCOPE WALL: AOP/strategic targets ONLY
   // — NO workforce (S117) · NO OKR/org-cost (S118) · NO budget/forecast/scenario (D.1).
   // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
-  | 'org_plan_event';
+  | 'org_plan_event'
+  // Sprint 117 · T-Phase-7.D.0.2 · Arc D.0 · Workforce Planning (module: 'mca-roc')
+  // 'workforce_plan_event' — logged by workforce-planning-engine on upsertHeadcountPlan /
+  // projectWorkforce. Carries fy + scope_id + current/planned headcount + hires/attrition +
+  // permanent/contract mix + projected_cost + (optional) aop_cost_target + cost_variance_vs_aop.
+  // FR-44: engine REUSES org-structure (Division/Department) + capacity-planning-engine
+  // (capacity context) + org-planning-engine (listStrategicTargets — AOP cost_target intra-arc
+  // linkage) + contract-manpower/employee types (mix source); reimplements none, all 0-DIFF.
+  // SCOPE WALL DP-D0-7: workforce projection only — NO OKR (S118) · NO org-design (S119) ·
+  // NO budget/forecast (D.1) · NO performance-mgmt / compensation-planning (deferred).
+  // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
+  | 'workforce_plan_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
