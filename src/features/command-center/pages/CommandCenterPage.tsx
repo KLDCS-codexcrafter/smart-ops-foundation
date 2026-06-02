@@ -172,6 +172,7 @@ import BudgetingPage from '@/features/budgeting/BudgetingPage';
 
 // 🎬 Sprint 121 · T-Phase-7.D.1.2 · FP&A Forecasting (Standalone Page #48 · Pillar D.1)
 import ForecastingPage from '@/features/forecasting/ForecastingPage';
+import ScenarioModelingPage from '@/features/scenario-modeling/ScenarioModelingPage';
 
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
