@@ -126,6 +126,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // Sidebar item lives under the NEW 'fpa-planning' card per AC#13 (requiredCards: ['fpa-planning']).
       { id: 'fincore-aop-strategic-plan', type: 'item', label: 'AOP & Strategic Plan', icon: Network,
         moduleId: 'fincore-aop-strategic-plan', requiredCards: ['fpa-planning'] },
+      // 🎬 Sprint 117 · T-Phase-7.D.0.2 · Arc D.0 · Workforce Planning · Standalone Page #44 (fpa-planning card)
+      { id: 'fpa-planning-workforce', type: 'item', label: 'Workforce Planning', icon: Network,
+        moduleId: 'fpa-planning-workforce', requiredCards: ['fpa-planning'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
