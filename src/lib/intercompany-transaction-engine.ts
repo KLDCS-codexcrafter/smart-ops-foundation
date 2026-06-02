@@ -406,13 +406,23 @@ export function postICTransaction(ic_txn_id: string): IntercompanyTransaction {
     const from_scope: PricingScope = { entity_id: txn.from_entity };
     const to_scope: PricingScope = { entity_id: txn.to_entity };
     // USE-SITE READ · internal-pricing-engine.resolvePrice
-    const resolved = resolvePrice({
+    // Try as_of_date first (idea-1 time-travel); fall back to current snapshot
+    // when no historical version was registered (typical for direct-seeded rules).
+    let resolved = resolvePrice({
       rule_type: 'inter_entity',
       from_scope,
       to_scope,
       item_key: txn.item_key ?? 'ALL',
       as_of_date: txn.txn_date,
     });
+    if (!resolved) {
+      resolved = resolvePrice({
+        rule_type: 'inter_entity',
+        from_scope,
+        to_scope,
+        item_key: txn.item_key ?? 'ALL',
+      });
+    }
     if (resolved) {
       pricing_rule_id = resolved.rule_id;
       const qty = txn.quantity ?? 1;
