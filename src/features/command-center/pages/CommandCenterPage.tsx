@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Shell } from '@/shell';
 import { commandCenterShellConfig } from '@/apps/erp/configs/command-center-shell-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
