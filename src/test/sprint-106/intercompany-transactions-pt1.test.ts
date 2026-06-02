@@ -118,13 +118,13 @@ function seedPricingRule(): string {
 }
 
 describe('S106 · Block 0 · Pre-flight & contract shape', () => {
-  it('exports the 4 IC transaction types in order', () => {
-    expect(IC_TRANSACTION_TYPES).toEqual(['stock_transfer', 'service_charge', 'capital_infusion', 'loan']);
+  it('exports the 4 IC transaction types in order (S106 first-four · S107 extends)', () => {
+    expect(IC_TRANSACTION_TYPES.slice(0, 4)).toEqual(['stock_transfer', 'service_charge', 'capital_infusion', 'loan']);
   });
 
-  it('classifies priced vs unpriced types correctly', () => {
-    expect(PRICED_IC_TYPES).toEqual(['stock_transfer', 'service_charge']);
-    expect(UNPRICED_IC_TYPES).toEqual(['capital_infusion', 'loan']);
+  it('classifies S106 priced vs unpriced types correctly (S107 may add more)', () => {
+    expect(PRICED_IC_TYPES).toEqual(expect.arrayContaining(['stock_transfer', 'service_charge']));
+    expect(UNPRICED_IC_TYPES).toEqual(expect.arrayContaining(['capital_infusion', 'loan']));
   });
 
   it('READS_FROM declares the 4 orchestrated engines', () => {
