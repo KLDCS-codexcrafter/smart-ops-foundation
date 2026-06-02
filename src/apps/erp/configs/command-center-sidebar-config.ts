@@ -104,6 +104,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🏁 Sprint 108 · T-Phase-6.C.1.4 · Arc 2 Capstone · Group Eliminations · Standalone Page #36
       { id: 'fincore-group-eliminations', type: 'item', label: 'Group Eliminations', icon: Network,
         moduleId: 'fincore-group-eliminations', requiredCards: ['command-center'] },
+      // 🎬 Sprint 109 · T-Phase-6.C.2.1 · Arc 3 Opener · Group Consolidation · Standalone Page #37
+      { id: 'fincore-group-consolidation', type: 'item', label: 'Group Consolidation', icon: Network,
+        moduleId: 'fincore-group-consolidation', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
