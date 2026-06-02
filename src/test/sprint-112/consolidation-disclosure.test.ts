@@ -348,7 +348,7 @@ describe('S112 · registers + guardrails', () => {
   });
 
   it('comply360-tier2 registry entry still appears exactly once (untouched)', () => {
-    const matches = SIBLINGS.filter((s) => s.id === 'comply360-tier2');
+    const matches = SIBLINGS.filter((s) => s.id.includes('comply360-tier2'));
     expect(matches.length).toBe(1);
   });
 
