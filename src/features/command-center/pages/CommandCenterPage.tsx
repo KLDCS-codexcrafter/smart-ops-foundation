@@ -423,6 +423,7 @@ export default function CommandCenterPage() {
       case 'fincore-consolidated-financials': return <ConsolidatedFinancialsPage />;
       case 'fincore-compliance-approval-rules': return <ComplianceApprovalRulesPage />;
       case 'fincore-workpaper-autopop': return <WorkpaperAutoPopPage />;
+      case 'fincore-inter-dept-governance': return <InterDeptGovernancePage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
