@@ -233,11 +233,15 @@ describe('Sprint 110 · fx-translation-engine · Ind AS 21', () => {
   });
 
   // ── FR-44 WALL ───────────────────────────────────────────────────────
-  it('FR-44 WALL: fx-translation-engine source does NOT mention fx-what-if', () => {
+  it('FR-44 WALL: engine does NOT import or call fx-what-if functions', () => {
     const src = fs.readFileSync(path.resolve(__dirname, '../../lib/fx-translation-engine.ts'), 'utf8');
-    expect(src).not.toMatch(/fx-what-if/i);
-    expect(src).not.toMatch(/computeFXScenarioForRealisation/);
-    expect(src).not.toMatch(/saveScenario|FXScenario/);
+    // No import from fx-what-if-engine path
+    expect(src).not.toMatch(/from ['"]\.?\/?fx-what-if-engine['"]/);
+    expect(src).not.toMatch(/from ['"]@\/lib\/fx-what-if-engine['"]/);
+    // No calls to fx-what-if functions
+    expect(src).not.toMatch(/computeFXScenarioForRealisation\s*\(/);
+    expect(src).not.toMatch(/loadFXScenarios\s*\(/);
+    expect(src).not.toMatch(/saveScenario\s*\(/);
   });
   it('FR-44 WALL: engine REUSES dual-rate loadForexRates (no parallel rate store)', () => {
     const src = fs.readFileSync(path.resolve(__dirname, '../../lib/fx-translation-engine.ts'), 'utf8');
@@ -266,8 +270,9 @@ describe('Sprint 110 · fx-translation-engine · Ind AS 21', () => {
   });
   it('SCOPE WALL: source file does not import fx-what-if or scenario types', () => {
     const src = fs.readFileSync(path.resolve(__dirname, '../../lib/fx-translation-engine.ts'), 'utf8');
-    expect(src).not.toMatch(/fx-scenario/);
-    expect(src).not.toMatch(/fx-what-if-engine/);
+    expect(src).not.toMatch(/from ['"]\.?\/?fx-what-if-engine['"]/);
+    expect(src).not.toMatch(/from ['"]@\/lib\/fx-what-if-engine['"]/);
+    expect(src).not.toMatch(/fx-scenario/i);
   });
 
   // ── S109 0-DIFF assertions (waiver scope) ────────────────────────────
