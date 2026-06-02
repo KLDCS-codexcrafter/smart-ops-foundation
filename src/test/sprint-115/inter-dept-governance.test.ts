@@ -237,10 +237,7 @@ describe('Sprint 115 · sibling-register · 183 → 184', () => {
     const matches = SIBLINGS.filter((s) => s.id === 'comply360-tier2-extensions-engine');
     expect(matches.length).toBe(1);
   });
-  it('getSiblingCount() is 184 (REAL post-S115 count)', () => {
-    expect(getSiblingCount()).toBe(184);
-  });
-  it('getSiblingCount() >= 184 (floor-style assertion · S110 T1 lesson)', () => {
+  it('getSiblingCount() >= 184 (floor-style assertion · S110 T1 lesson · no exact-equality)', () => {
     expect(getSiblingCount()).toBeGreaterThanOrEqual(184);
   });
 });
