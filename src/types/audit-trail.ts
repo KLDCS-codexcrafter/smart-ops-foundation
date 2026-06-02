@@ -195,7 +195,22 @@ export type AuditEntityType =
   // (ForecastModelHook) — NO live ML training, NO new runtime deps (§O).
   // SCOPE WALL DP-D1-9: forecasting only — NO scenario planning (S122-123) · NO
   // costing / driver / ABC (S124-125). ComplianceModule UNTOUCHED. No other audit type.
-  | 'forecast_event';
+  | 'forecast_event'
+  // Sprint 122 · T-Phase-7.D.1.3 · ⭐ Arc D.1 · Scenario Management Pt 1 (module: 'mca-roc')
+  // 'scenario_run' — logged by scenario-modeling-engine on runScenario.
+  // Carries scenario_id (composite of fy + scope + entity_scope + Date.now) +
+  // scope (single_entity | consolidated) + entity_scope[] + drivers (best/base/worst)
+  // + cases[] (best/base/worst consolidated_revenue / cost / pbt · decimal-safe).
+  // FR-44 (THE MOAT): engine ORCHESTRATES group-consolidation-engine + fx-
+  // translation-engine + group-eliminations-engine + fpa-forecasting-engine to
+  // produce a CONSOLIDATED scenario P&L across entities + currencies; does NOT
+  // reimplement consolidation / FX / eliminations and does NOT import the
+  // single-realisation fx-what-if-engine. ComplianceModule UNTOUCHED.
+  // SCOPE WALL (Pt 1): best/base/worst single + consolidated only.
+  //   NO FX × revenue × cost matrix (S123 · Pt 2)
+  //   NO demand / capex scenarios (S123)
+  //   NO costing / driver / ABC (S124-125)
+  | 'scenario_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
