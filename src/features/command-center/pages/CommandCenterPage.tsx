@@ -193,6 +193,7 @@ export type CommandCenterModule =
   | 'fincore-intercompany-group-structure'
   | 'fincore-intercompany-transactions-hub'
   | 'fincore-group-eliminations'
+  | 'fincore-group-consolidation'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
