@@ -635,6 +635,13 @@ export const SPRINTS: SprintEntry[] = [
     sprintNumber: 111, code: 'T-Phase-6.C.2.3', composite: false, grade: 'A',
     headSha: '3f00b9813e36e28fbea99ad2a6a1ca5f4427e5dd', predecessorSha: 'd247e08cdb840605129296409a18c1202d748592', loc: 1500,
     newSiblings: ['consolidated-balance-sheet-engine', 'consolidated-cash-flow-engine'],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🎉 Sprint 112 T-Phase-6.C.2.4 · Arc 3 CAPSTONE · "Horizon 1.5" DELIVERED · Pillar C.2 · Consolidation Disclosure Pack (Schedule III + Ind AS 110) · 1 NEW SIBLING consolidation-disclosure-engine (FR-44 PURE ASSEMBLY: calls S109 buildConsolidatedPnL + S111 buildBalanceSheet/buildCashFlow/computeNCI/computeGoodwill · NO figure recompute · maps sections to getSchedIIITaxonomyElements category) + exportDisclosureXBRL REUSES comply360-xbrl-builder buildXBRL+validateXBRL+exportXBRLDownload via bridge (synthetic aoc4_xbrl_id `consolidation-xbrl-{fy}` + getActiveBAPAccount() — xbrl-builder 0-DIFF · §L-noted: per-element value injection is Arc 4/Phase 8) + exportDisclosurePDF REUSES board-pack-pdf-engine jsPDF+autoTable pattern (board-pack 0-DIFF) + cross-references form-3ceb-engine loadForm3CEBSnapshots (count of CA-signed snapshots for FY · §L-noted) + Page #39 ConsolidatedFinancialsPage EXTENDED (Disclosure tab + Export PDF/XBRL buttons · NOT a new page · NOT a sibling) + 1 new audit type consolidation_disclosure_event under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL DP-A3-9: disclosure assembly + PDF/XBRL ONLY · NO new financial computation · NO OOB · NO Pillar-C.3 (Arc 4) · all sources 0-DIFF (xbrl-builder, board-pack, form-3ceb, S109/S110/S111 engines) · 38-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S113 Block 1) · 🎉 CLOSES ARC 3 — Horizon 1.5 promise delivered (Group P&L + multi-currency + BS + CF + 3 methods + NCI + Goodwill + disclosure PDF+XBRL)
+  {
+    sprintNumber: 112, code: 'T-Phase-6.C.2.4', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '3f00b9813e36e28fbea99ad2a6a1ca5f4427e5dd', loc: 1300,
+    newSiblings: ['consolidation-disclosure-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
