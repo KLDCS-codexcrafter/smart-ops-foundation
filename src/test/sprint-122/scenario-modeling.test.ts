@@ -344,6 +344,18 @@ describe('§I · Block 2 FP&A-landing fixes (carried from S116/S120)', () => {
     expect(ccPageSrc).toMatch(/setActiveModule\(/);
   });
 
+  // S122-T1 hotfix: react-router <Link> hash navigations don't fire native 'hashchange'
+  // when CC is already mounted. The hash effect MUST also re-run on router location
+  // changes, otherwise tile clicks leave activeModule on 'overview' (real bug we hit).
+  it('CommandCenterPage reacts to react-router navigation (useLocation in hash effect deps)', () => {
+    expect(ccPageSrc).toMatch(/from ['"]react-router-dom['"]/);
+    expect(ccPageSrc).toMatch(/useLocation\s*\(\s*\)/);
+    // Effect deps must reference `location` so applyHash() re-runs on every
+    // router-driven navigation (the real failure mode behind FP&A landing tiles).
+    const effectBlock = ccPageSrc.match(/applyHash[\s\S]*?\}\s*,\s*\[([^\]]*)\]\s*\)/);
+    expect(effectBlock?.[1] ?? '').toMatch(/location/);
+  });
+
   it('CommandCenterPage hash-listener allow-list includes fincore-aop-strategic-plan (AOP deep-link fix)', () => {
     // The listener body references the AOP module id directly so the
     // /erp/command-center#fincore-aop-strategic-plan deep-link from the
