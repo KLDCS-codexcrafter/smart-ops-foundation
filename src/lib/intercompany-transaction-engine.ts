@@ -456,6 +456,8 @@ export function createICTransaction(input: CreateICTransactionInput): Intercompa
     txn_date: input.txn_date,
     status: 'draft',
     note: input.note,
+    allocation_basis: input.txn_type === 'expense_allocation' ? input.allocation_basis : undefined,
+    settles_ic_txn_id: input.txn_type === 'payment' ? input.settles_ic_txn_id : undefined,
     created_at: now,
     updated_at: now,
   };
