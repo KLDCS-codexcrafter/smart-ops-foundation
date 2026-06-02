@@ -256,8 +256,9 @@ describe('Sprint 115 · sprint-history · S115 appended (final · time-robust)',
   it('S115 newSiblings lists inter-dept-governance-engine', () => {
     expect(s115?.newSiblings).toContain('inter-dept-governance-engine');
   });
-  it('S115 headSha is TBD_AT_BANK (legitimately the last open entry)', () => {
-    expect(s115?.headSha).toBe('TBD_AT_BANK');
+  it('S115 headSha is TBD_AT_BANK or backfilled SHA (time-robust · S116 Block 1 backfilled to 1c67f6c5…)', () => {
+    const sha = s115?.headSha ?? '';
+    expect(sha === 'TBD_AT_BANK' || sha === '1c67f6c50f6c58a1da69819b7fe94f6ac4019fc3').toBe(true);
   });
   it('S115 predecessorSha is 0eb85e87…', () => {
     expect(s115?.predecessorSha).toBe('0eb85e876271380bd526dd6d0901035665996001');
