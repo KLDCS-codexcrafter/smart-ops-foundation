@@ -119,7 +119,16 @@ export type AuditEntityType =
   // builds NO source figures and reimplements nothing; all source engines stay 0-DIFF. HONEST-METRICS
   // (DP-A4-8): "OOB 16/16" is NARRATIVE only — no machine OOB-count register is asserted in code.
   // SCOPE WALL: OOB-13 only · NO Pillar-C.3 governance (S115) · NO new financial computation.
-  | 'workpaper_autopop_event';
+  | 'workpaper_autopop_event'
+  // Sprint 115 · T-Phase-6.C.3.1-CLOSE · Phase 6 finale · Pillar C.3 Inter-Department Governance (module: 'mca-roc')
+  // 'inter_dept_governance_audit' — logged by inter-dept-governance-engine on auditInterDeptBridges. Carries
+  // fy + total_bridges (ACTUAL enumerated count · NOT hardcoded) + exception_count + sources_read[]. FR-44:
+  // engine is READ-ONLY — audits existing bridges by reading idea-6 listInterDeptWorkflows + oob8
+  // listComplianceApprovalRules + bridge-pattern siblings. Creates/edits NO bridge. idea-6 + oob8 +
+  // approval-matrix + approval-workflow all stay 0-DIFF. HONEST-METRICS (DP-A4-8 · FR-91): "29 bridges" /
+  // "16/16 OOBs" are NARRATIVE positioning figures — no machine register/counter is asserted in code.
+  // ComplianceModule UNTOUCHED. CLOSES PHASE 6 (S96–S115 · 5 arcs).
+  | 'inter_dept_governance_audit';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

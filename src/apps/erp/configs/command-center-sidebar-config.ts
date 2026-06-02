@@ -119,6 +119,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🎬 Sprint 114 · T-Phase-6.B.OOB.2 · Arc 4 · OOB-13 Workpaper Auto-Population · Standalone Page #41
       { id: 'fincore-workpaper-autopop', type: 'item', label: 'Workpaper Auto-Population', icon: Network,
         moduleId: 'fincore-workpaper-autopop', requiredCards: ['command-center'] },
+      // 🏁 Sprint 115 · T-Phase-6.C.3.1-CLOSE · Phase 6 finale · Pillar C.3 Inter-Department Governance · Standalone Page #42
+      { id: 'fincore-inter-dept-governance', type: 'item', label: 'Inter-Department Governance', icon: Network,
+        moduleId: 'fincore-inter-dept-governance', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },

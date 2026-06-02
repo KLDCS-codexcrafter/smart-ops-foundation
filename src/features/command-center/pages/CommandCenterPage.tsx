@@ -154,6 +154,9 @@ import ComplianceApprovalRulesPage from '@/features/compliance-approval/Complian
 // Sprint 114 · T-Phase-6.B.OOB.2 · Workpaper Auto-Population (Standalone Page #41 · Arc 4 · OOB-13)
 import WorkpaperAutoPopPage from '@/features/workpaper-autopop/WorkpaperAutoPopPage';
 
+// 🏁 Sprint 115 · T-Phase-6.C.3.1-CLOSE · Inter-Department Governance (Standalone Page #42 · Pillar C.3)
+import InterDeptGovernancePage from '@/features/inter-dept-governance/InterDeptGovernancePage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
@@ -210,6 +213,7 @@ export type CommandCenterModule =
   | 'fincore-consolidated-financials'
   | 'fincore-compliance-approval-rules'
   | 'fincore-workpaper-autopop'
+  | 'fincore-inter-dept-governance'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -309,7 +313,7 @@ export default function CommandCenterPage() {
       'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings', 'fincore-production-config',
       'org-structure',
       'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency', 'fincore-transaction-templates',
-      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'fincore-multi-currency-translation', 'fincore-consolidated-financials', 'fincore-compliance-approval-rules', 'fincore-workpaper-autopop', 'projx-project-centres',
+      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'fincore-multi-currency-translation', 'fincore-consolidated-financials', 'fincore-compliance-approval-rules', 'fincore-workpaper-autopop', 'fincore-inter-dept-governance', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -419,6 +423,7 @@ export default function CommandCenterPage() {
       case 'fincore-consolidated-financials': return <ConsolidatedFinancialsPage />;
       case 'fincore-compliance-approval-rules': return <ComplianceApprovalRulesPage />;
       case 'fincore-workpaper-autopop': return <WorkpaperAutoPopPage />;
+      case 'fincore-inter-dept-governance': return <InterDeptGovernancePage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -594,6 +599,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-consolidated-financials': 'Consolidated Financials',
     'fincore-compliance-approval-rules': 'Compliance Approval Rules',
     'fincore-workpaper-autopop': 'Workpaper Auto-Population',
+    'fincore-inter-dept-governance': 'Inter-Department Governance',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
