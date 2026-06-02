@@ -64,7 +64,12 @@ export type AuditEntityType =
   // Sprint 106 · T-Phase-6.C.1.2 · Arc 2 · Pillar C.1 · IC Transactions Pt 1 · 1 NEW audit entity type (module: 'mca-roc')
   // Logged by intercompany-transaction-engine on postICTransaction. TP-audit + voucher-post events
   // are logged downstream by idea-7 + fincore (v1.31 §P @orchestrator exemption).
-  | 'intercompany_transaction';
+  | 'intercompany_transaction'
+  // Sprint 107 · T-Phase-6.C.1.3 · Arc 2 · Pillar C.1 · IC Transactions Pt 2 · 1 NEW audit entity type (module: 'mca-roc')
+  // Logged by intercompany-transaction-engine on settleICTransaction (posted→settled).
+  // The 4 new S107 txn types (expense_allocation/asset_transfer/invoice/payment) REUSE
+  // 'intercompany_transaction' above — no per-type audit type.
+  | 'intercompany_settlement'
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
