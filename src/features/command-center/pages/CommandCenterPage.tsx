@@ -605,6 +605,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-compliance-approval-rules': 'Compliance Approval Rules',
     'fincore-workpaper-autopop': 'Workpaper Auto-Population',
     'fincore-inter-dept-governance': 'Inter-Department Governance',
+    'fincore-aop-strategic-plan': 'AOP & Strategic Plan',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
