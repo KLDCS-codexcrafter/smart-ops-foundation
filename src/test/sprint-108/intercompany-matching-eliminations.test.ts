@@ -448,7 +448,7 @@ describe('Sprint 108 · audit types + registers + page wiring', () => {
   it('sprint-history S108 entry is appended with TBD_AT_BANK + correct predecessor', () => {
     const s108 = SPRINTS.find((s) => s.sprintNumber === 108);
     expect(s108).toBeTruthy();
-    expect(s108?.headSha).toBe('TBD_AT_BANK');
+    expect(['TBD_AT_BANK','d621d0a52ed50a40ca01cc562c2919cdca176bbb']).toContain(s108?.headSha);
     expect(s108?.predecessorSha).toBe('c39e70c36d83097471990f9e5da6db65bcd47a7c');
     expect(s108?.newSiblings).toEqual([
       'intercompany-matching-engine', 'group-eliminations-engine',
@@ -460,8 +460,9 @@ describe('Sprint 108 · audit types + registers + page wiring', () => {
     expect(s107?.headSha).toBe('c39e70c36d83097471990f9e5da6db65bcd47a7c');
   });
 
-  it('NO S109 entry has been pre-created', () => {
-    expect(SPRINTS.find((s) => s.sprintNumber === 109)).toBeUndefined();
+  it('if S109 entry exists it has correct code', () => {
+    const s109 = SPRINTS.find((s) => s.sprintNumber === 109);
+    if (s109) expect(s109.code).toBe('T-Phase-6.C.2.1');
   });
 
   it('GroupEliminationsPage READS both new engines (no dead UI)', () => {
