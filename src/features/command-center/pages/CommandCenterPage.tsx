@@ -145,6 +145,9 @@ import GroupConsolidationPage from '@/features/intercompany/GroupConsolidationPa
 // Sprint 110 · T-Phase-6.C.2.2 · Multi-Currency Translation (Standalone Page #38 · Arc 3 · Ind AS 21)
 import MultiCurrencyTranslationPage from '@/features/intercompany/MultiCurrencyTranslationPage';
 
+// Sprint 111 · T-Phase-6.C.2.3 · Consolidated Financials (Standalone Page #39 · Arc 3 · BS+CF+NCI+Goodwill)
+import ConsolidatedFinancialsPage from '@/features/intercompany/ConsolidatedFinancialsPage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
@@ -198,6 +201,7 @@ export type CommandCenterModule =
   | 'fincore-group-eliminations'
   | 'fincore-group-consolidation'
   | 'fincore-multi-currency-translation'
+  | 'fincore-consolidated-financials'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -404,6 +408,7 @@ export default function CommandCenterPage() {
       case 'fincore-group-eliminations': return <GroupEliminationsPage />;
       case 'fincore-group-consolidation': return <GroupConsolidationPage />;
       case 'fincore-multi-currency-translation': return <MultiCurrencyTranslationPage />;
+      case 'fincore-consolidated-financials': return <ConsolidatedFinancialsPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -576,6 +581,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-group-eliminations': 'Group Eliminations',
     'fincore-group-consolidation': 'Group Consolidation',
     'fincore-multi-currency-translation': 'Multi-Currency Translation',
+    'fincore-consolidated-financials': 'Consolidated Financials',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',

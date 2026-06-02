@@ -110,6 +110,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🎬 Sprint 110 · T-Phase-6.C.2.2 · Arc 3 · Multi-Currency Translation · Standalone Page #38
       { id: 'fincore-multi-currency-translation', type: 'item', label: 'Multi-Currency Translation', icon: Network,
         moduleId: 'fincore-multi-currency-translation', requiredCards: ['command-center'] },
+      // 🎬 Sprint 111 · T-Phase-6.C.2.3 · Arc 3 · Consolidated Financials (BS+CF+NCI+Goodwill) · Standalone Page #39
+      { id: 'fincore-consolidated-financials', type: 'item', label: 'Consolidated Financials', icon: Network,
+        moduleId: 'fincore-consolidated-financials', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
