@@ -95,7 +95,14 @@ export type AuditEntityType =
   //   Carries fy + operating_total + investing_total + financing_total + line_count.
   // SCOPE WALL DP-A3-9: BS+CF+NCI+Goodwill ONLY · NO disclosure (S112) · NO XBRL (Arc 4) · NO OOB (Arc 4).
   | 'consolidated_balance_sheet_run'
-  | 'consolidated_cash_flow_run';
+  | 'consolidated_cash_flow_run'
+  // Sprint 112 · T-Phase-6.C.2.4 · Arc 3 CAPSTONE · Pillar C.2 · Consolidated Disclosure Pack (Schedule III + Ind AS 110)
+  // 'consolidation_disclosure_event' — logged by consolidation-disclosure-engine on
+  // buildDisclosurePack / exportDisclosureXBRL / exportDisclosurePDF. Carries fy + section_count +
+  // schedule_iii_compliant + ind_as_110_compliant + export_kind ('pack' | 'xbrl' | 'pdf').
+  // SCOPE WALL DP-A3-9: disclosure assembly + PDF/XBRL export ONLY — NO new financial computation,
+  // NO XBRL taxonomy rebuild (reuses comply360-xbrl-builder buildXBRL), NO OOB/Pillar-C.3 (Arc 4).
+  | 'consolidation_disclosure_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

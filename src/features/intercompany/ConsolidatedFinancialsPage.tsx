@@ -1,15 +1,18 @@
 /**
  * @file        ConsolidatedFinancialsPage.tsx
  * @purpose     Standalone Page #39 — Consolidated Financials (BS + CF + NCI + Goodwill).
- *              FY selector · 4 tabs · Schedule III shape · Ind AS 7 cash flow ·
- *              Ind AS 110 NCI · Ind AS 103 Goodwill + Ind AS 36 impairment FLAG.
- * @reads       consolidated-balance-sheet-engine + consolidated-cash-flow-engine.
- * @sprint      T-Phase-6.C.2.3 · Sprint 111 · Arc 3 · Block 5
- * @scope-wall  DP-A3-9 · BS+CF+NCI+Goodwill ONLY · NO disclosure (S112) · NO XBRL (Arc 4).
+ *              S112 EXTENSION: Disclosure Pack tab (Schedule III + Ind AS 110) +
+ *              Export PDF/XBRL buttons (consolidation-disclosure-engine).
+ * @reads       consolidated-balance-sheet-engine · consolidated-cash-flow-engine ·
+ *              consolidation-disclosure-engine (S112 NEW).
+ * @sprint      T-Phase-6.C.2.3 · Sprint 111 · EXTENDED Sprint 112 · Arc 3 · Block 5
+ * @scope-wall  DP-A3-9 · disclosure assembly + PDF/XBRL ONLY · NO new financial computation ·
+ *              NO OOB · NO Pillar-C.3 (Arc 4).
  * NOT A SIBLING — First-Class Standalone Page that READS engines via their published API.
  */
 import { useMemo, useState } from 'react';
-import { Building2, CheckCircle2, AlertTriangle, RefreshCw, Play } from 'lucide-react';
+import { Building2, CheckCircle2, AlertTriangle, RefreshCw, Play, FileDown, FileCode2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -26,6 +29,11 @@ import {
 import {
   buildCashFlow, loadConsolidatedCashFlow, type ConsolidatedCashFlow,
 } from '@/lib/consolidated-cash-flow-engine';
+import {
+  buildDisclosurePack, loadDisclosurePack,
+  exportDisclosureXBRL, exportDisclosurePDF,
+  type ConsolidationDisclosurePack,
+} from '@/lib/consolidation-disclosure-engine';
 
 const fmtINR = (n: number) =>
   `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
@@ -51,11 +59,41 @@ export default function ConsolidatedFinancialsPage() {
   );
   const ncis: NCIEntry[] = useMemo(() => { void tick; return computeNCI({ fy }); }, [fy, tick]);
   const goodwill: GoodwillEntry[] = useMemo(() => { void tick; return computeGoodwill({ fy }); }, [fy, tick]);
+  const pack: ConsolidationDisclosurePack | null = useMemo(
+    () => { void tick; return loadDisclosurePack(fy); },
+    [fy, tick],
+  );
 
   const runAll = () => {
     buildBalanceSheet({ fy });
     buildCashFlow({ fy });
     refresh();
+  };
+
+  const buildPack = () => {
+    buildDisclosurePack({ fy });
+    refresh();
+    toast.success(`Disclosure pack assembled for FY ${fy}`);
+  };
+
+  const exportPdf = () => {
+    const { blob, filename } = exportDisclosurePDF({ fy });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`PDF exported · ${filename}`);
+  };
+
+  const exportXbrl = () => {
+    const { download, validation } = exportDisclosureXBRL({ fy });
+    const url = URL.createObjectURL(download.blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = download.filename; a.click();
+    URL.revokeObjectURL(url);
+    toast.success(
+      `XBRL exported · ${download.filename} · valid=${validation.is_valid}`,
+    );
   };
 
   return (
@@ -66,7 +104,7 @@ export default function ConsolidatedFinancialsPage() {
           <div>
             <h1 className="text-2xl font-semibold">Consolidated Financials</h1>
             <p className="text-sm text-muted-foreground">
-              Sprint 111 · Arc 3 · Schedule III BS + Ind AS 7 CF + Ind AS 110 NCI + Ind AS 103 Goodwill.
+              Arc 3 · Schedule III BS + Ind AS 7 CF + Ind AS 110 NCI + Ind AS 103 Goodwill + S112 Disclosure Pack.
             </p>
           </div>
         </div>
@@ -91,6 +129,7 @@ export default function ConsolidatedFinancialsPage() {
           <TabsTrigger value="cf">Cash Flow</TabsTrigger>
           <TabsTrigger value="nci">NCI</TabsTrigger>
           <TabsTrigger value="gw">Goodwill</TabsTrigger>
+          <TabsTrigger value="disclosure">Disclosure Pack</TabsTrigger>
         </TabsList>
 
         <TabsContent value="bs">
@@ -231,6 +270,76 @@ export default function ConsolidatedFinancialsPage() {
                 ))}
               </TableBody>
             </Table>
+          </CardContent></Card>
+        </TabsContent>
+
+        <TabsContent value="disclosure">
+          <Card><CardContent className="p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold">
+                  Consolidated Disclosure Pack · Schedule III + Ind AS 110
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Assembled from S109 P&amp;L + S111 BS/CF/NCI/Goodwill. XBRL via
+                  comply360-xbrl-builder · PDF via board-pack pattern. No figure or
+                  taxonomy rebuild (FR-44).
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={buildPack}>
+                  <Play className="h-4 w-4 mr-1" />Assemble Pack
+                </Button>
+                <Button size="sm" variant="outline" onClick={exportPdf}>
+                  <FileDown className="h-4 w-4 mr-1" />Export PDF
+                </Button>
+                <Button size="sm" onClick={exportXbrl}>
+                  <FileCode2 className="h-4 w-4 mr-1" />Export XBRL
+                </Button>
+              </div>
+            </div>
+            {!pack ? (
+              <p className="text-sm text-muted-foreground">
+                No disclosure pack yet for FY {fy}. Click{' '}
+                <span className="font-medium">Assemble Pack</span>.
+              </p>
+            ) : (
+              <>
+                <div className="flex gap-2 flex-wrap">
+                  <Badge variant="outline" className={pack.schedule_iii_compliant ? 'bg-success/15 text-success' : ''}>
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    Schedule III {pack.schedule_iii_compliant ? 'compliant' : 'incomplete'}
+                  </Badge>
+                  <Badge variant="outline" className={pack.ind_as_110_compliant ? 'bg-success/15 text-success' : ''}>
+                    Ind AS 110 {pack.ind_as_110_compliant ? 'compliant' : 'unbalanced'}
+                  </Badge>
+                  <Badge variant="outline">Taxonomy: {pack.taxonomy_version}</Badge>
+                  <Badge variant="outline">Form 3CEB refs: {pack.form_3ceb_cross_ref_count}</Badge>
+                </div>
+                {pack.sections.map((section) => (
+                  <div key={section.key} className="space-y-1">
+                    <div className="text-xs font-semibold uppercase text-muted-foreground">
+                      {section.title} · {section.category}
+                      {section.taxonomy_element_code ? ` · ${section.taxonomy_element_code}` : ''}
+                    </div>
+                    <Table>
+                      <TableHeader><TableRow>
+                        <TableHead>Line</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                      </TableRow></TableHeader>
+                      <TableBody>
+                        {section.rows.map((r, i) => (
+                          <TableRow key={`${section.key}-${i}`}>
+                            <TableCell className="text-xs">{r.label}</TableCell>
+                            <TableCell className="text-right font-mono">{fmtINR(r.amount)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ))}
+              </>
+            )}
           </CardContent></Card>
         </TabsContent>
       </Tabs>
