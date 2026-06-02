@@ -116,6 +116,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🎬 Sprint 113 · T-Phase-6.B.OOB.1 · Arc 4 opener · OOB-8 Compliance-Aware Approval Rules · Standalone Page #40
       { id: 'fincore-compliance-approval-rules', type: 'item', label: 'Compliance Approval Rules', icon: Network,
         moduleId: 'fincore-compliance-approval-rules', requiredCards: ['command-center'] },
+      // 🎬 Sprint 114 · T-Phase-6.B.OOB.2 · Arc 4 · OOB-13 Workpaper Auto-Population · Standalone Page #41
+      { id: 'fincore-workpaper-autopop', type: 'item', label: 'Workpaper Auto-Population', icon: Network,
+        moduleId: 'fincore-workpaper-autopop', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },

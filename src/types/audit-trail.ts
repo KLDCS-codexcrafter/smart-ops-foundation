@@ -110,7 +110,16 @@ export type AuditEntityType =
   // reimplement idea-6/approval-matrix/approval-workflow (all 3 stay 0-DIFF). HONEST-METRICS
   // (DP-A4-8): "OOB 15/16" is NARRATIVE only — no machine register/counter is asserted.
   // SCOPE WALL: OOB-8 only · NO OOB-13 workpapers (S114) · NO Pillar-C.3 governance (S115).
-  | 'oob8_approval_rule_event';
+  | 'oob8_approval_rule_event'
+  // Sprint 114 · T-Phase-6.B.OOB.2 · Arc 4 · OOB-13 Workpaper Auto-Population (module: 'mca-roc')
+  // 'workpaper_autopop_event' — logged by oob13-workpaper-autopop-engine on autoPopulateWorkpaper /
+  // autoPopulateAll. Carries template_id + fy + entity_code + populated + source_engine + row_count.
+  // FR-44: engine PURELY ASSEMBLES workpapers from existing source engines (idea-7, multi-gaap-depreciation,
+  // tds-aggregator, cost-audit, statutory-registers, group-consolidation, consolidation-disclosure) — it
+  // builds NO source figures and reimplements nothing; all source engines stay 0-DIFF. HONEST-METRICS
+  // (DP-A4-8): "OOB 16/16" is NARRATIVE only — no machine OOB-count register is asserted in code.
+  // SCOPE WALL: OOB-13 only · NO Pillar-C.3 governance (S115) · NO new financial computation.
+  | 'workpaper_autopop_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
