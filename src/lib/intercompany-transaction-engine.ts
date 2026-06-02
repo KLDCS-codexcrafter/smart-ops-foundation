@@ -55,25 +55,39 @@ export const READS_FROM = {
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-/** Sprint 106 ships 4 of 8 IC transaction types · S107 adds the other 4. */
+/** Sprint 106 shipped first 4 IC transaction types · Sprint 107 (T-Phase-6.C.1.3)
+ *  appends the remaining 4 — completing all 8. S106 union members + classification
+ *  + reciprocal switch arms are 0-DIFF (additive only · DP-A2-5). */
 export type ICTransactionType =
   | 'stock_transfer'
   | 'service_charge'
   | 'capital_infusion'
-  | 'loan';
+  | 'loan'
+  // S107 (T-Phase-6.C.1.3) · 4 NEW types · completes all 8
+  | 'expense_allocation'
+  | 'asset_transfer'
+  | 'invoice'
+  | 'payment';
 
 export const IC_TRANSACTION_TYPES: readonly ICTransactionType[] = [
   'stock_transfer', 'service_charge', 'capital_infusion', 'loan',
+  'expense_allocation', 'asset_transfer', 'invoice', 'payment',
 ] as const;
 
 /** Types that require arm's-length pricing via resolvePrice. */
 export const PRICED_IC_TYPES: readonly ICTransactionType[] = [
   'stock_transfer', 'service_charge',
+  // S107 · asset_transfer + invoice flow through the SAME postICTransaction
+  // orchestration (FR-44 spine · NO new orchestration code).
+  'asset_transfer', 'invoice',
 ] as const;
 
-/** Types that bypass pricing (equity / principal · not a priced supply). */
+/** Types that bypass pricing (equity / principal / allocation / cash-settle). */
 export const UNPRICED_IC_TYPES: readonly ICTransactionType[] = [
   'capital_infusion', 'loan',
+  // S107 · expense_allocation = cost-share by basis (not a priced supply);
+  // payment = settles an existing IC payable/receivable (cash movement).
+  'expense_allocation', 'payment',
 ] as const;
 
 export type ICTransactionStatus = 'draft' | 'priced' | 'posted' | 'settled';
