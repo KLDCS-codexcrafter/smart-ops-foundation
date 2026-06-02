@@ -438,6 +438,7 @@ export default function CommandCenterPage() {
       case 'fincore-inter-dept-governance': return <InterDeptGovernancePage />;
       case 'fincore-aop-strategic-plan': return <AOPStrategicPlanPage />;
       case 'fpa-planning-workforce': return <WorkforcePlanningPage />;
+      case 'fpa-planning-okr-framework': return <OKRFrameworkPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
