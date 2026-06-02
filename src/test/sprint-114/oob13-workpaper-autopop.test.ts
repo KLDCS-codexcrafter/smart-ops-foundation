@@ -273,8 +273,8 @@ describe('Sprint 114 · SCOPE WALL · OOB-13 only', () => {
     // forbid common rebuild signatures
     expect(engineSrc).not.toMatch(/function\s+compute(Revenue|COGS|GrossProfit|NCI|Goodwill)\b/);
   });
-  it('no S115 governance engine file exists yet', () => {
-    expect(existsSync(join(ROOT, 'src/lib/pillar-c3-governance-engine.ts'))).toBe(false);
+  it('OOB-13 engine source does NOT export Pillar-C.3 governance fns (real scope-wall intent · S115 retarget)', () => {
+    expect(engineSrc).not.toMatch(/auditBridges|governanceAudit|listGovernedBridges/i);
   });
 });
 
