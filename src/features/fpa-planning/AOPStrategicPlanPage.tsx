@@ -82,9 +82,11 @@ export default function AOPStrategicPlanPage() {
     setScopeId(scopeOptions[0]?.id ?? '');
   }, [level, scopeOptions]);
 
-  const refresh = () => setPlan(buildAOP({ fy, horizon }));
+  useEffect(() => {
+    setPlan(buildAOP({ fy, horizon }));
+  }, [fy, horizon]);
 
-  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [fy, horizon]);
+  const refresh = () => setPlan(buildAOP({ fy, horizon }));
 
   const parentOptions = useMemo(() => {
     if (!plan) return [];
