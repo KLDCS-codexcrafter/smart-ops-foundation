@@ -35,6 +35,7 @@ import {
   postVoucher, generateVoucherNo, vouchersKey,
 } from '@/lib/fincore-engine';
 import { getGroupStructure } from '@/lib/intercompany-group-structure-engine';
+import { loadEntities } from '@/data/mock-entities';
 import type { Voucher, VoucherLedgerLine } from '@/types/voucher';
 import type { VoucherBaseType } from '@/types/voucher-type';
 
