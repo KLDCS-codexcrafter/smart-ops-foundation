@@ -654,8 +654,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint 114 T-Phase-6.B.OOB.2 · Arc 4 · OOB-13 Workpaper Auto-Population (10 templates) · 1 NEW SIBLING oob13-workpaper-autopop-engine (FR-44 PURE ASSEMBLY: reads idea-7 listTPAudits + multi-gaap compareMultiGAAPBooks + tds-aggregator aggregateBySection + cost-audit listCostAuditorAppointments + statutory-registers listRegisterEntries + group-consolidation buildConsolidatedPnL + S111 buildBalanceSheet + S112 buildDisclosurePack — NO figure rebuild; empty source → populated:false skeleton, no fabrication · DP-A4-8 honest metrics) + NEW Standalone Page #41 WorkpaperAutoPopPage (10-template grid + per-workpaper rows with source_ref + auto-populate-all · sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type workpaper_autopop_event under 'mca-roc' (ComplianceModule UNTOUCHED) · DP-A4-8 HONEST METRICS: "OOB 16/16" is NARRATIVE only · NO machine OOB-counter register · SCOPE WALL: OOB-13 ONLY · NO Pillar-C.3 governance (S115) · NO new financial computation · all source engines 0-DIFF · 38-streak ⭐ HOLD · headSha TBD_AT_BANK (backfilled at S115 Block 1)
   {
     sprintNumber: 114, code: 'T-Phase-6.B.OOB.2', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '0b16fd04433749a690761109741ef733ab96e315', loc: 1200,
+    headSha: '0eb85e876271380bd526dd6d0901035665996001', predecessorSha: '0b16fd04433749a690761109741ef733ab96e315', loc: 1200,
     newSiblings: ['oob13-workpaper-autopop-engine'],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🏁🎉 Sprint 115 T-Phase-6.C.3.1-CLOSE · PHASE 6 FINALE · Pillar C.3 Inter-Department Governance + Phase-6 Close Ceremony · 1 NEW SIBLING inter-dept-governance-engine (READ-ONLY audit of existing bridges: enumerates from idea-6 listInterDeptWorkflows + oob8 listComplianceApprovalRules + bridge-pattern siblings · FR-44: creates/edits NO bridge · idea-6 + oob8 + approval-matrix + approval-workflow all 0-DIFF · auditInterDeptBridges/listGovernedBridges; total_bridges = ACTUAL enumerated count, NOT hardcoded 29) + NEW Standalone Page #42 InterDeptGovernancePage (bridge-coverage table + exceptions · sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type inter_dept_governance_audit under 'mca-roc' (ComplianceModule UNTOUCHED) + docs/Operix_Phase6_Close_Ceremony.md (§A register-certified vs §B narrative SEPARATED per DP-A4-8/FR-91 — 16/16 OOBs + 29 bridges + 161/161 + 18 capabilities + Horizon 1.5 flagged as NARRATIVE) + S114 cleanups (commit missing close-summary at T-Phase-6.B.OOB.2 + retarget S114 existsSync tombstone to still-true invariant) · DP-A4-8 HONEST METRICS · SCOPE WALL: governance audit only, read-only · 38-streak ⭐ HOLD · CLOSES PHASE 6 (5 arcs · S96–S115) · headSha TBD_AT_BANK (legitimately the last open entry)
+  {
+    sprintNumber: 115, code: 'T-Phase-6.C.3.1-CLOSE', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '0eb85e876271380bd526dd6d0901035665996001', loc: 1400,
+    newSiblings: ['inter-dept-governance-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
