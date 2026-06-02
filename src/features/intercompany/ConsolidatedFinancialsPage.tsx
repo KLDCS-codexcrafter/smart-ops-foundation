@@ -42,11 +42,11 @@ export default function ConsolidatedFinancialsPage() {
   const refresh = () => setTick((t) => t + 1);
 
   const bs: ConsolidatedBalanceSheet | null = useMemo(
-    () => loadConsolidatedBalanceSheet(fy),
+    () => { void tick; return loadConsolidatedBalanceSheet(fy); },
     [fy, tick],
   );
   const cf: ConsolidatedCashFlow | null = useMemo(
-    () => loadConsolidatedCashFlow(fy),
+    () => { void tick; return loadConsolidatedCashFlow(fy); },
     [fy, tick],
   );
   const ncis: NCIEntry[] = useMemo(() => computeNCI({ fy }), [fy, tick]);
