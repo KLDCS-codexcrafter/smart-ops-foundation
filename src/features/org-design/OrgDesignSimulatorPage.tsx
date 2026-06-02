@@ -91,7 +91,10 @@ export default function OrgDesignSimulatorPage() {
     setSkills(getSkillsInventory());
   }, []);
 
-  const coverage = useMemo(() => getSuccessionCoverage(), []);
+  const coverage = useMemo(() => {
+    void succession;
+    return getSuccessionCoverage();
+  }, [succession]);
 
   // ── Simulator handlers ─────────────────────────────────────────────────────
   function addNode() {
