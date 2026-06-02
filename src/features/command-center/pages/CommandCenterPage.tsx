@@ -139,6 +139,9 @@ import IntercompanyTransactionsHubPage from '@/features/intercompany/Intercompan
 // Sprint 108 · T-Phase-6.C.1.4 · Group Eliminations (Standalone Page #36 · 🏁 Arc 2 Capstone)
 import GroupEliminationsPage from '@/features/intercompany/GroupEliminationsPage';
 
+// Sprint 109 · T-Phase-6.C.2.1 · Group Consolidation (Standalone Page #37 · 🎬 Arc 3 Opener)
+import GroupConsolidationPage from '@/features/intercompany/GroupConsolidationPage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
