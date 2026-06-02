@@ -43,12 +43,10 @@ export default function ConsolidatedFinancialsPage() {
 
   const bs: ConsolidatedBalanceSheet | null = useMemo(
     () => loadConsolidatedBalanceSheet(fy),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fy, tick],
   );
   const cf: ConsolidatedCashFlow | null = useMemo(
     () => loadConsolidatedCashFlow(fy),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [fy, tick],
   );
   const ncis: NCIEntry[] = useMemo(() => computeNCI({ fy }), [fy, tick]);
