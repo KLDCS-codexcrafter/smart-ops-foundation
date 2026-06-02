@@ -45,6 +45,8 @@ interface DraftState {
   amount: number;
   txn_date: string;
   note: string;
+  allocation_basis: string;
+  settles_ic_txn_id: string;
 }
 
 const fmtINR = (n: number) =>
