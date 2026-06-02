@@ -26,7 +26,11 @@ export type CardId =
   | 'unicomm'                 // Tier 3 stub (existing card · was missing)
   | 'webstorex'               // Tier 3 stub · MOAT #11 (existing card · was missing)
   | 'comply360'              // Tier 4 deferred · Phase 1.4+ (existing card · was missing)
-  | 'vendor-portal';          // Sprint T-Phase-1.A.1 · NEW · D-282-REV · Vendor Portal card (parallels Distributor Hub · 6th FR-81 application)
+  | 'vendor-portal'           // Sprint T-Phase-1.A.1 · NEW · D-282-REV · Vendor Portal card (parallels Distributor Hub · 6th FR-81 application)
+  // Sprint 116 · T-Phase-7.D.0.1 · 🎬 Phase 7 opener · NEW CARD (additive · DP-P7-2/DP-D0-1)
+  // Homes Arc D.0 (org planning · AOP/3-yr strategic plan) and Arc D.1 (budget/forecast/scenario).
+  // Existing CardIds 0-DIFF; this is appended at the end of the union.
+  | 'fpa-planning';
 
 export type PlanTier = 'starter' | 'growth' | 'enterprise' | 'trial';
 
