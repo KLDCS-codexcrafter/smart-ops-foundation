@@ -221,6 +221,7 @@ export type CommandCenterModule =
   | 'fincore-workpaper-autopop'
   | 'fincore-inter-dept-governance'
   | 'fincore-aop-strategic-plan'
+  | 'fpa-planning-workforce'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
