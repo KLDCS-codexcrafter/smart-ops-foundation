@@ -10,7 +10,7 @@
  * @scope-wall  DP-A2-9 · NO matching · NO eliminations · NO consolidation.
  */
 import { useMemo, useState } from 'react';
-import { ArrowLeftRight, Plus, Send, ShieldCheck, Receipt } from 'lucide-react';
+import { ArrowLeftRight, Plus, Send, ShieldCheck, Receipt, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -26,6 +26,7 @@ import { toast } from 'sonner';
 import {
   createICTransaction,
   postICTransaction,
+  settleICTransaction,
   listICTransactions,
   IC_TRANSACTION_TYPES,
   PRICED_IC_TYPES,
@@ -44,6 +45,8 @@ interface DraftState {
   amount: number;
   txn_date: string;
   note: string;
+  allocation_basis: string;
+  settles_ic_txn_id: string;
 }
 
 const fmtINR = (n: number) =>
@@ -74,6 +77,8 @@ export default function IntercompanyTransactionsHubPage() {
     amount: 0,
     txn_date: today,
     note: '',
+    allocation_basis: 'headcount',
+    settles_ic_txn_id: '',
   });
 
   const txns = useMemo(() => listICTransactions().sort(
@@ -96,6 +101,9 @@ export default function IntercompanyTransactionsHubPage() {
         amount: Number(draft.amount) || 0,
         txn_date: draft.txn_date,
         note: draft.note,
+        allocation_basis: draft.txn_type === 'expense_allocation' ? draft.allocation_basis : undefined,
+        settles_ic_txn_id: draft.txn_type === 'payment' && draft.settles_ic_txn_id
+          ? draft.settles_ic_txn_id : undefined,
       });
       toast.success('IC transaction created (draft)');
       setTick((t) => t + 1);
@@ -108,6 +116,16 @@ export default function IntercompanyTransactionsHubPage() {
     try {
       postICTransaction(id);
       toast.success('IC transaction posted · TP audit + reciprocal vouchers booked');
+      setTick((t) => t + 1);
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
+  };
+
+  const settle = (id: string) => {
+    try {
+      settleICTransaction(id, { settlement_date: new Date().toISOString().slice(0, 10) });
+      toast.success('IC transaction settled');
       setTick((t) => t + 1);
     } catch (e) {
       toast.error((e as Error).message);
@@ -289,6 +307,10 @@ export default function IntercompanyTransactionsHubPage() {
                     {t.status === 'draft' || t.status === 'priced' ? (
                       <Button size="sm" variant="outline" onClick={() => post(t.ic_txn_id)}>
                         <Send className="h-3 w-3 mr-1" /> Post
+                      </Button>
+                    ) : t.status === 'posted' ? (
+                      <Button size="sm" variant="outline" onClick={() => settle(t.ic_txn_id)}>
+                        <CheckCircle2 className="h-3 w-3 mr-1" /> Settle
                       </Button>
                     ) : null}
                   </TableCell>

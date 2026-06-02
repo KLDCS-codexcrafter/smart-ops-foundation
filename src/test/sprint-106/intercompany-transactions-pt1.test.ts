@@ -118,13 +118,13 @@ function seedPricingRule(): string {
 }
 
 describe('S106 · Block 0 · Pre-flight & contract shape', () => {
-  it('exports the 4 IC transaction types in order', () => {
-    expect(IC_TRANSACTION_TYPES).toEqual(['stock_transfer', 'service_charge', 'capital_infusion', 'loan']);
+  it('exports the 4 IC transaction types in order (S106 first-four · S107 extends)', () => {
+    expect(IC_TRANSACTION_TYPES.slice(0, 4)).toEqual(['stock_transfer', 'service_charge', 'capital_infusion', 'loan']);
   });
 
-  it('classifies priced vs unpriced types correctly', () => {
-    expect(PRICED_IC_TYPES).toEqual(['stock_transfer', 'service_charge']);
-    expect(UNPRICED_IC_TYPES).toEqual(['capital_infusion', 'loan']);
+  it('classifies S106 priced vs unpriced types correctly (S107 may add more)', () => {
+    expect(PRICED_IC_TYPES).toEqual(expect.arrayContaining(['stock_transfer', 'service_charge']));
+    expect(UNPRICED_IC_TYPES).toEqual(expect.arrayContaining(['capital_infusion', 'loan']));
   });
 
   it('READS_FROM declares the 4 orchestrated engines', () => {
@@ -502,8 +502,8 @@ describe('S106 · Block 4 · Audit type', () => {
     expect(AUDIT_TYPES_SRC).toMatch(/'intercompany_transaction'/);
   });
 
-  it("does NOT declare intercompany_settlement (deferred to S107)", () => {
-    expect(AUDIT_TYPES_SRC).not.toMatch(/'intercompany_settlement'/);
+  it("declares intercompany_settlement (added by S107 · backward-compatible)", () => {
+    expect(AUDIT_TYPES_SRC).toMatch(/'intercompany_settlement'/);
   });
 });
 
@@ -557,7 +557,7 @@ describe('S106 · Block 6 · Registers & sprint history', () => {
     expect(s106?.grade).toBe('A');
     expect(s106?.newSiblings).toEqual(['intercompany-transaction-engine']);
     expect(s106?.predecessorSha).toBe('f75081139fe8b4df9c41e72d8c753c647e37e5b7');
-    expect(s106?.headSha).toBe('TBD_AT_BANK');
+    expect(s106?.headSha).toBe('30839e082e3250b11ac79ef40b6696e7d64e8481');
   });
 });
 

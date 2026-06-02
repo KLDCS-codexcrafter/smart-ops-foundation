@@ -598,8 +598,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🏁 Sprint 106 T-Phase-6.C.1.2 · Arc 2 · Pillar C.1 · IC Transactions Pt 1 · NEW SIBLING intercompany-transaction-engine (FR-44 ORCHESTRATION SPINE · pipes resolvePrice → generateTPAudit → postVoucher for two reciprocal entries · 4 of 8 types: stock_transfer/service_charge/capital_infusion/loan · capital+loan skip pricing per §L · validates both parties via S105 getGroupStructure · per-type ledger mapping · v1.31 §P @orchestrator exemption · SCOPE WALL DP-A2-9 NO matching/eliminations/consolidation) + NEW Standalone Page #35 IntercompanyTransactionsHubPage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type intercompany_transaction under 'mca-roc' · 32-streak ⭐ target · §L: orchestration boundaries · per-type ledger mapping · capital_infusion pricing-skip rationale · loan-interest deferral to S107 · single-pass · headSha backfilled at S107 Block 1
   {
     sprintNumber: 106, code: 'T-Phase-6.C.1.2', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'f75081139fe8b4df9c41e72d8c753c647e37e5b7', loc: 1500,
+    headSha: '30839e082e3250b11ac79ef40b6696e7d64e8481', predecessorSha: 'f75081139fe8b4df9c41e72d8c753c647e37e5b7', loc: 1500,
     newSiblings: ['intercompany-transaction-engine'],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 107 T-Phase-6.C.1.3 · Arc 2 · Pillar C.1 · IC Transactions Pt 2 · EXTENDS intercompany-transaction-engine (4 more types: expense_allocation/asset_transfer/invoice/payment + settleICTransaction · all 8 IC types complete · FR-44 reused spine · NO new orchestration · DP-A2-9 scope wall · DP-A2-5 additive · DP-A2-3 settlement) + EXTENDS IntercompanyTransactionsHubPage (#35 · 4 new types + settle action) + 1 new audit type intercompany_settlement under 'mca-roc' · 33-streak ⭐ target · §L: per-type ledger mappings + allocation basis + FA-profit elimination deferred to S108/E7 + settlement design · headSha backfilled at S108 Block 1
+  {
+    sprintNumber: 107, code: 'T-Phase-6.C.1.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '30839e082e3250b11ac79ef40b6696e7d64e8481', loc: 1500,
+    newSiblings: [],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];

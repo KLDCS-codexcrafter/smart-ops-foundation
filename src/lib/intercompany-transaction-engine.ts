@@ -55,25 +55,39 @@ export const READS_FROM = {
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
-/** Sprint 106 ships 4 of 8 IC transaction types · S107 adds the other 4. */
+/** Sprint 106 shipped first 4 IC transaction types · Sprint 107 (T-Phase-6.C.1.3)
+ *  appends the remaining 4 — completing all 8. S106 union members + classification
+ *  + reciprocal switch arms are 0-DIFF (additive only · DP-A2-5). */
 export type ICTransactionType =
   | 'stock_transfer'
   | 'service_charge'
   | 'capital_infusion'
-  | 'loan';
+  | 'loan'
+  // S107 (T-Phase-6.C.1.3) · 4 NEW types · completes all 8
+  | 'expense_allocation'
+  | 'asset_transfer'
+  | 'invoice'
+  | 'payment';
 
 export const IC_TRANSACTION_TYPES: readonly ICTransactionType[] = [
   'stock_transfer', 'service_charge', 'capital_infusion', 'loan',
+  'expense_allocation', 'asset_transfer', 'invoice', 'payment',
 ] as const;
 
 /** Types that require arm's-length pricing via resolvePrice. */
 export const PRICED_IC_TYPES: readonly ICTransactionType[] = [
   'stock_transfer', 'service_charge',
+  // S107 · asset_transfer + invoice flow through the SAME postICTransaction
+  // orchestration (FR-44 spine · NO new orchestration code).
+  'asset_transfer', 'invoice',
 ] as const;
 
-/** Types that bypass pricing (equity / principal · not a priced supply). */
+/** Types that bypass pricing (equity / principal / allocation / cash-settle). */
 export const UNPRICED_IC_TYPES: readonly ICTransactionType[] = [
   'capital_infusion', 'loan',
+  // S107 · expense_allocation = cost-share by basis (not a priced supply);
+  // payment = settles an existing IC payable/receivable (cash movement).
+  'expense_allocation', 'payment',
 ] as const;
 
 export type ICTransactionStatus = 'draft' | 'priced' | 'posted' | 'settled';
@@ -95,6 +109,13 @@ export interface IntercompanyTransaction {
   txn_date: string;               // YYYY-MM-DD
   status: ICTransactionStatus;
   note?: string;
+  /** S107 · expense_allocation basis · §L-noted (e.g. 'headcount', 'revenue', 'area'). */
+  allocation_basis?: string;
+  /** S107 · payment links to the IC txn it settles (optional). */
+  settles_ic_txn_id?: string;
+  /** S107 · settlement bookkeeping (set by settleICTransaction). */
+  settlement_date?: string;
+  settlement_payment_ic_txn_id?: string;
   created_at: string;
   updated_at: string;
 }
@@ -108,7 +129,13 @@ export interface CreateICTransactionInput {
   amount?: number;
   txn_date: string;
   note?: string;
+  /** S107 · expense_allocation only. */
+  allocation_basis?: string;
+  /** S107 · payment only. Link the IC txn this payment settles. */
+  settles_ic_txn_id?: string;
 }
+
+
 
 // ─── Storage ─────────────────────────────────────────────────────────────────
 
@@ -257,6 +284,89 @@ function buildReciprocal(
         fromTypeName: 'IC Loan Principal (Source)',
         toTypeName: 'IC Loan Principal (Counterparty)',
       };
+    // ── S107 (T-Phase-6.C.1.3) · 4 NEW reciprocal cases ─────────────────
+    // §L · Ledger mapping rationale (S107):
+    //   - expense_allocation · cost-share by basis (headcount/revenue/area)
+    //     source: IC-RECV (Dr)  ↔  IC-ALLOC-INC "Allocated Expense Recovery" (Cr)
+    //     counter: IC-ALLOC-EXP "Allocated Expense" (Dr) ↔ IC-PAY (Cr).
+    //   - asset_transfer (PRICED · arm's-length via resolvePrice)
+    //     source: IC-RECV (Dr) ↔ FA-DISPOSAL "Asset Disposal (IC)" (Cr)
+    //     counter: IC-FA "Fixed Asset (IC)" (Dr) ↔ IC-PAY (Cr).
+    //     UNREALIZED-PROFIT-IN-FA elimination is **S108/E7** · NOT here (DP-A2-9).
+    //   - invoice (PRICED · trade IC invoice via resolvePrice)
+    //     source: IC-RECV (Dr) ↔ IC-SALES-INC "IC Sales Income" (Cr)
+    //     counter: IC-PURCH-EXP "IC Purchase Expense" (Dr) ↔ IC-PAY (Cr).
+    //   - payment (UNPRICED · settles existing IC payable/receivable)
+    //     source: CASH-BANK (Dr) ↔ IC-RECV-CLR "IC Receivable Clearing" (Cr)
+    //     counter: IC-PAY-CLR "IC Payable Clearing" (Dr) ↔ CASH-BANK (Cr).
+    case 'expense_allocation':
+      return {
+        fromLines: [
+          mkLine('IC-RECV', 'Inter-Company Receivable', 'CA', a, 0, narration),
+          mkLine('IC-ALLOC-INC', 'Allocated Expense Recovery (IC)', 'INC', 0, a, narration),
+        ],
+        toLines: [
+          mkLine('IC-ALLOC-EXP', 'Allocated Expense (IC)', 'EXP', a, 0, narration),
+          mkLine('IC-PAY', 'Inter-Company Payable', 'CL', 0, a, narration),
+        ],
+        fromBaseType: 'Journal',
+        toBaseType: 'Journal',
+        fromPrefix: 'ICEA',
+        toPrefix: 'ICEA',
+        fromTypeName: 'IC Expense Allocation (Source)',
+        toTypeName: 'IC Expense Allocation (Counterparty)',
+      };
+    case 'asset_transfer':
+      return {
+        fromLines: [
+          mkLine('IC-RECV', 'Inter-Company Receivable', 'CA', a, 0, narration),
+          mkLine('FA-DISPOSAL', 'Asset Disposal (IC)', 'INC', 0, a, narration),
+        ],
+        toLines: [
+          mkLine('IC-FA', 'Fixed Asset (IC)', 'FA', a, 0, narration),
+          mkLine('IC-PAY', 'Inter-Company Payable', 'CL', 0, a, narration),
+        ],
+        fromBaseType: 'Journal',
+        toBaseType: 'Journal',
+        fromPrefix: 'ICAT',
+        toPrefix: 'ICAT',
+        fromTypeName: 'IC Asset Transfer (Source)',
+        toTypeName: 'IC Asset Transfer (Counterparty)',
+      };
+    case 'invoice':
+      return {
+        fromLines: [
+          mkLine('IC-RECV', 'Inter-Company Receivable', 'CA', a, 0, narration),
+          mkLine('IC-SALES-INC', 'Inter-Company Sales Income', 'INC', 0, a, narration),
+        ],
+        toLines: [
+          mkLine('IC-PURCH-EXP', 'Inter-Company Purchase Expense', 'EXP', a, 0, narration),
+          mkLine('IC-PAY', 'Inter-Company Payable', 'CL', 0, a, narration),
+        ],
+        fromBaseType: 'Journal',
+        toBaseType: 'Journal',
+        fromPrefix: 'ICIN',
+        toPrefix: 'ICIN',
+        fromTypeName: 'IC Invoice (Source)',
+        toTypeName: 'IC Invoice (Counterparty)',
+      };
+    case 'payment':
+      return {
+        fromLines: [
+          mkLine('CASH-BANK', 'Bank / Cash', 'CA', a, 0, narration),
+          mkLine('IC-RECV-CLR', 'IC Receivable Clearing', 'CA', 0, a, narration),
+        ],
+        toLines: [
+          mkLine('IC-PAY-CLR', 'IC Payable Clearing', 'CL', a, 0, narration),
+          mkLine('CASH-BANK', 'Bank / Cash', 'CA', 0, a, narration),
+        ],
+        fromBaseType: 'Journal',
+        toBaseType: 'Journal',
+        fromPrefix: 'ICPY',
+        toPrefix: 'ICPY',
+        fromTypeName: 'IC Payment (Source)',
+        toTypeName: 'IC Payment (Counterparty)',
+      };
   }
 }
 
@@ -346,6 +456,8 @@ export function createICTransaction(input: CreateICTransactionInput): Intercompa
     txn_date: input.txn_date,
     status: 'draft',
     note: input.note,
+    allocation_basis: input.txn_type === 'expense_allocation' ? input.allocation_basis : undefined,
+    settles_ic_txn_id: input.txn_type === 'payment' ? input.settles_ic_txn_id : undefined,
     created_at: now,
     updated_at: now,
   };
@@ -526,3 +638,68 @@ export function getICTotalsForEntity(entity_id: string): { from: number; to: num
 
 /** Convenience read · vouchers key alias (re-export for page reads). */
 export const icVouchersKey = (entity: string): string => vouchersKey(entity);
+
+// ─── Sprint 107 · Settlement (DP-A2-3 · completes deferred S106 item) ───────
+
+export interface SettleICTransactionInput {
+  settlement_date: string;          // YYYY-MM-DD
+  payment_ic_txn_id?: string;       // optional · IC payment txn that cleared this
+}
+
+/**
+ * Transition a `'posted'` IC transaction → `'settled'`. Idempotent. Rejects
+ * txns not in 'posted' status. Logs `intercompany_settlement` audit event.
+ *
+ * §L · Settlement design (S107):
+ *   - A `payment` IC txn (or external cash settlement) clears a previously
+ *     posted IC invoice / loan principal / service charge etc. Settlement is
+ *     a status flip + audit event — no further ledger posting (the payment
+ *     txn itself already booked its reciprocal cash/clearing voucher).
+ *   - Linking `payment_ic_txn_id` lets downstream matching (S108) trace
+ *     which payment cleared which payable/receivable.
+ */
+export function settleICTransaction(
+  ic_txn_id: string,
+  input: SettleICTransactionInput,
+): IntercompanyTransaction {
+  const all = loadAll();
+  const idx = all.findIndex((t) => t.ic_txn_id === ic_txn_id);
+  if (idx < 0) throw new Error(`[ic-txn] not found: ${ic_txn_id}`);
+  const txn = all[idx];
+
+  if (txn.status === 'settled') return txn; // idempotent
+
+  if (txn.status !== 'posted') {
+    throw new Error(
+      `[ic-txn] cannot settle ic_txn=${ic_txn_id} · status=${txn.status} (must be 'posted')`,
+    );
+  }
+
+  if (!input.settlement_date) {
+    throw new Error('[ic-txn] settlement_date is required');
+  }
+
+  const before = { ...txn };
+  txn.status = 'settled';
+  txn.settlement_date = input.settlement_date;
+  txn.settlement_payment_ic_txn_id = input.payment_ic_txn_id;
+  txn.updated_at = new Date().toISOString();
+
+  all[idx] = txn;
+  saveAll(all);
+
+  // ── Audit · intercompany_settlement (S107 NEW audit type) ──────────
+  logAudit({
+    entityCode: txn.from_entity,
+    action: 'update',
+    entityType: 'intercompany_settlement',
+    recordId: txn.ic_txn_id,
+    recordLabel: `IC settle · ${txn.txn_type} · ${txn.from_entity}→${txn.to_entity} · ₹${txn.amount}`,
+    beforeState: before as unknown as Record<string, unknown>,
+    afterState: txn as unknown as Record<string, unknown>,
+    reason: input.payment_ic_txn_id ? `cleared by payment ${input.payment_ic_txn_id}` : 'manual settlement',
+    sourceModule: 'intercompany-transaction-engine',
+  });
+
+  return txn;
+}
