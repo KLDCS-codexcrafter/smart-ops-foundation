@@ -217,6 +217,7 @@ export type CommandCenterModule =
   | 'fincore-compliance-approval-rules'
   | 'fincore-workpaper-autopop'
   | 'fincore-inter-dept-governance'
+  | 'fincore-aop-strategic-plan'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
