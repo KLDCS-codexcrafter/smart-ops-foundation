@@ -432,6 +432,7 @@ export default function CommandCenterPage() {
       case 'fincore-workpaper-autopop': return <WorkpaperAutoPopPage />;
       case 'fincore-inter-dept-governance': return <InterDeptGovernancePage />;
       case 'fincore-aop-strategic-plan': return <AOPStrategicPlanPage />;
+      case 'fpa-planning-workforce': return <WorkforcePlanningPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
