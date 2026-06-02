@@ -335,7 +335,7 @@ export function getBudgetVsActual(input: BudgetVsActualInput): FPABudget {
   try {
     logAudit({
       entityCode: input.entity_code ?? 'GLOBAL',
-      action: 'view',
+      action: 'update',
       entityType: 'budget_event',
       recordId: budget_id,
       recordLabel:
@@ -439,7 +439,7 @@ export function getBudgetVsAOP(input: BudgetVsAOPInput): BudgetVsAOPResult {
   try {
     logAudit({
       entityCode: input.entity_code ?? 'GLOBAL',
-      action: 'view',
+      action: 'update',
       entityType: 'budget_event',
       recordId: `AOP::${input.fy}::${input.scope_level}::${input.scope_id}::${basis}`,
       recordLabel:
