@@ -39,11 +39,12 @@ function defaultFy(): string {
 
 export default function GroupConsolidationPage() {
   const [fy, setFy] = useState<string>(defaultFy());
-  const [tick, setTick] = useState(0);
+  const [, setTick] = useState(0);
 
-  const tb = useMemo(() => consolidate({ fy }), [fy, tick]);
-  const pnl = useMemo(() => buildConsolidatedPnL({ fy }), [fy, tick]);
-  const summary = useMemo(() => getConsolidationSummary(fy), [fy, tick]);
+  const tb = useMemo(() => consolidate({ fy }), [fy]);
+  const pnl = useMemo(() => buildConsolidatedPnL({ fy }), [fy]);
+  const summary = useMemo(() => getConsolidationSummary(fy), [fy]);
+  
 
   const refresh = () => setTick((t) => t + 1);
 

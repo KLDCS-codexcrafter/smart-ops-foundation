@@ -223,16 +223,21 @@ export function consolidate(input: { fy: string }): ConsolidatedTrialBalance {
       const pnlLines = tb.lines.filter((l) => l.classification === 'pnl');
       const net = dSub(dSum(pnlLines, (l) => l.credit), dSum(pnlLines, (l) => l.debit));
       const share = round2(dPct(net, node.ownership_pct));
-      const code = 'IC-EQUITY-INVEST';
-      const cur = combined.get(code) ?? {
-        ledger_group_code: code,
-        classification: 'bs' as Classification,
-        debit: 0,
-        credit: 0,
-      };
-      if (share >= 0) cur.debit = dAdd(cur.debit, share);
-      else cur.credit = dAdd(cur.credit, Math.abs(share));
-      combined.set(code, cur);
+      const absShare = Math.abs(share);
+      // Dr IC-EQUITY-INVEST / Cr IC-EQUITY-INCOME (or reversed for losses) — keeps TB balanced.
+      const invCode = 'IC-EQUITY-INVEST';
+      const incCode = 'IC-EQUITY-INCOME';
+      const inv = combined.get(invCode) ?? { ledger_group_code: invCode, classification: 'bs' as Classification, debit: 0, credit: 0 };
+      const inc = combined.get(incCode) ?? { ledger_group_code: incCode, classification: 'pnl' as Classification, debit: 0, credit: 0 };
+      if (share >= 0) {
+        inv.debit = dAdd(inv.debit, absShare);
+        inc.credit = dAdd(inc.credit, absShare);
+      } else {
+        inv.credit = dAdd(inv.credit, absShare);
+        inc.debit = dAdd(inc.debit, absShare);
+      }
+      combined.set(invCode, inv);
+      combined.set(incCode, inc);
     }
   }
 
