@@ -225,6 +225,7 @@ export type CommandCenterModule =
   | 'fincore-inter-dept-governance'
   | 'fincore-aop-strategic-plan'
   | 'fpa-planning-workforce'
+  | 'fpa-planning-okr-framework'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
