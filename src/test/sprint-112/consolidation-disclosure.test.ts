@@ -352,10 +352,9 @@ describe('S112 · registers + guardrails', () => {
     expect(matches.length).toBe(1);
   });
 
-  it('sprint-history has S112 entry with TBD_AT_BANK (Guardrail 1)', () => {
+  it('sprint-history has S112 entry (headSha backfilled at S113 Block 1)', () => {
     const s112 = SPRINTS.find((s) => s.sprintNumber === 112);
     expect(s112).toBeTruthy();
-    expect(s112?.headSha).toBe('TBD_AT_BANK');
     expect(s112?.predecessorSha).toBe('3f00b9813e36e28fbea99ad2a6a1ca5f4427e5dd');
     expect(s112?.newSiblings).toEqual(['consolidation-disclosure-engine']);
     expect(s112?.code).toBe('T-Phase-6.C.2.4');
@@ -365,9 +364,5 @@ describe('S112 · registers + guardrails', () => {
   it('S111 sprint-history headSha was backfilled to 3f00b981 (Block 1)', () => {
     const s111 = SPRINTS.find((s) => s.sprintNumber === 111);
     expect(s111?.headSha).toBe('3f00b9813e36e28fbea99ad2a6a1ca5f4427e5dd');
-  });
-
-  it('NO S113 entry has been pre-created (Guardrail 2)', () => {
-    expect(SPRINTS.find((s) => s.sprintNumber === 113)).toBeUndefined();
   });
 });

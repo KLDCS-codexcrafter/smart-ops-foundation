@@ -441,8 +441,8 @@ describe('Sprint 108 · audit types + registers + page wiring', () => {
     expect(hits).toHaveLength(1);
   });
 
-  it('getSiblingCount === 176 (174 + 2 new SIBLINGs)', () => {
-    expect(getSiblingCount()).toBe(176);
+  it('getSiblingCount >= 176 (174 + 2 new SIBLINGs · floored S110 T1 lesson)', () => {
+    expect(getSiblingCount()).toBeGreaterThanOrEqual(176);
   });
 
   it('sprint-history S108 entry is appended with TBD_AT_BANK + correct predecessor', () => {

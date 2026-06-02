@@ -316,8 +316,8 @@ describe("Sprint 105 · page wiring (Standalone Page #34 · NOT a sibling)", () 
 });
 
 describe('Sprint 105 · sibling-register + sprint-history', () => {
-  it('sibling-count is 173 (172 → 173)', () => {
-    expect(getSiblingCount()).toBe(173);
+  it('sibling-count >= 173 (172 → 173 · floored S110 T1 lesson)', () => {
+    expect(getSiblingCount()).toBeGreaterThanOrEqual(173);
   });
 
   it('intercompany-group-structure-engine id appears exactly once in register', () => {

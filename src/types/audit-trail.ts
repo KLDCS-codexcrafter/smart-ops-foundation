@@ -102,7 +102,15 @@ export type AuditEntityType =
   // schedule_iii_compliant + ind_as_110_compliant + export_kind ('pack' | 'xbrl' | 'pdf').
   // SCOPE WALL DP-A3-9: disclosure assembly + PDF/XBRL export ONLY — NO new financial computation,
   // NO XBRL taxonomy rebuild (reuses comply360-xbrl-builder buildXBRL), NO OOB/Pillar-C.3 (Arc 4).
-  | 'consolidation_disclosure_event';
+  | 'consolidation_disclosure_event'
+  // Sprint 113 · T-Phase-6.B.OOB.1 · Arc 4 opener · OOB-8 Compliance-Aware Approval (module: 'mca-roc')
+  // 'oob8_approval_rule_event' — logged by oob8-compliance-aware-approval-engine when one of the
+  // 8 default compliance-context rules fires. Carries rule_id + approver_role + amount +
+  // routed_workflow_id (from idea-6) + variance_pct. FR-44: engine ORCHESTRATES idea-6 — does NOT
+  // reimplement idea-6/approval-matrix/approval-workflow (all 3 stay 0-DIFF). HONEST-METRICS
+  // (DP-A4-8): "OOB 15/16" is NARRATIVE only — no machine register/counter is asserted.
+  // SCOPE WALL: OOB-8 only · NO OOB-13 workpapers (S114) · NO Pillar-C.3 governance (S115).
+  | 'oob8_approval_rule_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

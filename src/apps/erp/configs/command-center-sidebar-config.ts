@@ -113,6 +113,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🎬 Sprint 111 · T-Phase-6.C.2.3 · Arc 3 · Consolidated Financials (BS+CF+NCI+Goodwill) · Standalone Page #39
       { id: 'fincore-consolidated-financials', type: 'item', label: 'Consolidated Financials', icon: Network,
         moduleId: 'fincore-consolidated-financials', requiredCards: ['command-center'] },
+      // 🎬 Sprint 113 · T-Phase-6.B.OOB.1 · Arc 4 opener · OOB-8 Compliance-Aware Approval Rules · Standalone Page #40
+      { id: 'fincore-compliance-approval-rules', type: 'item', label: 'Compliance Approval Rules', icon: Network,
+        moduleId: 'fincore-compliance-approval-rules', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
