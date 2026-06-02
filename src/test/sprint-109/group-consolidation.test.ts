@@ -56,7 +56,7 @@ function seed() {
   // Vouchers — entity_code via mock-entities shortCode: e1→'GRP1' (DEFAULT), e2→'DGTL', e3→'EXPT'
   // We use entity.shortCode lookup; align with mock-entities: e1 DEFAULT_ENTITY_SHORTCODE, e2 'DGTL', e3 'EXPT'.
   // To stay robust, read MOCK_ENTITIES shortCodes through engine which uses loadEntities by id.
-  localStorage.setItem(vouchersKey('GRP1'), JSON.stringify([
+  localStorage.setItem(vouchersKey('SMRT'), JSON.stringify([
     mkV('e1', [{ code: 'SALE', dr: 0, cr: 100000 }, { code: 'PRTY-DR', dr: 100000, cr: 0 }]),
     mkV('e1', [{ code: 'PURCH', dr: 40000, cr: 0 }, { code: 'PRTY-CR', dr: 0, cr: 40000 }]),
   ]));
