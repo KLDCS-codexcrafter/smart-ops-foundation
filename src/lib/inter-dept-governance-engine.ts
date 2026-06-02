@@ -184,7 +184,7 @@ export function auditInterDeptBridges(input: AuditInput = {}): GovernanceAuditRe
   try {
     logAudit({
       entityCode: input.entity_code ?? 'GLOBAL',
-      action: 'export', // closest existing AuditAction for a read-only run
+      action: 'create', // read-only audit run record — 'create' of a governance-audit log entry
       entityType: 'inter_dept_governance_audit',
       recordId: `governance-${fy}-${Date.now()}`,
       recordLabel: `Inter-Dept Governance Audit · ${fy} · ${bridges.length} bridges · ${exceptions.length} exceptions`,
