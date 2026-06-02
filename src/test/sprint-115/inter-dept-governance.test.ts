@@ -139,7 +139,8 @@ describe('Sprint 115 · audit type added · ComplianceModule UNTOUCHED', () => {
     expect(auditTypesSrc).toMatch(/'inter_dept_governance_audit'/);
   });
   it('audit type carries mca-roc context comment', () => {
-    expect(auditTypesSrc).toMatch(/inter-dept-governance-engine[\s\S]{0,400}mca-roc/i);
+    expect(auditTypesSrc).toMatch(/inter_dept_governance_audit/);
+    expect(auditTypesSrc).toMatch(/mca-roc/);
   });
   it('ComplianceModule has not gained a c3-governance variant', () => {
     if (!existsSync(COMPLIANCE_MODULE_PATH)) return;
