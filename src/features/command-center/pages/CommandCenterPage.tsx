@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Shell } from '@/shell';
 import { commandCenterShellConfig } from '@/apps/erp/configs/command-center-shell-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
@@ -406,6 +407,7 @@ export default function CommandCenterPage() {
   // This listener re-reads window.location.hash on every `hashchange` and switches
   // activeModule when the hash is in the existing allow-list. The mount-initializer
   // (~line 329) and the sidebar click-handler (~line 564) are UNCHANGED.
+  const location = useLocation();
   useEffect(() => {
     const KNOWN_MODULES = new Set<string>([
       'overview', 'foundation', 'core', 'geography', 'console', 'fincore-hub',
@@ -435,10 +437,11 @@ export default function CommandCenterPage() {
       }
     };
     window.addEventListener('hashchange', applyHash);
-    // Also handle the case where hash is already present when this listener mounts.
+    // S122-T1: also re-run on react-router navigations (which don't fire native hashchange
+    // when CC is already mounted). Mount-init + sidebar handler unchanged.
     applyHash();
     return () => window.removeEventListener('hashchange', applyHash);
-  }, []);
+  }, [location]);
 
   function handleNavigate(module: CommandCenterModule) {
     setActiveModule(module);
