@@ -502,8 +502,8 @@ describe('S106 · Block 4 · Audit type', () => {
     expect(AUDIT_TYPES_SRC).toMatch(/'intercompany_transaction'/);
   });
 
-  it("does NOT declare intercompany_settlement (deferred to S107)", () => {
-    expect(AUDIT_TYPES_SRC).not.toMatch(/'intercompany_settlement'/);
+  it("declares intercompany_settlement (added by S107 · backward-compatible)", () => {
+    expect(AUDIT_TYPES_SRC).toMatch(/'intercompany_settlement'/);
   });
 });
 
