@@ -661,8 +661,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🏁🎉 Sprint 115 T-Phase-6.C.3.1-CLOSE · PHASE 6 FINALE · Pillar C.3 Inter-Department Governance + Phase-6 Close Ceremony · 1 NEW SIBLING inter-dept-governance-engine (READ-ONLY audit of existing bridges: enumerates from idea-6 listInterDeptWorkflows + oob8 listComplianceApprovalRules + bridge-pattern siblings · FR-44: creates/edits NO bridge · idea-6 + oob8 + approval-matrix + approval-workflow all 0-DIFF · auditInterDeptBridges/listGovernedBridges; total_bridges = ACTUAL enumerated count, NOT hardcoded 29) + NEW Standalone Page #42 InterDeptGovernancePage (bridge-coverage table + exceptions · sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type inter_dept_governance_audit under 'mca-roc' (ComplianceModule UNTOUCHED) + docs/Operix_Phase6_Close_Ceremony.md (§A register-certified vs §B narrative SEPARATED per DP-A4-8/FR-91 — 16/16 OOBs + 29 bridges + 161/161 + 18 capabilities + Horizon 1.5 flagged as NARRATIVE) + S114 cleanups (commit missing close-summary at T-Phase-6.B.OOB.2 + retarget S114 existsSync tombstone to still-true invariant) · DP-A4-8 HONEST METRICS · SCOPE WALL: governance audit only, read-only · 38-streak ⭐ HOLD · CLOSES PHASE 6 (5 arcs · S96–S115) · headSha TBD_AT_BANK (legitimately the last open entry)
   {
     sprintNumber: 115, code: 'T-Phase-6.C.3.1-CLOSE', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '0eb85e876271380bd526dd6d0901035665996001', loc: 1400,
+    headSha: '1c67f6c50f6c58a1da69819b7fe94f6ac4019fc3', predecessorSha: '0eb85e876271380bd526dd6d0901035665996001', loc: 1400,
     newSiblings: ['inter-dept-governance-engine'],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 116 T-Phase-7.D.0.1 · 🎬 PHASE 7 OPENER · Arc D.0 Org Planning · NEW CARD 'fpa-planning' (additive · DP-P7-2 · existing CardIds + every existing card's metadata 0-DIFF) + 1 NEW SIBLING org-planning-engine (AOP / 3-year strategic plan · revenue/cost target cascade corporate→entity→division→department · FR-44: REUSES org-structure (Division/Department) + intercompany-group-structure-engine (listGroupStructure) · STORES TARGETS only — NO actuals/variance, that lives in D.1 · cascade_balanced via decimal-helpers dEq · validates scope_id against the real tree · idempotent upsert + logAudit) + NEW Standalone Page #43 AOPStrategicPlanPage (sidebar type:'item' + CC case + requiredCards:['fpa-planning'] · NOT a sibling) + card landing FpaPlanningPage at /erp/fpa-planning · 1 new audit type org_plan_event under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL: AOP only — NO workforce (S117) · NO OKR/org-cost (S118) · NO budget/forecast/scenario (D.1) · REFINED LEAN-BEHAVIORAL TEST POSTURE: ≥20 discrete it() · time-robust toBeGreaterThanOrEqual · no exact-count brittle · no future-file existsSync tombstones · 39-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S117 Block 1)
+  {
+    sprintNumber: 116, code: 'T-Phase-7.D.0.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '1c67f6c50f6c58a1da69819b7fe94f6ac4019fc3', loc: 1300,
+    newSiblings: ['org-planning-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
