@@ -605,8 +605,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint 107 T-Phase-6.C.1.3 · Arc 2 · Pillar C.1 · IC Transactions Pt 2 · EXTENDS intercompany-transaction-engine (4 more types: expense_allocation/asset_transfer/invoice/payment + settleICTransaction · all 8 IC types complete · FR-44 reused spine · NO new orchestration · DP-A2-9 scope wall · DP-A2-5 additive · DP-A2-3 settlement) + EXTENDS IntercompanyTransactionsHubPage (#35 · 4 new types + settle action) + 1 new audit type intercompany_settlement under 'mca-roc' · 33-streak ⭐ target · §L: per-type ledger mappings + allocation basis + FA-profit elimination deferred to S108/E7 + settlement design · headSha backfilled at S108 Block 1
   {
     sprintNumber: 107, code: 'T-Phase-6.C.1.3', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '30839e082e3250b11ac79ef40b6696e7d64e8481', loc: 1500,
+    headSha: 'c39e70c36d83097471990f9e5da6db65bcd47a7c', predecessorSha: '30839e082e3250b11ac79ef40b6696e7d64e8481', loc: 1500,
     newSiblings: [],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🏁 Sprint 108 T-Phase-6.C.1.4 · 🏁 ARC 2 CAPSTONE · Pillar C.1 · Matching + 7-type Group Eliminations (E1–E7) · 2 NEW SIBLINGs (intercompany-matching-engine · group-eliminations-engine) + NEW Standalone Page #36 GroupEliminationsPage (sidebar type:'item' + CC case · NOT a sibling) + 2 new audit types intercompany_match + group_elimination under 'mca-roc' · ELIMINATION_TYPES length EXACTLY 7 (E1 sales/purchases · E2 IC balances · E3 unrealized profit inventory · E4 IC dividends · E5 IC loans/interest · E6 investment-vs-equity using getGroupStructure.ownership_pct · E7 unrealized profit fixed-assets from S107 asset_transfer) · DP-A2-9 SCOPE WALL: elimination ENTRIES ONLY · NO consolidated P&L/BS/CF · NO NCI rollup · NO Goodwill · NO multi-currency (Arc 3 S109-S112) · ALL money math via decimal-helpers · zero-source category returns zero + §L-note (no fabrication) · 34-streak ⭐ target · headSha backfilled at S109 Block 1
+  {
+    sprintNumber: 108, code: 'T-Phase-6.C.1.4', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'c39e70c36d83097471990f9e5da6db65bcd47a7c', loc: 1100,
+    newSiblings: ['intercompany-matching-engine', 'group-eliminations-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];

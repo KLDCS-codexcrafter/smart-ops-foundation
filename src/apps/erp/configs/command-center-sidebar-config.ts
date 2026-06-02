@@ -101,6 +101,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🏁 Sprint 106 · T-Phase-6.C.1.2 · Arc 2 · IC Transactions Pt 1 · Standalone Page #35
       { id: 'fincore-intercompany-transactions-hub', type: 'item', label: 'Intercompany Transactions Hub', icon: Network,
         moduleId: 'fincore-intercompany-transactions-hub', requiredCards: ['command-center'] },
+      // 🏁 Sprint 108 · T-Phase-6.C.1.4 · Arc 2 Capstone · Group Eliminations · Standalone Page #36
+      { id: 'fincore-group-eliminations', type: 'item', label: 'Group Eliminations', icon: Network,
+        moduleId: 'fincore-group-eliminations', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
