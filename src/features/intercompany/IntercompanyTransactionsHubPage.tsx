@@ -308,6 +308,10 @@ export default function IntercompanyTransactionsHubPage() {
                       <Button size="sm" variant="outline" onClick={() => post(t.ic_txn_id)}>
                         <Send className="h-3 w-3 mr-1" /> Post
                       </Button>
+                    ) : t.status === 'posted' ? (
+                      <Button size="sm" variant="outline" onClick={() => settle(t.ic_txn_id)}>
+                        <CheckCircle2 className="h-3 w-3 mr-1" /> Settle
+                      </Button>
                     ) : null}
                   </TableCell>
                 </TableRow>
