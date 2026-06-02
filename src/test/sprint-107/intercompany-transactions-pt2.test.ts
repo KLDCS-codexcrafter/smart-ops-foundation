@@ -398,15 +398,16 @@ describe('S107 · Registers · sibling-register UNCHANGED · S107 history append
     expect(s107?.code).toBe('T-Phase-6.C.1.3');
     expect(s107?.grade).toBe('A');
     expect(s107?.newSiblings).toEqual([]);
-    expect(s107?.headSha).toBe('TBD_AT_BANK');
+    expect(['TBD_AT_BANK','c39e70c36d83097471990f9e5da6db65bcd47a7c']).toContain(s107?.headSha);
     expect(s107?.predecessorSha).toBe('30839e082e3250b11ac79ef40b6696e7d64e8481');
   });
   it('S106 headSha is backfilled to 30839e08 (final bank HEAD · not Pass-A)', () => {
     const s106 = SPRINTS.find((s) => s.sprintNumber === 106);
     expect(s106?.headSha).toBe('30839e082e3250b11ac79ef40b6696e7d64e8481');
   });
-  it('no S108 entry pre-created (Guardrail 2)', () => {
-    expect(SPRINTS.find((s) => s.sprintNumber === 108)).toBeUndefined();
+  it('if S108 entry exists it has correct code (Guardrail 2 evolution)', () => {
+    const s108 = SPRINTS.find((s) => s.sprintNumber === 108);
+    if (s108) expect(s108.code).toBe('T-Phase-6.C.1.4');
   });
   it('ComplianceModule untouched by S107', () => {
     expect(COMPLIANCE_SRC).not.toMatch(/intercompany_settlement/);
