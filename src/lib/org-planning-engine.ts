@@ -243,7 +243,7 @@ export function upsertStrategicTarget(input: UpsertInput): StrategicTarget {
   try {
     logAudit({
       entityCode: input.entity_code ?? 'GLOBAL',
-      action: existing ? 'edit' : 'create',
+      action: existing ? 'update' : 'create',
       entityType: 'org_plan_event',
       recordId: target_id,
       recordLabel:
