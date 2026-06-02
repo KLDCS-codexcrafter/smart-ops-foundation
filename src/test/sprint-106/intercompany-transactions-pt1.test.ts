@@ -21,13 +21,12 @@ import {
   listICTransactions,
   getICTransaction,
   getICTotalsForEntity,
-  type IntercompanyTransaction,
 } from '@/lib/intercompany-transaction-engine';
 import * as icEngine from '@/lib/intercompany-transaction-engine';
 import * as pricingEngine from '@/lib/internal-pricing-engine';
 import * as tpEngine from '@/lib/idea-7-transfer-pricing-audit-engine';
 import * as fincoreEngine from '@/lib/fincore-engine';
-import { upsertGroupStructure, deleteGroupStructure } from '@/lib/intercompany-group-structure-engine';
+import { upsertGroupStructure } from '@/lib/intercompany-group-structure-engine';
 import { MOCK_ENTITIES } from '@/data/mock-entities';
 import { auditTrailKey, type AuditEntityType } from '@/types/audit-trail';
 import { getSiblingCount, SIBLINGS } from '@/lib/_institutional/sibling-register';
@@ -61,7 +60,7 @@ const AUDIT_TYPES_SRC = fs.readFileSync(AUDIT_TYPES_PATH, 'utf8');
 
 const PARENT_ID = MOCK_ENTITIES[0].id;
 const SUB_ID = MOCK_ENTITIES[1].id;
-const BRANCH_ID = MOCK_ENTITIES[2].id;
+const _BRANCH_ID = MOCK_ENTITIES[2].id; void _BRANCH_ID;
 const PARENT_CODE = MOCK_ENTITIES[0].shortCode;
 const SUB_CODE = MOCK_ENTITIES[1].shortCode;
 
