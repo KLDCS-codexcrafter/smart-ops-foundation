@@ -107,6 +107,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🎬 Sprint 109 · T-Phase-6.C.2.1 · Arc 3 Opener · Group Consolidation · Standalone Page #37
       { id: 'fincore-group-consolidation', type: 'item', label: 'Group Consolidation', icon: Network,
         moduleId: 'fincore-group-consolidation', requiredCards: ['command-center'] },
+      // 🎬 Sprint 110 · T-Phase-6.C.2.2 · Arc 3 · Multi-Currency Translation · Standalone Page #38
+      { id: 'fincore-multi-currency-translation', type: 'item', label: 'Multi-Currency Translation', icon: Network,
+        moduleId: 'fincore-multi-currency-translation', requiredCards: ['command-center'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
