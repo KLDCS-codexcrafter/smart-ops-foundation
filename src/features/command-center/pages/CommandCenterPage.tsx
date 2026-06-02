@@ -139,6 +139,9 @@ import IntercompanyTransactionsHubPage from '@/features/intercompany/Intercompan
 // Sprint 108 · T-Phase-6.C.1.4 · Group Eliminations (Standalone Page #36 · 🏁 Arc 2 Capstone)
 import GroupEliminationsPage from '@/features/intercompany/GroupEliminationsPage';
 
+// Sprint 109 · T-Phase-6.C.2.1 · Group Consolidation (Standalone Page #37 · 🎬 Arc 3 Opener)
+import GroupConsolidationPage from '@/features/intercompany/GroupConsolidationPage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
@@ -190,6 +193,7 @@ export type CommandCenterModule =
   | 'fincore-intercompany-group-structure'
   | 'fincore-intercompany-transactions-hub'
   | 'fincore-group-eliminations'
+  | 'fincore-group-consolidation'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -289,7 +293,7 @@ export default function CommandCenterPage() {
       'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings', 'fincore-production-config',
       'org-structure',
       'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency', 'fincore-transaction-templates',
-      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'projx-project-centres',
+      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -394,6 +398,7 @@ export default function CommandCenterPage() {
       case 'fincore-intercompany-group-structure': return <IntercompanyGroupStructurePage />;
       case 'fincore-intercompany-transactions-hub': return <IntercompanyTransactionsHubPage />;
       case 'fincore-group-eliminations': return <GroupEliminationsPage />;
+      case 'fincore-group-consolidation': return <GroupConsolidationPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -564,6 +569,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-intercompany-group-structure': 'Intercompany Group Structure',
     'fincore-intercompany-transactions-hub': 'Intercompany Transactions Hub',
     'fincore-group-eliminations': 'Group Eliminations',
+    'fincore-group-consolidation': 'Group Consolidation',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',

@@ -612,8 +612,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🏁 Sprint 108 T-Phase-6.C.1.4 · 🏁 ARC 2 CAPSTONE · Pillar C.1 · Matching + 7-type Group Eliminations (E1–E7) · 2 NEW SIBLINGs (intercompany-matching-engine · group-eliminations-engine) + NEW Standalone Page #36 GroupEliminationsPage (sidebar type:'item' + CC case · NOT a sibling) + 2 new audit types intercompany_match + group_elimination under 'mca-roc' · ELIMINATION_TYPES length EXACTLY 7 (E1 sales/purchases · E2 IC balances · E3 unrealized profit inventory · E4 IC dividends · E5 IC loans/interest · E6 investment-vs-equity using getGroupStructure.ownership_pct · E7 unrealized profit fixed-assets from S107 asset_transfer) · DP-A2-9 SCOPE WALL: elimination ENTRIES ONLY · NO consolidated P&L/BS/CF · NO NCI rollup · NO Goodwill · NO multi-currency (Arc 3 S109-S112) · ALL money math via decimal-helpers · zero-source category returns zero + §L-note (no fabrication) · 34-streak ⭐ target · headSha backfilled at S109 Block 1
   {
     sprintNumber: 108, code: 'T-Phase-6.C.1.4', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'c39e70c36d83097471990f9e5da6db65bcd47a7c', loc: 1100,
+    headSha: 'd621d0a52ed50a40ca01cc562c2919cdca176bbb', predecessorSha: 'c39e70c36d83097471990f9e5da6db65bcd47a7c', loc: 1100,
     newSiblings: ['intercompany-matching-engine', 'group-eliminations-engine'],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 109 T-Phase-6.C.2.1 · 🎬 ARC 3 OPENER · Pillar C.2 Group Consolidation · 1 NEW SIBLING group-consolidation-engine (FR-44 ORCHESTRATION SPINE · walks fincore per-entity vouchers + applies 3 Ind AS methods full/proportional/equity from group-structure + SUBTRACTS Arc 2 generateEliminations · MIRRORS ProfitLoss.tsx ledger_group_code→P&L/BS classification via reportUtils getL1Code/getL2Code · NO re-post/re-eliminate/re-derive) + NEW Standalone Page #37 GroupConsolidationPage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type group_consolidation_run under 'mca-roc' · SCOPE WALL DP-A3-9: Consolidated P&L + TB ONLY · 35-streak ⭐ target · headSha backfilled at S110 Block 1
+  {
+    sprintNumber: 109, code: 'T-Phase-6.C.2.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'd621d0a52ed50a40ca01cc562c2919cdca176bbb', loc: 1500,
+    newSiblings: ['group-consolidation-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
