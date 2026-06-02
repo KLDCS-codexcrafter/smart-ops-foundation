@@ -668,8 +668,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint 116 T-Phase-7.D.0.1 · 🎬 PHASE 7 OPENER · Arc D.0 Org Planning · NEW CARD 'fpa-planning' (additive · DP-P7-2 · existing CardIds + every existing card's metadata 0-DIFF) + 1 NEW SIBLING org-planning-engine (AOP / 3-year strategic plan · revenue/cost target cascade corporate→entity→division→department · FR-44: REUSES org-structure (Division/Department) + intercompany-group-structure-engine (listGroupStructure) · STORES TARGETS only — NO actuals/variance, that lives in D.1 · cascade_balanced via decimal-helpers dEq · validates scope_id against the real tree · idempotent upsert + logAudit) + NEW Standalone Page #43 AOPStrategicPlanPage (sidebar type:'item' + CC case + requiredCards:['fpa-planning'] · NOT a sibling) + card landing FpaPlanningPage at /erp/fpa-planning · 1 new audit type org_plan_event under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL: AOP only — NO workforce (S117) · NO OKR/org-cost (S118) · NO budget/forecast/scenario (D.1) · REFINED LEAN-BEHAVIORAL TEST POSTURE: ≥20 discrete it() · time-robust toBeGreaterThanOrEqual · no exact-count brittle · no future-file existsSync tombstones · 39-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S117 Block 1)
   {
     sprintNumber: 116, code: 'T-Phase-7.D.0.1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '1c67f6c50f6c58a1da69819b7fe94f6ac4019fc3', loc: 1300,
+    headSha: '8f5d4cf710fc614fd49b5c07958029204aeddb0e', predecessorSha: '1c67f6c50f6c58a1da69819b7fe94f6ac4019fc3', loc: 1300,
     newSiblings: ['org-planning-engine'],
+    bankDate: null, provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 117 T-Phase-7.D.0.2 · Arc D.0 · Workforce Planning · 1 NEW SIBLID workforce-planning-engine (headcount projection · hiring/attrition · permanent-vs-contract mix · workforce cost-vs-AOP — intra-arc S116 linkage) + NEW Standalone Page #44 WorkforcePlanningPage (sidebar type:'item' + CC case + requiredCards:['fpa-planning'] · NOT a sibling) + 1 new audit type workforce_plan_event under 'mca-roc' (ComplianceModule UNTOUCHED) · FR-44 REUSES org-structure (Division/Department) + capacity-planning-engine (capacity context) + org-planning-engine listStrategicTargets (cost_target lookup — intra-arc) + contract-manpower/employee types (mix source) · all 0-DIFF · SCOPE WALL DP-D0-7: workforce projection only — NO OKR (S118) · NO org-design (S119) · NO budget/forecast (D.1) · NO performance-mgmt / compensation-planning (deferred to later HR arc) · LEAN-BEHAVIORAL TEST POSTURE held · 40-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S118 Block 1)
+  {
+    sprintNumber: 117, code: 'T-Phase-7.D.0.2', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '8f5d4cf710fc614fd49b5c07958029204aeddb0e', loc: 1200,
+    newSiblings: ['workforce-planning-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];

@@ -160,6 +160,9 @@ import InterDeptGovernancePage from '@/features/inter-dept-governance/InterDeptG
 // 🎬 Sprint 116 · T-Phase-7.D.0.1 · AOP & Strategic Plan (Standalone Page #43 · Pillar D.0)
 import AOPStrategicPlanPage from '@/features/fpa-planning/AOPStrategicPlanPage';
 
+// 🎬 Sprint 117 · T-Phase-7.D.0.2 · Workforce Planning (Standalone Page #44 · Pillar D.0)
+import WorkforcePlanningPage from '@/features/workforce-planning/WorkforcePlanningPage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
@@ -218,6 +221,7 @@ export type CommandCenterModule =
   | 'fincore-workpaper-autopop'
   | 'fincore-inter-dept-governance'
   | 'fincore-aop-strategic-plan'
+  | 'fpa-planning-workforce'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -429,6 +433,7 @@ export default function CommandCenterPage() {
       case 'fincore-workpaper-autopop': return <WorkpaperAutoPopPage />;
       case 'fincore-inter-dept-governance': return <InterDeptGovernancePage />;
       case 'fincore-aop-strategic-plan': return <AOPStrategicPlanPage />;
+      case 'fpa-planning-workforce': return <WorkforcePlanningPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
