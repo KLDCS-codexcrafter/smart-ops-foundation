@@ -44,7 +44,7 @@ export default function GroupConsolidationPage() {
   const tb = useMemo(() => consolidate({ fy }), [fy]);
   const pnl = useMemo(() => buildConsolidatedPnL({ fy }), [fy]);
   const summary = useMemo(() => getConsolidationSummary(fy), [fy]);
-  void tick;
+  
 
   const refresh = () => setTick((t) => t + 1);
 
