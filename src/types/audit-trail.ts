@@ -87,7 +87,15 @@ export type AuditEntityType =
   // SCOPE WALL DP-A3-9: translation ONLY · NO BS/CF (S111) · NO NCI/Goodwill (S111) · NO disclosure (S112).
   // FR-44 WALL: DISTINCT from fx-what-if-engine simulator (which owns no rate table) — this engine
   // performs ACTUAL Ind AS 21 Current Rate translation of real balances and recognises FCTR/OCI.
-  | 'fx_translation_run';
+  | 'fx_translation_run'
+  // Sprint 111 · T-Phase-6.C.2.3 · Arc 3 · Pillar C.2 · Consolidated BS + CF + NCI + Goodwill · 2 NEW audit entity types (module: 'mca-roc')
+  // 'consolidated_balance_sheet_run' — logged by consolidated-balance-sheet-engine on buildBalanceSheet({fy}).
+  //   Carries entity_count + asset_total + liability_total + equity_total + nci_total + goodwill_total + balanced.
+  // 'consolidated_cash_flow_run' — logged by consolidated-cash-flow-engine on buildCashFlow({fy}).
+  //   Carries fy + operating_total + investing_total + financing_total + line_count.
+  // SCOPE WALL DP-A3-9: BS+CF+NCI+Goodwill ONLY · NO disclosure (S112) · NO XBRL (Arc 4) · NO OOB (Arc 4).
+  | 'consolidated_balance_sheet_run'
+  | 'consolidated_cash_flow_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

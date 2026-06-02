@@ -623,11 +623,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['group-consolidation-engine'],
     bankDate: '2026-06-02', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 110 T-Phase-6.C.2.2 · Arc 3 · Pillar C.2 · Multi-Currency Translation (Ind AS 21 / IAS 21 Current Rate method) · 1 NEW SIBLING fx-translation-engine (closing→BS · average→P&L · historical→equity · FCTR residual→OCI · REUSES dual-rate-engine.loadForexRates + currency master + idea-1 getMasterAsOf · DISTINCT from fx-what-if-engine simulator — FR-44 wall · §H WAIVER S110-only: ONE optional param entityTBProvider added to group-consolidation-engine.consolidate · default path 0-DIFF) + NEW Standalone Page #38 MultiCurrencyTranslationPage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type fx_translation_run under 'mca-roc' · SCOPE WALL DP-A3-9: translation ONLY · NO BS/CF (S111) · NO NCI/Goodwill (S111) · NO disclosure (S112) · NO scenario simulation (fx-what-if 0-DIFF) · 36-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S111 Block 1)
+  // 🎬 Sprint 110 T-Phase-6.C.2.2 · Arc 3 · Pillar C.2 · Multi-Currency Translation (Ind AS 21 / IAS 21 Current Rate method) · 1 NEW SIBLING fx-translation-engine (closing→BS · average→P&L · historical→equity · FCTR residual→OCI · REUSES dual-rate-engine.loadForexRates + currency master + idea-1 getMasterAsOf · DISTINCT from fx-what-if-engine simulator — FR-44 wall · §H WAIVER S110-only: ONE optional param entityTBProvider added to group-consolidation-engine.consolidate · default path 0-DIFF) + NEW Standalone Page #38 MultiCurrencyTranslationPage (sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type fx_translation_run under 'mca-roc' · SCOPE WALL DP-A3-9: translation ONLY · NO BS/CF (S111) · NO NCI/Goodwill (S111) · NO disclosure (S112) · NO scenario simulation (fx-what-if 0-DIFF) · 36-streak ⭐ · banked SHA d247e08c (post T1 hotfix · backfilled at S111 Block 1)
   {
     sprintNumber: 110, code: 'T-Phase-6.C.2.2', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '49690f03daa4eb9a42b0279930879b8bf2c3d7e4', loc: 1500,
+    headSha: 'd247e08cdb840605129296409a18c1202d748592', predecessorSha: '49690f03daa4eb9a42b0279930879b8bf2c3d7e4', loc: 1500,
     newSiblings: ['fx-translation-engine'],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 111 T-Phase-6.C.2.3 · Arc 3 · Pillar C.2 · Consolidated BS + CF + NCI + Goodwill · 2 NEW SIBLINGs consolidated-balance-sheet-engine + consolidated-cash-flow-engine (FR-44 ORCHESTRATION SPINE · reuses S110 consolidateWithTranslation + S109 consolidate · NO re-roll/re-translate/re-eliminate) + NEW Standalone Page #39 ConsolidatedFinancialsPage (BS/CF/NCI/Goodwill tabs · sidebar type:'item' + CC case · NOT a sibling) + 2 new audit types (consolidated_balance_sheet_run + consolidated_cash_flow_run) under 'mca-roc' · Ind AS 110 NCI = (100−ownership_pct)% × sub net assets · Ind AS 103 Goodwill from capital_infusion IC-INVEST listICTransactions vs ownership_pct × acquisition (optional engine-local `acquisition?` param · current-net-assets fallback §L-flagged) · Ind AS 36 impairment FLAG only (NOT DCF) · §L equity = L1 CE only + FCTR-OCI + NCI synthetics (SR is L2 under CE; no separate L1 'SR' exists in finframe-seed) · §L cash-flow-engine 0-DIFF (treasury projector with no Ind AS 7 partitioning to reuse; classifier implemented ENGINE-LOCAL · FR-44 clean · no §H waiver) · SCOPE WALL DP-A3-9: BS+CF+NCI+Goodwill ONLY · NO disclosure (S112) · NO XBRL/OOB (Arc 4) · 37-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S112 Block 1)
+  {
+    sprintNumber: 111, code: 'T-Phase-6.C.2.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'd247e08cdb840605129296409a18c1202d748592', loc: 1500,
+    newSiblings: ['consolidated-balance-sheet-engine', 'consolidated-cash-flow-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];

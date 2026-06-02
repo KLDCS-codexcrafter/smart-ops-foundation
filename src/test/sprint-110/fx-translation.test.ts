@@ -291,8 +291,8 @@ describe('Sprint 110 · fx-translation-engine · Ind AS 21', () => {
   });
 
   // ── Registry hygiene ─────────────────────────────────────────────────
-  it('sibling-register count is 178 (was 177)', () => {
-    expect(getSiblingCount()).toBe(178);
+  it('sibling-register count is ≥178 (S110 added 178th; S111 may add more)', () => {
+    expect(getSiblingCount()).toBeGreaterThanOrEqual(178);
   });
   it('fx-translation-engine sibling entry exists exactly once', () => {
     const matches = SIBLINGS.filter(s => s.id === 'fx-translation-engine');
@@ -304,18 +304,15 @@ describe('Sprint 110 · fx-translation-engine · Ind AS 21', () => {
     const matches = SIBLINGS.filter(s => s.id === 'comply360-tier2-extensions-engine');
     expect(matches.length).toBe(1);
   });
-  it('sprint-history has S110 entry with TBD_AT_BANK and predecessor 49690f03', () => {
+  it('sprint-history has S110 entry banked at d247e08c with predecessor 49690f03', () => {
     const s110 = SPRINTS.find(s => s.sprintNumber === 110);
     expect(s110).toBeDefined();
-    expect(s110!.headSha).toBe('TBD_AT_BANK');
+    expect(s110!.headSha).toBe('d247e08cdb840605129296409a18c1202d748592');
     expect(s110!.predecessorSha).toBe('49690f03daa4eb9a42b0279930879b8bf2c3d7e4');
     expect(s110!.newSiblings).toEqual(['fx-translation-engine']);
   });
   it('sprint-history S109 headSha backfilled to 49690f03', () => {
     const s109 = SPRINTS.find(s => s.sprintNumber === 109);
     expect(s109!.headSha).toBe('49690f03daa4eb9a42b0279930879b8bf2c3d7e4');
-  });
-  it('sprint-history has NO S111 pre-entry', () => {
-    expect(SPRINTS.find(s => s.sprintNumber === 111)).toBeUndefined();
   });
 });
