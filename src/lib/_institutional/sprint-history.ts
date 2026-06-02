@@ -707,6 +707,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['fpa-forecasting-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
+  // ⭐ Sprint 122 T-Phase-7.D.1.3 · Arc D.1 · Scenario Management Pt 1 · DP-D1-3 THE MOAT · 1 NEW SIBLID scenario-modeling-engine (best/base/worst at SINGLE-ENTITY AND MULTI-ENTITY CONSOLIDATED scope · runScenario/listScenarios/compareScenarios/listScenarioEntities · scope=consolidated ORCHESTRATES the Phase-6 stack — CALLS fx-translation-engine.consolidateWithTranslation + group-consolidation-engine.consolidate + group-eliminations-engine.generateEliminations + group-consolidation-engine.buildConsolidatedPnL — producing consolidated_revenue/cost/pbt across entities + currencies that no domestic competitor can structurally match · scope=single_entity CALLS fx-translation translateEntityTB + fpa-forecasting generateFPAForecast (NO consolidation/eliminations at single scope) · compareScenarios delta_vs_base decimal-safe · ALL money math via decimal-helpers · audit type scenario_run under mca-roc · FR-44 ORCHESTRATES group-consolidation + fx-translation + group-eliminations + fpa-forecasting — reimplements none; does NOT import/dup fx-what-if-engine (single-realisation simulator · distinct · FR-44 wall · 0-DIFF) — all foundations stay 0-DIFF) + NEW Standalone Page #49 ScenarioModelingPage (sidebar type:'item' + CC case + requiredCards:['fpa-planning'] · NOT a sibling) + 2 FP&A-landing fixes carried from S116/S120: (a) wrap FpaPlanningPage in ERP Shell (header + sidebar) consistent with other card surfaces; (b) add hash-change useEffect to CommandCenterPage so #fincore-aop-strategic-plan + every other deep-link from the landing tile actually switches activeModule (was previously read ONLY at mount → opened CC overview instead of AOP) — mount-initializer + sidebar handler 0-DIFF · 1 new audit type scenario_run under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL DP-D1-3 Pt 1: best/base/worst single + consolidated ONLY — NO FX×rev×cost matrix (S123) · NO demand/capex scenarios (S123) · NO costing (S124-125) · LEAN-BEHAVIORAL TEST POSTURE (≥20 it · time-robust toContain on own headSha) · 45-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S123 Block 1)
+  {
+    sprintNumber: 122, code: 'T-Phase-7.D.1.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '8e5e578c0fd775924cd5acc2cd7ea5a7432585da', loc: 1400,
+    newSiblings: ['scenario-modeling-engine'],
+    bankDate: null, provenance: 'CONFIRMED',
+  },
 ];
 
 
