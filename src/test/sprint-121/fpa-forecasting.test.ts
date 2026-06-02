@@ -408,7 +408,7 @@ describe('§J · sibling-register + sprint-history (time-robust)', () => {
     const s120 = SPRINTS.find((s) => s.sprintNumber === 120);
     expect(s120?.headSha).toBe('749907701208bf70e6e1bedb3863b3b7b37b014f');
     const s121 = SPRINTS.find((s) => s.sprintNumber === 121);
-    expect(s121?.headSha).toBe('TBD_AT_BANK');
+    expect(['TBD_AT_BANK', '8e5e578c0fd775924cd5acc2cd7ea5a7432585da']).toContain(s121?.headSha);
     expect(s121?.newSiblings).toEqual(['fpa-forecasting-engine']);
     expect(s121?.predecessorSha).toBe('749907701208bf70e6e1bedb3863b3b7b37b014f');
   });

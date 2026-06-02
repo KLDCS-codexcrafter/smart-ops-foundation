@@ -172,6 +172,7 @@ import BudgetingPage from '@/features/budgeting/BudgetingPage';
 
 // 🎬 Sprint 121 · T-Phase-7.D.1.2 · FP&A Forecasting (Standalone Page #48 · Pillar D.1)
 import ForecastingPage from '@/features/forecasting/ForecastingPage';
+import ScenarioModelingPage from '@/features/scenario-modeling/ScenarioModelingPage';
 
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
@@ -236,6 +237,7 @@ export type CommandCenterModule =
   | 'fpa-planning-org-design'
   | 'fpa-planning-budgeting'
   | 'fpa-planning-forecasting'
+  | 'fpa-planning-scenario'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -335,7 +337,7 @@ export default function CommandCenterPage() {
       'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings', 'fincore-production-config',
       'org-structure',
       'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency', 'fincore-transaction-templates',
-      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'fincore-multi-currency-translation', 'fincore-consolidated-financials', 'fincore-compliance-approval-rules', 'fincore-workpaper-autopop', 'fincore-inter-dept-governance', 'fincore-aop-strategic-plan', 'fpa-planning-workforce', 'fpa-planning-okr-framework', 'fpa-planning-org-design', 'fpa-planning-budgeting', 'fpa-planning-forecasting', 'projx-project-centres',
+      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'fincore-multi-currency-translation', 'fincore-consolidated-financials', 'fincore-compliance-approval-rules', 'fincore-workpaper-autopop', 'fincore-inter-dept-governance', 'fincore-aop-strategic-plan', 'fpa-planning-workforce', 'fpa-planning-okr-framework', 'fpa-planning-org-design', 'fpa-planning-budgeting', 'fpa-planning-forecasting', 'fpa-planning-scenario', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -397,6 +399,47 @@ export default function CommandCenterPage() {
     window.history.replaceState(null, '', window.location.pathname + hash);
   }, [activeModule]);
 
+  // 🆕 Sprint 122 · T-Phase-7.D.1.3 · Block 2B (FP&A-landing fix carried from S116/S120)
+  // The mount-time hash initializer (line ~329) only fires ONCE — deep-links like
+  // /erp/command-center#fincore-aop-strategic-plan from the FpaPlanningPage landing
+  // tile reach CC after it is already mounted, leaving activeModule on 'overview'.
+  // This listener re-reads window.location.hash on every `hashchange` and switches
+  // activeModule when the hash is in the existing allow-list. The mount-initializer
+  // (~line 329) and the sidebar click-handler (~line 564) are UNCHANGED.
+  useEffect(() => {
+    const KNOWN_MODULES = new Set<string>([
+      'overview', 'foundation', 'core', 'geography', 'console', 'fincore-hub',
+      'fincore-tax-rates', 'fincore-tds', 'fincore-tcs', 'fincore-hsn-sac',
+      'fincore-professional-tax', 'fincore-epf-esi-lwf', 'fincore-income-tax',
+      'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings',
+      'fincore-production-config', 'org-structure',
+      'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency',
+      'fincore-transaction-templates', 'fincore-mode-of-payment', 'fincore-terms-of-payment',
+      'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit',
+      'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree',
+      'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap',
+      'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure',
+      'fincore-intercompany-transactions-hub', 'fincore-group-eliminations',
+      'fincore-group-consolidation', 'fincore-multi-currency-translation',
+      'fincore-consolidated-financials', 'fincore-compliance-approval-rules',
+      'fincore-workpaper-autopop', 'fincore-inter-dept-governance',
+      'fincore-aop-strategic-plan',
+      'fpa-planning-workforce', 'fpa-planning-okr-framework', 'fpa-planning-org-design',
+      'fpa-planning-budgeting', 'fpa-planning-forecasting', 'fpa-planning-scenario',
+    ]);
+    const applyHash = () => {
+      const raw = window.location.hash.replace('#', '');
+      const next = raw === 'core' ? 'foundation' : raw;
+      if (next && KNOWN_MODULES.has(next)) {
+        setActiveModule(next as CommandCenterModule);
+      }
+    };
+    window.addEventListener('hashchange', applyHash);
+    // Also handle the case where hash is already present when this listener mounts.
+    applyHash();
+    return () => window.removeEventListener('hashchange', applyHash);
+  }, []);
+
   function handleNavigate(module: CommandCenterModule) {
     setActiveModule(module);
   }
@@ -452,6 +495,7 @@ export default function CommandCenterPage() {
       case 'fpa-planning-org-design': return <OrgDesignSimulatorPage />;
       case 'fpa-planning-budgeting': return <BudgetingPage />;
       case 'fpa-planning-forecasting': return <ForecastingPage />;
+      case 'fpa-planning-scenario': return <ScenarioModelingPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -634,6 +678,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fpa-planning-org-design': 'Org Design & Succession',
     'fpa-planning-budgeting': 'FP&A Budgeting',
     'fpa-planning-forecasting': 'FP&A Forecasting',
+    'fpa-planning-scenario': 'Scenario Modeling',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',

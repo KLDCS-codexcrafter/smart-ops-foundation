@@ -141,6 +141,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🎬 Sprint 121 · T-Phase-7.D.1.2 · Arc D.1 · FP&A Forecasting · Standalone Page #48 (fpa-planning card)
       { id: 'fpa-planning-forecasting', type: 'item', label: 'FP&A Forecasting', icon: Network,
         moduleId: 'fpa-planning-forecasting', requiredCards: ['fpa-planning'] },
+      // ⭐ Sprint 122 · T-Phase-7.D.1.3 · Arc D.1 · Scenario Modeling Pt 1 (THE MOAT) · Standalone Page #49 (fpa-planning card)
+      { id: 'fpa-planning-scenario', type: 'item', label: 'Scenario Modeling', icon: Network,
+        moduleId: 'fpa-planning-scenario', requiredCards: ['fpa-planning'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },
