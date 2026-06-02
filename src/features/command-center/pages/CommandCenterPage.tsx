@@ -495,6 +495,7 @@ export default function CommandCenterPage() {
       case 'fpa-planning-org-design': return <OrgDesignSimulatorPage />;
       case 'fpa-planning-budgeting': return <BudgetingPage />;
       case 'fpa-planning-forecasting': return <ForecastingPage />;
+      case 'fpa-planning-scenario': return <ScenarioModelingPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
