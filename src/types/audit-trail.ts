@@ -69,7 +69,7 @@ export type AuditEntityType =
   // Logged by intercompany-transaction-engine on settleICTransaction (posted→settled).
   // The 4 new S107 txn types (expense_allocation/asset_transfer/invoice/payment) REUSE
   // 'intercompany_transaction' above — no per-type audit type.
-  | 'intercompany_settlement'
+  | 'intercompany_settlement';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
