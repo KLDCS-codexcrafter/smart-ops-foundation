@@ -638,3 +638,68 @@ export function getICTotalsForEntity(entity_id: string): { from: number; to: num
 
 /** Convenience read · vouchers key alias (re-export for page reads). */
 export const icVouchersKey = (entity: string): string => vouchersKey(entity);
+
+// ─── Sprint 107 · Settlement (DP-A2-3 · completes deferred S106 item) ───────
+
+export interface SettleICTransactionInput {
+  settlement_date: string;          // YYYY-MM-DD
+  payment_ic_txn_id?: string;       // optional · IC payment txn that cleared this
+}
+
+/**
+ * Transition a `'posted'` IC transaction → `'settled'`. Idempotent. Rejects
+ * txns not in 'posted' status. Logs `intercompany_settlement` audit event.
+ *
+ * §L · Settlement design (S107):
+ *   - A `payment` IC txn (or external cash settlement) clears a previously
+ *     posted IC invoice / loan principal / service charge etc. Settlement is
+ *     a status flip + audit event — no further ledger posting (the payment
+ *     txn itself already booked its reciprocal cash/clearing voucher).
+ *   - Linking `payment_ic_txn_id` lets downstream matching (S108) trace
+ *     which payment cleared which payable/receivable.
+ */
+export function settleICTransaction(
+  ic_txn_id: string,
+  input: SettleICTransactionInput,
+): IntercompanyTransaction {
+  const all = loadAll();
+  const idx = all.findIndex((t) => t.ic_txn_id === ic_txn_id);
+  if (idx < 0) throw new Error(`[ic-txn] not found: ${ic_txn_id}`);
+  const txn = all[idx];
+
+  if (txn.status === 'settled') return txn; // idempotent
+
+  if (txn.status !== 'posted') {
+    throw new Error(
+      `[ic-txn] cannot settle ic_txn=${ic_txn_id} · status=${txn.status} (must be 'posted')`,
+    );
+  }
+
+  if (!input.settlement_date) {
+    throw new Error('[ic-txn] settlement_date is required');
+  }
+
+  const before = { ...txn };
+  txn.status = 'settled';
+  txn.settlement_date = input.settlement_date;
+  txn.settlement_payment_ic_txn_id = input.payment_ic_txn_id;
+  txn.updated_at = new Date().toISOString();
+
+  all[idx] = txn;
+  saveAll(all);
+
+  // ── Audit · intercompany_settlement (S107 NEW audit type) ──────────
+  logAudit({
+    entityCode: txn.from_entity,
+    action: 'update',
+    entityType: 'intercompany_settlement',
+    recordId: txn.ic_txn_id,
+    recordLabel: `IC settle · ${txn.txn_type} · ${txn.from_entity}→${txn.to_entity} · ₹${txn.amount}`,
+    beforeState: before as unknown as Record<string, unknown>,
+    afterState: txn as unknown as Record<string, unknown>,
+    reason: input.payment_ic_txn_id ? `cleared by payment ${input.payment_ic_txn_id}` : 'manual settlement',
+    sourceModule: 'intercompany-transaction-engine',
+  });
+
+  return txn;
+}
