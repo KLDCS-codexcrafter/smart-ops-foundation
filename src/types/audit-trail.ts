@@ -60,7 +60,11 @@ export type AuditEntityType =
   | 'master_lifecycle_event'
   // Sprint 105 · T-Phase-6.C.1.1 · Arc 2 OPENER · Pillar C.1 Intercompany Foundation · 1 NEW audit entity type (module: 'mca-roc')
   // Logged on every upsert/update of GroupStructureNode (ownership %, relationship, consolidation method)
-  | 'group_structure_change';
+  | 'group_structure_change'
+  // Sprint 106 · T-Phase-6.C.1.2 · Arc 2 · Pillar C.1 · IC Transactions Pt 1 · 1 NEW audit entity type (module: 'mca-roc')
+  // Logged by intercompany-transaction-engine on postICTransaction. TP-audit + voucher-post events
+  // are logged downstream by idea-7 + fincore (v1.31 §P @orchestrator exemption).
+  | 'intercompany_transaction';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
