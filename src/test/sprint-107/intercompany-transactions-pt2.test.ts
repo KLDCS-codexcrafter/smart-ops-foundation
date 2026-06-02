@@ -21,7 +21,7 @@ import {
 import * as icEngine from '@/lib/intercompany-transaction-engine';
 import * as pricingEngine from '@/lib/internal-pricing-engine';
 import * as tpEngine from '@/lib/idea-7-transfer-pricing-audit-engine';
-import * as fincoreEngine from '@/lib/fincore-engine';
+import * as fincoreEngine from '@/lib/fincore-engine'; void fincoreEngine;
 import { upsertGroupStructure } from '@/lib/intercompany-group-structure-engine';
 import { MOCK_ENTITIES } from '@/data/mock-entities';
 import { auditTrailKey, type AuditEntityType } from '@/types/audit-trail';
