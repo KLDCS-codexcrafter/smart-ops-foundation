@@ -78,6 +78,7 @@ export default function IntercompanyTransactionsHubPage() {
 
   const txns = useMemo(() => listICTransactions().sort(
     (a, b) => b.created_at.localeCompare(a.created_at),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional refresh trigger
   ), [tick]);
 
   const onChange = <K extends keyof DraftState>(k: K, v: DraftState[K]) => {
