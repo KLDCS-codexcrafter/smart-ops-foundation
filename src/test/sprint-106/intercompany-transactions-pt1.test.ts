@@ -557,7 +557,7 @@ describe('S106 · Block 6 · Registers & sprint history', () => {
     expect(s106?.grade).toBe('A');
     expect(s106?.newSiblings).toEqual(['intercompany-transaction-engine']);
     expect(s106?.predecessorSha).toBe('f75081139fe8b4df9c41e72d8c753c647e37e5b7');
-    expect(s106?.headSha).toBe('TBD_AT_BANK');
+    expect(s106?.headSha).toBe('4d1ce9ca3a0c8201401360949f2120b356c6afcd');
   });
 });
 
