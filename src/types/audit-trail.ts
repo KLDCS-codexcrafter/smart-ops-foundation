@@ -158,7 +158,19 @@ export type AuditEntityType =
   // pattern · read-only); reimplements none, all 4 stay 0-DIFF.
   // SCOPE WALL: OKR + org-cost only — NO org-design/succession (S119) · NO
   // budget/forecast/scenario (D.1). ComplianceModule UNTOUCHED. No other audit type added.
-  | 'okr_cascade_event';
+  | 'okr_cascade_event'
+  // Sprint 119 · T-Phase-7.D.0.4 · 🏁 Arc D.0 CAPSTONE · Org Design + Succession (module: 'mca-roc')
+  // 'org_design_event' — logged by org-design-succession-engine on simulateReorg /
+  // upsertSuccession / upsertSkill. Carries scenario_id (re-org · scenario copy ONLY ·
+  // NEVER mutates real erp_divisions_*/erp_departments_*) + headcount/cost deltas (via
+  // workforce-planning-engine projectWorkforce) + succession coverage RAG + skills.
+  // FR-44: engine REUSES org-structure (READ only) + workforce-planning-engine
+  // (projectWorkforce) + Employee (succession/skills source); reimplements none.
+  // SCOPE WALL DP-D0-7: re-org sim + succession + skills INVENTORY only — NO
+  // performance-management (reviews/360/calibration) · NO compensation-planning
+  // (salary bands/merit) · NO budget/forecast/scenario (D.1).
+  // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
+  | 'org_design_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

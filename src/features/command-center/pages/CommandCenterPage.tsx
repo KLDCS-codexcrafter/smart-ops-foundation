@@ -166,6 +166,9 @@ import WorkforcePlanningPage from '@/features/workforce-planning/WorkforcePlanni
 // 🎬 Sprint 118 · T-Phase-7.D.0.3 · OKR / KPI Framework + Org-Cost (Standalone Page #45 · Pillar D.0)
 import OKRFrameworkPage from '@/features/okr-framework/OKRFrameworkPage';
 
+// 🏁 Sprint 119 · T-Phase-7.D.0.4 · Org Design + Succession (Standalone Page #46 · 🏁 Arc D.0 Capstone)
+import OrgDesignSimulatorPage from '@/features/org-design/OrgDesignSimulatorPage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
@@ -226,6 +229,7 @@ export type CommandCenterModule =
   | 'fincore-aop-strategic-plan'
   | 'fpa-planning-workforce'
   | 'fpa-planning-okr-framework'
+  | 'fpa-planning-org-design'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -325,7 +329,7 @@ export default function CommandCenterPage() {
       'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings', 'fincore-production-config',
       'org-structure',
       'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency', 'fincore-transaction-templates',
-      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'fincore-multi-currency-translation', 'fincore-consolidated-financials', 'fincore-compliance-approval-rules', 'fincore-workpaper-autopop', 'fincore-inter-dept-governance', 'fincore-aop-strategic-plan', 'fpa-planning-workforce', 'fpa-planning-okr-framework', 'projx-project-centres',
+      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'fincore-multi-currency-translation', 'fincore-consolidated-financials', 'fincore-compliance-approval-rules', 'fincore-workpaper-autopop', 'fincore-inter-dept-governance', 'fincore-aop-strategic-plan', 'fpa-planning-workforce', 'fpa-planning-okr-framework', 'fpa-planning-org-design', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -439,6 +443,7 @@ export default function CommandCenterPage() {
       case 'fincore-aop-strategic-plan': return <AOPStrategicPlanPage />;
       case 'fpa-planning-workforce': return <WorkforcePlanningPage />;
       case 'fpa-planning-okr-framework': return <OKRFrameworkPage />;
+      case 'fpa-planning-org-design': return <OrgDesignSimulatorPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -618,6 +623,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-aop-strategic-plan': 'AOP & Strategic Plan',
     'fpa-planning-workforce': 'Workforce Planning',
     'fpa-planning-okr-framework': 'OKR / KPI Framework',
+    'fpa-planning-org-design': 'Org Design & Succession',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
