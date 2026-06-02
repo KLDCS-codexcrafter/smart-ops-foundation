@@ -69,7 +69,13 @@ export type AuditEntityType =
   // Logged by intercompany-transaction-engine on settleICTransaction (posted→settled).
   // The 4 new S107 txn types (expense_allocation/asset_transfer/invoice/payment) REUSE
   // 'intercompany_transaction' above — no per-type audit type.
-  | 'intercompany_settlement';
+  | 'intercompany_settlement'
+  // Sprint 108 · T-Phase-6.C.1.4 · 🏁 Arc 2 Capstone · Pillar C.1 · Matching + Eliminations · 2 NEW audit entity types (module: 'mca-roc')
+  // 'intercompany_match'  — logged by intercompany-matching-engine on runICMatching.
+  // 'group_elimination'   — logged by group-eliminations-engine on generateEliminations.
+  // SCOPE WALL DP-A2-9: ENTRIES ONLY (NO consolidated statements / NCI / Goodwill / multi-currency · Arc 3).
+  | 'intercompany_match'
+  | 'group_elimination';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
