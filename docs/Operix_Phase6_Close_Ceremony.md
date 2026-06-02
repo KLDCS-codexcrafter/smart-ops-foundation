@@ -17,7 +17,8 @@ This document SEPARATES two classes of figures and never conflates them:
   collateral, and the founder narrative. They are NOT register-certified integers and
   MUST NOT be re-quoted as such.
 
-No phrase such as "fully certified 16/16" appears anywhere in this declaration or in
+No phrase that re-presents a narrative figure as register-certified appears anywhere
+in this declaration or in
 the source tree — by design, per FR-91.
 
 ---
