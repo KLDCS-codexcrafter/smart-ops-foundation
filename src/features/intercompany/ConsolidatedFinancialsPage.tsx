@@ -59,11 +59,41 @@ export default function ConsolidatedFinancialsPage() {
   );
   const ncis: NCIEntry[] = useMemo(() => { void tick; return computeNCI({ fy }); }, [fy, tick]);
   const goodwill: GoodwillEntry[] = useMemo(() => { void tick; return computeGoodwill({ fy }); }, [fy, tick]);
+  const pack: ConsolidationDisclosurePack | null = useMemo(
+    () => { void tick; return loadDisclosurePack(fy); },
+    [fy, tick],
+  );
 
   const runAll = () => {
     buildBalanceSheet({ fy });
     buildCashFlow({ fy });
     refresh();
+  };
+
+  const buildPack = () => {
+    buildDisclosurePack({ fy });
+    refresh();
+    toast.success(`Disclosure pack assembled for FY ${fy}`);
+  };
+
+  const exportPdf = () => {
+    const { blob, filename } = exportDisclosurePDF({ fy });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`PDF exported · ${filename}`);
+  };
+
+  const exportXbrl = () => {
+    const { download, validation } = exportDisclosureXBRL({ fy });
+    const url = URL.createObjectURL(download.blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = download.filename; a.click();
+    URL.revokeObjectURL(url);
+    toast.success(
+      `XBRL exported · ${download.filename} · valid=${validation.is_valid}`,
+    );
   };
 
   return (
@@ -74,7 +104,7 @@ export default function ConsolidatedFinancialsPage() {
           <div>
             <h1 className="text-2xl font-semibold">Consolidated Financials</h1>
             <p className="text-sm text-muted-foreground">
-              Sprint 111 · Arc 3 · Schedule III BS + Ind AS 7 CF + Ind AS 110 NCI + Ind AS 103 Goodwill.
+              Arc 3 · Schedule III BS + Ind AS 7 CF + Ind AS 110 NCI + Ind AS 103 Goodwill + S112 Disclosure Pack.
             </p>
           </div>
         </div>
