@@ -128,7 +128,15 @@ export type AuditEntityType =
   // approval-matrix + approval-workflow all stay 0-DIFF. HONEST-METRICS (DP-A4-8 · FR-91): "29 bridges" /
   // "16/16 OOBs" are NARRATIVE positioning figures — no machine register/counter is asserted in code.
   // ComplianceModule UNTOUCHED. CLOSES PHASE 6 (S96–S115 · 5 arcs).
-  | 'inter_dept_governance_audit';
+  | 'inter_dept_governance_audit'
+  // Sprint 116 · T-Phase-7.D.0.1 · 🎬 Phase 7 opener · Arc D.0 Organisation Planning (module: 'mca-roc')
+  // 'org_plan_event' — logged by org-planning-engine on upsertStrategicTarget / buildAOP. Carries
+  // fy + horizon + level + scope_id + revenue_target + cost_target + cascade_balanced. FR-44: engine
+  // REUSES org-structure (Division/Department) + intercompany-group-structure-engine (listGroupStructure
+  // for entities) and reimplements NEITHER (both stay 0-DIFF). SCOPE WALL: AOP/strategic targets ONLY
+  // — NO workforce (S117) · NO OKR/org-cost (S118) · NO budget/forecast/scenario (D.1).
+  // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
+  | 'org_plan_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
