@@ -284,6 +284,89 @@ function buildReciprocal(
         fromTypeName: 'IC Loan Principal (Source)',
         toTypeName: 'IC Loan Principal (Counterparty)',
       };
+    // ── S107 (T-Phase-6.C.1.3) · 4 NEW reciprocal cases ─────────────────
+    // §L · Ledger mapping rationale (S107):
+    //   - expense_allocation · cost-share by basis (headcount/revenue/area)
+    //     source: IC-RECV (Dr)  ↔  IC-ALLOC-INC "Allocated Expense Recovery" (Cr)
+    //     counter: IC-ALLOC-EXP "Allocated Expense" (Dr) ↔ IC-PAY (Cr).
+    //   - asset_transfer (PRICED · arm's-length via resolvePrice)
+    //     source: IC-RECV (Dr) ↔ FA-DISPOSAL "Asset Disposal (IC)" (Cr)
+    //     counter: IC-FA "Fixed Asset (IC)" (Dr) ↔ IC-PAY (Cr).
+    //     UNREALIZED-PROFIT-IN-FA elimination is **S108/E7** · NOT here (DP-A2-9).
+    //   - invoice (PRICED · trade IC invoice via resolvePrice)
+    //     source: IC-RECV (Dr) ↔ IC-SALES-INC "IC Sales Income" (Cr)
+    //     counter: IC-PURCH-EXP "IC Purchase Expense" (Dr) ↔ IC-PAY (Cr).
+    //   - payment (UNPRICED · settles existing IC payable/receivable)
+    //     source: CASH-BANK (Dr) ↔ IC-RECV-CLR "IC Receivable Clearing" (Cr)
+    //     counter: IC-PAY-CLR "IC Payable Clearing" (Dr) ↔ CASH-BANK (Cr).
+    case 'expense_allocation':
+      return {
+        fromLines: [
+          mkLine('IC-RECV', 'Inter-Company Receivable', 'CA', a, 0, narration),
+          mkLine('IC-ALLOC-INC', 'Allocated Expense Recovery (IC)', 'INC', 0, a, narration),
+        ],
+        toLines: [
+          mkLine('IC-ALLOC-EXP', 'Allocated Expense (IC)', 'EXP', a, 0, narration),
+          mkLine('IC-PAY', 'Inter-Company Payable', 'CL', 0, a, narration),
+        ],
+        fromBaseType: 'Journal',
+        toBaseType: 'Journal',
+        fromPrefix: 'ICEA',
+        toPrefix: 'ICEA',
+        fromTypeName: 'IC Expense Allocation (Source)',
+        toTypeName: 'IC Expense Allocation (Counterparty)',
+      };
+    case 'asset_transfer':
+      return {
+        fromLines: [
+          mkLine('IC-RECV', 'Inter-Company Receivable', 'CA', a, 0, narration),
+          mkLine('FA-DISPOSAL', 'Asset Disposal (IC)', 'INC', 0, a, narration),
+        ],
+        toLines: [
+          mkLine('IC-FA', 'Fixed Asset (IC)', 'FA', a, 0, narration),
+          mkLine('IC-PAY', 'Inter-Company Payable', 'CL', 0, a, narration),
+        ],
+        fromBaseType: 'Journal',
+        toBaseType: 'Journal',
+        fromPrefix: 'ICAT',
+        toPrefix: 'ICAT',
+        fromTypeName: 'IC Asset Transfer (Source)',
+        toTypeName: 'IC Asset Transfer (Counterparty)',
+      };
+    case 'invoice':
+      return {
+        fromLines: [
+          mkLine('IC-RECV', 'Inter-Company Receivable', 'CA', a, 0, narration),
+          mkLine('IC-SALES-INC', 'Inter-Company Sales Income', 'INC', 0, a, narration),
+        ],
+        toLines: [
+          mkLine('IC-PURCH-EXP', 'Inter-Company Purchase Expense', 'EXP', a, 0, narration),
+          mkLine('IC-PAY', 'Inter-Company Payable', 'CL', 0, a, narration),
+        ],
+        fromBaseType: 'Journal',
+        toBaseType: 'Journal',
+        fromPrefix: 'ICIN',
+        toPrefix: 'ICIN',
+        fromTypeName: 'IC Invoice (Source)',
+        toTypeName: 'IC Invoice (Counterparty)',
+      };
+    case 'payment':
+      return {
+        fromLines: [
+          mkLine('CASH-BANK', 'Bank / Cash', 'CA', a, 0, narration),
+          mkLine('IC-RECV-CLR', 'IC Receivable Clearing', 'CA', 0, a, narration),
+        ],
+        toLines: [
+          mkLine('IC-PAY-CLR', 'IC Payable Clearing', 'CL', a, 0, narration),
+          mkLine('CASH-BANK', 'Bank / Cash', 'CA', 0, a, narration),
+        ],
+        fromBaseType: 'Journal',
+        toBaseType: 'Journal',
+        fromPrefix: 'ICPY',
+        toPrefix: 'ICPY',
+        fromTypeName: 'IC Payment (Source)',
+        toTypeName: 'IC Payment (Counterparty)',
+      };
   }
 }
 
