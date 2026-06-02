@@ -397,6 +397,7 @@ export default function CommandCenterPage() {
       case 'fincore-intercompany-group-structure': return <IntercompanyGroupStructurePage />;
       case 'fincore-intercompany-transactions-hub': return <IntercompanyTransactionsHubPage />;
       case 'fincore-group-eliminations': return <GroupEliminationsPage />;
+      case 'fincore-group-consolidation': return <GroupConsolidationPage />;
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
