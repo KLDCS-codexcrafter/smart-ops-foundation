@@ -31,8 +31,8 @@ import {
 } from '@/lib/group-consolidation-engine';
 import {
   listForecasts,
-  type DemandForecastRecord,
 } from '@/lib/demand-forecast-engine';
+import type { DemandForecastRecord } from '@/types/forecast';
 import {
   listBudgets,
   type FPABudget,
