@@ -69,11 +69,10 @@ export default function GroupEliminationsPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional refresh trigger
   const elimSummary = useMemo(() => getEliminationSummary(fy), [fy, tick]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- tick is intentional refresh trigger
   const drillEntries = useMemo<EliminationEntry[]>(() => {
     if (!selectedType) return [];
     return generateEliminationsByType({ fy, type: selectedType });
-  }, [fy, selectedType, tick]);
+  }, [fy, selectedType]);
 
   const refresh = () => setTick((t) => t + 1);
 

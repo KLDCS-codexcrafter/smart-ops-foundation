@@ -182,7 +182,7 @@ describe('Sprint 108 · intercompany-matching-engine', () => {
                   ?? '[]';
     const allKeys = Object.keys(localStorage);
     const found = allKeys.some((k) => {
-      if (!k.startsWith('audit_')) return false;
+      if (!k.startsWith('erp_audit_trail_')) return false;
       try {
         const list = JSON.parse(localStorage.getItem(k) || '[]') as Array<{ entity_type: AuditEntityType }>;
         return list.some((e) => e.entity_type === 'intercompany_match');
@@ -401,7 +401,7 @@ describe('Sprint 108 · per-E-type derivation (E1/E2/E5/E6/E7)', () => {
 
   it('logs group_elimination audit on generateEliminations run', () => {
     generateEliminations({ fy: '2026-27' });
-    const keys = Object.keys(localStorage).filter((k) => k.startsWith('audit_'));
+    const keys = Object.keys(localStorage).filter((k) => k.startsWith('erp_audit_trail_'));
     const found = keys.some((k) => {
       try {
         const list = JSON.parse(localStorage.getItem(k) || '[]') as Array<{ entity_type: AuditEntityType }>;
