@@ -236,7 +236,7 @@ export function runICMatching(
 
   logAudit({
     entityCode: auditEntity,
-    action: 'view',
+    action: 'create',
     entityType: 'intercompany_match',
     recordId: `ic-match-${Date.now()}`,
     recordLabel: `IC matching run · total=${results.length} · matched=${matched} · breaks=${breaks}`,
