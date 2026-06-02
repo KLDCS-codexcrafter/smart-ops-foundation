@@ -154,6 +154,9 @@ import ComplianceApprovalRulesPage from '@/features/compliance-approval/Complian
 // Sprint 114 · T-Phase-6.B.OOB.2 · Workpaper Auto-Population (Standalone Page #41 · Arc 4 · OOB-13)
 import WorkpaperAutoPopPage from '@/features/workpaper-autopop/WorkpaperAutoPopPage';
 
+// 🏁 Sprint 115 · T-Phase-6.C.3.1-CLOSE · Inter-Department Governance (Standalone Page #42 · Pillar C.3)
+import InterDeptGovernancePage from '@/features/inter-dept-governance/InterDeptGovernancePage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
