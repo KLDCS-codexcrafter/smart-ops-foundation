@@ -49,8 +49,8 @@ export default function ConsolidatedFinancialsPage() {
     () => { void tick; return loadConsolidatedCashFlow(fy); },
     [fy, tick],
   );
-  const ncis: NCIEntry[] = useMemo(() => computeNCI({ fy }), [fy, tick]);
-  const goodwill: GoodwillEntry[] = useMemo(() => computeGoodwill({ fy }), [fy, tick]);
+  const ncis: NCIEntry[] = useMemo(() => { void tick; return computeNCI({ fy }); }, [fy, tick]);
+  const goodwill: GoodwillEntry[] = useMemo(() => { void tick; return computeGoodwill({ fy }); }, [fy, tick]);
 
   const runAll = () => {
     buildBalanceSheet({ fy });
