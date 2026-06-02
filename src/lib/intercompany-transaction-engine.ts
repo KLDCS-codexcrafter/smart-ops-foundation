@@ -109,6 +109,38 @@ export interface IntercompanyTransaction {
   txn_date: string;               // YYYY-MM-DD
   status: ICTransactionStatus;
   note?: string;
+  /** S107 · expense_allocation basis · §L-noted (e.g. 'headcount', 'revenue', 'area'). */
+  allocation_basis?: string;
+  /** S107 · payment links to the IC txn it settles (optional). */
+  settles_ic_txn_id?: string;
+  /** S107 · settlement bookkeeping (set by settleICTransaction). */
+  settlement_date?: string;
+  settlement_payment_ic_txn_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateICTransactionInput {
+  txn_type: ICTransactionType;
+  from_entity: string;
+  to_entity: string;
+  item_key?: string;
+  quantity?: number;
+  amount?: number;
+  txn_date: string;
+  note?: string;
+  /** S107 · expense_allocation only. */
+  allocation_basis?: string;
+  /** S107 · payment only. Link the IC txn this payment settles. */
+  settles_ic_txn_id?: string;
+}
+  from_voucher_id?: string;       // fincore postVoucher (source entity)
+  to_voucher_id?: string;         // fincore postVoucher (counterparty)
+  from_voucher_no?: string;
+  to_voucher_no?: string;
+  txn_date: string;               // YYYY-MM-DD
+  status: ICTransactionStatus;
+  note?: string;
   created_at: string;
   updated_at: string;
 }
