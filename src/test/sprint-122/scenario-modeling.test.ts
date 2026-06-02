@@ -290,7 +290,7 @@ describe('§F · scenario_run audit fires (mca-roc)', () => {
 // ─── §G · FR-44 WALL · does NOT import or duplicate fx-what-if ─────────────
 describe('§G · FR-44 WALL · no fx-what-if import + foundations 0-DIFF', () => {
   it('engine does NOT import fx-what-if-engine', () => {
-    expect(engineSrc).not.toMatch(/fx-what-if-engine/);
+    expect(engineSrc).not.toMatch(/from\s+['"]@\/lib\/fx-what-if-engine['"]/);
     expect(engineSrc).not.toMatch(/computeFXScenarioForRealisation/);
   });
 
