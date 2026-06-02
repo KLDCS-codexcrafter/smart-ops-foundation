@@ -135,6 +135,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🏁 Sprint 119 · T-Phase-7.D.0.4 · 🏁 Arc D.0 Capstone · Org Design + Succession · Standalone Page #46 (fpa-planning card)
       { id: 'fpa-planning-org-design', type: 'item', label: 'Org Design & Succession', icon: Network,
         moduleId: 'fpa-planning-org-design', requiredCards: ['fpa-planning'] },
+      // 🎬 Sprint 120 · T-Phase-7.D.1.1 · 🎬 Arc D.1 OPENER · FP&A Budgeting · Standalone Page #47 (fpa-planning card)
+      { id: 'fpa-planning-budgeting', type: 'item', label: 'FP&A Budgeting', icon: Network,
+        moduleId: 'fpa-planning-budgeting', requiredCards: ['fpa-planning'] },
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },

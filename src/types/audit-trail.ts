@@ -170,7 +170,19 @@ export type AuditEntityType =
   // performance-management (reviews/360/calibration) · NO compensation-planning
   // (salary bands/merit) · NO budget/forecast/scenario (D.1).
   // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
-  | 'org_design_event';
+  | 'org_design_event'
+  // Sprint 120 · T-Phase-7.D.1.1 · 🎬 Arc D.1 OPENER · FP&A Budgeting (module: 'mca-roc')
+  // 'budget_event' — logged by fpa-budgeting-engine on upsertBudget / getBudgetVsActual /
+  // getBudgetVsAOP. Carries budget_id (composite of fy + budget_type + scope_level +
+  // scope_id) + totals (budgeted / actual / variance) + AOP linkage (aop_target /
+  // vs_aop_variance from S116 StrategicTarget).
+  // FR-44: engine REUSES budget-allocation PATTERN (commit/consume · NOT called/edited)
+  // + org-planning-engine (listStrategicTargets · isValidScope) + group-consolidation-
+  // engine (buildConsolidatedPnL · actuals source); reimplements none.
+  // SCOPE WALL DP-D1-9: budgeting only — NO forecasting (S121) · NO scenario (S122-123)
+  // · NO costing / driver / ABC (S124-125).
+  // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
+  | 'budget_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
