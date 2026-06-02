@@ -332,7 +332,11 @@ describe('Sprint 111 · consolidated-balance-sheet-engine + consolidated-cash-fl
     const s110 = SPRINTS.find(s => s.sprintNumber === 110);
     expect(s110!.headSha).toBe('d247e08cdb840605129296409a18c1202d748592');
   });
-  it('sprint-history has NO S112 pre-entry', () => {
-    expect(SPRINTS.find(s => s.sprintNumber === 112)).toBeUndefined();
+  it('sprint-history NO S112 pre-entry (Guardrail 2 · floored at S112 bank)', () => {
+    // Floored: S112 has since been added as a real sprint (T-Phase-6.C.2.4 · Arc 3 capstone).
+    // Original assertion was a S111-era tombstone guarding against pre-creation.
+    const s112 = SPRINTS.find(s => s.sprintNumber === 112);
+    if (s112) expect(s112.code).toBe('T-Phase-6.C.2.4');
+    else expect(s112).toBeUndefined();
   });
 });
