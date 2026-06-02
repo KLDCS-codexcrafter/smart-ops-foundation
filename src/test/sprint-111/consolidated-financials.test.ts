@@ -64,16 +64,15 @@ function seed() {
     { entity_id: 'e2', parent_entity_id: 'e1', relationship: 'subsidiary', ownership_pct: 80, consolidation_method: 'full', effective_from: '2026-04-01' },
     { entity_id: 'e3', parent_entity_id: 'e1', relationship: 'associate', ownership_pct: 30, consolidation_method: 'equity', effective_from: '2026-04-01' },
   ]));
-  // Use real L2-mapped codes so classification flows: PPE (A-NCA), TREC (A-CA), CASH (A-CA)
-  // For tests we use synthetic codes that resolve via L1 prefix; use 'PPE' for asset NCA, 'TREC' for CA, 'INV' etc.
+  // L3 codes used (real finframe seed): PPE→A-NCA→A · EQSH→CE-SF→CE · LTBOR→L-NCL→L · TREC→A-CA→A
   localStorage.setItem(vouchersKey('SMRT'), JSON.stringify([
-    mkV('e1', [{ code: 'PPE',  dr: 200000, cr: 0 }, { code: 'CE-SF', dr: 0, cr: 200000 }]),
+    mkV('e1', [{ code: 'PPE',  dr: 200000, cr: 0 }, { code: 'EQSH', dr: 0, cr: 200000 }]),
   ]));
   localStorage.setItem(vouchersKey('DGTL'), JSON.stringify([
-    mkV('e2', [{ code: 'PPE',  dr: 100000, cr: 0 }, { code: 'CE-SF', dr: 0, cr:  60000 }, { code: 'L-NCL', dr: 0, cr: 40000 }]),
+    mkV('e2', [{ code: 'PPE',  dr: 100000, cr: 0 }, { code: 'EQSH', dr: 0, cr:  60000 }, { code: 'LTBOR', dr: 0, cr: 40000 }]),
   ]));
   localStorage.setItem(vouchersKey('EXPT'), JSON.stringify([
-    mkV('e3', [{ code: 'PPE',  dr:  50000, cr: 0 }, { code: 'CE-SF', dr: 0, cr:  50000 }]),
+    mkV('e3', [{ code: 'PPE',  dr:  50000, cr: 0 }, { code: 'EQSH', dr: 0, cr:  50000 }]),
   ]));
 }
 
@@ -95,11 +94,11 @@ describe('Sprint 111 · consolidated-balance-sheet-engine + consolidated-cash-fl
   it('classifyCashFlowSection · L2 A-NCA → investing (PPE)', () => {
     expect(classifyCashFlowSection('PPE')).toBe('investing');
   });
-  it('classifyCashFlowSection · L2 L-NCL → financing', () => {
-    expect(classifyCashFlowSection('L-NCL')).toBe('financing');
+  it('classifyCashFlowSection · L1 CE → financing (EQSH equity share capital)', () => {
+    expect(classifyCashFlowSection('EQSH')).toBe('financing');
   });
-  it('classifyCashFlowSection · L1 CE → financing (CE-SF)', () => {
-    expect(classifyCashFlowSection('CE-SF')).toBe('financing');
+  it('classifyCashFlowSection · L3 under L-NCL (LTBOR) → financing', () => {
+    expect(classifyCashFlowSection('LTBOR')).toBe('financing');
   });
   it('classifyCashFlowSection · L1 I → operating (SALE not in seed → fallback operating)', () => {
     expect(['operating', 'investing', 'financing']).toContain(classifyCashFlowSection('SALE'));
@@ -196,9 +195,9 @@ describe('Sprint 111 · consolidated-balance-sheet-engine + consolidated-cash-fl
     const bs = buildBalanceSheet({ fy: FY });
     expect(bs.liabilities.every(l => l.l1 === 'L')).toBe(true);
   });
-  it('buildBalanceSheet · classifies L1=CE into equity[] (CE-SF reserves)', () => {
+  it('buildBalanceSheet · classifies L1=CE into equity[] (EQSH share capital)', () => {
     const bs = buildBalanceSheet({ fy: FY });
-    expect(bs.equity.some(e => e.ledger_group_code === 'CE-SF')).toBe(true);
+    expect(bs.equity.some(e => e.ledger_group_code === 'EQSH')).toBe(true);
   });
   it('buildBalanceSheet · totals are decimal-safe numbers', () => {
     const bs = buildBalanceSheet({ fy: FY });
@@ -235,9 +234,9 @@ describe('Sprint 111 · consolidated-balance-sheet-engine + consolidated-cash-fl
     const cf = buildCashFlow({ fy: FY });
     expect(cf.lines.some(l => l.ledger_group_code === 'PPE' && l.section === 'investing')).toBe(true);
   });
-  it('buildCashFlow · CE-SF lines land in financing section', () => {
+  it('buildCashFlow · CE share capital lines land in financing section', () => {
     const cf = buildCashFlow({ fy: FY });
-    expect(cf.lines.some(l => l.ledger_group_code === 'CE-SF' && l.section === 'financing')).toBe(true);
+    expect(cf.lines.some(l => l.ledger_group_code === 'EQSH' && l.section === 'financing')).toBe(true);
   });
   it('buildCashFlow · loadConsolidatedCashFlow round-trips', () => {
     buildCashFlow({ fy: FY });
