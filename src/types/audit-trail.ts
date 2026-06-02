@@ -75,7 +75,12 @@ export type AuditEntityType =
   // 'group_elimination'   — logged by group-eliminations-engine on generateEliminations.
   // SCOPE WALL DP-A2-9: ENTRIES ONLY (NO consolidated statements / NCI / Goodwill / multi-currency · Arc 3).
   | 'intercompany_match'
-  | 'group_elimination';
+  | 'group_elimination'
+  // Sprint 109 · T-Phase-6.C.2.1 · 🎬 Arc 3 OPENER · Pillar C.2 · Group Consolidation · 1 NEW audit entity type (module: 'mca-roc')
+  // Logged by group-consolidation-engine on consolidate({fy}). Carries entity_count + line_count +
+  // eliminations_applied + total_debit/credit + balanced. SCOPE WALL DP-A3-9: P&L + Trial Balance ONLY
+  // (NO BS/CF/NCI/Goodwill = S111 · NO multi-currency = S110 · NO disclosure = S112).
+  | 'group_consolidation_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
