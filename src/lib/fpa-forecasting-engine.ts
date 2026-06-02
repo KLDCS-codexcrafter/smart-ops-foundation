@@ -479,7 +479,7 @@ export function getForecastVsBudget(input: ForecastVsBudgetInput): ForecastVsBud
   try {
     logAudit({
       entityCode: 'GLOBAL',
-      action: 'view',
+      action: 'update',
       entityType: 'forecast_event',
       recordId: latest?.forecast_id ?? `FCAST::${input.fy}::${input.target}::${input.scope_id}`,
       recordLabel:
