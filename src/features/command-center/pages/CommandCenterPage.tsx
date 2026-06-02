@@ -293,7 +293,7 @@ export default function CommandCenterPage() {
       'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings', 'fincore-production-config',
       'org-structure',
       'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency', 'fincore-transaction-templates',
-      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'projx-project-centres',
+      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
