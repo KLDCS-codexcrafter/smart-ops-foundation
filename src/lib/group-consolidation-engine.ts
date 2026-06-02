@@ -23,8 +23,17 @@
  *
  * @scope-wall  DP-A3-9 · Consolidated P&L + Trial Balance ONLY.
  *              NO Balance Sheet (S111) · NO Cash Flow (S111) · NO NCI/Goodwill (S111) ·
- *              NO multi-currency (S110) · NO disclosure (S112) · NO OOB (Arc 4).
+ *              NO multi-currency translation IN-HOUSE — Sprint 110 ships fx-translation-engine
+ *              and injects translated per-entity TBs via the optional `entityTBProvider`
+ *              hook on `consolidate` (S110 §H WAIVER · backward-compatible · default path
+ *              IS IDENTICAL to pre-S110 behaviour and asserted by the S109 + S110 test packs).
+ *              NO disclosure (S112) · NO OOB (Arc 4).
  *              Scope-wall test asserts none of those exports exist on this module.
+ *
+ * @s110-waiver The ONLY edit to this file in S110 is the optional `entityTBProvider` param on
+ *              `consolidate(input)`. Rollup / method-scaling / equity-roll-up / elimination /
+ *              balance logic is UNCHANGED. computeEntityTrialBalance · buildConsolidatedPnL ·
+ *              getConsolidationSummary are 0-DIFF. See close_summary §L for the §H-waiver rationale.
  */
 import type { Voucher } from '@/types/voucher';
 import { vouchersKey } from '@/lib/fincore-engine';
@@ -193,16 +202,29 @@ export function computeEntityTrialBalance(entity_id: string, fy: string): Entity
  * 4. Subtract generateEliminations({fy}) (E1–E7) by adding offsetting Dr/Cr pairs
  * 5. Assert balanced (dEq totalDr,totalCr); decimal-helpers throughout
  * 6. Audit: log group_consolidation_run (mca-roc)
+ *
+ * S110 §H WAIVER — `entityTBProvider` (optional, backward-compatible):
+ *   When supplied, the per-entity Trial Balance is sourced from the provider instead of
+ *   the internal `computeEntityTrialBalance`. The rollup / method scaling / equity roll-up
+ *   / eliminations / balance logic below is IDENTICAL in both paths. When omitted, behaviour
+ *   is byte-identical to pre-S110 (asserted by the S109 + S110 regression tests). The S110
+ *   `fx-translation-engine` uses this hook to feed INR-translated TBs for foreign-functional
+ *   subsidiaries without S110 having to mirror this engine's rollup logic (FR-44 no-dup).
  */
-export function consolidate(input: { fy: string }): ConsolidatedTrialBalance {
-  const { fy } = input;
+export function consolidate(input: {
+  fy: string;
+  entityTBProvider?: (entity_id: string, fy: string) => EntityTrialBalance;
+}): ConsolidatedTrialBalance {
+  const { fy, entityTBProvider } = input;
   const nodes = listGroupStructure();
 
   // Combine all entity lines after method scaling.
   const combined = new Map<string, TBLine>();
 
   for (const node of nodes) {
-    const tb = computeEntityTrialBalance(node.entity_id, fy);
+    const tb = entityTBProvider
+      ? entityTBProvider(node.entity_id, fy)
+      : computeEntityTrialBalance(node.entity_id, fy);
     for (const raw of tb.lines) {
       const scaled = applyMethodToLine(raw, node.consolidation_method, node.ownership_pct);
       const cur = combined.get(scaled.ledger_group_code) ?? {

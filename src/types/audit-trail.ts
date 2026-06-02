@@ -80,7 +80,14 @@ export type AuditEntityType =
   // Logged by group-consolidation-engine on consolidate({fy}). Carries entity_count + line_count +
   // eliminations_applied + total_debit/credit + balanced. SCOPE WALL DP-A3-9: P&L + Trial Balance ONLY
   // (NO BS/CF/NCI/Goodwill = S111 · NO multi-currency = S110 · NO disclosure = S112).
-  | 'group_consolidation_run';
+  | 'group_consolidation_run'
+  // Sprint 110 · T-Phase-6.C.2.2 · Arc 3 · Pillar C.2 · Multi-Currency Translation (Ind AS 21) · 1 NEW audit entity type (module: 'mca-roc')
+  // Logged by fx-translation-engine on translateForeignEntity. Carries entity_id + fy + from_currency +
+  // closing_rate + average_rate + historical_rate + fctr_amount + line_count + balanced_pre_fctr.
+  // SCOPE WALL DP-A3-9: translation ONLY · NO BS/CF (S111) · NO NCI/Goodwill (S111) · NO disclosure (S112).
+  // FR-44 WALL: DISTINCT from fx-what-if-engine simulator (which owns no rate table) — this engine
+  // performs ACTUAL Ind AS 21 Current Rate translation of real balances and recognises FCTR/OCI.
+  | 'fx_translation_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
