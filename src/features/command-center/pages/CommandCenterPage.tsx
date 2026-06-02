@@ -563,6 +563,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-master-lifecycle-wizard': 'Master Lifecycle Wizard',
     'fincore-intercompany-group-structure': 'Intercompany Group Structure',
     'fincore-intercompany-transactions-hub': 'Intercompany Transactions Hub',
+    'fincore-group-eliminations': 'Group Eliminations',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
