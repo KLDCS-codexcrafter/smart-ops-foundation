@@ -272,6 +272,76 @@ export default function ConsolidatedFinancialsPage() {
             </Table>
           </CardContent></Card>
         </TabsContent>
+
+        <TabsContent value="disclosure">
+          <Card><CardContent className="p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-sm font-semibold">
+                  Consolidated Disclosure Pack · Schedule III + Ind AS 110
+                </h2>
+                <p className="text-xs text-muted-foreground">
+                  Assembled from S109 P&amp;L + S111 BS/CF/NCI/Goodwill. XBRL via
+                  comply360-xbrl-builder · PDF via board-pack pattern. No figure or
+                  taxonomy rebuild (FR-44).
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline" onClick={buildPack}>
+                  <Play className="h-4 w-4 mr-1" />Assemble Pack
+                </Button>
+                <Button size="sm" variant="outline" onClick={exportPdf}>
+                  <FileDown className="h-4 w-4 mr-1" />Export PDF
+                </Button>
+                <Button size="sm" onClick={exportXbrl}>
+                  <FileCode2 className="h-4 w-4 mr-1" />Export XBRL
+                </Button>
+              </div>
+            </div>
+            {!pack ? (
+              <p className="text-sm text-muted-foreground">
+                No disclosure pack yet for FY {fy}. Click{' '}
+                <span className="font-medium">Assemble Pack</span>.
+              </p>
+            ) : (
+              <>
+                <div className="flex gap-2 flex-wrap">
+                  <Badge variant="outline" className={pack.schedule_iii_compliant ? 'bg-success/15 text-success' : ''}>
+                    <CheckCircle2 className="h-3 w-3 mr-1" />
+                    Schedule III {pack.schedule_iii_compliant ? 'compliant' : 'incomplete'}
+                  </Badge>
+                  <Badge variant="outline" className={pack.ind_as_110_compliant ? 'bg-success/15 text-success' : ''}>
+                    Ind AS 110 {pack.ind_as_110_compliant ? 'compliant' : 'unbalanced'}
+                  </Badge>
+                  <Badge variant="outline">Taxonomy: {pack.taxonomy_version}</Badge>
+                  <Badge variant="outline">Form 3CEB refs: {pack.form_3ceb_cross_ref_count}</Badge>
+                </div>
+                {pack.sections.map((section) => (
+                  <div key={section.key} className="space-y-1">
+                    <div className="text-xs font-semibold uppercase text-muted-foreground">
+                      {section.title} · {section.category}
+                      {section.taxonomy_element_code ? ` · ${section.taxonomy_element_code}` : ''}
+                    </div>
+                    <Table>
+                      <TableHeader><TableRow>
+                        <TableHead>Line</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
+                      </TableRow></TableHeader>
+                      <TableBody>
+                        {section.rows.map((r, i) => (
+                          <TableRow key={`${section.key}-${i}`}>
+                            <TableCell className="text-xs">{r.label}</TableCell>
+                            <TableCell className="text-right font-mono">{fmtINR(r.amount)}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ))}
+              </>
+            )}
+          </CardContent></Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
