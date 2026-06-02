@@ -678,6 +678,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fpa-planning-org-design': 'Org Design & Succession',
     'fpa-planning-budgeting': 'FP&A Budgeting',
     'fpa-planning-forecasting': 'FP&A Forecasting',
+    'fpa-planning-scenario': 'Scenario Modeling',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
