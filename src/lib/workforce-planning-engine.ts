@@ -297,12 +297,12 @@ export function readAopCostTarget(
  */
 export function getCapacityContextRowCount(
   entityCode: string,
-  fromDate: string,
-  toDate: string,
+  _fromDate?: string,
+  _toDate?: string,
 ): number {
   try {
-    const rows = aggregateCapacity({ entityCode, view: 'per_day', fromDate, toDate });
-    return Array.isArray(rows) ? rows.length : 0;
+    const alerts = computeBottleneckHeatmap(entityCode);
+    return Array.isArray(alerts) ? alerts.length : 0;
   } catch {
     return 0;
   }
