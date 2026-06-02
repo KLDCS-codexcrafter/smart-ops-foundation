@@ -32,7 +32,7 @@ import {
   upsertStrategicTarget,
   __resetStrategicTargetsForTests,
 } from '@/lib/org-planning-engine';
-import { upsertGroupStructureNode } from '@/lib/intercompany-group-structure-engine';
+import { upsertGroupStructure } from '@/lib/intercompany-group-structure-engine';
 import { SIBLINGS, getSiblingCount } from '@/lib/_institutional/sibling-register';
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
 import {
