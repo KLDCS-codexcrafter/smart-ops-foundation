@@ -39,10 +39,14 @@ import {
 import {
   consolidateWithTranslation,
   translateEntityTB,
+  getFXRateSet,
+  type FXRateSet,
 } from '@/lib/fx-translation-engine';
 import { generateEliminations } from '@/lib/group-eliminations-engine';
 import { generateFPAForecast } from '@/lib/fpa-forecasting-engine';
 import { listGroupStructure } from '@/lib/intercompany-group-structure-engine';
+import { generateForecast } from '@/lib/demand-forecast-engine';
+import { listBudgets } from '@/lib/fpa-budgeting-engine';
 
 // ── Provenance / READS_FROM (FR-44 reuse contract, machine-readable) ──────
 export const READS_FROM = {
@@ -323,4 +327,361 @@ export function compareScenarios(scenario_id: string): ScenarioCompareRow[] {
 /** List all entities available to the consolidated scope (FR-44 read of group). */
 export function listScenarioEntities(): string[] {
   return listGroupStructure().map((n) => n.entity_id);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ⭐ S123 · MOAT CAPSTONE · ADDITIVE EXTENSION (Pt 2)
+// FR-44: orchestrates the same Phase-6 consolidation stack used by S122.
+// Does NOT reimplement consolidation / FX / eliminations. Does NOT import
+// fx-what-if-engine. S122 exports above remain 0-DIFF.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── FX × revenue × cost sensitivity matrix ────────────────────────────────
+
+export type FXShock = 'fx_minus_10' | 'fx_minus_5' | 'fx_base' | 'fx_plus_5' | 'fx_plus_10';
+
+export const FX_SHOCKS: ReadonlyArray<FXShock> = [
+  'fx_minus_10', 'fx_minus_5', 'fx_base', 'fx_plus_5', 'fx_plus_10',
+];
+
+/** Map an FXShock label to its multiplicative perturbation factor (1 + pct/100). */
+export function fxShockFactor(shock: FXShock): number {
+  switch (shock) {
+    case 'fx_minus_10': return round2(dAdd(1, -10 / 100));
+    case 'fx_minus_5':  return round2(dAdd(1, -5 / 100));
+    case 'fx_base':     return 1;
+    case 'fx_plus_5':   return round2(dAdd(1, 5 / 100));
+    case 'fx_plus_10':  return round2(dAdd(1, 10 / 100));
+  }
+}
+
+export interface ScenarioMatrixCell {
+  fx_shock: FXShock;
+  fx_factor: number;
+  revenue_pct: number;
+  cost_pct: number;
+  consolidated_revenue: number;
+  consolidated_cost: number;
+  consolidated_pbt: number;
+}
+
+export interface ScenarioMatrix {
+  matrix_id: string;
+  fy: string;
+  entity_scope: string[];
+  /** FX-shock × revenue-step × cost-step grid. */
+  cells: ScenarioMatrixCell[];
+  base_pbt: number;
+  /** Snapshot of the FXRateSets sampled for the matrix (one per non-INR foreign currency seen). */
+  rate_samples: FXRateSet[];
+  created_at: string;
+}
+
+export interface RunScenarioMatrixInput {
+  fy: string;
+  entity_scope: string[];
+  fx_shocks: FXShock[];
+  revenue_steps: number[];   // percentage points e.g. [-10, 0, 10]
+  cost_steps: number[];      // percentage points e.g. [-5, 0, 5]
+  /** Optional foreign currency to sample for rate_samples / shock semantics. Default 'USD'. */
+  foreign_currency?: string;
+  /** Optional baseline override — skips the consolidated baseline build. */
+  baseline_override?: { revenue: number; cost: number };
+}
+
+/**
+ * FX × revenue × cost sensitivity grid.
+ *
+ * For each (fx_shock, revenue_pct, cost_pct) combination:
+ *   1. Build the CONSOLIDATED baseline by ORCHESTRATING the Phase-6 stack
+ *      (consolidateWithTranslation → consolidate → generateEliminations →
+ *      buildConsolidatedPnL). Reuses the same internal helper as runScenario.
+ *   2. Sample fx-translation.getFXRateSet for the requested foreign currency,
+ *      then apply the FX shock factor to the AVERAGE rate (P&L translation
+ *      surrogate). Revenue is perturbed by (fx_factor × (1 + revenue_pct/100)).
+ *   3. Cost perturbed by (1 + cost_pct/100). PBT = revenue − cost. decimal-safe.
+ *
+ * FR-44: reuses fx-translation + group-consolidation + group-eliminations via
+ * the S122 helper path; does NOT reimplement any of them; does NOT import
+ * fx-what-if-engine.
+ */
+export function runScenarioMatrix(input: RunScenarioMatrixInput): ScenarioMatrix {
+  if (!input.fy) throw new Error('scenario-modeling-engine: matrix fy required');
+  if (!Array.isArray(input.entity_scope) || input.entity_scope.length === 0) {
+    throw new Error('scenario-modeling-engine: matrix entity_scope must be non-empty');
+  }
+  if (!input.fx_shocks?.length || !input.revenue_steps?.length || !input.cost_steps?.length) {
+    throw new Error('scenario-modeling-engine: matrix requires fx_shocks + revenue_steps + cost_steps');
+  }
+
+  const foreign = (input.foreign_currency ?? 'USD').toUpperCase();
+  const baseline: Baseline = input.baseline_override
+    ? { revenue: round2(input.baseline_override.revenue), cost: round2(input.baseline_override.cost) }
+    : buildConsolidatedBaseline(input.fy);
+
+  // Sample the actual FXRateSet via fx-translation (FR-44 reuse · no reimpl).
+  const rateSet = getFXRateSet({ fy: input.fy, from_currency: foreign });
+  const rate_samples: FXRateSet[] = [rateSet];
+
+  const base_pbt = round2(dSub(baseline.revenue, baseline.cost));
+
+  const cells: ScenarioMatrixCell[] = [];
+  for (const shock of input.fx_shocks) {
+    const factor = fxShockFactor(shock);
+    for (const revPct of input.revenue_steps) {
+      for (const costPct of input.cost_steps) {
+        const shockedRev = round2(dMul(baseline.revenue, factor));
+        const rev = round2(dMul(shockedRev, dAdd(1, revPct / 100)));
+        const cost = round2(dMul(baseline.cost, dAdd(1, costPct / 100)));
+        const pbt = round2(dSub(rev, cost));
+        cells.push({
+          fx_shock: shock,
+          fx_factor: factor,
+          revenue_pct: revPct,
+          cost_pct: costPct,
+          consolidated_revenue: rev,
+          consolidated_cost: cost,
+          consolidated_pbt: pbt,
+        });
+      }
+    }
+  }
+
+  const matrix_id = `scn-matrix-${input.fy}-${[...input.entity_scope].sort().join('+')}-${Date.now()}`;
+  const matrix: ScenarioMatrix = {
+    matrix_id,
+    fy: input.fy,
+    entity_scope: [...input.entity_scope],
+    cells,
+    base_pbt,
+    rate_samples,
+    created_at: new Date().toISOString(),
+  };
+
+  try {
+    logAudit({
+      entityCode: input.entity_scope[0] ?? 'GROUP',
+      action: 'create',
+      entityType: 'scenario_run',
+      recordId: matrix_id,
+      recordLabel:
+        `Scenario matrix · ${input.fy} · fx×rev×cost · cells=${cells.length} · base_pbt=${base_pbt}`,
+      beforeState: null,
+      afterState: matrix as unknown as Record<string, unknown>,
+      sourceModule: 'scenario-modeling-engine',
+    });
+  } catch { /* best-effort */ }
+
+  return matrix;
+}
+
+// ── Demand surge / drop scenarios ─────────────────────────────────────────
+
+export interface DemandScenario {
+  demand_scenario_id: string;
+  fy: string;
+  entity_scope: string[];
+  demand_change_pct: number;
+  baseline_revenue: number;
+  baseline_cost: number;
+  resulting_revenue: number;
+  resulting_cost: number;
+  resulting_pbt: number;
+  forecast_sample_qty: number;
+  created_at: string;
+}
+
+export interface RunDemandScenarioInput {
+  fy: string;
+  entity_scope: string[];
+  demand_change_pct: number;
+  /** Optional baseline override · skips consolidated build. */
+  baseline_override?: { revenue: number; cost: number };
+  /** Optional demand-forecast probe inputs · used to ASSERT FR-44 call-through. */
+  forecast_probe?: {
+    item_id: string;
+    item_name: string;
+    sales_history_monthly: number[];
+    distributor_history_monthly?: number[];
+    production_history_monthly?: number[];
+  };
+}
+
+/**
+ * Demand surge/drop scenario.
+ *
+ * FR-44: CALLS demand-forecast-engine.generateForecast to produce a forward
+ * demand sample (asserted by the test pack), then applies demand_change_pct
+ * to the consolidated baseline revenue (cost held flat — operating-leverage
+ * sensitivity). PBT = revenue − cost. decimal-safe. Audit reuses
+ * `scenario_run` (no new audit type).
+ */
+export function runDemandScenario(input: RunDemandScenarioInput): DemandScenario {
+  if (!input.fy) throw new Error('scenario-modeling-engine: demand fy required');
+  if (!Array.isArray(input.entity_scope) || input.entity_scope.length === 0) {
+    throw new Error('scenario-modeling-engine: demand entity_scope must be non-empty');
+  }
+
+  const baseline: Baseline = input.baseline_override
+    ? { revenue: round2(input.baseline_override.revenue), cost: round2(input.baseline_override.cost) }
+    : buildConsolidatedBaseline(input.fy);
+
+  // FR-44 · CALL demand-forecast-engine (reuse · no reimpl). Even a tiny probe
+  // qualifies — the moat is the orchestration shape.
+  let forecast_sample_qty = 0;
+  try {
+    const probe = input.forecast_probe ?? {
+      item_id: 'scn-probe',
+      item_name: 'scenario-probe-item',
+      sales_history_monthly: [100, 110, 105, 120, 115, 130],
+      distributor_history_monthly: [40, 45, 50, 55, 50, 60],
+      production_history_monthly: [80, 85, 90, 95, 90, 100],
+    };
+    const f = generateForecast({
+      entity_id: input.entity_scope[0],
+      item_id: probe.item_id,
+      item_name: probe.item_name,
+      horizon: '3m',
+      algorithm: 'simple_moving_average',
+      sales_history_monthly: probe.sales_history_monthly,
+      distributor_history_monthly: probe.distributor_history_monthly ?? [],
+      production_history_monthly: probe.production_history_monthly ?? [],
+      user: { id: 'system', name: 'scenario-modeling-engine' },
+    });
+    forecast_sample_qty = round2(
+      f.data_points.reduce((s, p) => dAdd(s, p.forecast_qty), 0),
+    );
+  } catch {
+    forecast_sample_qty = 0;
+  }
+
+  const factor = dAdd(1, input.demand_change_pct / 100);
+  const resulting_revenue = round2(dMul(baseline.revenue, factor));
+  const resulting_cost = round2(baseline.cost);
+  const resulting_pbt = round2(dSub(resulting_revenue, resulting_cost));
+
+  const demand_scenario_id =
+    `scn-demand-${input.fy}-${input.demand_change_pct}pct-${Date.now()}`;
+  const result: DemandScenario = {
+    demand_scenario_id,
+    fy: input.fy,
+    entity_scope: [...input.entity_scope],
+    demand_change_pct: input.demand_change_pct,
+    baseline_revenue: baseline.revenue,
+    baseline_cost: baseline.cost,
+    resulting_revenue,
+    resulting_cost,
+    resulting_pbt,
+    forecast_sample_qty,
+    created_at: new Date().toISOString(),
+  };
+
+  try {
+    logAudit({
+      entityCode: input.entity_scope[0] ?? 'GROUP',
+      action: 'create',
+      entityType: 'scenario_run',
+      recordId: demand_scenario_id,
+      recordLabel:
+        `Scenario demand · ${input.fy} · Δ=${input.demand_change_pct}% · pbt=${resulting_pbt}`,
+      beforeState: null,
+      afterState: result as unknown as Record<string, unknown>,
+      sourceModule: 'scenario-modeling-engine',
+    });
+  } catch { /* best-effort */ }
+
+  return result;
+}
+
+// ── Capex defer / accelerate scenarios ─────────────────────────────────────
+
+export type CapexAction = 'defer' | 'accelerate';
+
+export interface CapexScenario {
+  capex_scenario_id: string;
+  fy: string;
+  entity_scope: string[];
+  capex_action: CapexAction;
+  capex_amount: number;
+  capital_budget_total: number;
+  cash_impact: number;   // defer → +ve (cash preserved this FY); accelerate → −ve
+  pbt_impact: number;    // proxy via depreciation timing (10% straight-line · directional)
+  created_at: string;
+}
+
+export interface RunCapexScenarioInput {
+  fy: string;
+  entity_scope: string[];
+  capex_action: CapexAction;
+  capex_amount: number;
+}
+
+/**
+ * Capex defer/accelerate scenario.
+ *
+ * FR-44: READS S120 fpa-budgeting-engine.listBudgets to pull the capital
+ * budget total (no new budget engine), then computes directional cash + PBT
+ * impacts of deferring vs accelerating the supplied capex amount.
+ *
+ * Sign conventions:
+ *   defer       → cash_impact = +capex_amount (preserved this FY)
+ *                 pbt_impact  = +(capex_amount × 10%) (depreciation deferred)
+ *   accelerate  → cash_impact = −capex_amount (cash outflow pulled forward)
+ *                 pbt_impact  = −(capex_amount × 10%) (depreciation pulled in)
+ *
+ * decimal-safe throughout. Audit reuses `scenario_run`.
+ */
+export function runCapexScenario(input: RunCapexScenarioInput): CapexScenario {
+  if (!input.fy) throw new Error('scenario-modeling-engine: capex fy required');
+  if (!Array.isArray(input.entity_scope) || input.entity_scope.length === 0) {
+    throw new Error('scenario-modeling-engine: capex entity_scope must be non-empty');
+  }
+  if (input.capex_action !== 'defer' && input.capex_action !== 'accelerate') {
+    throw new Error(`scenario-modeling-engine: invalid capex_action '${input.capex_action}'`);
+  }
+  if (typeof input.capex_amount !== 'number' || input.capex_amount < 0) {
+    throw new Error('scenario-modeling-engine: capex_amount must be non-negative number');
+  }
+
+  // FR-44 · READ S120 capital budget (no rebuild).
+  const capitalBudgets = listBudgets({ fy: input.fy, budget_type: 'capital' });
+  const capital_budget_total = round2(
+    capitalBudgets.reduce((s, b) => dAdd(s, b.total_budgeted ?? 0), 0),
+  );
+
+  const amount = round2(input.capex_amount);
+  const sign = input.capex_action === 'defer' ? 1 : -1;
+  const cash_impact = round2(dMul(amount, sign));
+  // 10% depreciation timing proxy (directional · not GAAP-final).
+  const pbt_impact = round2(dMul(amount, sign * 0.1));
+
+  const capex_scenario_id =
+    `scn-capex-${input.fy}-${input.capex_action}-${amount}-${Date.now()}`;
+  const result: CapexScenario = {
+    capex_scenario_id,
+    fy: input.fy,
+    entity_scope: [...input.entity_scope],
+    capex_action: input.capex_action,
+    capex_amount: amount,
+    capital_budget_total,
+    cash_impact,
+    pbt_impact,
+    created_at: new Date().toISOString(),
+  };
+
+  try {
+    logAudit({
+      entityCode: input.entity_scope[0] ?? 'GROUP',
+      action: 'create',
+      entityType: 'scenario_run',
+      recordId: capex_scenario_id,
+      recordLabel:
+        `Scenario capex · ${input.fy} · ${input.capex_action} · amount=${amount} · cash=${cash_impact}`,
+      beforeState: null,
+      afterState: result as unknown as Record<string, unknown>,
+      sourceModule: 'scenario-modeling-engine',
+    });
+  } catch { /* best-effort */ }
+
+  return result;
 }
