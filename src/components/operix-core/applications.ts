@@ -413,4 +413,16 @@ export const applications: AppDefinition[] = [
     icon: 'BarChart3',
     status: 'coming_soon',
   },
+  // 🎬 Sprint 116 · T-Phase-7.D.0.1 · Phase 7 opener · NEW card (additive · DP-P7-2 · existing cards 0-DIFF)
+  // Homes Arc D.0 Organisation Planning (AOP / 3-yr strategic plan / target cascade) +
+  // Arc D.1 (budget / forecast / scenario) per DP-P7-2 card architecture.
+  {
+    id: 'fpa-planning',
+    name: 'FP&A / Planning',
+    description: 'Financial Planning & Analysis hub · Annual Operating Plan (AOP) · 3-year strategic plan · revenue & cost target cascade corporate → entity → division → department. Homes Arc D.0 (Org Planning) and Arc D.1 (Budget / Forecast / Scenario).',
+    category: 'Fin Hub',
+    route: '/erp/fpa-planning',
+    icon: 'Target',
+    status: 'active',
+  },
 ];
