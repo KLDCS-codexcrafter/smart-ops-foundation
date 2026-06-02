@@ -569,6 +569,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-intercompany-group-structure': 'Intercompany Group Structure',
     'fincore-intercompany-transactions-hub': 'Intercompany Transactions Hub',
     'fincore-group-eliminations': 'Group Eliminations',
+    'fincore-group-consolidation': 'Group Consolidation',
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
