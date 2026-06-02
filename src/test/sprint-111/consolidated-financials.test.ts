@@ -321,10 +321,11 @@ describe('Sprint 111 · consolidated-balance-sheet-engine + consolidated-cash-fl
     expect(matches.length).toBe(1);
     expect(matches[0].path).toBe('src/lib/consolidated-cash-flow-engine.ts');
   });
-  it('sprint-history has S111 entry with TBD_AT_BANK and predecessor d247e08c', () => {
+  it('sprint-history has S111 entry with banked headSha and predecessor d247e08c', () => {
     const s111 = SPRINTS.find(s => s.sprintNumber === 111);
     expect(s111).toBeDefined();
-    expect(s111!.headSha).toBe('TBD_AT_BANK');
+    // Floored at S112 Block 1 backfill: TBD_AT_BANK → 3f00b9813e36e28fbea99ad2a6a1ca5f4427e5dd.
+    expect(['TBD_AT_BANK', '3f00b9813e36e28fbea99ad2a6a1ca5f4427e5dd']).toContain(s111!.headSha);
     expect(s111!.predecessorSha).toBe('d247e08cdb840605129296409a18c1202d748592');
     expect(s111!.newSiblings).toEqual(['consolidated-balance-sheet-engine', 'consolidated-cash-flow-engine']);
   });
