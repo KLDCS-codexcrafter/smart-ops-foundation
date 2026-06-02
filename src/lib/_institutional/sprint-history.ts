@@ -640,8 +640,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎉 Sprint 112 T-Phase-6.C.2.4 · Arc 3 CAPSTONE · "Horizon 1.5" DELIVERED · Pillar C.2 · Consolidation Disclosure Pack (Schedule III + Ind AS 110) · 1 NEW SIBLING consolidation-disclosure-engine (FR-44 PURE ASSEMBLY: calls S109 buildConsolidatedPnL + S111 buildBalanceSheet/buildCashFlow/computeNCI/computeGoodwill · NO figure recompute · maps sections to getSchedIIITaxonomyElements category) + exportDisclosureXBRL REUSES comply360-xbrl-builder buildXBRL+validateXBRL+exportXBRLDownload via bridge (synthetic aoc4_xbrl_id `consolidation-xbrl-{fy}` + getActiveBAPAccount() — xbrl-builder 0-DIFF · §L-noted: per-element value injection is Arc 4/Phase 8) + exportDisclosurePDF REUSES board-pack-pdf-engine jsPDF+autoTable pattern (board-pack 0-DIFF) + cross-references form-3ceb-engine loadForm3CEBSnapshots (count of CA-signed snapshots for FY · §L-noted) + Page #39 ConsolidatedFinancialsPage EXTENDED (Disclosure tab + Export PDF/XBRL buttons · NOT a new page · NOT a sibling) + 1 new audit type consolidation_disclosure_event under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL DP-A3-9: disclosure assembly + PDF/XBRL ONLY · NO new financial computation · NO OOB · NO Pillar-C.3 (Arc 4) · all sources 0-DIFF (xbrl-builder, board-pack, form-3ceb, S109/S110/S111 engines) · 38-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S113 Block 1) · 🎉 CLOSES ARC 3 — Horizon 1.5 promise delivered (Group P&L + multi-currency + BS + CF + 3 methods + NCI + Goodwill + disclosure PDF+XBRL)
   {
     sprintNumber: 112, code: 'T-Phase-6.C.2.4', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '3f00b9813e36e28fbea99ad2a6a1ca5f4427e5dd', loc: 1300,
+    headSha: 'c8ddef29a3ec1a1d1015e80ff63da517ee76cedc', predecessorSha: '3f00b9813e36e28fbea99ad2a6a1ca5f4427e5dd', loc: 1300,
     newSiblings: ['consolidation-disclosure-engine'],
+    bankDate: null, provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 113 T-Phase-6.B.OOB.1 · 🎬 ARC 4 OPENER · OOB-8 Compliance-Aware Approval (8 default rules) · 1 NEW SIBLING oob8-compliance-aware-approval-engine (orchestrates idea-6-inter-dept-approval-bridge-engine — compliance-context trigger complementary to idea-6's price-variance trigger · idea-6 + approval-matrix + approval-workflow all 0-DIFF · OOB-8 context mapped to idea-6 shape at boundary) + NEW Standalone Page #40 ComplianceApprovalRulesPage (8-rule grid + active toggle + evaluation demo + routed-workflows panel · sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type oob8_approval_rule_event under 'mca-roc' (ComplianceModule UNTOUCHED) · DP-A4-8 HONEST METRICS: "OOB 15/16" is NARRATIVE only · NO machine OOB-counter register added/asserted · SCOPE WALL: OOB-8 ONLY · NO OOB-13 workpapers (S114) · NO Pillar-C.3 governance (S115) · 38-streak ⭐ HOLD · headSha TBD_AT_BANK (backfilled at S114 Block 1)
+  {
+    sprintNumber: 113, code: 'T-Phase-6.B.OOB.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'c8ddef29a3ec1a1d1015e80ff63da517ee76cedc', loc: 1200,
+    newSiblings: ['oob8-compliance-aware-approval-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
