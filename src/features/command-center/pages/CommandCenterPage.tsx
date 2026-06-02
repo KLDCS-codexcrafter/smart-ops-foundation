@@ -189,6 +189,7 @@ export type CommandCenterModule =
   | 'fincore-master-lifecycle-wizard'
   | 'fincore-intercompany-group-structure'
   | 'fincore-intercompany-transactions-hub'
+  | 'fincore-group-eliminations'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
