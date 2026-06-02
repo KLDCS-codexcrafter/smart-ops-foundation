@@ -160,6 +160,9 @@ import InterDeptGovernancePage from '@/features/inter-dept-governance/InterDeptG
 // 🎬 Sprint 116 · T-Phase-7.D.0.1 · AOP & Strategic Plan (Standalone Page #43 · Pillar D.0)
 import AOPStrategicPlanPage from '@/features/fpa-planning/AOPStrategicPlanPage';
 
+// 🎬 Sprint 117 · T-Phase-7.D.0.2 · Workforce Planning (Standalone Page #44 · Pillar D.0)
+import WorkforcePlanningPage from '@/features/workforce-planning/WorkforcePlanningPage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
