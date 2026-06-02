@@ -213,6 +213,7 @@ export type CommandCenterModule =
   | 'fincore-consolidated-financials'
   | 'fincore-compliance-approval-rules'
   | 'fincore-workpaper-autopop'
+  | 'fincore-inter-dept-governance'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
