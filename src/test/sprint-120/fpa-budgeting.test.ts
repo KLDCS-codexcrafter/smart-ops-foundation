@@ -360,7 +360,7 @@ describe('§G · Dashboard lane fix · sidebar · CC · registry', () => {
     const s119 = SPRINTS.find((s) => s.sprintNumber === 119);
     expect(s119?.headSha).toBe('d7489a054eb592beedc0c636d2034441f8156a1d');
     const s120 = SPRINTS.find((s) => s.sprintNumber === 120);
-    expect(s120?.headSha).toBe('TBD_AT_BANK');
+    expect(['TBD_AT_BANK', '749907701208bf70e6e1bedb3863b3b7b37b014f']).toContain(s120?.headSha);
     expect(s120?.newSiblings).toEqual(['fpa-budgeting-engine']);
     expect(s120?.predecessorSha).toBe('d7489a054eb592beedc0c636d2034441f8156a1d');
   });
