@@ -98,6 +98,7 @@ const LANES: LaneDef[] = [
       'comply360',
       'payout',
       'receivx',
+      'fpa-planning',      // S120 · T-Phase-7.D.1.1 · Block 2 · lane-wiring fix (card registered in S116 but never rendered)
     ],
   },
   {

@@ -689,8 +689,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🏁 Sprint 119 T-Phase-7.D.0.4 · 🏁 Arc D.0 CAPSTONE · Pillar D.0 · Org Design + Succession + Skills · 1 NEW SIBLID org-design-succession-engine (re-org simulator on SCENARIO COPY erp_org_design_scenario_* · NEVER mutates real erp_divisions_*/erp_departments_* · headcount/cost deltas via workforce-planning-engine projectWorkforce · succession coverage RAG gap/at_risk/covered · skills inventory) + NEW Standalone Page #46 OrgDesignSimulatorPage (sidebar type:'item' + CC case + requiredCards:['fpa-planning'] · NOT a sibling) + 1 new audit type org_design_event under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL DP-D0-7: re-org sim + succession + skills INVENTORY only — NO performance-management · NO compensation-planning · NO budget/forecast/scenario (D.1) · LEAN-BEHAVIORAL TEST POSTURE · 42-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S120 Block 1) · CLOSES Arc D.0
   {
     sprintNumber: 119, code: 'T-Phase-7.D.0.4', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'ae0c78fda93f5926705c4e93c95aa3e84ab08d01', loc: 1300,
+    headSha: 'd7489a054eb592beedc0c636d2034441f8156a1d', predecessorSha: 'ae0c78fda93f5926705c4e93c95aa3e84ab08d01', loc: 1300,
     newSiblings: ['org-design-succession-engine'],
+    bankDate: null, provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 120 T-Phase-7.D.1.1 · 🎬 Arc D.1 OPENER · Pillar D.1 FP&A · UI FIX (S116 carryover): added 'fpa-planning' to Dashboard.tsx Finance LANES ids — card now actually renders + 1 NEW SIBLID fpa-budgeting-engine (operating/capital/cash budgets at org-node level · upsertBudget/listBudgets/getBudget/getBudgetVsActual/getBudgetVsAOP/isValidBudgetScope · idempotent composite-key upsert · scope_id validated vs real org tree via org-planning isValidScope · budget-vs-actual sources actuals from group-consolidation-engine.buildConsolidatedPnL by ledger_group_code · budget-vs-AOP reads org-planning-engine.listStrategicTargets for cost/revenue target · all money math via decimal-helpers · audit type budget_event under mca-roc · FR-44 REUSES budget-allocation-engine PATTERN (commit/consume · NEVER called/edited) + org-planning-engine + group-consolidation-engine — all 3 stay 0-DIFF) + NEW Standalone Page #47 BudgetingPage (sidebar type:'item' + CC case + requiredCards:['fpa-planning'] · NOT a sibling) + 1 new audit type budget_event under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL DP-D1-9: budgeting ONLY — NO forecasting (S121) · NO scenario (S122-123) · NO costing/driver/ABC (S124-125) · LEAN-BEHAVIORAL TEST POSTURE · 43-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S121 Block 1)
+  {
+    sprintNumber: 120, code: 'T-Phase-7.D.1.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'd7489a054eb592beedc0c636d2034441f8156a1d', loc: 1300,
+    newSiblings: ['fpa-budgeting-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
