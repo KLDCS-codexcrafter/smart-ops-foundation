@@ -166,6 +166,9 @@ import WorkforcePlanningPage from '@/features/workforce-planning/WorkforcePlanni
 // 🎬 Sprint 118 · T-Phase-7.D.0.3 · OKR / KPI Framework + Org-Cost (Standalone Page #45 · Pillar D.0)
 import OKRFrameworkPage from '@/features/okr-framework/OKRFrameworkPage';
 
+// 🏁 Sprint 119 · T-Phase-7.D.0.4 · Org Design + Succession (Standalone Page #46 · 🏁 Arc D.0 Capstone)
+import OrgDesignSimulatorPage from '@/features/org-design/OrgDesignSimulatorPage';
+
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
 import { MasterConflictResolutionPanel } from '../modules/MasterConflictResolutionPanel';
@@ -226,6 +229,7 @@ export type CommandCenterModule =
   | 'fincore-aop-strategic-plan'
   | 'fpa-planning-workforce'
   | 'fpa-planning-okr-framework'
+  | 'fpa-planning-org-design'
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
