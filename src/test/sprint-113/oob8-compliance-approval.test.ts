@@ -285,15 +285,16 @@ describe('Sprint 113 · sprint-history · S112 backfilled + S113 appended · no 
     const s112 = SPRINTS.find((s) => s.sprintNumber === 112);
     expect(s112?.headSha).toBe('c8ddef29a3ec1a1d1015e80ff63da517ee76cedc');
   });
-  it('S113 entry exists with TBD_AT_BANK and correct predecessor', () => {
+  it('S113 entry exists with backfilled-or-TBD headSha and correct predecessor', () => {
     const s113 = SPRINTS.find((s) => s.sprintNumber === 113);
     expect(s113).toBeTruthy();
-    expect(s113?.headSha).toBe('TBD_AT_BANK');
+    expect(['TBD_AT_BANK', '0b16fd04433749a690761109741ef733ab96e315']).toContain(s113?.headSha);
     expect(s113?.predecessorSha).toBe('c8ddef29a3ec1a1d1015e80ff63da517ee76cedc');
     expect(s113?.newSiblings).toContain('oob8-compliance-aware-approval-engine');
   });
-  it('no S114 entry pre-created (Guardrail 2)', () => {
-    expect(SPRINTS.find((s) => s.sprintNumber === 114)).toBeFalsy();
+  it('if S114 entry exists, it is well-formed (Guardrail 4 · if-present-then-valid)', () => {
+    const s114 = SPRINTS.find((s) => s.sprintNumber === 114);
+    if (s114) expect(s114.code).toBe('T-Phase-6.B.OOB.2');
   });
 });
 

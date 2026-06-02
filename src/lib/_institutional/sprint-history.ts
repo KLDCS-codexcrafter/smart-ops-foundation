@@ -644,11 +644,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['consolidation-disclosure-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 113 T-Phase-6.B.OOB.1 · 🎬 ARC 4 OPENER · OOB-8 Compliance-Aware Approval (8 default rules) · 1 NEW SIBLING oob8-compliance-aware-approval-engine (orchestrates idea-6-inter-dept-approval-bridge-engine — compliance-context trigger complementary to idea-6's price-variance trigger · idea-6 + approval-matrix + approval-workflow all 0-DIFF · OOB-8 context mapped to idea-6 shape at boundary) + NEW Standalone Page #40 ComplianceApprovalRulesPage (8-rule grid + active toggle + evaluation demo + routed-workflows panel · sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type oob8_approval_rule_event under 'mca-roc' (ComplianceModule UNTOUCHED) · DP-A4-8 HONEST METRICS: "OOB 15/16" is NARRATIVE only · NO machine OOB-counter register added/asserted · SCOPE WALL: OOB-8 ONLY · NO OOB-13 workpapers (S114) · NO Pillar-C.3 governance (S115) · 38-streak ⭐ HOLD · headSha TBD_AT_BANK (backfilled at S114 Block 1)
+  // 🎬 Sprint 113 T-Phase-6.B.OOB.1 · 🎬 ARC 4 OPENER · OOB-8 Compliance-Aware Approval (8 default rules) · 1 NEW SIBLING oob8-compliance-aware-approval-engine (orchestrates idea-6-inter-dept-approval-bridge-engine — compliance-context trigger complementary to idea-6's price-variance trigger · idea-6 + approval-matrix + approval-workflow all 0-DIFF · OOB-8 context mapped to idea-6 shape at boundary) + NEW Standalone Page #40 ComplianceApprovalRulesPage (8-rule grid + active toggle + evaluation demo + routed-workflows panel · sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type oob8_approval_rule_event under 'mca-roc' (ComplianceModule UNTOUCHED) · DP-A4-8 HONEST METRICS: "OOB 15/16" is NARRATIVE only · NO machine OOB-counter register added/asserted · SCOPE WALL: OOB-8 ONLY · NO OOB-13 workpapers (S114) · NO Pillar-C.3 governance (S115) · 38-streak ⭐ HOLD · banked SHA 0b16fd04 (backfilled at S114 Block 1)
   {
     sprintNumber: 113, code: 'T-Phase-6.B.OOB.1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'c8ddef29a3ec1a1d1015e80ff63da517ee76cedc', loc: 1200,
+    headSha: '0b16fd04433749a690761109741ef733ab96e315', predecessorSha: 'c8ddef29a3ec1a1d1015e80ff63da517ee76cedc', loc: 1200,
     newSiblings: ['oob8-compliance-aware-approval-engine'],
+    bankDate: '2026-06-02', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 114 T-Phase-6.B.OOB.2 · Arc 4 · OOB-13 Workpaper Auto-Population (10 templates) · 1 NEW SIBLING oob13-workpaper-autopop-engine (FR-44 PURE ASSEMBLY: reads idea-7 listTPAudits + multi-gaap compareMultiGAAPBooks + tds-aggregator aggregateBySection + cost-audit listCostAuditorAppointments + statutory-registers listRegisterEntries + group-consolidation buildConsolidatedPnL + S111 buildBalanceSheet + S112 buildDisclosurePack — NO figure rebuild; empty source → populated:false skeleton, no fabrication · DP-A4-8 honest metrics) + NEW Standalone Page #41 WorkpaperAutoPopPage (10-template grid + per-workpaper rows with source_ref + auto-populate-all · sidebar type:'item' + CC case · NOT a sibling) + 1 new audit type workpaper_autopop_event under 'mca-roc' (ComplianceModule UNTOUCHED) · DP-A4-8 HONEST METRICS: "OOB 16/16" is NARRATIVE only · NO machine OOB-counter register · SCOPE WALL: OOB-13 ONLY · NO Pillar-C.3 governance (S115) · NO new financial computation · all source engines 0-DIFF · 38-streak ⭐ HOLD · headSha TBD_AT_BANK (backfilled at S115 Block 1)
+  {
+    sprintNumber: 114, code: 'T-Phase-6.B.OOB.2', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '0b16fd04433749a690761109741ef733ab96e315', loc: 1200,
+    newSiblings: ['oob13-workpaper-autopop-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
