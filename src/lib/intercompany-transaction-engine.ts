@@ -134,27 +134,8 @@ export interface CreateICTransactionInput {
   /** S107 · payment only. Link the IC txn this payment settles. */
   settles_ic_txn_id?: string;
 }
-  from_voucher_id?: string;       // fincore postVoucher (source entity)
-  to_voucher_id?: string;         // fincore postVoucher (counterparty)
-  from_voucher_no?: string;
-  to_voucher_no?: string;
-  txn_date: string;               // YYYY-MM-DD
-  status: ICTransactionStatus;
-  note?: string;
-  created_at: string;
-  updated_at: string;
-}
 
-export interface CreateICTransactionInput {
-  txn_type: ICTransactionType;
-  from_entity: string;
-  to_entity: string;
-  item_key?: string;
-  quantity?: number;
-  amount?: number;
-  txn_date: string;
-  note?: string;
-}
+
 
 // ─── Storage ─────────────────────────────────────────────────────────────────
 
