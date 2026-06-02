@@ -10,7 +10,7 @@
  * @scope-wall  DP-A2-9 · NO matching · NO eliminations · NO consolidation.
  */
 import { useMemo, useState } from 'react';
-import { ArrowLeftRight, Plus, Send, ShieldCheck, Receipt } from 'lucide-react';
+import { ArrowLeftRight, Plus, Send, ShieldCheck, Receipt, CheckCircle2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -26,6 +26,7 @@ import { toast } from 'sonner';
 import {
   createICTransaction,
   postICTransaction,
+  settleICTransaction,
   listICTransactions,
   IC_TRANSACTION_TYPES,
   PRICED_IC_TYPES,
