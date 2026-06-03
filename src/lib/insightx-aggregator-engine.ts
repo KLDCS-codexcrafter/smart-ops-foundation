@@ -35,6 +35,7 @@
  * [JWT] Phase 8: GET /api/insightx/scenarios · GET /api/insightx/aggregate/:id
  */
 import { logAudit } from '@/lib/audit-trail-engine';
+import { dSum, round2 } from '@/lib/decimal-helpers';
 
 // FR-44 walls — the 9 D-engines + insight-generators + staging (READ-ONLY namespaces).
 // All sources stay 0-DIFF. Aggregator never mutates.
