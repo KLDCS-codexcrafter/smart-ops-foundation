@@ -330,7 +330,18 @@ export type AuditEntityType =
   // ComplianceModule UNTOUCHED. SCOPE WALL: inbox + decision-loop ONLY —
   // NO predictive-ML / NL-query (S135).
   | 'insights_inbox_event'
-  | 'scenario_outcome_event';
+  | 'scenario_outcome_event'
+  // Sprint 135 · T-Phase-7.D.3.6 · 🌟 Arc D.3 · β Predictive ML + #6 Explainable + NL-Query (module: 'mca-roc')
+  // 'predictive_insight_run' — logged by predictive-insight-engine on predict().
+  //   Carries scenario + subject_id + model + predicted_value + r_squared + history_n.
+  //   #6 explainable-by-design — every prediction exposes drivers/coefficients/r²/confidence.
+  //   In-house statistical ML ONLY (regression / Holt-Winters / ARIMA-lite) · NO ML library
+  //   · NO LLM · NO new runtime dep (§O). Implements the S121 ForecastModelHook seam.
+  //   NL-query (deterministic intent-match over the 75-registry · NO LLM) reuses
+  //   'insightx_aggregation_run' — no new type. ComplianceModule UNTOUCHED.
+  //   SCOPE WALL DP-D3-5/D3-7: 4 numeric ML scenarios + NL-query ONLY — NO scenario 67
+  //   (invoice NLP · Phase 8) · NO generative AI · NO self-service builder (Phase 8).
+  | 'predictive_insight_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
