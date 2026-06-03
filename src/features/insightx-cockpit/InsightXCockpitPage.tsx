@@ -37,6 +37,10 @@ function TrendIcon({ trend }: { trend: 'up' | 'down' | 'flat' }): JSX.Element {
 
 export default function InsightXCockpitPage(): JSX.Element {
   const cockpit = useMemo(() => buildExecutiveCockpit({ fy: 'FY26' }), []);
+  const narrative = useMemo(
+    () => narrateVariance({ subject_metric: NARRATIVE_SUBJECTS[0].label, fy: 'FY26' }),
+    [],
+  );
 
   return (
     <div className="min-h-full bg-background p-6 md:p-10">
@@ -52,6 +56,21 @@ export default function InsightXCockpitPage(): JSX.Element {
             Generated at <span className="font-mono text-xs">{cockpit.generated_at}</span>.
           </p>
         </header>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <FileText className="h-4 w-4" /> Auto-Narrative · What Changed &amp; Why
+            </CardTitle>
+            <CardDescription>
+              Deterministic NLG · no LLM · narrates the S132 causal chain (FR-44).
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="font-semibold">{narrative.headline}</div>
+            <p className="text-sm text-muted-foreground leading-relaxed">{narrative.paragraph}</p>
+          </CardContent>
+        </Card>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {cockpit.tiles.map((tile) => (
