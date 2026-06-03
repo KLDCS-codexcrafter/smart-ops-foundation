@@ -55,6 +55,8 @@ export default function InsightXPage() {
         return <OperixScorePage />;
       case 'ix-insights-inbox':
         return <InsightsInboxPage />;
+      case 'ix-predictive':
+        return <PredictiveInsightsPage />;
       case 'ix-overview':
       default:
         return <InsightXOverviewPage />;
