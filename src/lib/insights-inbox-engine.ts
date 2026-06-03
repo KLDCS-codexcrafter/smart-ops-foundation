@@ -193,8 +193,9 @@ function gatherFromNarratives(fy: string, entity_code?: string): InboxItem[] {
   try {
     const narratives = varianceNarrative.listNarratives({ fy });
     return narratives.slice(0, 5).map((n) => {
+      const driverCount = n.drivers?.length ?? 0;
       const impact = clampImpact(
-        round2(Math.min(100, Math.abs(n.driver_count) * 8 + (n.chain_complete ? 20 : 10))),
+        round2(Math.min(100, driverCount * 8 + (n.chain_complete ? 20 : 10))),
       );
       return {
         item_id: newItemId('vn'),
