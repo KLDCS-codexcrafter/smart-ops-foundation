@@ -242,15 +242,17 @@ const REGISTRY: ScenarioRegistryEntry[] = [
   r('xc-nps-score',                 'cross_card', 'NPS score (period)',                    'abm-nps-engine'),
   r('xc-marketingx-dashboard',      'cross_card', 'MarketingX consolidated dashboard',     'abm-nps-engine'),
 
-  // ── AI / Predictive lens (8) — 4 unbacked stay deferred to S135 (β-ML) ────
+  // ── AI / Predictive lens (8) — S136: 3 β-ML backed via predictive-insight-engine ─
   r('ai-forecast-confidence',       'ai_predictive', 'Forecast confidence note',           'fpa-forecasting-engine'),
   r('ai-scenario-best-base-worst',  'ai_predictive', 'Best/base/worst PBT spread',         'scenario-modeling-engine'),
   r('ai-lead-score-distribution',   'ai_predictive', 'Lead score distribution',            'marketing-automation-engine'),
   r('ai-attribution-model-compare', 'ai_predictive', 'Attribution model comparison',       'attribution-engine'),
-  r('ai-anomaly-detector',          'ai_predictive', 'Anomaly detector (deferred)',        null),
-  r('ai-churn-predictor',           'ai_predictive', 'Churn predictor (deferred)',         null),
-  r('ai-cash-shortfall-predictor',  'ai_predictive', 'Cash-shortfall predictor (deferred)',null),
-  r('ai-nl-query',                  'ai_predictive', 'Natural-language query (S135)',      null),
+  r('ai-anomaly-detector',          'ai_predictive', 'Anomaly detector (β · explainable)', 'predictive-insight-engine'),
+  r('ai-churn-predictor',           'ai_predictive', 'Churn predictor (β · explainable)',  'predictive-insight-engine'),
+  r('ai-cash-shortfall-predictor',  'ai_predictive', 'Cash-shortfall predictor (β · expl.)','predictive-insight-engine'),
+  r('ai-nl-query',                  'ai_predictive', 'Natural-language query (true LLM)',  null,
+    'True conversational NLP / LLM assistant deferred to Phase 8 · S135 ships a deterministic keyword/synonym matcher (not a real NL query)'),
+
 
   // ── Differentiation lens (8) — the moats ───────────────────────────────────
   r('diff-multi-entity-consolidation','differentiation', 'Multi-entity consolidated scenario','scenario-modeling-engine'),
