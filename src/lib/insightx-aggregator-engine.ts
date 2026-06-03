@@ -363,6 +363,14 @@ export function aggregateInsight(scenario_id: string): AggregatedInsight {
       source_ref = 'insightx-fa-staging-engine · read-only staging surface';
       break;
     }
+    case 'engine-local': {
+      // Source-less scenarios · engine-local compute via decimal-helpers (§L).
+      // Each branch is a small, honest proxy until a dedicated source engine lands.
+      const local = computeEngineLocal(entry.scenario_id);
+      value = local.value;
+      source_ref = local.source_ref;
+      break;
+    }
     default: {
       throw new Error(`InsightX: unmapped source_engine '${entry.source_engine}'`);
     }
