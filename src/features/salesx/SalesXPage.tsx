@@ -154,6 +154,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-marketing-automation':   'Marketing Automation',
   // Sprint 128 · Arc D.2 · Attribution + Segmentation (SalesX EXTENSION)
   'sx-attribution-segmentation': 'Attribution & Segmentation',
+  // Sprint 129 · 🏁 Arc D.2 CAPSTONE · ABM + NPS + MarketingX dashboard (SalesX EXTENSION)
+  'sx-abm-nps':                'ABM, NPS & MarketingX',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
