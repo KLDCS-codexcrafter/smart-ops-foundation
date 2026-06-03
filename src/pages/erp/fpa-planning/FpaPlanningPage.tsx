@@ -151,6 +151,7 @@ function FpaHome({ onNavigate }: FpaHomeProps) {
     { id: 'fpa-okr',                 title: 'OKR / KPI Framework',  description: 'Top-down objective cascade + org-cost allocation.',                  icon: Trophy },
     { id: 'fpa-org-design',          title: 'Org Design',           description: 'Re-org simulator + succession + skills inventory.',                  icon: Network },
     { id: 'fpa-operational-costing', title: 'Operational Costing',  description: 'BOM roll-up · standard costing · standard-vs-actual variance.',     icon: Calculator, badge: '🆕 S124' },
+    { id: 'fpa-advanced-costing',    title: 'Advanced Costing',     description: 'Job · process · ABC · CVP / break-even (management-decision).',     icon: Layers,     badge: '🏁 S125' },
   ];
 
   return (
