@@ -71,7 +71,9 @@ export type SalesXModule =
   | 'sx-r-customer-voucher'
   | 'sx-r-invoice-dispute'
   // UPRA-4 Phase B · Tier-1 NEW
-  | 'sx-r-so-register';
+  | 'sx-r-so-register'
+  // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION · DP-P7-2)
+  | 'sx-marketing-planning';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
