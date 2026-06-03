@@ -16,6 +16,3 @@ export const insightxSidebarItems: SidebarItem[] = [
   // Future modules land in subsequent Arc D.3 sprints:
   // S132 Drill-to-Root · S133 Operix-Score · S134 Insights Inbox · S135 Predictive.
 ];
-  // Future modules land in subsequent Arc D.3 sprints:
-  // S131 Cockpit · S132 Drill-to-Root · S133 Operix-Score · S134 Insights Inbox · S135 Predictive.
-];
