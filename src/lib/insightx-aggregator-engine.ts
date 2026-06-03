@@ -118,10 +118,16 @@ export interface ScenarioRegistryEntry {
   scenario_id: string;
   lens: InsightLens;
   title: string;
-  /** Source engine module id · null = engine-local compute (the unbacked, built in S131+). */
+  /** Source engine module id · null = unbacked (deferred). */
   source_engine: string | null;
   /** true = a source engine already produces this; false = unbacked (deferred). */
   backed: boolean;
+  /**
+   * S136 · honest deferral reason (FR-91). Present only on backed:false
+   * entries genuinely deferred to a later phase (e.g. conversational NLP/LLM
+   * → Phase 8). Absent on backed entries.
+   */
+  deferred_reason?: string;
 }
 
 export interface AggregatedInsight {
@@ -140,15 +146,22 @@ export interface LensCoverage {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // REGISTRY — the 75-scenario / 11-lens catalog (DP-D3-2).
-// ~46 backed + ~29 unbacked (the ~29 are built in S131-S135).
+// S136 close: 3 β-ML scenarios now backed by predictive-insight-engine;
+// ai-nl-query stays HONESTLY deferred (deterministic keyword match is NOT a
+// true conversational NL query · real LLM/NLP → Phase 8 · FR-91 no overclaim).
 // ─────────────────────────────────────────────────────────────────────────────
 function r(
   scenario_id: string,
   lens: InsightLens,
   title: string,
   source_engine: string | null,
+  deferred_reason?: string,
 ): ScenarioRegistryEntry {
-  return { scenario_id, lens, title, source_engine, backed: source_engine !== null };
+  const entry: ScenarioRegistryEntry = {
+    scenario_id, lens, title, source_engine, backed: source_engine !== null,
+  };
+  if (!entry.backed && deferred_reason) entry.deferred_reason = deferred_reason;
+  return entry;
 }
 
 const REGISTRY: ScenarioRegistryEntry[] = [
@@ -229,15 +242,17 @@ const REGISTRY: ScenarioRegistryEntry[] = [
   r('xc-nps-score',                 'cross_card', 'NPS score (period)',                    'abm-nps-engine'),
   r('xc-marketingx-dashboard',      'cross_card', 'MarketingX consolidated dashboard',     'abm-nps-engine'),
 
-  // ── AI / Predictive lens (8) — 4 unbacked stay deferred to S135 (β-ML) ────
+  // ── AI / Predictive lens (8) — S136: 3 β-ML backed via predictive-insight-engine ─
   r('ai-forecast-confidence',       'ai_predictive', 'Forecast confidence note',           'fpa-forecasting-engine'),
   r('ai-scenario-best-base-worst',  'ai_predictive', 'Best/base/worst PBT spread',         'scenario-modeling-engine'),
   r('ai-lead-score-distribution',   'ai_predictive', 'Lead score distribution',            'marketing-automation-engine'),
   r('ai-attribution-model-compare', 'ai_predictive', 'Attribution model comparison',       'attribution-engine'),
-  r('ai-anomaly-detector',          'ai_predictive', 'Anomaly detector (deferred)',        null),
-  r('ai-churn-predictor',           'ai_predictive', 'Churn predictor (deferred)',         null),
-  r('ai-cash-shortfall-predictor',  'ai_predictive', 'Cash-shortfall predictor (deferred)',null),
-  r('ai-nl-query',                  'ai_predictive', 'Natural-language query (S135)',      null),
+  r('ai-anomaly-detector',          'ai_predictive', 'Anomaly detector (β · explainable)', 'predictive-insight-engine'),
+  r('ai-churn-predictor',           'ai_predictive', 'Churn predictor (β · explainable)',  'predictive-insight-engine'),
+  r('ai-cash-shortfall-predictor',  'ai_predictive', 'Cash-shortfall predictor (β · expl.)','predictive-insight-engine'),
+  r('ai-nl-query',                  'ai_predictive', 'Natural-language query (true LLM)',  null,
+    'True conversational NLP / LLM assistant deferred to Phase 8 · S135 ships a deterministic keyword/synonym matcher (not a real NL query)'),
+
 
   // ── Differentiation lens (8) — the moats ───────────────────────────────────
   r('diff-multi-entity-consolidation','differentiation', 'Multi-entity consolidated scenario','scenario-modeling-engine'),
