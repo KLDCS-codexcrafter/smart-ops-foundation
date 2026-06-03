@@ -86,6 +86,8 @@ export const SALESX_MODULE_GROUP: Record<SalesXModule, SalesXGroup> = {
   'sx-r-customer-voucher':     'report',
   'sx-r-invoice-dispute':      'report',
   'sx-r-so-register':          'report',
+  // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION)
+  'sx-marketing-planning':     'master',
 };
 
 /** Default landing module per group when user clicks the tab */
