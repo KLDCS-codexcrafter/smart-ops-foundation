@@ -345,7 +345,7 @@ describe('F · sibling-register + sprint-history (time-robust)', () => {
   it('F6 · S133 entry present · headSha via toContain([TBD_AT_BANK, ...]) NOT toBe', () => {
     const s133 = SPRINTS.find((s) => s.sprintNumber === 133);
     expect(s133).toBeDefined();
-    expect(['TBD_AT_BANK']).toContain(s133!.headSha);
+    expect(['TBD_AT_BANK', 'b0b062cd392f148b7af1ade25045a03848fb884d']).toContain(s133!.headSha);
     expect(s133!.predecessorSha).toBe('8753d98e24e233e4c45004fd660d9bd3d8dcf1e2');
   });
 

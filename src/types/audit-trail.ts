@@ -317,7 +317,20 @@ export type AuditEntityType =
   // ComplianceModule UNTOUCHED. SCOPE WALL: narrative + Operix Score ONLY — NO inbox/decision-loop
   // (S134) · NO predictive-ML / NL-query (S135).
   | 'variance_narrative_run'
-  | 'operix_score_run';
+  | 'operix_score_run'
+  // Sprint 134 · T-Phase-7.D.3.5 · 🌟 Arc D.3 · #4 Insights Inbox + #5 Scenario Decision-Loop (module: 'mca-roc')
+  // 'insights_inbox_event'  — logged by insights-inbox-engine on buildInbox.
+  //   Carries fy + items_count + top_impact + sources_read.
+  //   FR-44: AGGREGATES + RANKS existing signals (alert engines + narrative + score + drill) ·
+  //   recomputes NOTHING. All sources stay 0-DIFF.
+  // 'scenario_outcome_event' — logged by scenario-outcome-tracker-engine on evaluateOutcome.
+  //   Carries scenario_id + fy + delta + accuracy_pct + assumptions_reliable.
+  //   FR-44: READS scenario-modeling-engine ScenarioResult + group-consolidation-engine
+  //   buildConsolidatedPnL actual · recomputes neither. Both sources 0-DIFF.
+  // ComplianceModule UNTOUCHED. SCOPE WALL: inbox + decision-loop ONLY —
+  // NO predictive-ML / NL-query (S135).
+  | 'insights_inbox_event'
+  | 'scenario_outcome_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
