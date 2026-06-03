@@ -141,7 +141,8 @@ describe('C · aggregateInsight CALLS a source (FR-44 · no recompute)', () => {
   });
 
   it('C7 · unbacked scenario throws with deferral message (no fabrication)', () => {
-    expect(() => aggregateInsight('diff-operix-score')).toThrow(/S131|unbacked|deferr/i);
+    // S131 filled diff-operix-score; AI/Predictive 4 remain deferred to S135.
+    expect(() => aggregateInsight('ai-anomaly-detector')).toThrow(/S131|unbacked|deferr/i);
   });
 });
 
