@@ -306,6 +306,9 @@ function renderModule(
     // Sprint 128 · Arc D.2 · MarketingX (SalesX EXTENSION) · Attribution + Segmentation
     case 'sx-attribution-segmentation':
       return <AttributionSegmentationPage entityCode={entityCode} />;
+    // Sprint 129 · 🏁 Arc D.2 CAPSTONE · MarketingX (SalesX EXTENSION) · ABM + NPS + dashboard
+    case 'sx-abm-nps':
+      return <ABMNpsPage entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
