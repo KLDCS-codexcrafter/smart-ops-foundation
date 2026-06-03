@@ -759,7 +759,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🏁 Sprint 129 T-Phase-7.D.2.4 · 🏁 ARC D.2 CAPSTONE · MarketingX (SalesX EXTENSION · DP-P7-2) · abm-nps-engine (ABM tiering strategic/target/nurture + engagement from salesx-conversion · NPS 0-10 → promoter 9-10 / passive 7-8 / detractor 0-6 · computeNPS = %promoters − %detractors via decimal-helpers · DISTINCT from realisation-feedback-engine which is REALISATION-specific · 0-DIFF on all D.2 engines + customer/opportunity types + salesx-conversion + realisation-feedback) + ABMNpsPage #55 (SalesXModule sx-abm-nps + sidebar item + renderModule case · SalesX existing modules 0-DIFF · NOT a sibling) + MarketingX DASHBOARD READ-ONLY roll-up aggregating S126 marketing-planning + S127 marketing-automation + S128 attribution + this sprint ABM/NPS (recomputes NOTHING) + 1 new audit type abm_nps_event under mca-roc (ComplianceModule UNTOUCHED) · SCOPE WALL DP-D2-9: ABM + NPS + MarketingX-dashboard ONLY — NO InsightX/75-scenario aggregation (D.3) · LEAN-BEHAVIORAL TEST POSTURE (≥20 it · time-robust toContain on own headSha) · 52-streak ⭐ target · headSha TBD_AT_BANK · 🏁 CLOSES ARC D.2 (S126 planning → S127 automation → S128 attribution/segmentation → S129 ABM/NPS+dashboard · 4 NEW SIBLIDs 193→197 · pages #52–55)
   {
     sprintNumber: 129, code: 'T-Phase-7.D.2.4', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '1d6f650d3e0f3cf05ac169ffc91727d214d108b3', loc: 1300,
+    headSha: '841dca74b0938cdb292e9d6a8d5aaf0f4eae38dd', predecessorSha: '1d6f650d3e0f3cf05ac169ffc91727d214d108b3', loc: 1300,
     newSiblings: ['abm-nps-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
