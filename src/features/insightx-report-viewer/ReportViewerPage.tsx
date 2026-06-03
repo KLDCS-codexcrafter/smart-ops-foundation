@@ -256,7 +256,7 @@ export default function ReportViewerPage(): JSX.Element {
                   </TableHeader>
                   <TableBody>
                     {groupedRows.map((g) => (
-                      <>
+                      <React.Fragment key={`grp-${g.key}`}>
                         {groupBy === 'lens' && (
                           <TableRow key={`hdr-${g.key}`}>
                             <TableCell
