@@ -9,7 +9,7 @@
  *              that's Phase 8 (DP-D3-8). Reads insightx-aggregator-engine for data.
  *              NOT a sibling. Registered as InsightXModule 'ix-viewer'.
  */
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Card, CardContent, CardHeader, CardTitle, CardDescription,
 } from '@/components/ui/card';
