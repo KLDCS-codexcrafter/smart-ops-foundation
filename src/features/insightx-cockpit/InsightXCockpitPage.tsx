@@ -10,9 +10,10 @@ import {
   Card, CardContent, CardHeader, CardTitle, CardDescription,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { LayoutDashboard, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, TrendingDown, Minus, FileText } from 'lucide-react';
 import { buildExecutiveCockpit } from '@/lib/insight-cockpit-engine';
 import type { InsightLens } from '@/lib/insightx-aggregator-engine';
+import { narrateVariance, NARRATIVE_SUBJECTS } from '@/lib/variance-narrative-engine';
 
 const LENS_LABELS: Record<InsightLens, string> = {
   cfo_finance:      'CFO / Finance',
