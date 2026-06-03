@@ -140,6 +140,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-invoice-dispute':      'Invoice Dispute Register',
   // UPRA-4 Phase B · Tier-1 NEW
   'sx-r-so-register':          'Sales Order Register',
+  // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION)
+  'sx-marketing-planning':     'Marketing Planning',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
