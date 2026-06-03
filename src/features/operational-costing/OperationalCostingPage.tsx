@@ -60,7 +60,7 @@ export default function OperationalCostingPage() {
   const [tree, setTree] = useState<BOMCostNode | null>(null);
   const [variance, setVariance] = useState<CostVariance | null>(null);
 
-  const existing = useMemo(() => getStandardCost(itemKey), [itemKey, variance]);
+  const existing = useMemo(() => getStandardCost(itemKey), [itemKey]);
   const [material, setMaterial] = useState(existing?.standard_material ?? 0);
   const [labour, setLabour] = useState(existing?.standard_labour ?? 0);
   const [overhead, setOverhead] = useState(existing?.standard_overhead ?? 0);
