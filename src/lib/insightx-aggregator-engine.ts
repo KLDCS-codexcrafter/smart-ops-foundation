@@ -118,10 +118,16 @@ export interface ScenarioRegistryEntry {
   scenario_id: string;
   lens: InsightLens;
   title: string;
-  /** Source engine module id · null = engine-local compute (the unbacked, built in S131+). */
+  /** Source engine module id · null = unbacked (deferred). */
   source_engine: string | null;
   /** true = a source engine already produces this; false = unbacked (deferred). */
   backed: boolean;
+  /**
+   * S136 · honest deferral reason (FR-91). Present only on backed:false
+   * entries genuinely deferred to a later phase (e.g. conversational NLP/LLM
+   * → Phase 8). Absent on backed entries.
+   */
+  deferred_reason?: string;
 }
 
 export interface AggregatedInsight {
@@ -140,15 +146,22 @@ export interface LensCoverage {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // REGISTRY — the 75-scenario / 11-lens catalog (DP-D3-2).
-// ~46 backed + ~29 unbacked (the ~29 are built in S131-S135).
+// S136 close: 3 β-ML scenarios now backed by predictive-insight-engine;
+// ai-nl-query stays HONESTLY deferred (deterministic keyword match is NOT a
+// true conversational NL query · real LLM/NLP → Phase 8 · FR-91 no overclaim).
 // ─────────────────────────────────────────────────────────────────────────────
 function r(
   scenario_id: string,
   lens: InsightLens,
   title: string,
   source_engine: string | null,
+  deferred_reason?: string,
 ): ScenarioRegistryEntry {
-  return { scenario_id, lens, title, source_engine, backed: source_engine !== null };
+  const entry: ScenarioRegistryEntry = {
+    scenario_id, lens, title, source_engine, backed: source_engine !== null,
+  };
+  if (!entry.backed && deferred_reason) entry.deferred_reason = deferred_reason;
+  return entry;
 }
 
 const REGISTRY: ScenarioRegistryEntry[] = [
