@@ -127,7 +127,7 @@ interface VarianceFigure {
   has_baseline: boolean;
 }
 
-function readVarianceFigure(subject: string, fy: string): VarianceFigure {
+function readVarianceFigure(_subject: string, fy: string): VarianceFigure {
   try {
     const budgets = fpaBudgeting.listBudgets({ fy });
     if (!budgets || budgets.length === 0) {
