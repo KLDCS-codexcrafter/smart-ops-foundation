@@ -231,7 +231,17 @@ export type AuditEntityType =
   // cost-allocation-engine driver allocation (all 0-DIFF). SCOPE WALL DP-D1-9:
   // costing only — NO marketing (D.2) · NO InsightX aggregation (D.3).
   // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
-  | 'advanced_cost_run';
+  | 'advanced_cost_run'
+  // Sprint 126 · T-Phase-7.D.2.1 · 🎬 Arc D.2 OPENER · Marketing Planning (module: 'mca-roc')
+  // 'marketing_plan_event' — logged by marketing-planning-engine on
+  // allocateChannelBudget / upsertMarketingPlan. Carries plan_id + total_budget +
+  // channel count. FR-44: REUSES Campaign/CampaignBudget types + fpa-budgeting-engine
+  // (S120 · marketing budget reconciles to FP&A operating budget) + salesx-conversion-
+  // engine (READ-ONLY funnel). All sources 0-DIFF. SCOPE WALL DP-D2-9: marketing
+  // planning ONLY — NO lead-scoring/automation (S127), NO attribution/segmentation
+  // (S128), NO ABM/NPS (S129), NO InsightX aggregation (D.3).
+  // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
+  | 'marketing_plan_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
