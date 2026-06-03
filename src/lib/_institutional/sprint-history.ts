@@ -784,6 +784,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['cross-card-drilldown-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
+  // 🌟 Sprint 133 T-Phase-7.D.3.4 · Arc D.3 · #2 Auto-Narrative + #3 Operix Score (TOP-1%) · 2 NEW SIBLIDs variance-narrative-engine (deterministic templated NLG · NO LLM / NO model / NO API / NO new dep · narrates the S132 CausalChain + FP&A budget-vs-actual variance · ranked drivers with contribution_pct + source_ref · headline + forecastability note · honest §L gap-notes when chain incomplete) + operix-score-engine (composite 0–100 enterprise-health · 6 dimensions weighted (compliance 0.25 + assets 0.15 + receivables 0.15 + inventory 0.10 + profitability 0.20 + operations 0.15 · weights sum 1 via decimal-helpers dEq) · raw signal READ per dimension from insightx-aggregator-engine.listInsightsByLens + comply360-health-score-engine.computeWeightedComplianceHealth · LOCAL bandFromScore mirrors §H frozen pattern · indent-health-score-engine + comply360-health-score-engine NEVER edited · 0-DIFF) + NEW Standalone Page #61 OperixScorePage (ix-operix-score · sidebar type:'item' + InsightX shell renderModule case · big number + component breakdown + trend + narrative surfacing · NOT a sibling) + narrative surfacing in InsightXCockpitPage (#57) + DrillToRootPage (#60) · NO new page for narrative (enriches existing) + 2 new audit types variance_narrative_run + operix_score_run under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL DP-D3-6/D3-9: narrative + Operix Score ONLY — NO inbox/decision-loop (S134) · NO predictive-ML/NL-query (S135) · cross-card-drilldown-engine + insightx-aggregator-engine + fpa-budgeting-engine + §H health-score engines all 0-DIFF · LEAN-BEHAVIORAL TEST POSTURE (≥20 it · S133 own headSha via toContain([...]) NOT toBe · NO LLM import asserted · §H 0-DIFF on both health-score engines asserted · weights-sum-to-1 via dEq asserted · FR-44 reuse asserted · scope-wall via toBeUndefined) · 56-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S134 Block 1)
+  {
+    sprintNumber: 133, code: 'T-Phase-7.D.3.4', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '8753d98e24e233e4c45004fd660d9bd3d8dcf1e2', loc: 1400,
+    newSiblings: ['variance-narrative-engine', 'operix-score-engine'],
+    bankDate: null, provenance: 'CONFIRMED',
+  },
 ];
 
 
