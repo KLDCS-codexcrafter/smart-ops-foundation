@@ -168,12 +168,13 @@ function countAccountTouchpoints(accountId: string, entityCode: string): number 
     const events = JSON.parse(raw) as salesxConversion.ConversionActivityEntry[];
     if (!Array.isArray(events)) return 0;
     return events.filter((e) => {
-      // Account match is best-effort: source_id / target_id / source_no can carry
+      // Account match is best-effort: from_id / to_id / from_no / to_no can carry
       // the account ref. We never fabricate — only count explicit references.
-      const src = String(e.source_id ?? '');
-      const tgt = String(e.target_id ?? '');
-      const srcNo = String(e.source_no ?? '');
-      return src === accountId || tgt === accountId || srcNo === accountId;
+      const fromId = String(e.from_id ?? '');
+      const toId = String(e.to_id ?? '');
+      const fromNo = String(e.from_no ?? '');
+      const toNo = String(e.to_no ?? '');
+      return fromId === accountId || toId === accountId || fromNo === accountId || toNo === accountId;
     }).length;
   } catch {
     return 0;
