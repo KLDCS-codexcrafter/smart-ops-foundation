@@ -122,28 +122,10 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🏁 Sprint 115 · T-Phase-6.C.3.1-CLOSE · Phase 6 finale · Pillar C.3 Inter-Department Governance · Standalone Page #42
       { id: 'fincore-inter-dept-governance', type: 'item', label: 'Inter-Department Governance', icon: Network,
         moduleId: 'fincore-inter-dept-governance', requiredCards: ['command-center'] },
-      // 🎬 Sprint 116 · T-Phase-7.D.0.1 · 🎬 Phase 7 opener · Arc D.0 AOP / Strategic Plan · Standalone Page #43
-      // Sidebar item lives under the NEW 'fpa-planning' card per AC#13 (requiredCards: ['fpa-planning']).
-      { id: 'fincore-aop-strategic-plan', type: 'item', label: 'AOP & Strategic Plan', icon: Network,
-        moduleId: 'fincore-aop-strategic-plan', requiredCards: ['fpa-planning'] },
-      // 🎬 Sprint 117 · T-Phase-7.D.0.2 · Arc D.0 · Workforce Planning · Standalone Page #44 (fpa-planning card)
-      { id: 'fpa-planning-workforce', type: 'item', label: 'Workforce Planning', icon: Network,
-        moduleId: 'fpa-planning-workforce', requiredCards: ['fpa-planning'] },
-      // 🎬 Sprint 118 · T-Phase-7.D.0.3 · Arc D.0 · OKR/KPI Framework + Org-Cost · Standalone Page #45 (fpa-planning card)
-      { id: 'fpa-planning-okr-framework', type: 'item', label: 'OKR / KPI Framework', icon: Network,
-        moduleId: 'fpa-planning-okr-framework', requiredCards: ['fpa-planning'] },
-      // 🏁 Sprint 119 · T-Phase-7.D.0.4 · 🏁 Arc D.0 Capstone · Org Design + Succession · Standalone Page #46 (fpa-planning card)
-      { id: 'fpa-planning-org-design', type: 'item', label: 'Org Design & Succession', icon: Network,
-        moduleId: 'fpa-planning-org-design', requiredCards: ['fpa-planning'] },
-      // 🎬 Sprint 120 · T-Phase-7.D.1.1 · 🎬 Arc D.1 OPENER · FP&A Budgeting · Standalone Page #47 (fpa-planning card)
-      { id: 'fpa-planning-budgeting', type: 'item', label: 'FP&A Budgeting', icon: Network,
-        moduleId: 'fpa-planning-budgeting', requiredCards: ['fpa-planning'] },
-      // 🎬 Sprint 121 · T-Phase-7.D.1.2 · Arc D.1 · FP&A Forecasting · Standalone Page #48 (fpa-planning card)
-      { id: 'fpa-planning-forecasting', type: 'item', label: 'FP&A Forecasting', icon: Network,
-        moduleId: 'fpa-planning-forecasting', requiredCards: ['fpa-planning'] },
-      // ⭐ Sprint 122 · T-Phase-7.D.1.3 · Arc D.1 · Scenario Modeling Pt 1 (THE MOAT) · Standalone Page #49 (fpa-planning card)
-      { id: 'fpa-planning-scenario', type: 'item', label: 'Scenario Modeling', icon: Network,
-        moduleId: 'fpa-planning-scenario', requiredCards: ['fpa-planning'] },
+      // 🚚 Sprint 124 · T-Phase-7.D.1.5 · A1 — FP&A self-owned card.
+      // The 7 FP&A items (AOP / Workforce / OKR / Org Design / Budgeting /
+      // Forecasting / Scenario) MOVED to fpa-planning-sidebar-config under the
+      // FP&A self-owned shell (/erp/fpa-planning). CC no longer hosts them.
       { id: 'fc-divider-4', type: 'divider', label: '' },
       { id: 'cc-print-config-launcher', type: 'item', label: 'Print Format Config', icon: Printer,
         route: '/erp/fincore/settings/print-config', requiredCards: ['command-center'] },

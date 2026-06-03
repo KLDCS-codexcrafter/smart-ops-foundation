@@ -210,7 +210,17 @@ export type AuditEntityType =
   //   NO FX × revenue × cost matrix (S123 · Pt 2)
   //   NO demand / capex scenarios (S123)
   //   NO costing / driver / ABC (S124-125)
-  | 'scenario_run';
+  | 'scenario_run'
+  // Sprint 124 · T-Phase-7.D.1.5 · Arc D.1 · Operational Costing Pt 1 (module: 'mca-roc')
+  // 'operational_cost_run' — logged by operational-costing-engine on
+  // rollUpBOMCost / upsertStandardCost / computeCostVariance. Carries item_key +
+  // (for variance) standard_total / actual_total / variance / variance_pct.
+  // DISTINCT from comply360-cost-audit-engine (statutory §148 — shipped S104).
+  // Operational costing computes INTERNAL product cost; cost-audit handles
+  // statutory CRA-1/2/3/4 filings + cost-auditor appointments. FR-44 wall.
+  // SCOPE WALL DP-COSTING-2..5: BOM/standard/variance only.
+  //   NO job costing · NO process costing · NO ABC · NO CVP (all S125)
+  | 'operational_cost_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

@@ -158,22 +158,9 @@ import WorkpaperAutoPopPage from '@/features/workpaper-autopop/WorkpaperAutoPopP
 // 🏁 Sprint 115 · T-Phase-6.C.3.1-CLOSE · Inter-Department Governance (Standalone Page #42 · Pillar C.3)
 import InterDeptGovernancePage from '@/features/inter-dept-governance/InterDeptGovernancePage';
 
-// 🎬 Sprint 116 · T-Phase-7.D.0.1 · AOP & Strategic Plan (Standalone Page #43 · Pillar D.0)
-import AOPStrategicPlanPage from '@/features/fpa-planning/AOPStrategicPlanPage';
-
-// 🎬 Sprint 117 · T-Phase-7.D.0.2 · Workforce Planning (Standalone Page #44 · Pillar D.0)
-import WorkforcePlanningPage from '@/features/workforce-planning/WorkforcePlanningPage';
-
-// 🎬 Sprint 118 · T-Phase-7.D.0.3 · OKR / KPI Framework + Org-Cost (Standalone Page #45 · Pillar D.0)
-import OKRFrameworkPage from '@/features/okr-framework/OKRFrameworkPage';
-
-// 🏁 Sprint 119 · T-Phase-7.D.0.4 · Org Design + Succession (Standalone Page #46 · 🏁 Arc D.0 Capstone)
-import OrgDesignSimulatorPage from '@/features/org-design/OrgDesignSimulatorPage';
-import BudgetingPage from '@/features/budgeting/BudgetingPage';
-
-// 🎬 Sprint 121 · T-Phase-7.D.1.2 · FP&A Forecasting (Standalone Page #48 · Pillar D.1)
-import ForecastingPage from '@/features/forecasting/ForecastingPage';
-import ScenarioModelingPage from '@/features/scenario-modeling/ScenarioModelingPage';
+// 🚚 Sprint 124 · T-Phase-7.D.1.5 · A1 — FP&A pages MOVED to the FP&A self-owned
+// shell (/erp/fpa-planning). The 7 imports/cases/type-union members previously
+// here have been removed. Legacy hashes redirect via the effect below.
 
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
@@ -232,13 +219,8 @@ export type CommandCenterModule =
   | 'fincore-compliance-approval-rules'
   | 'fincore-workpaper-autopop'
   | 'fincore-inter-dept-governance'
-  | 'fincore-aop-strategic-plan'
-  | 'fpa-planning-workforce'
-  | 'fpa-planning-okr-framework'
-  | 'fpa-planning-org-design'
-  | 'fpa-planning-budgeting'
-  | 'fpa-planning-forecasting'
-  | 'fpa-planning-scenario'
+  // 🚚 S124 · A1 — 7 FP&A module ids removed from this union (moved to
+  // FpaPlanningModule under /erp/fpa-planning). Legacy hashes redirect.
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
@@ -338,7 +320,7 @@ export default function CommandCenterPage() {
       'fincore-statutory-reg', 'fincore-gst-config', 'fincore-compliance-settings', 'fincore-production-config',
       'org-structure',
       'fincore-finframe', 'fincore-ledgers', 'fincore-voucher-types', 'fincore-currency', 'fincore-transaction-templates',
-      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'fincore-multi-currency-translation', 'fincore-consolidated-financials', 'fincore-compliance-approval-rules', 'fincore-workpaper-autopop', 'fincore-inter-dept-governance', 'fincore-aop-strategic-plan', 'fpa-planning-workforce', 'fpa-planning-okr-framework', 'fpa-planning-org-design', 'fpa-planning-budgeting', 'fpa-planning-forecasting', 'fpa-planning-scenario', 'projx-project-centres',
+      'fincore-mode-of-payment', 'fincore-terms-of-payment', 'fincore-terms-of-delivery', 'fincore-fiscal-year', 'fincore-business-unit', 'fincore-asset-centres', 'fincore-voucher-class', 'fincore-ledger-tree', 'fincore-internal-pricing-hub', 'fincore-master-visibility-heatmap', 'fincore-master-lifecycle-wizard', 'fincore-intercompany-group-structure', 'fincore-intercompany-transactions-hub', 'fincore-group-eliminations', 'fincore-group-consolidation', 'fincore-multi-currency-translation', 'fincore-consolidated-financials', 'fincore-compliance-approval-rules', 'fincore-workpaper-autopop', 'fincore-inter-dept-governance', 'projx-project-centres',
       'inventory-parametric', 'inventory-batch', 'inventory-serial',
       'inventory-stock-matrix', 'inventory-classify', 'inventory-brands',
       'inventory-storage', 'inventory-uom',
@@ -425,20 +407,29 @@ export default function CommandCenterPage() {
       'fincore-group-consolidation', 'fincore-multi-currency-translation',
       'fincore-consolidated-financials', 'fincore-compliance-approval-rules',
       'fincore-workpaper-autopop', 'fincore-inter-dept-governance',
-      'fincore-aop-strategic-plan',
-      'fpa-planning-workforce', 'fpa-planning-okr-framework', 'fpa-planning-org-design',
-      'fpa-planning-budgeting', 'fpa-planning-forecasting', 'fpa-planning-scenario',
     ]);
+    // 🚚 S124 · A1 — legacy FP&A hashes redirect to /erp/fpa-planning#<new-id>.
+    const LEGACY_FPA: Record<string, string> = {
+      'fincore-aop-strategic-plan': 'fpa-aop',
+      'fpa-planning-workforce': 'fpa-workforce',
+      'fpa-planning-okr-framework': 'fpa-okr',
+      'fpa-planning-org-design': 'fpa-org-design',
+      'fpa-planning-budgeting': 'fpa-budgeting',
+      'fpa-planning-forecasting': 'fpa-forecasting',
+      'fpa-planning-scenario': 'fpa-scenario',
+    };
     const applyHash = () => {
       const raw = window.location.hash.replace('#', '');
       const next = raw === 'core' ? 'foundation' : raw;
+      if (next && LEGACY_FPA[next]) {
+        window.location.replace(`/erp/fpa-planning#${LEGACY_FPA[next]}`);
+        return;
+      }
       if (next && KNOWN_MODULES.has(next)) {
         setActiveModule(next as CommandCenterModule);
       }
     };
     window.addEventListener('hashchange', applyHash);
-    // S122-T1: also re-run on react-router navigations (which don't fire native hashchange
-    // when CC is already mounted). Mount-init + sidebar handler unchanged.
     applyHash();
     return () => window.removeEventListener('hashchange', applyHash);
   }, [location]);
@@ -492,13 +483,9 @@ export default function CommandCenterPage() {
       case 'fincore-compliance-approval-rules': return <ComplianceApprovalRulesPage />;
       case 'fincore-workpaper-autopop': return <WorkpaperAutoPopPage />;
       case 'fincore-inter-dept-governance': return <InterDeptGovernancePage />;
-      case 'fincore-aop-strategic-plan': return <AOPStrategicPlanPage />;
-      case 'fpa-planning-workforce': return <WorkforcePlanningPage />;
-      case 'fpa-planning-okr-framework': return <OKRFrameworkPage />;
-      case 'fpa-planning-org-design': return <OrgDesignSimulatorPage />;
-      case 'fpa-planning-budgeting': return <BudgetingPage />;
-      case 'fpa-planning-forecasting': return <ForecastingPage />;
-      case 'fpa-planning-scenario': return <ScenarioModelingPage />;
+      // 🚚 S124 · A1 — FP&A cases MOVED to FpaPlanningPage under /erp/fpa-planning.
+      // Legacy hashes (e.g. #fincore-aop-strategic-plan) are intercepted by the
+      // hash effect below and redirected via React Router.
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
@@ -675,13 +662,7 @@ function getModuleLabel(m: CommandCenterModule): string {
     'fincore-compliance-approval-rules': 'Compliance Approval Rules',
     'fincore-workpaper-autopop': 'Workpaper Auto-Population',
     'fincore-inter-dept-governance': 'Inter-Department Governance',
-    'fincore-aop-strategic-plan': 'AOP & Strategic Plan',
-    'fpa-planning-workforce': 'Workforce Planning',
-    'fpa-planning-okr-framework': 'OKR / KPI Framework',
-    'fpa-planning-org-design': 'Org Design & Succession',
-    'fpa-planning-budgeting': 'FP&A Budgeting',
-    'fpa-planning-forecasting': 'FP&A Forecasting',
-    'fpa-planning-scenario': 'Scenario Modeling',
+    // S124 · A1 — FP&A module labels live in FpaPlanningPage now.
     'ph-pay-heads': 'Pay Heads',
     'ph-salary-structures': 'Salary Structures',
     'opening-ledger-balances': 'Opening Ledger Balances',
