@@ -80,6 +80,8 @@ import { SalesOrderRegisterPanel } from '@/pages/erp/salesx/reports/SalesOrderRe
 import { MarketingPlanningPage } from '@/features/marketing-planning/MarketingPlanningPage';
 // Sprint 127 · Arc D.2 · MarketingX (SalesX EXTENSION · DP-P7-2 · DP-D2-2..8) · Lead Scoring + Automation
 import { MarketingAutomationPage } from '@/features/marketing-automation/MarketingAutomationPage';
+// Sprint 128 · Arc D.2 · MarketingX (SalesX EXTENSION · DP-P7-2 · DP-D2-2..9) · Attribution + Segmentation
+import { AttributionSegmentationPage } from '@/features/attribution-segmentation/AttributionSegmentationPage';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
@@ -148,6 +150,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-marketing-planning':     'Marketing Planning',
   // Sprint 127 · Arc D.2 · Lead Scoring + Automation (SalesX EXTENSION)
   'sx-marketing-automation':   'Marketing Automation',
+  // Sprint 128 · Arc D.2 · Attribution + Segmentation (SalesX EXTENSION)
+  'sx-attribution-segmentation': 'Attribution & Segmentation',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -295,6 +299,9 @@ function renderModule(
     // Sprint 127 · Arc D.2 · MarketingX (SalesX EXTENSION) · Lead Scoring + Automation
     case 'sx-marketing-automation':
       return <MarketingAutomationPage entityCode={entityCode} />;
+    // Sprint 128 · Arc D.2 · MarketingX (SalesX EXTENSION) · Attribution + Segmentation
+    case 'sx-attribution-segmentation':
+      return <AttributionSegmentationPage entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
