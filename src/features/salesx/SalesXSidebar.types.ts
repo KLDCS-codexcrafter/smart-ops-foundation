@@ -147,4 +147,6 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-marketing-automation',
   // Sprint 128 · Arc D.2 · MarketingX (SalesX EXTENSION) · Attribution + Segmentation
   'sx-attribution-segmentation',
+  // Sprint 129 · 🏁 Arc D.2 CAPSTONE · MarketingX (SalesX EXTENSION) · ABM + NPS + dashboard
+  'sx-abm-nps',
 ];
