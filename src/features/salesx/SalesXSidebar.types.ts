@@ -73,7 +73,9 @@ export type SalesXModule =
   // UPRA-4 Phase B · Tier-1 NEW
   | 'sx-r-so-register'
   // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION · DP-P7-2)
-  | 'sx-marketing-planning';
+  | 'sx-marketing-planning'
+  // Sprint 127 · Arc D.2 · MarketingX (SalesX EXTENSION · DP-P7-2) · Lead Scoring + Automation
+  | 'sx-marketing-automation';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
