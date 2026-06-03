@@ -257,7 +257,18 @@ export type AuditEntityType =
   // engine.sendEmail is receivables-specific). SCOPE WALL DP-D2-9: lead scoring +
   // automation ONLY — NO attribution/segmentation (S128) · NO ABM/NPS (S129) ·
   // NO InsightX aggregation (D.3). ComplianceModule UNTOUCHED. No other type added.
-  | 'marketing_automation_run';
+  | 'marketing_automation_run'
+  // Sprint 128 · T-Phase-7.D.2.3 · Arc D.2 · Attribution + Segmentation (module: 'mca-roc')
+  // 'attribution_run' — logged by attribution-engine on attributeConversion /
+  // buildMarketingSegment. Carries conversion_id / model / touchpoints (attribution)
+  // and rule / matched_count / audience_size (segmentation · via=segment-rule-engine).
+  // FR-44 (DP-D2-5): segmentation REUSES segment-rule-engine (evalRule /
+  // evaluateAllSegments) — NO second segmentation engine/parser. REUSES
+  // salesx-conversion-engine + marketing-automation-engine + marketing-planning-engine
+  // (READ-ONLY namespaces · all sources 0-DIFF). SCOPE WALL DP-D2-9: attribution +
+  // segmentation ONLY — NO ABM/NPS (S129) · NO InsightX aggregation (D.3).
+  // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
+  | 'attribution_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
