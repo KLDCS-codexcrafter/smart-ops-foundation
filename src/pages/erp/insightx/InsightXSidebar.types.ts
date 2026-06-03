@@ -8,8 +8,8 @@ export type InsightXModule =
   | 'ix-cockpit'
   | 'ix-viewer'
   | 'ix-lens-explorer'
-  | 'ix-drill-to-root';
+  | 'ix-drill-to-root'
+  | 'ix-operix-score';
   // Reserved (added as D.3 sprints land):
-  // | 'ix-operix-score'   (S133)
   // | 'ix-insights-inbox' (S134)
   // | 'ix-predictive'     (S135)

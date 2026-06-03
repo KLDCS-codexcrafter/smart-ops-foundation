@@ -6,7 +6,7 @@
  *              FP&A). NO commandCenterShellConfig borrow.
  * @disciplines FR-74 ('i *' namespace) · all items type:'item' (navigable canon)
  */
-import { Home, LayoutDashboard, FileBarChart, Layers, GitBranch } from 'lucide-react';
+import { Home, LayoutDashboard, FileBarChart, Layers, GitBranch, Gauge } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
 export const insightxSidebarItems: SidebarItem[] = [
@@ -15,5 +15,6 @@ export const insightxSidebarItems: SidebarItem[] = [
   { id: 'ix-viewer',        type: 'item', label: 'Report Viewer',               icon: FileBarChart,    moduleId: 'ix-viewer',        requiredCards: ['insightx'], keyboard: 'i r' },
   { id: 'ix-lens-explorer', type: 'item', label: '11-Lens Explorer',            icon: Layers,          moduleId: 'ix-lens-explorer', requiredCards: ['insightx'], keyboard: 'i l' },
   { id: 'ix-drill-to-root', type: 'item', label: 'Drill-to-Root (Cross-Card)',  icon: GitBranch,       moduleId: 'ix-drill-to-root', requiredCards: ['insightx'], keyboard: 'i d' },
-  // Future: S133 Operix-Score · S134 Insights Inbox · S135 Predictive.
+  { id: 'ix-operix-score',  type: 'item', label: 'Operix Score',                icon: Gauge,           moduleId: 'ix-operix-score',  requiredCards: ['insightx'], keyboard: 'i s' },
+  // Future: S134 Insights Inbox · S135 Predictive.
 ];

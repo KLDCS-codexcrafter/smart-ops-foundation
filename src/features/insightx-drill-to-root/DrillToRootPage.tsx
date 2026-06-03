@@ -16,13 +16,14 @@ import { Input } from '@/components/ui/input';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { GitBranch, AlertTriangle, CheckCircle2, Play } from 'lucide-react';
+import { GitBranch, AlertTriangle, CheckCircle2, Play, FileText } from 'lucide-react';
 import {
   drillToRoot,
   listDrillTraces,
   DRILL_ANOMALIES,
   type CausalChain,
 } from '@/lib/cross-card-drilldown-engine';
+import { narrateVariance, type VarianceNarrative } from '@/lib/variance-narrative-engine';
 
 const CARD_LABELS: Record<string, string> = {
   'fpa-planning': 'FP&A · Consolidation',
@@ -38,6 +39,7 @@ export default function DrillToRootPage(): JSX.Element {
   const [fy, setFy] = useState<string>('FY26');
   const [entityCode, setEntityCode] = useState<string>('OPX');
   const [current, setCurrent] = useState<CausalChain | null>(null);
+  const [narrative, setNarrative] = useState<VarianceNarrative | null>(null);
   const [tick, setTick] = useState(0);
 
   const traces = useMemo(() => listDrillTraces(), [tick]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -51,6 +53,12 @@ export default function DrillToRootPage(): JSX.Element {
       entity_code: entityCode.trim() || undefined,
     });
     setCurrent(result);
+    // Auto-narrative — reads the same anomaly + fy (FR-44).
+    setNarrative(narrateVariance({
+      subject_metric: anomaly.label,
+      fy,
+      entity_code: entityCode.trim() || undefined,
+    }));
     setTick((n) => n + 1);
   };
 
@@ -182,6 +190,23 @@ export default function DrillToRootPage(): JSX.Element {
                   ))}
                 </div>
               )}
+            </CardContent>
+          </Card>
+        )}
+
+        {narrative && (
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <FileText className="h-4 w-4" /> Auto-Narrative · What Changed &amp; Why
+              </CardTitle>
+              <CardDescription>
+                Deterministic NLG · narrates the causal chain above (FR-44 · no LLM).
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="font-semibold">{narrative.headline}</div>
+              <p className="text-sm text-muted-foreground leading-relaxed">{narrative.paragraph}</p>
             </CardContent>
           </Card>
         )}
