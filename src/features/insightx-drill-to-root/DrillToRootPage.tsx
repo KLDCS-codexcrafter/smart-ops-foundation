@@ -16,13 +16,14 @@ import { Input } from '@/components/ui/input';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { GitBranch, AlertTriangle, CheckCircle2, Play } from 'lucide-react';
+import { GitBranch, AlertTriangle, CheckCircle2, Play, FileText } from 'lucide-react';
 import {
   drillToRoot,
   listDrillTraces,
   DRILL_ANOMALIES,
   type CausalChain,
 } from '@/lib/cross-card-drilldown-engine';
+import { narrateVariance, type VarianceNarrative } from '@/lib/variance-narrative-engine';
 
 const CARD_LABELS: Record<string, string> = {
   'fpa-planning': 'FP&A · Consolidation',
