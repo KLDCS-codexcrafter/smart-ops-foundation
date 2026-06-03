@@ -731,7 +731,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🏁 Sprint 125 T-Phase-7.D.1.6 · 🏁 ARC D.1 CAPSTONE · Pillar D.1 · Advanced Costing · 1 NEW SIBLID advanced-costing-engine (job costing · process costing · activity-based costing (ABC · reuses cost-allocation-engine drivers) · cost-volume-profit / break-even analysis · contribution-margin ratio + margin of safety · DP-D1-4 / DP-COSTING-6..8 · DISTINCT from comply360-cost-audit-engine (statutory §148 · 0-DIFF) AND REUSES (not reimplements) S124 operational-costing-engine getStandardCost as the standard-cost base · all money math via decimal-helpers · audit type advanced_cost_run under mca-roc · FR-44 TWO WALLS asserted) + NEW Standalone Page #51 AdvancedCostingPage (under FP&A self-owned shell · sidebar type:'item' + renderModule case · NOT a sibling) + 1 new audit type advanced_cost_run under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL DP-D1-9: costing only — NO marketing (D.2) · NO InsightX aggregation (D.3) · LEAN-BEHAVIORAL TEST POSTURE (≥20 it · time-robust toContain on own headSha) · 48-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S126 Block 1) · 🏁 CLOSES ARC D.1 (S120 budgeting → S121 forecasting → ⭐ S122/123 scenario moat → S124 operational costing → S125 advanced costing)
   {
     sprintNumber: 125, code: 'T-Phase-7.D.1.6', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '2ff3e426645aff98648ab8d2ccf0b9ba405f535d', loc: 1400,
+    headSha: '23e5eabe0f77c0b0bf179da63770c28725030e6c', predecessorSha: '2ff3e426645aff98648ab8d2ccf0b9ba405f535d', loc: 1400,
     newSiblings: ['advanced-costing-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
