@@ -479,13 +479,9 @@ export default function CommandCenterPage() {
       case 'fincore-compliance-approval-rules': return <ComplianceApprovalRulesPage />;
       case 'fincore-workpaper-autopop': return <WorkpaperAutoPopPage />;
       case 'fincore-inter-dept-governance': return <InterDeptGovernancePage />;
-      case 'fincore-aop-strategic-plan': return <AOPStrategicPlanPage />;
-      case 'fpa-planning-workforce': return <WorkforcePlanningPage />;
-      case 'fpa-planning-okr-framework': return <OKRFrameworkPage />;
-      case 'fpa-planning-org-design': return <OrgDesignSimulatorPage />;
-      case 'fpa-planning-budgeting': return <BudgetingPage />;
-      case 'fpa-planning-forecasting': return <ForecastingPage />;
-      case 'fpa-planning-scenario': return <ScenarioModelingPage />;
+      // 🚚 S124 · A1 — FP&A cases MOVED to FpaPlanningPage under /erp/fpa-planning.
+      // Legacy hashes (e.g. #fincore-aop-strategic-plan) are intercepted by the
+      // hash effect below and redirected via React Router.
       case 'console': return <SecurityModule />;
       case 'inventory-parametric': return <ParametricPanel />;
       case 'inventory-batch':     return <BatchGridPanel />;
