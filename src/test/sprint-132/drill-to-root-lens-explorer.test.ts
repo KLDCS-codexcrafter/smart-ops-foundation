@@ -267,10 +267,9 @@ describe('G · registers — time-robust', () => {
     expect(hits.length).toBe(1);
   });
 
-  it('G3 · comply360-tier2 still present once (zero-touch)', () => {
-    const src = readFileSync(join(process.cwd(), 'src/lib/_institutional/sibling-register.ts'), 'utf-8');
-    const occurrences = src.split('comply360-tier2').length - 1;
-    expect(occurrences).toBe(1);
+  it('G3 · comply360-tier2-extensions-engine still appears exactly once (0-DIFF)', () => {
+    const matches = SIBLINGS.filter((s) => s.id === 'comply360-tier2-extensions-engine');
+    expect(matches.length).toBe(1);
   });
 
   it('G4 · S131 backfill applied (predecessor SHA)', () => {
