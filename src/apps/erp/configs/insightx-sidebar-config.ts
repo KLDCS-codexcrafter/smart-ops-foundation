@@ -1,18 +1,19 @@
 /**
  * @file        src/apps/erp/configs/insightx-sidebar-config.ts
  * @purpose     InsightX self-owned card sidebar · navigable canon (S95 pattern)
- * @sprint      Sprint 130 · T-Phase-7.D.3.1 · 🌟 ARC D.3 OPENER · DP-D3-1
+ * @sprint      Sprint 130 · S131 (+cockpit/viewer) · S132 (+lens-explorer/drill-to-root)
  * @decisions   InsightX is its OWN card — own shell + own sidebar (mirrors Comply360 /
- *              FP&A). NO commandCenterShellConfig borrow (the FP&A lesson applied).
+ *              FP&A). NO commandCenterShellConfig borrow.
  * @disciplines FR-74 ('i *' namespace) · all items type:'item' (navigable canon)
  */
-import { Home, LayoutDashboard, FileBarChart } from 'lucide-react';
+import { Home, LayoutDashboard, FileBarChart, Layers, GitBranch } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
 export const insightxSidebarItems: SidebarItem[] = [
-  { id: 'ix-overview', type: 'item', label: 'Overview · 11-Lens Coverage', icon: Home, moduleId: 'ix-overview', requiredCards: ['insightx'], keyboard: 'i o' },
-  { id: 'ix-cockpit',  type: 'item', label: 'Executive Cockpit',          icon: LayoutDashboard, moduleId: 'ix-cockpit',  requiredCards: ['insightx'], keyboard: 'i c' },
-  { id: 'ix-viewer',   type: 'item', label: 'Report Viewer',              icon: FileBarChart,    moduleId: 'ix-viewer',   requiredCards: ['insightx'], keyboard: 'i r' },
-  // Future modules land in subsequent Arc D.3 sprints:
-  // S132 Drill-to-Root · S133 Operix-Score · S134 Insights Inbox · S135 Predictive.
+  { id: 'ix-overview',      type: 'item', label: 'Overview · 11-Lens Coverage', icon: Home,           moduleId: 'ix-overview',      requiredCards: ['insightx'], keyboard: 'i o' },
+  { id: 'ix-cockpit',       type: 'item', label: 'Executive Cockpit',           icon: LayoutDashboard, moduleId: 'ix-cockpit',       requiredCards: ['insightx'], keyboard: 'i c' },
+  { id: 'ix-viewer',        type: 'item', label: 'Report Viewer',               icon: FileBarChart,    moduleId: 'ix-viewer',        requiredCards: ['insightx'], keyboard: 'i r' },
+  { id: 'ix-lens-explorer', type: 'item', label: '11-Lens Explorer',            icon: Layers,          moduleId: 'ix-lens-explorer', requiredCards: ['insightx'], keyboard: 'i l' },
+  { id: 'ix-drill-to-root', type: 'item', label: 'Drill-to-Root (Cross-Card)',  icon: GitBranch,       moduleId: 'ix-drill-to-root', requiredCards: ['insightx'], keyboard: 'i d' },
+  // Future: S133 Operix-Score · S134 Insights Inbox · S135 Predictive.
 ];
