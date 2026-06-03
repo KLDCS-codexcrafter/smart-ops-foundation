@@ -150,12 +150,7 @@ export function evaluateOutcome(input: EvaluateOutcomeInput): ScenarioOutcome {
 
   // READ actual.
   const pnl = groupConsolidation.buildConsolidatedPnL({ fy });
-  // Profit before tax proxy: gross_profit - opex (use net_profit when present).
-  const actualPbt = round2(
-    typeof (pnl as unknown as { profit_before_tax?: number }).profit_before_tax === 'number'
-      ? (pnl as unknown as { profit_before_tax: number }).profit_before_tax
-      : pnl.net_profit ?? pnl.gross_profit ?? 0,
-  );
+  const actualPbt = round2(pnl.profit_before_tax ?? pnl.operating_profit ?? pnl.gross_profit ?? 0);
   const modeledPbt = round2(modeledCase.consolidated_pbt);
   const delta = round2(dSub(actualPbt, modeledPbt));
   const accuracy_pct = computeAccuracyPct(modeledPbt, actualPbt);
