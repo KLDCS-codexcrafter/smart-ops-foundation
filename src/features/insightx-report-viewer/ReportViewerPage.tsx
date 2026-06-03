@@ -290,7 +290,7 @@ export default function ReportViewerPage(): JSX.Element {
                             </TableRow>
                           );
                         })}
-                      </>
+                      </React.Fragment>
                     ))}
                   </TableBody>
                 </Table>
