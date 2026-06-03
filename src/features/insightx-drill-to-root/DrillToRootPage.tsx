@@ -194,6 +194,23 @@ export default function DrillToRootPage(): JSX.Element {
           </Card>
         )}
 
+        {narrative && (
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <FileText className="h-4 w-4" /> Auto-Narrative · What Changed &amp; Why
+              </CardTitle>
+              <CardDescription>
+                Deterministic NLG · narrates the causal chain above (FR-44 · no LLM).
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="font-semibold">{narrative.headline}</div>
+              <p className="text-sm text-muted-foreground leading-relaxed">{narrative.paragraph}</p>
+            </CardContent>
+          </Card>
+        )}
+
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="text-base">Recent traces · in-session</CardTitle>
