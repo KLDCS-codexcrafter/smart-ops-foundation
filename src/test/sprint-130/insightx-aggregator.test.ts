@@ -71,7 +71,8 @@ describe('A · 11-lens taxonomy + registry shape', () => {
   it('A6 · registry contains BOTH backed and unbacked entries', () => {
     const reg = getScenarioRegistry();
     expect(reg.filter((e) => e.backed).length).toBeGreaterThanOrEqual(20);
-    expect(reg.filter((e) => !e.backed).length).toBeGreaterThanOrEqual(5);
+    // S131 filled most unbacked; AI/Predictive 4 still unbacked (S135 β-ML).
+    expect(reg.filter((e) => !e.backed).length).toBeGreaterThanOrEqual(4);
   });
 
   it('A7 · scenario_ids are unique', () => {
