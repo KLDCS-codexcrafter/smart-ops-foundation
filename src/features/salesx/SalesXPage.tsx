@@ -76,6 +76,8 @@ import { CustomerVoucherRegisterPanel } from '@/pages/erp/salesx/reports/Custome
 import { InvoiceDisputeRegisterPanel } from '@/pages/erp/salesx/reports/InvoiceDisputeRegister';
 // UPRA-4 Phase B · Tier-1 NEW
 import { SalesOrderRegisterPanel } from '@/pages/erp/salesx/reports/SalesOrderRegister';
+// Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION · DP-P7-2 · DP-D2-1)
+import { MarketingPlanningPage } from '@/features/marketing-planning/MarketingPlanningPage';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
