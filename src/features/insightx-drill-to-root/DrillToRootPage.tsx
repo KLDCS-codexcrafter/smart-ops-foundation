@@ -39,6 +39,7 @@ export default function DrillToRootPage(): JSX.Element {
   const [fy, setFy] = useState<string>('FY26');
   const [entityCode, setEntityCode] = useState<string>('OPX');
   const [current, setCurrent] = useState<CausalChain | null>(null);
+  const [narrative, setNarrative] = useState<VarianceNarrative | null>(null);
   const [tick, setTick] = useState(0);
 
   const traces = useMemo(() => listDrillTraces(), [tick]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -52,6 +53,12 @@ export default function DrillToRootPage(): JSX.Element {
       entity_code: entityCode.trim() || undefined,
     });
     setCurrent(result);
+    // Auto-narrative — reads the same anomaly + fy (FR-44).
+    setNarrative(narrateVariance({
+      subject_metric: anomaly.label,
+      fy,
+      entity_code: entityCode.trim() || undefined,
+    }));
     setTick((n) => n + 1);
   };
 
