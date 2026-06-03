@@ -733,6 +733,13 @@ export const SPRINTS: SprintEntry[] = [
     sprintNumber: 125, code: 'T-Phase-7.D.1.6', composite: false, grade: 'A',
     headSha: '23e5eabe0f77c0b0bf179da63770c28725030e6c', predecessorSha: '2ff3e426645aff98648ab8d2ccf0b9ba405f535d', loc: 1400,
     newSiblings: ['advanced-costing-engine'],
+    bankDate: '2026-06-03', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 126 T-Phase-7.D.2.1 · 🎬 ARC D.2 OPENER · MarketingX (SalesX EXTENSION · DP-P7-2 · DP-D2-1) · marketing-planning-engine (marketing budget · channel mix · campaign calendar · ties to FP&A budget · S120 cross-arc reuse) + MarketingPlanningPage #52 registered via SalesXModule id + SalesXSidebar.groups item + SalesXPage renderModule case (NO new card · NO new shell-config) + 1 new audit type marketing_plan_event under 'mca-roc' (ComplianceModule UNTOUCHED) · FR-44 REUSES Campaign/CampaignBudget types + fpa-budgeting-engine + salesx-conversion-engine — reimplements none, all 3 stay 0-DIFF · SCOPE WALL DP-D2-9: marketing planning ONLY — NO lead-scoring/automation (S127) · NO attribution/segmentation (S128) · NO ABM/NPS (S129) · NO InsightX aggregation (D.3) · channel-mix pcts sum to 100 via decimal-helpers dEq · LEAN-BEHAVIORAL TEST POSTURE (≥20 it · time-robust toContain on own headSha) · 49-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S127 Block 1)
+  {
+    sprintNumber: 126, code: 'T-Phase-7.D.2.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '23e5eabe0f77c0b0bf179da63770c28725030e6c', loc: 1300,
+    newSiblings: ['marketing-planning-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
