@@ -17,7 +17,6 @@ import {
   READS_FROM as DRILL_READS_FROM,
   __fr44_reuse,
   __resetDrillForTests,
-  type CausalChain,
 } from '@/lib/cross-card-drilldown-engine';
 import * as drillEngine from '@/lib/cross-card-drilldown-engine';
 
