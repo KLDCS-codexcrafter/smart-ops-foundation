@@ -313,7 +313,7 @@ export function predict(input: PredictInput): Prediction {
   let scenarioNote = '';
   if (input.scenario === 'breakdown_30d') {
     try {
-      const high = predictiveMaintenanceFA.listHighRiskAssets();
+      const high = predictiveMaintenanceFA.listHighRiskAssets('GLOBAL');
       scenarioNote = ` · pm-engine high-risk-assets=${high.length}`;
     } catch {
       scenarioNote = ' · pm-engine read skipped';
