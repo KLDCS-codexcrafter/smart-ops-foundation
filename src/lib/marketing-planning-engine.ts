@@ -128,11 +128,9 @@ function readFpaOperatingBudget(fy: string, entity_code: string): number | null 
     scope_id: entity_code,
   } as Parameters<typeof fpaBudgeting.listBudgets>[0]);
   if (!budgets || budgets.length === 0) return null;
-  // sum totals defensively (multiple line items per budget are allowed by S120)
+  // sum total_budgeted defensively across any matching FPABudget rows
   const total = dSum(budgets, (b) =>
-    typeof (b as { total?: number }).total === 'number'
-      ? (b as { total: number }).total
-      : 0,
+    typeof b.total_budgeted === 'number' ? b.total_budgeted : 0,
   );
   return total > 0 ? round2(total) : null;
 }
