@@ -51,6 +51,8 @@ export default function InsightXPage() {
         return <DrillToRootPage />;
       case 'ix-operix-score':
         return <OperixScorePage />;
+      case 'ix-insights-inbox':
+        return <InsightsInboxPage />;
       case 'ix-overview':
       default:
         return <InsightXOverviewPage />;
