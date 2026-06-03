@@ -76,6 +76,8 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     }
     // Sprint 126 · Arc D.2 OPENER · MarketingX (SalesX EXTENSION · always available)
     items.push({ id: 'sx-marketing-planning', label: 'Marketing Planning', icon: Megaphone });
+    // Sprint 127 · Arc D.2 · Lead Scoring + Automation (SalesX EXTENSION · always available)
+    items.push({ id: 'sx-marketing-automation', label: 'Marketing Automation', icon: Sparkles });
     return items;
   }, [cfg]);
 

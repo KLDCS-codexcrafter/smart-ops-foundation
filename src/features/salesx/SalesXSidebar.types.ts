@@ -139,4 +139,6 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-r-so-register',
   // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION)
   'sx-marketing-planning',
+  // Sprint 127 · Arc D.2 · MarketingX (SalesX EXTENSION) · Lead Scoring + Automation
+  'sx-marketing-automation',
 ];
