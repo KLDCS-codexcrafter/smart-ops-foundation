@@ -82,6 +82,8 @@ import { MarketingPlanningPage } from '@/features/marketing-planning/MarketingPl
 import { MarketingAutomationPage } from '@/features/marketing-automation/MarketingAutomationPage';
 // Sprint 128 · Arc D.2 · MarketingX (SalesX EXTENSION · DP-P7-2 · DP-D2-2..9) · Attribution + Segmentation
 import { AttributionSegmentationPage } from '@/features/attribution-segmentation/AttributionSegmentationPage';
+// Sprint 129 · 🏁 Arc D.2 CAPSTONE · MarketingX (SalesX EXTENSION · DP-P7-2) · ABM + NPS + dashboard
+import { ABMNpsPage } from '@/features/abm-nps/ABMNpsPage';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
@@ -152,6 +154,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-marketing-automation':   'Marketing Automation',
   // Sprint 128 · Arc D.2 · Attribution + Segmentation (SalesX EXTENSION)
   'sx-attribution-segmentation': 'Attribution & Segmentation',
+  // Sprint 129 · 🏁 Arc D.2 CAPSTONE · ABM + NPS + MarketingX dashboard (SalesX EXTENSION)
+  'sx-abm-nps':                'ABM, NPS & MarketingX',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -302,6 +306,9 @@ function renderModule(
     // Sprint 128 · Arc D.2 · MarketingX (SalesX EXTENSION) · Attribution + Segmentation
     case 'sx-attribution-segmentation':
       return <AttributionSegmentationPage entityCode={entityCode} />;
+    // Sprint 129 · 🏁 Arc D.2 CAPSTONE · MarketingX (SalesX EXTENSION) · ABM + NPS + dashboard
+    case 'sx-abm-nps':
+      return <ABMNpsPage entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }

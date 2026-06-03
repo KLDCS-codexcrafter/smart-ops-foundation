@@ -268,7 +268,19 @@ export type AuditEntityType =
   // (READ-ONLY namespaces · all sources 0-DIFF). SCOPE WALL DP-D2-9: attribution +
   // segmentation ONLY — NO ABM/NPS (S129) · NO InsightX aggregation (D.3).
   // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
-  | 'attribution_run';
+  | 'attribution_run'
+  // Sprint 129 · T-Phase-7.D.2.4 · 🏁 Arc D.2 CAPSTONE · ABM + NPS + MarketingX dashboard (module: 'mca-roc')
+  // 'abm_nps_event' — logged by abm-nps-engine on scoreABMAccount / recordNPSSurvey
+  // / computeNPS. Carries account_id + tier + engagement_score (ABM) and
+  // respondent_id + score + category (NPS) and period + nps (computeNPS).
+  // FR-44 (DP-D2-2/D2-3): engine REUSES customer/opportunity types +
+  // salesx-conversion-engine (READ-ONLY funnel/account touches) — NPS is customer-
+  // survey scoring DISTINCT from realisation-feedback-engine (which is realisation-
+  // specific; not duplicated). MarketingX dashboard READS marketing-planning +
+  // marketing-automation + attribution + this engine — recomputes nothing.
+  // SCOPE WALL DP-D2-9: ABM + NPS + MarketingX-dashboard ONLY — NO InsightX /
+  // 75-scenario aggregation (D.3). ComplianceModule UNTOUCHED. No other type.
+  | 'abm_nps_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

@@ -80,6 +80,8 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     items.push({ id: 'sx-marketing-automation', label: 'Marketing Automation', icon: Sparkles });
     // Sprint 128 · Arc D.2 · Attribution + Segmentation (SalesX EXTENSION · always available)
     items.push({ id: 'sx-attribution-segmentation', label: 'Attribution & Segmentation', icon: BarChart3 });
+    // Sprint 129 · 🏁 Arc D.2 CAPSTONE · ABM + NPS + MarketingX dashboard (SalesX EXTENSION · always available)
+    items.push({ id: 'sx-abm-nps', label: 'ABM, NPS & MarketingX', icon: Star });
     return items;
   }, [cfg]);
 
