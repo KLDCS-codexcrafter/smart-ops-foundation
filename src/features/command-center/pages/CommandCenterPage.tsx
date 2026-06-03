@@ -219,13 +219,8 @@ export type CommandCenterModule =
   | 'fincore-compliance-approval-rules'
   | 'fincore-workpaper-autopop'
   | 'fincore-inter-dept-governance'
-  | 'fincore-aop-strategic-plan'
-  | 'fpa-planning-workforce'
-  | 'fpa-planning-okr-framework'
-  | 'fpa-planning-org-design'
-  | 'fpa-planning-budgeting'
-  | 'fpa-planning-forecasting'
-  | 'fpa-planning-scenario'
+  // 🚚 S124 · A1 — 7 FP&A module ids removed from this union (moved to
+  // FpaPlanningModule under /erp/fpa-planning). Legacy hashes redirect.
   | 'console'
   | 'inventory-parametric'
   | 'inventory-batch'
