@@ -22,7 +22,12 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Sparkles, Layers, Globe2, TrendingUp, TrendingDown, AlertTriangle, Grid3x3, Activity, Wallet } from 'lucide-react';
+import { Sparkles, Layers, Globe2, TrendingUp, TrendingDown, AlertTriangle, Grid3x3, Activity, Wallet, GitCompareArrows } from 'lucide-react';
+import {
+  recordScenarioDecision,
+  evaluateOutcome,
+  type ScenarioOutcome,
+} from '@/lib/scenario-outcome-tracker-engine';
 import {
   runScenario,
   listScenarios,
