@@ -77,7 +77,9 @@ export type SalesXModule =
   // Sprint 127 · Arc D.2 · MarketingX (SalesX EXTENSION · DP-P7-2) · Lead Scoring + Automation
   | 'sx-marketing-automation'
   // Sprint 128 · Arc D.2 · MarketingX (SalesX EXTENSION · DP-P7-2) · Attribution + Segmentation
-  | 'sx-attribution-segmentation';
+  | 'sx-attribution-segmentation'
+  // Sprint 129 · 🏁 Arc D.2 CAPSTONE · MarketingX (SalesX EXTENSION · DP-P7-2) · ABM + NPS + MarketingX dashboard
+  | 'sx-abm-nps';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
