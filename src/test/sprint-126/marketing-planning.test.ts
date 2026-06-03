@@ -333,7 +333,7 @@ describe('§J · sibling-register + sprint-history · time-robust', () => {
   it('sprint-history: S126 entry exists · headSha via toContain (NOT toBe · S121-T1 rule)', () => {
     const s126 = SPRINTS.find((s) => s.sprintNumber === 126);
     expect(s126).toBeDefined();
-    expect(['TBD_AT_BANK']).toContain(s126!.headSha);
+    expect(['TBD_AT_BANK', '0fb77b585f7861107c979007e9869e17ab15e61d']).toContain(s126!.headSha);
     expect(s126!.newSiblings).toEqual(['marketing-planning-engine']);
     expect(s126!.predecessorSha).toBe('23e5eabe0f77c0b0bf179da63770c28725030e6c');
     expect(s126!.code).toBe('T-Phase-7.D.2.1');
