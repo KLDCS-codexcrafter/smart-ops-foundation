@@ -362,11 +362,11 @@ describe('F · register + history · S134 entry · time-robust', () => {
     expect(s134?.newSiblings).toContain('scenario-outcome-tracker-engine');
   });
 
-  it('F5 · S134 headSha uses TBD_AT_BANK (toContain · NEVER toBe)', () => {
+  it('F5 · S134 headSha is TBD_AT_BANK OR a banked 40-hex SHA (time-robust)', () => {
     const s134 = SPRINTS.find((s) => s.sprintNumber === 134);
     expect(s134).toBeTruthy();
-    expect(['TBD_AT_BANK', s134?.headSha ?? '']).toContain(s134?.headSha ?? '');
-    expect(['TBD_AT_BANK']).toContain(s134?.headSha);
+    const sha = s134?.headSha ?? '';
+    expect(sha === 'TBD_AT_BANK' || /^[a-f0-9]{40}$/.test(sha)).toBe(true);
   });
 
   it('F6 · S133 SHA backfilled to b0b062cd…', () => {
