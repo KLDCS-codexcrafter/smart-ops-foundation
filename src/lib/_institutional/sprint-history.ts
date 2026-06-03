@@ -745,8 +745,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎯 Sprint 127 T-Phase-7.D.2.2 · Arc D.2 · MarketingX (SalesX EXTENSION · DP-P7-2) · marketing-automation-engine (lead scoring · explainable weighted-sum heuristic + LeadScoreModelHook ML-interface seam · DP-D2-8 honest AI · NO ML library · NO new runtime deps §O · band thresholds cold<30≤warm<70≤hot · decimal-helpers dAdd/dMul/round2 · drip/journey sequences: upsertJourney + enrollLeadInJourney + fireJourneyStep · fireJourneyStep CALLS the matching rail — push-notification-bridge.registerForPush for 'notification' channel · distributor-whatsapp-notify.notifyDistributorBroadcast for 'whatsapp' channel · ORCHESTRATION ONLY · NO parallel sender · all rails 0-DIFF) + MarketingAutomationPage #53 registered via SalesXModule id 'sx-marketing-automation' + SalesXSidebar.groups item (master tab) + SalesXSidebar masters item + SalesXPage renderModule case (NO new card · NO new shell-config · existing SalesX modules 0-DIFF) + 1 new audit type marketing_automation_run under 'mca-roc' (ComplianceModule UNTOUCHED) · §L EMAIL CHANNEL DEFERRED · no generic marketing email rail exists at HEAD 0fb77b58 (receivx-engine.sendEmail is receivables-specific · requires ReceivXConfig + OutstandingTask · NOT a marketing rail) · JourneyChannel scoped to ['notification', 'whatsapp'] · DEFERRED_CHANNELS=['email'] surfaced for transparency · FR-44 REUSES lead types + salesx-conversion-engine (READ-ONLY namespace) + push-notification-bridge + distributor-whatsapp-notify · reimplements none · all 4 stay 0-DIFF · exposed via __fr44_reuse re-export namespace · SCOPE WALL DP-D2-9: lead scoring + automation ONLY — NO attribution/segmentation (S128) · NO ABM/NPS (S129) · NO InsightX aggregation (D.3) · scope-wall test asserts those exports DO NOT exist on the engine surface (toBeUndefined · time-robust) · LEAN-BEHAVIORAL TEST POSTURE (≥20 it · time-robust toContain on own headSha) · 50-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S128 Block 1)
   {
     sprintNumber: 127, code: 'T-Phase-7.D.2.2', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '0fb77b585f7861107c979007e9869e17ab15e61d', loc: 1400,
+    headSha: '2c6f04d2c8590d275222370d23afabb259b84e9b', predecessorSha: '0fb77b585f7861107c979007e9869e17ab15e61d', loc: 1400,
     newSiblings: ['marketing-automation-engine'],
+    bankDate: '2026-06-03', provenance: 'CONFIRMED',
+  },
+  // 🎯 Sprint 128 T-Phase-7.D.2.3 · Arc D.2 · Attribution + Segmentation · DP-D2-2/D2-3/D2-5 · attribution-engine (multi-touch attribution + channel ROI · segmentation REUSES segment-rule-engine — the key FR-44 dedup · NO second segmentation engine) · AttributionSegmentationPage #54 registered as SalesXModule + sidebar + renderModule case · +1 audit type attribution_run under mca-roc · ComplianceModule UNTOUCHED · SCOPE WALL DP-D2-9: attribution + segmentation ONLY — NO ABM/NPS (S129) · NO InsightX aggregation (D.3) · 51-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S129 Block 1)
+  {
+    sprintNumber: 128, code: 'T-Phase-7.D.2.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '2c6f04d2c8590d275222370d23afabb259b84e9b', loc: 1400,
+    newSiblings: ['attribution-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];

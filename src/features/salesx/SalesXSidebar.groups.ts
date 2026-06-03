@@ -90,6 +90,8 @@ export const SALESX_MODULE_GROUP: Record<SalesXModule, SalesXGroup> = {
   'sx-marketing-planning':     'master',
   // Sprint 127 · Arc D.2 · Lead Scoring + Automation (SalesX EXTENSION)
   'sx-marketing-automation':   'master',
+  // Sprint 128 · Arc D.2 · Attribution + Segmentation (SalesX EXTENSION)
+  'sx-attribution-segmentation': 'master',
 };
 
 /** Default landing module per group when user clicks the tab */
