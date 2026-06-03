@@ -135,4 +135,6 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-r-customer-voucher',
   'sx-r-invoice-dispute',
   'sx-r-so-register',
+  // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION)
+  'sx-marketing-planning',
 ];
