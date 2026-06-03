@@ -70,6 +70,9 @@ export default function ScenarioModelingPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [runs, setRuns] = useState<ScenarioResult[]>(() => listScenarios({ fy: 'FY26-27' }));
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [decisionText, setDecisionText] = useState<string>('');
+  const [outcome, setOutcome] = useState<ScenarioOutcome | null>(null);
+  const [outcomeError, setOutcomeError] = useState<string | null>(null);
 
   // ── S123 · Matrix / Demand / Capex state ────────────────────────────────
   const [matrix, setMatrix] = useState<ScenarioMatrix | null>(null);
