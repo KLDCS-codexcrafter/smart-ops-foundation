@@ -1,9 +1,7 @@
 /**
  * @file        src/pages/erp/insightx/InsightXPage.tsx
  * @page        Landing surface + module-switch host for the InsightX self-owned card.
- * @sprint      Sprint 130 · T-Phase-7.D.3.1 · 🌟 ARC D.3 OPENER · DP-D3-1
- * @decisions   InsightX becomes ACTIVE and self-owned (own shell · NOT CC-shell borrow ·
- *              the FP&A lesson applied · set right from the start).
+ * @sprint      Sprint 130 · S131 (+cockpit/viewer) · S132 (+lens-explorer/drill-to-root)
  */
 import { useState, useCallback } from 'react';
 import { Shell } from '@/shell';
@@ -15,8 +13,16 @@ import type { InsightXModule } from './InsightXSidebar.types';
 import InsightXOverviewPage from '@/features/insightx-overview/InsightXOverviewPage';
 import InsightXCockpitPage from '@/features/insightx-cockpit/InsightXCockpitPage';
 import ReportViewerPage from '@/features/insightx-report-viewer/ReportViewerPage';
+import LensExplorerPage from '@/features/insightx-lens-explorer/LensExplorerPage';
+import DrillToRootPage from '@/features/insightx-drill-to-root/DrillToRootPage';
 
-const KNOWN_MODULES = new Set<InsightXModule>(['ix-overview', 'ix-cockpit', 'ix-viewer']);
+const KNOWN_MODULES = new Set<InsightXModule>([
+  'ix-overview',
+  'ix-cockpit',
+  'ix-viewer',
+  'ix-lens-explorer',
+  'ix-drill-to-root',
+]);
 
 export default function InsightXPage() {
   const { profile, entitlements } = useCardEntitlement();
@@ -35,6 +41,10 @@ export default function InsightXPage() {
         return <InsightXCockpitPage />;
       case 'ix-viewer':
         return <ReportViewerPage />;
+      case 'ix-lens-explorer':
+        return <LensExplorerPage />;
+      case 'ix-drill-to-root':
+        return <DrillToRootPage />;
       case 'ix-overview':
       default:
         return <InsightXOverviewPage />;

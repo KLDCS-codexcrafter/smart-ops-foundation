@@ -1,14 +1,15 @@
 /**
  * @file        src/pages/erp/insightx/InsightXSidebar.types.ts
- * @purpose     InsightX sidebar module union · mirrors Comply360Sidebar.types / FpaPlanningSidebar.types
- * @sprint      Sprint 130 · S131 extends with ix-cockpit + ix-viewer
+ * @purpose     InsightX sidebar module union
+ * @sprint      Sprint 130 · S131 extended (cockpit/viewer) · S132 extended (lens-explorer/drill-to-root)
  */
 export type InsightXModule =
   | 'ix-overview'
   | 'ix-cockpit'
-  | 'ix-viewer';
+  | 'ix-viewer'
+  | 'ix-lens-explorer'
+  | 'ix-drill-to-root';
   // Reserved (added as D.3 sprints land):
-  // | 'ix-drill-to-root'  (S132)
   // | 'ix-operix-score'   (S133)
   // | 'ix-insights-inbox' (S134)
   // | 'ix-predictive'     (S135)
