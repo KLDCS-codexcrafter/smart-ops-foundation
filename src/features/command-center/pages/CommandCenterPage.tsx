@@ -158,22 +158,9 @@ import WorkpaperAutoPopPage from '@/features/workpaper-autopop/WorkpaperAutoPopP
 // 🏁 Sprint 115 · T-Phase-6.C.3.1-CLOSE · Inter-Department Governance (Standalone Page #42 · Pillar C.3)
 import InterDeptGovernancePage from '@/features/inter-dept-governance/InterDeptGovernancePage';
 
-// 🎬 Sprint 116 · T-Phase-7.D.0.1 · AOP & Strategic Plan (Standalone Page #43 · Pillar D.0)
-import AOPStrategicPlanPage from '@/features/fpa-planning/AOPStrategicPlanPage';
-
-// 🎬 Sprint 117 · T-Phase-7.D.0.2 · Workforce Planning (Standalone Page #44 · Pillar D.0)
-import WorkforcePlanningPage from '@/features/workforce-planning/WorkforcePlanningPage';
-
-// 🎬 Sprint 118 · T-Phase-7.D.0.3 · OKR / KPI Framework + Org-Cost (Standalone Page #45 · Pillar D.0)
-import OKRFrameworkPage from '@/features/okr-framework/OKRFrameworkPage';
-
-// 🏁 Sprint 119 · T-Phase-7.D.0.4 · Org Design + Succession (Standalone Page #46 · 🏁 Arc D.0 Capstone)
-import OrgDesignSimulatorPage from '@/features/org-design/OrgDesignSimulatorPage';
-import BudgetingPage from '@/features/budgeting/BudgetingPage';
-
-// 🎬 Sprint 121 · T-Phase-7.D.1.2 · FP&A Forecasting (Standalone Page #48 · Pillar D.1)
-import ForecastingPage from '@/features/forecasting/ForecastingPage';
-import ScenarioModelingPage from '@/features/scenario-modeling/ScenarioModelingPage';
+// 🚚 Sprint 124 · T-Phase-7.D.1.5 · A1 — FP&A pages MOVED to the FP&A self-owned
+// shell (/erp/fpa-planning). The 7 imports/cases/type-union members previously
+// here have been removed. Legacy hashes redirect via the effect below.
 
 // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance panels
 import { FieldLockRulesPanel } from '../modules/FieldLockRulesPanel';
