@@ -7,7 +7,7 @@
  * @disciplines FR-74 ('f *' namespace) · all items type:'item' (navigable canon)
  */
 import {
-  Home, Target, Wallet, LineChart, Sparkles, Users, Trophy, Network, Calculator,
+  Home, Target, Wallet, LineChart, Sparkles, Users, Trophy, Network, Calculator, Layers,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -20,6 +20,8 @@ export const fpaPlanningSidebarItems: SidebarItem[] = [
   { id: 'fpa-workforce',           type: 'item', label: 'Workforce Planning',        icon: Users,      moduleId: 'fpa-workforce',           requiredCards: ['fpa-planning'], keyboard: 'f w' },
   { id: 'fpa-okr',                 type: 'item', label: 'OKR / KPI Framework',       icon: Trophy,     moduleId: 'fpa-okr',                 requiredCards: ['fpa-planning'], keyboard: 'f k' },
   { id: 'fpa-org-design',          type: 'item', label: 'Org Design & Succession',   icon: Network,    moduleId: 'fpa-org-design',          requiredCards: ['fpa-planning'], keyboard: 'f o' },
-  // 🆕 Sprint 124 · Operational Costing Pt 1 · Standalone Page #50
+  // Sprint 124 · Operational Costing Pt 1 · Standalone Page #50
   { id: 'fpa-operational-costing', type: 'item', label: 'Operational Costing',       icon: Calculator, moduleId: 'fpa-operational-costing', requiredCards: ['fpa-planning'], keyboard: 'f c' },
+  // 🏁 Sprint 125 · Advanced Costing · Standalone Page #51 · Arc D.1 Capstone
+  { id: 'fpa-advanced-costing',    type: 'item', label: 'Advanced Costing',          icon: Layers,     moduleId: 'fpa-advanced-costing',    requiredCards: ['fpa-planning'], keyboard: 'f x' },
 ];
