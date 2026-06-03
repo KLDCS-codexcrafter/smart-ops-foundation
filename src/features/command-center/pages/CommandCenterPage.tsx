@@ -407,20 +407,29 @@ export default function CommandCenterPage() {
       'fincore-group-consolidation', 'fincore-multi-currency-translation',
       'fincore-consolidated-financials', 'fincore-compliance-approval-rules',
       'fincore-workpaper-autopop', 'fincore-inter-dept-governance',
-      'fincore-aop-strategic-plan',
-      'fpa-planning-workforce', 'fpa-planning-okr-framework', 'fpa-planning-org-design',
-      'fpa-planning-budgeting', 'fpa-planning-forecasting', 'fpa-planning-scenario',
     ]);
+    // 🚚 S124 · A1 — legacy FP&A hashes redirect to /erp/fpa-planning#<new-id>.
+    const LEGACY_FPA: Record<string, string> = {
+      'fincore-aop-strategic-plan': 'fpa-aop',
+      'fpa-planning-workforce': 'fpa-workforce',
+      'fpa-planning-okr-framework': 'fpa-okr',
+      'fpa-planning-org-design': 'fpa-org-design',
+      'fpa-planning-budgeting': 'fpa-budgeting',
+      'fpa-planning-forecasting': 'fpa-forecasting',
+      'fpa-planning-scenario': 'fpa-scenario',
+    };
     const applyHash = () => {
       const raw = window.location.hash.replace('#', '');
       const next = raw === 'core' ? 'foundation' : raw;
+      if (next && LEGACY_FPA[next]) {
+        window.location.replace(`/erp/fpa-planning#${LEGACY_FPA[next]}`);
+        return;
+      }
       if (next && KNOWN_MODULES.has(next)) {
         setActiveModule(next as CommandCenterModule);
       }
     };
     window.addEventListener('hashchange', applyHash);
-    // S122-T1: also re-run on react-router navigations (which don't fire native hashchange
-    // when CC is already mounted). Mount-init + sidebar handler unchanged.
     applyHash();
     return () => window.removeEventListener('hashchange', applyHash);
   }, [location]);
