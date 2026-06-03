@@ -324,6 +324,131 @@ export default function ScenarioModelingPage() {
           </Card>
         )}
 
+        {/* S134 · #5 Decision-Loop · modeled vs actual (reads scenario-outcome-tracker-engine) */}
+        {active && (
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="text-base flex items-center gap-2">
+                <GitCompareArrows className="h-4 w-4 text-primary" />
+                Decision-Loop · modeled vs actual
+              </CardTitle>
+              <CardDescription>
+                Capture the decision driven by this scenario, then evaluate against
+                the consolidated actual (reads <span className="font-mono">scenario-outcome-tracker-engine</span> ·
+                both sources 0-DIFF · FR-44).
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_auto] gap-3 items-end">
+                <div className="space-y-1">
+                  <Label>Decision recorded</Label>
+                  <Input
+                    placeholder="e.g. Accelerate capex on Plant-2 (worst-case cushion)"
+                    value={decisionText}
+                    onChange={(e) => setDecisionText(e.target.value)}
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const r = recordScenarioDecision({
+                      scenario_id: active.scenario_id,
+                      decision: decisionText,
+                    });
+                    if (!r.tracked) {
+                      setOutcomeError('Decision text required to record.');
+                    } else {
+                      setOutcomeError(null);
+                    }
+                  }}
+                >
+                  Record decision
+                </Button>
+                <Button
+                  onClick={() => {
+                    try {
+                      setOutcomeError(null);
+                      const o = evaluateOutcome({
+                        scenario_id: active.scenario_id,
+                        fy: active.fy,
+                      });
+                      setOutcome(o);
+                    } catch (e) {
+                      setOutcome(null);
+                      setOutcomeError(e instanceof Error ? e.message : 'Failed to evaluate');
+                    }
+                  }}
+                  className="gap-2"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Evaluate outcome
+                </Button>
+              </div>
+
+              {outcomeError && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Outcome unavailable</AlertTitle>
+                  <AlertDescription>{outcomeError}</AlertDescription>
+                </Alert>
+              )}
+
+              {outcome && (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="rounded-lg border border-border p-3">
+                      <div className="text-xs text-muted-foreground">Modeled PBT</div>
+                      <div className="font-mono text-lg">₹{formatINR(outcome.modeled_pbt)}</div>
+                    </div>
+                    <div className="rounded-lg border border-border p-3">
+                      <div className="text-xs text-muted-foreground">Actual PBT</div>
+                      <div className="font-mono text-lg">₹{formatINR(outcome.actual_pbt)}</div>
+                    </div>
+                    <div className="rounded-lg border border-border p-3">
+                      <div className="text-xs text-muted-foreground">Δ (actual − modeled)</div>
+                      <div className={`font-mono text-lg ${outcome.delta >= 0 ? 'text-success' : 'text-destructive'}`}>
+                        ₹{formatINR(outcome.delta)}
+                      </div>
+                    </div>
+                    <div className="rounded-lg border border-border p-3">
+                      <div className="text-xs text-muted-foreground">Accuracy</div>
+                      <div className="font-mono text-lg">{outcome.accuracy_pct}%</div>
+                    </div>
+                  </div>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Assumption</TableHead>
+                        <TableHead className="text-right">Modeled</TableHead>
+                        <TableHead className="text-right">Actual</TableHead>
+                        <TableHead>Reliable?</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {outcome.assumptions.map((a) => (
+                        <TableRow key={a.assumption}>
+                          <TableCell className="font-mono text-xs">{a.assumption}</TableCell>
+                          <TableCell className="text-right font-mono">{a.modeled}%</TableCell>
+                          <TableCell className="text-right font-mono">{a.actual}%</TableCell>
+                          <TableCell>
+                            {a.reliable ? (
+                              <Badge variant="outline" className="bg-success/10 text-success border-success/30">reliable</Badge>
+                            ) : (
+                              <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30">drifted</Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+
+
         {/* History */}
         <Card className="glass-card">
           <CardHeader>
