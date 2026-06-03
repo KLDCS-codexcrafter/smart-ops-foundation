@@ -289,7 +289,14 @@ export type AuditEntityType =
   // UNTOUCHED. SCOPE WALL: registry + backed-scenario surfacing ONLY — NO
   // cockpit (S131) · NO drill-to-root (S132) · NO narrative/score (S133) ·
   // NO inbox/loop (S134) · NO predictive/NL-query (S135).
-  | 'insightx_aggregation_run';
+  | 'insightx_aggregation_run'
+  // Sprint 131 · T-Phase-7.D.3.2 · Arc D.3 · Executive Cockpit (module: 'mca-roc')
+  // 'cockpit_view_event' — logged by insight-cockpit-engine on buildExecutiveCockpit.
+  // Carries fy + tile_count. FR-44 (DP-D3-3): cockpit READS insightx-aggregator-engine —
+  // recomputes nothing. ComplianceModule UNTOUCHED. SCOPE WALL: cockpit + viewer + the
+  // ~23 unbacked scenarios ONLY — NO drill-to-root (S132) · NO narrative/score (S133) ·
+  // NO inbox/loop (S134) · NO predictive/NL-query (S135).
+  | 'cockpit_view_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
