@@ -20,7 +20,7 @@ import {
 } from '@/lib/insightx-aggregator-engine';
 import { SPRINTS, getSprintCount, getCurrentAStreak } from '@/lib/_institutional/sprint-history';
 import { getSiblingCount } from '@/lib/_institutional/sibling-register';
-import { INSIGHTX_SIDEBAR } from '@/apps/erp/configs/insightx-sidebar-config';
+import { insightxSidebarItems as INSIGHTX_SIDEBAR } from '@/apps/erp/configs/insightx-sidebar-config';
 
 const CEREMONY_PATH = join(process.cwd(), 'docs', 'Operix_Phase7_Close_Ceremony.md');
 const CEREMONY = existsSync(CEREMONY_PATH) ? readFileSync(CEREMONY_PATH, 'utf8') : '';
