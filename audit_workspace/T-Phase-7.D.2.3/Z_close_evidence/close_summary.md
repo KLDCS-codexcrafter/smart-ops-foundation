@@ -22,7 +22,7 @@
 - **Sprint-history** — S128 entry added with `headSha: 'TBD_AT_BANK'`, `newSiblings: ['attribution-engine']`. **No S129 pre-entry.**
 
 ## §B · Test pack
-`src/test/sprint-128/attribution-segmentation.test.ts` — 28 discrete `it()` (§N FLOOR ≥20):
+`src/test/sprint-128/attribution-segmentation.test.ts` — 41 discrete `it()` (§N FLOOR ≥20):
 - A · 3 attribution models · sum-to-100 invariant (×3 models) · credit_value math · empty-touchpoints throw
 - B · Channel ROI · divide-by-zero guard · FR-44 read of marketing-planning spend · aggregation
 - C · Touchpoint sources reads (FR-44)
