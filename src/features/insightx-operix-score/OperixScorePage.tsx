@@ -60,7 +60,7 @@ export default function OperixScorePage(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tick],
   );
-  const trend = useMemo(() => getScoreTrend({ fy: 'FY26', periods: 6 }), [tick]);
+  const trend = useMemo(() => getScoreTrend({ fy: 'FY26', periods: 6 }), [tick]); // eslint-disable-line react-hooks/exhaustive-deps
   const narrative: VarianceNarrative = useMemo(
     () => narrateVariance({ subject_metric: NARRATIVE_SUBJECTS[0].label, fy: 'FY26' }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
