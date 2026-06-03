@@ -241,7 +241,23 @@ export type AuditEntityType =
   // planning ONLY — NO lead-scoring/automation (S127), NO attribution/segmentation
   // (S128), NO ABM/NPS (S129), NO InsightX aggregation (D.3).
   // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
-  | 'marketing_plan_event';
+  | 'marketing_plan_event'
+  // Sprint 127 · T-Phase-7.D.2.2 · Arc D.2 · Lead Scoring + Marketing Automation (module: 'mca-roc')
+  // 'marketing_automation_run' — logged by marketing-automation-engine on
+  // scoreLead / upsertJourney / enrollLeadInJourney / fireJourneyStep. Carries
+  // lead_id / journey_id / step_id + channel + rail + dispatched flag (for fire
+  // events) and band + score + model + signal_count (for scoring events).
+  // FR-44 (DP-D2-4): engine ORCHESTRATES push-notification-bridge (registerForPush)
+  // + distributor-whatsapp-notify (notifyDistributorBroadcast) — calls the rails,
+  // does NOT build a parallel sender. REUSES lead types + salesx-conversion-engine
+  // (READ-ONLY funnel). All sources 0-DIFF. DP-D2-8 HONEST AI: lead scoring is a
+  // transparent weighted-sum heuristic; LeadScoreModelHook is the declared
+  // ML-interface seam (NO live ML, NO new runtime deps · §O). §L: email channel
+  // deferred — no generic marketing email rail exists at HEAD 0fb77b58 (receivx-
+  // engine.sendEmail is receivables-specific). SCOPE WALL DP-D2-9: lead scoring +
+  // automation ONLY — NO attribution/segmentation (S128) · NO ABM/NPS (S129) ·
+  // NO InsightX aggregation (D.3). ComplianceModule UNTOUCHED. No other type added.
+  | 'marketing_automation_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

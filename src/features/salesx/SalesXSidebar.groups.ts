@@ -88,6 +88,8 @@ export const SALESX_MODULE_GROUP: Record<SalesXModule, SalesXGroup> = {
   'sx-r-so-register':          'report',
   // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION)
   'sx-marketing-planning':     'master',
+  // Sprint 127 · Arc D.2 · Lead Scoring + Automation (SalesX EXTENSION)
+  'sx-marketing-automation':   'master',
 };
 
 /** Default landing module per group when user clicks the tab */

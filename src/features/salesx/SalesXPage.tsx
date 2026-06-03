@@ -78,6 +78,8 @@ import { InvoiceDisputeRegisterPanel } from '@/pages/erp/salesx/reports/InvoiceD
 import { SalesOrderRegisterPanel } from '@/pages/erp/salesx/reports/SalesOrderRegister';
 // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION · DP-P7-2 · DP-D2-1)
 import { MarketingPlanningPage } from '@/features/marketing-planning/MarketingPlanningPage';
+// Sprint 127 · Arc D.2 · MarketingX (SalesX EXTENSION · DP-P7-2 · DP-D2-2..8) · Lead Scoring + Automation
+import { MarketingAutomationPage } from '@/features/marketing-automation/MarketingAutomationPage';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
@@ -144,6 +146,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-r-so-register':          'Sales Order Register',
   // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION)
   'sx-marketing-planning':     'Marketing Planning',
+  // Sprint 127 · Arc D.2 · Lead Scoring + Automation (SalesX EXTENSION)
+  'sx-marketing-automation':   'Marketing Automation',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -288,6 +292,9 @@ function renderModule(
     // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION)
     case 'sx-marketing-planning':
       return <MarketingPlanningPage entityCode={entityCode} />;
+    // Sprint 127 · Arc D.2 · MarketingX (SalesX EXTENSION) · Lead Scoring + Automation
+    case 'sx-marketing-automation':
+      return <MarketingAutomationPage entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
