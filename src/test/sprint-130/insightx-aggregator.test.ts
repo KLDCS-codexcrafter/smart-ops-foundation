@@ -29,7 +29,7 @@ import * as abmNps from '@/lib/abm-nps-engine';
 
 import { SIBLINGS, getSiblingCount } from '@/lib/_institutional/sibling-register';
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
-import { APPLICATIONS } from '@/components/operix-core/applications';
+import { applications } from '@/components/operix-core/applications';
 
 // ────────────────────────────────────────────────────────────────────────────
 // A · Lenses + Registry shape (DP-D3-2)
@@ -220,7 +220,7 @@ describe('E · SCOPE WALL (S131-S135 NOT in S130)', () => {
 // ────────────────────────────────────────────────────────────────────────────
 describe('F · InsightX card flip + OWN shell + /erp/insightx route', () => {
   it('F1 · applications.ts InsightX entry now status=active', () => {
-    const ix = APPLICATIONS.find((a) => a.id === 'insightx');
+    const ix = applications.find((a: { id: string }) => a.id === 'insightx');
     expect(ix).toBeDefined();
     expect(ix?.status).toBe('active');
   });
