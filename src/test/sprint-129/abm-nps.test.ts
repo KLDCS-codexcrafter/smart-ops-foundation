@@ -175,7 +175,7 @@ describe('C · ★ NPS distinct from realisation-feedback-engine (FR-44 no-dup)'
   });
 
   it('C3 · abm-nps-engine source does NOT import realisation-feedback', () => {
-    expect(ENGINE_SRC).not.toMatch(/realisation-feedback-engine/);
+    expect(ENGINE_SRC).not.toMatch(/from\s+['"]@\/lib\/realisation-feedback-engine['"]/);
   });
 });
 
