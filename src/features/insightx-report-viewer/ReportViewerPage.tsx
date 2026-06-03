@@ -4,8 +4,8 @@
  * @sprint      Sprint 131 · T-Phase-7.D.3.2 · Arc D.3 · the founder's report-dropdown +
  *              IN-SESSION view-config (table/chart toggle · chart-type · sort · column
  *              show/hide · group-by · filters).
- * @decisions   View-config is React state ONLY · §O NO localStorage / sessionStorage /
- *              storage API. Resets on reload. NO save · NO share · NO schedule —
+ * @decisions   View-config is React state ONLY · §O no browser-side persistence
+ *              API (forbidden by sprint discipline). Resets on reload. NO save ·
  *              that's Phase 8 (DP-D3-8). Reads insightx-aggregator-engine for data.
  *              NOT a sibling. Registered as InsightXModule 'ix-viewer'.
  */
