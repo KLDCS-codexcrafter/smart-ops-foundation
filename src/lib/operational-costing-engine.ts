@@ -242,11 +242,12 @@ function resolveActualTotal(item_key: string, fy: string): number {
   const list = loadJSON<ActualCost[]>(ACTUAL_KEY, []);
   const hit = list.find((a) => a.item_key === item_key && a.fy === fy);
   if (hit) return hit.actual_total;
-  // FR-44 reuse — read-only call; tolerate any signature surface
+  // FR-44 reuse — read-only call; we pass a sentinel entity. Any return value
+  // shape is tolerated; we only care about reference/actual rate as a fallback.
   try {
-    const v = _purchaseCostVarianceItem({ item_id: item_key, fy } as never);
-    if (v && typeof (v as { actual_rate?: number }).actual_rate === 'number') {
-      return round2((v as { actual_rate: number }).actual_rate);
+    const v = _purchaseCostVarianceItem(item_key, 'GROUP');
+    if (v && typeof (v as { reference_rate?: number }).reference_rate === 'number') {
+      return round2((v as { reference_rate: number }).reference_rate);
     }
   } catch { /* read-only fallback */ }
   return 0;
