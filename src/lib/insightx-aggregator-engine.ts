@@ -161,8 +161,8 @@ const REGISTRY: ScenarioRegistryEntry[] = [
   r('cfo-scenario-matrix',          'cfo_finance', 'FX × revenue × cost sensitivity grid', 'scenario-modeling-engine'),
   r('cfo-capex-scenario',           'cfo_finance', 'Capex defer / accelerate impact',      'scenario-modeling-engine'),
   r('cfo-demand-scenario',          'cfo_finance', 'Demand surge / drop impact',           'scenario-modeling-engine'),
-  r('cfo-cash-runway',              'cfo_finance', 'Cash runway projection',               null),
-  r('cfo-working-capital-cycle',    'cfo_finance', 'Working-capital cycle days',           null),
+  r('cfo-cash-runway',              'cfo_finance', 'Cash runway projection',               'engine-local'),
+  r('cfo-working-capital-cycle',    'cfo_finance', 'Working-capital cycle days',           'engine-local'),
 
   // ── Operations / Plant lens (8) ────────────────────────────────────────────
   r('ops-bom-roll-up',              'operations_plant', 'BOM cost roll-up',                'operational-costing-engine'),
@@ -171,15 +171,15 @@ const REGISTRY: ScenarioRegistryEntry[] = [
   r('ops-process-cost',             'operations_plant', 'Process costing per equiv-unit',  'advanced-costing-engine'),
   r('ops-abc-allocation',           'operations_plant', 'Activity-based allocation',       'advanced-costing-engine'),
   r('ops-cvp-breakeven',            'operations_plant', 'CVP / break-even / MOS',          'advanced-costing-engine'),
-  r('ops-throughput-bottleneck',    'operations_plant', 'Throughput bottleneck flag',      null),
-  r('ops-line-utilization',         'operations_plant', 'Line utilization %',              null),
+  r('ops-throughput-bottleneck',    'operations_plant', 'Throughput bottleneck flag',      'engine-local'),
+  r('ops-line-utilization',         'operations_plant', 'Line utilization %',              'engine-local'),
 
   // ── Maintenance lens (5) ───────────────────────────────────────────────────
   r('maint-predictive-flag',        'maintenance', 'Predictive maintenance flag',          'insightx-fa-staging-engine'),
   r('maint-iot-signal-trend',       'maintenance', 'IoT signal trend (read-only)',         'insightx-fa-staging-engine'),
   r('maint-asset-utilization',      'maintenance', 'Asset utilization roll-up',            'insightx-fa-staging-engine'),
-  r('maint-mttr',                   'maintenance', 'Mean time to repair (MTTR)',           null),
-  r('maint-spares-coverage',        'maintenance', 'Critical-spares coverage',             null),
+  r('maint-mttr',                   'maintenance', 'Mean time to repair (MTTR)',           'engine-local'),
+  r('maint-spares-coverage',        'maintenance', 'Critical-spares coverage',             'engine-local'),
 
   // ── Compliance / GRC lens (8) ──────────────────────────────────────────────
   r('grc-narrative-summary',        'compliance_grc', 'Compliance narrative summary',      'insight-generators'),
@@ -188,34 +188,34 @@ const REGISTRY: ScenarioRegistryEntry[] = [
   r('grc-fa-audit-trail',           'compliance_grc', 'FA audit-trail integrity',          'insight-generators'),
   r('grc-statutory-payments',       'compliance_grc', 'Statutory-payments calendar',       'insight-generators'),
   r('grc-msme-aging',               'compliance_grc', 'MSME Form-1 aging',                 'insight-generators'),
-  r('grc-related-party-flag',       'compliance_grc', 'Related-party transactions flag',   null),
-  r('grc-control-deficiency',       'compliance_grc', 'Control-deficiency heatmap',        null),
+  r('grc-related-party-flag',       'compliance_grc', 'Related-party transactions flag',   'engine-local'),
+  r('grc-control-deficiency',       'compliance_grc', 'Control-deficiency heatmap',        'engine-local'),
 
   // ── ESG lens (4) ───────────────────────────────────────────────────────────
   r('esg-brsr-pulse',               'esg', 'BRSR pulse (read-only)',                       'insight-generators'),
-  r('esg-emissions-trend',          'esg', 'Emissions trend',                              null),
-  r('esg-energy-intensity',         'esg', 'Energy intensity',                             null),
-  r('esg-waste-recovery',           'esg', 'Waste recovery %',                             null),
+  r('esg-emissions-trend',          'esg', 'Emissions trend',                              'engine-local'),
+  r('esg-energy-intensity',         'esg', 'Energy intensity',                             'engine-local'),
+  r('esg-waste-recovery',           'esg', 'Waste recovery %',                             'engine-local'),
 
   // ── HR lens (5) ────────────────────────────────────────────────────────────
   r('hr-headcount-vs-plan',         'hr', 'Headcount vs plan',                             'fpa-budgeting-engine'),
-  r('hr-attrition-trend',           'hr', 'Attrition trend',                               null),
-  r('hr-okr-progress',              'hr', 'OKR progress %',                                null),
-  r('hr-skill-gap',                 'hr', 'Skill-gap inventory',                           null),
-  r('hr-payroll-variance',          'hr', 'Payroll variance vs budget',                    null),
+  r('hr-attrition-trend',           'hr', 'Attrition trend',                               'engine-local'),
+  r('hr-okr-progress',              'hr', 'OKR progress %',                                'engine-local'),
+  r('hr-skill-gap',                 'hr', 'Skill-gap inventory',                           'engine-local'),
+  r('hr-payroll-variance',          'hr', 'Payroll variance vs budget',                    'engine-local'),
 
   // ── Procurement lens (6) ───────────────────────────────────────────────────
   r('proc-spend-by-vendor',         'procurement', 'Spend by vendor (read-only)',          'fpa-budgeting-engine'),
   r('proc-price-variance',          'procurement', 'Purchase price variance',              'operational-costing-engine'),
   r('proc-msme-vendor-share',       'procurement', 'MSME-vendor share %',                  'insight-generators'),
-  r('proc-vendor-risk',             'procurement', 'Vendor risk flag',                     null),
-  r('proc-on-time-delivery',        'procurement', 'On-time delivery %',                   null),
-  r('proc-savings-realized',        'procurement', 'Savings realized vs target',           null),
+  r('proc-vendor-risk',             'procurement', 'Vendor risk flag',                     'engine-local'),
+  r('proc-on-time-delivery',        'procurement', 'On-time delivery %',                   'engine-local'),
+  r('proc-savings-realized',        'procurement', 'Savings realized vs target',           'engine-local'),
 
   // ── Insurance / Risk lens (3) ──────────────────────────────────────────────
   r('risk-fa-insurance-coverage',   'insurance_risk', 'FA insurance coverage gap',         'insightx-fa-staging-engine'),
-  r('risk-claim-loss-ratio',        'insurance_risk', 'Claim loss ratio',                  null),
-  r('risk-policy-renewal-pulse',    'insurance_risk', 'Policy-renewal pulse',              null),
+  r('risk-claim-loss-ratio',        'insurance_risk', 'Claim loss ratio',                  'engine-local'),
+  r('risk-policy-renewal-pulse',    'insurance_risk', 'Policy-renewal pulse',              'engine-local'),
 
   // ── Cross-Card lens (10) ───────────────────────────────────────────────────
   r('xc-marketing-budget-mix',      'cross_card', 'Marketing budget / channel mix',        'marketing-planning-engine'),
@@ -229,7 +229,7 @@ const REGISTRY: ScenarioRegistryEntry[] = [
   r('xc-nps-score',                 'cross_card', 'NPS score (period)',                    'abm-nps-engine'),
   r('xc-marketingx-dashboard',      'cross_card', 'MarketingX consolidated dashboard',     'abm-nps-engine'),
 
-  // ── AI / Predictive lens (8) ───────────────────────────────────────────────
+  // ── AI / Predictive lens (8) — 4 unbacked stay deferred to S135 (β-ML) ────
   r('ai-forecast-confidence',       'ai_predictive', 'Forecast confidence note',           'fpa-forecasting-engine'),
   r('ai-scenario-best-base-worst',  'ai_predictive', 'Best/base/worst PBT spread',         'scenario-modeling-engine'),
   r('ai-lead-score-distribution',   'ai_predictive', 'Lead score distribution',            'marketing-automation-engine'),
@@ -245,9 +245,9 @@ const REGISTRY: ScenarioRegistryEntry[] = [
   r('diff-india-statutory-pulse',   'differentiation', 'India statutory pulse',            'insight-generators'),
   r('diff-marketingx-rollup',       'differentiation', 'MarketingX cross-card roll-up',    'abm-nps-engine'),
   r('diff-cost-audit-vs-operational','differentiation','Cost-audit vs operational costing','advanced-costing-engine'),
-  r('diff-operix-score',            'differentiation', 'Operix-Score (S133)',              null),
-  r('diff-insights-inbox',          'differentiation', 'Insights inbox (S134)',            null),
-  r('diff-decision-loop-closed',    'differentiation', 'Closed-loop decisions (S134)',     null),
+  r('diff-operix-score',            'differentiation', 'Operix-Score (coverage proxy · full S133)', 'engine-local'),
+  r('diff-insights-inbox',          'differentiation', 'Insights inbox (count proxy · full S134)',  'engine-local'),
+  r('diff-decision-loop-closed',    'differentiation', 'Closed-loop decisions (proxy · full S134)', 'engine-local'),
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
