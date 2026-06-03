@@ -763,6 +763,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['abm-nps-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
+  // 🌟 Sprint 130 T-Phase-7.D.3.1 · 🌟 ARC D.3 OPENER · InsightX ACTIVATES (the moat card · DP-D3-1) · own shell + own sidebar (mirrors Comply360 · NO CC-shell borrow · FP&A lesson applied) + 1 NEW SIBLID insightx-aggregator-engine (cross-card 75-scenario / 11-lens REGISTRY + read-layer · INSIGHT_LENSES exactly 11 · getScenarioRegistry / aggregateInsight / listInsightsByLens / getRegistryCoverage · DP-D3-3 FR-44 AGGREGATE-DON'T-RECOMPUTE — aggregateInsight READS the source engine and cites source_ref · the ~29 unbacked entries throw with explicit S131-S135 deferral · FR-44 REUSES the 9 D-engines (fpa-budgeting + fpa-forecasting + scenario-modeling + operational-costing + advanced-costing + marketing-planning + marketing-automation + attribution + abm-nps) + insight-generators + insightx-fa-staging-engine — all 11 stay 0-DIFF · exposed via __fr44_reuse) + applications.ts InsightX status flipped coming_soon → active (other card metadata 0-DIFF · InsightX already in ROLE_DEFAULT_CARDS finance/sales/hr/view_only · no grant change) + NEW insightx-shell-config + insightx-sidebar-config + InsightXSidebar.types (InsightXModule union) + InsightXPage (useState activeModule + renderModule switch · uses insightxShellConfig NOT commandCenterShellConfig) + /erp/insightx route in App.tsx + InsightXOverviewPage #56 (First-Class Standalone · NOT a sibling · registered as InsightXModule 'ix-overview' + sidebar item + renderModule case · reads insightx-aggregator-engine only) + 1 new audit type insightx_aggregation_run under 'mca-roc' (ComplianceModule UNTOUCHED) · SCOPE WALL DP-D3-9: registry + backed-scenario surfacing ONLY — NO cockpit (S131) · NO drill-to-root (S132) · NO narrative/Operix-Score (S133) · NO insights-inbox/decision-loop (S134) · NO predictive-ML/NL-query (S135) · scope-wall test asserts those exports DO NOT exist on the engine surface (toBeUndefined · time-robust) · LEAN-BEHAVIORAL TEST POSTURE (≥20 it · S130 own headSha via toContain([...]) NOT toBe) · 53-streak ⭐ target · headSha TBD_AT_BANK
+  {
+    sprintNumber: 130, code: 'T-Phase-7.D.3.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '841dca74b0938cdb292e9d6a8d5aaf0f4eae38dd', loc: 1400,
+    newSiblings: ['insightx-aggregator-engine'],
+    bankDate: null, provenance: 'CONFIRMED',
+  },
 ];
 
 
