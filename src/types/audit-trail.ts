@@ -303,7 +303,21 @@ export type AuditEntityType =
   // full forensic replay. FR-44: drill engine WALKS source engines — recomputes nothing.
   // ComplianceModule UNTOUCHED. SCOPE WALL: drill-to-root + lens views ONLY —
   // NO narrative/Operix-Score (S133) · NO inbox/decision-loop (S134) · NO predictive/NL-query (S135).
-  | 'drilldown_trace_event';
+  | 'drilldown_trace_event'
+  // Sprint 133 · T-Phase-7.D.3.4 · 🌟 Arc D.3 · #2 Auto-Narrative + #3 Operix Score (module: 'mca-roc')
+  // 'variance_narrative_run' — logged by variance-narrative-engine on narrateVariance.
+  //   Carries subject + fy + driver_count + chain_complete + has_baseline + sources_read.
+  //   FR-44 / §O: deterministic templated NLG · NO LLM / NO model / NO API / NO new dep.
+  //   READS cross-card-drilldown-engine CausalChain + fpa-budgeting-engine variance — no recompute.
+  // 'operix_score_run' — logged by operix-score-engine on computeOperixScore.
+  //   Carries fy + score + band + component_count + weights_sum (must equal 1).
+  //   FR-44: COMPOSES a NEW weighted score from cross-card signals READ via aggregator +
+  //   comply360-health-score-engine. §H: indent-health-score-engine + comply360-health-score-engine
+  //   stay 0-DIFF (read-only · local bandFromScore mirrors the frozen pattern · never edits frozen).
+  // ComplianceModule UNTOUCHED. SCOPE WALL: narrative + Operix Score ONLY — NO inbox/decision-loop
+  // (S134) · NO predictive-ML / NL-query (S135).
+  | 'variance_narrative_run'
+  | 'operix_score_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
