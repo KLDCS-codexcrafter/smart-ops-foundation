@@ -194,26 +194,27 @@ function rollOne(item_key: string, qty: number, seen: Set<string>): BOMCostNode 
     // cycle guard — return zero-cost leaf
     return { item_key, qty, unit_cost: 0, rolled_cost: 0, children: [] };
   }
-  seen.add(item_key);
+  const nextSeen = new Set(seen);
+  nextSeen.add(item_key);
   const bom = getBOMInput(item_key);
   const unit_cost = bom?.unit_cost ?? 0;
+  // unit_total = cost to produce 1 unit of this item (self + child contributions per unit)
+  let unit_total = unit_cost;
   const children: BOMCostNode[] = [];
-  let child_sum = 0;
   if (bom && bom.children.length > 0) {
     for (const c of bom.children) {
-      const childNode = rollOne(c.item_key, c.qty, new Set(seen));
-      // child rolled_cost is for 1 unit of child; scale by qty
-      const scaled: BOMCostNode = {
-        ...childNode,
+      // Roll up child at qty=1 to obtain per-unit child cost, then scale by required qty.
+      const childPerUnit = rollOne(c.item_key, 1, nextSeen);
+      const childRolledForQty = round2(dMul(childPerUnit.rolled_cost, c.qty));
+      children.push({
+        ...childPerUnit,
         qty: c.qty,
-        rolled_cost: round2(dMul(childNode.rolled_cost, c.qty)),
-      };
-      children.push(scaled);
-      child_sum = dAdd(child_sum, scaled.rolled_cost);
+        rolled_cost: childRolledForQty,
+      });
+      unit_total = dAdd(unit_total, dMul(childPerUnit.rolled_cost, c.qty));
     }
   }
-  const self_cost = round2(dMul(unit_cost, qty));
-  const rolled_cost = round2(dAdd(self_cost, child_sum));
+  const rolled_cost = round2(dMul(unit_total, qty));
   return { item_key, qty, unit_cost, rolled_cost, children };
 }
 
