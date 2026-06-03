@@ -1,12 +1,13 @@
 /**
  * @file        src/pages/erp/insightx/InsightXSidebar.types.ts
  * @purpose     InsightX sidebar module union · mirrors Comply360Sidebar.types / FpaPlanningSidebar.types
- * @sprint      Sprint 130 · T-Phase-7.D.3.1 · 🌟 ARC D.3 OPENER · DP-D3-1
+ * @sprint      Sprint 130 · S131 extends with ix-cockpit + ix-viewer
  */
 export type InsightXModule =
-  | 'ix-overview';
+  | 'ix-overview'
+  | 'ix-cockpit'
+  | 'ix-viewer';
   // Reserved (added as D.3 sprints land):
-  // | 'ix-cockpit'        (S131)
   // | 'ix-drill-to-root'  (S132)
   // | 'ix-operix-score'   (S133)
   // | 'ix-insights-inbox' (S134)

@@ -71,7 +71,8 @@ describe('A · 11-lens taxonomy + registry shape', () => {
   it('A6 · registry contains BOTH backed and unbacked entries', () => {
     const reg = getScenarioRegistry();
     expect(reg.filter((e) => e.backed).length).toBeGreaterThanOrEqual(20);
-    expect(reg.filter((e) => !e.backed).length).toBeGreaterThanOrEqual(5);
+    // S131 filled most unbacked; AI/Predictive 4 still unbacked (S135 β-ML).
+    expect(reg.filter((e) => !e.backed).length).toBeGreaterThanOrEqual(4);
   });
 
   it('A7 · scenario_ids are unique', () => {
@@ -140,7 +141,8 @@ describe('C · aggregateInsight CALLS a source (FR-44 · no recompute)', () => {
   });
 
   it('C7 · unbacked scenario throws with deferral message (no fabrication)', () => {
-    expect(() => aggregateInsight('diff-operix-score')).toThrow(/S131|unbacked|deferr/i);
+    // S131 filled diff-operix-score; AI/Predictive 4 remain deferred to S135.
+    expect(() => aggregateInsight('ai-anomaly-detector')).toThrow(/S131|unbacked|deferr/i);
   });
 });
 

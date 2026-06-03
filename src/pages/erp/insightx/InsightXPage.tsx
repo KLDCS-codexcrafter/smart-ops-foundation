@@ -13,8 +13,10 @@ import type { SidebarItem } from '@/shell/types';
 import type { InsightXModule } from './InsightXSidebar.types';
 
 import InsightXOverviewPage from '@/features/insightx-overview/InsightXOverviewPage';
+import InsightXCockpitPage from '@/features/insightx-cockpit/InsightXCockpitPage';
+import ReportViewerPage from '@/features/insightx-report-viewer/ReportViewerPage';
 
-const KNOWN_MODULES = new Set<InsightXModule>(['ix-overview']);
+const KNOWN_MODULES = new Set<InsightXModule>(['ix-overview', 'ix-cockpit', 'ix-viewer']);
 
 export default function InsightXPage() {
   const { profile, entitlements } = useCardEntitlement();
@@ -29,6 +31,10 @@ export default function InsightXPage() {
 
   const renderModule = () => {
     switch (activeModule) {
+      case 'ix-cockpit':
+        return <InsightXCockpitPage />;
+      case 'ix-viewer':
+        return <ReportViewerPage />;
       case 'ix-overview':
       default:
         return <InsightXOverviewPage />;
