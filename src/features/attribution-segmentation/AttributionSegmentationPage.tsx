@@ -52,11 +52,11 @@ const DEMO_TOUCHPOINTS: Touchpoint[] = [
 ];
 
 const DEMO_AUDIENCE: SegmentContext[] = [
-  { customer_id: 'C-1', city: 'Mumbai',    clv_tier: 'high', churn_tier: 'low',    placed_orders_30d: 6, lifetime_value_paise: 5_50_00_000 },
-  { customer_id: 'C-2', city: 'Delhi',     clv_tier: 'mid',  churn_tier: 'medium', placed_orders_30d: 2, lifetime_value_paise: 1_20_00_000 },
-  { customer_id: 'C-3', city: 'Bengaluru', clv_tier: 'high', churn_tier: 'low',    placed_orders_30d: 4, lifetime_value_paise: 3_75_00_000 },
-  { customer_id: 'C-4', city: 'Mumbai',    clv_tier: 'low',  churn_tier: 'high',   placed_orders_30d: 0, lifetime_value_paise: 0           },
-  { customer_id: 'C-5', city: 'Chennai',   clv_tier: 'mid',  churn_tier: 'low',    placed_orders_30d: 3, lifetime_value_paise: 2_10_00_000 },
+  { customer_id: 'C-1', city: 'Mumbai',    clv_tier: 'vip',      churn_tier: 'safe',     placed_orders_30d: 6, lifetime_value_paise: 5_50_00_000 },
+  { customer_id: 'C-2', city: 'Delhi',     clv_tier: 'growth',   churn_tier: 'watch',    placed_orders_30d: 2, lifetime_value_paise: 1_20_00_000 },
+  { customer_id: 'C-3', city: 'Bengaluru', clv_tier: 'vip',      churn_tier: 'safe',     placed_orders_30d: 4, lifetime_value_paise: 3_75_00_000 },
+  { customer_id: 'C-4', city: 'Mumbai',    clv_tier: 'at_risk',  churn_tier: 'critical', placed_orders_30d: 0, lifetime_value_paise: 0           },
+  { customer_id: 'C-5', city: 'Chennai',   clv_tier: 'standard', churn_tier: 'safe',     placed_orders_30d: 3, lifetime_value_paise: 2_10_00_000 },
 ];
 
 export function AttributionSegmentationPage({ entityCode }: Props) {
