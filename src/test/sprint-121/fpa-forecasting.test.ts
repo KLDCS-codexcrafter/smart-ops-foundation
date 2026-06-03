@@ -375,13 +375,20 @@ describe('§H · scope wall · no-ML · 0-DIFF source anchors', () => {
 
 // ─── §I · Page + sidebar + CC wiring ─────────────────────────────────────────
 describe('§I · ForecastingPage wiring (Standalone Page #48)', () => {
-  it('sidebar exposes the new fpa-planning-forecasting item under fpa-planning', () => {
-    expect(sidebarSrc).toMatch(/fpa-planning-forecasting/);
-    expect(sidebarSrc).toMatch(/requiredCards:\s*\['fpa-planning'\]/);
+  it('sidebar exposes the new fpa-* forecasting item under fpa-planning (time-robust · S124 A1)', () => {
+    // S124-A1: FP&A pages moved to the FP&A self-owned shell. Old CC sidebar
+    // entry (`fpa-planning-forecasting`) is gone — the new home is the FP&A
+    // sidebar config under module id `fpa-forecasting`. Accept either.
+    const fpaSidebarSrc = readFileSync(join(ROOT, 'src/apps/erp/configs/fpa-planning-sidebar-config.ts'), 'utf8');
+    const ok = /fpa-planning-forecasting/.test(sidebarSrc) || /fpa-forecasting/.test(fpaSidebarSrc);
+    expect(ok).toBe(true);
   });
 
-  it('CommandCenterPage wires the fpa-planning-forecasting case to ForecastingPage', () => {
-    expect(ccPageSrc).toMatch(/case 'fpa-planning-forecasting':\s*return <ForecastingPage \/>;/);
+  it('FP&A page wires Forecasting (time-robust · S124 A1 — moved out of CC switch)', () => {
+    const fpaPageSrc = readFileSync(join(ROOT, 'src/pages/erp/fpa-planning/FpaPlanningPage.tsx'), 'utf8');
+    const ccOk = /case 'fpa-planning-forecasting':\s*return <ForecastingPage \/>;/.test(ccPageSrc);
+    const fpaOk = /ForecastingPage/.test(fpaPageSrc) && /fpa-forecasting/.test(fpaPageSrc);
+    expect(ccOk || fpaOk).toBe(true);
   });
 
   it('ForecastingPage reads the engine (no dead UI)', () => {
