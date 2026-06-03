@@ -285,6 +285,9 @@ function renderModule(
       return <InvoiceDisputeRegisterPanel />;
     case 'sx-r-so-register':
       return <SalesOrderRegisterPanel />;
+    // Sprint 126 · 🎬 Arc D.2 OPENER · MarketingX (SalesX EXTENSION)
+    case 'sx-marketing-planning':
+      return <MarketingPlanningPage entityCode={entityCode} />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
