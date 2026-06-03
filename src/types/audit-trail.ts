@@ -220,7 +220,18 @@ export type AuditEntityType =
   // statutory CRA-1/2/3/4 filings + cost-auditor appointments. FR-44 wall.
   // SCOPE WALL DP-COSTING-2..5: BOM/standard/variance only.
   //   NO job costing · NO process costing · NO ABC · NO CVP (all S125)
-  | 'operational_cost_run';
+  | 'operational_cost_run'
+  // Sprint 125 · T-Phase-7.D.1.6 · 🏁 Arc D.1 CAPSTONE · Advanced Costing (module: 'mca-roc')
+  // 'advanced_cost_run' — logged by advanced-costing-engine on computeJobCost /
+  // computeProcessCost / computeABC / computeCVP. Carries cost_object/job/process
+  // identifier + totals (decimal-safe). DISTINCT from operational-costing 'operational_cost_run'
+  // (BOM/standard/variance) AND from statutory 'cost_audit'-flavoured filings.
+  // FR-44 TWO WALLS: (a) distinct from comply360-cost-audit-engine (§148 statutory);
+  // (b) REUSES (NOT reimplements) S124 operational-costing-engine.getStandardCost +
+  // cost-allocation-engine driver allocation (all 0-DIFF). SCOPE WALL DP-D1-9:
+  // costing only — NO marketing (D.2) · NO InsightX aggregation (D.3).
+  // ComplianceModule UNTOUCHED. No other audit type added in this sprint.
+  | 'advanced_cost_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

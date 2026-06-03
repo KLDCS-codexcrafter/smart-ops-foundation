@@ -12,4 +12,5 @@ export type FpaPlanningModule =
   | 'fpa-workforce'
   | 'fpa-okr'
   | 'fpa-org-design'
-  | 'fpa-operational-costing';
+  | 'fpa-operational-costing'
+  | 'fpa-advanced-costing';

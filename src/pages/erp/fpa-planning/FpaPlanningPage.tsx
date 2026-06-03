@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  Target, TrendingUp, LineChart, Sparkles, Users, Trophy, Network, Calculator,
+  Target, TrendingUp, LineChart, Sparkles, Users, Trophy, Network, Calculator, Layers,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 import type { FpaPlanningModule } from './FpaPlanningSidebar.types';
@@ -33,10 +33,12 @@ import WorkforcePlanningPage from '@/features/workforce-planning/WorkforcePlanni
 import OKRFrameworkPage from '@/features/okr-framework/OKRFrameworkPage';
 import OrgDesignSimulatorPage from '@/features/org-design/OrgDesignSimulatorPage';
 import OperationalCostingPage from '@/features/operational-costing/OperationalCostingPage';
+import AdvancedCostingPage from '@/features/advanced-costing/AdvancedCostingPage';
 
 const KNOWN_MODULES = new Set<FpaPlanningModule>([
   'fpa-home', 'fpa-aop', 'fpa-budgeting', 'fpa-forecasting', 'fpa-scenario',
   'fpa-workforce', 'fpa-okr', 'fpa-org-design', 'fpa-operational-costing',
+  'fpa-advanced-costing',
 ]);
 
 // Legacy hash redirect map — old CC deep-links route into the new FP&A ids.
@@ -106,6 +108,7 @@ export default function FpaPlanningPage() {
       case 'fpa-okr':                 return <OKRFrameworkPage />;
       case 'fpa-org-design':          return <OrgDesignSimulatorPage />;
       case 'fpa-operational-costing': return <OperationalCostingPage />;
+      case 'fpa-advanced-costing':    return <AdvancedCostingPage />;
       default:                        return <FpaHome onNavigate={setActiveModule} />;
     }
   };
@@ -148,6 +151,7 @@ function FpaHome({ onNavigate }: FpaHomeProps) {
     { id: 'fpa-okr',                 title: 'OKR / KPI Framework',  description: 'Top-down objective cascade + org-cost allocation.',                  icon: Trophy },
     { id: 'fpa-org-design',          title: 'Org Design',           description: 'Re-org simulator + succession + skills inventory.',                  icon: Network },
     { id: 'fpa-operational-costing', title: 'Operational Costing',  description: 'BOM roll-up · standard costing · standard-vs-actual variance.',     icon: Calculator, badge: '🆕 S124' },
+    { id: 'fpa-advanced-costing',    title: 'Advanced Costing',     description: 'Job · process · ABC · CVP / break-even (management-decision).',     icon: Layers,     badge: '🏁 S125' },
   ];
 
   return (
