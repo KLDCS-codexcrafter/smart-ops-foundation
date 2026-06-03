@@ -74,6 +74,8 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     if (cfg.enableSLSMTarget || cfg.enableCompanyTarget) {
       items.push({ id: 'sx-m-target' as SalesXModule, label: 'Targets', icon: Target });
     }
+    // Sprint 126 · Arc D.2 OPENER · MarketingX (SalesX EXTENSION · always available)
+    items.push({ id: 'sx-marketing-planning', label: 'Marketing Planning', icon: Megaphone });
     return items;
   }, [cfg]);
 
