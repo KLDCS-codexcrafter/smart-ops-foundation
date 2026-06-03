@@ -280,7 +280,16 @@ export type AuditEntityType =
   // marketing-automation + attribution + this engine — recomputes nothing.
   // SCOPE WALL DP-D2-9: ABM + NPS + MarketingX-dashboard ONLY — NO InsightX /
   // 75-scenario aggregation (D.3). ComplianceModule UNTOUCHED. No other type.
-  | 'abm_nps_event';
+  | 'abm_nps_event'
+  // Sprint 130 · T-Phase-7.D.3.1 · 🌟 ARC D.3 OPENER · InsightX Aggregator (module: 'mca-roc')
+  // 'insightx_aggregation_run' — logged by insightx-aggregator-engine on aggregateInsight.
+  // Carries scenario_id + lens + source_engine + source_ref. FR-44 (DP-D3-3):
+  // aggregator READS the source engine — recomputes nothing. All 9 D-engines +
+  // insight-generators + insightx-fa-staging-engine stay 0-DIFF. ComplianceModule
+  // UNTOUCHED. SCOPE WALL: registry + backed-scenario surfacing ONLY — NO
+  // cockpit (S131) · NO drill-to-root (S132) · NO narrative/score (S133) ·
+  // NO inbox/loop (S134) · NO predictive/NL-query (S135).
+  | 'insightx_aggregation_run';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */

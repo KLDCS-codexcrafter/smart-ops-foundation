@@ -411,7 +411,7 @@ export const applications: AppDefinition[] = [
     category: 'InsightX',
     route: '/erp/insightx',
     icon: 'BarChart3',
-    status: 'coming_soon',
+    status: 'active', // 🌟 Sprint 130 · T-Phase-7.D.3.1 · Arc D.3 OPENER · InsightX flips active (own shell · DP-D3-1)
   },
   // 🎬 Sprint 116 · T-Phase-7.D.0.1 · Phase 7 opener · NEW card (additive · DP-P7-2 · existing cards 0-DIFF)
   // Homes Arc D.0 Organisation Planning (AOP / 3-yr strategic plan / target cascade) +
