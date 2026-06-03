@@ -717,8 +717,15 @@ export const SPRINTS: SprintEntry[] = [
   // ⭐ Sprint 123 T-Phase-7.D.1.4 · Arc D.1 · Scenario Management Pt 2 (MOAT CAPSTONE) · 0 NEW SIBLID (engine extension) · EXTENDS scenario-modeling-engine additively with runScenarioMatrix (FX×revenue×cost sensitivity grid · orchestrates fx-translation FXRateSet perturbation + S122 consolidated baseline) + runDemandScenario (reuses demand-forecast-engine.generateForecast for surge/drop %→revenue→PBT) + runCapexScenario (reads S120 fpa-budgeting capital budget for defer/accelerate cash+PBT impact) · S122 exports 0-DIFF (runScenario/ScenarioDriver/ScenarioCase/ScenarioScope/ScenarioResult/READS_FROM all intact) · FR-44 WALL: orchestrates the same Phase-6 consolidation stack via S122, does NOT reimplement consolidation/FX/eliminations, does NOT import/dup fx-what-if-engine · NO new audit type — matrix/demand/capex all reuse 'scenario_run' · ScenarioModelingPage (#49) EXTENDED with matrix heatmap + demand slider + capex panel (NOT a new page) · ComplianceModule UNTOUCHED · SCOPE WALL: scenario ONLY — NO costing (S124-125) asserted via toBeUndefined on engine surface · LEAN-BEHAVIORAL TEST POSTURE (≥20 it · time-robust toContain on own headSha) · 46-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S124 Block 1)
   {
     sprintNumber: 123, code: 'T-Phase-7.D.1.4', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'fd40a57c146605056dd70090097f39d82ecf8844', loc: 1400,
+    headSha: '01a12091ae77bf6f48b20d89354fea551b0c1356', predecessorSha: 'fd40a57c146605056dd70090097f39d82ecf8844', loc: 1400,
     newSiblings: [],
+    bankDate: '2026-06-03', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 124 T-Phase-7.D.1.5 · Arc D.1 · Operational Costing Pt 1 + A1 (FP&A self-owned card) · 1 NEW SIBLID operational-costing-engine (BOM cost roll-up · standard costing · standard-vs-actual variance · DP-D1-4/DP-COSTING-2..5 · DISTINCT from statutory comply360-cost-audit-engine §148 · FR-44 REUSES cost-allocation-engine + purchase-cost-variance-engine + packing-bom-engine — reimplements none, all stay 0-DIFF) + NEW Standalone Page #50 OperationalCostingPage (under FP&A self-owned shell · NOT a sibling) + 1 new audit type operational_cost_run under 'mca-roc' (ComplianceModule UNTOUCHED) + A1 FP&A SELF-OWNED CARD: new fpa-planning-shell-config + fpa-planning-sidebar-config + FpaPlanningModule type · FpaPlanningPage re-pointed from commandCenterShellConfig → fpaPlanningShellConfig with activeModule + renderModule() switch · 7 FP&A pages (AOP/Workforce/OKR/Org-Design/Budgeting/Forecasting/Scenario) MOVED under FP&A shell · CC cases + imports + sidebar children + type-union members removed · CC OTHER cases 0-DIFF · fixes the CC-sidebar-showing bug (carried from S116/S120/S122) · SCOPE WALL: BOM/standard/variance only — NO job/process/ABC/CVP (S125) · LEAN-BEHAVIORAL TEST POSTURE · 47-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S125 Block 1)
+  {
+    sprintNumber: 124, code: 'T-Phase-7.D.1.5', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '01a12091ae77bf6f48b20d89354fea551b0c1356', loc: 1500,
+    newSiblings: ['operational-costing-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
