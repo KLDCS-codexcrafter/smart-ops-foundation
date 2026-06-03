@@ -296,7 +296,14 @@ export type AuditEntityType =
   // recomputes nothing. ComplianceModule UNTOUCHED. SCOPE WALL: cockpit + viewer + the
   // ~23 unbacked scenarios ONLY — NO drill-to-root (S132) · NO narrative/score (S133) ·
   // NO inbox/loop (S134) · NO predictive/NL-query (S135).
-  | 'cockpit_view_event';
+  | 'cockpit_view_event'
+  // Sprint 132 · T-Phase-7.D.3.3 · 🌟 Arc D.3 · #1 Cross-Card Drill-to-Root (module: 'mca-roc')
+  // 'drilldown_trace_event' — logged by cross-card-drilldown-engine on drillToRoot.
+  // Carries anomaly + fy + cards_walked + sources_read + chain_complete + gaps for
+  // full forensic replay. FR-44: drill engine WALKS source engines — recomputes nothing.
+  // ComplianceModule UNTOUCHED. SCOPE WALL: drill-to-root + lens views ONLY —
+  // NO narrative/Operix-Score (S133) · NO inbox/decision-loop (S134) · NO predictive/NL-query (S135).
+  | 'drilldown_trace_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
