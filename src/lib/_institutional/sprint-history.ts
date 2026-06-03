@@ -752,8 +752,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎯 Sprint 128 T-Phase-7.D.2.3 · Arc D.2 · Attribution + Segmentation · DP-D2-2/D2-3/D2-5 · attribution-engine (multi-touch attribution + channel ROI · segmentation REUSES segment-rule-engine — the key FR-44 dedup · NO second segmentation engine) · AttributionSegmentationPage #54 registered as SalesXModule + sidebar + renderModule case · +1 audit type attribution_run under mca-roc · ComplianceModule UNTOUCHED · SCOPE WALL DP-D2-9: attribution + segmentation ONLY — NO ABM/NPS (S129) · NO InsightX aggregation (D.3) · 51-streak ⭐ target · headSha TBD_AT_BANK (backfilled at S129 Block 1)
   {
     sprintNumber: 128, code: 'T-Phase-7.D.2.3', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '2c6f04d2c8590d275222370d23afabb259b84e9b', loc: 1400,
+    headSha: '1d6f650d3e0f3cf05ac169ffc91727d214d108b3', predecessorSha: '2c6f04d2c8590d275222370d23afabb259b84e9b', loc: 1400,
     newSiblings: ['attribution-engine'],
+    bankDate: '2026-06-03', provenance: 'CONFIRMED',
+  },
+  // 🏁 Sprint 129 T-Phase-7.D.2.4 · 🏁 ARC D.2 CAPSTONE · MarketingX (SalesX EXTENSION · DP-P7-2) · abm-nps-engine (ABM tiering strategic/target/nurture + engagement from salesx-conversion · NPS 0-10 → promoter 9-10 / passive 7-8 / detractor 0-6 · computeNPS = %promoters − %detractors via decimal-helpers · DISTINCT from realisation-feedback-engine which is REALISATION-specific · 0-DIFF on all D.2 engines + customer/opportunity types + salesx-conversion + realisation-feedback) + ABMNpsPage #55 (SalesXModule sx-abm-nps + sidebar item + renderModule case · SalesX existing modules 0-DIFF · NOT a sibling) + MarketingX DASHBOARD READ-ONLY roll-up aggregating S126 marketing-planning + S127 marketing-automation + S128 attribution + this sprint ABM/NPS (recomputes NOTHING) + 1 new audit type abm_nps_event under mca-roc (ComplianceModule UNTOUCHED) · SCOPE WALL DP-D2-9: ABM + NPS + MarketingX-dashboard ONLY — NO InsightX/75-scenario aggregation (D.3) · LEAN-BEHAVIORAL TEST POSTURE (≥20 it · time-robust toContain on own headSha) · 52-streak ⭐ target · headSha TBD_AT_BANK · 🏁 CLOSES ARC D.2 (S126 planning → S127 automation → S128 attribution/segmentation → S129 ABM/NPS+dashboard · 4 NEW SIBLIDs 193→197 · pages #52–55)
+  {
+    sprintNumber: 129, code: 'T-Phase-7.D.2.4', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '1d6f650d3e0f3cf05ac169ffc91727d214d108b3', loc: 1300,
+    newSiblings: ['abm-nps-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
