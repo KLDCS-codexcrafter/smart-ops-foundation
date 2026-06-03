@@ -16,6 +16,7 @@ import ReportViewerPage from '@/features/insightx-report-viewer/ReportViewerPage
 import LensExplorerPage from '@/features/insightx-lens-explorer/LensExplorerPage';
 import DrillToRootPage from '@/features/insightx-drill-to-root/DrillToRootPage';
 import OperixScorePage from '@/features/insightx-operix-score/OperixScorePage';
+import InsightsInboxPage from '@/features/insightx-insights-inbox/InsightsInboxPage';
 
 const KNOWN_MODULES = new Set<InsightXModule>([
   'ix-overview',
@@ -24,6 +25,7 @@ const KNOWN_MODULES = new Set<InsightXModule>([
   'ix-lens-explorer',
   'ix-drill-to-root',
   'ix-operix-score',
+  'ix-insights-inbox',
 ]);
 
 export default function InsightXPage() {
