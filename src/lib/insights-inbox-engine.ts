@@ -219,14 +219,14 @@ function gatherFromAlertEngines(entity_code: string | undefined): InboxItem[] {
   const items: InboxItem[] = [];
   // Production variance alerts (critical, unacknowledged).
   try {
-    const crit = productionVarianceAlerts.getCriticalUnacknowledgedVariances(entity_code, 5);
+    const crit = productionVarianceAlerts.getCriticalUnacknowledgedVariances(entity_code).slice(0, 5);
     for (const a of crit) {
       items.push({
         item_id: newItemId('pv'),
-        title: `Production variance · ${a.kind}`,
+        title: `Production variance · ${a.alert_type} (${a.po_no})`,
         impact_score: clampImpact(Math.min(100, Math.abs(a.variance_pct ?? 0) * 2 + 40)),
         category: 'anomaly',
-        root_cause: a.summary ?? 'unfavorable production variance detected',
+        root_cause: `${a.alert_type} variance ${round2(a.variance_pct)}% on PO ${a.po_no} (threshold ${a.threshold_pct}%)`,
         recommended_action: 'Open Production · acknowledge or investigate the run.',
         source_ref: `production-variance-alert-engine.getCriticalUnacknowledgedVariances(${entity_code})`,
         source_engine: 'production-variance-alert-engine',
@@ -257,15 +257,18 @@ function gatherFromAlertEngines(entity_code: string | undefined): InboxItem[] {
 
 function gatherFromAggregator(fy: string): InboxItem[] {
   try {
-    const reg = insightxAggregator.getRegistryCoverage();
-    if (reg.backed === 0) return [];
+    const lenses = insightxAggregator.getRegistryCoverage();
+    const total = lenses.reduce((s, l) => s + l.total, 0);
+    const backed = lenses.reduce((s, l) => s + l.backed, 0);
+    if (backed === 0 || total === 0) return [];
+    const unbacked = total - backed;
     return [
       {
         item_id: newItemId('ag'),
-        title: `InsightX coverage · ${reg.backed}/${reg.total} scenarios backed (FY ${fy})`,
-        impact_score: clampImpact(Math.min(100, (reg.backed / Math.max(1, reg.total)) * 60)),
+        title: `InsightX coverage · ${backed}/${total} scenarios backed (FY ${fy})`,
+        impact_score: clampImpact(Math.min(100, (backed / total) * 60)),
         category: 'opportunity',
-        root_cause: `aggregator coverage · ${reg.unbacked} pending engine backing`,
+        root_cause: `aggregator coverage · ${unbacked} pending engine backing`,
         recommended_action: 'Open InsightX Cockpit → review newly backed scenarios.',
         source_ref: 'insightx-aggregator-engine.getRegistryCoverage()',
         source_engine: 'insightx-aggregator-engine',
