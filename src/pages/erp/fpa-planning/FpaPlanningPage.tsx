@@ -108,6 +108,7 @@ export default function FpaPlanningPage() {
       case 'fpa-okr':                 return <OKRFrameworkPage />;
       case 'fpa-org-design':          return <OrgDesignSimulatorPage />;
       case 'fpa-operational-costing': return <OperationalCostingPage />;
+      case 'fpa-advanced-costing':    return <AdvancedCostingPage />;
       default:                        return <FpaHome onNavigate={setActiveModule} />;
     }
   };
