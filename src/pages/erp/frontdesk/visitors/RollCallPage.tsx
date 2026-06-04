@@ -31,9 +31,14 @@ export function RollCallPage(): JSX.Element {
               Generated {new Date(report.generatedAt).toLocaleString('en-IN')} · {report.count} on-site
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => window.print()}>
-            <Printer className="h-4 w-4 mr-2" /> Print
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={reload}>
+              <RefreshCw className="h-4 w-4 mr-2" /> Refresh
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => window.print()}>
+              <Printer className="h-4 w-4 mr-2" /> Print
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {report.rows.length === 0 ? (
