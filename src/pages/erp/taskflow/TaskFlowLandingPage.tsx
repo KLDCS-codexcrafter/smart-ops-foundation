@@ -9,14 +9,20 @@ import { useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, ListChecks, CheckSquare, AlertCircle, PlayCircle, Bell } from 'lucide-react';
+import { Clock, ListChecks, CheckSquare, AlertCircle, PlayCircle, Bell, Ban, ArrowUpCircle } from 'lucide-react';
 import { listDueWithin24h, getStats } from '@/lib/taskflow-engine';
+import { getOpenBlocked, listEscalations } from '@/lib/taskflow-governance-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 
 export default function TaskFlowLandingPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const stats = useMemo(() => getStats(entityCode), [entityCode]);
   const dueSoon = useMemo(() => listDueWithin24h(entityCode), [entityCode]);
+  const openBlocked = useMemo(() => getOpenBlocked(entityCode).length, [entityCode]);
+  const openEscalations = useMemo(
+    () => listEscalations(entityCode).filter((e) => e.status !== 'resolved').length,
+    [entityCode],
+  );
 
   useEffect(() => {
     if (dueSoon.length > 0) {
@@ -42,6 +48,8 @@ export default function TaskFlowLandingPage(): JSX.Element {
         <StatCard label="On Hold" value={stats.on_hold} icon={<AlertCircle className="h-4 w-4 text-destructive" />} />
         <StatCard label="Completed" value={stats.completed} icon={<CheckSquare className="h-4 w-4 text-success" />} />
         <StatCard label="Unacknowledged" value={stats.unacknowledged} icon={<Bell className="h-4 w-4 text-warning" />} />
+        <StatCard label="Open Blocked" value={openBlocked} icon={<Ban className="h-4 w-4 text-destructive" />} />
+        <StatCard label="Open Escalations" value={openEscalations} icon={<ArrowUpCircle className="h-4 w-4 text-destructive" />} />
       </div>
 
       <Card className="rounded-2xl">

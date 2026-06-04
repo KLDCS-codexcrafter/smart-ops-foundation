@@ -108,3 +108,25 @@ Sprint suite roll-up: **S136 (30) + S137 (47) + S138 (12) = 89/89 PASS**.
 - `src/pages/erp/taskflow/TaskRoomPage.tsx` (Discussion + Approvals + Blocked)
 - `src/lib/_institutional/sprint-history.ts` (S137 backfill + S138 entry)
 - `src/lib/_institutional/sibling-register.ts` (+1 taskflow-governance-engine)
+
+---
+
+## T1 HOTFIX · S138.T1 corrective (predecessor e734050d)
+
+### Scope (single pass)
+- **T1-1 · Tests** — `src/test/sprint-138/taskflow-governance.test.ts` expanded from 12 → 30 it() (≥30 ✅).
+  Added: raiseBlocked empty-reason throws, raiseBlocked no-person-no-dep throws, getTimeBlockedHours math (open + closed windows · nowISO-injected · time-robust), moveToOnHold (legal + terminal-skip), buildTaskDraftFromSource both branches (obligation→compliance, audit_observation→internal_audit) + tag format `comply360:{type}:{id}`, reminders due/snooze/markTriggered, SLA escalation idempotency (evaluateSLA×2 = 1 EscalationRecord), single-step final-approve → 'approved', sibling-register count = 207 + contains `taskflow-governance-engine`, sprint-history contains SHA `0742e96b` + `T-TaskFlow-A641.2`, no `Phase 8 OPENER` literal in src/. Comment shim: T1-2 mentions/internal/legacy shim + coexistence + empty-throws.
+- **T1-2 · Comment migration** — `taskflow-engine.addComment` now writes `TaskCommentModel` (taskId/userId/content/isInternal/mentions/parentCommentId/createdAt/updatedAt). `listComments` lifts legacy `{task_id,body,author_id,author_name,created_at}` rows on read (`liftLegacy` shim). Optional opts `{isInternal, mentions, parentCommentId}` — mentions fire a sonner toast per id. TaskRoom Discussion tab gains @mention picker (uses `useEmployees`) + internal-note checkbox + per-comment internal badge + mention list rendering.
+- **T2 · Badges** — `TaskFlowAllTasksPage` reads `getOpenBlocked` + `listEscalations` once into Sets; list rows show `blocked` / `escalated` Badge next to title; kanban cards show same badges below status. `TaskFlowLandingPage` strip gains `Open Blocked` + `Open Escalations` StatCards.
+
+### Guardrails
+- §H · `approval-workflow-engine`, `ComplianceModule`, `push-notification-bridge` · 0-DIFF.
+- Comply360 source engines (`comply360-statutory-memory`, `comply360-internal-audit-engine`) · 0-DIFF (READ-ONLY consumption only).
+- `audit_workspace/Z*` · 0-DIFF.
+- Sibling-register · no entry added (T1 is engine-internal · count holds at 207).
+- Sprint-history · S138 stays `TBD_AT_BANK`.
+
+### Triple Gate (NODE_OPTIONS="--max-old-space-size=7168")
+- **TSC** — 0 errors.
+- **ESLint** — `--max-warnings 0` → 0/0 across repo.
+- **Vitest** — S138 suite `taskflow-governance.test.ts`: **30/30 green**. Full suite roll-up matches pre-existing baseline (failures concentrated in S70b/S95/S102/S116–S120/S130/S131 — all test files this T1 hotfix did NOT modify · zero new regressions attributable to T1).

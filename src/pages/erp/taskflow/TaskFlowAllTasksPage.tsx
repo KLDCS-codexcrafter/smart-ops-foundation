@@ -30,6 +30,7 @@ import { Plus, Search, ListChecks, LayoutGrid, List as ListIcon } from 'lucide-r
 import {
   createTask, listTasks, changeStatus, listDueWithin24h,
 } from '@/lib/taskflow-engine';
+import { getOpenBlocked, listEscalations } from '@/lib/taskflow-governance-engine';
 import type { Task, TaskPriority, TaskStatus, TaskCategory } from '@/types/taskflow';
 import { TASK_STATUS_TRANSITIONS } from '@/types/taskflow';
 import { useEntityCode } from '@/hooks/useEntityCode';
@@ -94,9 +95,17 @@ export default function TaskFlowAllTasksPage({
   const [dueSoonIds, setDueSoonIds] = useState<Set<string>>(
     () => new Set(listDueWithin24h(entityCode).map((t) => t.id)),
   );
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(
+    () => new Set(getOpenBlocked(entityCode).map((b) => b.taskId)),
+  );
+  const [escalatedIds, setEscalatedIds] = useState<Set<string>>(
+    () => new Set(listEscalations(entityCode).filter((e) => e.status !== 'resolved').map((e) => e.taskId)),
+  );
   const refresh = useCallback(() => {
     setTasks(listTasks(entityCode));
     setDueSoonIds(new Set(listDueWithin24h(entityCode).map((t) => t.id)));
+    setBlockedIds(new Set(getOpenBlocked(entityCode).map((b) => b.taskId)));
+    setEscalatedIds(new Set(listEscalations(entityCode).filter((e) => e.status !== 'resolved').map((e) => e.taskId)));
   }, [entityCode]);
   useEffect(() => { refresh(); }, [refresh]);
 
@@ -428,6 +437,14 @@ export default function TaskFlowAllTasksPage({
                         </TableCell>
                         <TableCell className="font-medium">
                           <Link to={`/erp/taskflow/task/${t.id}`} className="hover:underline">{t.title}</Link>
+                          <span className="ml-2 inline-flex items-center gap-1 align-middle">
+                            {blockedIds.has(t.id) && (
+                              <Badge variant="destructive" className="text-[10px]">blocked</Badge>
+                            )}
+                            {escalatedIds.has(t.id) && (
+                              <Badge variant="destructive" className="text-[10px]">escalated</Badge>
+                            )}
+                          </span>
                         </TableCell>
                         <TableCell className="text-sm">{t.assigneeName || '—'}</TableCell>
                         <TableCell className="text-xs font-mono">{t.category}</TableCell>
@@ -480,6 +497,16 @@ export default function TaskFlowAllTasksPage({
                         <Badge variant={statusVariant(t.status)} className="font-mono text-[10px]">{t.status}</Badge>
                         <span className="text-[10px] font-mono text-muted-foreground">{t.priority}</span>
                       </div>
+                      {(blockedIds.has(t.id) || escalatedIds.has(t.id)) && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {blockedIds.has(t.id) && (
+                            <Badge variant="destructive" className="text-[10px]">blocked</Badge>
+                          )}
+                          {escalatedIds.has(t.id) && (
+                            <Badge variant="destructive" className="text-[10px]">escalated</Badge>
+                          )}
+                        </div>
+                      )}
                     </Link>
                   ))}
                 </CardContent>

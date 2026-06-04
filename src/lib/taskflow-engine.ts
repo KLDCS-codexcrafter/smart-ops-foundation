@@ -23,6 +23,7 @@
 import {
   type Task,
   type TaskComment,
+  type TaskCommentModel,
   type TaskStatus,
   type TaskPriority,
   type TaskCategory,
@@ -36,6 +37,7 @@ import {
   taskflowAuditChainKey,
   TASK_STATUS_TRANSITIONS,
 } from '@/types/taskflow';
+import { toast } from 'sonner';
 import { logAudit } from '@/lib/audit-trail-engine';
 
 // ── tiny JSON helpers ──────────────────────────────────────────────────────
@@ -160,9 +162,40 @@ export function getTask(entityCode: string, id: string): Task | null {
 }
 
 // [JWT] GET /api/taskflow/comments?taskId={id}
-export function listComments(entityCode: string, taskId: string): TaskComment[] {
-  return readJSON<TaskComment[]>(taskflowCommentsKey(entityCode), [])
-    .filter((c) => c.task_id === taskId);
+// S138.T1 — TaskCommentModel migration with READ-SHIM for legacy TaskComment.
+type LegacyOrNewComment = TaskComment | TaskCommentModel;
+function isLegacyComment(c: LegacyOrNewComment): c is TaskComment {
+  return typeof (c as TaskComment).task_id === 'string'
+    && typeof (c as TaskCommentModel).taskId !== 'string';
+}
+function liftLegacy(c: TaskComment): TaskCommentModel {
+  return {
+    id: c.id,
+    taskId: c.task_id,
+    userId: c.author_id,
+    content: c.body,
+    isInternal: false,
+    mentions: [],
+    createdAt: c.created_at,
+    updatedAt: c.created_at,
+  };
+}
+export function listComments(entityCode: string, taskId: string): TaskCommentModel[] {
+  const raw = readJSON<LegacyOrNewComment[]>(taskflowCommentsKey(entityCode), []);
+  return raw
+    .map((c) => (isLegacyComment(c) ? liftLegacy(c) : c))
+    .filter((c) => c.taskId === taskId);
+}
+export function listCommentsLegacy(entityCode: string, taskId: string): TaskComment[] {
+  // Back-compat surface for any consumer still expecting old shape.
+  return listComments(entityCode, taskId).map((c) => ({
+    id: c.id,
+    task_id: c.taskId,
+    body: c.content,
+    author_id: c.userId,
+    author_name: c.userId,
+    created_at: c.createdAt,
+  }));
 }
 
 // ── Writes ─────────────────────────────────────────────────────────────────
@@ -415,24 +448,35 @@ export function getBlockingBadges(entityCode: string, taskId: string): BlockingB
     .map((x) => ({ taskId: x.id, code: x.code, title: x.title, status: x.status }));
 }
 
-// ── Comments (kept · S138 scope-forward will migrate to TaskCommentModel) ─
+// ── Comments · TaskCommentModel (S138.T1 migration) ──────────────────────
 // [JWT] POST /api/taskflow/comments
+export interface AddCommentOpts {
+  isInternal?: boolean;
+  mentions?: string[];
+  parentCommentId?: string;
+}
 export function addComment(
   entityCode: string,
   taskId: string,
-  body: string,
-  author_id: string,
-  author_name: string,
-): TaskComment {
-  if (!body.trim()) throw new Error('TaskFlow: comment body required');
-  const all = readJSON<TaskComment[]>(taskflowCommentsKey(entityCode), []);
-  const c: TaskComment = {
+  content: string,
+  userId: string,
+  _legacyAuthorName?: string, // kept positional for back-compat
+  opts: AddCommentOpts = {},
+): TaskCommentModel {
+  if (!content.trim()) throw new Error('TaskFlow: comment body required');
+  const all = readJSON<unknown[]>(taskflowCommentsKey(entityCode), []);
+  const now = new Date().toISOString();
+  const mentions = (opts.mentions ?? []).filter(Boolean);
+  const c: TaskCommentModel = {
     id: newId('cmt'),
-    task_id: taskId,
-    body: body.trim(),
-    author_id,
-    author_name,
-    created_at: new Date().toISOString(),
+    taskId,
+    userId,
+    content: content.trim(),
+    isInternal: !!opts.isInternal,
+    mentions,
+    parentCommentId: opts.parentCommentId,
+    createdAt: now,
+    updatedAt: now,
   };
   writeJSON(taskflowCommentsKey(entityCode), [...all, c]);
   safeAudit({
@@ -440,11 +484,18 @@ export function addComment(
     action: 'create',
     entityType: 'taskflow_event',
     recordId: taskId,
-    recordLabel: `comment by ${author_name}`,
+    recordLabel: `comment by ${userId}${c.isInternal ? ' · internal' : ''}${mentions.length ? ` · mentions:${mentions.length}` : ''}`,
     beforeState: null,
     afterState: c as unknown as Record<string, unknown>,
     sourceModule: 'taskflow',
   });
+  // Fire a sonner toast per @mention (UI bridge · no notification rail yet).
+  if (mentions.length > 0) {
+    for (const m of mentions) {
+      try { toast.message(`@${m} mentioned`, { description: c.content.slice(0, 80) }); }
+      catch { /* test env / SSR */ }
+    }
+  }
   return c;
 }
 
