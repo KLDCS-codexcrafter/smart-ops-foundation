@@ -359,6 +359,10 @@ export function changeStatus(
     if (milestoneOffenders.length > 0) {
       throw new Error(`TaskFlow: cannot complete — incomplete milestones: ${milestoneOffenders.join('; ')}`);
     }
+    const policyShortfall = _closePolicyResolver(entityCode, id);
+    if (policyShortfall) {
+      throw new Error(`TaskFlow: cannot complete — ${policyShortfall}`);
+    }
   }
   const completedDate = next === 'completed' ? new Date().toISOString() : before.completedDate ?? null;
   return updateTask(entityCode, id, { status: next, completedDate }, byUserId);
