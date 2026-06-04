@@ -26,7 +26,7 @@ import {
   taskflowKey, taskflowCommentsKey,
 } from '@/types/taskflow';
 import { SIBLINGS } from '@/lib/_institutional/sibling-register';
-import { SPRINT_HISTORY } from '@/lib/_institutional/sprint-history';
+import { SPRINTS } from '@/lib/_institutional/sprint-history';
 
 const E = 'TST';
 
