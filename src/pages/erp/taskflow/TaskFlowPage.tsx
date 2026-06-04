@@ -30,6 +30,10 @@ import AccountabilityDashboardPage from './AccountabilityDashboardPage';
 import ClosePoliciesPage from './ClosePoliciesPage';
 import WorkDiaryPage from './WorkDiaryPage';
 import ExpenseCenterPage from './ExpenseCenterPage';
+import MediaVaultPage from './MediaVaultPage';
+import FollowUpsPage from './FollowUpsPage';
+import ChatGovernancePage from './ChatGovernancePage';
+import HandoverPage from './HandoverPage';
 import type { TaskFlowModule } from './TaskFlowSidebar.types';
 
 const VALID_MODULES: TaskFlowModule[] = [
@@ -37,7 +41,8 @@ const VALID_MODULES: TaskFlowModule[] = [
   'approval-chains', 'sla-rules', 'escalations', 'blocked',
   'reminders', 'compliance-sources',
   'templates', 'workflows', 'decisions', 'minutes',
-  'chat', 'channels', 'email-threads', 'voice-library',
+  'chat', 'channels', 'email-threads',
+  'media-vault', 'follow-ups', 'chat-governance', 'handover',
   'accountability', 'close-policies', 'work-diary',
   'expense-center',
 ];
@@ -78,8 +83,11 @@ export default function TaskFlowPage(): JSX.Element {
       case 'minutes':            return <MeetingMinutesPage />;
       case 'chat':               return <OperixChatInboxPage />;
       case 'channels':           return <OperixChatChannelsPage />;
-      case 'email-threads':      return <ComingSoonPanel module="operixchat-email-threads-s142" />;
-      case 'voice-library':      return <ComingSoonPanel module="operixchat-voice-library-s142" />;
+      case 'email-threads':      return <ComingSoonPanel module="operixchat-email-threads-p2bb" />;
+      case 'media-vault':        return <MediaVaultPage />;
+      case 'follow-ups':         return <FollowUpsPage />;
+      case 'chat-governance':    return <ChatGovernancePage />;
+      case 'handover':           return <HandoverPage />;
       case 'accountability':     return <AccountabilityDashboardPage />;
       case 'close-policies':     return <ClosePoliciesPage />;
       case 'work-diary':         return <WorkDiaryPage />;
