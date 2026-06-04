@@ -40,7 +40,7 @@ export default function HandoverPage(): JSX.Element {
   useEffect(() => { refresh(); }, [refresh]);
 
   const peopleOptions = useMemo(() => {
-    return employees.map((e) => ({ id: e.id, name: e.full_name ?? e.id }));
+    return employees.map((e) => ({ id: e.id, name: e.displayName || e.id }));
   }, [employees]);
 
   const onPreview = (): void => {
