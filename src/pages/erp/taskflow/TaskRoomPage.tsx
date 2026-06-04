@@ -263,22 +263,22 @@ export default function TaskRoomPage(): JSX.Element {
             </Card>
           </TabsContent>
 
+          <TabsContent value="discussion">
+            <DiscussionTab task={task} entityCode={entityCode}
+              currentUserId={currentUserId} comments={comments} onDone={refresh} />
+          </TabsContent>
+
+          <TabsContent value="approvals">
+            <ApprovalsTab task={task} entityCode={entityCode}
+              currentUserId={currentUserId} onDone={refresh} />
+          </TabsContent>
+
           {PLACEHOLDER_TABS.map((p) => (
             <TabsContent key={p.id} value={p.id}>
               <Card className="rounded-2xl">
                 <CardHeader><CardTitle className="text-base">{p.label}</CardTitle></CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent>
                   <p className="text-sm text-muted-foreground">Arriving {p.arrives}.</p>
-                  {p.id === 'discussion' && comments.length > 0 && (
-                    <ul className="divide-y divide-border mt-3">
-                      {comments.map((c) => (
-                        <li key={c.id} className="py-2">
-                          <p className="text-xs font-mono text-muted-foreground">{c.author_name} · {c.created_at}</p>
-                          <p className="text-sm">{c.body}</p>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
                 </CardContent>
               </Card>
             </TabsContent>
