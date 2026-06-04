@@ -83,9 +83,9 @@ describe('SLA + escalation (TF-21)', () => {
     const t = seedTask();
     changeStatus(E, t.id, 'in_progress', 'u0');
     // Tighten createdAt by reading + rewriting; engine sets createdAt on createTask.
-    const all = JSON.parse(localStorage.getItem(`taskflow_tasks_${E}`) ?? '[]');
+    const all = JSON.parse(localStorage.getItem(taskflowKey(E)) ?? '[]');
     all[0].createdAt = past;
-    localStorage.setItem(`taskflow_tasks_${E}`, JSON.stringify(all));
+    localStorage.setItem(taskflowKey(E), JSON.stringify(all));
     const rule: TaskSLARule = {
       id: 'sla-1', name: 'global 24h', maxHours: 24, escalateAfterHours: 12,
       escalateTo: 'manager', isActive: true,
@@ -99,9 +99,9 @@ describe('SLA + escalation (TF-21)', () => {
   it('specificity: category+priority beats category-only', () => {
     const t = seedTask({ category: 'compliance', priority: 'critical' });
     changeStatus(E, t.id, 'in_progress', 'u0');
-    const all = JSON.parse(localStorage.getItem(`taskflow_tasks_${E}`) ?? '[]');
+    const all = JSON.parse(localStorage.getItem(taskflowKey(E)) ?? '[]');
     all[0].createdAt = new Date(Date.now() - 4 * 3600_000).toISOString();
-    localStorage.setItem(`taskflow_tasks_${E}`, JSON.stringify(all));
+    localStorage.setItem(taskflowKey(E), JSON.stringify(all));
     upsertSLARule(E, { id: 'a', name: 'cat', category: 'compliance', maxHours: 24,
       escalateAfterHours: 12, escalateTo: 'manager', isActive: true });
     upsertSLARule(E, { id: 'b', name: 'cat+pri', category: 'compliance', priority: 'critical',
