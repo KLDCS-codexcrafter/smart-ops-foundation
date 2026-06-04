@@ -36,5 +36,9 @@ export const taskflowSidebarItems: SidebarItem[] = [
   // ── S142 coming-soon ───────────────────────────────────────────────
   { id: 'email-threads',      type: 'item', label: 'Email Threads · S142', icon: Mail,        keyboard: 'k j' },
   { id: 'voice-library',      type: 'item', label: 'Voice Library · S142', icon: Mic,         keyboard: 'k v' },
+  // ── Accountability Payoff (S141) ───────────────────────────────────
+  { id: 'accountability',     type: 'item', label: 'Accountability',    icon: Gauge,          keyboard: 'k y' },
+  { id: 'close-policies',     type: 'item', label: 'Close Policies',    icon: ShieldCheck,    keyboard: 'k q' },
+  { id: 'work-diary',         type: 'item', label: 'Work Diary',        icon: NotebookPen,    keyboard: 'k z' },
 ];
 
