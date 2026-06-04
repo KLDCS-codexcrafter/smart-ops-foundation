@@ -341,11 +341,11 @@ describe('S140 · OperixChat · audit-trail typing', () => {
 // ─────────────────────────────────────────────────────────────────────────
 describe('S140.T1 · ChatTab ensureTaskConversation', () => {
   const fakeTask = { id: 't-1', code: 'TSK-000001', assigneeId: U_MEMBER } as unknown as Parameters<
-    typeof import('@/pages/erp/taskflow/TaskRoomPage').ensureTaskConversation
+    typeof import('@/pages/erp/taskflow/ensureTaskConversation').ensureTaskConversation
   >[0];
 
   it('two ensures produce exactly one conversation (idempotent on re-mount)', async () => {
-    const { ensureTaskConversation } = await import('@/pages/erp/taskflow/TaskRoomPage');
+    const { ensureTaskConversation } = await import('@/pages/erp/taskflow/ensureTaskConversation');
     const a = ensureTaskConversation(fakeTask, ENTITY, U_OWNER);
     const b = ensureTaskConversation(fakeTask, ENTITY, U_OWNER);
     expect(a.id).toBe(b.id);
@@ -355,13 +355,13 @@ describe('S140.T1 · ChatTab ensureTaskConversation', () => {
   });
 
   it('task-ref linkage shape: { type: "task", id: task.id, label: task.code }', async () => {
-    const { ensureTaskConversation } = await import('@/pages/erp/taskflow/TaskRoomPage');
+    const { ensureTaskConversation } = await import('@/pages/erp/taskflow/ensureTaskConversation');
     const conv = ensureTaskConversation(fakeTask, ENTITY, U_OWNER);
-    const ref = conv.linkedRefs.find((r) => r.type === 'task' && r.id === fakeTask.id);
+    const ref = conv.linkedRefs.find((r) => r.type === 'task' && r.id === (fakeTask as { id: string }).id);
     expect(ref).toBeDefined();
     expect(ref!.type).toBe('task');
-    expect(ref!.id).toBe(fakeTask.id);
-    expect(ref!.label).toBe(fakeTask.code);
+    expect(ref!.id).toBe((fakeTask as { id: string }).id);
+    expect(ref!.label).toBe((fakeTask as { code: string }).code);
     expect(conv.channelType).toBe('task');
   });
 });
