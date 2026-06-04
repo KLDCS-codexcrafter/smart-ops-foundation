@@ -15,7 +15,7 @@ import {
 import {
   taskflowKey, taskflowCommentsKey, TASK_STATUS_TRANSITIONS,
 } from '@/types/taskflow';
-import type { Task } from '@/types/taskflow';
+
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
 import { SIBLINGS } from '@/lib/_institutional/sibling-register';
 import * as engineModule from '@/lib/taskflow-engine';
