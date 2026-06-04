@@ -880,27 +880,9 @@ interface ChatTabProps {
   currentUserId: string;
 }
 
-export function ensureTaskConversation(
-  task: Task,
-  entityCode: string,
-  currentUserId: string,
-): Conversation {
-  const existing = listConversations(entityCode, { linkedRefType: 'task' })
-    .find((c) => c.linkedRefs.some((r) => r.type === 'task' && r.id === task.id));
-  if (existing) return existing;
-  const participantUserIds = [currentUserId];
-  if (task.assigneeId && task.assigneeId !== currentUserId) {
-    participantUserIds.push(task.assigneeId);
-  }
-  const conv = createConversation(entityCode, {
-    channelType: 'task',
-    title: `Task · ${task.code}`,
-    ownerId: currentUserId,
-    createdByUserId: currentUserId,
-    participantUserIds,
-  });
-  return linkConversation(entityCode, conv.id, { type: 'task', id: task.id, label: task.code });
-}
+// ensureTaskConversation lives in ./ensureTaskConversation (kept out of this file
+// for react-refresh/only-export-components compliance).
+
 
 function ChatTab({ task, entityCode, currentUserId }: ChatTabProps): JSX.Element {
   const navigate = useNavigate();
