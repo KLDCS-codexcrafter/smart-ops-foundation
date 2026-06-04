@@ -437,6 +437,14 @@ export default function TaskFlowAllTasksPage({
                         </TableCell>
                         <TableCell className="font-medium">
                           <Link to={`/erp/taskflow/task/${t.id}`} className="hover:underline">{t.title}</Link>
+                          <span className="ml-2 inline-flex items-center gap-1 align-middle">
+                            {blockedIds.has(t.id) && (
+                              <Badge variant="destructive" className="text-[10px]">blocked</Badge>
+                            )}
+                            {escalatedIds.has(t.id) && (
+                              <Badge variant="destructive" className="text-[10px]">escalated</Badge>
+                            )}
+                          </span>
                         </TableCell>
                         <TableCell className="text-sm">{t.assigneeName || '—'}</TableCell>
                         <TableCell className="text-xs font-mono">{t.category}</TableCell>
