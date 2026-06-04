@@ -1,7 +1,7 @@
 /**
  * @file        src/apps/erp/configs/taskflow-sidebar-config.ts
  * @purpose     TaskFlow sidebar config · MVP · type:'item' navigable
- * @sprint      Sprint 137 · T-TaskFlow-A641.1 · Phase 8 OPENER · Block 3
+ * @sprint      Sprint 137 · T-TaskFlow-A641.1 · Pillar A.6.4 · TaskFlow Arc opener (post-Phase-7) · Block 3
  * @decisions   DP-D3-1 self-owned-shell precedent (mirror comply360 pattern)
  *              FR-74 keyboard namespace 'k *' for TaskFlow
  */
