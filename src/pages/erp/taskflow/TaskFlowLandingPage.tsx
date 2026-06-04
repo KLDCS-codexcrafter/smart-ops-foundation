@@ -48,6 +48,8 @@ export default function TaskFlowLandingPage(): JSX.Element {
         <StatCard label="On Hold" value={stats.on_hold} icon={<AlertCircle className="h-4 w-4 text-destructive" />} />
         <StatCard label="Completed" value={stats.completed} icon={<CheckSquare className="h-4 w-4 text-success" />} />
         <StatCard label="Unacknowledged" value={stats.unacknowledged} icon={<Bell className="h-4 w-4 text-warning" />} />
+        <StatCard label="Open Blocked" value={openBlocked} icon={<Ban className="h-4 w-4 text-destructive" />} />
+        <StatCard label="Open Escalations" value={openEscalations} icon={<ArrowUpCircle className="h-4 w-4 text-destructive" />} />
       </div>
 
       <Card className="rounded-2xl">
