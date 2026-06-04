@@ -43,16 +43,23 @@ import {
 } from '@/lib/taskflow-workflow-engine';
 import { listMessages, sendMessage } from '@/lib/operix-chat-engine';
 import { ensureTaskConversation } from './ensureTaskConversation';
+import {
+  listExpensesForTask, createExpense, submitExpense, approveExpense,
+  rejectExpense, markReimbursed, getTaskExpenseTotals,
+  listEvidenceForTask, createEvidence, evaluateClosePolicy,
+  listIndiaGstRates, listTdsSections,
+} from '@/lib/taskflow-accountability-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEmployees } from '@/hooks/useEmployees';
-import type { Task, TaskStatus, TaskApprovalChain, TaskWorkflowTemplate } from '@/types/taskflow';
+import type {
+  Task, TaskStatus, TaskApprovalChain, TaskWorkflowTemplate,
+  TaskExpense, TaskEvidence,
+} from '@/types/taskflow';
 import type { Conversation, ChatMessage } from '@/types/operix-chat';
 import { TASK_STATUS_TRANSITIONS } from '@/types/taskflow';
 
 const PLACEHOLDER_TABS = [
-  { id: 'documents',  label: 'Documents',  arrives: 'S141' },
-  { id: 'expenses',   label: 'Expenses',   arrives: 'S143' },
-  { id: 'evidence',   label: 'Evidence',   arrives: 'S141' },
+  { id: 'documents',  label: 'Documents',  arrives: 'S143' },
 ];
 
 export default function TaskRoomPage(): JSX.Element {
