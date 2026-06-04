@@ -162,9 +162,40 @@ export function getTask(entityCode: string, id: string): Task | null {
 }
 
 // [JWT] GET /api/taskflow/comments?taskId={id}
-export function listComments(entityCode: string, taskId: string): TaskComment[] {
-  return readJSON<TaskComment[]>(taskflowCommentsKey(entityCode), [])
-    .filter((c) => c.task_id === taskId);
+// S138.T1 — TaskCommentModel migration with READ-SHIM for legacy TaskComment.
+type LegacyOrNewComment = TaskComment | TaskCommentModel;
+function isLegacyComment(c: LegacyOrNewComment): c is TaskComment {
+  return typeof (c as TaskComment).task_id === 'string'
+    && typeof (c as TaskCommentModel).taskId !== 'string';
+}
+function liftLegacy(c: TaskComment): TaskCommentModel {
+  return {
+    id: c.id,
+    taskId: c.task_id,
+    userId: c.author_id,
+    content: c.body,
+    isInternal: false,
+    mentions: [],
+    createdAt: c.created_at,
+    updatedAt: c.created_at,
+  };
+}
+export function listComments(entityCode: string, taskId: string): TaskCommentModel[] {
+  const raw = readJSON<LegacyOrNewComment[]>(taskflowCommentsKey(entityCode), []);
+  return raw
+    .map((c) => (isLegacyComment(c) ? liftLegacy(c) : c))
+    .filter((c) => c.taskId === taskId);
+}
+export function listCommentsLegacy(entityCode: string, taskId: string): TaskComment[] {
+  // Back-compat surface for any consumer still expecting old shape.
+  return listComments(entityCode, taskId).map((c) => ({
+    id: c.id,
+    task_id: c.taskId,
+    body: c.content,
+    author_id: c.userId,
+    author_name: c.userId,
+    created_at: c.createdAt,
+  }));
 }
 
 // ── Writes ─────────────────────────────────────────────────────────────────
