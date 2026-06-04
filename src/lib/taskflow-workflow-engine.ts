@@ -111,7 +111,7 @@ export function listChecklistItems(entityCode: string, taskId: string): Checklis
 export function addChecklistItem(
   entityCode: string,
   input: AddChecklistItemInput,
-  byUserId = 'system',
+  _byUserId = 'system',
 ): ChecklistItem {
   if (!input.title || !input.title.trim()) {
     throw new Error('TaskFlow: checklist item title is required');
