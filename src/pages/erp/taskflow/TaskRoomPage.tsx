@@ -41,9 +41,13 @@ import {
   listChecklistItems, addChecklistItem, toggleChecklistItem, removeChecklistItem,
   getChecklistProgress, listWorkflows, applyWorkflowToTask, getWorkflowProgress,
 } from '@/lib/taskflow-workflow-engine';
+import {
+  listConversations, createConversation, listMessages, sendMessage, linkConversation,
+} from '@/lib/operix-chat-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEmployees } from '@/hooks/useEmployees';
 import type { Task, TaskStatus, TaskApprovalChain, TaskWorkflowTemplate } from '@/types/taskflow';
+import type { Conversation, ChatMessage } from '@/types/operix-chat';
 import { TASK_STATUS_TRANSITIONS } from '@/types/taskflow';
 
 const PLACEHOLDER_TABS = [
@@ -153,6 +157,7 @@ export default function TaskRoomPage(): JSX.Element {
             <TabsTrigger value="discussion">Discussion ({comments.length})</TabsTrigger>
             <TabsTrigger value="approvals">Approvals</TabsTrigger>
             <TabsTrigger value="checklist">Checklist</TabsTrigger>
+            <TabsTrigger value="chat">Chat</TabsTrigger>
             {PLACEHOLDER_TABS.map((p) => (
               <TabsTrigger key={p.id} value={p.id}>{p.label}</TabsTrigger>
             ))}
@@ -281,6 +286,11 @@ export default function TaskRoomPage(): JSX.Element {
             <ChecklistTab task={task} entityCode={entityCode}
               currentUserId={currentUserId} onDone={refresh} />
           </TabsContent>
+
+          <TabsContent value="chat">
+            <ChatTab task={task} entityCode={entityCode} currentUserId={currentUserId} />
+          </TabsContent>
+
 
           {PLACEHOLDER_TABS.map((p) => (
             <TabsContent key={p.id} value={p.id}>
