@@ -15,6 +15,7 @@ import {
   listConversations, transferOwnership, removeParticipant, getConversation,
 } from '@/lib/operix-chat-engine';
 import { loadDocuments } from '@/lib/docvault-engine';
+import { transferDocumentOwnership, getControl } from '@/lib/docvault-control-engine';
 import { logAudit } from '@/lib/audit-trail-engine';
 
 const TERMINAL_STATUSES = new Set(['completed', 'cancelled']);
@@ -46,8 +47,9 @@ export function generateHandoverPacket(entityCode: string, fromUserId: string): 
     .filter((c) => c.ownerId === fromUserId);
   let documents: { documentId: string; title: string }[] = [];
   try {
+    // S143 · DocVault Control Pt 1 · selection now uses control.owner_id (defaults to created_by for legacy docs · getControl materialises)
     documents = loadDocuments(entityCode)
-      .filter((d) => d.created_by === fromUserId)
+      .filter((d) => getControl(d).owner_id === fromUserId)
       .map((d) => ({ documentId: d.id, title: d.title }));
   } catch { documents = []; }
   return {
@@ -104,9 +106,15 @@ export function executeHandover(
     } catch { /* skip */ }
   }
 
-  // Documents: read-only consume — DocVault stays 0-DIFF. We record intended document ids
-  // for the audit trail; physical owner field flip arrives when DocVault exposes a transfer write surface ([JWT] P2BB).
-  const documentIds: string[] = packet.ownedDocuments.map((d) => d.documentId);
+  // S143 · DocVault Control Pt 1 · CLOSES S142 DESIGN-DECISION-FLAG (DocVault read-only deferral):
+  // documents now actually transfer ownership via docvault-control-engine.transferDocumentOwnership.
+  const documentIds: string[] = [];
+  for (const d of packet.ownedDocuments) {
+    try {
+      transferDocumentOwnership(entityCode, d.documentId, toUserId, byUserId, reason);
+      documentIds.push(d.documentId);
+    } catch { /* skip on error · idempotent */ }
+  }
 
   const record: HandoverRecord = {
     id: newId('ho'),
