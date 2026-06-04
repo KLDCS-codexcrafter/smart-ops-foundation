@@ -847,11 +847,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['taskflow-accountability-engine'],
     bankDate: '2026-06-04', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 142 T-TaskFlow-A641.6 · Pillar A.6.4 · TaskFlow Arc · Chat Depth + Handover Slice · TF-25 chat→task bridge (FollowUps · convertFollowUpToTask) · TF-30c MediaVault org-owned media index (survives participant removal) · TF-30d retention/export policies + soft-delete-per-policy · ConvSearch active-participant scope · Conversation Escalations (mandatory reason) · TF-35 Handover Protocol cross-module (tasks · conversations · documents per Block-0 outcome) · 1 NEW SIBLING operix-handover-engine · DocVault 0-DIFF (READ-ONLY consume of Document.created_by) · operix-chat.ts ADDITIVE (one optional attachment field + 5 new interfaces) · ExpenseCenterPage carried from S141 T2 · audit via inline chat_event · §H 0-DIFF · headSha TBD_AT_BANK
+  // 🎬 Sprint 142 T-TaskFlow-A641.6 · Pillar A.6.4 · TaskFlow Arc · Chat Depth + Handover Slice · TF-35 Handover Protocol cross-module · operix-handover-engine · DocVault read-only (ownership flip deferred to S143) · headSha 3b53dd5e (banked)
   {
     sprintNumber: 142, code: 'T-TaskFlow-A641.6', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'b93f45b4', loc: 1600,
+    headSha: '3b53dd5e', predecessorSha: 'b93f45b4', loc: 1600,
     newSiblings: ['operix-handover-engine'],
+    bankDate: '2026-06-04', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 143 T-TaskFlow-A641.7 · Pillar A.6.4 · TaskFlow Arc · DocVault Control Pt 1 · document lifecycle + ownership/transfer (closes TF-35 DocVault deferral) + confidentiality + numbering + folders + categories + control audit · 1 NEW SIBLING docvault-control-engine · docvault.ts ADDITIVE (optional control meta + DocumentFolder + DocumentTypeNumberingConfig + DocumentControlAuditEntry) · audit type document_control_event ADDITIVE under mca-roc · docvault-engine + 12-state taskflow + approval-workflow + Comply360 + push-notification-bridge ALL 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 143, code: 'T-TaskFlow-A641.7', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '3b53dd5e', loc: 1350,
+    newSiblings: ['docvault-control-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
