@@ -155,6 +155,8 @@ const Comply360Page = lazy(() => import('./pages/erp/comply360/Comply360Page'));
 const FpaPlanningPage = lazy(() => import('./pages/erp/fpa-planning/FpaPlanningPage'));
 // 🌟 Sprint 130 · T-Phase-7.D.3.1 · Arc D.3 OPENER · InsightX self-owned card (DP-D3-1)
 const InsightXPage = lazy(() => import('./pages/erp/insightx/InsightXPage'));
+// 🎬 Sprint 137 · T-TaskFlow-A641.1 · Phase 8 OPENER · TaskFlow self-owned card
+const TaskFlowPage = lazy(() => import('./pages/erp/taskflow/TaskFlowPage'));
 const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
 const MobileMaintenanceTechnicianPage = lazy(() => import('./pages/mobile/MobileMaintenanceTechnicianPage'));
 const MobileShopFloorOperatorPage = lazy(() => import('./pages/mobile/MobileShopFloorOperatorPage'));
