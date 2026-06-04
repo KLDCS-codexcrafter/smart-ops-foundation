@@ -76,7 +76,7 @@ const newId = (prefix: string): string =>
 export function listIndiaGstRates(): { code: string; rate: number; name: string }[] {
   return GST_RATES
     .filter(r => r.countryCode === 'IN' && r.taxType === 'gst' && r.status === 'active')
-    .map(r => ({ code: r.code, rate: r.rate, name: r.name });
+    .map(r => ({ code: r.code, rate: r.rate, name: r.name }));
 }
 function isValidGstRate(rate: number): boolean {
   return listIndiaGstRates().some(r => r.rate === rate);
