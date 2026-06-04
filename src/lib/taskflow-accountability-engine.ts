@@ -30,7 +30,8 @@ import {
   taskflowAuditChainKey,
 } from '@/types/taskflow';
 import {
-  getTimeBlockedHours, listEscalations, listBlocked,
+  getTimeBlockedHours, listEscalations, getOpenBlocked,
+  type BlockedRecord,
 } from '@/lib/taskflow-governance-engine';
 import { GST_RATES, TDS_SECTIONS } from '@/data/compliance-seed-data';
 import { logAudit } from '@/lib/audit-trail-engine';
