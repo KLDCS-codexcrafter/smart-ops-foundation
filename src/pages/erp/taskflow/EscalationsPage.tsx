@@ -27,7 +27,7 @@ export default function EscalationsPage(): JSX.Element {
   const runEval = (): void => {
     try {
       const { breached, escalated } = evaluateSLA(entityCode);
-      toast.success(`SLA evaluated · ${breached} breach(es) · ${escalated} new escalation(s)`);
+      toast.success(`SLA evaluated · ${breached.length} breach(es) · ${escalated.length} new escalation(s)`);
       refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'SLA evaluation failed');
