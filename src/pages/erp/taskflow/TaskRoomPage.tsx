@@ -406,3 +406,247 @@ function ChangeDueDialog({ task, entityCode, currentUserId, onDone }: ChangeDueP
     </Dialog>
   );
 }
+
+// ═════════════════════════════════════════════════════════════════════════
+// S138 · Discussion tab · live comments via taskflow-engine.addComment
+// ═════════════════════════════════════════════════════════════════════════
+interface DiscussionProps {
+  task: Task;
+  entityCode: string;
+  currentUserId: string;
+  comments: { id: string; author_name: string; created_at: string; body: string }[];
+  onDone: () => void;
+}
+function DiscussionTab({ task, entityCode, currentUserId, comments, onDone }: DiscussionProps): JSX.Element {
+  const [body, setBody] = useState('');
+  const post = (): void => {
+    if (!body.trim()) { toast.error('Comment required'); return; }
+    try {
+      addComment(entityCode, task.id, body, currentUserId, currentUserId);
+      setBody('');
+      onDone();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Post failed');
+    }
+  };
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader><CardTitle className="text-base">Discussion ({comments.length})</CardTitle></CardHeader>
+      <CardContent className="space-y-3">
+        <div className="space-y-2">
+          <Textarea rows={3} value={body} placeholder="Write a comment…"
+            onChange={(e) => setBody(e.target.value)} />
+          <div className="flex justify-end">
+            <Button size="sm" onClick={post}>Post comment</Button>
+          </div>
+        </div>
+        {comments.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center">No comments yet.</p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {[...comments].reverse().map((c) => (
+              <li key={c.id} className="py-2">
+                <p className="text-xs font-mono text-muted-foreground">{c.author_name} · {c.created_at}</p>
+                <p className="text-sm whitespace-pre-wrap">{c.body}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// S138 · Approvals tab · chain picker + submit + step-level approve/reject
+// ═════════════════════════════════════════════════════════════════════════
+interface ApprovalsProps {
+  task: Task;
+  entityCode: string;
+  currentUserId: string;
+  onDone: () => void;
+}
+function ApprovalsTab({ task, entityCode, currentUserId, onDone }: ApprovalsProps): JSX.Element {
+  const chains = useMemo(() => listApprovalChains(entityCode), [entityCode]);
+  const [chainId, setChainId] = useState<string>('');
+  const [state, setState] = useState(() => getTaskApprovalState(entityCode, task.id));
+  const [reason, setReason] = useState('');
+  const [comments, setComments] = useState('');
+
+  const refresh = (): void => {
+    setState(getTaskApprovalState(entityCode, task.id));
+    onDone();
+  };
+
+  const submit = (): void => {
+    if (!chainId) { toast.error('Pick a chain'); return; }
+    try {
+      submitTaskForApproval(entityCode, task.id, chainId, currentUserId);
+      toast.success('Submitted for approval');
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Submit failed');
+    }
+  };
+
+  const approve = (): void => {
+    try {
+      const r = approveTaskStep(entityCode, task.id, currentUserId, comments);
+      toast.success(r.final ? 'Final approval recorded' : 'Step approved · next step opened');
+      setComments('');
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Approve failed');
+    }
+  };
+
+  const reject = (): void => {
+    if (!reason.trim()) { toast.error('Reason required'); return; }
+    try {
+      rejectTaskStep(entityCode, task.id, currentUserId, reason);
+      toast.success('Rejected');
+      setReason('');
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Reject failed');
+    }
+  };
+
+  const canSubmit = task.status === 'in_review' && state.steps.length === 0;
+  const currentStep = state.steps.find((s) => s.id === state.currentStepId) ?? null;
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader><CardTitle className="text-base">Approvals</CardTitle></CardHeader>
+      <CardContent className="space-y-4">
+        {state.steps.length === 0 && (
+          <div className="space-y-2">
+            <Label>Approval chain</Label>
+            <Select value={chainId} onValueChange={setChainId}>
+              <SelectTrigger><SelectValue placeholder={chains.length === 0 ? 'No chains configured' : 'Select…'} /></SelectTrigger>
+              <SelectContent>
+                {chains.map((c: TaskApprovalChain) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}{c.isDefault ? ' · default' : ''}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex justify-end">
+              <Button disabled={!canSubmit || !chainId} onClick={submit}>
+                Submit for approval
+              </Button>
+            </div>
+            {!canSubmit && (
+              <p className="text-xs text-muted-foreground">
+                Submit requires task status = in_review (current: {task.status}).
+              </p>
+            )}
+          </div>
+        )}
+
+        {state.steps.length > 0 && (
+          <>
+            <ul className="space-y-2">
+              {state.steps.map((s) => (
+                <li key={s.id} className="flex items-center justify-between border border-border rounded-lg p-2">
+                  <div>
+                    <p className="text-sm">Step #{s.order} · approver {s.approverId}</p>
+                    {s.comments && <p className="text-xs text-muted-foreground">“{s.comments}”</p>}
+                  </div>
+                  <Badge variant={s.status === 'approved' ? 'secondary'
+                    : s.status === 'rejected' ? 'destructive' : 'outline'}>
+                    {s.status}
+                  </Badge>
+                </li>
+              ))}
+            </ul>
+
+            {currentStep && (
+              <div className="grid gap-3 border border-border rounded-lg p-3">
+                <p className="text-sm font-medium">Decide step #{currentStep.order}</p>
+                <Label>Comments (optional for approve)</Label>
+                <Textarea rows={2} value={comments} onChange={(e) => setComments(e.target.value)} />
+                <Label>Reason (required for reject)</Label>
+                <Textarea rows={2} value={reason} onChange={(e) => setReason(e.target.value)} />
+                <div className="flex justify-end gap-2">
+                  <Button variant="destructive" onClick={reject}>Reject</Button>
+                  <Button onClick={approve}>Approve</Button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// S138 · I'm-Blocked dialog (TF-33)
+// ═════════════════════════════════════════════════════════════════════════
+interface BlockedDialogProps {
+  task: Task;
+  employees: { id: string; displayName: string; empCode?: string }[];
+  entityCode: string;
+  currentUserId: string;
+  onDone: () => void;
+}
+function BlockedDialog({ task, employees, entityCode, currentUserId, onDone }: BlockedDialogProps): JSX.Element {
+  const [open, setOpen] = useState(false);
+  const [blockedByUserId, setBlockedByUserId] = useState('');
+  const [blockedByDep, setBlockedByDep] = useState('');
+  const [reason, setReason] = useState('');
+  const [moveToOnHold, setMoveToOnHold] = useState(false);
+  const submit = (): void => {
+    if (!reason.trim()) { toast.error('Reason is required'); return; }
+    if (!blockedByUserId && !blockedByDep.trim()) {
+      toast.error('Specify blocker user or dependency'); return;
+    }
+    try {
+      raiseBlocked(entityCode, {
+        taskId: task.id,
+        reason,
+        raisedByUserId: currentUserId,
+        blockedByUserId: blockedByUserId || null,
+        blockedByDependency: blockedByDep.trim() || null,
+        moveToOnHold,
+      });
+      toast.success('Blocker raised');
+      setOpen(false); setReason(''); setBlockedByUserId(''); setBlockedByDep(''); setMoveToOnHold(false);
+      onDone();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Raise blocked failed');
+    }
+  };
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild><Button variant="outline" size="sm">I’m Blocked</Button></DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Raise blocker</DialogTitle></DialogHeader>
+        <div className="grid gap-3 py-2">
+          <Label>Blocked by (user)</Label>
+          <Select value={blockedByUserId} onValueChange={setBlockedByUserId}>
+            <SelectTrigger><SelectValue placeholder="—" /></SelectTrigger>
+            <SelectContent>
+              {employees.map((e) => <SelectItem key={e.id} value={e.id}>{e.displayName}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Label>Blocked by (dependency · free text)</Label>
+          <Input value={blockedByDep} onChange={(e) => setBlockedByDep(e.target.value)} />
+          <Label>Reason *</Label>
+          <Textarea rows={3} value={reason} onChange={(e) => setReason(e.target.value)} />
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={moveToOnHold}
+              onChange={(e) => setMoveToOnHold(e.target.checked)} />
+            Also move task to on_hold (if legal from current status)
+          </label>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={submit}>Raise blocker</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
