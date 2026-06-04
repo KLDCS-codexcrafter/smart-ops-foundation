@@ -408,27 +408,41 @@ function ChangeDueDialog({ task, entityCode, currentUserId, onDone }: ChangeDueP
 }
 
 // ═════════════════════════════════════════════════════════════════════════
-// S138 · Discussion tab · live comments via taskflow-engine.addComment
+// S138.T1 · Discussion tab · TaskCommentModel + @mention picker + internal toggle
 // ═════════════════════════════════════════════════════════════════════════
 interface DiscussionProps {
   task: Task;
   entityCode: string;
   currentUserId: string;
-  comments: { id: string; author_name: string; created_at: string; body: string }[];
+  comments: { id: string; userId: string; createdAt: string; content: string; isInternal: boolean; mentions: string[] }[];
   onDone: () => void;
 }
 function DiscussionTab({ task, entityCode, currentUserId, comments, onDone }: DiscussionProps): JSX.Element {
+  const { employees } = useEmployees();
   const [body, setBody] = useState('');
+  const [isInternal, setIsInternal] = useState(false);
+  const [mentions, setMentions] = useState<string[]>([]);
+  const addMention = (id: string): void => {
+    if (!id || mentions.includes(id)) return;
+    setMentions((m) => [...m, id]);
+  };
+  const removeMention = (id: string): void => {
+    setMentions((m) => m.filter((x) => x !== id));
+  };
   const post = (): void => {
     if (!body.trim()) { toast.error('Comment required'); return; }
     try {
-      addComment(entityCode, task.id, body, currentUserId, currentUserId);
-      setBody('');
+      addComment(entityCode, task.id, body, currentUserId, currentUserId, {
+        isInternal, mentions,
+      });
+      setBody(''); setIsInternal(false); setMentions([]);
       onDone();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Post failed');
     }
   };
+  const nameFor = (id: string): string =>
+    employees.find((e) => e.id === id)?.displayName ?? id;
   return (
     <Card className="rounded-2xl">
       <CardHeader><CardTitle className="text-base">Discussion ({comments.length})</CardTitle></CardHeader>
@@ -436,8 +450,29 @@ function DiscussionTab({ task, entityCode, currentUserId, comments, onDone }: Di
         <div className="space-y-2">
           <Textarea rows={3} value={body} placeholder="Write a comment…"
             onChange={(e) => setBody(e.target.value)} />
-          <div className="flex justify-end">
-            <Button size="sm" onClick={post}>Post comment</Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-2 text-xs">
+              <input type="checkbox" checked={isInternal}
+                onChange={(e) => setIsInternal(e.target.checked)} />
+              Internal note
+            </label>
+            <Select value="" onValueChange={addMention}>
+              <SelectTrigger className="h-8 w-48"><SelectValue placeholder="@mention…" /></SelectTrigger>
+              <SelectContent>
+                {employees.map((e) => (
+                  <SelectItem key={e.id} value={e.id}>{e.displayName}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {mentions.map((id) => (
+              <Badge key={id} variant="outline" className="cursor-pointer"
+                onClick={() => removeMention(id)}>
+                @{nameFor(id)} ×
+              </Badge>
+            ))}
+            <div className="ml-auto">
+              <Button size="sm" onClick={post}>Post comment</Button>
+            </div>
           </div>
         </div>
         {comments.length === 0 ? (
@@ -446,8 +481,16 @@ function DiscussionTab({ task, entityCode, currentUserId, comments, onDone }: Di
           <ul className="divide-y divide-border">
             {[...comments].reverse().map((c) => (
               <li key={c.id} className="py-2">
-                <p className="text-xs font-mono text-muted-foreground">{c.author_name} · {c.created_at}</p>
-                <p className="text-sm whitespace-pre-wrap">{c.body}</p>
+                <p className="text-xs font-mono text-muted-foreground flex items-center gap-2">
+                  <span>{nameFor(c.userId)} · {c.createdAt}</span>
+                  {c.isInternal && <Badge variant="secondary" className="text-[10px]">internal</Badge>}
+                </p>
+                <p className="text-sm whitespace-pre-wrap">{c.content}</p>
+                {c.mentions.length > 0 && (
+                  <p className="text-[10px] font-mono text-muted-foreground mt-1">
+                    mentions: {c.mentions.map(nameFor).map((n) => `@${n}`).join(' ')}
+                  </p>
+                )}
               </li>
             ))}
           </ul>
