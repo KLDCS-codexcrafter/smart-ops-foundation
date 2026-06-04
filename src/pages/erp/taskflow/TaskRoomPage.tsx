@@ -299,6 +299,15 @@ export default function TaskRoomPage(): JSX.Element {
             <ChatTab task={task} entityCode={entityCode} currentUserId={currentUserId} />
           </TabsContent>
 
+          <TabsContent value="expenses">
+            <ExpensesTab task={task} entityCode={entityCode} currentUserId={currentUserId} />
+          </TabsContent>
+
+          <TabsContent value="evidence">
+            <EvidenceTab task={task} entityCode={entityCode} currentUserId={currentUserId} />
+          </TabsContent>
+
+
 
           {PLACEHOLDER_TABS.map((p) => (
             <TabsContent key={p.id} value={p.id}>
