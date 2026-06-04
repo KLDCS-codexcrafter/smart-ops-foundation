@@ -249,7 +249,7 @@ export function approveTaskStep(
   const remaining = all
     .filter(m => m.taskId === taskId && m.id !== updated.id && m.status === 'draft')
     .sort((a, b) => a.order - b.order);
-  let final = remaining.length === 0;
+  const final = remaining.length === 0;
   if (!final) {
     const nextStep = remaining[0];
     const sub = awSubmit<StepMirror>(nextStep, actor, ctx);
