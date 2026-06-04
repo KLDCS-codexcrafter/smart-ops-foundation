@@ -28,6 +28,11 @@ import type {
   MessageType,
   VoiceNoteMeta,
   DeliveryStatus,
+  MessageAttachmentMeta,
+  MediaVaultItem,
+  FollowUp,
+  ConversationEscalationRecord,
+  ConversationRetentionPolicy,
 } from '@/types/operix-chat';
 import { logAudit } from '@/lib/audit-trail-engine';
 
@@ -405,6 +410,7 @@ export interface SendMessageInput {
   type: MessageType;
   content: string;
   voiceMeta?: VoiceNoteMeta | null;
+  attachment?: MessageAttachmentMeta | null; // S142 · TF-30c
   replyToMessageId?: string | null;
   mentions?: string[];
   isInternalNote?: boolean;
@@ -425,6 +431,7 @@ function appendSystemMessage(entityCode: string, convId: string, content: string
     type: 'system',
     content,
     voiceMeta: null,
+    attachment: null,
     replyToMessageId: null,
     mentions: [],
     isInternalNote: false,
@@ -439,6 +446,8 @@ function appendSystemMessage(entityCode: string, convId: string, content: string
   appendMessage(entityCode, msg);
   return msg;
 }
+
+export const ATTACHMENT_MAX_BYTES = 1024 * 1024; // S142 · ~1MB cap
 
 export function sendMessage(
   entityCode: string,
@@ -465,6 +474,14 @@ export function sendMessage(
       throw new Error(`voice note exceeds ~1MB size cap`);
     }
   }
+  if (input.attachment) {
+    if (input.attachment.sizeBytes > ATTACHMENT_MAX_BYTES) {
+      throw new Error(`attachment exceeds ~1MB size cap`);
+    }
+    if (!input.attachment.fileName || !input.attachment.mimeType) {
+      throw new Error('attachment requires fileName + mimeType');
+    }
+  }
   if (input.replyToMessageId) {
     const target = readMessages(entityCode).find((m) => m.id === input.replyToMessageId);
     if (!target || target.conversationId !== convId) {
@@ -480,6 +497,7 @@ export function sendMessage(
     type: input.type,
     content: input.content,
     voiceMeta: input.type === 'voice' ? (input.voiceMeta ?? null) : null,
+    attachment: input.attachment ?? null,
     replyToMessageId: input.replyToMessageId ?? null,
     mentions: input.mentions ?? [],
     isInternalNote: input.isInternalNote ?? false,
@@ -492,10 +510,12 @@ export function sendMessage(
     deletedAt: null,
   };
   appendMessage(entityCode, msg);
+  // S142 · refresh media index opportunistically
+  try { rebuildMediaVaultIndex(entityCode); } catch { /* index best-effort */ }
   safeAudit({
     entityCode, action: 'create', entityType: 'chat_event', recordId: msg.id,
     recordLabel: `Message sent · ${input.type} · ${convId}`,
-    beforeState: null, afterState: { conversationId: convId, type: input.type, isInternalNote: msg.isInternalNote },
+    beforeState: null, afterState: { conversationId: convId, type: input.type, isInternalNote: msg.isInternalNote, hasAttachment: !!msg.attachment },
     reason: 'message.send', sourceModule: 'operix-chat-engine',
   });
   return msg;
