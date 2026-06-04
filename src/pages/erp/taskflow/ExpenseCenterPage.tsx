@@ -5,7 +5,7 @@
  * @reads-from  taskflow-accountability-engine (listExpenses · approveExpense · rejectExpense)
  * @canon       Indian locale · ₹ paise-aware display via /100. [JWT] Voucher emission to FinCore arrives with P2BB.
  */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -31,12 +31,14 @@ const fmtINR = (n: number): string =>
 export default function ExpenseCenterPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const user = useCurrentUser();
-  const [tick, setTick] = useState(0);
+  const [expenses, setExpenses] = useState<TaskExpense[]>([]);
   const [filter, setFilter] = useState<StatusChip>('submitted');
   const [decision, setDecision] = useState<{ id: string; kind: 'approve' | 'reject' } | null>(null);
   const [financeNote, setFinanceNote] = useState('');
 
-  const expenses = useMemo(() => listExpenses(entityCode), [entityCode, tick]);
+  const refresh = (): void => { setExpenses(listExpenses(entityCode)); };
+  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [entityCode]);
+
   const visible = useMemo(
     () => filter === 'all' ? expenses : expenses.filter((e) => e.status === filter),
     [expenses, filter],
