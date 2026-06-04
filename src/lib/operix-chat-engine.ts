@@ -665,3 +665,451 @@ export function getConversationStats(
     voiceNotes,
   };
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+// S142 · CHAT DEPTH + RETENTION + SEARCH (TF-25 · TF-30 c/d)
+// ════════════════════════════════════════════════════════════════════════════
+
+export const mediaIndexKey = (entityCode: string): string =>
+  entityCode ? `oc_media_index_${entityCode}` : 'oc_media_index_system';
+export const followUpsKey = (entityCode: string): string =>
+  entityCode ? `oc_followups_${entityCode}` : 'oc_followups_system';
+export const escalationsKey = (entityCode: string): string =>
+  entityCode ? `oc_escalations_${entityCode}` : 'oc_escalations_system';
+export const retentionPoliciesKey = (entityCode: string): string =>
+  entityCode ? `oc_retention_policies_${entityCode}` : 'oc_retention_policies_system';
+
+// ── MediaVault (TF-30c) ────────────────────────────────────────────────────
+function kindForMessage(m: ChatMessage): 'voice' | 'image' | 'file' | null {
+  if (m.type === 'voice' && m.voiceMeta) return 'voice';
+  if (m.attachment) {
+    if (m.attachment.mimeType.startsWith('image/')) return 'image';
+    return 'file';
+  }
+  return null;
+}
+
+export function rebuildMediaVaultIndex(entityCode: string): MediaVaultItem[] {
+  const msgs = readMessages(entityCode);
+  const convs = readConversations(entityCode);
+  const convById = new Map(convs.map((c) => [c.id, c]));
+  const items: MediaVaultItem[] = [];
+  for (const m of msgs) {
+    if (m.deletedAt) continue;
+    const kind = kindForMessage(m);
+    if (!kind) continue;
+    const conv = convById.get(m.conversationId);
+    if (!conv) continue;
+    const fileName = kind === 'voice'
+      ? `voice-${m.id}.webm`
+      : (m.attachment?.fileName ?? `file-${m.id}`);
+    const mimeType = kind === 'voice'
+      ? (m.voiceMeta?.mimeType ?? 'audio/webm')
+      : (m.attachment?.mimeType ?? 'application/octet-stream');
+    const sizeBytes = kind === 'voice'
+      ? (m.voiceMeta?.sizeBytes ?? 0)
+      : (m.attachment?.sizeBytes ?? 0);
+    items.push({
+      id: `mv-${m.id}`,
+      entityId: entityCode,
+      conversationId: m.conversationId,
+      messageId: m.id,
+      kind,
+      fileName, mimeType, sizeBytes,
+      uploadedByUserId: m.senderId,
+      uploadedAt: m.createdAt,
+      linkedRefs: [...conv.linkedRefs],
+    });
+  }
+  writeJSON(mediaIndexKey(entityCode), items);
+  return items;
+}
+
+export interface ListMediaVaultFilter {
+  kind?: 'voice' | 'file' | 'image';
+  conversationId?: string;
+  linkedRefType?: ConversationLinkRef['type'];
+}
+
+export function listMediaVault(entityCode: string, filter: ListMediaVaultFilter = {}): MediaVaultItem[] {
+  let items = readJSON<MediaVaultItem[]>(mediaIndexKey(entityCode), []);
+  if (items.length === 0) items = rebuildMediaVaultIndex(entityCode);
+  if (filter.kind) items = items.filter((i) => i.kind === filter.kind);
+  if (filter.conversationId) items = items.filter((i) => i.conversationId === filter.conversationId);
+  if (filter.linkedRefType) items = items.filter((i) => i.linkedRefs.some((r) => r.type === filter.linkedRefType));
+  return [...items].sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
+}
+
+// ── FollowUps (TF-25) ──────────────────────────────────────────────────────
+export interface CreateFollowUpInput {
+  conversationId: string;
+  messageId: string;
+  note: string;
+  assigneeId: string;
+  dueDate?: string | null;
+  createdByUserId: string;
+}
+
+export function createFollowUp(entityCode: string, input: CreateFollowUpInput): FollowUp {
+  if (!input.note || !input.note.trim()) throw new Error('follow-up note required');
+  const msg = readMessages(entityCode).find((m) => m.id === input.messageId);
+  if (!msg || msg.conversationId !== input.conversationId) {
+    throw new Error('follow-up: source message not found in conversation');
+  }
+  const fu: FollowUp = {
+    id: newId('fu'),
+    entityId: entityCode,
+    conversationId: input.conversationId,
+    messageId: input.messageId,
+    note: input.note.trim(),
+    assigneeId: input.assigneeId,
+    dueDate: input.dueDate ?? null,
+    status: 'open',
+    linkedTaskId: null,
+    createdByUserId: input.createdByUserId,
+    createdAt: nowISO(),
+    resolvedAt: null,
+  };
+  const all = readJSON<FollowUp[]>(followUpsKey(entityCode), []);
+  writeJSON(followUpsKey(entityCode), [...all, fu]);
+  safeAudit({
+    entityCode, action: 'create', entityType: 'chat_event', recordId: fu.id,
+    recordLabel: `Follow-up created · ${fu.conversationId}`,
+    beforeState: null, afterState: { assigneeId: fu.assigneeId, dueDate: fu.dueDate },
+    reason: 'followup.create', sourceModule: 'operix-chat-engine',
+  });
+  return fu;
+}
+
+export function listFollowUps(entityCode: string, filter: { status?: FollowUp['status']; assigneeId?: string } = {}): FollowUp[] {
+  let list = readJSON<FollowUp[]>(followUpsKey(entityCode), []);
+  if (filter.status) list = list.filter((f) => f.status === filter.status);
+  if (filter.assigneeId) list = list.filter((f) => f.assigneeId === filter.assigneeId);
+  return [...list].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function resolveFollowUp(entityCode: string, id: string): FollowUp {
+  const all = readJSON<FollowUp[]>(followUpsKey(entityCode), []);
+  const fu = all.find((f) => f.id === id);
+  if (!fu) throw new Error('follow-up not found');
+  if (fu.status === 'converted') return fu; // immutable terminal
+  const next: FollowUp = { ...fu, status: 'done', resolvedAt: nowISO() };
+  writeJSON(followUpsKey(entityCode), all.map((f) => (f.id === id ? next : f)));
+  safeAudit({
+    entityCode, action: 'update', entityType: 'chat_event', recordId: id,
+    recordLabel: `Follow-up resolved`,
+    beforeState: { status: fu.status }, afterState: { status: 'done' },
+    reason: 'followup.resolve', sourceModule: 'operix-chat-engine',
+  });
+  return next;
+}
+
+// TF-25 chat→task bridge · returns updated follow-up (linkedTaskId set)
+export interface ConvertFollowUpToTaskDeps {
+  createTaskFn: (entityCode: string, taskInput: {
+    title: string; description?: string; assigneeId: string | null; assigneeName: string;
+    creatorId: string; departmentId: string | null; priority: 'critical' | 'high' | 'medium' | 'low';
+    category: 'general'; dueDate: string | null; tags?: string[]; entityId: string;
+  }) => { id: string };
+}
+
+export function convertFollowUpToTask(
+  entityCode: string,
+  followUpId: string,
+  byUserId: string,
+  deps: ConvertFollowUpToTaskDeps,
+): { followUp: FollowUp; taskId: string } {
+  const all = readJSON<FollowUp[]>(followUpsKey(entityCode), []);
+  const fu = all.find((f) => f.id === followUpId);
+  if (!fu) throw new Error('follow-up not found');
+  if (fu.status === 'converted') throw new Error('follow-up already converted');
+  const task = deps.createTaskFn(entityCode, {
+    title: fu.note,
+    description: `Converted from chat follow-up ${fu.id} (conversation ${fu.conversationId})`,
+    assigneeId: fu.assigneeId,
+    assigneeName: fu.assigneeId,
+    creatorId: byUserId,
+    departmentId: null,
+    priority: 'medium',
+    category: 'general',
+    dueDate: fu.dueDate,
+    tags: [`followup:${fu.id}`],
+    entityId: entityCode,
+  });
+  const next: FollowUp = { ...fu, status: 'converted', linkedTaskId: task.id, resolvedAt: nowISO() };
+  writeJSON(followUpsKey(entityCode), all.map((f) => (f.id === followUpId ? next : f)));
+  safeAudit({
+    entityCode, action: 'update', entityType: 'chat_event', recordId: followUpId,
+    recordLabel: `Follow-up converted to task ${task.id}`,
+    beforeState: { status: fu.status }, afterState: { status: 'converted', linkedTaskId: task.id },
+    reason: 'followup.convert', sourceModule: 'operix-chat-engine',
+  });
+  return { followUp: next, taskId: task.id };
+}
+
+// ── Conversation Escalations ───────────────────────────────────────────────
+export function raiseConversationEscalation(
+  entityCode: string,
+  conversationId: string,
+  reason: string,
+  raisedByUserId: string,
+): ConversationEscalationRecord {
+  if (!reason || !reason.trim()) throw new Error('escalation reason required');
+  const c = getConversation(entityCode, conversationId);
+  if (!c) throw new Error('conversation not found');
+  const rec: ConversationEscalationRecord = {
+    id: newId('esc'),
+    entityId: entityCode,
+    conversationId,
+    reason: reason.trim(),
+    raisedByUserId,
+    raisedAt: nowISO(),
+    status: 'open',
+    resolvedAt: null,
+  };
+  const all = readJSON<ConversationEscalationRecord[]>(escalationsKey(entityCode), []);
+  writeJSON(escalationsKey(entityCode), [...all, rec]);
+  safeAudit({
+    entityCode, action: 'create', entityType: 'chat_event', recordId: rec.id,
+    recordLabel: `Conversation escalation raised · ${conversationId}`,
+    beforeState: null, afterState: { reason: rec.reason },
+    reason: 'conversation.escalate', sourceModule: 'operix-chat-engine',
+  });
+  return rec;
+}
+
+export function resolveConversationEscalation(entityCode: string, id: string): ConversationEscalationRecord {
+  const all = readJSON<ConversationEscalationRecord[]>(escalationsKey(entityCode), []);
+  const rec = all.find((r) => r.id === id);
+  if (!rec) throw new Error('escalation not found');
+  if (rec.status === 'resolved') return rec;
+  const next: ConversationEscalationRecord = { ...rec, status: 'resolved', resolvedAt: nowISO() };
+  writeJSON(escalationsKey(entityCode), all.map((r) => (r.id === id ? next : r)));
+  safeAudit({
+    entityCode, action: 'update', entityType: 'chat_event', recordId: id,
+    recordLabel: `Conversation escalation resolved`,
+    beforeState: { status: 'open' }, afterState: { status: 'resolved' },
+    reason: 'conversation.escalation.resolve', sourceModule: 'operix-chat-engine',
+  });
+  return next;
+}
+
+export function listConversationEscalations(entityCode: string, filter: { status?: ConversationEscalationRecord['status']; conversationId?: string } = {}): ConversationEscalationRecord[] {
+  let list = readJSON<ConversationEscalationRecord[]>(escalationsKey(entityCode), []);
+  if (filter.status) list = list.filter((r) => r.status === filter.status);
+  if (filter.conversationId) list = list.filter((r) => r.conversationId === filter.conversationId);
+  return [...list].sort((a, b) => b.raisedAt.localeCompare(a.raisedAt));
+}
+
+// ── Retention / Export (TF-30d) ────────────────────────────────────────────
+export interface UpsertRetentionPolicyInput {
+  id?: string;
+  channelType?: ChannelType | null;
+  archiveAfterDays: number | null;
+  retentionDays: number | null;
+  allowExport: boolean;
+  allowDelete: boolean;
+  isActive?: boolean;
+}
+
+export function upsertRetentionPolicy(entityCode: string, input: UpsertRetentionPolicyInput): ConversationRetentionPolicy {
+  const all = readJSON<ConversationRetentionPolicy[]>(retentionPoliciesKey(entityCode), []);
+  const ts = nowISO();
+  const isActive = input.isActive ?? true;
+  // one active per channelType: deactivate any conflicting active policy
+  const channelKey = input.channelType ?? null;
+  const next = all.map((p) => {
+    if (p.id === input.id) return p; // updating self
+    if (isActive && (p.channelType ?? null) === channelKey && p.isActive) {
+      return { ...p, isActive: false, updatedAt: ts };
+    }
+    return p;
+  });
+  let saved: ConversationRetentionPolicy;
+  if (input.id && next.some((p) => p.id === input.id)) {
+    saved = {
+      ...(next.find((p) => p.id === input.id) as ConversationRetentionPolicy),
+      channelType: channelKey,
+      archiveAfterDays: input.archiveAfterDays,
+      retentionDays: input.retentionDays,
+      allowExport: input.allowExport,
+      allowDelete: input.allowDelete,
+      isActive,
+      updatedAt: ts,
+    };
+    writeJSON(retentionPoliciesKey(entityCode), next.map((p) => (p.id === input.id ? saved : p)));
+  } else {
+    saved = {
+      id: newId('rp'),
+      entityId: entityCode,
+      channelType: channelKey,
+      archiveAfterDays: input.archiveAfterDays,
+      retentionDays: input.retentionDays,
+      allowExport: input.allowExport,
+      allowDelete: input.allowDelete,
+      isActive,
+      createdAt: ts,
+      updatedAt: ts,
+    };
+    writeJSON(retentionPoliciesKey(entityCode), [...next, saved]);
+  }
+  safeAudit({
+    entityCode, action: 'update', entityType: 'chat_event', recordId: saved.id,
+    recordLabel: `Retention policy upsert · ${channelKey ?? 'default'}`,
+    beforeState: null, afterState: { archiveAfterDays: saved.archiveAfterDays, retentionDays: saved.retentionDays, allowExport: saved.allowExport, allowDelete: saved.allowDelete, isActive: saved.isActive },
+    reason: 'retention.upsert', sourceModule: 'operix-chat-engine',
+  });
+  return saved;
+}
+
+export function listRetentionPolicies(entityCode: string): ConversationRetentionPolicy[] {
+  return readJSON<ConversationRetentionPolicy[]>(retentionPoliciesKey(entityCode), []);
+}
+
+function policyForChannel(policies: ConversationRetentionPolicy[], channelType: ChannelType): ConversationRetentionPolicy | null {
+  const specific = policies.find((p) => p.isActive && p.channelType === channelType);
+  if (specific) return specific;
+  return policies.find((p) => p.isActive && (p.channelType === null || p.channelType === undefined)) ?? null;
+}
+
+export interface RetentionEvaluation {
+  toArchive: { conversationId: string; reason: string }[];
+  toDelete:  { conversationId: string; reason: string; allowDelete: boolean }[];
+}
+
+export function evaluateRetention(entityCode: string, nowISOArg?: string): RetentionEvaluation {
+  const policies = listRetentionPolicies(entityCode);
+  const convs = readConversations(entityCode);
+  const now = nowISOArg ? new Date(nowISOArg).getTime() : Date.now();
+  const ms = 24 * 60 * 60 * 1000;
+  const result: RetentionEvaluation = { toArchive: [], toDelete: [] };
+  for (const c of convs) {
+    const policy = policyForChannel(policies, c.channelType);
+    if (!policy) continue;
+    const last = c.lastMessageAt ?? c.createdAt;
+    const age = (now - new Date(last).getTime()) / ms;
+    if (!c.isArchived && policy.archiveAfterDays !== null && age >= policy.archiveAfterDays) {
+      result.toArchive.push({ conversationId: c.id, reason: `idle ${Math.floor(age)}d ≥ ${policy.archiveAfterDays}d` });
+    }
+    if (policy.retentionDays !== null && age >= policy.retentionDays) {
+      result.toDelete.push({ conversationId: c.id, reason: `retention ${Math.floor(age)}d ≥ ${policy.retentionDays}d`, allowDelete: policy.allowDelete });
+    }
+  }
+  return result;
+}
+
+export function archiveConversations(entityCode: string, conversationIds: string[]): number {
+  let touched = 0;
+  for (const id of conversationIds) {
+    try { archiveConversation(entityCode, id); touched += 1; } catch { /* skip */ }
+  }
+  return touched;
+}
+
+export function deleteConversationsPerPolicy(entityCode: string, conversationIds: string[]): number {
+  const policies = listRetentionPolicies(entityCode);
+  const convs = readConversations(entityCode);
+  // gate: every target must be backed by a policy with allowDelete
+  for (const id of conversationIds) {
+    const c = convs.find((x) => x.id === id);
+    if (!c) throw new Error(`delete: conversation ${id} not found`);
+    const p = policyForChannel(policies, c.channelType);
+    if (!p || !p.allowDelete) {
+      throw new Error(`delete: policy for ${c.channelType} forbids deletion`);
+    }
+  }
+  let touched = 0;
+  const msgs = readMessages(entityCode);
+  const ts = nowISO();
+  const idSet = new Set(conversationIds);
+  const nextMsgs = msgs.map((m) => idSet.has(m.conversationId) && !m.deletedAt
+    ? { ...m, content: '[retention-deleted]', voiceMeta: null, attachment: null, deletedAt: ts } as ChatMessage
+    : m);
+  writeMessages(entityCode, nextMsgs);
+  for (const id of conversationIds) {
+    try {
+      archiveConversation(entityCode, id);
+      appendSystemMessage(entityCode, id, 'retention deletion executed');
+      safeAudit({
+        entityCode, action: 'cancel', entityType: 'chat_event', recordId: id,
+        recordLabel: `Retention deletion executed`,
+        beforeState: null, afterState: { conversationId: id },
+        reason: 'retention.delete', sourceModule: 'operix-chat-engine',
+      });
+      touched += 1;
+    } catch { /* skip */ }
+  }
+  return touched;
+}
+
+export interface ExportedConversationBundle {
+  conversation: Conversation;
+  participants: ConversationParticipant[];
+  messages: ChatMessage[];
+  exportedAt: string;
+}
+
+export function exportConversation(entityCode: string, conversationId: string): ExportedConversationBundle {
+  const c = getConversation(entityCode, conversationId);
+  if (!c) throw new Error('conversation not found');
+  const policy = policyForChannel(listRetentionPolicies(entityCode), c.channelType);
+  if (!policy || !policy.allowExport) throw new Error('policy forbids export for this channel');
+  const bundle: ExportedConversationBundle = {
+    conversation: c,
+    participants: c.participants, // includes removed (history preserved)
+    messages: listMessages(entityCode, conversationId),
+    exportedAt: nowISO(),
+  };
+  safeAudit({
+    entityCode, action: 'create', entityType: 'chat_event', recordId: conversationId,
+    recordLabel: `Conversation exported`,
+    beforeState: null, afterState: { messageCount: bundle.messages.length, participantCount: bundle.participants.length },
+    reason: 'conversation.export', sourceModule: 'operix-chat-engine',
+  });
+  return bundle;
+}
+
+// ── ConvSearch ─────────────────────────────────────────────────────────────
+export interface SearchHit {
+  conversationId: string;
+  conversationTitle: string;
+  messageId: string;
+  snippet: string;
+  createdAt: string;
+}
+
+export function searchMessages(
+  entityCode: string,
+  userId: string,
+  query: string,
+  filter: { channelType?: ChannelType } = {},
+): SearchHit[] {
+  const q = (query ?? '').trim().toLowerCase();
+  if (!q) return [];
+  const convs = readConversations(entityCode);
+  // active participant scope (TF-30b: removed users excluded going forward)
+  const allowed = new Map(
+    convs
+      .filter((c) => isActiveParticipant(c, userId))
+      .filter((c) => !filter.channelType || c.channelType === filter.channelType)
+      .map((c) => [c.id, c]),
+  );
+  const msgs = readMessages(entityCode);
+  const hits: SearchHit[] = [];
+  for (const m of msgs) {
+    if (m.deletedAt) continue;
+    if (m.type !== 'text') continue;
+    const conv = allowed.get(m.conversationId);
+    if (!conv) continue;
+    if (m.content.toLowerCase().includes(q)) {
+      hits.push({
+        conversationId: conv.id,
+        conversationTitle: conv.title,
+        messageId: m.id,
+        snippet: m.content.length > 160 ? m.content.slice(0, 157) + '…' : m.content,
+        createdAt: m.createdAt,
+      });
+    }
+  }
+  return hits.sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
