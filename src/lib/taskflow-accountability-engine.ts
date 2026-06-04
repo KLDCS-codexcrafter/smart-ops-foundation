@@ -47,8 +47,27 @@ const readJSON = <T,>(key: string, fallback: T): T => {
 const writeJSON = (key: string, value: unknown): void => {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* quota */ }
 };
-const safeAudit = (entry: Parameters<typeof logAudit>[0]): void => {
-  try { logAudit(entry); } catch { /* D-AUDIT-SAFE */ }
+type AuditOpts = Parameters<typeof logAudit>[0];
+const safeAudit = (
+  entityCode: string,
+  partial: Omit<AuditOpts, 'entityCode' | 'action' | 'entityType' | 'sourceModule' | 'beforeState' | 'afterState'> & {
+    action?: AuditOpts['action'];
+    beforeState?: AuditOpts['beforeState'];
+    afterState?: AuditOpts['afterState'];
+  },
+): void => {
+  try {
+    logAudit({
+      entityCode,
+      action: partial.action ?? 'update',
+      entityType: 'taskflow_event',
+      recordId: partial.recordId,
+      recordLabel: partial.recordLabel,
+      beforeState: partial.beforeState ?? null,
+      afterState: partial.afterState ?? null,
+      sourceModule: 'taskflow-accountability',
+    });
+  } catch { /* D-AUDIT-SAFE */ }
 };
 const newId = (prefix: string): string =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
