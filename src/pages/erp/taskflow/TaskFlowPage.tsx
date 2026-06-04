@@ -20,12 +20,17 @@ import ApprovalChainsPage from './ApprovalChainsPage';
 import BlockedListPage from './BlockedListPage';
 import RemindersPage from './RemindersPage';
 import ComplianceSourcesPage from './ComplianceSourcesPage';
+import TemplatesPage from './TemplatesPage';
+import WorkflowsPage from './WorkflowsPage';
+import DecisionsPage from './DecisionsPage';
+import MeetingMinutesPage from './MeetingMinutesPage';
 import type { TaskFlowModule } from './TaskFlowSidebar.types';
 
 const VALID_MODULES: TaskFlowModule[] = [
   'landing', 'all-tasks', 'my-tasks', 'due-soon', 'completed',
   'approval-chains', 'sla-rules', 'escalations', 'blocked',
   'reminders', 'compliance-sources',
+  'templates', 'workflows', 'decisions', 'minutes',
 ];
 
 export default function TaskFlowPage(): JSX.Element {
@@ -58,6 +63,10 @@ export default function TaskFlowPage(): JSX.Element {
       case 'blocked':            return <BlockedListPage />;
       case 'reminders':          return <RemindersPage />;
       case 'compliance-sources': return <ComplianceSourcesPage />;
+      case 'templates':          return <TemplatesPage />;
+      case 'workflows':          return <WorkflowsPage />;
+      case 'decisions':          return <DecisionsPage />;
+      case 'minutes':            return <MeetingMinutesPage />;
       default:                   return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
   };
