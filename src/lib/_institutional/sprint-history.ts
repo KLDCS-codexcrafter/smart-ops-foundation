@@ -840,11 +840,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['operix-chat-engine'],
     bankDate: '2026-06-04', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 141 T-TaskFlow-A641.5 · Pillar A.6.4 · TaskFlow Arc · Accountability Payoff · TF-18 expenses (GST/TDS · READ from compliance-seed-data GST_RATES + TDS_SECTIONS · FR-44) · TF-19 evidence (base64 ≤1MB · guarded geolocation) · TF-29d evidence-mandatory close (ClosePolicyResolver mirrors S139 MilestoneResolver) · TF-29e accountability metrics · TF-29f symmetric self-trail export · TF-31 daily work diary · 1 NEW SIBLING taskflow-accountability-engine · NO leaderboards/ranking (founder-ratified don't-build canon) · audit via inline taskflow_event · §H 0-DIFF · headSha TBD_AT_BANK
+  // 🎬 Sprint 141 T-TaskFlow-A641.5 · Pillar A.6.4 · TaskFlow Arc · Accountability Payoff · TF-18 expenses (GST/TDS · READ from compliance-seed-data GST_RATES + TDS_SECTIONS · FR-44) · TF-19 evidence (base64 ≤1MB · guarded geolocation) · TF-29d evidence-mandatory close (ClosePolicyResolver mirrors S139 MilestoneResolver) · TF-29e accountability metrics · TF-29f symmetric self-trail export · TF-31 daily work diary · 1 NEW SIBLING taskflow-accountability-engine · NO leaderboards/ranking (founder-ratified don't-build canon) · audit via inline taskflow_event · §H 0-DIFF · banked @ b93f45b4
   {
     sprintNumber: 141, code: 'T-TaskFlow-A641.5', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'ad30edeb', loc: 1550,
+    headSha: 'b93f45b4', predecessorSha: 'ad30edeb', loc: 1550,
     newSiblings: ['taskflow-accountability-engine'],
+    bankDate: '2026-06-04', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 142 T-TaskFlow-A641.6 · Pillar A.6.4 · TaskFlow Arc · Chat Depth + Handover Slice · TF-25 chat→task bridge (FollowUps · convertFollowUpToTask) · TF-30c MediaVault org-owned media index (survives participant removal) · TF-30d retention/export policies + soft-delete-per-policy · ConvSearch active-participant scope · Conversation Escalations (mandatory reason) · TF-35 Handover Protocol cross-module (tasks · conversations · documents per Block-0 outcome) · 1 NEW SIBLING operix-handover-engine · DocVault 0-DIFF (READ-ONLY consume of Document.created_by) · operix-chat.ts ADDITIVE (one optional attachment field + 5 new interfaces) · ExpenseCenterPage carried from S141 T2 · audit via inline chat_event · §H 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 142, code: 'T-TaskFlow-A641.6', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'b93f45b4', loc: 1600,
+    newSiblings: ['operix-handover-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
