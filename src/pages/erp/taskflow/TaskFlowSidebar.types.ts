@@ -29,4 +29,6 @@ export type TaskFlowModule =
   // ─ Accountability Payoff (S141) ────────────────────────────────────
   | 'accountability'
   | 'close-policies'
-  | 'work-diary';
+  | 'work-diary'
+  // ─ Chat Depth + Handover (S142) ────────────────────────────────────
+  | 'expense-center';

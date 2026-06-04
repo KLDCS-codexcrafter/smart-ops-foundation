@@ -8,7 +8,7 @@ import {
   GitBranch, Timer, AlertTriangle, ShieldOff, Bell, Link2,
   FileStack, Workflow, Gavel, BookOpen,
   MessageSquare, Hash, Mail, Mic,
-  Gauge, ShieldCheck, NotebookPen,
+  Gauge, ShieldCheck, NotebookPen, Receipt,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -40,5 +40,6 @@ export const taskflowSidebarItems: SidebarItem[] = [
   { id: 'accountability',     type: 'item', label: 'Accountability',    icon: Gauge,          keyboard: 'k y' },
   { id: 'close-policies',     type: 'item', label: 'Close Policies',    icon: ShieldCheck,    keyboard: 'k q' },
   { id: 'work-diary',         type: 'item', label: 'Work Diary',        icon: NotebookPen,    keyboard: 'k z' },
+  { id: 'expense-center',     type: 'item', label: 'Expense Center',    icon: Receipt,        keyboard: 'k f' },
 ];
 

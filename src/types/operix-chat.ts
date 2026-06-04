@@ -57,6 +57,7 @@ export interface ChatMessage {
   type: MessageType;
   content: string;                // text body · voice: base64 data-url · system: event text
   voiceMeta?: VoiceNoteMeta | null;   // TF-37
+  attachment?: MessageAttachmentMeta | null; // S142 · TF-30c (additive optional · pre-S142 messages have it absent)
   replyToMessageId?: string | null;
   mentions: string[];
   isInternalNote: boolean;        // visible-to-internal badge (external semantics post-P2BB)
@@ -72,4 +73,47 @@ export interface ChatMessage {
 export interface ConversationStats {
   totalConversations: number; unreadConversations: number;
   messagesToday: number; pinnedMessages: number; voiceNotes: number;
+}
+
+// ════════════════════════════════════════════════════════════════════════════
+// S142 · Chat Depth + Handover (TF-25 · TF-30 c/d) — ADDITIVE
+// ════════════════════════════════════════════════════════════════════════════
+
+export interface MessageAttachmentMeta {
+  fileName: string; mimeType: string; sizeBytes: number; // ≤ 1MB
+  dataUrl: string;                                        // base64
+}
+
+export interface MediaVaultItem {
+  id: string; entityId: string; conversationId: string; messageId: string;
+  kind: 'voice' | 'file' | 'image';
+  fileName: string; mimeType: string; sizeBytes: number;
+  uploadedByUserId: string; uploadedAt: string;
+  linkedRefs: ConversationLinkRef[];   // inherited from the conversation at index time
+}
+
+export interface FollowUp {
+  id: string; entityId: string;
+  conversationId: string; messageId: string;
+  note: string;                        // mandatory · throw on empty
+  assigneeId: string; dueDate: string | null;
+  status: 'open' | 'done' | 'converted';
+  linkedTaskId?: string | null;        // set when converted (TF-25 chat→task bridge)
+  createdByUserId: string; createdAt: string; resolvedAt?: string | null;
+}
+
+export interface ConversationEscalationRecord {
+  id: string; entityId: string; conversationId: string;
+  reason: string;                      // mandatory
+  raisedByUserId: string; raisedAt: string;
+  status: 'open' | 'resolved'; resolvedAt?: string | null;
+}
+
+export interface ConversationRetentionPolicy {
+  id: string; entityId: string;
+  channelType?: ChannelType | null;    // null = default policy
+  archiveAfterDays: number | null;     // null = never auto-archive
+  retentionDays: number | null;        // null = retain forever
+  allowExport: boolean; allowDelete: boolean;
+  isActive: boolean; createdAt: string; updatedAt: string;
 }
