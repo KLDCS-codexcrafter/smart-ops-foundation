@@ -20,14 +20,16 @@ import { toast } from 'sonner';
 export function WatchlistPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const me = useCurrentUser();
-  const [tick, setTick] = useState(0);
+  const [rows, setRows] = useState<WatchlistEntry[]>(() => listWatchlist(entityCode));
+  const reload = useCallback(() => { setRows(listWatchlist(entityCode)); }, [entityCode]);
+  useEffect(() => { reload(); }, [reload]);
+
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
   const [phone, setPhone] = useState('');
   const [reason, setReason] = useState('');
 
-  const rows = useMemo(() => listWatchlist(entityCode), [entityCode, tick]);
 
   function submit(): void {
     try {
