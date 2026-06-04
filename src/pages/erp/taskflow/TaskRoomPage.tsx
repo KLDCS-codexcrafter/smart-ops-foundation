@@ -58,9 +58,10 @@ import type {
 import type { Conversation, ChatMessage } from '@/types/operix-chat';
 import { TASK_STATUS_TRANSITIONS } from '@/types/taskflow';
 
-const PLACEHOLDER_TABS = [
-  { id: 'documents',  label: 'Documents',  arrives: 'S143' },
-];
+import { AttachDocuments } from '@/components/docvault/AttachDocuments';
+
+const PLACEHOLDER_TABS: { id: string; label: string; arrives: string }[] = [];
+
 
 export default function TaskRoomPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
@@ -166,6 +167,7 @@ export default function TaskRoomPage(): JSX.Element {
             <TabsTrigger value="chat">Chat</TabsTrigger>
             <TabsTrigger value="expenses">Expenses</TabsTrigger>
             <TabsTrigger value="evidence">Evidence</TabsTrigger>
+            <TabsTrigger value="documents">Documents</TabsTrigger>
             {PLACEHOLDER_TABS.map((p) => (
               <TabsTrigger key={p.id} value={p.id}>{p.label}</TabsTrigger>
             ))}
@@ -306,6 +308,18 @@ export default function TaskRoomPage(): JSX.Element {
           <TabsContent value="evidence">
             <EvidenceTab task={task} entityCode={entityCode} currentUserId={currentUserId} />
           </TabsContent>
+
+          <TabsContent value="documents">
+            <AttachDocuments
+              entityCode={entityCode}
+              currentUserId={currentUserId}
+              refType="task"
+              refId={task.id}
+              refLabel={`${task.code} · ${task.title}`}
+              departmentId={task.departmentId || 'ops'}
+            />
+          </TabsContent>
+
 
 
 

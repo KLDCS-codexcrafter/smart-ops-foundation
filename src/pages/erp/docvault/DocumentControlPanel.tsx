@@ -26,7 +26,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-import { Hash, Lock, Unlock, UserCog, History } from 'lucide-react';
+import { Hash, Lock, Unlock, UserCog, History, Share2, Link2, CalendarCheck, X } from 'lucide-react';
 import {
   getControl,
   previewNextDocumentCode, assignDocumentCode,
@@ -36,9 +36,20 @@ import {
   listControlAudit, listFolders,
 } from '@/lib/docvault-control-engine';
 import { getDocument } from '@/lib/docvault-engine';
+import {
+  listShares, grantShare, approveExternalShare, revokeShare,
+  getEffectivePermission,
+  listLinksForDocument, linkDocument, unlinkDocument,
+  setFinancialYear, markReviewed,
+} from '@/lib/docvault-governance-engine';
 import type {
   Document, DocumentCategory, DocumentLifecycleStatus, ConfidentialityLevel,
+  DocumentShare, DocumentLinkRef, SharePermission,
 } from '@/types/docvault';
+
+const PERMISSIONS: SharePermission[] = ['view', 'view_watermark', 'download', 'comment', 'edit'];
+const LINK_TYPES: DocumentLinkRef['ref_type'][] = ['task', 'conversation', 'obligation', 'employee', 'voucher'];
+const FY_RE = /^FY\d{4}-\d{2}$/;
 
 const CATEGORIES: DocumentCategory[] = [
   'policy', 'procedure', 'work_instruction', 'contract', 'agreement',
@@ -96,11 +107,41 @@ export default function DocumentControlPanel({
     [entityCode, documentId, tick],
   );
 
+  const shares = useMemo(
+    () => listShares(entityCode, documentId),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [entityCode, documentId, tick],
+  );
+  const links = useMemo(
+    () => listLinksForDocument(entityCode, documentId),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [entityCode, documentId, tick],
+  );
+
   const [xferOpen, setXferOpen] = useState(false);
   const [xferTo, setXferTo] = useState('');
   const [xferReason, setXferReason] = useState('');
 
+  // Sharing dialog state
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareMode, setShareMode] = useState<'internal' | 'external'>('internal');
+  const [shareGrantee, setShareGrantee] = useState('');
+  const [shareEmail, setShareEmail] = useState('');
+  const [sharePerm, setSharePerm] = useState<SharePermission>('view');
+  const [shareExpires, setShareExpires] = useState('');
+  const [previewUser, setPreviewUser] = useState('');
+
+  // Link dialog state
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkType, setLinkType] = useState<DocumentLinkRef['ref_type']>('task');
+  const [linkRefId, setLinkRefId] = useState('');
+  const [linkLabel, setLinkLabel] = useState('');
+
+  // FY
+  const [fyValue, setFyValue] = useState('');
+
   useEffect(() => { if (open) refresh(); }, [open, refresh]);
+
 
   if (!doc) return null;
   const ctrl = getControl(doc);
@@ -157,6 +198,69 @@ export default function DocumentControlPanel({
 
   const folderName = (id?: string | null): string =>
     (id && folders.find((f) => f.id === id)?.name) ?? '—';
+
+  // ── Sharing handlers ────────────────────────────────────────────────────
+  const onShareSubmit = (): void => {
+    if (shareMode === 'internal' && !shareGrantee.trim()) {
+      toast.error('Internal grantee user-id required'); return;
+    }
+    if (shareMode === 'external' && !shareEmail.trim()) {
+      toast.error('External email required'); return;
+    }
+    safe(() => {
+      grantShare(entityCode, {
+        document_id: doc.id,
+        grantee_user_id: shareMode === 'internal' ? shareGrantee.trim() : null,
+        external_email: shareMode === 'external' ? shareEmail.trim() : null,
+        permission: sharePerm,
+        expires_at: shareExpires ? new Date(shareExpires).toISOString() : null,
+        created_by: currentUserId,
+      });
+      toast.success('Share granted');
+      setShareOpen(false); setShareGrantee(''); setShareEmail(''); setShareExpires('');
+    });
+  };
+  const onApproveShare = (id: string): void => safe(() => {
+    approveExternalShare(entityCode, id, currentUserId); toast.success('Approved');
+  });
+  const onRevokeShare = (id: string): void => safe(() => {
+    revokeShare(entityCode, id, currentUserId); toast.success('Revoked');
+  });
+  const effectivePreview = previewUser.trim()
+    ? getEffectivePermission(entityCode, doc.id, previewUser.trim(), previewUser.trim())
+    : null;
+
+  // ── Links handlers ──────────────────────────────────────────────────────
+  const onLinkSubmit = (): void => {
+    if (!linkRefId.trim() || !linkLabel.trim()) {
+      toast.error('Ref id and label required'); return;
+    }
+    safe(() => {
+      linkDocument(entityCode, doc.id, {
+        ref_type: linkType, ref_id: linkRefId.trim(),
+        ref_label: linkLabel.trim(), created_by: currentUserId,
+      });
+      toast.success('Linked');
+      setLinkOpen(false); setLinkRefId(''); setLinkLabel('');
+    });
+  };
+  const onUnlink = (linkId: string): void => safe(() => {
+    unlinkDocument(entityCode, linkId); toast.success('Unlinked');
+  });
+
+  // ── FY + review handlers ────────────────────────────────────────────────
+  const onSetFY = (): void => {
+    if (!FY_RE.test(fyValue)) { toast.error('FY format: FYYYYY-YY (e.g. FY2026-27)'); return; }
+    safe(() => {
+      setFinancialYear(entityCode, doc.id, fyValue, currentUserId);
+      toast.success(`FY → ${fyValue}`);
+    });
+  };
+  const onMarkReviewed = (): void => safe(() => {
+    markReviewed(entityCode, doc.id, currentUserId);
+    toast.success('Marked reviewed · next review scheduled');
+  });
+
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
@@ -303,7 +407,110 @@ export default function DocumentControlPanel({
             </CardContent>
           </Card>
 
+          {/* Sharing */}
+          <Card className="rounded-2xl" data-testid="sharing-section">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Share2 className="h-4 w-4" />Sharing · {shares.length}
+              </CardTitle>
+              <Button size="sm" variant="outline" onClick={() => setShareOpen(true)}>Grant share</Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {shares.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2 text-center">No shares yet.</p>
+              ) : (
+                <ul className="divide-y divide-border">
+                  {shares.map((s: DocumentShare) => (
+                    <li key={s.id} className="py-2 flex items-center gap-2 text-xs">
+                      <Badge variant="outline" className="font-mono">{s.permission}</Badge>
+                      <span className="flex-1 truncate font-mono">
+                        {s.grantee_user_id ?? s.external_email}
+                      </span>
+                      {s.revoked_at && <Badge variant="destructive">revoked</Badge>}
+                      {!s.revoked_at && s.requires_approval && (
+                        <Button size="sm" variant="ghost" onClick={() => onApproveShare(s.id)}>Approve</Button>
+                      )}
+                      {!s.revoked_at && !s.requires_approval && (
+                        <Button size="sm" variant="ghost" className="text-destructive"
+                          onClick={() => onRevokeShare(s.id)}>Revoke</Button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="border-t border-border pt-2 space-y-1">
+                <Label className="text-xs text-muted-foreground">Effective permission preview</Label>
+                <div className="flex gap-2">
+                  <Input value={previewUser} onChange={(e) => setPreviewUser(e.target.value)}
+                    placeholder="user-id to preview…" className="rounded-lg font-mono" />
+                  <Badge variant="secondary" className="font-mono whitespace-nowrap self-center">
+                    {effectivePreview?.permission ?? '—'}
+                  </Badge>
+                </div>
+                {effectivePreview?.watermark && (
+                  <p className="text-[10px] font-mono text-muted-foreground">
+                    watermark: {effectivePreview.watermark}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* B.7 Links */}
+          <Card className="rounded-2xl" data-testid="links-section">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Link2 className="h-4 w-4" />Links · {links.length}
+              </CardTitle>
+              <Button size="sm" variant="outline" onClick={() => setLinkOpen(true)}>Add link</Button>
+            </CardHeader>
+            <CardContent>
+              {links.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2 text-center">No links yet.</p>
+              ) : (
+                <ul className="divide-y divide-border">
+                  {links.map((l) => (
+                    <li key={l.id} className="py-2 flex items-center gap-2 text-xs">
+                      <Badge variant="outline" className="font-mono">{l.ref_type}</Badge>
+                      <span className="flex-1 truncate">{l.ref_label}</span>
+                      <span className="font-mono text-muted-foreground">{l.ref_id}</span>
+                      <Button size="sm" variant="ghost" className="text-destructive"
+                        onClick={() => onUnlink(l.id)}>
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* FY + Mark reviewed */}
+          <Card className="rounded-2xl" data-testid="fy-review-section">
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2">
+                <CalendarCheck className="h-4 w-4" />Financial year & review
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">FY (current: {ctrl.financial_year ?? '—'})</Label>
+                <div className="flex gap-2">
+                  <Input value={fyValue} onChange={(e) => setFyValue(e.target.value)}
+                    placeholder="FY2026-27" className="rounded-lg font-mono" />
+                  <Button variant="outline" onClick={onSetFY}>Set</Button>
+                </div>
+              </div>
+              <div className="space-y-1 self-end">
+                <Button variant="outline" className="w-full" onClick={onMarkReviewed}>
+                  <CalendarCheck className="h-4 w-4 mr-2" />Mark reviewed
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Audit timeline */}
+
           <Card className="rounded-2xl">
             <CardHeader>
               <CardTitle className="text-sm flex items-center gap-2">
@@ -356,6 +563,90 @@ export default function DocumentControlPanel({
             <DialogFooter>
               <Button variant="outline" onClick={() => setXferOpen(false)}>Cancel</Button>
               <Button onClick={onTransferSubmit}>Transfer</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Share dialog */}
+        <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Grant share</DialogTitle>
+              <DialogDescription>External grants require approval before they become effective.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                {(['internal', 'external'] as const).map((m) => (
+                  <Button key={m} variant={shareMode === m ? 'secondary' : 'outline'} size="sm"
+                    onClick={() => setShareMode(m)}>{m}</Button>
+                ))}
+              </div>
+              {shareMode === 'internal' ? (
+                <div className="space-y-1">
+                  <Label>Grantee user-id</Label>
+                  <Input value={shareGrantee} onChange={(e) => setShareGrantee(e.target.value)}
+                    className="rounded-lg font-mono" />
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  <Label>External email</Label>
+                  <Input type="email" value={shareEmail} onChange={(e) => setShareEmail(e.target.value)}
+                    className="rounded-lg font-mono" />
+                </div>
+              )}
+              <div className="space-y-1">
+                <Label>Permission</Label>
+                <Select value={sharePerm} onValueChange={(v) => setSharePerm(v as SharePermission)}>
+                  <SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PERMISSIONS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label>Expires (optional)</Label>
+                <Input type="date" value={shareExpires} onChange={(e) => setShareExpires(e.target.value)}
+                  className="rounded-lg font-mono" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShareOpen(false)}>Cancel</Button>
+              <Button onClick={onShareSubmit}>Grant</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Link dialog */}
+        <Dialog open={linkOpen} onOpenChange={setLinkOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add link</DialogTitle>
+              <DialogDescription>Bind this document to a task, conversation, obligation, employee, or voucher.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label>Ref type</Label>
+                <Select value={linkType} onValueChange={(v) => setLinkType(v as DocumentLinkRef['ref_type'])}>
+                  <SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {LINK_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label>Ref id</Label>
+                <Input value={linkRefId} onChange={(e) => setLinkRefId(e.target.value)}
+                  className="rounded-lg font-mono" />
+              </div>
+              <div className="space-y-1">
+                <Label>Label</Label>
+                <Input value={linkLabel} onChange={(e) => setLinkLabel(e.target.value)}
+                  className="rounded-lg" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setLinkOpen(false)}>Cancel</Button>
+              <Button onClick={onLinkSubmit}>Add</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
