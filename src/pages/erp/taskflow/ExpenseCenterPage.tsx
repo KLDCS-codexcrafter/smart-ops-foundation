@@ -29,8 +29,8 @@ const fmtINR = (n: number): string =>
   `₹ ${new Intl.NumberFormat('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n)}`;
 
 export default function ExpenseCenterPage(): JSX.Element {
-  const entityCode = useEntityCode();
-  const { user } = useCurrentUser();
+  const { entityCode } = useEntityCode();
+  const user = useCurrentUser();
   const [tick, setTick] = useState(0);
   const [filter, setFilter] = useState<StatusChip>('submitted');
   const [decision, setDecision] = useState<{ id: string; kind: 'approve' | 'reject' } | null>(null);
