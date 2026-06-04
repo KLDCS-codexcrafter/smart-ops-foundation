@@ -367,8 +367,6 @@ export function evaluateSLA(
   const now = nowISO ?? new Date().toISOString();
   const rules = listSLARules(entityCode);
   if (!rules.length) return { breached: [], escalated: [] };
-  // import lazily to avoid potential cycles
-  const { listTasks } = require('@/lib/taskflow-engine') as typeof import('@/lib/taskflow-engine');
   const openTasks = listTasks(entityCode).filter(t =>
     t.status !== 'completed' && t.status !== 'cancelled' && t.status !== 'rejected'
   );
