@@ -82,7 +82,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('production'),   // active per A.2.b D-NEW-T
     one('maintainpro'),  // A.17 STATUS FLIP · MOAT #23 banks · matches A.13 EngineeringX + A.15a SiteX precedent
     one('requestx'),       // active · D Shell migration · matches sibling Shell-pattern cards per D-NEW-CT
-    one('frontdesk', 'locked'),
+    one('frontdesk'),    // Sprint 145 · T-FrontDesk-A6F.1 · STATUS FLIP coming_soon→active · FrontDesk MVP
     one('servicedesk'),  // C.2.T1 STATUS FLIP · MOAT #24 banks · matches A.13 EngineeringX + A.15a SiteX + A.17 MaintainPro precedent
     // ─── A.13.T2 Hotfix · seed parity with active Shell-pattern cards ───
     // 4 cards drifted out of seed coverage over A.8/A.9.T1/A.10/A.13. Without seed entries the
