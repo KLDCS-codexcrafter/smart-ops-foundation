@@ -833,11 +833,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['taskflow-workflow-engine'],
     bankDate: '2026-06-04', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 140 T-TaskFlow-A641.4 · Pillar A.6.4 · TaskFlow Arc · OperixChat MVP (Module 2 wakes) · org-owned conversations (TF-30) · 10 channel types (TF-24) · UnifiedInbox + Threads + Channels · voice notes (TF-37) · exit-safe history (TF-30b) · 1 NEW SIBLING operix-chat-engine · additive inline audit type chat_event (mirrors taskflow_event precedent · no aggregator entry) · §H 0-DIFF · 63-streak ⭐ target · headSha TBD_AT_BANK
+  // 🎬 Sprint 140 T-TaskFlow-A641.4 · Pillar A.6.4 · TaskFlow Arc · OperixChat MVP (Module 2 wakes) · org-owned conversations (TF-30) · 10 channel types (TF-24) · UnifiedInbox + Threads + Channels · voice notes (TF-37) · exit-safe history (TF-30b) · 1 NEW SIBLING operix-chat-engine · additive inline audit type chat_event (mirrors taskflow_event precedent · no aggregator entry) · §H 0-DIFF · 63-streak ⭐ · banked @ ad30edeb
   {
     sprintNumber: 140, code: 'T-TaskFlow-A641.4', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'c1610463', loc: 1500,
+    headSha: 'ad30edeb', predecessorSha: 'c1610463', loc: 1500,
     newSiblings: ['operix-chat-engine'],
+    bankDate: '2026-06-04', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 141 T-TaskFlow-A641.5 · Pillar A.6.4 · TaskFlow Arc · Accountability Payoff · TF-18 expenses (GST/TDS · READ from compliance-seed-data GST_RATES + TDS_SECTIONS · FR-44) · TF-19 evidence (base64 ≤1MB · guarded geolocation) · TF-29d evidence-mandatory close (ClosePolicyResolver mirrors S139 MilestoneResolver) · TF-29e accountability metrics · TF-29f symmetric self-trail export · TF-31 daily work diary · 1 NEW SIBLING taskflow-accountability-engine · NO leaderboards/ranking (founder-ratified don't-build canon) · audit via inline taskflow_event · §H 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 141, code: 'T-TaskFlow-A641.5', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'ad30edeb', loc: 1550,
+    newSiblings: ['taskflow-accountability-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
