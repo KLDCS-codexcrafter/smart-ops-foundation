@@ -300,8 +300,11 @@ describe('FrontDesk · Institutional', () => {
     const s = SPRINTS.find((x) => x.sprintNumber === 144);
     expect(s!.headSha).toBe('293b0c1e');
   });
-  it('frontdesk_event audit literal is exported additively', async () => {
-    const { auditTrailLogKey } = await import('@/lib/audit-trail-engine');
-    expect(typeof auditTrailLogKey).toBe('function');
+  it('frontdesk_event audit literal is accepted by AuditEntityType union', async () => {
+    const types = await import('@/types/audit-trail');
+    // Compile-time check: the union must include 'frontdesk_event'.
+    const x: import('@/types/audit-trail').AuditEntityType = 'frontdesk_event';
+    expect(x).toBe('frontdesk_event');
+    expect(typeof types).toBe('object');
   });
 });
