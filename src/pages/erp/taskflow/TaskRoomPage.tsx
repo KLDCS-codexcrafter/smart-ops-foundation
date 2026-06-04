@@ -309,6 +309,18 @@ export default function TaskRoomPage(): JSX.Element {
             <EvidenceTab task={task} entityCode={entityCode} currentUserId={currentUserId} />
           </TabsContent>
 
+          <TabsContent value="documents">
+            <AttachDocuments
+              entityCode={entityCode}
+              currentUserId={currentUserId}
+              refType="task"
+              refId={task.id}
+              refLabel={`${task.code} · ${task.title}`}
+              departmentId={task.departmentId || 'ops'}
+            />
+          </TabsContent>
+
+
 
 
           {PLACEHOLDER_TABS.map((p) => (
