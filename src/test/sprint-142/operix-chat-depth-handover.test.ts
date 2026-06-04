@@ -37,7 +37,7 @@ beforeEach(() => { localStorage.clear(); });
 function mkConv(channelType: 'group' | 'task' = 'group', owner = U_A): ReturnType<typeof createConversation> {
   return createConversation(E, {
     channelType, title: `T-${channelType}-${Date.now()}-${Math.random()}`,
-    ownerId: owner, participantIds: [owner, U_B], createdByUserId: owner,
+    ownerId: owner, participantUserIds: [owner, U_B], createdByUserId: owner,
     linkedRefs: [],
   });
 }
@@ -58,7 +58,7 @@ describe('S142 · storage keys are entity-scoped', () => {
 describe('S142 · MediaVault TF-30c', () => {
   it('indexes a file attachment as kind=file', () => {
     const c = mkConv();
-    sendMessage(E, {
+    sendMessage(E, c.id, {
       conversationId: c.id, senderId: U_A, type: 'text', content: 'see attached',
       attachment: { fileName: 'doc.pdf', mimeType: 'application/pdf', sizeBytes: 1024, dataUrl: 'data:application/pdf;base64,AAA=' },
     });
@@ -70,7 +70,7 @@ describe('S142 · MediaVault TF-30c', () => {
 
   it('indexes an image attachment as kind=image', () => {
     const c = mkConv();
-    sendMessage(E, {
+    sendMessage(E, c.id, {
       conversationId: c.id, senderId: U_A, type: 'text', content: 'pic',
       attachment: { fileName: 'p.png', mimeType: 'image/png', sizeBytes: 500, dataUrl: 'data:image/png;base64,AAA=' },
     });
@@ -81,7 +81,7 @@ describe('S142 · MediaVault TF-30c', () => {
 
   it('indexes a voice note as kind=voice', () => {
     const c = mkConv();
-    sendMessage(E, {
+    sendMessage(E, c.id, {
       conversationId: c.id, senderId: U_A, type: 'voice', content: 'data:audio/webm;base64,AAA=',
       voiceMeta: { durationSeconds: 5, mimeType: 'audio/webm', sizeBytes: 800 },
     });
@@ -92,7 +92,7 @@ describe('S142 · MediaVault TF-30c', () => {
 
   it('rejects attachments over the cap', () => {
     const c = mkConv();
-    expect(() => sendMessage(E, {
+    expect(() => sendMessage(E, c.id, {
       conversationId: c.id, senderId: U_A, type: 'text', content: 'big',
       attachment: { fileName: 'big.bin', mimeType: 'application/octet-stream', sizeBytes: ATTACHMENT_MAX_BYTES + 1, dataUrl: 'data:application/octet-stream;base64,A' },
     })).toThrow();
@@ -100,7 +100,7 @@ describe('S142 · MediaVault TF-30c', () => {
 
   it('survives participant removal (org-owned)', () => {
     const c = mkConv();
-    sendMessage(E, {
+    sendMessage(E, c.id, {
       conversationId: c.id, senderId: U_B, type: 'text', content: 'bye',
       attachment: { fileName: 'f.txt', mimeType: 'text/plain', sizeBytes: 10, dataUrl: 'data:text/plain;base64,AAA=' },
     });
@@ -111,7 +111,7 @@ describe('S142 · MediaVault TF-30c', () => {
 
   it('rebuildMediaVaultIndex is idempotent on item count', () => {
     const c = mkConv();
-    sendMessage(E, {
+    sendMessage(E, c.id, {
       conversationId: c.id, senderId: U_A, type: 'text', content: 'x',
       attachment: { fileName: 'f.txt', mimeType: 'text/plain', sizeBytes: 5, dataUrl: 'data:text/plain;base64,AAA=' },
     });
@@ -127,7 +127,7 @@ describe('S142 · MediaVault TF-30c', () => {
 describe('S142 · Follow-Ups TF-25', () => {
   it('rejects empty notes', () => {
     const c = mkConv();
-    const m = sendMessage(E, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hi' });
+    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hi' });
     expect(() => createFollowUp(E, {
       conversationId: c.id, messageId: m.id, note: '   ', assigneeId: U_B, createdByUserId: U_A,
     })).toThrow();
@@ -135,7 +135,7 @@ describe('S142 · Follow-Ups TF-25', () => {
 
   it('creates a follow-up and lists it as open', () => {
     const c = mkConv();
-    const m = sendMessage(E, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
+    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
       conversationId: c.id, messageId: m.id, note: 'follow up', assigneeId: U_B, createdByUserId: U_A,
     });
@@ -145,7 +145,7 @@ describe('S142 · Follow-Ups TF-25', () => {
 
   it('resolveFollowUp moves to done with resolvedAt', () => {
     const c = mkConv();
-    const m = sendMessage(E, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
+    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
       conversationId: c.id, messageId: m.id, note: 'x', assigneeId: U_B, createdByUserId: U_A,
     });
@@ -156,7 +156,7 @@ describe('S142 · Follow-Ups TF-25', () => {
 
   it('convertFollowUpToTask creates a task and sets linkedTaskId', () => {
     const c = mkConv();
-    const m = sendMessage(E, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
+    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
       conversationId: c.id, messageId: m.id, note: 'do it', assigneeId: U_B, createdByUserId: U_A,
     });
@@ -168,7 +168,7 @@ describe('S142 · Follow-Ups TF-25', () => {
 
   it('converted follow-up cannot be converted again', () => {
     const c = mkConv();
-    const m = sendMessage(E, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
+    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
       conversationId: c.id, messageId: m.id, note: 'do it', assigneeId: U_B, createdByUserId: U_A,
     });
@@ -236,7 +236,7 @@ describe('S142 · Retention TF-30d', () => {
 
   it('deleteConversationsPerPolicy soft-deletes when allowed', () => {
     const c = mkConv();
-    sendMessage(E, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hi' });
+    sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hi' });
     upsertRetentionPolicy(E, { channelType: null, archiveAfterDays: null, retentionDays: 0, allowExport: true, allowDelete: true });
     const n = deleteConversationsPerPolicy(E, [c.id]);
     expect(n).toBeGreaterThanOrEqual(1);
@@ -256,7 +256,7 @@ describe('S142 · Retention TF-30d', () => {
 
   it('exportConversation succeeds when policy allows', () => {
     const c = mkConv();
-    sendMessage(E, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hello' });
+    sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hello' });
     upsertRetentionPolicy(E, { channelType: null, archiveAfterDays: null, retentionDays: null, allowExport: true, allowDelete: false });
     const b = exportConversation(E, c.id);
     expect(b.messages.length).toBeGreaterThanOrEqual(1);
@@ -269,12 +269,12 @@ describe('S142 · Retention TF-30d', () => {
 describe('S142 · searchMessages active-participant scope', () => {
   it('returns hits to a current participant', () => {
     const c = mkConv();
-    sendMessage(E, { conversationId: c.id, senderId: U_A, type: 'text', content: 'need invoice copy' });
+    sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'need invoice copy' });
     expect(searchMessages(E, U_A, 'invoice').length).toBeGreaterThanOrEqual(1);
   });
   it('hides messages from a removed participant going forward', () => {
     const c = mkConv();
-    sendMessage(E, { conversationId: c.id, senderId: U_A, type: 'text', content: 'secret note' });
+    sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'secret note' });
     removeParticipant(E, c.id, U_B, U_A);
     expect(searchMessages(E, U_B, 'secret').length).toBe(0);
   });
