@@ -14,7 +14,7 @@ export const frontdeskShellTitle = 'FrontDesk';
 export const frontdeskShellConfig: ShellConfig & { title: string } = {
   title: frontdeskShellTitle,
   product: { id: 'erp', name: 'Operix ERP — FrontDesk', code: 'FD', version: '1.0.0' },
-  theme: { accent: 'teal', mode: 'auto' },
+  theme: { accent: 'cyan', mode: 'auto' },
   header: {
     logo: { src: '/operix-logo.svg', alt: 'Operix' },
     breadcrumb: true,
