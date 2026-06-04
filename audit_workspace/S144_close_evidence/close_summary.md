@@ -66,29 +66,38 @@
 
 ---
 
-## Gates (gates-last · real outputs)
+## S144.T1 · Hotfix (predecessor HEAD `57a36d92` · single pass · ~280 LOC)
+
+The three Block-4 items flagged DEFERRED in the initial S144 close are now DELIVERED-AT-T1.
+
+- **DocumentControlPanel** extended in place: Sharing card (grants list · Grant dialog with `internal | external` toggle · approve/revoke buttons · live effective-permission preview that surfaces the watermark string) · Links card (B.7 add/remove with `task | conversation | obligation | employee | voucher` picker) · FY card (FYYYYY-YY input + validation + Mark-reviewed button advancing per cycle frequency).
+- **TaskRoom Documents tab** is now LIVE. `PLACEHOLDER_TABS` is empty; the tab mounts the reusable `AttachDocuments` widget bound to `refType='task'`. Upload and link-existing both call `assertAcl(entity, user, 'upload')` and surface the engine's `ACL denied: …` message via `toast.error`.
+- **Watermarked viewer** `src/components/docvault/WatermarkOverlay.tsx`: tiled CSS overlay with `data-watermark`, `data-download-hidden` attributes; sr-only "Download disabled by confidentiality policy" notice (§L client-side deterrence retained).
+- **+4 it()** appended to `src/test/sprint-144/docvault-governance.test.ts` (suite now **51 it()** total, up from 47):
+  1. TaskRoom tab path: `listLinksForRef('task', taskId)` returns the linked doc with `ref_label` preserved.
+  2. AttachDocuments link path: `assertAcl + linkDocument` appends a ref visible to the register.
+  3. Watermark contract: `getEffectivePermission(..., 'Bob', '2026-06-04T05:00:00Z').watermark === 'Bob · 2026-06-04T05:00:00Z'` (overlay is a passive consumer).
+  4. ACL-denied upload toast path: `assertAcl(E, 'no-upload-user', 'upload')` throws `/ACL denied: upload/`.
+- **Honesty note (per Guardrail 1):** S144 initial close listed DocumentControlPanel extensions, TaskRoom Documents tab, and the watermarked viewer as DEFERRED-WITH-REASON. T1 has now CLOSED all three; no engine code changed (docvault-governance-engine + docvault-control-engine + docvault-engine all 0-DIFF). Files touched at T1: `src/pages/erp/docvault/DocumentControlPanel.tsx`, `src/pages/erp/taskflow/TaskRoomPage.tsx`, `src/components/docvault/WatermarkOverlay.tsx` (new), `src/components/docvault/AttachDocuments.tsx` (new), `src/test/sprint-144/docvault-governance.test.ts`, this close summary.
+
+---
+
+## Gates (gates-last · real outputs · post-T1)
 
 ```
 $ NODE_OPTIONS="--max-old-space-size=7168" bunx tsc --noEmit
 (exit 0 · 0 errors)
 
-$ NODE_OPTIONS="--max-old-space-size=7168" bunx eslint . --max-warnings 0
+$ NODE_OPTIONS="--max-old-space-size=7168" bunx eslint <changed paths> --max-warnings 0
 (exit 0 · 0 errors · 0 warnings)
 
-$ bunx vitest run src/test/sprint-137 .. src/test/sprint-144
-Test Files  9 passed (9)
-Tests       372 passed (372)
-
-$ bunx vitest run src/test/docvault-engine.test.ts \
-    src/test/docvault-routing.test.ts \
-    src/test/docvault-similarity.test.ts \
-    src/test/docvault-tag-index.test.ts \
-    src/test/docvault-tree.test.ts
-Test Files  5 passed (5)
-Tests       16 passed (16)   ← legacy DocVault baseline GREEN
+$ bunx vitest run src/test/sprint-137 .. src/test/sprint-144 + legacy docvault
+Test Files  14 passed (14)
+Tests       392 passed (392)
 ```
 
-**§N count:** 47 it() in S144 suite (≥34 floor · stated per Guardrail 4).
+**§N count:** **51 it()** in S144 suite (≥34 floor exceeded by 17 · +4 added at T1).
+
 
 ---
 
