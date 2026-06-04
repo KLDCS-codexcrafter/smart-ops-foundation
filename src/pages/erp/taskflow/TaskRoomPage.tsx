@@ -41,9 +41,8 @@ import {
   listChecklistItems, addChecklistItem, toggleChecklistItem, removeChecklistItem,
   getChecklistProgress, listWorkflows, applyWorkflowToTask, getWorkflowProgress,
 } from '@/lib/taskflow-workflow-engine';
-import {
-  listConversations, createConversation, listMessages, sendMessage, linkConversation,
-} from '@/lib/operix-chat-engine';
+import { listMessages, sendMessage } from '@/lib/operix-chat-engine';
+import { ensureTaskConversation } from './ensureTaskConversation';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEmployees } from '@/hooks/useEmployees';
 import type { Task, TaskStatus, TaskApprovalChain, TaskWorkflowTemplate } from '@/types/taskflow';
@@ -864,6 +863,93 @@ function ChecklistTab({ task, entityCode, currentUserId, onDone }: ChecklistProp
             })}
           </ul>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// S140.T1 · Chat tab · finishes the TaskRoom ⇄ OperixChat bridge
+// Finds-or-creates a task-linked conversation; idempotent on re-mount.
+// ═════════════════════════════════════════════════════════════════════════
+interface ChatTabProps {
+  task: Task;
+  entityCode: string;
+  currentUserId: string;
+}
+
+// ensureTaskConversation lives in ./ensureTaskConversation (kept out of this file
+// for react-refresh/only-export-components compliance).
+
+
+function ChatTab({ task, entityCode, currentUserId }: ChatTabProps): JSX.Element {
+  const navigate = useNavigate();
+  const [conversation, setConversation] = useState<Conversation | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [draft, setDraft] = useState('');
+
+  const reload = useCallback((conv: Conversation): void => {
+    setMessages(listMessages(entityCode, conv.id));
+  }, [entityCode]);
+
+  useEffect(() => {
+    const conv = ensureTaskConversation(task, entityCode, currentUserId);
+    setConversation(conv);
+    setMessages(listMessages(entityCode, conv.id));
+  }, [task, entityCode, currentUserId]);
+
+  const handleSend = (): void => {
+    if (!conversation) return;
+    if (!draft.trim()) { toast.error('Message required'); return; }
+    try {
+      sendMessage(entityCode, conversation.id, {
+        senderId: currentUserId, type: 'text', content: draft.trim(),
+      });
+      setDraft('');
+      reload(conversation);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Send failed');
+    }
+  };
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader className="flex flex-row items-center justify-between gap-2">
+        <CardTitle className="text-base">
+          Chat {conversation ? `· ${conversation.title}` : ''}
+        </CardTitle>
+        <Button variant="outline" size="sm" onClick={() => navigate('/erp/taskflow#chat')}>
+          Open in Inbox
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {messages.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center">No messages yet.</p>
+        ) : (
+          <ul className="divide-y divide-border max-h-80 overflow-y-auto">
+            {messages.map((m) => (
+              <li key={m.id} className="py-2">
+                <p className="text-xs font-mono text-muted-foreground flex items-center gap-2">
+                  <span>{m.senderId} · {m.createdAt}</span>
+                  {m.isInternalNote && <Badge variant="secondary" className="text-[10px]">internal</Badge>}
+                  {m.type === 'voice' && <Badge variant="outline" className="text-[10px]">voice</Badge>}
+                </p>
+                {m.deletedAt ? (
+                  <p className="text-sm italic text-muted-foreground">[deleted]</p>
+                ) : m.type === 'voice' ? (
+                  <audio controls src={m.content} className="mt-1 h-8" />
+                ) : (
+                  <p className="text-sm whitespace-pre-wrap">{m.content}</p>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+        <div className="flex items-end gap-2">
+          <Textarea rows={2} value={draft} placeholder="Write a message…"
+            onChange={(e) => setDraft(e.target.value)} />
+          <Button size="sm" onClick={handleSend}>Send</Button>
+        </div>
       </CardContent>
     </Card>
   );

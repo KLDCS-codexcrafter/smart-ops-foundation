@@ -64,3 +64,49 @@ SIBLINGS register entries: previous + 1 (`operix-chat-engine`).
 
 ---
 *Banked at HEAD TBD_AT_BANK · 63-streak ⭐ target.*
+
+---
+
+## S140.T1 hotfix · TaskRoom ⇄ OperixChat bridge completion
+
+**Predecessor HEAD:** `0cfc4f6b` (S140 initial close)
+**This HEAD:** TBD_AT_BANK
+
+### Honesty note
+The S140 initial close summary claimed **"TSC: 0 errors"** under the Triple Gate, but the gates were NOT re-run after the final `TaskRoomPage.tsx` edit that introduced a `<ChatTab/>` reference without a backing component. Real post-edit TSC produced **3 errors** (missing `ChatTab` symbol) and ESLint produced **7 unused-import errors** (`listConversations`, `createConversation`, `listMessages`, `sendMessage`, `linkConversation`, `Conversation`, `ChatMessage`). Corrected at T1.
+
+### Fix (single pass, root-fix only)
+- **NEW** `src/pages/erp/taskflow/ensureTaskConversation.ts` — extracted helper (kept out of `TaskRoomPage.tsx` to preserve `react-refresh/only-export-components`):
+  - Find-or-create via `listConversations(entityCode, { linkedRefType: 'task' })` filtered to `ref.id === task.id`.
+  - On miss: `createConversation({ channelType:'task', title:`Task · ${task.code}`, ownerId+createdByUserId=currentUserId, participantUserIds=[currentUserId, task.assigneeId?] })` + `linkConversation({type:'task', id:task.id, label:task.code})`.
+  - Idempotent on re-mount.
+- **EDIT** `src/pages/erp/taskflow/TaskRoomPage.tsx`:
+  - Slimmed `operix-chat-engine` import to actually-consumed symbols (`listMessages`, `sendMessage`).
+  - Added `ChatTab({ task, entityCode, currentUserId })` component:
+    - On mount: ensures conversation via `ensureTaskConversation`, loads messages.
+    - Renders message list (voice notes via `<audio>` control · internal-note badge · soft-deleted placeholder).
+    - Lite composer (text + `sendMessage`).
+    - "Open in Inbox" button → `navigate('/erp/taskflow#chat')`.
+  - All previously-unused imports now genuinely consumed.
+
+### Tests added (+2 `it()`)
+`src/test/sprint-140/operix-chat.test.ts` — new `describe('S140.T1 · ChatTab ensureTaskConversation')`:
+1. **two ensures → one conversation** (idempotency).
+2. **task-ref linkage shape**: `{ type:'task', id:task.id, label:task.code }` + `channelType:'task'`.
+
+### Post-hotfix Triple Gate (REAL outputs)
+- **TSC:** 0 errors (`NODE_OPTIONS=--max-old-space-size=7168 npx tsc --noEmit` · exit 0 · no output).
+- **ESLint:** 0 errors / 0 warnings repo-wide (`npx eslint . --max-warnings 0` · exit 0 · no output).
+- **Vitest scoped** (`src/test/sprint-137/ src/test/sprint-138/ src/test/sprint-139/ src/test/sprint-140/`):
+  - **Test Files:** 5 passed (5)
+  - **Tests:** **195 passed (195)** — previous 193 + 2 new T1 it().
+  - Breakdown: sprint-137 47/47 · sprint-138 30/30 · sprint-139 taskflow-workflow 37/37 · sprint-139 z14-writer-idempotency 37/37 · sprint-140 operix-chat **44/44** (was 42; +2 T1).
+
+### Guardrails
+- §H `approval-workflow-engine` · `push-notification-bridge` · Comply360 engines · `ComplianceModule` — **0-DIFF** (unchanged from S140 initial close).
+- Z* evidence — clean tree after run (S139.T1 root-fix held).
+
+### Files touched (T1 only)
+- **CREATED:** `src/pages/erp/taskflow/ensureTaskConversation.ts`
+- **EDITED:**  `src/pages/erp/taskflow/TaskRoomPage.tsx` · `src/test/sprint-140/operix-chat.test.ts` · `audit_workspace/S140_close_evidence/close_summary.md`
+
