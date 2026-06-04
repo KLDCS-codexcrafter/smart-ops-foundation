@@ -640,6 +640,9 @@ const App = () => (
               {/* Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block G · D-326 · QualiCheck */}
               <Route path="/erp/qualicheck" element={<P><QualiCheckPage /></P>} />
               <Route path="/erp/docvault" element={<P><DocVaultPage /></P>} />
+              {/* Sprint 145 · T-FrontDesk-A6F.1 · FrontDesk MVP */}
+              <Route path="/erp/frontdesk" element={<P><FrontDeskPage /></P>} />
+              <Route path="/erp/frontdesk/*" element={<P><FrontDeskPage /></P>} />
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
               <Route path="/erp/vendor-portal" element={<P><VendorPortal /></P>} />
               <Route path="/erp/vendor-portal/*" element={<P><VendorPortal /></P>} />
