@@ -95,9 +95,17 @@ export default function TaskFlowAllTasksPage({
   const [dueSoonIds, setDueSoonIds] = useState<Set<string>>(
     () => new Set(listDueWithin24h(entityCode).map((t) => t.id)),
   );
+  const [blockedIds, setBlockedIds] = useState<Set<string>>(
+    () => new Set(getOpenBlocked(entityCode).map((b) => b.taskId)),
+  );
+  const [escalatedIds, setEscalatedIds] = useState<Set<string>>(
+    () => new Set(listEscalations(entityCode).filter((e) => e.status !== 'resolved').map((e) => e.taskId)),
+  );
   const refresh = useCallback(() => {
     setTasks(listTasks(entityCode));
     setDueSoonIds(new Set(listDueWithin24h(entityCode).map((t) => t.id)));
+    setBlockedIds(new Set(getOpenBlocked(entityCode).map((b) => b.taskId)));
+    setEscalatedIds(new Set(listEscalations(entityCode).filter((e) => e.status !== 'resolved').map((e) => e.taskId)));
   }, [entityCode]);
   useEffect(() => { refresh(); }, [refresh]);
 
