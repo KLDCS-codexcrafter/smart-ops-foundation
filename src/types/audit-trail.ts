@@ -353,7 +353,16 @@ export type AuditEntityType =
   // ADDITIVE inline emission ONLY · NO registerAuditEntityType call (mirrors taskflow_event precedent).
   // Single audit type carries action discriminator via AuditTrailEntry.reason / record_label.
   // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow-engine + Comply360 + push-notification-bridge.
-  | 'chat_event';
+  | 'chat_event'
+  // Sprint 143 · T-TaskFlow-A641.7 · DocVault Control Pt 1 (module: 'mca-roc')
+  // Logged by docvault-control-engine on every control-meta mutation: assignDocumentCode ·
+  // setLifecycleStatus · setConfidentiality · transferDocumentOwnership · lockDocument · unlockDocument
+  // · moveDocumentToFolder · setCategory · setControlDates · upsertNumberingConfig · folder CRUD.
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call (mirrors chat_event / taskflow_event precedent).
+  // Single audit type carries action discriminator via AuditTrailEntry.reason / record_label.
+  // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow-engine + Comply360 + push-notification-bridge.
+  // docvault-engine UNTOUCHED (sibling pattern · FR-19).
+  | 'document_control_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
