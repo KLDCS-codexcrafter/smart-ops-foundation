@@ -2,7 +2,7 @@
  * @file        src/pages/erp/frontdesk/contacts/WatchlistPage.tsx
  * @sprint      Sprint 145 · T-FrontDesk-A6F.1 · Block 4
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { listWatchlist, addWatchlistEntry, removeWatchlistEntry } from '@/lib/frontdesk-engine';
