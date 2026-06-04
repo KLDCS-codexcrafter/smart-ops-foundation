@@ -235,6 +235,7 @@ const GateFlowPage = lazy(() => import('./pages/erp/gateflow/GateFlowPage'));
 const QualiCheckPage = lazy(() => import('./pages/erp/qualicheck/QualiCheckPage'));
 
 const DocVaultPage = lazy(() => import('./pages/erp/docvault/DocVaultPage'));
+const FrontDeskPage = lazy(() => import('./pages/erp/frontdesk/FrontDeskPage'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
 // Sprint T-Phase-1.2.6f-b-1 · vendor portal public surface (token replaces auth · NO <P> wrapper)
 const VendorLogin = lazy(() => import('./pages/vendor-portal/VendorLogin'));
