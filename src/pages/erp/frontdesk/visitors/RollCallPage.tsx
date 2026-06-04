@@ -13,9 +13,12 @@ import { Printer, AlertTriangle } from 'lucide-react';
 
 export function RollCallPage(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const [tick] = useState(0);
-  const report = useMemo(() => buildMusterReport(entityCode), [entityCode, tick]);
-  const overstays = useMemo(() => getOverstays(entityCode), [entityCode, tick]);
+  // S145.T1 · reload-callback pattern (no tick-in-useMemo): both reports recompute
+  // when the user explicitly reloads. Engine is pure, so memo-on-entityCode is correct.
+  const [reloadKey, setReloadKey] = useState(0);
+  const reload = useCallback(() => setReloadKey((k) => k + 1), []);
+  const report = useMemo(() => buildMusterReport(entityCode), [entityCode, reloadKey]);
+  const overstays = useMemo(() => getOverstays(entityCode), [entityCode, reloadKey]);
   const overstayIds = new Set(overstays.map((v) => v.badgeNo));
 
   return (
