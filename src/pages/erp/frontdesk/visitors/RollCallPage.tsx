@@ -2,20 +2,27 @@
  * @file        src/pages/erp/frontdesk/visitors/RollCallPage.tsx
  * @sprint      Sprint 145 · T-FrontDesk-A6F.1 · Block 4
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import { buildMusterReport, getOverstays } from '@/lib/frontdesk-engine';
+import { buildMusterReport, getOverstays, type MusterReport } from '@/lib/frontdesk-engine';
+import type { Visitor } from '@/types/frontdesk';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Printer, AlertTriangle } from 'lucide-react';
+import { Printer, AlertTriangle, RefreshCw } from 'lucide-react';
 
 export function RollCallPage(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const [tick] = useState(0);
-  const report = useMemo(() => buildMusterReport(entityCode), [entityCode, tick]);
-  const overstays = useMemo(() => getOverstays(entityCode), [entityCode, tick]);
+  // S145.T1 · reload-callback pattern (no tick-in-useMemo): state holds latest
+  // report+overstays; reload() refreshes on demand and on entity switch.
+  const [report, setReport] = useState<MusterReport>(() => buildMusterReport(entityCode));
+  const [overstays, setOverstays] = useState<Visitor[]>(() => getOverstays(entityCode));
+  const reload = useCallback(() => {
+    setReport(buildMusterReport(entityCode));
+    setOverstays(getOverstays(entityCode));
+  }, [entityCode]);
+  useEffect(() => { reload(); }, [reload]);
   const overstayIds = new Set(overstays.map((v) => v.badgeNo));
 
   return (
@@ -28,9 +35,14 @@ export function RollCallPage(): JSX.Element {
               Generated {new Date(report.generatedAt).toLocaleString('en-IN')} · {report.count} on-site
             </p>
           </div>
-          <Button variant="outline" size="sm" onClick={() => window.print()}>
-            <Printer className="h-4 w-4 mr-2" /> Print
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={reload}>
+              <RefreshCw className="h-4 w-4 mr-2" /> Refresh
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => window.print()}>
+              <Printer className="h-4 w-4 mr-2" /> Print
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           {report.rows.length === 0 ? (

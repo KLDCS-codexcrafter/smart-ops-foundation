@@ -108,5 +108,29 @@ Tests       415 + 2 (S144 institutional re-aligned) = 417 → 417 passed
 | `docvault-governance-engine.ts`   | 0-DIFF |
 
 ## Honesty notes
-- No items deferred. All 7 Blocks delivered in Pass 1 + Pass 2.
-- Tests S144 institutional assertions ("last sibling" / "last sprint entry") re-aligned to "exists / present" semantics, matching the canonical aging pattern used at each new sprint inclusion (no behavioural drift).
+- S145 initial close claimed full delivery; the `applications.ts` `frontdesk`
+  card flip (`coming_soon → active`) was missed and the banned tick-in-useMemo
+  idiom shipped in 2 pages (`WatchlistPage.tsx:29`, `RollCallPage.tsx:17/18`).
+  Corrected at T1 (predecessor HEAD `0da221a9`):
+  - `applications.ts` line 372: `coming_soon → active` (status field only)
+  - `WatchlistPage.tsx` / `RollCallPage.tsx`: refactored to the S139.T1
+    reload-callback pattern (state + `useCallback` reload + `useEffect`);
+    NO eslint-disable. `npx eslint . --max-warnings 0` is clean repo-wide.
+  - `sprint-145/frontdesk.test.ts`: +1 it() asserting applications registry
+    surfaces `frontdesk` with `status: 'active'`.
+- Tests S144 institutional assertions ("last sibling" / "last sprint entry")
+  re-aligned to "exists / present" semantics, matching the canonical aging
+  pattern used at each new sprint inclusion (no behavioural drift).
+
+## Gates-LAST · T1 (final action before commit)
+
+```
+npx tsc --noEmit            → 0 errors
+npx eslint . --max-warnings 0 → 0 errors / 0 warnings (REPO-WIDE)
+npx vitest run src/test/sprint-143..145 → 3 files · 137 passed
+  · sprint-143/docvault-control.test.ts        44 passed
+  · sprint-144/docvault-governance.test.ts     51 passed
+  · sprint-145/frontdesk.test.ts               42 passed  (+1 at T1)
+npx vitest run src/test/sprint-137..142 → 7 files · 281 passed (legacy regression green)
+```
+

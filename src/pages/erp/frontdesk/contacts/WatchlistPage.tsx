@@ -2,10 +2,11 @@
  * @file        src/pages/erp/frontdesk/contacts/WatchlistPage.tsx
  * @sprint      Sprint 145 · T-FrontDesk-A6F.1 · Block 4
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { listWatchlist, addWatchlistEntry, removeWatchlistEntry } from '@/lib/frontdesk-engine';
+import type { WatchlistEntry } from '@/types/frontdesk';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,14 +20,16 @@ import { toast } from 'sonner';
 export function WatchlistPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const me = useCurrentUser();
-  const [tick, setTick] = useState(0);
+  const [rows, setRows] = useState<WatchlistEntry[]>(() => listWatchlist(entityCode));
+  const reload = useCallback(() => { setRows(listWatchlist(entityCode)); }, [entityCode]);
+  useEffect(() => { reload(); }, [reload]);
+
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [company, setCompany] = useState('');
   const [phone, setPhone] = useState('');
   const [reason, setReason] = useState('');
 
-  const rows = useMemo(() => listWatchlist(entityCode), [entityCode, tick]);
 
   function submit(): void {
     try {
@@ -36,7 +39,7 @@ export function WatchlistPage(): JSX.Element {
       });
       toast.success('Added to watchlist');
       setName(''); setCompany(''); setPhone(''); setReason(''); setOpen(false);
-      setTick((n) => n + 1);
+      reload();
     } catch (e) {
       toast.error((e as Error).message);
     }
@@ -46,7 +49,7 @@ export function WatchlistPage(): JSX.Element {
     try {
       removeWatchlistEntry(entityCode, id, me?.id ?? 'demo-user');
       toast.success('Removed');
-      setTick((n) => n + 1);
+      reload();
     } catch (e) {
       toast.error((e as Error).message);
     }
