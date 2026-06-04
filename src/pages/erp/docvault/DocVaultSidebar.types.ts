@@ -23,4 +23,8 @@ export type DocVaultModule =
   | 'similarity-viewer'
   | 'documents-by-dept'
   | 'approval-latency'
-  | 'version-velocity';
+  | 'version-velocity'
+  // Sprint 143 · DocVault Control Pt 1
+  | 'folders'
+  | 'numbering-config'
+  | 'expiry-review';

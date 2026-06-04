@@ -15,7 +15,7 @@
  */
 import {
   Home, FileText, FilePlus, CheckSquare, TreePine, Bookmark, ListFilter,
-  BarChart3, Clock, TrendingUp,
+  BarChart3, Clock, TrendingUp, FolderTree, Hash, CalendarClock,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
