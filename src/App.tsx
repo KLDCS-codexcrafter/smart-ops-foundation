@@ -235,6 +235,7 @@ const GateFlowPage = lazy(() => import('./pages/erp/gateflow/GateFlowPage'));
 const QualiCheckPage = lazy(() => import('./pages/erp/qualicheck/QualiCheckPage'));
 
 const DocVaultPage = lazy(() => import('./pages/erp/docvault/DocVaultPage'));
+const FrontDeskPage = lazy(() => import('./pages/erp/frontdesk/FrontDeskPage'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
 // Sprint T-Phase-1.2.6f-b-1 · vendor portal public surface (token replaces auth · NO <P> wrapper)
 const VendorLogin = lazy(() => import('./pages/vendor-portal/VendorLogin'));
@@ -639,6 +640,9 @@ const App = () => (
               {/* Sprint T-Phase-1.2.6f-d-2-card5-5-pre-1 · Block G · D-326 · QualiCheck */}
               <Route path="/erp/qualicheck" element={<P><QualiCheckPage /></P>} />
               <Route path="/erp/docvault" element={<P><DocVaultPage /></P>} />
+              {/* Sprint 145 · T-FrontDesk-A6F.1 · FrontDesk MVP */}
+              <Route path="/erp/frontdesk" element={<P><FrontDeskPage /></P>} />
+              <Route path="/erp/frontdesk/*" element={<P><FrontDeskPage /></P>} />
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
               <Route path="/erp/vendor-portal" element={<P><VendorPortal /></P>} />
               <Route path="/erp/vendor-portal/*" element={<P><VendorPortal /></P>} />

@@ -454,16 +454,16 @@ describe('S144 · Registers', () => {
     expect(s143.headSha).toContain('339ce7a2');
   });
 
-  it('S144 is the last entry in sprint-history', () => {
-    expect(SPRINTS[SPRINTS.length - 1].sprintNumber).toBe(144);
+  it('S144 entry exists in sprint-history', () => {
+    expect(SPRINTS.find((s) => s.sprintNumber === 144)).toBeDefined();
   });
 
   it('sibling register length is at least 213', () => {
     expect(SIBLINGS.length).toBeGreaterThanOrEqual(213);
   });
 
-  it('docvault-governance-engine is the last sibling', () => {
-    expect(SIBLINGS[SIBLINGS.length - 1].id).toBe('docvault-governance-engine');
+  it('docvault-governance-engine is registered as a sibling', () => {
+    expect(SIBLINGS.find((s) => s.id === 'docvault-governance-engine')).toBeDefined();
   });
 });
 
