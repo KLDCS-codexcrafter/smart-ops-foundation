@@ -155,6 +155,8 @@ const Comply360Page = lazy(() => import('./pages/erp/comply360/Comply360Page'));
 const FpaPlanningPage = lazy(() => import('./pages/erp/fpa-planning/FpaPlanningPage'));
 // 🌟 Sprint 130 · T-Phase-7.D.3.1 · Arc D.3 OPENER · InsightX self-owned card (DP-D3-1)
 const InsightXPage = lazy(() => import('./pages/erp/insightx/InsightXPage'));
+// 🎬 Sprint 137 · T-TaskFlow-A641.1 · Phase 8 OPENER · TaskFlow self-owned card
+const TaskFlowPage = lazy(() => import('./pages/erp/taskflow/TaskFlowPage'));
 const MobileSiteEngineerPage = lazy(() => import('./pages/mobile/MobileSiteEngineerPage'));
 const MobileMaintenanceTechnicianPage = lazy(() => import('./pages/mobile/MobileMaintenanceTechnicianPage'));
 const MobileShopFloorOperatorPage = lazy(() => import('./pages/mobile/MobileShopFloorOperatorPage'));
@@ -557,6 +559,8 @@ const App = () => (
               <Route path="/erp/fpa-planning" element={<P><FpaPlanningPage /></P>} />
               {/* 🌟 Sprint 130 · T-Phase-7.D.3.1 · Arc D.3 OPENER · InsightX self-owned card */}
               <Route path="/erp/insightx" element={<P><InsightXPage /></P>} />
+              {/* 🎬 Sprint 137 · T-TaskFlow-A641.1 · Phase 8 OPENER · TaskFlow self-owned card */}
+              <Route path="/erp/taskflow" element={<P><TaskFlowPage /></P>} />
               <Route path="/erp/fincore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
               <Route path="/erp/fincore/receipt-print" element={<P><ReceiptPrint /></P>} />
               <Route path="/erp/fincore/payment-print" element={<P><PaymentPrint /></P>} />

@@ -341,7 +341,12 @@ export type AuditEntityType =
   //   'insightx_aggregation_run' — no new type. ComplianceModule UNTOUCHED.
   //   SCOPE WALL DP-D3-5/D3-7: 4 numeric ML scenarios + NL-query ONLY — NO scenario 67
   //   (invoice NLP · Phase 8) · NO generative AI · NO self-service builder (Phase 8).
-  | 'predictive_insight_run';
+  | 'predictive_insight_run'
+  // Sprint 137 · T-TaskFlow-A641.1 · 🎬 Phase 8 OPENER · TaskFlow MVP Core (module: 'mca-roc')
+  // Logged by taskflow-engine on every createTask / updateTask / changeStatus / addComment.
+  // Single audit type carries action discriminator via AuditTrailEntry.reason / record_label.
+  // ComplianceModule UNTOUCHED.
+  | 'taskflow_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
