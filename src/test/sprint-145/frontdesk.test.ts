@@ -307,4 +307,10 @@ describe('FrontDesk · Institutional', () => {
     expect(x).toBe('frontdesk_event');
     expect(typeof types).toBe('object');
   });
+  it('S145.T1 · applications registry shows frontdesk status active', async () => {
+    const { applications } = await import('@/components/operix-core/applications');
+    const fd = applications.find((a) => a.id === 'frontdesk');
+    expect(fd).toBeDefined();
+    expect(fd!.status).toBe('active');
+  });
 });
