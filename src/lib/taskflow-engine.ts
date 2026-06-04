@@ -41,7 +41,7 @@ const writeJSON = (key: string, value: unknown): void => {
   }
 };
 
-const safeAudit: typeof logAudit = (entry) => {
+const safeAudit = (entry: Parameters<typeof logAudit>[0]): void => {
   try {
     logAudit(entry);
   } catch {
