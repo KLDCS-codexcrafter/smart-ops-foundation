@@ -2,9 +2,10 @@
  * @file        src/pages/erp/frontdesk/visitors/RollCallPage.tsx
  * @sprint      Sprint 145 · T-FrontDesk-A6F.1 · Block 4
  */
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import { buildMusterReport, getOverstays } from '@/lib/frontdesk-engine';
+import { buildMusterReport, getOverstays, type MusterReport } from '@/lib/frontdesk-engine';
+import type { Visitor } from '@/types/frontdesk';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
