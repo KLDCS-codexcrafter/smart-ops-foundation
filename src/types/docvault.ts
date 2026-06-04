@@ -108,6 +108,7 @@ export interface DocumentControlMeta {
   locked_by?: string | null;            // check-out lock
   locked_at?: string | null;
   folder_id?: string | null;
+  financial_year?: string | null;       // S144 · TDL FY facet · 'FY2026-27'
 }
 
 export interface DocumentFolder {
