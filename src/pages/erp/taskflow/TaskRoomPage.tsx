@@ -44,6 +44,7 @@ import {
 import {
   listConversations, createConversation, listMessages, sendMessage, linkConversation,
 } from '@/lib/operix-chat-engine';
+import { ensureTaskConversation } from './ensureTaskConversation';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEmployees } from '@/hooks/useEmployees';
 import type { Task, TaskStatus, TaskApprovalChain, TaskWorkflowTemplate } from '@/types/taskflow';
