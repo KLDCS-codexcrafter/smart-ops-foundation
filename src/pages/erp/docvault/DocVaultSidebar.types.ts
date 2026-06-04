@@ -27,4 +27,9 @@ export type DocVaultModule =
   // Sprint 143 · DocVault Control Pt 1
   | 'folders'
   | 'numbering-config'
-  | 'expiry-review';
+  | 'expiry-review'
+  // Sprint 144 · DocVault Control Pt 2 · ARC CLOSER
+  | 'sharing-acl'
+  | 'retention-review'
+  | 'circulars'
+  | 'completeness';

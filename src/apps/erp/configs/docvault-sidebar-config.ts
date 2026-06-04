@@ -16,6 +16,7 @@
 import {
   Home, FileText, FilePlus, CheckSquare, TreePine, Bookmark, ListFilter,
   BarChart3, Clock, TrendingUp, FolderTree, Hash, CalendarClock,
+  Share2, Archive, Megaphone, ListChecks,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -114,6 +115,50 @@ export const docVaultSidebarItems: SidebarItem[] = [
         moduleId: 'expiry-review',
         requiredCards: ['docvault'],
         keyboard: 'd x',
+      },
+    ],
+  },
+  {
+    id: 'governance-group',
+    type: 'group',
+    label: 'Governance',
+    icon: Share2,
+    children: [
+      {
+        id: 'sharing-acl',
+        type: 'item',
+        label: 'Sharing & ACL',
+        icon: Share2,
+        moduleId: 'sharing-acl',
+        requiredCards: ['docvault'],
+        keyboard: 'd g',
+      },
+      {
+        id: 'retention-review',
+        type: 'item',
+        label: 'Retention & Review',
+        icon: Archive,
+        moduleId: 'retention-review',
+        requiredCards: ['docvault'],
+        keyboard: 'd y',
+      },
+      {
+        id: 'circulars',
+        type: 'item',
+        label: 'Circulars',
+        icon: Megaphone,
+        moduleId: 'circulars',
+        requiredCards: ['docvault'],
+        keyboard: 'd c',
+      },
+      {
+        id: 'completeness',
+        type: 'item',
+        label: 'Completeness',
+        icon: ListChecks,
+        moduleId: 'completeness',
+        requiredCards: ['docvault'],
+        keyboard: 'd k',
       },
     ],
   },

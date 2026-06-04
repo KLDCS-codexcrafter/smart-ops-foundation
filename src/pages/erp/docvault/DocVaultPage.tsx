@@ -31,6 +31,10 @@ import { VersionVelocityReport } from './reports/VersionVelocityReport';
 import FoldersPage from './registers/FoldersPage';
 import NumberingConfigPage from './registers/NumberingConfigPage';
 import ExpiryReviewPage from './registers/ExpiryReviewPage';
+import SharingAclPage from './registers/SharingAclPage';
+import RetentionReviewPage from './registers/RetentionReviewPage';
+import CircularsPage from './registers/CircularsPage';
+import CompletenessPage from './registers/CompletenessPage';
 import type { DocVaultModule } from './DocVaultSidebar.types';
 
 export default function DocVaultPage(): JSX.Element {
@@ -52,6 +56,10 @@ export default function DocVaultPage(): JSX.Element {
       case 'folders':            return <FoldersPage />;
       case 'numbering-config':   return <NumberingConfigPage />;
       case 'expiry-review':      return <ExpiryReviewPage />;
+      case 'sharing-acl':        return <SharingAclPage />;
+      case 'retention-review':   return <RetentionReviewPage />;
+      case 'circulars':          return <CircularsPage />;
+      case 'completeness':       return <CompletenessPage />;
       default:                   return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
