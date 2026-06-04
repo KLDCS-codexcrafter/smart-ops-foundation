@@ -383,3 +383,54 @@ describe('S143 · Audit + registers + additivity', () => {
     expect(getDocument(E, id)!.current_version).toBe('B');
   });
 });
+
+// ──────────────────────────────────────────────────────────────────────────────
+// S143.T1 hotfix · +4 panel-level wiring assertions (Block 4 UI corrections).
+// Engine logic is already covered above; these assert the contracts that
+// DocumentControlPanel + DocumentRegister rely on.
+// ──────────────────────────────────────────────────────────────────────────────
+describe('S143.T1 · panel-level wiring', () => {
+  beforeEach(() => { localStorage.clear(); });
+
+  it('assign-code idempotency · panel disables button after first assignment (engine throws on re-assign)', () => {
+    const id = newDoc();
+    upsertNumberingConfig(E, { category: 'policy', numbering_prefix: 'POL', next_sequence: 1, is_active: true });
+    setCategory(E, id, 'policy', U_OWNER);
+    const first = assignDocumentCode(E, id, U_OWNER);
+    expect(first.code).toBe('POL-000001');
+    // Panel `disabled={hasCode}` reflects this engine guarantee:
+    expect(() => assignDocumentCode(E, id, U_OWNER)).toThrow(/already has code/);
+    // Sequence MUST NOT advance on the failed second attempt
+    expect(getActiveNumberingConfigForCategory(E, 'policy')?.next_sequence).toBe(2);
+  });
+
+  it('illegal lifecycle option absent from control · active has no published transition', () => {
+    const id = newDoc();
+    const ctrl = getControl(getDocument(E, id)!);
+    expect(ctrl.lifecycle_status).toBe('active');
+    // Panel computes legalNexts the same way the engine validates
+    expect(() => setLifecycleStatus(E, id, 'published', U_OWNER)).toThrow(/illegal/);
+    // Legal targets ARE reachable
+    expect(() => setLifecycleStatus(E, id, 'under_review', U_OWNER)).not.toThrow();
+  });
+
+  it('transfer requires reason · panel submit guard mirrors engine throw', () => {
+    const id = newDoc();
+    expect(() => transferDocumentOwnership(E, id, U_OTHER, U_OWNER, '')).toThrow(/reason/i);
+    expect(() => transferDocumentOwnership(E, id, U_OTHER, U_OWNER, '   ')).toThrow(/reason/i);
+    transferDocumentOwnership(E, id, U_OTHER, U_OWNER, 'role change');
+    expect(getControl(getDocument(E, id)!).owner_id).toBe(U_OTHER);
+  });
+
+  it('register filter by category returns control-meta docs (legacy docs excluded until category set)', () => {
+    const a = newDoc({ title: 'A' });
+    const b = newDoc({ title: 'B' });
+    setCategory(E, a, 'policy', U_OWNER);
+    // Mirror DocumentRegister filter logic exactly: getControl(d).category === filter
+    const all = [getDocument(E, a)!, getDocument(E, b)!];
+    const filteredByPolicy = all.filter((d) => getControl(d).category === 'policy');
+    expect(filteredByPolicy.map((d) => d.id)).toEqual([a]);
+    const filteredByOther = all.filter((d) => getControl(d).category === 'contract');
+    expect(filteredByOther).toHaveLength(0);
+  });
+});

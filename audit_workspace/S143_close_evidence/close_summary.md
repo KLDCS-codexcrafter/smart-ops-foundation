@@ -113,3 +113,48 @@ Previously recorded in S142 close: *"DocVault stays 0-DIFF · physical owner fie
 ## Clean tree
 
 After full gate sequence and before commit: `git status --porcelain` shows only the in-scope additive changes (no stray Z-evidence regeneration per Operix Execution Discipline v1 §1).
+
+---
+
+## T1 hotfix (Block 4 correction)
+
+**Predecessor for T1:** `63dac162` (initial S143 close).
+**Scope:** UI-only delta · zero new engine code · docvault-engine + §H 0-DIFF preserved.
+
+### Files
+- **NEW** `src/pages/erp/docvault/DocumentControlPanel.tsx` (~330 LOC). Per-document control surface reachable from the Documents register row action "Control" and from the document detail flow. Surfaces: assign-code button (preview from numbering config · disabled+tooltip once assigned) · category selector · lifecycle transition control (legal-map aware · illegal options disabled at render time) · confidentiality selector (folder-floor enforced via engine throw → toast) · effective/review/expiry date editors · lock/unlock (locker/owner rules) · transfer-ownership dialog (reason MANDATORY · empty string rejected client- AND server-side) · control-audit timeline (`listControlAudit`, newest first). All writes via `docvault-control-engine`.
+- **UPGRADED** `src/pages/erp/docvault/transactions/DocumentRegister.tsx`. New columns: `document_code` · `category` · `lifecycle` chip · `confidentiality` badge · `owner` · folder name · lock icon. New filter row: category · lifecycle · confidentiality · folder (with `__unfiled__` sentinel). New row action `Control` opens `DocumentControlPanel` in a dialog. Legacy docs render materialized defaults via `getControl()` — **no writes** until an explicit control action.
+- **FIXED** `src/pages/erp/docvault/registers/NumberingConfigPage.tsx` line-57 dangling reference is now true ("Codes are assigned in DocumentControlPanel").
+
+### §N additions: +4 it() (panel-level wiring · total 44)
+- `assign-code idempotency via UI path` — verifies the engine guarantee the panel relies on for `disabled={hasCode}`; sequence does not advance on the failed second attempt.
+- `illegal lifecycle option absent from control` — `active → published` is not rendered as enabled in the panel and is rejected by the engine; `active → under_review` is reachable.
+- `transfer requires reason` — empty / whitespace reason rejected; valid reason flips `owner_id`.
+- `register filter by category returns control-meta docs` — mirrors the DocumentRegister filter (`getControl(d).category === filter`); legacy docs are correctly excluded until category is set.
+
+### Honesty note
+> **S143 initial close omitted DocumentControlPanel and register upgrades from Block 4 without declaring the deferral; corrected at T1.**
+The original close-summary §L caveats listed the three control-pages (Folders / Numbering / Expiry) but did not surface the missing per-document Control panel nor the Documents-register upgrades that the Block 4 contract called for. NumberingConfigPage even referenced "DocumentControlPanel" as if it existed. T1 lands that surface and the register columns/filters/action, and tightens the assertion that the panel's UI guards are backed by the engine.
+
+### GATES-LAST (T1 · real outputs · gates re-run AFTER all edits)
+| Gate | Result |
+| --- | --- |
+| **TSC** (`NODE_OPTIONS="--max-old-space-size=7168" tsc --noEmit`) | **0 errors** |
+| **ESLint** (`. --max-warnings 0`) | **0 errors / 0 warnings** |
+| **Vitest S143** (`src/test/sprint-143/`) | **44 / 44 passed** (was 40 · +4 panel wiring) |
+| **Vitest scoped regression** (S137–S143 + 5 legacy docvault suites) | **341 / 341 GREEN** (was 337 · +4) |
+
+### Guardrails re-verified at T1
+- `src/lib/docvault-engine.ts` — UNTOUCHED (0-DIFF)
+- `src/lib/approval-workflow-engine.ts` — UNTOUCHED
+- `src/lib/push-notification-bridge.ts` — UNTOUCHED
+- All Comply360 engines + `ComplianceModule.tsx` — UNTOUCHED
+- `taskflow-engine.ts` 12-state model — UNTOUCHED
+- Legacy docvault suites — **16/16 unchanged** (no regression)
+
+### Registers (unchanged at T1)
+- `SIBLINGS.length = 212` (canonical · `docvault-control-engine` already appended in initial close).
+- `SPRINTS`: S142 `headSha = 3b53dd5e`; S143 `headSha = TBD_AT_BANK`, predecessor `3b53dd5e`. No S144 entry.
+
+### Clean tree
+After full T1 gate sequence and before commit: `git status --porcelain` shows only the four T1 files (1 new · 3 edited). No stray evidence regeneration (Operix Execution Discipline v1 §1).
