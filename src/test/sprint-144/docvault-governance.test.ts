@@ -466,3 +466,46 @@ describe('S144 · Registers', () => {
     expect(SIBLINGS[SIBLINGS.length - 1].id).toBe('docvault-governance-engine');
   });
 });
+
+describe('S144.T1 · hotfix · TaskRoom Documents · AttachDocuments · Watermark · ACL toast', () => {
+  beforeEach(() => { localStorage.clear(); });
+
+  it('TaskRoom Documents tab surfaces linked docs via listLinksForRef("task", taskId)', () => {
+    const id = newDoc({ title: 'TaskAttachedDoc' });
+    const TASK_ID = 't-room-1';
+    linkDocument(E, id, { ref_type: 'task', ref_id: TASK_ID,
+      ref_label: 'Task room 1', created_by: U_OWNER });
+    const linked = listLinksForRef(E, 'task', TASK_ID);
+    expect(linked).toHaveLength(1);
+    expect(linked[0].document_id).toBe(id);
+    expect(linked[0].ref_label).toBe('Task room 1');
+  });
+
+  it('AttachDocuments link-existing path appends a DocumentLinkRef visible to register', () => {
+    // Default ACL allows view+download but not upload — give explicit upload right.
+    upsertACL(E, { ...DEFAULT_ACL(U_OWNER, E), allow_upload: true, updated_by: U_OWNER });
+    expect(() => assertAcl(E, U_OWNER, 'upload')).not.toThrow();
+    const id = newDoc({ title: 'Linkable' });
+    linkDocument(E, id, { ref_type: 'task', ref_id: 't-att-1',
+      ref_label: 'Att 1', created_by: U_OWNER });
+    expect(listLinksForRef(E, 'task', 't-att-1').map((l) => l.document_id)).toContain(id);
+  });
+
+  it('watermark string surfaces in getEffectivePermission → consumed verbatim by overlay props', () => {
+    const id = newDoc();
+    grantShare(E, { document_id: id, grantee_user_id: U_OTHER,
+      permission: 'view_watermark', created_by: U_OWNER });
+    const eff = getEffectivePermission(E, id, U_OTHER, 'Bob', '2026-06-04T05:00:00Z');
+    // Contract drives WatermarkOverlay's data-watermark attribute (UI is a passive consumer).
+    expect(eff.permission).toBe('view_watermark');
+    expect(eff.watermark).toBe('Bob · 2026-06-04T05:00:00Z');
+    expect(eff.watermark).toMatch(/^Bob · /);
+  });
+
+  it('ACL-denied upload toast path: assertAcl throws on user without upload right', () => {
+    // Default ACL does NOT grant upload — AttachDocuments toasts on this throw.
+    const denied = (): void => assertAcl(E, 'no-upload-user', 'upload');
+    expect(denied).toThrow(/ACL denied: upload/);
+  });
+});
+
