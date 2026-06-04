@@ -15,8 +15,8 @@ import {
   computeAccountabilityMetrics, exportMyTrail,
   generateWorkDiary, generateTeamDiary,
   listIndiaGstRates, listTdsSections,
-  tfExpensesKey, tfEvidenceKey, tfClosePoliciesKey,
 } from '@/lib/taskflow-accountability-engine';
+import { tfExpensesKey, tfEvidenceKey, tfClosePoliciesKey } from '@/types/taskflow';
 import * as engine from '@/lib/taskflow-accountability-engine';
 import {
   createTask, changeStatus, acknowledgeTask, reassignTask,
