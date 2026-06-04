@@ -39,7 +39,7 @@ export function WatchlistPage(): JSX.Element {
       });
       toast.success('Added to watchlist');
       setName(''); setCompany(''); setPhone(''); setReason(''); setOpen(false);
-      setTick((n) => n + 1);
+      reload();
     } catch (e) {
       toast.error((e as Error).message);
     }
@@ -49,7 +49,7 @@ export function WatchlistPage(): JSX.Element {
     try {
       removeWatchlistEntry(entityCode, id, me?.id ?? 'demo-user');
       toast.success('Removed');
-      setTick((n) => n + 1);
+      reload();
     } catch (e) {
       toast.error((e as Error).message);
     }
