@@ -9,8 +9,9 @@ import { useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, ListChecks, CheckSquare, AlertCircle, PlayCircle, Bell } from 'lucide-react';
+import { Clock, ListChecks, CheckSquare, AlertCircle, PlayCircle, Bell, Ban, ArrowUpCircle } from 'lucide-react';
 import { listDueWithin24h, getStats } from '@/lib/taskflow-engine';
+import { getOpenBlocked, listEscalations } from '@/lib/taskflow-governance-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 
 export default function TaskFlowLandingPage(): JSX.Element {
