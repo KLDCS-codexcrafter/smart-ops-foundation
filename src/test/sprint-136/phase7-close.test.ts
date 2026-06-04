@@ -186,7 +186,7 @@ describe('S136 · Phase-7 Close · institutional registers (S136 last entry · �
     expect(s136?.newSiblings.length).toBe(0);
   });
 
-  it('S137 has opened as the new last entry (Phase 8 OPENER · TaskFlow)', () => {
+  it('S137 has opened as the new last entry (Pillar A.6.4 · TaskFlow Arc)', () => {
     const last = SPRINTS[SPRINTS.length - 1];
     expect(last.sprintNumber).toBeGreaterThanOrEqual(137);
   });

@@ -812,11 +812,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-04', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 137 T-TaskFlow-A641.1 · Pillar A.6.4 · TaskFlow Arc opener (post-Phase-7) · TaskFlow MVP Core (the 13th card · was coming_soon · DP-P7-2 additive · existing card metadata 0-DIFF · status field only flip) · 1 NEW SIBLID taskflow-engine (generic cross-department task delegation · ratified 12-state lifecycle · Accountability Spine TF-29 a/b/c · TF-14 sub-tasks + blocking · TF-36 hash-chained per-task audit) · R1 corrective re-execution upgraded the model in-place (camelCase fields · 12 statuses · 4 priorities · supporting model TYPE-ONLY S138+ · TaskRoomPage 8-tab shell · kanban + filters · category/branch + dept toggle TF-15) · NO Phase 8 designation (Phase 8 reserved for P2BB) · ComplianceModule UNTOUCHED · push-notification-bridge.ts UNTOUCHED · all 4 picker source surfaces 0-DIFF · FR-44 read-only consume · 60-streak ⭐ target · headSha TBD_AT_BANK
+  // 🎬 Sprint 137 T-TaskFlow-A641.1 · Pillar A.6.4 · TaskFlow Arc opener (post-Phase-7) · TaskFlow MVP Core · 1 NEW SIBLID taskflow-engine · 12-state lifecycle · Accountability Spine + hash-chain · ComplianceModule UNTOUCHED · push-notification-bridge.ts UNTOUCHED · 4 picker surfaces 0-DIFF · 60-streak ⭐ · banked @ 0742e96b
   {
     sprintNumber: 137, code: 'T-TaskFlow-A641.1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '79153fad', loc: 1300,
+    headSha: '0742e96b', predecessorSha: '79153fad', loc: 1300,
     newSiblings: ['taskflow-engine'],
+    bankDate: '2026-06-04', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 138 T-TaskFlow-A641.2 · Pillar A.6.4 · TaskFlow Arc · Governance Slice · approvals adapter (REUSE approval-workflow-engine 0-DIFF) + SLA + escalations + I'm-Blocked artifact + Comply360 bridge (READ-ONLY over loadObligations + listIAIssues) + rich reminders + comments upgrade · 1 NEW SIBLID taskflow-governance-engine (TF-3 · TF-21 · TF-33 · TF-11 · TF-13-rich) · §H 0-DIFF on approval-workflow-engine + all Comply360 engines + ComplianceModule UNTOUCHED · 61-streak ⭐ target · headSha TBD_AT_BANK
+  {
+    sprintNumber: 138, code: 'T-TaskFlow-A641.2', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '0742e96b', loc: 1400,
+    newSiblings: ['taskflow-governance-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
