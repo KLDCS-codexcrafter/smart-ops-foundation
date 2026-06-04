@@ -30,6 +30,7 @@ import { Plus, Search, ListChecks, LayoutGrid, List as ListIcon } from 'lucide-r
 import {
   createTask, listTasks, changeStatus, listDueWithin24h,
 } from '@/lib/taskflow-engine';
+import { getOpenBlocked, listEscalations } from '@/lib/taskflow-governance-engine';
 import type { Task, TaskPriority, TaskStatus, TaskCategory } from '@/types/taskflow';
 import { TASK_STATUS_TRANSITIONS } from '@/types/taskflow';
 import { useEntityCode } from '@/hooks/useEntityCode';
