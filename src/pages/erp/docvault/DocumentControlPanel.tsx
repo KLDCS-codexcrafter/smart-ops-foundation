@@ -26,7 +26,7 @@ import {
   Tooltip, TooltipContent, TooltipProvider, TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { toast } from 'sonner';
-import { Hash, Lock, Unlock, UserCog, History } from 'lucide-react';
+import { Hash, Lock, Unlock, UserCog, History, Share2, Link2, CalendarCheck, X } from 'lucide-react';
 import {
   getControl,
   previewNextDocumentCode, assignDocumentCode,
@@ -36,9 +36,20 @@ import {
   listControlAudit, listFolders,
 } from '@/lib/docvault-control-engine';
 import { getDocument } from '@/lib/docvault-engine';
+import {
+  listShares, grantShare, approveExternalShare, revokeShare,
+  getEffectivePermission,
+  listLinksForDocument, linkDocument, unlinkDocument,
+  setFinancialYear, markReviewed,
+} from '@/lib/docvault-governance-engine';
 import type {
   Document, DocumentCategory, DocumentLifecycleStatus, ConfidentialityLevel,
+  DocumentShare, DocumentLinkRef, SharePermission,
 } from '@/types/docvault';
+
+const PERMISSIONS: SharePermission[] = ['view', 'view_watermark', 'download', 'comment', 'edit'];
+const LINK_TYPES: DocumentLinkRef['ref_type'][] = ['task', 'conversation', 'obligation', 'employee', 'voucher'];
+const FY_RE = /^FY\d{4}-\d{2}$/;
 
 const CATEGORIES: DocumentCategory[] = [
   'policy', 'procedure', 'work_instruction', 'contract', 'agreement',
