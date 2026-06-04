@@ -24,11 +24,14 @@ export type TaskFlowModule =
   // ─ OperixChat MVP (S140) ───────────────────────────────────────────
   | 'chat'
   | 'channels'
-  | 'email-threads'      // S142 coming-soon
-  | 'voice-library'      // S142 coming-soon
+  | 'email-threads'      // P2BB · omnichannel rail wiring
+  // ─ Chat Depth + Handover (S142) ────────────────────────────────────
+  | 'media-vault'
+  | 'follow-ups'
+  | 'chat-governance'
+  | 'handover'
   // ─ Accountability Payoff (S141) ────────────────────────────────────
   | 'accountability'
   | 'close-policies'
   | 'work-diary'
-  // ─ Chat Depth + Handover (S142) ────────────────────────────────────
   | 'expense-center';

@@ -9,6 +9,7 @@ import {
   FileStack, Workflow, Gavel, BookOpen,
   MessageSquare, Hash, Mail, Mic,
   Gauge, ShieldCheck, NotebookPen, Receipt,
+  ListTodo, ShieldAlert, ArrowRightLeft,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -33,9 +34,12 @@ export const taskflowSidebarItems: SidebarItem[] = [
   // ── OperixChat MVP (S140) ──────────────────────────────────────────
   { id: 'chat',               type: 'item', label: 'Chat Inbox',        icon: MessageSquare,  keyboard: 'k i' },
   { id: 'channels',           type: 'item', label: 'Channels',          icon: Hash,           keyboard: 'k l' },
-  // ── S142 coming-soon ───────────────────────────────────────────────
-  { id: 'email-threads',      type: 'item', label: 'Email Threads · S142', icon: Mail,        keyboard: 'k j' },
-  { id: 'voice-library',      type: 'item', label: 'Voice Library · S142', icon: Mic,         keyboard: 'k v' },
+  // ── Chat Depth + Handover (S142) ───────────────────────────────────
+  { id: 'media-vault',        type: 'item', label: 'Media Vault',       icon: Mic,            keyboard: 'k v' },
+  { id: 'follow-ups',         type: 'item', label: 'Follow-Ups',        icon: ListTodo,       keyboard: 'k u' },
+  { id: 'chat-governance',    type: 'item', label: 'Chat Governance',   icon: ShieldAlert,    keyboard: 'k o' },
+  { id: 'handover',           type: 'item', label: 'Handover',          icon: ArrowRightLeft, keyboard: 'k k' },
+  { id: 'email-threads',      type: 'item', label: 'Email Threads · P2BB', icon: Mail,        keyboard: 'k j' },
   // ── Accountability Payoff (S141) ───────────────────────────────────
   { id: 'accountability',     type: 'item', label: 'Accountability',    icon: Gauge,          keyboard: 'k y' },
   { id: 'close-policies',     type: 'item', label: 'Close Policies',    icon: ShieldCheck,    keyboard: 'k q' },
