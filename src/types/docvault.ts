@@ -132,3 +132,81 @@ export interface DocumentControlAuditEntry {
   user_id: string; before?: Record<string, unknown>; after?: Record<string, unknown>;
   timestamp: string;
 }
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Sprint 144 · T-TaskFlow-A641.8 · DocVault Control Pt 2 · ADDITIVE (snake_case)
+// Sharing+Watermark+ACL · Retention/Review · B.7 Generalized Binding ·
+// TF-34 Read-and-Understood Circulars · TF-38 Required-Documents Completeness ·
+// FY facet (added to DocumentControlMeta above).
+// docvault-engine + Q-LOCK-15a FKs + version state machinery UNTOUCHED.
+// ──────────────────────────────────────────────────────────────────────────────
+
+export type SharePermission = 'view' | 'view_watermark' | 'download' | 'comment' | 'edit';
+
+export interface DocumentShare {
+  id: string; entity_id: string; document_id: string;
+  grantee_user_id?: string | null;          // internal grant
+  external_email?: string | null;           // external grant (P2BB delivery · modeled now)
+  permission: SharePermission;
+  expires_at?: string | null;
+  requires_approval: boolean;               // external default true
+  approved_by?: string | null; approved_at?: string | null;
+  created_by: string; created_at: string; revoked_at?: string | null;
+}
+
+export interface DocVaultUserACL {          // TDL 6-action set (Scan = desktop-agent seam · excluded)
+  user_id: string; entity_id: string;
+  allow_config: boolean; allow_upload: boolean; allow_view: boolean;
+  allow_download: boolean; allow_delete: boolean;
+  updated_by: string; updated_at: string;
+}
+
+export interface DocumentRetentionRule {
+  id: string; entity_id: string;
+  category?: DocumentCategory | null;       // null = default
+  retain_years: number | null;              // null = forever
+  action_at_end: 'archive' | 'flag_delete';
+  is_active: boolean; created_at: string; updated_at: string;
+}
+
+export interface DocumentReviewCycle {
+  id: string; entity_id: string;
+  category: DocumentCategory;
+  frequency: 'monthly' | 'quarterly' | 'half_yearly' | 'yearly' | 'biennial';
+  escalate_to_owner: boolean;
+  is_active: boolean;
+}
+
+export interface DocumentLinkRef {          // B.7 generalized (Q-LOCK FKs remain for legacy refs)
+  id: string; entity_id: string; document_id: string;
+  ref_type: 'task' | 'conversation' | 'obligation' | 'employee' | 'voucher';
+  ref_id: string; ref_label: string;
+  created_by: string; created_at: string;
+}
+
+// TF-34 · Read-and-Understood Circulars
+export interface Circular {
+  id: string; entity_id: string; document_id: string;
+  title: string;
+  target: 'all' | 'department';
+  target_department_id?: string | null;
+  obligation_ref?: { id: string; label: string } | null;   // Comply360 read-only linkage
+  published_by: string; published_at: string;
+  due_by?: string | null; closed_at?: string | null;
+}
+export interface CircularAcknowledgment {
+  id: string; circular_id: string; user_id: string; acknowledged_at: string;
+}
+
+// TF-38 · Required-Documents Templates (TDL adoption)
+export interface DocumentRequirementTemplate {
+  id: string; entity_id: string;
+  target_kind: 'customer' | 'vendor' | 'employee' | 'document_category';
+  target_filter?: string | null;            // e.g. vendor group / employee role per Block-0 shapes · null = all of kind
+  required_items: { title: string; category: DocumentCategory; mandatory: boolean }[];
+  is_active: boolean; created_at: string; updated_at: string;
+}
+export interface CompletenessResult {
+  target_kind: string; target_id: string; target_label: string;
+  required: number; present: number; missing: { title: string; category: string }[];
+}
