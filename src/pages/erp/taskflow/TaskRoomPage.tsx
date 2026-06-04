@@ -41,9 +41,7 @@ import {
   listChecklistItems, addChecklistItem, toggleChecklistItem, removeChecklistItem,
   getChecklistProgress, listWorkflows, applyWorkflowToTask, getWorkflowProgress,
 } from '@/lib/taskflow-workflow-engine';
-import {
-  listConversations, createConversation, listMessages, sendMessage, linkConversation,
-} from '@/lib/operix-chat-engine';
+import { listMessages, sendMessage } from '@/lib/operix-chat-engine';
 import { ensureTaskConversation } from './ensureTaskConversation';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEmployees } from '@/hooks/useEmployees';
