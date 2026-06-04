@@ -145,7 +145,7 @@ export function removeChecklistItem(entityCode: string, itemId: string, byUserId
   if (!before) return;
   writeJSON(tfChecklistsKey(entityCode), all.filter((c) => c.id !== itemId));
   safeAudit({
-    entityCode, action: 'delete', entityType: 'taskflow_event', recordId: itemId,
+    entityCode, action: 'cancel', entityType: 'taskflow_event', recordId: itemId,
     recordLabel: `checklist:${before.title}`,
     beforeState: before as unknown as Record<string, unknown>, afterState: null,
     sourceModule: 'taskflow',
@@ -266,7 +266,7 @@ export function deleteTemplate(entityCode: string, id: string): void {
   if (!before) return;
   writeJSON(tfTemplatesKey(entityCode), all.filter((t) => t.id !== id));
   safeAudit({
-    entityCode, action: 'delete', entityType: 'taskflow_event', recordId: id,
+    entityCode, action: 'cancel', entityType: 'taskflow_event', recordId: id,
     recordLabel: `template:${before.name}`,
     beforeState: before as unknown as Record<string, unknown>, afterState: null,
     sourceModule: 'taskflow',
@@ -355,7 +355,7 @@ export function deleteWorkflow(entityCode: string, id: string): void {
   if (!before) return;
   writeJSON(tfWorkflowsKey(entityCode), all.filter((w) => w.id !== id));
   safeAudit({
-    entityCode, action: 'delete', entityType: 'taskflow_event', recordId: id,
+    entityCode, action: 'cancel', entityType: 'taskflow_event', recordId: id,
     recordLabel: `workflow:${before.name}`,
     beforeState: before as unknown as Record<string, unknown>, afterState: null,
     sourceModule: 'taskflow',
