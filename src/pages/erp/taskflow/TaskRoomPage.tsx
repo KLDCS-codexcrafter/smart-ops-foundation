@@ -147,6 +147,8 @@ export default function TaskRoomPage(): JSX.Element {
             <TabsTrigger value="summary">Summary</TabsTrigger>
             <TabsTrigger value="subtasks">Sub-tasks ({subTasks.length})</TabsTrigger>
             <TabsTrigger value="activity">Activity ({auditChain.length})</TabsTrigger>
+            <TabsTrigger value="discussion">Discussion ({comments.length})</TabsTrigger>
+            <TabsTrigger value="approvals">Approvals</TabsTrigger>
             {PLACEHOLDER_TABS.map((p) => (
               <TabsTrigger key={p.id} value={p.id}>{p.label}</TabsTrigger>
             ))}
