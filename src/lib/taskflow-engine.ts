@@ -321,6 +321,15 @@ export function registerMilestoneResolver(resolver: MilestoneResolver): void {
   _milestoneResolver = resolver;
 }
 
+// S141 · TF-29d · Close-policy resolver (registered by accountability-engine).
+// Returns a shortfall message when the task fails the active close policy
+// (e.g. "evidence-mandatory: need 2, have 0"). Empty string ⇒ no block.
+type ClosePolicyResolver = (entityCode: string, taskId: string) => string;
+let _closePolicyResolver: ClosePolicyResolver = () => '';
+export function registerClosePolicyResolver(resolver: ClosePolicyResolver): void {
+  _closePolicyResolver = resolver;
+}
+
 // [JWT] PATCH /api/taskflow/tasks/:id/status — 12-state transition guard
 export function changeStatus(
   entityCode: string,
@@ -349,6 +358,10 @@ export function changeStatus(
     const milestoneOffenders = _milestoneResolver(entityCode, id);
     if (milestoneOffenders.length > 0) {
       throw new Error(`TaskFlow: cannot complete — incomplete milestones: ${milestoneOffenders.join('; ')}`);
+    }
+    const policyShortfall = _closePolicyResolver(entityCode, id);
+    if (policyShortfall) {
+      throw new Error(`TaskFlow: cannot complete — ${policyShortfall}`);
     }
   }
   const completedDate = next === 'completed' ? new Date().toISOString() : before.completedDate ?? null;

@@ -147,3 +147,44 @@ export const taskflowDueDateChangesKey = (entityCode: string): string =>
   entityCode ? `tf_duedate_changes_${entityCode}` : 'tf_duedate_changes';
 export const taskflowAuditChainKey = (entityCode: string): string =>
   entityCode ? `tf_task_audit_${entityCode}` : 'tf_task_audit';
+
+// ── S141 · Accountability Payoff · TF-29 d/e/f · TF-31 (VERBATIM) ──────────
+export interface TaskClosePolicy {
+  id: string; entityId: string;
+  category: TaskCategory;
+  requireEvidence: boolean;            // TF-29d: completion blocked without ≥1 evidence
+  minEvidenceCount: number;            // default 1
+  isActive: boolean;
+  createdAt: string; updatedAt: string;
+}
+
+export interface PersonAccountabilityMetrics {
+  userId: string; userName: string; departmentId: string | null;
+  openTasks: number; overdueTasks: number;
+  avgTimeToAcknowledgeHours: number | null;   // null = nothing to measure
+  unacknowledgedCount: number;
+  ageingBuckets: { d0_2: number; d3_7: number; d8_14: number; d15_plus: number };
+  reworkBounces: number;                      // transitions INTO 'rework'
+  reassignmentsAway: number;                  // tasks this person reassigned to others
+  blockedHoursOpen: number;
+  slaBreaches: number;
+  estimatedHoursTotal: number; actualHoursTotal: number;
+}
+
+export interface WorkDiaryEntry {
+  userId: string; dateISO: string;            // YYYY-MM-DD (entity-local)
+  acknowledged: { taskId: string; code: string; title: string }[];
+  created: { taskId: string; code: string; title: string }[];
+  statusChanges: { taskId: string; code: string; from: TaskStatus; to: TaskStatus }[];
+  completed: { taskId: string; code: string; title: string }[];
+  commentsPosted: number;
+  wentOverdue: { taskId: string; code: string; title: string }[];
+}
+
+// S141 storage keys (§O)
+export const tfExpensesKey = (entityCode: string): string =>
+  entityCode ? `tf_expenses_${entityCode}` : 'tf_expenses';
+export const tfEvidenceKey = (entityCode: string): string =>
+  entityCode ? `tf_evidence_${entityCode}` : 'tf_evidence';
+export const tfClosePoliciesKey = (entityCode: string): string =>
+  entityCode ? `tf_close_policies_${entityCode}` : 'tf_close_policies';
