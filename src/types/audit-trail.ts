@@ -362,7 +362,14 @@ export type AuditEntityType =
   // Single audit type carries action discriminator via AuditTrailEntry.reason / record_label.
   // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow-engine + Comply360 + push-notification-bridge.
   // docvault-engine UNTOUCHED (sibling pattern · FR-19).
-  | 'document_control_event';
+  | 'document_control_event'
+  // Sprint 145 · T-FrontDesk-A6F.1 · Pillar A.6-F · FrontDesk MVP (module: 'mca-roc')
+  // Logged by frontdesk-engine on visitor/watchlist/contact-note mutations. ADDITIVE inline
+  // emission ONLY · NO registerAuditEntityType call (mirrors chat_event / taskflow_event /
+  // document_control_event precedent). Action discriminator carried via reason/record_label.
+  // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow-engine + Comply360 + push-notification-bridge.
+  // SCOPE WALL DP-FD-1 · gate-entry.ts + gate-pass.ts + weighbridge are 0-DIFF — FrontDesk owns PEOPLE.
+  | 'frontdesk_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
