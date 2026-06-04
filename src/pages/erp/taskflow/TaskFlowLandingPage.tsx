@@ -1,14 +1,15 @@
 /**
  * @file        src/pages/erp/taskflow/TaskFlowLandingPage.tsx
- * @purpose     TaskFlow MVP landing · stats + Due-Soon strip + on-load reminder toast
- * @sprint      Sprint 137 · T-TaskFlow-A641.1 · Phase 8 OPENER · Block 3 (scaffold for Block 5)
- * @decisions   Block-5 ruling Option A: sonner toast() + computed Due-Soon strip · NO store
+ * @purpose     TaskFlow landing · stats (+ unacknowledged) + Due-Soon strip + reminder toast
+ * @sprint      Sprint 137.R1 · T-TaskFlow-A641.1 · Pillar A.6.4 · TaskFlow Arc opener · Block R4
+ * @decisions   R1 corrective: adds `unacknowledged` stat. Notification posture unchanged
+ *              (sonner toast + computed strip · NO store · push-bridge UNTOUCHED).
  */
 import { useEffect, useMemo } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, ListChecks, CheckSquare, AlertCircle, PlayCircle } from 'lucide-react';
+import { Clock, ListChecks, CheckSquare, AlertCircle, PlayCircle, Bell } from 'lucide-react';
 import { listDueWithin24h, getStats } from '@/lib/taskflow-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 
@@ -17,7 +18,6 @@ export default function TaskFlowLandingPage(): JSX.Element {
   const stats = useMemo(() => getStats(entityCode), [entityCode]);
   const dueSoon = useMemo(() => listDueWithin24h(entityCode), [entityCode]);
 
-  // DESIGN-DECISION-FLAG #3 · on-load reminder toast for Due-Soon (sonner, no store)
   useEffect(() => {
     if (dueSoon.length > 0) {
       toast.warning(`${dueSoon.length} task${dueSoon.length === 1 ? '' : 's'} due within 24h`, {
@@ -31,16 +31,17 @@ export default function TaskFlowLandingPage(): JSX.Element {
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">TaskFlow</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Generic cross-department task delegation · MVP Phase 8 opener
+          Generic cross-department task delegation · Pillar A.6.4 · TaskFlow Arc opener (post-Phase-7)
         </p>
       </header>
 
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
         <StatCard label="Total" value={stats.total} icon={<ListChecks className="h-4 w-4" />} />
         <StatCard label="Open" value={stats.open} icon={<AlertCircle className="h-4 w-4 text-warning" />} />
         <StatCard label="In Progress" value={stats.in_progress} icon={<PlayCircle className="h-4 w-4 text-primary" />} />
-        <StatCard label="Blocked" value={stats.blocked} icon={<AlertCircle className="h-4 w-4 text-destructive" />} />
-        <StatCard label="Done" value={stats.done} icon={<CheckSquare className="h-4 w-4 text-success" />} />
+        <StatCard label="On Hold" value={stats.on_hold} icon={<AlertCircle className="h-4 w-4 text-destructive" />} />
+        <StatCard label="Completed" value={stats.completed} icon={<CheckSquare className="h-4 w-4 text-success" />} />
+        <StatCard label="Unacknowledged" value={stats.unacknowledged} icon={<Bell className="h-4 w-4 text-warning" />} />
       </div>
 
       <Card className="rounded-2xl">
@@ -53,9 +54,7 @@ export default function TaskFlowLandingPage(): JSX.Element {
         </CardHeader>
         <CardContent>
           {dueSoon.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nothing due within 24 hours.
-            </p>
+            <p className="text-sm text-muted-foreground">Nothing due within 24 hours.</p>
           ) : (
             <ul className="divide-y divide-border">
               {dueSoon.map((t) => (
@@ -63,12 +62,10 @@ export default function TaskFlowLandingPage(): JSX.Element {
                   <div>
                     <p className="font-medium">{t.title}</p>
                     <p className="text-xs text-muted-foreground font-mono">
-                      {t.code} · {t.assignee_name || 'Unassigned'}
+                      {t.code} · {t.assigneeName || 'Unassigned'}
                     </p>
                   </div>
-                  <Badge variant="secondary" className="font-mono">
-                    {t.priority.toUpperCase()}
-                  </Badge>
+                  <Badge variant="secondary" className="font-mono">{t.priority}</Badge>
                 </li>
               ))}
             </ul>
@@ -78,7 +75,8 @@ export default function TaskFlowLandingPage(): JSX.Element {
 
       <p className="text-xs text-muted-foreground">
         TaskFlow notifications ride sonner + computed Due-Soon strip pending B.4
-        Notifications Consolidation. Full CRUD UI lands in Block 4 (Pass 2).
+        Notifications Consolidation. Approvals / Discussion / Checklist / Documents /
+        Expenses / Evidence land in S138–S143 (TaskRoom placeholders live).
       </p>
     </div>
   );

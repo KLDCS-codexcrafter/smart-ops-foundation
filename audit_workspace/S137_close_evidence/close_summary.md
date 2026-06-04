@@ -114,3 +114,146 @@ Test Files  19 failed | 443 passed | 3 skipped (465)
 Sprint 137 successfully opens **Phase 8** by activating the 13th ERP card (TaskFlow) with a self-contained, FR-44-compliant MVP. The Notification type is intentionally type-only to reserve the B.4 contract without creating orphan persistence. ComplianceModule and push-notification-bridge are both 0-DIFF, preserving Phase 7's audit integrity. 60-streak ⭐ target reached pending bank.
 
 **headSha will be filled at bank time (TBD_AT_BANK in sprint-history.ts).**
+
+---
+
+## 🔧 R1 CORRECTION — Sprint 137.R1 (upgrade-in-place)
+
+**Predecessor:** `d6905c13` "Completed Pass 2 of Sprint 137"  
+**Why:** Audit found the shipped Task model and feature slice diverged from the
+ratified spec (`TaskFlow_Step1_Alignment_v5_FINAL.md`). Shell, pickers, registers,
+§H discipline, and FR-44 reuse remained good — this corrective re-execution
+upgraded the model + added missing ratified features without rollback.
+
+### Blocks delivered (R1–R7, single pass)
+
+- **R1 · ESLint fix:** Removed the two `react-hooks/exhaustive-deps` warnings in
+  `TaskFlowAllTasksPage.tsx` by holding task rows in state (`useState` +
+  `refresh` callback) so the artificial `tick` dep disappears. Repo ESLint
+  `--max-warnings 0` clean.
+- **R2 · Ratified Task model:** Replaced `src/types/taskflow.ts` verbatim with
+  the 12-state lifecycle + 4 priorities + 11 categories (incl. `internal_audit`
+  /`external_audit` TF-9), `Recur ringConfig`, full `Task` shape (camelCase
+  `assigneeId`/`departmentId`/`clientId`/`vendorId`/`dueDate`/`entityId`/
+  `acknowledgedAt`/etc.), `ReassignmentRecord`, `DueDateChangeRecord`,
+  `TaskAuditEntry`, and ALL supporting TYPE-ONLY interfaces (`TaskTemplate`,
+  `ChecklistItem`, `TaskCommentModel`, `TaskAttachment`, `TaskApprovalStep`,
+  `TaskApprovalChain`, `TaskSLARule`, `TaskWorkflowStage`,
+  `TaskWorkflowTemplate`, `TaskReminder`, `TaskEvidence`, `TaskExpense`).
+  Backward-compat aliases kept: `TaskComment`, `TaskNotification`. New
+  entity-scoped keys: `tf_reassignments_*`, `tf_duedate_changes_*`,
+  `tf_task_audit_*`.
+- **R3 · Engine additions** (`src/lib/taskflow-engine.ts`):
+  - `acknowledgeTask` (throws on double-ack) + `getUnacknowledgedTasks`.
+  - `reassignTask` (reason mandatory; appends to `tf_reassignments`) +
+    `getReassignmentTrail`.
+  - `changeDueDate` (reason mandatory; appends to `tf_duedate_changes`) +
+    `getDueDateHistory`.
+  - `getSubTasks` + `getBlockingBadges` (TF-14).
+  - **Hash-chain (TF-36):** `appendTaskAudit` invoked by every mutating
+    function; `verifyAuditChain` returns `{ valid, breakIndex? }`.
+  - `changeStatus` validates against the 12-state `TASK_STATUS_TRANSITIONS`
+    map (illegal → throw). `completed` stamps `completedDate`.
+  - `migrateLegacyTask` helper maps `open/in_progress/blocked/done →
+    open/in_progress/on_hold/completed` and `p0..p3 → critical/high/medium/low`.
+- **R4 · Pages:**
+  - `TaskFlowAllTasksPage`: List/Board view toggle. **Kanban** groups the 12
+    statuses into 5 visual lanes (Open · In Progress · Review · Waiting ·
+    Closed — terminal states compacted per DESIGN-DECISION-FLAG R1-1).
+    Filters: category (incl. internal/external audit) · branch · department
+    with "My dept / All" toggle (TF-15). Create dialog adds category · branch
+    · parentTask picker · tags · estimatedHours · watchers (multi-select).
+    Row click opens TaskRoom.
+  - **NEW `TaskRoomPage.tsx`** mounted at `/erp/taskflow/task/:id`: 8-tab
+    shell — LIVE: Summary (with Acknowledge button when current assignee &
+    unacknowledged + Reassign dialog [reason mandatory] + Change-Due-Date
+    dialog [reason mandatory] + status transition Select honoring the map);
+    Sub-tasks (children list + blocked-by badges); Activity (hash-chained
+    entries newest-first + chain-verify badge from `verifyAuditChain`).
+    PLACEHOLDERS: Discussion (existing comments rendered read-only),
+    Checklist, Documents, Approvals, Expenses, Evidence — each labelled
+    with the future sprint that will land it (S138/S139/S141/S143).
+  - `TaskFlowLandingPage`: stat strip extended with `unacknowledged` count.
+- **R5 · Tests:** `src/test/sprint-137/taskflow-mvp.test.ts` extended to
+  **47 it** (≥34 target). New coverage: all 12 statuses present + 4 legal +
+  3 illegal transitions · acknowledge (sets fields · double-ack throws) ·
+  unacknowledged threshold query · reassign requires reason (empty throws) +
+  trail recorded · due-date change requires reason + history recorded ·
+  sub-task linkage + blocking badges resolve when dep completes · hash-chain
+  appends correctly · `verifyAuditChain` valid on clean chain · detects
+  tampering when a middle entry's `action` is mutated (returns
+  `{valid:false, breakIndex:number}`) · category/branch round-trip ·
+  migration-map correctness for old → new status/priority. All existing
+  tests green.
+- **R6 · Labels/registers:** Removed every "Phase 8 OPENER" mention from
+  `applications.ts` consumers (sprint-history S137 comment, sibling-register
+  taskflow-engine name, taskflow-shell-config / taskflow-sidebar-config /
+  TaskFlowPage / TaskRoomPage docblocks, App.tsx route comments, landing-page
+  subtitle). Replaced with **"Pillar A.6.4 · TaskFlow Arc opener
+  (post-Phase-7)"**. Phase 8 designation **reserved for P2BB**. S137 entry
+  in `sprint-history.ts` stays `TBD_AT_BANK`. No S138 entry created.
+- **R7 · This append.**
+
+### LOC delta (R1 corrective)
+
+| File | Δ LOC (approx) |
+| --- | --- |
+| `src/types/taskflow.ts` | +120 (full replacement; structural growth) |
+| `src/lib/taskflow-engine.ts` | +320 |
+| `src/pages/erp/taskflow/TaskFlowAllTasksPage.tsx` | +200 (rewrite; kanban + filters + camelCase) |
+| `src/pages/erp/taskflow/TaskRoomPage.tsx` | +340 (new) |
+| `src/pages/erp/taskflow/TaskFlowLandingPage.tsx` | +6 |
+| `src/test/sprint-137/taskflow-mvp.test.ts` | +180 (47 it total) |
+| Label fixes (configs / App.tsx / registers) | ±10 |
+| **Total R1 corrective delta** | **≈ +1,170 LOC net** |
+
+### Gates (R1 final · 7GB heap)
+
+- **TSC:** 0 errors (`tsc --noEmit` clean).
+- **ESLint:** 0 errors / 0 warnings repo-wide (`eslint --max-warnings 0 .`).
+- **Vitest (scoped: sprint-137 + sprint-136 + sprint-135 + _meta):**
+  `5 files · 111 tests · all pass` (~5.3s). sprint-137 itself: **47/47 pass**.
+- **Vitest full-suite floor:** baseline 20 failures / 5730 passes / 3 skipped
+  preserved as the cap. R1 did not introduce any logic regression in
+  TaskFlow surface code; the pre-existing comply360 worker-timeout delta
+  (documented in §L above) remains infra-only and out of scope.
+- **Build:** Vite production build PASS (harness build step clean).
+
+### DESIGN-DECISION-FLAGs (R1)
+
+- **R1-1 · Kanban groupings.** 12 statuses → 5 visual lanes
+  (Open[draft,open] · In Progress[in_progress,rework] ·
+  Review[in_review,pending_approval,approved] ·
+  Waiting[on_hold,escalated] · Closed[completed,cancelled,rejected]).
+  Compact grouping prevents UI sprawl while keeping every status reachable
+  from the inline status-change Select (which still honors the strict
+  transition map).
+- **R1-2 · Current-user dept resolution.** TaskFlowAllTasksPage accepts
+  `currentUserDepartmentId` as a prop today. The mock-auth surface is owned
+  by another seam; R1 keeps that surface read-only (zero edits to auth
+  engines) and defers wiring to the next TaskFlow sprint. "My dept / All"
+  toggle only renders when the prop is supplied — otherwise filter is hidden.
+- **R1-3 · sha256 helper.** Implemented as a compact synchronous
+  FNV-1a-64×2 cascade returning a 64-hex-char digest (`sha256Sync`).
+  Rationale: engine surface must stay synchronous (vitest jsdom +
+  chain-verify in tests); `crypto.subtle.digest` is async-only and would
+  force the entire mutating API to be Promise-returning. The cascade is
+  deterministic and tamper-sensitive (single-byte mutations cascade
+  through both halves of the chain). Upgrade path to a real SHA-256
+  digest (Web Crypto or pure-JS) is scoped to **B.4** alongside the
+  notification rail consolidation.
+
+### §H · 0-DIFF confirmed
+
+- `ComplianceModule`: **UNTOUCHED**.
+- `push-notification-bridge.ts`: **UNTOUCHED**.
+- `useEmployees` / `useOrgStructure` / `party-master-engine` /
+  `audit-trail-engine`: **READ-ONLY consume; 0-DIFF**.
+- `audit_workspace/Z*_close_evidence/*.json`: **NOT regenerated** in R1
+  (Operix Execution Discipline v1 §1 honored).
+
+**R1 outcome:** Ratified spec parity achieved in-place. TaskFlow MVP now
+exposes the 12-state lifecycle, Accountability Spine (TF-29 a/b/c), TF-14
+sub-task hierarchy, and TF-36 tamper-evident hash-chain through a single
+self-owned shell. `headSha` still **TBD_AT_BANK** in `sprint-history.ts`
+and will be backfilled at S138 Block 1 per institutional canon.
