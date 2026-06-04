@@ -2,14 +2,14 @@
  * @file        src/pages/erp/frontdesk/visitors/RollCallPage.tsx
  * @sprint      Sprint 145 · T-FrontDesk-A6F.1 · Block 4
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { buildMusterReport, getOverstays } from '@/lib/frontdesk-engine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Printer, AlertTriangle } from 'lucide-react';
+import { Printer, AlertTriangle, RefreshCw } from 'lucide-react';
 
 export function RollCallPage(): JSX.Element {
   const { entityCode } = useEntityCode();
