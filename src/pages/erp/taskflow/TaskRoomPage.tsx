@@ -58,9 +58,10 @@ import type {
 import type { Conversation, ChatMessage } from '@/types/operix-chat';
 import { TASK_STATUS_TRANSITIONS } from '@/types/taskflow';
 
-const PLACEHOLDER_TABS = [
-  { id: 'documents',  label: 'Documents',  arrives: 'S143' },
-];
+import { AttachDocuments } from '@/components/docvault/AttachDocuments';
+
+const PLACEHOLDER_TABS: { id: string; label: string; arrives: string }[] = [];
+
 
 export default function TaskRoomPage(): JSX.Element {
   const { id } = useParams<{ id: string }>();
