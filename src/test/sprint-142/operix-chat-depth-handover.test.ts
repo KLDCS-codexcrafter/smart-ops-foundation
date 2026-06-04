@@ -59,7 +59,6 @@ describe('S142 · MediaVault TF-30c', () => {
   it('indexes a file attachment as kind=file', () => {
     const c = mkConv();
     sendMessage(E, c.id, {
-      conversationId: c.id, senderId: U_A, type: 'text', content: 'see attached',
       attachment: { fileName: 'doc.pdf', mimeType: 'application/pdf', sizeBytes: 1024, dataUrl: 'data:application/pdf;base64,AAA=' },
     });
     const items = listMediaVault(E);
@@ -71,7 +70,6 @@ describe('S142 · MediaVault TF-30c', () => {
   it('indexes an image attachment as kind=image', () => {
     const c = mkConv();
     sendMessage(E, c.id, {
-      conversationId: c.id, senderId: U_A, type: 'text', content: 'pic',
       attachment: { fileName: 'p.png', mimeType: 'image/png', sizeBytes: 500, dataUrl: 'data:image/png;base64,AAA=' },
     });
     const items = listMediaVault(E, { kind: 'image' });
@@ -82,7 +80,6 @@ describe('S142 · MediaVault TF-30c', () => {
   it('indexes a voice note as kind=voice', () => {
     const c = mkConv();
     sendMessage(E, c.id, {
-      conversationId: c.id, senderId: U_A, type: 'voice', content: 'data:audio/webm;base64,AAA=',
       voiceMeta: { durationSeconds: 5, mimeType: 'audio/webm', sizeBytes: 800 },
     });
     const items = listMediaVault(E, { kind: 'voice' });
@@ -93,7 +90,6 @@ describe('S142 · MediaVault TF-30c', () => {
   it('rejects attachments over the cap', () => {
     const c = mkConv();
     expect(() => sendMessage(E, c.id, {
-      conversationId: c.id, senderId: U_A, type: 'text', content: 'big',
       attachment: { fileName: 'big.bin', mimeType: 'application/octet-stream', sizeBytes: ATTACHMENT_MAX_BYTES + 1, dataUrl: 'data:application/octet-stream;base64,A' },
     })).toThrow();
   });
@@ -101,7 +97,6 @@ describe('S142 · MediaVault TF-30c', () => {
   it('survives participant removal (org-owned)', () => {
     const c = mkConv();
     sendMessage(E, c.id, {
-      conversationId: c.id, senderId: U_B, type: 'text', content: 'bye',
       attachment: { fileName: 'f.txt', mimeType: 'text/plain', sizeBytes: 10, dataUrl: 'data:text/plain;base64,AAA=' },
     });
     removeParticipant(E, c.id, U_B, U_A);
@@ -112,7 +107,6 @@ describe('S142 · MediaVault TF-30c', () => {
   it('rebuildMediaVaultIndex is idempotent on item count', () => {
     const c = mkConv();
     sendMessage(E, c.id, {
-      conversationId: c.id, senderId: U_A, type: 'text', content: 'x',
       attachment: { fileName: 'f.txt', mimeType: 'text/plain', sizeBytes: 5, dataUrl: 'data:text/plain;base64,AAA=' },
     });
     const a = rebuildMediaVaultIndex(E).length;
@@ -129,7 +123,6 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hi' });
     expect(() => createFollowUp(E, {
-      conversationId: c.id, messageId: m.id, note: '   ', assigneeId: U_B, createdByUserId: U_A,
     })).toThrow();
   });
 
@@ -137,7 +130,6 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
-      conversationId: c.id, messageId: m.id, note: 'follow up', assigneeId: U_B, createdByUserId: U_A,
     });
     expect(fu.status).toBe('open');
     expect(listFollowUps(E, { status: 'open' }).length).toBe(1);
@@ -147,7 +139,6 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
-      conversationId: c.id, messageId: m.id, note: 'x', assigneeId: U_B, createdByUserId: U_A,
     });
     const r = resolveFollowUp(E, fu.id);
     expect(r.status).toBe('done');
@@ -158,7 +149,6 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
-      conversationId: c.id, messageId: m.id, note: 'do it', assigneeId: U_B, createdByUserId: U_A,
     });
     const out = convertFollowUpToTask(E, fu.id, U_A, { createTaskFn: (ec, t) => createTask(ec, t) });
     expect(out.taskId).toBeTruthy();
@@ -170,7 +160,6 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
-      conversationId: c.id, messageId: m.id, note: 'do it', assigneeId: U_B, createdByUserId: U_A,
     });
     convertFollowUpToTask(E, fu.id, U_A, { createTaskFn: (ec, t) => createTask(ec, t) });
     expect(() => convertFollowUpToTask(E, fu.id, U_A, { createTaskFn: (ec, t) => createTask(ec, t) })).toThrow();
