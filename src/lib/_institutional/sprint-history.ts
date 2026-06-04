@@ -819,11 +819,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['taskflow-engine'],
     bankDate: '2026-06-04', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 138 T-TaskFlow-A641.2 · Pillar A.6.4 · TaskFlow Arc · Governance Slice · approvals adapter (REUSE approval-workflow-engine 0-DIFF) + SLA + escalations + I'm-Blocked artifact + Comply360 bridge (READ-ONLY over loadObligations + listIAIssues) + rich reminders + comments upgrade · 1 NEW SIBLID taskflow-governance-engine (TF-3 · TF-21 · TF-33 · TF-11 · TF-13-rich) · §H 0-DIFF on approval-workflow-engine + all Comply360 engines + ComplianceModule UNTOUCHED · 61-streak ⭐ target · headSha TBD_AT_BANK
+  // 🎬 Sprint 138 T-TaskFlow-A641.2 · Pillar A.6.4 · TaskFlow Arc · Governance Slice · approvals adapter (REUSE approval-workflow-engine 0-DIFF) + SLA + escalations + I'm-Blocked artifact + Comply360 bridge (READ-ONLY over loadObligations + listIAIssues) + rich reminders + comments upgrade · 1 NEW SIBLID taskflow-governance-engine (TF-3 · TF-21 · TF-33 · TF-11 · TF-13-rich) · §H 0-DIFF on approval-workflow-engine + all Comply360 engines + ComplianceModule UNTOUCHED · banked @ dc387822 (61 ⭐)
   {
     sprintNumber: 138, code: 'T-TaskFlow-A641.2', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '0742e96b', loc: 1400,
+    headSha: 'dc387822', predecessorSha: '0742e96b', loc: 1400,
     newSiblings: ['taskflow-governance-engine'],
+    bankDate: '2026-06-04', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 139 T-TaskFlow-A641.3 · Pillar A.6.4 · TaskFlow Arc · Structure Slice · workflows + templates + checklists/milestones + dependency enforcement + recurring + Decision Register (TF-32) · 1 NEW SIBLING taskflow-workflow-engine (TF-14-full · TF-32) · §H 0-DIFF on approval-workflow-engine + all Comply360 engines + ComplianceModule UNTOUCHED · Z* writer idempotency root-fix · 62-streak ⭐ target · headSha TBD_AT_BANK
+  {
+    sprintNumber: 139, code: 'T-TaskFlow-A641.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'dc387822', loc: 1450,
+    newSiblings: ['taskflow-workflow-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
