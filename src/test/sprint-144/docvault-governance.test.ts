@@ -114,8 +114,6 @@ describe('S144 · Sharing · XOR + approval + expiry', () => {
 
   it('restricted doc returns null without explicit grant', () => {
     const id = newDoc();
-    setLifecycleStatus(E, id, 'active', U_OWNER);
-    // Bump confidentiality directly via control engine
     const raw = localStorage.getItem(`erp_documents_${E}`)!;
     const all = JSON.parse(raw);
     all[0].control = { ...(all[0].control ?? {}), confidentiality: 'restricted' };
