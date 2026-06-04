@@ -497,6 +497,16 @@ export default function TaskFlowAllTasksPage({
                         <Badge variant={statusVariant(t.status)} className="font-mono text-[10px]">{t.status}</Badge>
                         <span className="text-[10px] font-mono text-muted-foreground">{t.priority}</span>
                       </div>
+                      {(blockedIds.has(t.id) || escalatedIds.has(t.id)) && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {blockedIds.has(t.id) && (
+                            <Badge variant="destructive" className="text-[10px]">blocked</Badge>
+                          )}
+                          {escalatedIds.has(t.id) && (
+                            <Badge variant="destructive" className="text-[10px]">escalated</Badge>
+                          )}
+                        </div>
+                      )}
                     </Link>
                   ))}
                 </CardContent>
