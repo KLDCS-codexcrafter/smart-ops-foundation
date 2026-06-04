@@ -321,7 +321,7 @@ describe('institutional contract', () => {
     expect(SIBLINGS.some((s) => s.id === 'taskflow-governance-engine')).toBe(true);
   });
   it('sprint-history: S137 entry banked at SHA 0742e96b and S138 last entry references TaskFlow-A641.2', () => {
-    const hist = JSON.stringify(SPRINT_HISTORY);
+    const hist = JSON.stringify(SPRINTS);
     expect(hist).toContain('0742e96b');
     expect(hist).toContain('T-TaskFlow-A641.2');
   });
