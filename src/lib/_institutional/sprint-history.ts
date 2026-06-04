@@ -861,11 +861,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['docvault-control-engine'],
     bankDate: '2026-06-04', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 144 T-TaskFlow-A641.8 · Pillar A.6.4 · TaskFlow Arc · DocVault Control Pt 2 · ARC CLOSER · sharing (internal/external · watermark) + ACL (TDL 6-action) + retention/review + B.7 generalized DocumentLinkRef (+voucher) + TF-34 Read-and-Understood Circulars (Comply360 read-only) + TF-38 Required-Documents Completeness + FY facet + TaskRoom Documents tab LIVE · 1 NEW SIBLING docvault-governance-engine · docvault.ts ADDITIVE (DocumentShare · DocVaultUserACL · DocumentRetentionRule · DocumentReviewCycle · DocumentLinkRef · Circular · CircularAcknowledgment · DocumentRequirementTemplate · CompletenessResult + optional financial_year on DocumentControlMeta) · docvault-engine + docvault-control-engine version/lifecycle machinery + approval-workflow + Comply360 (READ-ONLY) + push-notification-bridge ALL 0-DIFF · headSha TBD_AT_BANK
+  // 🎬 Sprint 144 T-TaskFlow-A641.8 · Pillar A.6.4 · TaskFlow Arc · DocVault Control Pt 2 · ARC CLOSER · sharing (internal/external · watermark) + ACL (TDL 6-action) + retention/review + B.7 generalized DocumentLinkRef (+voucher) + TF-34 Read-and-Understood Circulars (Comply360 read-only) + TF-38 Required-Documents Completeness + FY facet + TaskRoom Documents tab LIVE · 1 NEW SIBLING docvault-governance-engine · docvault.ts ADDITIVE · §H + docvault-engine + docvault-control-engine + approval-workflow + Comply360 + push-notification-bridge ALL 0-DIFF · headSha 293b0c1e (banked · T1 added DocumentControlPanel sharing/links + TaskRoom Documents tab + WatermarkOverlay)
   {
     sprintNumber: 144, code: 'T-TaskFlow-A641.8', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '339ce7a2', loc: 1700,
+    headSha: '293b0c1e', predecessorSha: '339ce7a2', loc: 1700,
     newSiblings: ['docvault-governance-engine'],
+    bankDate: '2026-06-04', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 145 T-FrontDesk-A6F.1 · Pillar A.6-F · FrontDesk MVP · card 'frontdesk' coming_soon→active · Visitors (planned + walk-in · badge B-#### + watchlist gate + ID-CAPTURE CANON DP-FD-18 · last4 only · 12+ digit string throws · photo ≤1MB) · Items-Carried + checkout mismatch · Contact Book + per-party notes · Evacuation Roll-Call print · Watchlist (mandatory reason + flaggedBy) · 1 NEW SIBLING frontdesk-engine · NEW audit literal frontdesk_event ADDITIVE under mca-roc · SCOPE WALL DP-FD-1: gate-entry.ts + gate-pass.ts + weighbridge 0-DIFF (FrontDesk owns PEOPLE not goods) · §H + approval-workflow + Comply360 + push-notification-bridge ALL 0-DIFF · FR-44 READ-ONLY consume from useEmployees + party-master-engine + useCurrentUser + S144 AttachDocuments · headSha TBD_AT_BANK
+  {
+    sprintNumber: 145, code: 'T-FrontDesk-A6F.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '293b0c1e', loc: 1500,
+    newSiblings: ['frontdesk-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
