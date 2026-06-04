@@ -363,12 +363,12 @@ describe('S143 · Audit + registers + additivity', () => {
     expect(SIBLINGS.length).toBeGreaterThanOrEqual(212);
   });
 
-  it('S142 backfilled to 3b53dd5e and S143 is last entry as TBD_AT_BANK', () => {
+  it('S142 backfilled to 3b53dd5e and S143 backfilled to 339ce7a2 at S144 open', () => {
     const s142 = SPRINTS.find((s) => s.sprintNumber === 142);
     expect(s142?.headSha).toBe('3b53dd5e');
     const s143 = SPRINTS.find((s) => s.sprintNumber === 143);
     expect(s143?.predecessorSha).toBe('3b53dd5e');
-    expect(s143?.headSha).toBe('TBD_AT_BANK');
+    expect(s143?.headSha).toContain('339ce7a2');
   });
 
   it('existing Document fields and version states untouched (additivity proof)', () => {
