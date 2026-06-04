@@ -854,11 +854,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['operix-handover-engine'],
     bankDate: '2026-06-04', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 143 T-TaskFlow-A641.7 · Pillar A.6.4 · TaskFlow Arc · DocVault Control Pt 1 · document lifecycle + ownership/transfer (closes TF-35 DocVault deferral) + confidentiality + numbering + folders + categories + control audit · 1 NEW SIBLING docvault-control-engine · docvault.ts ADDITIVE (optional control meta + DocumentFolder + DocumentTypeNumberingConfig + DocumentControlAuditEntry) · audit type document_control_event ADDITIVE under mca-roc · docvault-engine + 12-state taskflow + approval-workflow + Comply360 + push-notification-bridge ALL 0-DIFF · headSha TBD_AT_BANK
+  // 🎬 Sprint 143 T-TaskFlow-A641.7 · Pillar A.6.4 · TaskFlow Arc · DocVault Control Pt 1 · document lifecycle + ownership/transfer (closes TF-35 DocVault deferral) + confidentiality + numbering + folders + categories + control audit · 1 NEW SIBLING docvault-control-engine · docvault.ts ADDITIVE · audit type document_control_event ADDITIVE under mca-roc · docvault-engine + 12-state taskflow + approval-workflow + Comply360 + push-notification-bridge ALL 0-DIFF · headSha 339ce7a2 (banked · T1 added DocumentControlPanel + DocumentRegister upgrades)
   {
     sprintNumber: 143, code: 'T-TaskFlow-A641.7', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '3b53dd5e', loc: 1350,
+    headSha: '339ce7a2', predecessorSha: '3b53dd5e', loc: 1350,
     newSiblings: ['docvault-control-engine'],
+    bankDate: '2026-06-04', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 144 T-TaskFlow-A641.8 · Pillar A.6.4 · TaskFlow Arc · DocVault Control Pt 2 · ARC CLOSER · sharing (internal/external · watermark) + ACL (TDL 6-action) + retention/review + B.7 generalized DocumentLinkRef (+voucher) + TF-34 Read-and-Understood Circulars (Comply360 read-only) + TF-38 Required-Documents Completeness + FY facet + TaskRoom Documents tab LIVE · 1 NEW SIBLING docvault-governance-engine · docvault.ts ADDITIVE (DocumentShare · DocVaultUserACL · DocumentRetentionRule · DocumentReviewCycle · DocumentLinkRef · Circular · CircularAcknowledgment · DocumentRequirementTemplate · CompletenessResult + optional financial_year on DocumentControlMeta) · docvault-engine + docvault-control-engine version/lifecycle machinery + approval-workflow + Comply360 (READ-ONLY) + push-notification-bridge ALL 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 144, code: 'T-TaskFlow-A641.8', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '339ce7a2', loc: 1700,
+    newSiblings: ['docvault-governance-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
