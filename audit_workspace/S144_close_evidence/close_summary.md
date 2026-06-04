@@ -44,7 +44,9 @@
 - `CompletenessPage.tsx` — template CRUD · per-kind summary · per-target missing-items register.
 - DocVault sidebar: "Governance" group with 4 items (`d g`, `d y`, `d c`, `d k`).
 - DocVaultPage routing: 4 new modules wired.
-- **DocumentControlPanel extensions:** DEFERRED-WITH-REASON — engine surface is fully tested via 47 it(); panel-level wiring for Sharing/Links/FY sections (extra ~120 LOC) deferred to S144.T1 if requested. The 4 standalone Governance pages above already deliver the full operator workflow. **TaskRoom Documents tab** and **Watermarked viewer overlay**: DEFERRED-WITH-REASON — engine contracts (`listLinksForRef('task', taskId)` and `getEffectivePermission` watermark string) are LIVE and tested; UI surfacing in TaskRoom + viewer overlay is a thin presentation layer over the same engine and deferred to T1 to keep this pass within the §H/gates window.
+- **DocumentControlPanel extensions:** DELIVERED-AT-T1 — Sharing section (grants table · internal/external grant dialog · approve/revoke · effective-permission preview with watermark surfacing) · B.7 Links section (add/remove with task/conversation/obligation/employee/voucher pickers) · FY selector (FYYYYY-YY validated) · Mark-reviewed action (advances per cycle frequency).
+- **TaskRoom Documents tab:** DELIVERED-AT-T1 — placeholder removed · LIVE tab renders the reusable `AttachDocuments` widget which surfaces `listLinksForRef('task', taskId)`. Link-existing picker and upload-new both honor `assertAcl('upload')` (ACL-denied surfaces a toast).
+- **Watermarked viewer:** DELIVERED-AT-T1 — `src/components/docvault/WatermarkOverlay.tsx` renders tiled name+timestamp CSS overlay; download hidden via `data-download-hidden="true"` + sr-only notice (§L client-side deterrence note retained).
 
 ### Block 5 · Registers + Tests — DELIVERED
 - Sibling register +1 → `docvault-governance-engine` appended (canonical length **213**).
