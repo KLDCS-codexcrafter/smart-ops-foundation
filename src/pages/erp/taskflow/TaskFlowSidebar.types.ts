@@ -1,7 +1,7 @@
 /**
  * @file        src/pages/erp/taskflow/TaskFlowSidebar.types.ts
  * @purpose     TaskFlowModule discriminated union for activeModule state
- * @sprint      Sprint 138 · T-TaskFlow-A641.2 · Pillar A.6.4 · TaskFlow Arc · Governance Slice
+ * @sprint      Sprint 139 · T-TaskFlow-A641.3 · Structure Slice adds templates · workflows · decisions · minutes
  */
 export type TaskFlowModule =
   | 'landing'
@@ -15,4 +15,9 @@ export type TaskFlowModule =
   | 'escalations'
   | 'blocked'
   | 'reminders'
-  | 'compliance-sources';
+  | 'compliance-sources'
+  // ─ Structure Slice (S139) ──────────────────────────────────────────
+  | 'templates'
+  | 'workflows'
+  | 'decisions'
+  | 'minutes';

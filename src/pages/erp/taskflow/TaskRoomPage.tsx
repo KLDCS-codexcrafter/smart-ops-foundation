@@ -37,13 +37,16 @@ import {
   listApprovalChains, getTaskApprovalState, submitTaskForApproval,
   approveTaskStep, rejectTaskStep, raiseBlocked,
 } from '@/lib/taskflow-governance-engine';
+import {
+  listChecklistItems, addChecklistItem, toggleChecklistItem, removeChecklistItem,
+  getChecklistProgress, listWorkflows, applyWorkflowToTask, getWorkflowProgress,
+} from '@/lib/taskflow-workflow-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEmployees } from '@/hooks/useEmployees';
-import type { Task, TaskStatus, TaskApprovalChain } from '@/types/taskflow';
+import type { Task, TaskStatus, TaskApprovalChain, TaskWorkflowTemplate } from '@/types/taskflow';
 import { TASK_STATUS_TRANSITIONS } from '@/types/taskflow';
 
 const PLACEHOLDER_TABS = [
-  { id: 'checklist',  label: 'Checklist',  arrives: 'S139' },
   { id: 'documents',  label: 'Documents',  arrives: 'S141' },
   { id: 'expenses',   label: 'Expenses',   arrives: 'S143' },
   { id: 'evidence',   label: 'Evidence',   arrives: 'S141' },
@@ -149,6 +152,7 @@ export default function TaskRoomPage(): JSX.Element {
             <TabsTrigger value="activity">Activity ({auditChain.length})</TabsTrigger>
             <TabsTrigger value="discussion">Discussion ({comments.length})</TabsTrigger>
             <TabsTrigger value="approvals">Approvals</TabsTrigger>
+            <TabsTrigger value="checklist">Checklist</TabsTrigger>
             {PLACEHOLDER_TABS.map((p) => (
               <TabsTrigger key={p.id} value={p.id}>{p.label}</TabsTrigger>
             ))}
@@ -270,6 +274,11 @@ export default function TaskRoomPage(): JSX.Element {
 
           <TabsContent value="approvals">
             <ApprovalsTab task={task} entityCode={entityCode}
+              currentUserId={currentUserId} onDone={refresh} />
+          </TabsContent>
+
+          <TabsContent value="checklist">
+            <ChecklistTab task={task} entityCode={entityCode}
               currentUserId={currentUserId} onDone={refresh} />
           </TabsContent>
 
@@ -691,5 +700,167 @@ function BlockedDialog({ task, employees, entityCode, currentUserId, onDone }: B
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// S139 · Checklist tab · TF-14-full (live · dependency-enforced · workflow apply)
+// ═════════════════════════════════════════════════════════════════════════
+interface ChecklistProps {
+  task: Task;
+  entityCode: string;
+  currentUserId: string;
+  onDone: () => void;
+}
+function ChecklistTab({ task, entityCode, currentUserId, onDone }: ChecklistProps): JSX.Element {
+  const [tick, setTick] = useState(0);
+  const refresh = (): void => { setTick((t) => t + 1); onDone(); };
+  const items = useMemo(
+    () => listChecklistItems(entityCode, task.id),
+    [entityCode, task.id, tick],
+  );
+  const progress = useMemo(
+    () => getChecklistProgress(entityCode, task.id),
+    [entityCode, task.id, tick],
+  );
+  const workflows: TaskWorkflowTemplate[] = useMemo(
+    () => listWorkflows(entityCode),
+    [entityCode, tick],
+  );
+  const wfProgress = useMemo(
+    () => getWorkflowProgress(entityCode, task.id),
+    [entityCode, task.id, tick],
+  );
+
+  const [title, setTitle] = useState('');
+  const [isMilestone, setIsMilestone] = useState(false);
+  const [dependsOn, setDependsOn] = useState('');
+  const [workflowId, setWorkflowId] = useState('');
+
+  const add = (): void => {
+    if (!title.trim()) { toast.error('Title required'); return; }
+    try {
+      addChecklistItem(entityCode, {
+        taskId: task.id, title, isMilestone,
+        dependsOn: dependsOn || undefined,
+      }, currentUserId);
+      setTitle(''); setIsMilestone(false); setDependsOn('');
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Add failed');
+    }
+  };
+
+  const toggle = (id: string): void => {
+    try {
+      toggleChecklistItem(entityCode, id, currentUserId);
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Toggle blocked');
+    }
+  };
+
+  const remove = (id: string): void => {
+    removeChecklistItem(entityCode, id, currentUserId);
+    refresh();
+  };
+
+  const applyWf = (): void => {
+    if (!workflowId) return;
+    try {
+      const spawned = applyWorkflowToTask(entityCode, task.id, workflowId, currentUserId);
+      toast.success(`Workflow applied · ${spawned.length} stage${spawned.length === 1 ? '' : 's'} added`);
+      setWorkflowId('');
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Apply failed');
+    }
+  };
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader>
+        <CardTitle className="text-base flex items-center justify-between flex-wrap gap-2">
+          <span>Checklist ({progress.done}/{progress.total})</span>
+          <div className="flex items-center gap-2 text-xs">
+            {progress.milestonesPending > 0 && (
+              <Badge variant="destructive" className="font-mono">{progress.milestonesPending} milestone(s) pending</Badge>
+            )}
+            {wfProgress && (
+              <Badge variant="outline" className="font-mono">
+                Workflow {wfProgress.done}/{wfProgress.total}{wfProgress.pendingStage ? ` · ${wfProgress.pendingStage}` : ''}
+              </Badge>
+            )}
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {workflows.length > 0 && !wfProgress && (
+          <div className="flex items-end gap-2 border border-border rounded-lg p-3">
+            <div className="flex-1">
+              <Label className="text-xs">Apply workflow</Label>
+              <Select value={workflowId} onValueChange={setWorkflowId}>
+                <SelectTrigger><SelectValue placeholder="Select workflow…" /></SelectTrigger>
+                <SelectContent>
+                  {workflows.filter((w) => w.isActive).map((w) => (
+                    <SelectItem key={w.id} value={w.id}>{w.name} · {w.stages.length} stage(s)</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button size="sm" disabled={!workflowId} onClick={applyWf}>Apply</Button>
+          </div>
+        )}
+        <div className="grid gap-2 border border-border rounded-lg p-3">
+          <Label className="text-xs">Add checklist item</Label>
+          <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="What needs doing…" />
+          <div className="flex items-center gap-3 flex-wrap">
+            <label className="flex items-center gap-2 text-xs">
+              <input type="checkbox" checked={isMilestone}
+                onChange={(e) => setIsMilestone(e.target.checked)} />
+              Milestone (blocks task completion)
+            </label>
+            <Select value={dependsOn} onValueChange={setDependsOn}>
+              <SelectTrigger className="h-8 w-56"><SelectValue placeholder="Depends on (optional)" /></SelectTrigger>
+              <SelectContent>
+                {items.map((i) => <SelectItem key={i.id} value={i.id}>{i.title}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <div className="ml-auto">
+              <Button size="sm" onClick={add}>Add</Button>
+            </div>
+          </div>
+        </div>
+        {items.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center">No checklist items yet.</p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {items.map((i) => {
+              const pred = i.dependsOn ? items.find((x) => x.id === i.dependsOn) : null;
+              return (
+                <li key={i.id} className="py-2 flex items-start gap-3">
+                  <input type="checkbox" checked={i.isCompleted}
+                    onChange={() => toggle(i.id)} className="mt-1" />
+                  <div className="flex-1">
+                    <p className={`text-sm ${i.isCompleted ? 'line-through text-muted-foreground' : ''}`}>{i.title}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {i.isMilestone && <Badge variant="destructive" className="text-[10px]">milestone</Badge>}
+                      {pred && (
+                        <Badge variant="outline" className="text-[10px] font-mono">depends on: {pred.title}</Badge>
+                      )}
+                      {i.completedAt && (
+                        <span className="text-[10px] font-mono text-muted-foreground">{i.completedAt}</span>
+                      )}
+                    </div>
+                  </div>
+                  <Button size="sm" variant="ghost" className="text-destructive"
+                    onClick={() => remove(i.id)}>Remove</Button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
   );
 }

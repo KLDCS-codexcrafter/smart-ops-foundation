@@ -459,8 +459,9 @@ export function completeRecurringTask(
 ): { completed: Task; next: Task | null } {
   const before = getTask(entityCode, taskId);
   if (!before) throw new Error(`TaskFlow: task ${taskId} not found`);
+  const wasAlreadyCompleted = before.status === 'completed';
   // changeStatus enforces dependency + milestone gates (TF-14-full).
-  const completed = before.status === 'completed' ? before : changeStatus(entityCode, taskId, 'completed', byUserId);
+  const completed = wasAlreadyCompleted ? before : changeStatus(entityCode, taskId, 'completed', byUserId);
 
   if (!completed.isRecurring || !completed.recurringConfig || !completed.dueDate) {
     return { completed, next: null };
@@ -468,9 +469,12 @@ export function completeRecurringTask(
   const cfg = completed.recurringConfig;
   const parentId = completed.tags.find((t) => t.startsWith('recur:'))?.split(':')[1] ?? completed.id;
 
-  // Idempotency: count existing children to derive next sequence n.
+  // Idempotency: if a child for this completion already exists, return it.
   const all = listTasks(entityCode);
   const existing = all.filter((t) => t.tags.some((tag) => tag.startsWith(`recur:${parentId}:`)));
+  if (wasAlreadyCompleted && existing.length > 0) {
+    return { completed, next: existing[existing.length - 1] };
+  }
   const n = existing.length + 1;
   const recurTag = `recur:${parentId}:${n}`;
   if (all.some((t) => t.tags.includes(recurTag))) {
