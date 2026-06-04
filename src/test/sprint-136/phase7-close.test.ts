@@ -174,9 +174,11 @@ describe('S136 · Phase-7 Close · institutional registers (S136 last entry · �
     expect(s136?.predecessorSha).toBe('93a79931a988445ff94bfd6c44b1446f5605f6b2');
   });
 
-  it('S136 headSha is the FINAL open entry (toContain([...]) · legitimately last)', () => {
+  it('S136 headSha is now backfilled (S137 has opened · S136 no longer TBD)', () => {
     const s136 = SPRINTS.find((s) => s.sprintNumber === 136);
-    expect(['TBD_AT_BANK']).toContain(s136?.headSha);
+    expect(s136?.headSha).toBeDefined();
+    expect(s136?.headSha).not.toBe('TBD_AT_BANK');
+    expect((s136?.headSha?.length ?? 0)).toBeGreaterThan(0);
   });
 
   it('S136 adds zero siblings (doc + wiring sprint · 205-class holds)', () => {
@@ -184,8 +186,9 @@ describe('S136 · Phase-7 Close · institutional registers (S136 last entry · �
     expect(s136?.newSiblings.length).toBe(0);
   });
 
-  it('S136 is the last sprint-history entry (no next-sprint tombstone)', () => {
-    expect(SPRINTS[SPRINTS.length - 1].sprintNumber).toBe(136);
+  it('S137 has opened as the new last entry (Phase 8 OPENER · TaskFlow)', () => {
+    const last = SPRINTS[SPRINTS.length - 1];
+    expect(last.sprintNumber).toBeGreaterThanOrEqual(137);
   });
 
   it('sprint count is a FLOOR (≥ 21 Phase-7 sprints S116..S136)', () => {
@@ -200,10 +203,9 @@ describe('S136 · Phase-7 Close · institutional registers (S136 last entry · �
     expect(getSiblingCount()).toBeGreaterThanOrEqual(205);
   });
 
-  it('no other sprint-history entry carries TBD_AT_BANK except S136 (§M)', () => {
+  it('at most one sprint-history entry carries TBD_AT_BANK (the current open sprint · §M)', () => {
     const tbds = SPRINTS.filter((s) => s.headSha === 'TBD_AT_BANK');
-    expect(tbds.length).toBe(1);
-    expect(tbds[0].sprintNumber).toBe(136);
+    expect(tbds.length).toBeLessThanOrEqual(1);
   });
 });
 
