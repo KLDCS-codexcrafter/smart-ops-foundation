@@ -121,14 +121,14 @@ describe('S142 · MediaVault TF-30c', () => {
 describe('S142 · Follow-Ups TF-25', () => {
   it('rejects empty notes', () => {
     const c = mkConv();
-    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hi' });
+    const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'hi' });
     expect(() => createFollowUp(E, {
     })).toThrow();
   });
 
   it('creates a follow-up and lists it as open', () => {
     const c = mkConv();
-    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
+    const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
     });
     expect(fu.status).toBe('open');
@@ -137,7 +137,7 @@ describe('S142 · Follow-Ups TF-25', () => {
 
   it('resolveFollowUp moves to done with resolvedAt', () => {
     const c = mkConv();
-    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
+    const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
     });
     const r = resolveFollowUp(E, fu.id);
@@ -147,7 +147,7 @@ describe('S142 · Follow-Ups TF-25', () => {
 
   it('convertFollowUpToTask creates a task and sets linkedTaskId', () => {
     const c = mkConv();
-    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
+    const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
     });
     const out = convertFollowUpToTask(E, fu.id, U_A, { createTaskFn: (ec, t) => createTask(ec, t) });
@@ -158,7 +158,7 @@ describe('S142 · Follow-Ups TF-25', () => {
 
   it('converted follow-up cannot be converted again', () => {
     const c = mkConv();
-    const m = sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'todo' });
+    const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
     });
     convertFollowUpToTask(E, fu.id, U_A, { createTaskFn: (ec, t) => createTask(ec, t) });
@@ -225,7 +225,7 @@ describe('S142 · Retention TF-30d', () => {
 
   it('deleteConversationsPerPolicy soft-deletes when allowed', () => {
     const c = mkConv();
-    sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hi' });
+    sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'hi' });
     upsertRetentionPolicy(E, { channelType: null, archiveAfterDays: null, retentionDays: 0, allowExport: true, allowDelete: true });
     const n = deleteConversationsPerPolicy(E, [c.id]);
     expect(n).toBeGreaterThanOrEqual(1);
@@ -245,7 +245,7 @@ describe('S142 · Retention TF-30d', () => {
 
   it('exportConversation succeeds when policy allows', () => {
     const c = mkConv();
-    sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'hello' });
+    sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'hello' });
     upsertRetentionPolicy(E, { channelType: null, archiveAfterDays: null, retentionDays: null, allowExport: true, allowDelete: false });
     const b = exportConversation(E, c.id);
     expect(b.messages.length).toBeGreaterThanOrEqual(1);
@@ -258,12 +258,12 @@ describe('S142 · Retention TF-30d', () => {
 describe('S142 · searchMessages active-participant scope', () => {
   it('returns hits to a current participant', () => {
     const c = mkConv();
-    sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'need invoice copy' });
+    sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'need invoice copy' });
     expect(searchMessages(E, U_A, 'invoice').length).toBeGreaterThanOrEqual(1);
   });
   it('hides messages from a removed participant going forward', () => {
     const c = mkConv();
-    sendMessage(E, c.id, { conversationId: c.id, senderId: U_A, type: 'text', content: 'secret note' });
+    sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'secret note' });
     removeParticipant(E, c.id, U_B, U_A);
     expect(searchMessages(E, U_B, 'secret').length).toBe(0);
   });
