@@ -106,7 +106,7 @@ export default function DocumentControlPanel({
   const ctrl = getControl(doc);
   const codePreview = ctrl.category ? previewNextDocumentCode(entityCode, ctrl.category) : null;
   const hasCode = Boolean(ctrl.document_code);
-  const legalNexts = LIFECYCLE_LEGAL[ctrl.lifecycle_status];
+  const legalNexts = LIFECYCLE_LEGAL[ctrl.lifecycle_status ?? 'active'];
 
   const safe = (fn: () => void): void => {
     try { fn(); refresh(); }
