@@ -826,11 +826,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['taskflow-governance-engine'],
     bankDate: '2026-06-04', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 139 T-TaskFlow-A641.3 · Pillar A.6.4 · TaskFlow Arc · Structure Slice · workflows + templates + checklists/milestones + dependency enforcement + recurring + Decision Register (TF-32) · 1 NEW SIBLING taskflow-workflow-engine (TF-14-full · TF-32) · §H 0-DIFF on approval-workflow-engine + all Comply360 engines + ComplianceModule UNTOUCHED · Z* writer idempotency root-fix · 62-streak ⭐ target · headSha TBD_AT_BANK
+  // 🎬 Sprint 139 T-TaskFlow-A641.3 · Pillar A.6.4 · TaskFlow Arc · Structure Slice · workflows + templates + checklists/milestones + dependency enforcement + recurring + Decision Register (TF-32) · 1 NEW SIBLING taskflow-workflow-engine (TF-14-full · TF-32) · §H 0-DIFF on approval-workflow-engine + all Comply360 engines + ComplianceModule UNTOUCHED · Z* writer idempotency root-fix · banked @ c1610463 (62 ⭐)
   {
     sprintNumber: 139, code: 'T-TaskFlow-A641.3', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'dc387822', loc: 1450,
+    headSha: 'c1610463', predecessorSha: 'dc387822', loc: 1450,
     newSiblings: ['taskflow-workflow-engine'],
+    bankDate: '2026-06-04', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 140 T-TaskFlow-A641.4 · Pillar A.6.4 · TaskFlow Arc · OperixChat MVP (Module 2 wakes) · org-owned conversations (TF-30) · 10 channel types (TF-24) · UnifiedInbox + Threads + Channels · voice notes (TF-37) · exit-safe history (TF-30b) · 1 NEW SIBLING operix-chat-engine · additive inline audit type chat_event (mirrors taskflow_event precedent · no aggregator entry) · §H 0-DIFF · 63-streak ⭐ target · headSha TBD_AT_BANK
+  {
+    sprintNumber: 140, code: 'T-TaskFlow-A641.4', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'c1610463', loc: 1500,
+    newSiblings: ['operix-chat-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
