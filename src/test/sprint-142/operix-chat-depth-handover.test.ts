@@ -373,9 +373,9 @@ describe('S142 · institutional registration', () => {
     const s = SPRINTS.find((x) => x.sprintNumber === 142);
     expect(s?.newSiblings).toContain('operix-handover-engine');
   });
-  it('S142 headSha placeholder TBD_AT_BANK pre-bank', () => {
+  it('S142 headSha banked at 3b53dd5e (backfilled at S143 Block 1)', () => {
     const s = SPRINTS.find((x) => x.sprintNumber === 142);
-    expect(s?.headSha).toBe('TBD_AT_BANK');
+    expect(s?.headSha).toBe('3b53dd5e');
   });
 });
 
