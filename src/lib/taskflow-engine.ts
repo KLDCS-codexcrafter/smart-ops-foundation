@@ -311,6 +311,16 @@ export function updateTask(
   return updated;
 }
 
+// ── TF-14-full · Completion-blocking resolver (registered by workflow-engine) ──
+// Returns the list of incomplete-milestone item titles for `taskId` (empty when
+// none). Defaults to an empty array so existing consumers keep current behavior
+// when the workflow-engine has not been imported.
+type MilestoneResolver = (entityCode: string, taskId: string) => string[];
+let _milestoneResolver: MilestoneResolver = () => [];
+export function registerMilestoneResolver(resolver: MilestoneResolver): void {
+  _milestoneResolver = resolver;
+}
+
 // [JWT] PATCH /api/taskflow/tasks/:id/status — 12-state transition guard
 export function changeStatus(
   entityCode: string,
@@ -323,6 +333,23 @@ export function changeStatus(
   const allowed = TASK_STATUS_TRANSITIONS[before.status];
   if (!allowed.includes(next)) {
     throw new Error(`TaskFlow: invalid transition ${before.status} → ${next}`);
+  }
+  // TF-14-full · dependency + milestone enforcement on transitions to `completed`.
+  if (next === 'completed') {
+    if (before.dependencyIds && before.dependencyIds.length > 0) {
+      const all = listTasks(entityCode);
+      const offenders = before.dependencyIds
+        .map((dId) => all.find((t) => t.id === dId))
+        .filter((t): t is Task => !!t && t.status !== 'completed' && t.status !== 'cancelled')
+        .map((t) => `${t.code} · ${t.title}`);
+      if (offenders.length > 0) {
+        throw new Error(`TaskFlow: cannot complete — open dependencies: ${offenders.join('; ')}`);
+      }
+    }
+    const milestoneOffenders = _milestoneResolver(entityCode, id);
+    if (milestoneOffenders.length > 0) {
+      throw new Error(`TaskFlow: cannot complete — incomplete milestones: ${milestoneOffenders.join('; ')}`);
+    }
   }
   const completedDate = next === 'completed' ? new Date().toISOString() : before.completedDate ?? null;
   return updateTask(entityCode, id, { status: next, completedDate }, byUserId);
