@@ -308,7 +308,24 @@ describe('Comment model migration (T1-2)', () => {
     expect(out[0].content).toBe('old');
     expect(out[0].isInternal).toBe(false);
     expect(out[0].mentions).toEqual([]);
+  it('legacy + new comments coexist via shim', () => {
+    const t = seedTask();
+    const legacy = [{
+      id: 'L1', task_id: t.id, body: 'legacy',
+      author_id: 'u9', author_name: 'U9', created_at: '2025-01-01T00:00:00.000Z',
+    }];
+    localStorage.setItem(taskflowCommentsKey(E), JSON.stringify(legacy));
+    addComment(E, t.id, 'modern', 'u1', 'U1', { mentions: ['u2'] });
+    const got = listComments(E, t.id);
+    expect(got).toHaveLength(2);
+    expect(got.some((c) => c.content === 'legacy' && c.mentions.length === 0)).toBe(true);
+    expect(got.some((c) => c.content === 'modern' && c.mentions[0] === 'u2')).toBe(true);
   });
+  it('empty content throws', () => {
+    const t = seedTask();
+    expect(() => addComment(E, t.id, '   ', 'u1', 'U1')).toThrow();
+  });
+});
 });
 
 describe('institutional contract', () => {
