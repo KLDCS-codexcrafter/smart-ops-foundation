@@ -146,6 +146,8 @@ function writeEvidence(folder: string, file: string, result: AssertionResult | o
       if (prevStable === nextStable) return; // SKIP rewrite · stable content unchanged
     } catch {/* fall through to write */}
   }
+  // Final byte-level guard to avoid any mtime churn.
+  if (fs.existsSync(target) && fs.readFileSync(target, 'utf8') === nextJson) return;
   fs.writeFileSync(target, nextJson);
 }
 // Expose for cross-suite idempotency unit test (S139 Block 1b).
