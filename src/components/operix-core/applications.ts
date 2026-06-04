@@ -387,7 +387,7 @@ export const applications: AppDefinition[] = [
     category: 'Support Hub',
     route: '/erp/taskflow',
     icon: 'CheckSquare',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'docvault',
