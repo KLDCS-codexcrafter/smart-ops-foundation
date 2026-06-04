@@ -3,7 +3,7 @@
  * @purpose     Decision Register · TF-32 · S139 Block 4
  * @sprint      Sprint 139 · T-TaskFlow-A641.3 · Structure Slice
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,9 +25,9 @@ import { useEmployees } from '@/hooks/useEmployees';
 export default function DecisionsPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const { employees } = useEmployees();
-  const [tick, setTick] = useState(0);
-  const refresh = (): void => setTick((t) => t + 1);
-  const decisions = useMemo(() => listDecisions(entityCode), [entityCode, tick]);
+  const [decisions, setDecisions] = useState(() => listDecisions(entityCode));
+  const refresh = useCallback((): void => { setDecisions(listDecisions(entityCode)); }, [entityCode]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({

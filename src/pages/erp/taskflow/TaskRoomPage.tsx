@@ -713,24 +713,18 @@ interface ChecklistProps {
   onDone: () => void;
 }
 function ChecklistTab({ task, entityCode, currentUserId, onDone }: ChecklistProps): JSX.Element {
-  const [tick, setTick] = useState(0);
-  const refresh = (): void => { setTick((t) => t + 1); onDone(); };
-  const items = useMemo(
-    () => listChecklistItems(entityCode, task.id),
-    [entityCode, task.id, tick],
-  );
-  const progress = useMemo(
-    () => getChecklistProgress(entityCode, task.id),
-    [entityCode, task.id, tick],
-  );
-  const workflows: TaskWorkflowTemplate[] = useMemo(
-    () => listWorkflows(entityCode),
-    [entityCode, tick],
-  );
-  const wfProgress = useMemo(
-    () => getWorkflowProgress(entityCode, task.id),
-    [entityCode, task.id, tick],
-  );
+  const [items, setItems] = useState(() => listChecklistItems(entityCode, task.id));
+  const [progress, setProgress] = useState(() => getChecklistProgress(entityCode, task.id));
+  const [workflows, setWorkflows] = useState<TaskWorkflowTemplate[]>(() => listWorkflows(entityCode));
+  const [wfProgress, setWfProgress] = useState(() => getWorkflowProgress(entityCode, task.id));
+  const refresh = useCallback((): void => {
+    setItems(listChecklistItems(entityCode, task.id));
+    setProgress(getChecklistProgress(entityCode, task.id));
+    setWorkflows(listWorkflows(entityCode));
+    setWfProgress(getWorkflowProgress(entityCode, task.id));
+    onDone();
+  }, [entityCode, task.id, onDone]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   const [title, setTitle] = useState('');
   const [isMilestone, setIsMilestone] = useState(false);

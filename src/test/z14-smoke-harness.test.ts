@@ -738,11 +738,15 @@ describe('Z14 Block 1 Auto · Phase 1 close smoke harness', () => {
     };
     const evidenceDir = path.join(WS, 'Z14_close_evidence', 'Z14_Block1_Auto_evidence');
     if (!fs.existsSync(evidenceDir)) fs.mkdirSync(evidenceDir, { recursive: true });
-    fs.writeFileSync(path.join(evidenceDir, 'assertions.json'), JSON.stringify(summary, null, 2));
-    fs.writeFileSync(path.join(evidenceDir, 'runner_output.txt'),
-      `Z14 smoke: ${passCount}/${allResults.length} pass · ${failCount} fail\n`
-      + allResults.map(r => `  [${r.pass ? 'PASS' : 'FAIL'}] ${r.id} · ${r.description}`).join('\n') + '\n',
-    );
+    // S139.T1 · idempotent write: route assertions.json through writeEvidence so
+    // the volatile `timestamp` field is excluded from the rewrite decision.
+    writeEvidence('Z14_close_evidence/Z14_Block1_Auto_evidence', 'assertions.json', summary);
+    const runnerOut = path.join(evidenceDir, 'runner_output.txt');
+    const runnerNext = `Z14 smoke: ${passCount}/${allResults.length} pass · ${failCount} fail\n`
+      + allResults.map(r => `  [${r.pass ? 'PASS' : 'FAIL'}] ${r.id} · ${r.description}`).join('\n') + '\n';
+    if (!fs.existsSync(runnerOut) || fs.readFileSync(runnerOut, 'utf8') !== runnerNext) {
+      fs.writeFileSync(runnerOut, runnerNext);
+    }
     expect(failCount).toBe(0);
     expect(passCount).toBe(16);
   });

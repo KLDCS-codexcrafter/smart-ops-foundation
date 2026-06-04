@@ -3,7 +3,7 @@
  * @purpose     Task workflows · sequential stages · S139 Block 4
  * @sprint      Sprint 139 · T-TaskFlow-A641.3 · Structure Slice
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,9 +27,9 @@ const STAGE_TYPES: TaskWorkflowStage['type'][] = ['task', 'approval', 'review', 
 
 export default function WorkflowsPage(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const [tick, setTick] = useState(0);
-  const refresh = (): void => setTick((t) => t + 1);
-  const workflows = useMemo(() => listWorkflows(entityCode), [entityCode, tick]);
+  const [workflows, setWorkflows] = useState(() => listWorkflows(entityCode));
+  const refresh = useCallback((): void => { setWorkflows(listWorkflows(entityCode)); }, [entityCode]);
+  useEffect(() => { refresh(); }, [refresh]);
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
