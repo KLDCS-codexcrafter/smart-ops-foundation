@@ -15,7 +15,7 @@
  */
 import {
   Home, FileText, FilePlus, CheckSquare, TreePine, Bookmark, ListFilter,
-  BarChart3, Clock, TrendingUp,
+  BarChart3, Clock, TrendingUp, FolderTree, Hash, CalendarClock,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -79,6 +79,41 @@ export const docVaultSidebarItems: SidebarItem[] = [
         moduleId: 'tag-index',
         requiredCards: ['docvault'],
         keyboard: 'd i',
+      },
+    ],
+  },
+  {
+    id: 'control-group',
+    type: 'group',
+    label: 'Control',
+    icon: FolderTree,
+    children: [
+      {
+        id: 'folders',
+        type: 'item',
+        label: 'Folders',
+        icon: FolderTree,
+        moduleId: 'folders',
+        requiredCards: ['docvault'],
+        keyboard: 'd f',
+      },
+      {
+        id: 'numbering-config',
+        type: 'item',
+        label: 'Numbering',
+        icon: Hash,
+        moduleId: 'numbering-config',
+        requiredCards: ['docvault'],
+        keyboard: 'd n',
+      },
+      {
+        id: 'expiry-review',
+        type: 'item',
+        label: 'Expiry & Review',
+        icon: CalendarClock,
+        moduleId: 'expiry-review',
+        requiredCards: ['docvault'],
+        keyboard: 'd x',
       },
     ],
   },

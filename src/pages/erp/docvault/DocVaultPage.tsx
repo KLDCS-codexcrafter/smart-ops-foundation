@@ -28,6 +28,9 @@ import { SimilarityViewer } from './registers/SimilarityViewer';
 import { DocumentsByDeptReport } from './reports/DocumentsByDeptReport';
 import { ApprovalLatencyReport } from './reports/ApprovalLatencyReport';
 import { VersionVelocityReport } from './reports/VersionVelocityReport';
+import FoldersPage from './registers/FoldersPage';
+import NumberingConfigPage from './registers/NumberingConfigPage';
+import ExpiryReviewPage from './registers/ExpiryReviewPage';
 import type { DocVaultModule } from './DocVaultSidebar.types';
 
 export default function DocVaultPage(): JSX.Element {
@@ -46,6 +49,9 @@ export default function DocVaultPage(): JSX.Element {
       case 'documents-by-dept':  return <DocumentsByDeptReport />;
       case 'approval-latency':   return <ApprovalLatencyReport />;
       case 'version-velocity':   return <VersionVelocityReport />;
+      case 'folders':            return <FoldersPage />;
+      case 'numbering-config':   return <NumberingConfigPage />;
+      case 'expiry-review':      return <ExpiryReviewPage />;
       default:                   return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
