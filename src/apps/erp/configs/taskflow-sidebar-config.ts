@@ -8,6 +8,7 @@ import {
   GitBranch, Timer, AlertTriangle, ShieldOff, Bell, Link2,
   FileStack, Workflow, Gavel, BookOpen,
   MessageSquare, Hash, Mail, Mic,
+  Gauge, ShieldCheck, NotebookPen,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
