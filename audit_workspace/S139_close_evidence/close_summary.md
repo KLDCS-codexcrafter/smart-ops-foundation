@@ -100,3 +100,56 @@ were introduced by S139.
 - `src/lib/_institutional/sprint-history.ts` (Pass 1)
 - `src/test/z14-smoke-harness.test.ts` (Pass 1 · idempotency)
 - `src/test/sprint-138/taskflow-governance.test.ts` (≥207 sibling assertion)
+
+---
+
+## S139.T1 · Hotfix (predecessor 9a9ff7e5)
+
+**T1-1 · ESLint 0/0 root-fix (7 react-hooks/exhaustive-deps `tick` warnings).**
+Replaced the `tick`-in-useMemo refresh idiom with state-driven refetch
+(mirrors the S137.R1 fix in `TaskFlowAllTasksPage`). For each affected page,
+the read result is held in `useState`, `refresh` is a `useCallback` that
+re-invokes the engine list function, and a `useEffect([refresh])` primes
+the initial load. NO `eslint-disable` used.
+
+Files patched:
+- `src/pages/erp/taskflow/DecisionsPage.tsx` (line 30)
+- `src/pages/erp/taskflow/MeetingMinutesPage.tsx` (line 38)
+- `src/pages/erp/taskflow/WorkflowsPage.tsx` (line 32)
+- `src/pages/erp/taskflow/TaskRoomPage.tsx` (Checklist tab · 4 useMemos)
+
+Verified: `npx eslint . --max-warnings 0` → 0 errors / 0 warnings.
+
+**T1-2 · Z14 writer idempotency completed.**
+Root cause of residual Z* churn: the consolidated `assertions.json` writer
+at the tail of `z14-smoke-harness.test.ts` bypassed `writeEvidence` and
+called `fs.writeFileSync` directly, so the volatile top-level `timestamp`
+re-wrote the file every run.
+
+Fix: routed `assertions.json` through `writeEvidence` (which already strips
+`timestamp`/`generatedAt`/ISO datetime strings from the compare key) and
+added a byte-level guard for `runner_output.txt`. `writeEvidence` retains
+the existing timestamp on disk when stable content is unchanged.
+
+Block 1b test strengthened (new file
+`src/test/sprint-139/z14-writer-idempotency.test.ts`):
+- `stripVolatile` excludes `timestamp` / `generatedAt` / ISO strings.
+- Second write with same stable content + different timestamp → bytes
+  identical AND `mtimeMs` identical AND on-disk `timestamp` preserved.
+- Write with changed stable content DOES rewrite.
+
+Acceptance: full z14 suite run twice on a clean tree →
+`git status --porcelain` is EMPTY.
+
+## Triple Gate (T1)
+- `tsc --noEmit` (7GB heap): 0 errors.
+- `eslint . --max-warnings 0`: 0 / 0.
+- Vitest full-suite: 28 failures (within documented baseline ≤ 33); S139
+  + Z14 suites green (108/108 in scope).
+
+## Guardrails
+- §H / `approval-workflow-engine` / Comply360 / `ComplianceModule` /
+  `push-notification-bridge`: 0-DIFF.
+- S139 sprint-history entry stays `TBD_AT_BANK`.
+- No Z* evidence file churn (verified by clean `git status` after double run).
+- Sibling-register unchanged (no new sibling).
