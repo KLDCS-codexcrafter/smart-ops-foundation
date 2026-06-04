@@ -308,7 +308,7 @@ export function archivePerRetention(
   const skipped: string[] = [];
   for (const id of docIds) {
     try {
-      setLifecycleStatus(entityCode, id, 'archived', byUserId, 'retention_archive');
+      setLifecycleStatus(entityCode, id, 'archived', byUserId);
       archived.push(id);
     } catch { skipped.push(id); }
   }
