@@ -10,6 +10,7 @@ import { taskflowShellConfig } from '@/apps/erp/configs/taskflow-shell-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { ComingSoonPanel } from '@/components/fincore/ComingSoonPanel';
 import TaskFlowLandingPage from './TaskFlowLandingPage';
+import TaskFlowAllTasksPage from './TaskFlowAllTasksPage';
 import type { TaskFlowModule } from './TaskFlowSidebar.types';
 
 export default function TaskFlowPage(): JSX.Element {
@@ -20,6 +21,14 @@ export default function TaskFlowPage(): JSX.Element {
     switch (activeModule) {
       case 'landing':
         return <TaskFlowLandingPage />;
+      case 'all-tasks':
+        return <TaskFlowAllTasksPage filter="all" />;
+      case 'my-tasks':
+        return <TaskFlowAllTasksPage filter="my" />;
+      case 'due-soon':
+        return <TaskFlowAllTasksPage filter="due-soon" />;
+      case 'completed':
+        return <TaskFlowAllTasksPage filter="completed" />;
       default:
         return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
