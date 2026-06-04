@@ -550,7 +550,7 @@ export function computeAccountabilityMetrics(
 
   // SLA breaches — escalations with source 'sla' on tasks owned by user
   for (const esc of escalations) {
-    const tsMs = new Date(esc.createdAt).getTime();
+    const tsMs = new Date(esc.raisedAt).getTime();
     if (tsMs < fromMs || tsMs > toMs) continue;
     if (esc.source !== 'sla') continue;
     const t = tasks.find(x => x.id === esc.taskId);
@@ -603,7 +603,7 @@ export interface MyTrailBundle {
   acknowledgments: { taskId: string; code: string; acknowledgedAt: string }[];
   reassignments: { id: string; taskId: string; fromUserId: string | null; toUserId: string; reason: string; byUserId: string; timestamp: string }[];
   dueDateChanges: { id: string; taskId: string; oldDate: string | null; newDate: string | null; reason: string; byUserId: string; timestamp: string }[];
-  blockedRecords: ReturnType<typeof listBlocked>;
+  blockedRecords: BlockedRecord[];
   auditEntries: { id: string; taskId: string; action: string; userId: string; timestamp: string }[];
   diarySpan: { from: string; to: string };
 }
@@ -618,7 +618,7 @@ export function exportMyTrail(entityCode: string, userId: string): MyTrailBundle
   const allDueDateChanges = readJSON<MyTrailBundle['dueDateChanges']>(taskflowDueDateChangesKey(entityCode), []);
   const myTaskIds = new Set(myTasks.map(t => t.id));
   const dueDateChanges = allDueDateChanges.filter(d => myTaskIds.has(d.taskId) || d.byUserId === userId);
-  const blockedRecords = listBlocked(entityCode).filter(b => myTaskIds.has(b.taskId));
+  const blockedRecords = getOpenBlocked(entityCode).filter(b => myTaskIds.has(b.taskId));
   const auditChain = readJSON<{ id: string; taskId: string; action: string; userId: string; timestamp: string }[]>(taskflowAuditChainKey(entityCode), []);
   const auditEntries = auditChain.filter(a => myTaskIds.has(a.taskId) || a.userId === userId)
     .map(a => ({ id: a.id, taskId: a.taskId, action: a.action, userId: a.userId, timestamp: a.timestamp });
