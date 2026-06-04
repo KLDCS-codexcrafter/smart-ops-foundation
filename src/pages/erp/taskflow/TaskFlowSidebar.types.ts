@@ -25,4 +25,8 @@ export type TaskFlowModule =
   | 'chat'
   | 'channels'
   | 'email-threads'      // S142 coming-soon
-  | 'voice-library';     // S142 coming-soon
+  | 'voice-library'      // S142 coming-soon
+  // ─ Accountability Payoff (S141) ────────────────────────────────────
+  | 'accountability'
+  | 'close-policies'
+  | 'work-diary';
