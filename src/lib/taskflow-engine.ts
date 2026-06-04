@@ -23,6 +23,7 @@
 import {
   type Task,
   type TaskComment,
+  type TaskCommentModel,
   type TaskStatus,
   type TaskPriority,
   type TaskCategory,
@@ -36,6 +37,7 @@ import {
   taskflowAuditChainKey,
   TASK_STATUS_TRANSITIONS,
 } from '@/types/taskflow';
+import { toast } from 'sonner';
 import { logAudit } from '@/lib/audit-trail-engine';
 
 // ── tiny JSON helpers ──────────────────────────────────────────────────────
