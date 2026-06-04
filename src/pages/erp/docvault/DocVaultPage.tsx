@@ -56,6 +56,10 @@ export default function DocVaultPage(): JSX.Element {
       case 'folders':            return <FoldersPage />;
       case 'numbering-config':   return <NumberingConfigPage />;
       case 'expiry-review':      return <ExpiryReviewPage />;
+      case 'sharing-acl':        return <SharingAclPage />;
+      case 'retention-review':   return <RetentionReviewPage />;
+      case 'circulars':          return <CircularsPage />;
+      case 'completeness':       return <CompletenessPage />;
       default:                   return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
