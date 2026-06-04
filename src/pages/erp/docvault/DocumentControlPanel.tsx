@@ -407,7 +407,110 @@ export default function DocumentControlPanel({
             </CardContent>
           </Card>
 
+          {/* Sharing */}
+          <Card className="rounded-2xl" data-testid="sharing-section">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Share2 className="h-4 w-4" />Sharing · {shares.length}
+              </CardTitle>
+              <Button size="sm" variant="outline" onClick={() => setShareOpen(true)}>Grant share</Button>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {shares.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2 text-center">No shares yet.</p>
+              ) : (
+                <ul className="divide-y divide-border">
+                  {shares.map((s: DocumentShare) => (
+                    <li key={s.id} className="py-2 flex items-center gap-2 text-xs">
+                      <Badge variant="outline" className="font-mono">{s.permission}</Badge>
+                      <span className="flex-1 truncate font-mono">
+                        {s.grantee_user_id ?? s.external_email}
+                      </span>
+                      {s.revoked_at && <Badge variant="destructive">revoked</Badge>}
+                      {!s.revoked_at && s.requires_approval && (
+                        <Button size="sm" variant="ghost" onClick={() => onApproveShare(s.id)}>Approve</Button>
+                      )}
+                      {!s.revoked_at && !s.requires_approval && (
+                        <Button size="sm" variant="ghost" className="text-destructive"
+                          onClick={() => onRevokeShare(s.id)}>Revoke</Button>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+              <div className="border-t border-border pt-2 space-y-1">
+                <Label className="text-xs text-muted-foreground">Effective permission preview</Label>
+                <div className="flex gap-2">
+                  <Input value={previewUser} onChange={(e) => setPreviewUser(e.target.value)}
+                    placeholder="user-id to preview…" className="rounded-lg font-mono" />
+                  <Badge variant="secondary" className="font-mono whitespace-nowrap self-center">
+                    {effectivePreview?.permission ?? '—'}
+                  </Badge>
+                </div>
+                {effectivePreview?.watermark && (
+                  <p className="text-[10px] font-mono text-muted-foreground">
+                    watermark: {effectivePreview.watermark}
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* B.7 Links */}
+          <Card className="rounded-2xl" data-testid="links-section">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Link2 className="h-4 w-4" />Links · {links.length}
+              </CardTitle>
+              <Button size="sm" variant="outline" onClick={() => setLinkOpen(true)}>Add link</Button>
+            </CardHeader>
+            <CardContent>
+              {links.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-2 text-center">No links yet.</p>
+              ) : (
+                <ul className="divide-y divide-border">
+                  {links.map((l) => (
+                    <li key={l.id} className="py-2 flex items-center gap-2 text-xs">
+                      <Badge variant="outline" className="font-mono">{l.ref_type}</Badge>
+                      <span className="flex-1 truncate">{l.ref_label}</span>
+                      <span className="font-mono text-muted-foreground">{l.ref_id}</span>
+                      <Button size="sm" variant="ghost" className="text-destructive"
+                        onClick={() => onUnlink(l.id)}>
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* FY + Mark reviewed */}
+          <Card className="rounded-2xl" data-testid="fy-review-section">
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center gap-2">
+                <CalendarCheck className="h-4 w-4" />Financial year & review
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-xs text-muted-foreground">FY (current: {ctrl.financial_year ?? '—'})</Label>
+                <div className="flex gap-2">
+                  <Input value={fyValue} onChange={(e) => setFyValue(e.target.value)}
+                    placeholder="FY2026-27" className="rounded-lg font-mono" />
+                  <Button variant="outline" onClick={onSetFY}>Set</Button>
+                </div>
+              </div>
+              <div className="space-y-1 self-end">
+                <Button variant="outline" className="w-full" onClick={onMarkReviewed}>
+                  <CalendarCheck className="h-4 w-4 mr-2" />Mark reviewed
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Audit timeline */}
+
           <Card className="rounded-2xl">
             <CardHeader>
               <CardTitle className="text-sm flex items-center gap-2">
