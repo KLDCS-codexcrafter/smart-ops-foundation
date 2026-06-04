@@ -239,7 +239,7 @@ export default function DocumentControlPanel({
             <CardHeader><CardTitle className="text-sm">Confidentiality</CardTitle></CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <Select value={ctrl.confidentiality} onValueChange={onConfidentiality}>
+                <Select value={ctrl.confidentiality ?? 'internal'} onValueChange={onConfidentiality}>
                   <SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {CONF_LEVELS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
