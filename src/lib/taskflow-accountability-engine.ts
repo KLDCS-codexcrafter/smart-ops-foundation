@@ -76,7 +76,7 @@ const newId = (prefix: string): string =>
 export function listIndiaGstRates(): { code: string; rate: number; name: string }[] {
   return GST_RATES
     .filter(r => r.countryCode === 'IN' && r.taxType === 'gst' && r.status === 'active')
-    .map(r => ({ code: r.code, rate: r.rate, name: r.name }));
+    .map(r => ({ code: r.code, rate: r.rate, name: r.name });
 }
 function isValidGstRate(rate: number): boolean {
   return listIndiaGstRates().some(r => r.rate === rate);
@@ -87,7 +87,7 @@ export function listTdsSections(): { code: string; name: string; rateIndividual:
     .map(s => ({
       code: s.sectionCode, name: s.sectionName,
       rateIndividual: s.rateIndividual, rateCompany: s.rateCompany, rateNoPAN: s.rateNoPAN,
-    }));
+    });
 }
 function isValidTdsSection(code: string): boolean {
   return TDS_SECTIONS.some(s => s.sectionCode === code && s.status === 'active');
@@ -211,7 +211,7 @@ export function createExpense(entityCode: string, input: CreateExpenseInput): Ta
     recordId: exp.id,
     recordLabel: `expense ${exp.id} · draft`,
     afterState: exp as unknown as Record<string, unknown>
-  }));
+  });
   return exp;
 }
 
@@ -228,7 +228,7 @@ function _updateExpense(entityCode: string, id: string, patch: Partial<TaskExpen
     recordLabel: `expense ${id} · ${next.status}`,
     beforeState: before as unknown as Record<string, unknown>,
     afterState: next as unknown as Record<string, unknown>
-  }));
+  });
   return next;
 }
 
@@ -331,7 +331,7 @@ export function createEvidence(entityCode: string, input: CreateEvidenceInput): 
     recordId: ev.id,
     recordLabel: `evidence ${ev.id} · ${ev.type}`,
     afterState: { id: ev.id, taskId: ev.taskId, type: ev.type, fileName: ev.fileName } as Record<string, unknown>
-  }));
+  });
   return ev;
 }
 export function listEvidence(entityCode: string): TaskEvidence[] {
@@ -394,7 +394,7 @@ export function upsertClosePolicy(entityCode: string, input: UpsertClosePolicyIn
     recordId: policy.id,
     recordLabel: `close_policy ${policy.category} · upsert`,
     afterState: policy as unknown as Record<string, unknown>
-  }));
+  });
   return policy;
 }
 
@@ -612,7 +612,7 @@ export function exportMyTrail(entityCode: string, userId: string): MyTrailBundle
   const myTasks = allTasks.filter(t => t.assigneeId === userId || t.creatorId === userId);
   const acknowledgments = myTasks
     .filter(t => !!t.acknowledgedAt && t.acknowledgedBy === userId)
-    .map(t => ({ taskId: t.id, code: t.code, acknowledgedAt: t.acknowledgedAt as string }));
+    .map(t => ({ taskId: t.id, code: t.code, acknowledgedAt: t.acknowledgedAt as string });
   const allReassignments = readJSON<MyTrailBundle['reassignments']>(taskflowReassignmentsKey(entityCode), []);
   const reassignments = allReassignments.filter(r => r.fromUserId === userId || r.toUserId === userId || r.byUserId === userId);
   const allDueDateChanges = readJSON<MyTrailBundle['dueDateChanges']>(taskflowDueDateChangesKey(entityCode), []);
@@ -621,7 +621,7 @@ export function exportMyTrail(entityCode: string, userId: string): MyTrailBundle
   const blockedRecords = listBlocked(entityCode).filter(b => myTaskIds.has(b.taskId));
   const auditChain = readJSON<{ id: string; taskId: string; action: string; userId: string; timestamp: string }[]>(taskflowAuditChainKey(entityCode), []);
   const auditEntries = auditChain.filter(a => myTaskIds.has(a.taskId) || a.userId === userId)
-    .map(a => ({ id: a.id, taskId: a.taskId, action: a.action, userId: a.userId, timestamp: a.timestamp }));
+    .map(a => ({ id: a.id, taskId: a.taskId, action: a.action, userId: a.userId, timestamp: a.timestamp });
   const firstTs = myTasks.length > 0 ? myTasks.map(t => t.createdAt).sort()[0] : new Date().toISOString();
   return {
     userId,
