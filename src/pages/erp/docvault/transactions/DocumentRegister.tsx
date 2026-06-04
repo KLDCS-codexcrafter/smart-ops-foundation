@@ -153,7 +153,7 @@ export function DocumentRegister(): JSX.Element {
             <SelectTrigger className="rounded-lg"><SelectValue placeholder="Folder" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All folders</SelectItem>
-              <SelectItem value="">Unfiled</SelectItem>
+              <SelectItem value="__unfiled__">Unfiled</SelectItem>
               {folders.map((f) => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
             </SelectContent>
           </Select>
