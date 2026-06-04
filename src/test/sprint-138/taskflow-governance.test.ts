@@ -308,6 +308,7 @@ describe('Comment model migration (T1-2)', () => {
     expect(out[0].content).toBe('old');
     expect(out[0].isInternal).toBe(false);
     expect(out[0].mentions).toEqual([]);
+  });
   it('legacy + new comments coexist via shim', () => {
     const t = seedTask();
     const legacy = [{
