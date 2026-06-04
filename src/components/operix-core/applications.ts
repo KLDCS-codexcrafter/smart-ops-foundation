@@ -369,7 +369,7 @@ export const applications: AppDefinition[] = [
     category: 'FrontDesk Hub',
     route: '/erp/frontdesk',
     icon: 'Building2',
-    status: 'coming_soon',
+    status: 'active',
   },
   {
     id: 'servicedesk',
