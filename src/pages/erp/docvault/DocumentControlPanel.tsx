@@ -566,6 +566,90 @@ export default function DocumentControlPanel({
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Share dialog */}
+        <Dialog open={shareOpen} onOpenChange={setShareOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Grant share</DialogTitle>
+              <DialogDescription>External grants require approval before they become effective.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="flex gap-2">
+                {(['internal', 'external'] as const).map((m) => (
+                  <Button key={m} variant={shareMode === m ? 'secondary' : 'outline'} size="sm"
+                    onClick={() => setShareMode(m)}>{m}</Button>
+                ))}
+              </div>
+              {shareMode === 'internal' ? (
+                <div className="space-y-1">
+                  <Label>Grantee user-id</Label>
+                  <Input value={shareGrantee} onChange={(e) => setShareGrantee(e.target.value)}
+                    className="rounded-lg font-mono" />
+                </div>
+              ) : (
+                <div className="space-y-1">
+                  <Label>External email</Label>
+                  <Input type="email" value={shareEmail} onChange={(e) => setShareEmail(e.target.value)}
+                    className="rounded-lg font-mono" />
+                </div>
+              )}
+              <div className="space-y-1">
+                <Label>Permission</Label>
+                <Select value={sharePerm} onValueChange={(v) => setSharePerm(v as SharePermission)}>
+                  <SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PERMISSIONS.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label>Expires (optional)</Label>
+                <Input type="date" value={shareExpires} onChange={(e) => setShareExpires(e.target.value)}
+                  className="rounded-lg font-mono" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShareOpen(false)}>Cancel</Button>
+              <Button onClick={onShareSubmit}>Grant</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Link dialog */}
+        <Dialog open={linkOpen} onOpenChange={setLinkOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Add link</DialogTitle>
+              <DialogDescription>Bind this document to a task, conversation, obligation, employee, or voucher.</DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3">
+              <div className="space-y-1">
+                <Label>Ref type</Label>
+                <Select value={linkType} onValueChange={(v) => setLinkType(v as DocumentLinkRef['ref_type'])}>
+                  <SelectTrigger className="rounded-lg"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {LINK_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label>Ref id</Label>
+                <Input value={linkRefId} onChange={(e) => setLinkRefId(e.target.value)}
+                  className="rounded-lg font-mono" />
+              </div>
+              <div className="space-y-1">
+                <Label>Label</Label>
+                <Input value={linkLabel} onChange={(e) => setLinkLabel(e.target.value)}
+                  className="rounded-lg" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setLinkOpen(false)}>Cancel</Button>
+              <Button onClick={onLinkSubmit}>Add</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
