@@ -207,12 +207,11 @@ export function createExpense(entityCode: string, input: CreateExpenseInput): Ta
     createdAt: now, updatedAt: now,
   };
   writeJSON(tfExpensesKey(entityCode), [...all, exp]);
-  safeAudit({
-    entityType: 'taskflow_event', recordId: exp.id,
+  safeAudit(entityCode, {
+    recordId: exp.id,
     recordLabel: `expense ${exp.id} · draft`,
-    afterState: exp as unknown as Record<string, unknown>,
-    sourceModule: 'taskflow',
-  });
+    afterState: exp as unknown as Record<string, unknown>
+  }));
   return exp;
 }
 
@@ -224,13 +223,12 @@ function _updateExpense(entityCode: string, id: string, patch: Partial<TaskExpen
   const next: TaskExpense = { ...before, ...patch, updatedAt: new Date().toISOString() };
   all[idx] = next;
   writeJSON(tfExpensesKey(entityCode), all);
-  safeAudit({
-    entityType: 'taskflow_event', recordId: id,
+  safeAudit(entityCode, {
+    recordId: id,
     recordLabel: `expense ${id} · ${next.status}`,
     beforeState: before as unknown as Record<string, unknown>,
-    afterState: next as unknown as Record<string, unknown>,
-    sourceModule: 'taskflow',
-  });
+    afterState: next as unknown as Record<string, unknown>
+  }));
   return next;
 }
 
@@ -329,12 +327,11 @@ export function createEvidence(entityCode: string, input: CreateEvidenceInput): 
     location: input.location ?? undefined,
   };
   writeJSON(tfEvidenceKey(entityCode), [...all, ev]);
-  safeAudit({
-    entityType: 'taskflow_event', recordId: ev.id,
+  safeAudit(entityCode, {
+    recordId: ev.id,
     recordLabel: `evidence ${ev.id} · ${ev.type}`,
-    afterState: { id: ev.id, taskId: ev.taskId, type: ev.type, fileName: ev.fileName } as Record<string, unknown>,
-    sourceModule: 'taskflow',
-  });
+    afterState: { id: ev.id, taskId: ev.taskId, type: ev.type, fileName: ev.fileName } as Record<string, unknown>
+  }));
   return ev;
 }
 export function listEvidence(entityCode: string): TaskEvidence[] {
@@ -393,12 +390,11 @@ export function upsertClosePolicy(entityCode: string, input: UpsertClosePolicyIn
     all.push(policy);
   }
   writeJSON(tfClosePoliciesKey(entityCode), all);
-  safeAudit({
-    entityType: 'taskflow_event', recordId: policy.id,
+  safeAudit(entityCode, {
+    recordId: policy.id,
     recordLabel: `close_policy ${policy.category} · upsert`,
-    afterState: policy as unknown as Record<string, unknown>,
-    sourceModule: 'taskflow',
-  });
+    afterState: policy as unknown as Record<string, unknown>
+  }));
   return policy;
 }
 
