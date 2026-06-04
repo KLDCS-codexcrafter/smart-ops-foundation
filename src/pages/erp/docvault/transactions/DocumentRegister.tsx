@@ -100,7 +100,10 @@ export function DocumentRegister(): JSX.Element {
       if (categoryFilter !== 'all' && c.category !== categoryFilter) return false;
       if (lifecycleFilter !== 'all' && c.lifecycle_status !== lifecycleFilter) return false;
       if (confFilter !== 'all' && c.confidentiality !== confFilter) return false;
-      if (folderFilter !== 'all' && (c.folder_id ?? '') !== folderFilter) return false;
+      if (folderFilter !== 'all') {
+        const want = folderFilter === '__unfiled__' ? null : folderFilter;
+        if ((c.folder_id ?? null) !== want) return false;
+      }
       return true;
     });
   }, [
