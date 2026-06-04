@@ -100,7 +100,8 @@ function updateDocumentControl(
   const all = loadAllDocs(entityCode);
   const idx = all.findIndex((d) => d.id === docId);
   if (idx < 0) throw new Error(`document not found: ${docId}`);
-  const before = getControl(all[idx]);
+  // getControl() snapshot retained for symmetry with other mutators; audit captures it where needed
+  void getControl(all[idx]);
   const next: DocumentControlMeta = { ...(all[idx].control ?? {}), ...patch };
   all[idx] = { ...all[idx], control: next };
   saveAllDocs(entityCode, all);
