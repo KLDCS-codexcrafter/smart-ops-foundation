@@ -240,6 +240,7 @@ describe('S143 · Confidentiality + folder floor', () => {
   it('setConfidentiality below folder floor throws', () => {
     const f = createFolder(E, { name: 'Top', confidentiality_floor: 'restricted' }, U_OWNER);
     const id = newDoc();
+    setConfidentiality(E, id, 'restricted', U_OWNER); // bring up to floor first
     moveDocumentToFolder(E, id, f.id, U_OWNER);
     expect(() => setConfidentiality(E, id, 'public', U_OWNER)).toThrow(/floor/);
   });
