@@ -243,7 +243,7 @@ export function setLifecycleStatus(
 ): Document {
   const doc = getDocument(entityCode, docId);
   if (!doc) throw new Error(`document not found: ${docId}`);
-  const current = getControl(doc).lifecycle_status;
+  const current: DocumentLifecycleStatus = getControl(doc).lifecycle_status ?? 'active';
   const legal = LIFECYCLE_LEGAL[current];
   if (!legal.includes(next)) {
     throw new Error(`illegal lifecycle transition: ${current} → ${next}`);
