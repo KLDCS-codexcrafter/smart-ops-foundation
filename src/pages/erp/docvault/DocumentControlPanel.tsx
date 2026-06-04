@@ -199,6 +199,69 @@ export default function DocumentControlPanel({
   const folderName = (id?: string | null): string =>
     (id && folders.find((f) => f.id === id)?.name) ?? '—';
 
+  // ── Sharing handlers ────────────────────────────────────────────────────
+  const onShareSubmit = (): void => {
+    if (shareMode === 'internal' && !shareGrantee.trim()) {
+      toast.error('Internal grantee user-id required'); return;
+    }
+    if (shareMode === 'external' && !shareEmail.trim()) {
+      toast.error('External email required'); return;
+    }
+    safe(() => {
+      grantShare(entityCode, {
+        document_id: doc.id,
+        grantee_user_id: shareMode === 'internal' ? shareGrantee.trim() : null,
+        external_email: shareMode === 'external' ? shareEmail.trim() : null,
+        permission: sharePerm,
+        expires_at: shareExpires ? new Date(shareExpires).toISOString() : null,
+        created_by: currentUserId,
+      });
+      toast.success('Share granted');
+      setShareOpen(false); setShareGrantee(''); setShareEmail(''); setShareExpires('');
+    });
+  };
+  const onApproveShare = (id: string): void => safe(() => {
+    approveExternalShare(entityCode, id, currentUserId); toast.success('Approved');
+  });
+  const onRevokeShare = (id: string): void => safe(() => {
+    revokeShare(entityCode, id, currentUserId); toast.success('Revoked');
+  });
+  const effectivePreview = previewUser.trim()
+    ? getEffectivePermission(entityCode, doc.id, previewUser.trim(), previewUser.trim())
+    : null;
+
+  // ── Links handlers ──────────────────────────────────────────────────────
+  const onLinkSubmit = (): void => {
+    if (!linkRefId.trim() || !linkLabel.trim()) {
+      toast.error('Ref id and label required'); return;
+    }
+    safe(() => {
+      linkDocument(entityCode, doc.id, {
+        ref_type: linkType, ref_id: linkRefId.trim(),
+        ref_label: linkLabel.trim(), created_by: currentUserId,
+      });
+      toast.success('Linked');
+      setLinkOpen(false); setLinkRefId(''); setLinkLabel('');
+    });
+  };
+  const onUnlink = (linkId: string): void => safe(() => {
+    unlinkDocument(entityCode, linkId); toast.success('Unlinked');
+  });
+
+  // ── FY + review handlers ────────────────────────────────────────────────
+  const onSetFY = (): void => {
+    if (!FY_RE.test(fyValue)) { toast.error('FY format: FYYYYY-YY (e.g. FY2026-27)'); return; }
+    safe(() => {
+      setFinancialYear(entityCode, doc.id, fyValue, currentUserId);
+      toast.success(`FY → ${fyValue}`);
+    });
+  };
+  const onMarkReviewed = (): void => safe(() => {
+    markReviewed(entityCode, doc.id, currentUserId);
+    toast.success('Marked reviewed · next review scheduled');
+  });
+
+
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto glass-card rounded-2xl">
