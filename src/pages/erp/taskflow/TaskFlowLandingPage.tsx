@@ -18,6 +18,11 @@ export default function TaskFlowLandingPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const stats = useMemo(() => getStats(entityCode), [entityCode]);
   const dueSoon = useMemo(() => listDueWithin24h(entityCode), [entityCode]);
+  const openBlocked = useMemo(() => getOpenBlocked(entityCode).length, [entityCode]);
+  const openEscalations = useMemo(
+    () => listEscalations(entityCode).filter((e) => e.status !== 'resolved').length,
+    [entityCode],
+  );
 
   useEffect(() => {
     if (dueSoon.length > 0) {
