@@ -45,7 +45,7 @@ export default function ChatGovernancePage(): JSX.Element {
 
   useEffect(() => { refresh(); }, [refresh]);
 
-  const evaluation = useMemo(() => evaluateRetention(entityCode), [entityCode, policies]); // re-eval when policies change
+  const evaluation = useMemo(() => evaluateRetention(entityCode), [entityCode, policies]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onSavePolicy = (): void => {
     try {

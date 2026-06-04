@@ -123,6 +123,7 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'hi' });
     expect(() => createFollowUp(E, {
+      conversationId: c.id, messageId: m.id, note: '   ', assigneeId: U_B, createdByUserId: U_A,
     })).toThrow();
   });
 
@@ -130,6 +131,7 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
+      conversationId: c.id, messageId: m.id, note: 'follow up', assigneeId: U_B, createdByUserId: U_A,
     });
     expect(fu.status).toBe('open');
     expect(listFollowUps(E, { status: 'open' }).length).toBe(1);
@@ -139,6 +141,7 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
+      conversationId: c.id, messageId: m.id, note: 'x', assigneeId: U_B, createdByUserId: U_A,
     });
     const r = resolveFollowUp(E, fu.id);
     expect(r.status).toBe('done');
@@ -149,6 +152,7 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
+      conversationId: c.id, messageId: m.id, note: 'do it', assigneeId: U_B, createdByUserId: U_A,
     });
     const out = convertFollowUpToTask(E, fu.id, U_A, { createTaskFn: (ec, t) => createTask(ec, t) });
     expect(out.taskId).toBeTruthy();
@@ -160,6 +164,7 @@ describe('S142 · Follow-Ups TF-25', () => {
     const c = mkConv();
     const m = sendMessage(E, c.id, { senderId: U_A, type: 'text', content: 'todo' });
     const fu = createFollowUp(E, {
+      conversationId: c.id, messageId: m.id, note: 'do it', assigneeId: U_B, createdByUserId: U_A,
     });
     convertFollowUpToTask(E, fu.id, U_A, { createTaskFn: (ec, t) => createTask(ec, t) });
     expect(() => convertFollowUpToTask(E, fu.id, U_A, { createTaskFn: (ec, t) => createTask(ec, t) })).toThrow();
