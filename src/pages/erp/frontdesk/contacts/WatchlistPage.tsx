@@ -5,7 +5,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
-import { listWatchlist, addWatchlistEntry, removeWatchlistEntry } from '@/lib/frontdesk-engine';
+import { listWatchlist, addWatchlistEntry, removeWatchlistEntry, type WatchlistEntry } from '@/lib/frontdesk-engine';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
