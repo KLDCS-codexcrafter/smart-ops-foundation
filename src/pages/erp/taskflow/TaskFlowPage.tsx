@@ -26,6 +26,9 @@ import DecisionsPage from './DecisionsPage';
 import MeetingMinutesPage from './MeetingMinutesPage';
 import OperixChatInboxPage from './OperixChatInboxPage';
 import OperixChatChannelsPage from './OperixChatChannelsPage';
+import AccountabilityDashboardPage from './AccountabilityDashboardPage';
+import ClosePoliciesPage from './ClosePoliciesPage';
+import WorkDiaryPage from './WorkDiaryPage';
 import type { TaskFlowModule } from './TaskFlowSidebar.types';
 
 const VALID_MODULES: TaskFlowModule[] = [
@@ -34,6 +37,7 @@ const VALID_MODULES: TaskFlowModule[] = [
   'reminders', 'compliance-sources',
   'templates', 'workflows', 'decisions', 'minutes',
   'chat', 'channels', 'email-threads', 'voice-library',
+  'accountability', 'close-policies', 'work-diary',
 ];
 
 export default function TaskFlowPage(): JSX.Element {
@@ -74,6 +78,9 @@ export default function TaskFlowPage(): JSX.Element {
       case 'channels':           return <OperixChatChannelsPage />;
       case 'email-threads':      return <ComingSoonPanel module="operixchat-email-threads-s142" />;
       case 'voice-library':      return <ComingSoonPanel module="operixchat-voice-library-s142" />;
+      case 'accountability':     return <AccountabilityDashboardPage />;
+      case 'close-policies':     return <ClosePoliciesPage />;
+      case 'work-diary':         return <WorkDiaryPage />;
       default:                   return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
   };
