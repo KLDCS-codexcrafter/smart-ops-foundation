@@ -972,3 +972,298 @@ function ChatTab({ task, entityCode, currentUserId }: ChatTabProps): JSX.Element
     </Card>
   );
 }
+
+// ═════════════════════════════════════════════════════════════════════════
+// S141 · ExpensesTab · TF-18 GST/TDS-aware expense capture
+// ═════════════════════════════════════════════════════════════════════════
+interface AcctTabProps {
+  task: Task;
+  entityCode: string;
+  currentUserId: string;
+}
+
+function ExpensesTab({ task, entityCode, currentUserId }: AcctTabProps): JSX.Element {
+  const [items, setItems] = useState<TaskExpense[]>(() => listExpensesForTask(entityCode, task.id));
+  const [totals, setTotals] = useState(() => getTaskExpenseTotals(entityCode, task.id));
+  const gstRates = useMemo(() => listIndiaGstRates(), []);
+  const tdsSections = useMemo(() => listTdsSections(), []);
+  const [form, setForm] = useState({
+    amount: 0,
+    category: 'travel' as TaskExpense['category'],
+    description: '',
+    isReimbursable: true,
+    gstRate: gstRates[0]?.rate ?? 18,
+    isInterState: false,
+    isReverseCharge: false,
+    tdsSection: '',
+    tdsRate: 0,
+  });
+
+  const refresh = useCallback(() => {
+    setItems(listExpensesForTask(entityCode, task.id));
+    setTotals(getTaskExpenseTotals(entityCode, task.id));
+  }, [entityCode, task.id]);
+
+  const add = (): void => {
+    if (form.amount <= 0 || !form.description.trim()) {
+      toast.error('Amount and description required'); return;
+    }
+    try {
+      createExpense(entityCode, {
+        taskId: task.id,
+        amount: form.amount,
+        category: form.category,
+        description: form.description.trim(),
+        isReimbursable: form.isReimbursable,
+        gstRate: form.gstRate,
+        isInterState: form.isInterState,
+        isReverseCharge: form.isReverseCharge,
+        tdsSection: form.tdsSection || undefined,
+        tdsRate: form.tdsSection ? form.tdsRate : undefined,
+        submittedBy: currentUserId,
+      });
+      toast.success('Expense added (draft)');
+      setForm({ ...form, amount: 0, description: '' });
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Add failed');
+    }
+  };
+
+  const act = (fn: () => void): void => {
+    try { fn(); refresh(); } catch (err) { toast.error(err instanceof Error ? err.message : 'Failed'); }
+  };
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader>
+        <CardTitle className="text-base flex items-center justify-between flex-wrap gap-2">
+          <span>Expenses ({totals.count})</span>
+          <div className="text-xs font-mono space-x-3">
+            <span>₹ {totals.amount.toFixed(2)}</span>
+            <Badge variant="outline">GST ₹{totals.tax.toFixed(2)}</Badge>
+            <Badge variant="outline">TDS ₹{totals.tds.toFixed(2)}</Badge>
+            <Badge variant="secondary">Net ₹{totals.net.toFixed(2)}</Badge>
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid md:grid-cols-3 gap-2 border border-border rounded-lg p-3">
+          <div>
+            <Label className="text-xs">Amount (₹)</Label>
+            <Input type="number" value={form.amount}
+              onChange={(e) => setForm({ ...form, amount: Number(e.target.value) || 0 })} />
+          </div>
+          <div>
+            <Label className="text-xs">Category</Label>
+            <Select value={form.category} onValueChange={(v) => setForm({ ...form, category: v as TaskExpense['category'] })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {(['travel','supplies','services','equipment','communication','other'] as const).map((c) => (
+                  <SelectItem key={c} value={c}>{c}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">GST rate</Label>
+            <Select value={String(form.gstRate)} onValueChange={(v) => setForm({ ...form, gstRate: Number(v) })}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {gstRates.map((r) => <SelectItem key={r.code} value={String(r.rate)}>{r.rate}% · {r.name}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="md:col-span-3">
+            <Label className="text-xs">Description</Label>
+            <Input value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          </div>
+          <div>
+            <Label className="text-xs">TDS section</Label>
+            <Select value={form.tdsSection || '__none__'}
+              onValueChange={(v) => setForm({ ...form, tdsSection: v === '__none__' ? '' : v })}>
+              <SelectTrigger><SelectValue placeholder="None" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="__none__">None</SelectItem>
+                {tdsSections.map((s) => (
+                  <SelectItem key={s.code} value={s.code}>{s.code} · {s.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="text-xs">TDS rate (%)</Label>
+            <Input type="number" value={form.tdsRate}
+              onChange={(e) => setForm({ ...form, tdsRate: Number(e.target.value) || 0 })}
+              disabled={!form.tdsSection} />
+          </div>
+          <div className="flex items-center gap-3 text-xs">
+            <label className="flex items-center gap-1">
+              <input type="checkbox" checked={form.isInterState}
+                onChange={(e) => setForm({ ...form, isInterState: e.target.checked })} />
+              Inter-state (IGST)
+            </label>
+            <label className="flex items-center gap-1">
+              <input type="checkbox" checked={form.isReverseCharge}
+                onChange={(e) => setForm({ ...form, isReverseCharge: e.target.checked })} />
+              RCM
+            </label>
+            <label className="flex items-center gap-1 ml-auto">
+              <input type="checkbox" checked={form.isReimbursable}
+                onChange={(e) => setForm({ ...form, isReimbursable: e.target.checked })} />
+              Reimbursable
+            </label>
+          </div>
+          <div className="md:col-span-3 flex justify-end">
+            <Button size="sm" onClick={add}>Add expense</Button>
+          </div>
+        </div>
+
+        {items.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center">No expenses captured yet.</p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {items.map((e) => (
+              <li key={e.id} className="py-2 flex flex-wrap items-center gap-2 text-sm">
+                <Badge variant="outline" className="font-mono text-[10px]">{e.status}</Badge>
+                <span className="font-mono">₹{e.amount.toFixed(2)}</span>
+                <span className="text-xs text-muted-foreground">{e.category}</span>
+                <span className="flex-1">{e.description}</span>
+                <span className="text-xs font-mono">GST ₹{(e.taxAmount ?? 0).toFixed(2)}</span>
+                <span className="text-xs font-mono">TDS ₹{(e.tdsAmount ?? 0).toFixed(2)}</span>
+                <div className="flex gap-1">
+                  {e.status === 'draft' && (
+                    <Button size="sm" variant="ghost" onClick={() => act(() => submitExpense(entityCode, e.id))}>Submit</Button>
+                  )}
+                  {e.status === 'submitted' && (
+                    <>
+                      <Button size="sm" variant="ghost" onClick={() => act(() => approveExpense(entityCode, e.id, currentUserId))}>Approve</Button>
+                      <Button size="sm" variant="ghost" className="text-destructive" onClick={() => act(() => rejectExpense(entityCode, e.id, currentUserId))}>Reject</Button>
+                    </>
+                  )}
+                  {e.status === 'approved' && (
+                    <Button size="sm" variant="ghost" onClick={() => act(() => markReimbursed(entityCode, e.id))}>Reimbursed</Button>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// ═════════════════════════════════════════════════════════════════════════
+// S141 · EvidenceTab · TF-19 evidence capture · guarded geolocation · 1MB cap
+// ═════════════════════════════════════════════════════════════════════════
+function EvidenceTab({ task, entityCode, currentUserId }: AcctTabProps): JSX.Element {
+  const [items, setItems] = useState<TaskEvidence[]>(() => listEvidenceForTask(entityCode, task.id));
+  const [type, setType] = useState<TaskEvidence['type']>('proof');
+  const [notes, setNotes] = useState('');
+  const [busy, setBusy] = useState(false);
+  const verdict = useMemo(() => evaluateClosePolicy(entityCode, task), [entityCode, task]);
+
+  const refresh = useCallback(() => {
+    setItems(listEvidenceForTask(entityCode, task.id));
+  }, [entityCode, task.id]);
+
+  const getGeo = (): Promise<string | null> =>
+    new Promise((resolve) => {
+      if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
+        resolve(null); return;
+      }
+      try {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve(`${pos.coords.latitude.toFixed(5)},${pos.coords.longitude.toFixed(5)}`),
+          () => resolve(null),
+          { timeout: 4000, maximumAge: 60_000 },
+        );
+      } catch { resolve(null); }
+    });
+
+  const onFile = async (file: File): Promise<void> => {
+    setBusy(true);
+    try {
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const r = new FileReader();
+        r.onerror = () => reject(new Error('read failed'));
+        r.onload = () => resolve(r.result as string);
+        r.readAsDataURL(file);
+      });
+      const loc = await getGeo();
+      createEvidence(entityCode, {
+        taskId: task.id,
+        type,
+        fileUrl: dataUrl,
+        fileName: file.name,
+        fileType: file.type || 'application/octet-stream',
+        notes: notes || undefined,
+        location: loc,
+        uploadedBy: currentUserId,
+      });
+      toast.success('Evidence captured');
+      setNotes('');
+      refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Capture failed');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Card className="rounded-2xl">
+      <CardHeader>
+        <CardTitle className="text-base flex items-center justify-between flex-wrap gap-2">
+          <span>Evidence ({items.length})</span>
+          {verdict.allowed ? (
+            <Badge variant="outline" className="text-[10px]">close-policy OK ({verdict.have}/{verdict.required})</Badge>
+          ) : (
+            <Badge variant="destructive" className="text-[10px]">{verdict.message}</Badge>
+          )}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid md:grid-cols-3 gap-2 border border-border rounded-lg p-3">
+          <div>
+            <Label className="text-xs">Type</Label>
+            <Select value={type} onValueChange={(v) => setType(v as TaskEvidence['type'])}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {(['before','after','proof','field'] as const).map((t) => (
+                  <SelectItem key={t} value={t}>{t}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="md:col-span-2">
+            <Label className="text-xs">Notes</Label>
+            <Input value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </div>
+          <div className="md:col-span-3">
+            <Label className="text-xs">Upload (≤ 1 MB · base64 stored locally)</Label>
+            <Input type="file" disabled={busy}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) void onFile(f); e.target.value = ''; }} />
+          </div>
+        </div>
+
+        {items.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4 text-center">No evidence captured yet.</p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {items.map((ev) => (
+              <li key={ev.id} className="py-2 flex flex-wrap items-center gap-2 text-sm">
+                <Badge variant="outline" className="text-[10px]">{ev.type}</Badge>
+                <span className="font-mono text-xs">{ev.fileName}</span>
+                <span className="text-xs text-muted-foreground">{ev.timestamp.slice(0, 16)}</span>
+                {ev.location && <Badge variant="secondary" className="text-[10px] font-mono">{ev.location}</Badge>}
+                {ev.notes && <span className="text-xs italic text-muted-foreground flex-1">{ev.notes}</span>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
