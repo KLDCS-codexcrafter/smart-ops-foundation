@@ -78,6 +78,9 @@ export default function TaskFlowPage(): JSX.Element {
       case 'channels':           return <OperixChatChannelsPage />;
       case 'email-threads':      return <ComingSoonPanel module="operixchat-email-threads-s142" />;
       case 'voice-library':      return <ComingSoonPanel module="operixchat-voice-library-s142" />;
+      case 'accountability':     return <AccountabilityDashboardPage />;
+      case 'close-policies':     return <ClosePoliciesPage />;
+      case 'work-diary':         return <WorkDiaryPage />;
       default:                   return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
   };
