@@ -73,7 +73,7 @@ export default function ExpenseCenterPage(): JSX.Element {
       }
       setDecision(null);
       setFinanceNote('');
-      setTick((t) => t + 1);
+      refresh();
     } catch (err) {
       toast.error((err as Error).message);
     }
