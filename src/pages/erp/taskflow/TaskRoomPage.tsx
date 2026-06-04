@@ -39,10 +39,8 @@ import type { Task, TaskStatus } from '@/types/taskflow';
 import { TASK_STATUS_TRANSITIONS } from '@/types/taskflow';
 
 const PLACEHOLDER_TABS = [
-  { id: 'discussion', label: 'Discussion', arrives: 'S138' },
   { id: 'checklist',  label: 'Checklist',  arrives: 'S139' },
   { id: 'documents',  label: 'Documents',  arrives: 'S141' },
-  { id: 'approvals',  label: 'Approvals',  arrives: 'S138' },
   { id: 'expenses',   label: 'Expenses',   arrives: 'S143' },
   { id: 'evidence',   label: 'Evidence',   arrives: 'S141' },
 ];
