@@ -31,11 +31,15 @@ import { ArrowLeft, BadgeCheck, ShieldCheck, ShieldAlert } from 'lucide-react';
 import {
   getTask, changeStatus, acknowledgeTask, reassignTask, changeDueDate,
   getSubTasks, getBlockingBadges, getTaskAuditChain, verifyAuditChain,
-  getReassignmentTrail, getDueDateHistory, listComments,
+  getReassignmentTrail, getDueDateHistory, listComments, addComment,
 } from '@/lib/taskflow-engine';
+import {
+  listApprovalChains, getTaskApprovalState, submitTaskForApproval,
+  approveTaskStep, rejectTaskStep, raiseBlocked,
+} from '@/lib/taskflow-governance-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEmployees } from '@/hooks/useEmployees';
-import type { Task, TaskStatus } from '@/types/taskflow';
+import type { Task, TaskStatus, TaskApprovalChain } from '@/types/taskflow';
 import { TASK_STATUS_TRANSITIONS } from '@/types/taskflow';
 
 const PLACEHOLDER_TABS = [
