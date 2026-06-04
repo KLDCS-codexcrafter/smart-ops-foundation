@@ -29,6 +29,7 @@ import OperixChatChannelsPage from './OperixChatChannelsPage';
 import AccountabilityDashboardPage from './AccountabilityDashboardPage';
 import ClosePoliciesPage from './ClosePoliciesPage';
 import WorkDiaryPage from './WorkDiaryPage';
+import ExpenseCenterPage from './ExpenseCenterPage';
 import type { TaskFlowModule } from './TaskFlowSidebar.types';
 
 const VALID_MODULES: TaskFlowModule[] = [
@@ -38,6 +39,7 @@ const VALID_MODULES: TaskFlowModule[] = [
   'templates', 'workflows', 'decisions', 'minutes',
   'chat', 'channels', 'email-threads', 'voice-library',
   'accountability', 'close-policies', 'work-diary',
+  'expense-center',
 ];
 
 export default function TaskFlowPage(): JSX.Element {
@@ -81,6 +83,7 @@ export default function TaskFlowPage(): JSX.Element {
       case 'accountability':     return <AccountabilityDashboardPage />;
       case 'close-policies':     return <ClosePoliciesPage />;
       case 'work-diary':         return <WorkDiaryPage />;
+      case 'expense-center':     return <ExpenseCenterPage />;
       default:                   return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
   };
