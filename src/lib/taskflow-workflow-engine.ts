@@ -139,7 +139,7 @@ export function addChecklistItem(
   return item;
 }
 
-export function removeChecklistItem(entityCode: string, itemId: string, byUserId = 'system'): void {
+export function removeChecklistItem(entityCode: string, itemId: string, _byUserId = 'system'): void {
   const all = listAllChecklist(entityCode);
   const before = all.find((c) => c.id === itemId);
   if (!before) return;
