@@ -164,6 +164,8 @@ export default function TaskRoomPage(): JSX.Element {
             <TabsTrigger value="approvals">Approvals</TabsTrigger>
             <TabsTrigger value="checklist">Checklist</TabsTrigger>
             <TabsTrigger value="chat">Chat</TabsTrigger>
+            <TabsTrigger value="expenses">Expenses</TabsTrigger>
+            <TabsTrigger value="evidence">Evidence</TabsTrigger>
             {PLACEHOLDER_TABS.map((p) => (
               <TabsTrigger key={p.id} value={p.id}>{p.label}</TabsTrigger>
             ))}
