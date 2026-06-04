@@ -131,6 +131,8 @@ export default function TaskRoomPage(): JSX.Element {
               currentUserId={currentUserId} onDone={refresh} />
             <ChangeDueDialog task={task} entityCode={entityCode}
               currentUserId={currentUserId} onDone={refresh} />
+            <BlockedDialog task={task} employees={employees} entityCode={entityCode}
+              currentUserId={currentUserId} onDone={refresh} />
             <Select value={task.status} onValueChange={(v) => handleStatusChange(v as TaskStatus)}>
               <SelectTrigger className="h-9 w-[170px]"><SelectValue /></SelectTrigger>
               <SelectContent>
