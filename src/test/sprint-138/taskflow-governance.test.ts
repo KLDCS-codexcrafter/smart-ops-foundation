@@ -92,8 +92,8 @@ describe('SLA + escalation (TF-21)', () => {
     };
     upsertSLARule(E, rule);
     const out = evaluateSLA(E);
-    expect(out.breached).toBe(1);
-    expect(out.escalated).toBeGreaterThanOrEqual(1);
+    expect(out.breached).toHaveLength(1);
+    expect(out.escalated.length).toBeGreaterThanOrEqual(1);
     expect(listEscalations(E).length).toBeGreaterThanOrEqual(1);
   });
   it('specificity: category+priority beats category-only', () => {
@@ -107,7 +107,7 @@ describe('SLA + escalation (TF-21)', () => {
     upsertSLARule(E, { id: 'b', name: 'cat+pri', category: 'compliance', priority: 'critical',
       maxHours: 2, escalateAfterHours: 1, escalateTo: 'admin', isActive: true });
     const out = evaluateSLA(E);
-    expect(out.breached).toBe(1);
+    expect(out.breached).toHaveLength(1);
     const escs = listEscalations(E);
     expect(escs[0]?.escalatedTo).toBe('admin');
   });
