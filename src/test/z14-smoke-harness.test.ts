@@ -109,11 +109,48 @@ function record(
 // audit_workspace path resolution · vitest CWD = project root
 const WS = path.resolve(process.cwd(), 'audit_workspace');
 
+/**
+ * Idempotent evidence writer (S139 Block 1b · register T-fix).
+ *
+ * Strips volatile fields (`timestamp`, `generatedAt`, ISO-8601 datetime
+ * string values) from the payload before comparing with the on-disk
+ * file. If the stable content is identical, the write is SKIPPED so
+ * that a plain test run on a clean tree leaves `git status` clean.
+ *
+ * Re-exported for test access via globalThis (S139 Block 1b unit test).
+ */
+const ISO_DATETIME_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$/;
+export function stripVolatile(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(stripVolatile);
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (k === 'timestamp' || k === 'generatedAt') continue;
+      out[k] = stripVolatile(v);
+    }
+    return out;
+  }
+  if (typeof value === 'string' && ISO_DATETIME_RE.test(value)) return '<ISO>';
+  return value;
+}
 function writeEvidence(folder: string, file: string, result: AssertionResult | object) {
   const dir = path.join(WS, folder);
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(path.join(dir, file), JSON.stringify(result, null, 2));
+  const target = path.join(dir, file);
+  const nextJson = JSON.stringify(result, null, 2);
+  const nextStable = JSON.stringify(stripVolatile(result));
+  if (fs.existsSync(target)) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(target, 'utf8'));
+      const prevStable = JSON.stringify(stripVolatile(prev));
+      if (prevStable === nextStable) return; // SKIP rewrite · stable content unchanged
+    } catch {/* fall through to write */}
+  }
+  fs.writeFileSync(target, nextJson);
 }
+// Expose for cross-suite idempotency unit test (S139 Block 1b).
+(globalThis as unknown as { __z14WriteEvidence?: typeof writeEvidence }).__z14WriteEvidence = writeEvidence;
+(globalThis as unknown as { __z14StripVolatile?: typeof stripVolatile }).__z14StripVolatile = stripVolatile;
 
 // ──────────────────────────────────────────────────────────────────────
 // Test fixtures
