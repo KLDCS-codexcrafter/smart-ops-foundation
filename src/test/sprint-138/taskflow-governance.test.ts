@@ -327,7 +327,6 @@ describe('Comment model migration (T1-2)', () => {
     expect(() => addComment(E, t.id, '   ', 'u1', 'U1')).toThrow();
   });
 });
-});
 
 describe('institutional contract', () => {
   it('listTasks remains stable shape', () => {
