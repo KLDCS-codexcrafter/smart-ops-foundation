@@ -560,8 +560,9 @@ const App = () => (
               <Route path="/erp/fpa-planning" element={<P><FpaPlanningPage /></P>} />
               {/* 🌟 Sprint 130 · T-Phase-7.D.3.1 · Arc D.3 OPENER · InsightX self-owned card */}
               <Route path="/erp/insightx" element={<P><InsightXPage /></P>} />
-              {/* 🎬 Sprint 137 · T-TaskFlow-A641.1 · Phase 8 OPENER · TaskFlow self-owned card */}
+              {/* 🎬 Sprint 137.R1 · T-TaskFlow-A641.1 · Pillar A.6.4 · TaskFlow Arc opener (post-Phase-7) */}
               <Route path="/erp/taskflow" element={<P><TaskFlowPage /></P>} />
+              <Route path="/erp/taskflow/task/:id" element={<P><TaskRoomPage /></P>} />
               <Route path="/erp/fincore/invoice-print" element={<P><SalesInvoicePrint /></P>} />
               <Route path="/erp/fincore/receipt-print" element={<P><ReceiptPrint /></P>} />
               <Route path="/erp/fincore/payment-print" element={<P><PaymentPrint /></P>} />
