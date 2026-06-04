@@ -21,7 +21,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listSLARules, upsertSLARule } from '@/lib/taskflow-governance-engine';
 import type { TaskSLARule, TaskCategory, TaskPriority } from '@/types/taskflow';
