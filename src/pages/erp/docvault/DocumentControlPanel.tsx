@@ -107,11 +107,41 @@ export default function DocumentControlPanel({
     [entityCode, documentId, tick],
   );
 
+  const shares = useMemo(
+    () => listShares(entityCode, documentId),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [entityCode, documentId, tick],
+  );
+  const links = useMemo(
+    () => listLinksForDocument(entityCode, documentId),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [entityCode, documentId, tick],
+  );
+
   const [xferOpen, setXferOpen] = useState(false);
   const [xferTo, setXferTo] = useState('');
   const [xferReason, setXferReason] = useState('');
 
+  // Sharing dialog state
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareMode, setShareMode] = useState<'internal' | 'external'>('internal');
+  const [shareGrantee, setShareGrantee] = useState('');
+  const [shareEmail, setShareEmail] = useState('');
+  const [sharePerm, setSharePerm] = useState<SharePermission>('view');
+  const [shareExpires, setShareExpires] = useState('');
+  const [previewUser, setPreviewUser] = useState('');
+
+  // Link dialog state
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkType, setLinkType] = useState<DocumentLinkRef['ref_type']>('task');
+  const [linkRefId, setLinkRefId] = useState('');
+  const [linkLabel, setLinkLabel] = useState('');
+
+  // FY
+  const [fyValue, setFyValue] = useState('');
+
   useEffect(() => { if (open) refresh(); }, [open, refresh]);
+
 
   if (!doc) return null;
   const ctrl = getControl(doc);
