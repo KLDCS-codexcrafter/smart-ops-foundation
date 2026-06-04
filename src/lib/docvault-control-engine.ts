@@ -500,7 +500,8 @@ export function moveDocumentToFolder(
     const folder = getFolder(entityCode, folderId);
     if (!folder) throw new Error(`folder not found: ${folderId}`);
     if (folder.confidentiality_floor) {
-      if (CONF_RANK[ctrl.confidentiality] < CONF_RANK[folder.confidentiality_floor]) {
+      const docLevel: ConfidentialityLevel = ctrl.confidentiality ?? 'internal';
+      if (CONF_RANK[docLevel] < CONF_RANK[folder.confidentiality_floor]) {
         throw new Error(
           `document confidentiality ${ctrl.confidentiality} below folder floor ${folder.confidentiality_floor}`,
         );
