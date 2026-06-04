@@ -346,7 +346,14 @@ export type AuditEntityType =
   // Logged by taskflow-engine on every createTask / updateTask / changeStatus / addComment.
   // Single audit type carries action discriminator via AuditTrailEntry.reason / record_label.
   // ComplianceModule UNTOUCHED.
-  | 'taskflow_event';
+  | 'taskflow_event'
+  // Sprint 140 · T-TaskFlow-A641.4 · Pillar A.6.4 · TaskFlow Arc · OperixChat MVP (module: 'mca-roc')
+  // Logged by operix-chat-engine on every conversation/message mutation (create/update/cancel of
+  // conversations · messages · participants · pin/flag/softDelete · link/unlink · markRead).
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call (mirrors taskflow_event precedent).
+  // Single audit type carries action discriminator via AuditTrailEntry.reason / record_label.
+  // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow-engine + Comply360 + push-notification-bridge.
+  | 'chat_event';
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
