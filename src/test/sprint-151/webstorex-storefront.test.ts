@@ -366,17 +366,17 @@ describe('S151 · Institutional registers + meta-assertion', () => {
     expect(hit!.sprintAdded).toBe(151);
   });
   it('S150 entry exists with backfilled SHA (no longer TBD)', () => {
-    const s150 = SPRINTS.find(s => s.sprintId === 'S150');
+    const s150 = SPRINTS.find(s => s.sprintNumber === 150);
     expect(s150).toBeTruthy();
     expect(s150!.headSha).not.toBe('TBD_AT_BANK');
   });
   it('S151 entry exists (TBD until commit)', () => {
-    const s151 = SPRINTS.find(s => s.sprintId === 'S151');
+    const s151 = SPRINTS.find(s => s.sprintNumber === 151);
     expect(s151).toBeTruthy();
     expect(s151!.newSiblings).toContain('webstorex-order-engine');
   });
   it('NO S152 entry exists (sprint discipline)', () => {
-    expect(SPRINTS.find(s => s.sprintId === 'S152')).toBeUndefined();
+    expect(SPRINTS.find(s => s.sprintNumber === 152)).toBeUndefined();
   });
   it('meta: webstorex-engine + commerce-engine remain in registry (0-DIFF wall)', () => {
     expect(SIBLINGS.find(s => s.id === 'webstorex-engine')).toBeTruthy();
