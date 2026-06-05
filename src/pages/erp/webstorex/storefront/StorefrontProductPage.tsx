@@ -168,3 +168,68 @@ export function StorefrontProductPage({ onNavigate }: Props): JSX.Element {
     </div>
   );
 }
+
+// ─── Accessory Rails (DP-WS-19.5 · S151.T1 hotfix) ───────────────────
+interface RailProps {
+  item: WebStoreItem;
+  entityCode: string;
+  onAdd: (storeItemId: string, qty: number) => void;
+  onOpen: (storeItemId: string) => void;
+}
+
+const RAILS: { kind: RailKind; title: string; cta?: 'add-all' }[] = [
+  { kind: 'crossSell',        title: 'Goes well with' },
+  { kind: 'upsell',           title: 'Consider instead' },
+  { kind: 'frequentlyBought', title: 'Frequently bought together', cta: 'add-all' },
+];
+
+function AccessoryRails({ item, entityCode, onAdd, onOpen }: RailProps): JSX.Element {
+  return (
+    <div className="px-4 space-y-4 pb-4">
+      {RAILS.map(({ kind, title, cta }) => {
+        const ids = pickRelationIds(item, kind);
+        if (ids.length === 0) return null; // hidden when empty (DP-WS-19.5)
+        const rows = ids
+          .map((id) => getStoreItem(entityCode, id))
+          .filter((x): x is WebStoreItem => !!x && x.visibility === 'published');
+        if (rows.length === 0) return null;
+        return (
+          <section key={`rail-${kind}`} className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold">{title}</h2>
+              {cta === 'add-all' && (
+                <Button size="sm" variant="outline" onClick={() => { for (const r of rows) onAdd(r.id, 1); toast.success(`Added ${rows.length} items`); }}>
+                  Add all to cart
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+              {rows.map((r) => {
+                const eff = getEffectivePrice(entityCode, r.id);
+                return (
+                  <div key={`${kind}-${r.id}`} className="min-w-[150px] max-w-[150px] glass-card rounded-lg overflow-hidden">
+                    <button type="button" className="block w-full text-left" onClick={() => onOpen(r.id)} aria-label={`View ${r.storeTitle}`}>
+                      <div className="aspect-square bg-muted">
+                        {r.images[0]?.dataUrl
+                          ? <img src={r.images[0].dataUrl} alt={r.storeTitle} className="w-full h-full object-cover" />
+                          : <div className="w-full h-full" />}
+                      </div>
+                      <div className="p-2 space-y-1">
+                        <div className="text-xs font-medium line-clamp-2 min-h-[2rem]">{r.storeTitle}</div>
+                        <div className="font-mono text-xs font-semibold">{fmtINR(eff.effective)}</div>
+                      </div>
+                    </button>
+                    <Button size="sm" variant="ghost" className="w-full h-7 rounded-none border-t border-border"
+                      onClick={() => { onAdd(r.id, 1); toast.success('Added'); }}>
+                      <Plus className="h-3 w-3 mr-1" />Add
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
