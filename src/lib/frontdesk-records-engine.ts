@@ -237,8 +237,10 @@ export function createInwardMail(entityCode: string, input: InwardMailInput): Ma
   const mail: MailItem = {
     id: mkId('mail'),
     entityId: input.entityId,
+    mailNo: nextMailNo(entityCode, 'inward'),
     direction: 'inward',
     kind: input.kind,
+
     description: input.description.trim(),
     courierName: input.courierName ?? null,
     awbDocketNo: input.awbDocketNo ?? null,
@@ -356,8 +358,10 @@ export function createOutwardMail(entityCode: string, input: OutwardMailInput): 
   const mail: MailItem = {
     id: mkId('mail'),
     entityId: input.entityId,
+    mailNo: nextMailNo(entityCode, 'outward'),
     direction: 'outward',
     kind: input.kind,
+
     description: input.description.trim(),
     courierName: input.courierName ?? null,
     awbDocketNo: input.awbDocketNo ?? null,
