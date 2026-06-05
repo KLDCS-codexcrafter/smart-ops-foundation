@@ -48,6 +48,7 @@ export function OutstandingTaskBoardPanel({ entityCode, onNavigate: _onNavigate 
   const [tasks, setTasks] = useState<OutstandingTask[]>([]);
   const [ptpDialogFor, setPtpDialogFor] = useState<OutstandingTask | null>(null);
   const [reassignFor, setReassignFor] = useState<OutstandingTask | null>(null);
+  const [followUpFor, setFollowUpFor] = useState<OutstandingTask | null>(null);
   const [filterBucket, setFilterBucket] = useState<AgeBucket | 'all'>('all');
   const [searchCustomer, setSearchCustomer] = useState('');
   const [ptpAmount, setPtpAmount] = useState('');
