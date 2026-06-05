@@ -889,11 +889,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['frontdesk-records-engine'],
     bankDate: '2026-06-05', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 148 T-ReceivX-CF.1 · Collections Follow-Up (append-only · Today board · on-open prompt · Planned Reminders · Last-3) + Mail TDL-Parity Rider (mailNo IN-/OUT-NNNN per-entity per-direction · period filter · universal search · Print/CSV · immutable-field edit guards) + Contact Book Depth Rider (PartyContact CRUD · one isPrimary · greetings · Address Book report exploding party→contact rows · envelope M/S. + Kind Attn + From-toggle · label cm + A4 grid math) · DP-RX-1 delta canon: receivx-engine.ts + receivx.ts types 0-DIFF (one documented additive write rides existing task save path: last_contact_at/channel/next_action_date) · DP-RX-2 APPEND-ONLY: no edit · no bulk delete · voidFollowUp(reason) sole correction · DP-RX-3 once-per-day prompt · 1 NEW SIBLING receivx-followup-engine · §H 0-DIFF · headSha TBD_AT_BANK
+  // 🎬 Sprint 148 T-ReceivX-CF.1 · Collections Follow-Up + FrontDesk riders · DP-RX-1/2/3 · receivx-engine.ts + receivx.ts types 0-DIFF · §H 0-DIFF · headSha 6f2f05df (banked S149.B1 backfill)
   {
     sprintNumber: 148, code: 'T-ReceivX-CF.1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '8764b8f1', loc: 1250,
+    headSha: '6f2f05df', predecessorSha: '8764b8f1', loc: 1250,
     newSiblings: ['receivx-followup-engine'],
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 149 T-WebStoreX-A11.1 · WebStoreX PIM + Catalog · card 'webstorex' coming_soon→active · DP-WS-2/8/13/14/15/18 · PIM publication wrapper (item/stock master READ-ONLY · wrapped by reference · never copied · never edited) · variants with allocation guard (Σ active stockAllocation ≤ master qty · over-allocation throws naming excess · reconciliation re-reads master live) · brands · categories (3-level tree · cycle throw) · store settings · catalog manager · webstorex added to sales ROLE_DEFAULT_CARDS · NEW audit literal webstorex_event ADDITIVE under mca-roc · 1 NEW SIBLING webstorex-engine · §H + approval-workflow + Comply360 + push-notification-bridge + all masters 0-DIFF · FR-44 READ-ONLY consume from erp_inventory_items + party-master-engine + audit-trail-engine · headSha TBD_AT_BANK
+  {
+    sprintNumber: 149, code: 'T-WebStoreX-A11.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '6f2f05df', loc: 1500,
+    newSiblings: ['webstorex-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
