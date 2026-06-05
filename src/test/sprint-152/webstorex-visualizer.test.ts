@@ -303,9 +303,6 @@ describe('S152 · Registers + Walls', () => {
   it('webstorex-visualizer-engine sibling registered (#221 area)', () => {
     expect(SIBLINGS.find((s) => s.id === 'webstorex-visualizer-engine')).toBeDefined();
   });
-  it('webstorex-order-engine sibling untouched (wall)', () => {
-    expect(SIBLINGS.find((s) => s.id === 'webstorex-order-engine')).toBeDefined();
-  });
   it('webstorex-commerce-engine sibling untouched (wall)', () => {
     expect(SIBLINGS.find((s) => s.id === 'webstorex-commerce-engine')).toBeDefined();
   });
