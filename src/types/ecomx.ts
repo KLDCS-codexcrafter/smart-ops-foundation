@@ -251,3 +251,49 @@ export const ecClaimsKey = (e: string) => `ecomx_claims_${e}`;
 export const ecReturnsKey = (e: string) => `ecomx_returns_${e}`;
 export const ecAllocationsKey = (e: string) => `ecomx_channel_allocations_${e}`;
 
+// ── S155 · Cockpit + Packing Evidence (DP-EC-10/11) · ADDITIVE ─────────
+export interface EcPackingEvidence {
+  // METADATA ONLY — binary clip is downloaded to the user's machine, NEVER persisted.
+  id: string;
+  ecOrderId: string;
+  marketplaceId: string;
+  marketplaceOrderId: string;
+  docVaultDocumentId: string;
+  fileName: string;
+  durationSec: number | null;
+  sizeBytes: number;
+  capturedVia: 'camera' | 'file_upload';
+  note: string;
+  createdAt: string;
+}
+
+export interface EcCockpitChannelRow {
+  marketplaceId: string;
+  marketplaceName: string;
+  ordersBooked: number;
+  grossBooked: number;
+  parkedB2B: number;
+  returned: number;
+  returnsPct: number;             // returned / ordersBooked · 0 when no orders
+  lastReconVariance: number | null;
+  openClaimsAmount: number;
+  recoveredAmount: number;
+}
+
+export interface EcCockpit {
+  periodFrom: string;
+  periodTo: string;
+  channels: EcCockpitChannelRow[];
+  totals: {
+    ordersBooked: number; grossBooked: number; returned: number;
+    unmappedSkus: number; parkedB2B: number;
+    tds194oCredit: number;        // 26AS cross-check
+    gstTcsCredit: number;         // GSTR-2B Table-8 cross-check
+    openClaimsAmount: number; recoveredAmount: number;
+    evidenceCount: number;
+  };
+}
+
+export const ecPackingEvidenceKey = (e: string) => `ecomx_packing_evidence_${e}`;
+
+
