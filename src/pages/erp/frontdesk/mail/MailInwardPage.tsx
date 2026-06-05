@@ -77,7 +77,7 @@ export function MailInwardPage(): JSX.Element {
   const reload = useCallback(() => setRows(compute()), [compute]);
   useEffect(() => { reload(); }, [reload]);
 
-  const unclaimed = useMemo(() => getUnclaimedInward(entityCode), [entityCode, rows]);
+  const unclaimed = getUnclaimedInward(entityCode);
 
   function ageBadge(m: MailItem): JSX.Element {
     if (m.acknowledgedAt) return <Badge variant="outline">acknowledged</Badge>;

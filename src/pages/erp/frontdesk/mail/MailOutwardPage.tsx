@@ -67,7 +67,7 @@ export function MailOutwardPage(): JSX.Element {
   const reload = useCallback(() => setRows(compute()), [compute]);
   useEffect(() => { reload(); }, [reload]);
 
-  const ageing = useMemo(() => getUnconfirmedOutward(entityCode), [entityCode, rows]);
+  const ageing = getUnconfirmedOutward(entityCode);
 
   function statusBadge(m: MailItem): JSX.Element {
     if (m.deliveryConfirmed) return <Badge variant="outline">delivered</Badge>;
