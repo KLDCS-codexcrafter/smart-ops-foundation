@@ -9,6 +9,7 @@ export type FrontDeskModule =
   | 'check-in'
   | 'roll-call'
   | 'contact-book'
+  | 'address-book'
   | 'watchlist'
   | 'meeting-rooms'
   | 'booking-calendar'

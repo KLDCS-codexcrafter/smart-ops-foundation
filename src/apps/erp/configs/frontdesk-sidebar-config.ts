@@ -9,7 +9,7 @@
  */
 import {
   Home, Users, UserPlus, LogIn, BookUser, ShieldAlert, ClipboardList,
-  DoorOpen, CalendarRange, Briefcase, Mail, Inbox, Send, Package, ClipboardCheck,
+  DoorOpen, CalendarRange, Briefcase, Mail, Inbox, Send, Package, ClipboardCheck, NotebookText,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -59,6 +59,7 @@ export const frontdeskSidebarItems: SidebarItem[] = [
     id: 'contacts-group', type: 'group', label: 'Contacts', icon: BookUser,
     children: [
       { id: 'contact-book', type: 'item', label: 'Contact Book', icon: BookUser, moduleId: 'contact-book', keyboard: 'f c' },
+      { id: 'address-book', type: 'item', label: 'Address Book', icon: NotebookText, moduleId: 'address-book', keyboard: 'f k' },
       { id: 'watchlist', type: 'item', label: 'Watchlist', icon: ShieldAlert, moduleId: 'watchlist', keyboard: 'f l' },
     ],
   },

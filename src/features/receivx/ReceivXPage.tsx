@@ -1,8 +1,9 @@
 /**
  * ReceivXPage.tsx — Main ReceivX Hub container
  * Amber-500 accent. Mirrors SalesXPage pattern.
+ * S148 · T-ReceivX-CF.1 · adds Collections Follow-Up surfaces + once-per-day on-open prompt.
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useEntityList } from '@/hooks/useEntityList';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { ReceivXSidebar } from './ReceivXSidebar';
@@ -24,11 +25,15 @@ import { PTPTrackerPanel } from '@/pages/erp/receivx/transactions/PTPTracker';
 import { ReminderConsolePanel } from '@/pages/erp/receivx/transactions/ReminderConsole';
 import { PaymentLinksPanel } from '@/pages/erp/receivx/transactions/PaymentLinks';
 import { DunningConsolePanel } from '@/pages/erp/receivx/transactions/DunningConsole';
+import { TodayFollowUpsPanel } from '@/pages/erp/receivx/transactions/TodayFollowUpsPage';
+import { PlannedRemindersPanel } from '@/pages/erp/receivx/transactions/PlannedRemindersPage';
 import { AgingByPersonPanel } from '@/pages/erp/receivx/reports/AgingByPerson';
 import { CollectionEfficiencyPanel } from '@/pages/erp/receivx/reports/CollectionEfficiency';
 import { CommunicationLogReportPanel } from '@/pages/erp/receivx/reports/CommunicationLogReport';
 import { CreditRiskReportPanel } from '@/pages/erp/receivx/reports/CreditRiskReport';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { shouldPromptToday, markPrompted, getTodaysFollowUps } from '@/lib/receivx-followup-engine';
+import { toast } from 'sonner';
 
 const breadcrumbLabels: Record<ReceivXModule, string> = {
   'rx-hub':                  'Hub Overview',
@@ -41,6 +46,8 @@ const breadcrumbLabels: Record<ReceivXModule, string> = {
   'rx-t-reminder-console':   'Reminder Console',
   'rx-t-payment-links':      'Payment Links',
   'rx-t-dunning':            'Dunning Console',
+  'rx-t-followups-today':    "Today's Follow-Ups",
+  'rx-t-planned-reminders':  'Planned Reminders',
   'rx-r-aging-salesman':     'Aging — Salesman',
   'rx-r-aging-agent':        'Aging — Agent',
   'rx-r-aging-broker':       'Aging — Broker',
@@ -55,7 +62,7 @@ function renderModule(
   entityCode: string,
   setActiveModule: (m: ReceivXModule) => void,
 ): React.ReactElement {
-  const nav = (m: string) => setActiveModule(m as ReceivXModule);
+  const nav = (m: string): void => setActiveModule(m as ReceivXModule);
   switch (mod) {
     case 'rx-hub':                  return <ReceivXHubPanel entityCode={entityCode} onNavigate={nav} />;
     case 'rx-m-reminder-template':  return <ReminderTemplateMasterPanel entityCode={entityCode} />;
@@ -67,6 +74,8 @@ function renderModule(
     case 'rx-t-reminder-console':   return <ReminderConsolePanel entityCode={entityCode} onNavigate={nav} />;
     case 'rx-t-payment-links':      return <PaymentLinksPanel entityCode={entityCode} />;
     case 'rx-t-dunning':            return <DunningConsolePanel entityCode={entityCode} />;
+    case 'rx-t-followups-today':    return <TodayFollowUpsPanel entityCode={entityCode} />;
+    case 'rx-t-planned-reminders':  return <PlannedRemindersPanel entityCode={entityCode} />;
     case 'rx-r-aging-salesman':     return <AgingByPersonPanel entityCode={entityCode} personType="salesman" onNavigate={nav} />;
     case 'rx-r-aging-agent':        return <AgingByPersonPanel entityCode={entityCode} personType="agent" onNavigate={nav} />;
     case 'rx-r-aging-broker':       return <AgingByPersonPanel entityCode={entityCode} personType="broker" onNavigate={nav} />;
@@ -77,11 +86,12 @@ function renderModule(
   }
 }
 
-export default function ReceivXPage() {
+export default function ReceivXPage(): JSX.Element {
   const { entities, selectedEntityId, isMultiEntity } = useEntityList();
   const entityCode = selectedEntityId ?? DEFAULT_ENTITY_SHORTCODE;
   const [activeModule, setActiveModule] = useState<ReceivXModule>('rx-hub');
   const { entityCode: entCode, userId } = useCardEntitlement();
+  const promptedRef = useRef(false);
 
   useEffect(() => {
     logAudit({
@@ -90,6 +100,28 @@ export default function ReceivXPage() {
       action: 'card_open',
     });
   }, [entCode, userId]);
+
+  // S148 · DP-RX-3 once-per-day on-open prompt (client-side flag · [JWT] P2BB server-side)
+  useEffect(() => {
+    if (promptedRef.current) return;
+    if (!entityCode) return;
+    if (shouldPromptToday(entityCode)) {
+      const { overdue, today } = getTodaysFollowUps(entityCode);
+      const total = overdue.length + today.length;
+      toast.warning(
+        `${total} follow-up${total === 1 ? '' : 's'} pending today (${overdue.length} overdue).`,
+        {
+          action: {
+            label: 'Open',
+            onClick: () => setActiveModule('rx-t-followups-today'),
+          },
+          duration: 8000,
+        },
+      );
+      markPrompted(entityCode, new Date().toISOString());
+    }
+    promptedRef.current = true;
+  }, [entityCode]);
 
   useEffect(() => {
     rememberModule('receivx', activeModule);
@@ -142,4 +174,4 @@ export default function ReceivXPage() {
   );
 }
 
-export function ReceivXPagePanel() { return <ReceivXPage />; }
+export function ReceivXPagePanel(): JSX.Element { return <ReceivXPage />; }

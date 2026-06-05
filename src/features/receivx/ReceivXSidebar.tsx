@@ -32,11 +32,13 @@ export function ReceivXSidebar({ activeModule, onModuleChange }: Props) {
   ];
 
   const txnItems: Array<{ id: ReceivXModule; label: string; icon: React.ElementType }> = [
-    { id: 'rx-t-task-board',       label: 'Outstanding Tasks',  icon: ClipboardCheck },
-    { id: 'rx-t-ptp-tracker',      label: 'PTP Tracker',        icon: CalendarClock },
-    { id: 'rx-t-reminder-console', label: 'Reminder Console',   icon: MessageCircle },
-    { id: 'rx-t-payment-links',    label: 'Payment Links',      icon: CreditCard },
-    { id: 'rx-t-dunning',          label: 'Dunning Console',    icon: MailWarning },
+    { id: 'rx-t-task-board',         label: 'Outstanding Tasks',  icon: ClipboardCheck },
+    { id: 'rx-t-followups-today',    label: "Today's Follow-Ups", icon: Bell },
+    { id: 'rx-t-planned-reminders',  label: 'Planned Reminders',  icon: CalendarClock },
+    { id: 'rx-t-ptp-tracker',        label: 'PTP Tracker',        icon: CalendarClock },
+    { id: 'rx-t-reminder-console',   label: 'Reminder Console',   icon: MessageCircle },
+    { id: 'rx-t-payment-links',      label: 'Payment Links',      icon: CreditCard },
+    { id: 'rx-t-dunning',            label: 'Dunning Console',    icon: MailWarning },
   ];
 
   const reportItems: Array<{ id: ReceivXModule; label: string; icon: React.ElementType }> = [

@@ -353,17 +353,17 @@ describe('S147 · Audit + Registers', () => {
     expect(s146?.headSha).toBe('c06202c9');
   });
 
-  it('registers: S147 last entry · TBD_AT_BANK', () => {
-    const last = SPRINTS[SPRINTS.length - 1];
-    expect(last.sprintNumber).toBe(147);
-    expect(last.headSha).toBe('TBD_AT_BANK');
+  it('registers: S147 entry · headSha 8764b8f1 (backfilled by S148)', () => {
+    const s147 = SPRINTS.find((s) => s.code === 'T-FrontDesk-A6F.3');
+    expect(s147?.headSha).toBe('8764b8f1');
   });
 
-  it('registers: sibling frontdesk-records-engine present (→216)', () => {
+  it('registers: sibling frontdesk-records-engine present (entry 216)', () => {
     const sib = SIBLINGS.find((s) => s.id === 'frontdesk-records-engine');
     expect(sib).toBeTruthy();
     expect(sib?.sprintAdded).toBe(147);
-    expect(SIBLINGS.length).toBe(216);
+    // S148 added entry 217 (receivx-followup-engine); guard the floor at ≥216.
+    expect(SIBLINGS.length).toBeGreaterThanOrEqual(216);
   });
 
   it('time-robust: now-injection works in unclaimed math', () => {

@@ -16,6 +16,8 @@ export type ReceivXModule =
   | 'rx-m-incentive-scheme' | 'rx-m-config'
   | 'rx-t-task-board' | 'rx-t-ptp-tracker' | 'rx-t-reminder-console'
   | 'rx-t-payment-links' | 'rx-t-dunning'
+  // S148 · T-ReceivX-CF.1 · Collections Follow-Up surfaces
+  | 'rx-t-followups-today' | 'rx-t-planned-reminders'
   | 'rx-r-aging-salesman' | 'rx-r-aging-agent'
   | 'rx-r-aging-broker' | 'rx-r-aging-telecaller'
   | 'rx-r-collection-eff' | 'rx-r-comm-log' | 'rx-r-credit-risk';
@@ -25,6 +27,7 @@ export const LIVE_RECEIVX_MODULES: ReceivXModule[] = [
   'rx-m-incentive-scheme','rx-m-config',
   'rx-t-task-board','rx-t-ptp-tracker','rx-t-reminder-console',
   'rx-t-payment-links','rx-t-dunning',
+  'rx-t-followups-today','rx-t-planned-reminders',
   'rx-r-aging-salesman','rx-r-aging-agent',
   'rx-r-aging-broker','rx-r-aging-telecaller',
   'rx-r-collection-eff','rx-r-comm-log','rx-r-credit-risk',
