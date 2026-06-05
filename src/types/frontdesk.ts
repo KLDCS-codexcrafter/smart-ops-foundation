@@ -204,7 +204,10 @@ export interface ReceptionDiaryEntry {      // DP-FD-16 · COMPUTED · never sto
   custodyOverdue: { recordId: string; assetLabel: string; employeeName: string; dueBackAt: string }[];
   tomorrowsAppointments: { title: string; executiveName: string; startAt: string }[];
   expectedCouriers: { mailId: string; description: string }[];   // outward awaiting confirmation, courier mode
+  /** S148 Rider 1c · birthday/anniversary digest from fd_party_contacts. */
+  greetingsToday?: { contactId: string; partyId: string; name: string; kind: 'birthday' | 'anniversary' }[];
 }
+
 
 export const fdMailKey = (entityCode: string): string => `fd_mail_${entityCode}`;
 export const fdCustodyKey = (entityCode: string): string => `fd_custody_${entityCode}`;
