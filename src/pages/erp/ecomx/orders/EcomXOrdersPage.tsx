@@ -35,6 +35,44 @@ export function EcomXOrdersPage(): JSX.Element {
 
   const parties = useMemo(() => entityCode ? loadPartyMaster(entityCode) : [], [entityCode]);
 
+  const evidenceByOrder = useMemo(() => {
+    if (!entityCode) return new Map<string, number>();
+    const m = new Map<string, number>();
+    listPackingEvidence(entityCode).forEach((e) => m.set(e.ecOrderId, (m.get(e.ecOrderId) ?? 0) + 1));
+    return m;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityCode, tick]);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const pendingOrderId = useRef<string | null>(null);
+
+  const onAttachClick = useCallback((ecOrderId: string) => {
+    pendingOrderId.current = ecOrderId;
+    fileInputRef.current?.click();
+  }, []);
+
+  const onFileSelected = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
+    const file = ev.target.files?.[0];
+    const ecOrderId = pendingOrderId.current;
+    ev.target.value = '';
+    if (!file || !ecOrderId || !entityCode) return;
+    try {
+      // Binary is NEVER persisted — metadata only.  [JWT] P2BB · upload to CDN, replace file_url.
+      recordPackingEvidence(entityCode, {
+        ecOrderId,
+        fileName: file.name,
+        sizeBytes: file.size,
+        durationSec: null,
+        capturedVia: 'file_upload',
+        note: '',
+        uploadedBy: 'self',
+        originatingDepartmentId: 'ecomx',
+      });
+      toast.success('Packing evidence recorded (metadata only).');
+      setTick((t) => t + 1);
+    } catch (e) { toast.error((e as Error).message); }
+  }, [entityCode]);
+
   const onResolve = useCallback((ecOrderId: string, partyId: string) => {
     if (!entityCode || !partyId) return;
     try {
