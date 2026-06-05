@@ -37,9 +37,12 @@ export const webstorexSidebarItems: SidebarItem[] = [
   { id: 'storefront-orders',     type: 'item', label: 'My orders',      icon: Receipt,      moduleId: 'storefront-orders',     keyboard: 'w m' },
   { id: 'storefront-quote',      type: 'item', label: 'Request quote',  icon: FileText,     moduleId: 'storefront-quote',      keyboard: 'w e' },
   { id: 'storefront-compare',    type: 'item', label: 'Compare',        icon: GitCompare,   moduleId: 'storefront-compare',    keyboard: 'w n' },
+  // ── Visualizer + Stats (S152 · ARC CLOSER · DP-WS-12/21) ─────────
+  { id: 'div-visualizer', type: 'divider', label: 'Visualizer & Stats' },
+  { id: 'visualizer',  type: 'item', label: 'Visualizer',  icon: ImageIcon, moduleId: 'visualizer',  keyboard: 'w i' },
+  { id: 'store-stats', type: 'item', label: 'Store stats', icon: BarChart3, moduleId: 'store-stats', keyboard: 'w x' },
   // ── Coming soon ────────────────────────────────────────────────────
   { id: 'div-soon', type: 'divider', label: 'Coming Soon' },
-  { id: 'visualizer-coming-soon', type: 'item', label: 'Visualizer — S152', icon: ImageIcon, moduleId: 'visualizer-coming-soon', comingSoon: true },
   { id: 'storefront-coming-soon', type: 'item', label: 'Layered views — TBD', icon: Layers, moduleId: 'storefront-coming-soon', comingSoon: true },
   // ── Settings ───────────────────────────────────────────────────────
   { id: 'settings',   type: 'item', label: 'Settings',   icon: Settings,    moduleId: 'settings',   keyboard: 'w s' },
