@@ -14,12 +14,12 @@ import {
   createCategory, updateCategory, deleteCategory, listCategoryTree, listCategories,
   createBrand, updateBrand, deleteBrand, listBrands,
   getStoreSettings, updateStoreSettings,
-  filterStoreItems,
+  getCatalog,
 } from '@/lib/webstorex-engine';
 import { SIBLINGS } from '@/lib/_institutional/sibling-register';
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
 import { webstorexSidebarItems } from '@/apps/erp/configs/webstorex-sidebar-config';
-import { APPLICATIONS } from '@/components/operix-core/applications';
+import { applications as APPLICATIONS } from '@/components/operix-core/applications';
 import type { AuditEntityType } from '@/types/audit-trail';
 
 const ENT = 'TST';
@@ -263,11 +263,11 @@ describe('S149 · settings + queries + audit additivity', () => {
     expect(s.supportEmail).toBe('help@demo.in');
   });
 
-  it('filterStoreItems by search and visibility', () => {
+  it('getCatalog filters by search and visibility', () => {
     publishItem(ENT, 'm-shirt', USER, { storeTitle: 'Cotton Shirt Premium' });
     publishItem(ENT, 'm-mug', USER, { storeTitle: 'Coffee Mug' });
-    expect(filterStoreItems(ENT, { search: 'cotton' })).toHaveLength(1);
-    expect(filterStoreItems(ENT, { visibility: 'draft' })).toHaveLength(2);
+    expect(getCatalog(ENT, { search: 'cotton' })).toHaveLength(1);
+    expect(getCatalog(ENT, { visibility: 'draft' })).toHaveLength(2);
   });
 
   it('listMasterCandidates flags already-published items', () => {
