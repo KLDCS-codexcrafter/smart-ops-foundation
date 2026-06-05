@@ -20,15 +20,20 @@ import {
   type ContactNote,
   type FrontDeskStats,
   type IdProofType,
+  type LabelPrefs,
+  type PartyContact,
   type VisitPurpose,
   type Visitor,
   type VisitorStatus,
   type WatchlistEntry,
   fdBadgeSeqKey,
   fdContactNotesKey,
+  fdLabelPrefsKey,
+  fdPartyContactsKey,
   fdVisitorsKey,
   fdWatchlistKey,
 } from '@/types/frontdesk';
+
 
 // ─── storage helpers ─────────────────────────────────────────────────
 function readJSON<T>(key: string, fallback: T): T {
