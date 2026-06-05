@@ -1,16 +1,16 @@
 /**
  * @file        src/lib/webstorex-order-engine.ts
  * @purpose     S151 · Storefront orders · DP-WS-3 ONE-WRITE WALL · checkout creates REAL Sales Order
- *              voucher via the existing useOrders.createOrder path (Quotation→SO precedent · Order shape
- *              consumed verbatim · same ordersKey storage) · DP-WS-8 server-side re-evaluation via
- *              evaluateCart at commit · Quick-Order Pad · Request-a-Quote (REAL Quotation voucher via
- *              quotationsKey + generateDocNo('RFQ', ...) — same path useQuotations.createQuotation uses)
- *              · saved carts CRUD · reorder · store-orders register w/ status mirror + payment-link
- *              attach · askAboutProduct → OperixChat customer-channel conversation.
+ *              voucher via the existing useOrders.createOrder data path (Order shape + ordersKey
+ *              storage consumed verbatim · Quotation→SO precedent) · DP-WS-8 server-side re-evaluation
+ *              via evaluateCart at commit · Quick-Order Pad · Request-a-Quote (REAL Quotation voucher
+ *              via quotationsKey + generateDocNo('RFQ', ...) — same path useQuotations.createQuotation
+ *              uses) · saved carts CRUD · reorder · store-orders register w/ status mirror +
+ *              payment-link attach · askAboutProduct → OperixChat customer-channel conversation.
  * @sprint      Sprint 151 · T-WebStoreX-A11.3 · DP-WS-3/8/19/22
- * @reads-from  webstorex-engine (CALL ONLY) · webstorex-commerce-engine (CALL ONLY) · party-master-engine
- *              (CALL ONLY) · operix-chat-engine (CALL ONLY) · fincore-engine.generateDocNo (CALL ONLY)
- *              · audit-trail-engine.logAudit
+ * @reads-from  webstorex-engine (CALL ONLY) · webstorex-commerce-engine (CALL ONLY) ·
+ *              party-master-engine (CALL ONLY) · operix-chat-engine (CALL ONLY) ·
+ *              fincore-engine.generateDocNo / fyForDate (CALL ONLY) · audit-trail-engine.logAudit
  * @walls       webstorex-engine.ts + webstorex-commerce-engine.ts + receivx + salesx engines 0-DIFF.
  *              Order + Quotation TYPES verbatim. NO parallel order object as source of truth —
  *              WsStoreOrder is a LINK + evaluation snapshot only.
@@ -20,21 +20,18 @@ import type { Order, OrderLine } from '@/types/order';
 import { ordersKey } from '@/types/order';
 import type { Quotation, QuotationItem } from '@/types/quotation';
 import { quotationsKey } from '@/types/quotation';
+import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import {
-  generateDocNo, fyForDate,
-} from '@/lib/fincore-engine';
-import {
-  getStoreItem, listVariants,
+  getStoreItem, listVariants, listStoreItems,
 } from '@/lib/webstorex-engine';
 import {
   evaluateCart, commitCouponUse, getEffectivePrice,
   earnPoints, redeemPoints, redeemVoucher, redeemCredit,
-  listSchemes,
+  reversePointEntry, reverseVoucherEntry, reverseCreditEntry,
+  getLoyaltyRule, listSchemes,
 } from '@/lib/webstorex-commerce-engine';
 import { loadPartyMaster } from '@/lib/party-master-engine';
-import {
-  createConversation, sendMessage,
-} from '@/lib/operix-chat-engine';
+import { createConversation, sendMessage } from '@/lib/operix-chat-engine';
 import { logAudit } from '@/lib/audit-trail-engine';
 import type {
   WsCartLine, WsSavedCart, WsStoreOrder, WsQuoteRequest,
@@ -111,7 +108,7 @@ export function updateSavedCart(
   if (idx < 0) throw new Error('saved cart not found');
   const before = { ...all[idx] };
   if (patch.lines) {
-    for (const l of patch.lines) if (l.qty < 1) throw new Error(`line qty must be ≥1`);
+    for (const l of patch.lines) if (l.qty < 1) throw new Error('line qty must be ≥1');
   }
   const updated: WsSavedCart = {
     ...all[idx],
@@ -163,11 +160,13 @@ export function checkoutCart(
   opts: CheckoutOpts,
 ): CheckoutResult {
   if (!lines.length) throw new Error('cart is empty');
+
   // 1. Validate party
   const party = loadPartyMaster(entityCode).find((p) => p.id === opts.partyId);
   if (!party) throw new Error(`Unknown party: ${opts.partyId}`);
+  const partyName = party.party_name;
 
-  // 2. Validate items: published + variant active + MOQ
+  // 2. Validate items: published + variant active + MOQ (named)
   for (const l of lines) {
     if (l.qty < 1) throw new Error(`line qty must be ≥1 (storeItem ${l.storeItemId})`);
     const item = getStoreItem(entityCode, l.storeItemId);
@@ -188,42 +187,43 @@ export function checkoutCart(
 
   // 3. SERVER-SIDE TRUTH — re-evaluate (client totals never trusted)
   const evalLines = lines.map((l) => ({ storeItemId: l.storeItemId, qty: l.qty }));
-  const evaluation = evaluateCart(entityCode, {
+  const evaluation = evaluateCart(entityCode, evalLines, {
     partyId: opts.partyId,
-    lines: evalLines,
     couponCode: opts.couponCode ?? undefined,
     nowISO: opts.nowISO,
   });
 
-  // 4. Apply redemptions through the LEDGERS — any throw ABORTS atomically
-  //    (nothing committed: no voucher, no coupon increment, no earn).
+  // 4. Apply redemptions through the LEDGERS — any throw ABORTS atomically.
   const ts = nowIso(opts.nowISO);
   const orderRef = newId('wsord');
-  const redemptionRollback: Array<() => void> = [];
+  const rollback: Array<() => void> = [];
   let pointsRedeemed = 0;
   let voucherCodeUsed: string | null = null;
   let creditRedeemed = 0;
+  let pointsValue = 0;
+  let voucherValue = 0;
 
   try {
     let payable = evaluation.payable;
+    const rule = getLoyaltyRule(entityCode);
 
     if (opts.redeemPoints && opts.redeemPoints > 0) {
-      // Cap: value of points ≤ payable
-      const rule = (await Promise.resolve()) && undefined; // placeholder no-op for clarity
-      const entry = redeemPoints(entityCode, opts.partyId, opts.redeemPoints, orderRef, opts.byUserId, opts.nowISO);
-      redemptionRollback.push(() => reverseLastPointEntry(entityCode, entry.id, opts.byUserId, opts.nowISO));
-      pointsRedeemed = opts.redeemPoints;
-      // best-effort payable subtraction (engine validates real value)
-      payable = Math.max(0, payable - (entry.valueInr ?? 0));
+      const pts = Math.floor(opts.redeemPoints);
+      const ptValue = rule ? +(pts * rule.redeemValuePerPoint).toFixed(2) : 0;
+      if (ptValue > payable) throw new Error('points value exceeds payable');
+      const entry = redeemPoints(entityCode, opts.partyId, pts, orderRef, opts.byUserId, opts.nowISO);
+      rollback.push(() => { try { reversePointEntry(entityCode, entry.id, 'checkout aborted', opts.byUserId, opts.nowISO); } catch { /* */ } });
+      pointsRedeemed = pts; pointsValue = ptValue;
+      payable = Math.max(0, +(payable - ptValue).toFixed(2));
     }
 
     if (opts.voucherCode) {
       const amt = Math.min(payable, evaluation.payable);
       if (amt > 0) {
         const ve = redeemVoucher(entityCode, opts.voucherCode, amt, orderRef, opts.byUserId, opts.nowISO);
-        redemptionRollback.push(() => reverseLastVoucherEntry(entityCode, ve.id, opts.byUserId, opts.nowISO));
-        voucherCodeUsed = opts.voucherCode;
-        payable = Math.max(0, payable - amt);
+        rollback.push(() => { try { reverseVoucherEntry(entityCode, ve.id, 'checkout aborted', opts.byUserId, opts.nowISO); } catch { /* */ } });
+        voucherCodeUsed = opts.voucherCode; voucherValue = amt;
+        payable = Math.max(0, +(payable - amt).toFixed(2));
       }
     }
 
@@ -231,30 +231,35 @@ export function checkoutCart(
       const amt = Math.min(opts.redeemCredit, payable);
       if (amt > 0) {
         const ce = redeemCredit(entityCode, opts.partyId, amt, `Order ${orderRef}`, orderRef, opts.byUserId, opts.nowISO);
-        redemptionRollback.push(() => reverseLastCreditEntry(entityCode, ce.id, opts.byUserId, opts.nowISO));
+        rollback.push(() => { try { reverseCreditEntry(entityCode, ce.id, 'checkout aborted', opts.byUserId, opts.nowISO); } catch { /* */ } });
         creditRedeemed = amt;
-        payable = Math.max(0, payable - amt);
+        payable = Math.max(0, +(payable - amt).toFixed(2));
       }
     }
 
-    // 5. Create the REAL SO voucher via the existing path (useOrders.createOrder shape).
-    const voucher = writeSalesOrderVoucher(entityCode, party.name, opts.partyId, lines, evaluation, opts.couponCode ?? null, opts.byUserId, opts.nowISO);
+    // 5. Create the REAL SO voucher via the existing path.
+    const voucher = writeSalesOrderVoucher(
+      entityCode, partyName, opts.partyId, lines, evaluation,
+      opts.couponCode ?? null, opts.byUserId, opts.nowISO,
+    );
 
     // 6. Commit side-effects only after voucher success.
     if (opts.couponCode) {
       const scheme = listSchemes(entityCode).find((s) => s.couponCode === opts.couponCode);
       if (scheme) commitCouponUse(entityCode, scheme.id);
     }
-    // loyalty earn on NET payable
-    earnPoints(entityCode, opts.partyId, Math.max(0, evaluation.payable - pointsValueRedeemed(evaluation, pointsRedeemed) - creditRedeemed - (voucherCodeUsed ? Math.min(evaluation.payable, evaluation.payable) : 0)), voucher.id, opts.byUserId, opts.nowISO);
+    const netForEarn = Math.max(0, +(evaluation.payable - pointsValue - voucherValue - creditRedeemed).toFixed(2));
+    earnPoints(entityCode, opts.partyId, netForEarn, voucher.id, opts.byUserId, opts.nowISO);
 
-    // 7. Write the WsStoreOrder snapshot (LINK + evaluation only).
+    // 7. Write the WsStoreOrder snapshot.
     const so: WsStoreOrder = {
       id: orderRef, entityId: entityCode,
       soVoucherId: voucher.id, soVoucherNo: voucher.order_no,
-      partyId: opts.partyId, partyName: party.name,
+      partyId: opts.partyId, partyName,
       evaluation,
-      couponSchemeId: opts.couponCode ? (listSchemes(entityCode).find((s) => s.couponCode === opts.couponCode)?.id ?? null) : null,
+      couponSchemeId: opts.couponCode
+        ? (listSchemes(entityCode).find((s) => s.couponCode === opts.couponCode)?.id ?? null)
+        : null,
       pointsRedeemed, voucherCodeUsed, creditRedeemed,
       paymentLinkRef: null,
       placedVia: opts.placedVia,
@@ -266,28 +271,9 @@ export function checkoutCart(
 
     return { order: so, voucher, evaluation };
   } catch (err) {
-    // ABORT — reverse any committed redemption ledger entries.
-    for (const rb of redemptionRollback.reverse()) { try { rb(); } catch { /* swallow */ } }
+    for (const rb of rollback.reverse()) rb();
     throw err;
   }
-}
-
-function pointsValueRedeemed(_evaluation: CartEvaluation, pts: number): number {
-  // Engine reports value via redeemPoints entry; here we just return 0 since
-  // the contribution is already netted from payable in the try block.
-  return pts > 0 ? 0 : 0;
-}
-
-// thin wrappers — kept here so checkoutCart's rollback path is unmistakable.
-function reverseLastPointEntry(entityCode: string, entryId: string, userId: string, nowISO?: string): void {
-  // CALL ONLY · commerce engine is the canonical reverser
-  import('@/lib/webstorex-commerce-engine').then((m) => m.reversePointEntry(entityCode, entryId, 'checkout aborted', userId, nowISO)).catch(() => {});
-}
-function reverseLastVoucherEntry(entityCode: string, entryId: string, userId: string, nowISO?: string): void {
-  import('@/lib/webstorex-commerce-engine').then((m) => m.reverseVoucherEntry(entityCode, entryId, 'checkout aborted', userId, nowISO)).catch(() => {});
-}
-function reverseLastCreditEntry(entityCode: string, entryId: string, userId: string, nowISO?: string): void {
-  import('@/lib/webstorex-commerce-engine').then((m) => m.reverseCreditEntry(entityCode, entryId, 'checkout aborted', userId, nowISO)).catch(() => {});
 }
 
 // ─── REAL SO voucher writer (mirrors useOrders.createOrder · same key + shape) ───
@@ -297,14 +283,13 @@ function writeSalesOrderVoucher(
   cartLines: WsCartLine[],
   evaluation: CartEvaluation,
   couponCode: string | null,
-  byUserId: string,
+  _byUserId: string,
   nowISO?: string,
 ): Order {
   const ts = nowIso(nowISO);
   const dateOnly = ts.split('T')[0];
   const orderNo = generateDocNo('SO', entityCode);
 
-  // Build priced lines at effective prices (DP-WS-3 wall: voucher line = MASTER item; variant axes in description).
   const lines: OrderLine[] = [];
   let lineSeq = 0;
 
@@ -325,8 +310,7 @@ function writeSalesOrderVoucher(
       item_name: item.storeTitle + descrSuffix,
       hsn_sac_code: '',
       qty: cl.qty, uom: 'NOS',
-      rate,
-      discount_percent: 0,
+      rate, discount_percent: 0,
       taxable_value: +(cl.qty * rate).toFixed(2),
       gst_rate: 0,
       pending_qty: cl.qty, fulfilled_qty: 0,
@@ -352,9 +336,8 @@ function writeSalesOrderVoucher(
     });
   }
 
-  // Scheme + coupon + redemption discount as a synthetic discount line (Order line shape
-  // supports rate · taxable_value · but NOT an order-level discount field —
-  // DESIGN-DECISION-FLAG: discounts expressed as a SYNTHETIC LINE with negative rate).
+  // DESIGN-DECISION-FLAG · Order shape lacks an order-level discount field — discounts
+  // (scheme + coupon + redemptions) are expressed as a SYNTHETIC LINE with negative rate.
   const totalDiscount = evaluation.totalDiscount;
   if (totalDiscount > 0) {
     lineSeq += 1;
@@ -399,7 +382,6 @@ function writeSalesOrderVoucher(
   all.push(order);
   ss(ordersKey(entityCode), all);
 
-  // mirror useOrders audit semantics
   try {
     logAudit({
       entityCode, action: 'create', entityType: 'order',
@@ -423,6 +405,7 @@ export function requestQuote(
   if (!lines.length) throw new Error('quote request needs ≥1 line');
   const party = loadPartyMaster(entityCode).find((p) => p.id === opts.partyId);
   if (!party) throw new Error(`Unknown party: ${opts.partyId}`);
+  const partyName = party.party_name;
 
   const ts = nowIso(opts.nowISO);
   const items: QuotationItem[] = lines.map((cl, idx) => {
@@ -456,7 +439,7 @@ export function requestQuote(
     quotation_date: ts.split('T')[0],
     quotation_type: 'original', quotation_stage: 'draft',
     enquiry_id: null, enquiry_no: null,
-    customer_id: opts.partyId, customer_name: party.name,
+    customer_id: opts.partyId, customer_name: partyName,
     valid_until_days: 30, valid_until_date: null,
     original_quotation_no: null, last_quotation_no: null, last_quotation_date: null,
     revision_number: 0, revision_history: [],
@@ -465,6 +448,8 @@ export function requestQuote(
     notes: opts.note ?? null, terms_conditions: null,
     proforma_no: null, proforma_date: null, proforma_converted_at: null,
     so_id: null, so_no: null, so_converted_at: null,
+    project_id: null,
+    is_active: true,
     created_at: ts, updated_at: ts,
   };
   const allQ = ls<Quotation>(quotationsKey(entityCode));
@@ -473,7 +458,7 @@ export function requestQuote(
   const request: WsQuoteRequest = {
     id: newId('wsqr'), entityId: entityCode,
     quotationVoucherId: quote.id, quotationVoucherNo: quote.quotation_no,
-    partyId: opts.partyId, partyName: party.name,
+    partyId: opts.partyId, partyName,
     lines: lines.map((l) => ({ ...l })),
     note: opts.note ?? null,
     createdAt: ts, createdByUserId: opts.byUserId,
@@ -491,18 +476,20 @@ export function requestQuote(
 export function parseQuickOrder(entityCode: string, rawText: string): QuickOrderParseResult {
   const result: QuickOrderParseResult = { lines: [], unknownSkus: [], invalidRows: [] };
   if (!rawText) return result;
+
+  const allItems = listStoreItems(entityCode);
+
   const rows = rawText.split(/\r?\n/).map((r) => r.trim()).filter(Boolean);
   for (const row of rows) {
     const parts = row.includes(',') ? row.split(',').map((p) => p.trim()) : row.split(/\s+/);
     if (parts.length < 2) { result.invalidRows.push(row); continue; }
-    const sku = parts[0]; const qty = parseInt(parts[1], 10);
+    const sku = parts[0];
+    const qty = parseInt(parts[1], 10);
     if (!sku || !Number.isFinite(qty) || qty < 1) { result.invalidRows.push(row); continue; }
-    // resolve variant SKU first
+
+    // 1. resolve variant SKU first
     let matched = false;
-    const items = (await Promise.resolve()) ? [] : [];
-    // synchronous resolve via webstorex-engine
-    const all = require('@/lib/webstorex-engine').listStoreItems(entityCode) as Array<{ id: string; itemRefId: string; storeTitle: string }>;
-    for (const it of all) {
+    for (const it of allItems) {
       const variants = listVariants(entityCode, it.id);
       const v = variants.find((x) => x.sku.toLowerCase() === sku.toLowerCase());
       if (v) {
@@ -511,9 +498,10 @@ export function parseQuickOrder(entityCode: string, rawText: string): QuickOrder
         break;
       }
     }
+    // 2. item-level resolve (itemRefId match or title prefix)
     if (!matched) {
-      // item-level resolve by itemRefId or storeTitle prefix
-      const it = all.find((i) => i.itemRefId.toLowerCase() === sku.toLowerCase()
+      const it = allItems.find((i) =>
+        i.itemRefId.toLowerCase() === sku.toLowerCase()
         || i.storeTitle.toLowerCase().startsWith(sku.toLowerCase()));
       if (it) { result.lines.push({ storeItemId: it.id, qty }); matched = true; }
     }
@@ -548,11 +536,13 @@ export function listStoreOrders(entityCode: string, filter: StoreOrderFilter = {
   return result;
 }
 
-export function getOrderStatusMirror(entityCode: string, storeOrderId: string): {
+export interface StatusMirror {
   storeOrder: WsStoreOrder | null;
   voucherStatus: Order['status'] | null;
   dispatchStatus: null;     // DESIGN-DECISION-FLAG · S151: no readable dispatch surface at HEAD
-} {
+}
+
+export function getOrderStatusMirror(entityCode: string, storeOrderId: string): StatusMirror {
   const so = ls<WsStoreOrder>(wsStoreOrdersKey(entityCode)).find((o) => o.id === storeOrderId);
   if (!so) return { storeOrder: null, voucherStatus: null, dispatchStatus: null };
   const v = ls<Order>(ordersKey(entityCode)).find((o) => o.id === so.soVoucherId);
