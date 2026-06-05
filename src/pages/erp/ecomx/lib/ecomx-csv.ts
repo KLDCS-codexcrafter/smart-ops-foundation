@@ -13,6 +13,6 @@ export function exportEcomxCsv(
   baseName: string,
 ): void {
   const body = rows.map((r) => r.map((c) => csvEscapeCell(String(c ?? ''))).join(',')).join('\n');
-  const filename = buildExportFilename(baseName, 'csv');
+  const filename = buildExportFilename('ecomx', baseName, 'csv');
   downloadBlob(new Blob([body], { type: 'text/csv;charset=utf-8' }), filename);
 }
