@@ -9,9 +9,10 @@
  */
 import {
   Home, Users, UserPlus, LogIn, BookUser, ShieldAlert, ClipboardList,
-  DoorOpen, CalendarRange, Briefcase,
+  DoorOpen, CalendarRange, Briefcase, Mail, Inbox, Send, Package, ClipboardCheck,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
+
 
 export const frontdeskSidebarItems: SidebarItem[] = [
   {
