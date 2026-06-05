@@ -54,10 +54,29 @@ export function ContactBookPage(): JSX.Element {
     }
   }
 
+  const [envelopeOpen, setEnvelopeOpen] = useState(false);
+  const [labelOpen, setLabelOpen] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  function toggleSelect(id: string): void {
+    setSelectedIds((cur) => cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]);
+  }
+
   return (
     <div className="p-6 space-y-4">
       <Card>
-        <CardHeader><CardTitle>Contact Book</CardTitle></CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Contact Book</CardTitle>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" disabled={selectedIds.length === 0}
+              onClick={() => setEnvelopeOpen(true)}>
+              <Mail className="h-3 w-3 mr-1" /> Envelopes ({selectedIds.length})
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => setLabelOpen(true)}>
+              <Tag className="h-3 w-3 mr-1" /> Label sheet
+            </Button>
+          </div>
+        </CardHeader>
         <CardContent className="space-y-4">
           <Input
             placeholder="Search party name / code"
