@@ -56,14 +56,36 @@ export const ROLE_DEFAULT_CARDS: Record<UserRole, CardId[]> = {
   super_admin: [],
   tenant_admin: [],
   // Sprint 116 · T-Phase-7.D.0.1 · finance + hr get 'fpa-planning' visibility (DP-D0-1)
-  finance: ['fincore', 'receivx', 'payout', 'insightx', 'command-center', 'fpa-planning'],
-  sales: ['salesx', 'distributor-hub', 'customer-hub', 'insightx'],
+  // S146.T1 · role-default visibility fix · 'taskflow' added (tasks are universal)
+  finance: ['fincore', 'receivx', 'payout', 'insightx', 'command-center', 'fpa-planning', 'taskflow'],
+  // S146.T1 · role-default visibility fix · 'taskflow' added (tasks are universal)
+  sales: ['salesx', 'distributor-hub', 'customer-hub', 'insightx', 'taskflow'],
+  // S146.T1 · role-default visibility fix · 'frontdesk' + 'taskflow' added (reception management + universal tasks)
   operations: ['procure360', 'inventory-hub', 'production', 'qualicheck', 'gateflow',
-    'maintainpro', 'requestx', 'logistics', 'dispatch-hub'],
-  hr: ['peoplepay', 'insightx', 'fpa-planning'],
+    'maintainpro', 'requestx', 'logistics', 'dispatch-hub', 'frontdesk', 'taskflow'],
+  // S146.T1 · role-default visibility fix · 'frontdesk' + 'taskflow' added (reception management role + universal tasks)
+  hr: ['peoplepay', 'insightx', 'fpa-planning', 'frontdesk', 'taskflow'],
   support: ['servicedesk'],
   view_only: ['insightx'],
 };
+
+/**
+ * S146.T1 · ADMIN_ONLY_CARDS allowlist — explicit exceptions to the standing
+ * assertion that every 'active' card must appear in at least one role default.
+ * Cards here are intentionally visible only to super_admin / tenant_admin
+ * (or via explicit_allow override). Add only after deliberate review.
+ */
+export const ADMIN_ONLY_CARDS: CardId[] = [
+  'engineeringx',   // platform engineering · admin-gated until role mapping defined
+  'sitex',          // site management · admin-gated
+  'store-hub',      // department stores · admin-gated
+  'vendor-portal',  // external party panel · admin-provisioned
+  'projx',          // orchestrator · admin-gated
+  'comply360',      // tier-4 deferred · admin-only by current design
+  'bill-passing',   // 3-way match · admin-gated until finance role expansion
+  'eximx',          // international trade · admin-gated
+  'docvault',       // tier-1 prereq · admin-gated
+];
 
 export interface CardEntitlement {
   tenant_id: string;

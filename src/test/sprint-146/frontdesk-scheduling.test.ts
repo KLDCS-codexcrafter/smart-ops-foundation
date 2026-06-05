@@ -375,4 +375,65 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
       expect(SPRINTS.find((s) => s.sprintNumber === 147)).toBeUndefined();
     });
   });
+
+  // ── S146.T1 · ROLE_DEFAULT_CARDS visibility fix ──────────────────
+  describe('S146.T1 · role-default visibility', () => {
+    it('hr-role profile resolves frontdesk as allowed', async () => {
+      const { ROLE_DEFAULT_CARDS } = await import('@/types/card-entitlement');
+      const { canAccessCard } = await import('@/lib/card-entitlement-engine');
+      expect(ROLE_DEFAULT_CARDS.hr).toContain('frontdesk');
+      const profile = {
+        user_id: 'u1', tenant_id: E, role: 'hr' as const,
+        explicit_allow: [], explicit_deny: [], updated_at: new Date().toISOString(),
+      };
+      const tenant = [{
+        tenant_id: E, card_id: 'frontdesk' as const, status: 'active' as const,
+        plan_tier: 'growth' as const, effective_from: new Date().toISOString(),
+        effective_until: null, trial_days_remaining: null, feature_flags: [],
+        notes: '', created_at: '', updated_at: '',
+      }];
+      expect(canAccessCard('frontdesk', profile, tenant).allowed).toBe(true);
+    });
+
+    it('filterSidebarByMatrix on frontdeskSidebarItems with operations-role profile returns non-empty list', async () => {
+      const { filterSidebarByMatrix } = await import('@/shell/utils/filterSidebarByMatrix');
+      const { frontdeskSidebarItems } = await import('@/apps/erp/configs/frontdesk-sidebar-config');
+      const profile = {
+        user_id: 'u1', tenant_id: E, role: 'operations' as const,
+        explicit_allow: [], explicit_deny: [], updated_at: new Date().toISOString(),
+      };
+      const tenant = [{
+        tenant_id: E, card_id: 'frontdesk' as const, status: 'active' as const,
+        plan_tier: 'growth' as const, effective_from: new Date().toISOString(),
+        effective_until: null, trial_days_remaining: null, feature_flags: [],
+        notes: '', created_at: '', updated_at: '',
+      }];
+      const filtered = filterSidebarByMatrix(frontdeskSidebarItems, profile, tenant);
+      expect(filtered.length).toBeGreaterThan(0);
+    });
+
+    it('sales-role profile resolves taskflow as allowed', async () => {
+      const { ROLE_DEFAULT_CARDS } = await import('@/types/card-entitlement');
+      expect(ROLE_DEFAULT_CARDS.sales).toContain('taskflow');
+      expect(ROLE_DEFAULT_CARDS.finance).toContain('taskflow');
+      expect(ROLE_DEFAULT_CARDS.operations).toContain('taskflow');
+      expect(ROLE_DEFAULT_CARDS.hr).toContain('taskflow');
+    });
+  });
+
+  // ── S146.T1 · STANDING ASSERTION (institutional/meta) ────────────
+  describe('S146.T1 · standing assertion · active card visibility', () => {
+    it('every active applications.ts card is either in CardId union+a role default OR in ADMIN_ONLY_CARDS', async () => {
+      const { applications } = await import('@/components/operix-core/applications');
+      const { ROLE_DEFAULT_CARDS, ADMIN_ONLY_CARDS } = await import('@/types/card-entitlement');
+      const allRoleCards = new Set<string>();
+      for (const cards of Object.values(ROLE_DEFAULT_CARDS)) {
+        for (const c of cards) allRoleCards.add(c);
+      }
+      const adminOnly = new Set<string>(ADMIN_ONLY_CARDS);
+      const activeCards = applications.filter((a) => a.status === 'active').map((a) => a.id);
+      const orphans = activeCards.filter((id) => !allRoleCards.has(id) && !adminOnly.has(id));
+      expect(orphans).toEqual([]);
+    });
+  });
 });
