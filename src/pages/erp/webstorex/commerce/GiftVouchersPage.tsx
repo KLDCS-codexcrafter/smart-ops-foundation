@@ -42,12 +42,13 @@ export function GiftVouchersPage(): JSX.Element {
     [entityCode, tick],
   );
 
-  if (!entityCode) return <div className="p-6 text-sm text-muted-foreground">Select a company to continue.</div>;
-
   const partyBalances = useMemo(() => {
+    if (!entityCode) return [];
     const ids = Array.from(new Set(credits.map(c => c.partyId)));
     return ids.map(id => ({ id, balance: getCreditBalance(entityCode, id) }));
   }, [credits, entityCode]);
+
+  if (!entityCode) return <div className="p-6 text-sm text-muted-foreground">Select a company to continue.</div>;
 
   return (
     <div className="p-6 space-y-4 animate-fade-in">
