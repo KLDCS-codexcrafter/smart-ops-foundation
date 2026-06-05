@@ -1,6 +1,6 @@
 /**
  * @file        src/pages/erp/frontdesk/FrontDeskSidebar.types.ts
- * @sprint      Sprint 145 · T-FrontDesk-A6F.1 · Block 4
+ * @sprint      Sprint 145 (base) + Sprint 146 (rooms / booking-calendar / executive-desk)
  */
 export type FrontDeskModule =
   | 'welcome'
@@ -9,4 +9,7 @@ export type FrontDeskModule =
   | 'check-in'
   | 'roll-call'
   | 'contact-book'
-  | 'watchlist';
+  | 'watchlist'
+  | 'meeting-rooms'
+  | 'booking-calendar'
+  | 'executive-desk';
