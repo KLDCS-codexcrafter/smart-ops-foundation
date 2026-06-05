@@ -220,6 +220,9 @@ export function OutstandingTaskBoardPanel({ entityCode, onNavigate: _onNavigate 
                       <Button size="icon" variant="ghost" className="h-6 w-6" title="Reassign" onClick={() => setReassignFor(t)}>
                         <UserPlus className="h-3 w-3" />
                       </Button>
+                      <Button size="icon" variant="ghost" className="h-6 w-6" title="Follow-ups" onClick={() => setFollowUpFor(t)}>
+                        <History className="h-3 w-3" />
+                      </Button>
                     </div>
                     <Select value={t.status} onValueChange={(v) => moveTask(t.id, v as TaskStatus)}>
                       <SelectTrigger className="h-6 text-[10px]"><SelectValue /></SelectTrigger>
