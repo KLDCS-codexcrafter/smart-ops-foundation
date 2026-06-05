@@ -733,30 +733,19 @@ export function upsertAllocation(
   if (input.allocatedQty < 0) throw new Error('allocatedQty must be ≥ 0');
   if (input.bufferPct < 0 || input.bufferPct > 100) throw new Error('bufferPct must be 0..100');
 
-  // Resolve marketplaceSku via existing listing (denormalized for export)
-  const listing = resolveListing(entityCode, input.marketplaceId,
-    /* we don't have SKU yet — look up by storeItemId + variantId among listings */ '');
-  // The above resolveListing key is SKU-side; we instead need a reverse lookup.
-  // Defer to a manual scan of existing listings under this marketplace+storeItemId+variantId.
-  let marketplaceSku = '';
-  if (listing && listing.storeItemId === input.storeItemId && listing.variantId === input.variantId) {
-    marketplaceSku = listing.marketplaceSku;
-  } else {
-    // Reverse-scan: import ecomx-engine listListings lazily — but we kept call-only;
-    // listings live in localStorage under ecListingsKey (same module).
-    // To stay loosely coupled and respect the §H wall (no new ecomx-engine exports),
-    // we read the listings store directly here.
-    const allListings = ls<{ id: string; marketplaceId: string; marketplaceSku: string; storeItemId: string | null; variantId: string | null }>(
-      `ecomx_listings_${entityCode}`,
-    );
-    const found = allListings.find((l) =>
-      l.marketplaceId === input.marketplaceId &&
-      l.storeItemId === input.storeItemId &&
-      (l.variantId ?? null) === (input.variantId ?? null),
-    );
-    if (!found) throw new Error('No listing exists for this storeItem/variant on the marketplace — create the listing first');
-    marketplaceSku = found.marketplaceSku;
-  }
+  // Reverse-scan listings under this marketplace to denormalize marketplaceSku.
+  // We read the listings store directly (call-only on ecomx-engine — no new export added).
+  const allListings = ls<{ id: string; marketplaceId: string; marketplaceSku: string; storeItemId: string | null; variantId: string | null; status: string }>(
+    `ecomx_listings_${entityCode}`,
+  );
+  const found = allListings.find((l) =>
+    l.marketplaceId === input.marketplaceId &&
+    l.storeItemId === input.storeItemId &&
+    (l.variantId ?? null) === (input.variantId ?? null),
+  );
+  if (!found) throw new Error('No listing exists for this storeItem/variant on the marketplace — create the listing first');
+  const marketplaceSku = found.marketplaceSku;
+
 
   const all = ls<EcChannelAllocation>(ecAllocationsKey(entityCode));
 
