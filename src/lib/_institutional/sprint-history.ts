@@ -945,13 +945,6 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['ecomx-cockpit-engine'],
     bankDate: '2026-06-05', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 155.T1 T-EcomX-CF.3.T1 · S155 follow-on · MediaRecorder camera capture path (≤30s hard cap · countdown · stop→blob→immediate browser download · file-upload fallback w/ capture="environment" mobile attr) · DP-EC-11 honesty banner constant exported from ecomx-engine + rendered verbatim · Orders module Evidence Register tab (full EcPackingEvidence list · marketplace/order filters · DocVault doc id link) · +4 it() sprint-155 (no-blob structural · camera metadata capturedVia/durationSec · banner string · register filter) · regenerated close_summary 1:1 vs Blocks 0.1-7+T1 · gates last · ZERO new siblings · ZERO new engines · UI-only delta · headSha TBD_AT_BANK
-  {
-    sprintNumber: 1551, code: 'T-EcomX-CF.3.T1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'c5f59599', loc: 280,
-    newSiblings: [],
-    bankDate: '2026-06-05', provenance: 'CONFIRMED',
-  },
 ];
 
 
