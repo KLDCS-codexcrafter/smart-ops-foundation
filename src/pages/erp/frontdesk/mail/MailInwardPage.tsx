@@ -29,12 +29,14 @@ const KINDS: { value: MailKind; label: string }[] = [
 
 export function MailInwardPage(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const { user } = useCurrentUser();
+  const user = useCurrentUser();
   const { employees } = useEmployees();
+  const empOptions = employees.map((e) => ({ id: e.id, name: e.displayName }));
   const [kind, setKind] = useState<MailKind | 'all'>('all');
   const [openCreate, setOpenCreate] = useState(false);
   const [ackTarget, setAckTarget] = useState<MailItem | null>(null);
   const [overrideReason, setOverrideReason] = useState('');
+
 
   const compute = useCallback((): MailItem[] => {
     const items = listMail(entityCode, { direction: 'inward' });
