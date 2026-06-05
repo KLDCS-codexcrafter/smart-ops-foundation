@@ -142,3 +142,66 @@ export interface ExecutiveDayView {
 export const fdRoomsKey = (entityCode: string): string => `fd_rooms_${entityCode}`;
 export const fdBookingsKey = (entityCode: string): string => `fd_bookings_${entityCode}`;
 export const fdExecAppointmentsKey = (entityCode: string): string => `fd_exec_appointments_${entityCode}`;
+
+// ─── S147 · Mail Room + Asset Custody + Reception Diary · DP-FD-9/15/16 + DP-FD-4 ──
+export type MailDirection = 'inward' | 'outward';
+export type MailKind = 'letter' | 'document' | 'parcel' | 'gift';
+export type DispatchMode = 'rpad' | 'speed_post' | 'courier' | 'hand_delivery';
+
+export interface MailItem {
+  id: string; entityId: string;
+  direction: MailDirection;
+  kind: MailKind;
+  description: string;
+  courierName?: string | null;
+  awbDocketNo?: string | null;
+  // counterparty: exactly ONE of partyId / external free-text per side
+  fromPartyId?: string | null; fromText?: string | null;       // inward sender · outward = company
+  toEmployeeId?: string | null; toEmployeeName?: string | null; // inward addressee
+  toPartyId?: string | null; toText?: string | null;            // outward recipient
+  receivedAt?: string | null;       // inward
+  // INWARD acknowledgment (TF-29a pattern · DP-FD-9):
+  acknowledgedAt?: string | null; acknowledgedByUserId?: string | null;
+  acknowledgedViaOverride?: boolean; acknowledgedOverrideReason?: string | null;
+  // GIFT register fields (kind === 'gift' · CoC visibility):
+  giftGiverPartyId?: string | null; giftGiverText?: string | null;
+  giftDeclaredByEmployeeId?: string | null;
+  giftApproxValue?: number | null;
+  // OUTWARD (DP-FD-15):
+  sentAt?: string | null;
+  dispatchMode?: DispatchMode | null;
+  proofOfDispatchDocId?: string | null;     // DocVault scan (postal receipt)
+  deliveryConfirmed?: boolean;              // ages on the board until true
+  deliveryConfirmedAt?: string | null;
+  scanDocumentId?: string | null;           // scanned letter/document (DocVault)
+  notes?: string | null;
+  createdAt: string; createdByUserId: string; updatedAt: string;
+}
+
+export type CustodyStatus = 'issued' | 'returned' | 'overdue';
+
+export interface AssetCustodyRecord {       // DP-FD-4 · asset masters READ-ONLY
+  id: string; entityId: string;
+  assetRefId: string;                       // id from existing asset master (read-only ref)
+  assetLabel: string;                       // denormalized display
+  employeeId: string; employeeName: string;
+  issuedAt: string; dueBackAt?: string | null;
+  returnedAt?: string | null;
+  conditionOnIssue?: string | null; conditionOnReturn?: string | null;
+  evidencePhotoDataUrl?: string | null;     // ≤1MB · optional
+  overdueTaskId?: string | null;            // TaskFlow task when overdue flagged
+  createdAt: string; createdByUserId: string;
+}
+
+export interface ReceptionDiaryEntry {      // DP-FD-16 · COMPUTED · never stored
+  dateISO: string;
+  visitorsIn: number; visitorsOut: number; overstaysOpen: number;
+  unclaimedInwardMail: { mailId: string; description: string; toEmployeeName: string; ageDays: number }[];
+  unconfirmedOutward: { mailId: string; description: string; sentAt: string; ageDays: number }[];
+  custodyOverdue: { recordId: string; assetLabel: string; employeeName: string; dueBackAt: string }[];
+  tomorrowsAppointments: { title: string; executiveName: string; startAt: string }[];
+  expectedCouriers: { mailId: string; description: string }[];   // outward awaiting confirmation, courier mode
+}
+
+export const fdMailKey = (entityCode: string): string => `fd_mail_${entityCode}`;
+export const fdCustodyKey = (entityCode: string): string => `fd_custody_${entityCode}`;

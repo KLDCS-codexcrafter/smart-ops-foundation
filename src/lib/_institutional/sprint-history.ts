@@ -875,11 +875,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['frontdesk-engine'],
     bankDate: '2026-06-05', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint 146 T-FrontDesk-A6F.2 · Pillar A.6-F · Meeting Rooms + Executive Desk · DP-FD-2 + DP-FD-10 · room master CRUD (capacity>0) · COMPUTED room status (in_use/reserved/available · never stored) · booking calendar day/week grid · conflict discipline (overlap throws · touching boundaries OK · capacity overflow warns not throws) · executive picker via Employee.designation regex (path A) · Executive Day View (appointments + expected visitors filtered by host + room bookings + reminder tasks) · TaskFlow-reminder reuse (taskflow-engine.createTask CALL-ONLY · tag exec-reminder:<apptId> · TF-29a acknowledgment) · visitor↔booking link via frontdesk-engine read · 1 NEW SIBLING frontdesk-scheduling-engine · §H + dispatch gate types + Comply360 + approval-workflow + push-notification-bridge + taskflow files ALL 0-DIFF · headSha TBD_AT_BANK
+  // 🎬 Sprint 146 T-FrontDesk-A6F.2 · Pillar A.6-F · Meeting Rooms + Executive Desk · DP-FD-2 + DP-FD-10 · room master CRUD (capacity>0) · COMPUTED room status (in_use/reserved/available · never stored) · booking calendar day/week grid · conflict discipline (overlap throws · touching boundaries OK · capacity overflow warns not throws) · executive picker via Employee.designation regex (path A) · Executive Day View (appointments + expected visitors filtered by host + room bookings + reminder tasks) · TaskFlow-reminder reuse (taskflow-engine.createTask CALL-ONLY · tag exec-reminder:<apptId> · TF-29a acknowledgment) · visitor↔booking link via frontdesk-engine read · 1 NEW SIBLING frontdesk-scheduling-engine · §H + dispatch gate types + Comply360 + approval-workflow + push-notification-bridge + taskflow files ALL 0-DIFF · headSha c06202c9 (banked · T1 ROLE_DEFAULT_CARDS frontdesk/taskflow visibility + ADMIN_ONLY_CARDS allowlist · T2 removed per-item requiredCards from frontdesk-sidebar-config to match sibling pattern)
   {
     sprintNumber: 146, code: 'T-FrontDesk-A6F.2', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'de6e6e61', loc: 1400,
+    headSha: 'c06202c9', predecessorSha: 'de6e6e61', loc: 1400,
     newSiblings: ['frontdesk-scheduling-engine'],
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
+  // 🏁 Sprint 147 T-FrontDesk-A6F.3 · 🏁 FRONTDESK ARC CLOSE · Pillar A.6-F · Mail Room + Asset Custody + Reception Diary + gate-entry bridge · DP-FD-4 + DP-FD-9 + DP-FD-15 + DP-FD-16 · inward mail register with TF-29a acknowledgment (addressee identity check + reception-override recorded) + ageing board · outward register with mark-sent + proof-of-dispatch (rpad/speed_post WARN when proof missing >2 days) + confirm-delivery + unconfirmed-ageing · gift register (giver + declaredBy + approxValue mandatory when kind=gift) · Asset Custody (assetRefId READ-ONLY check vs asset-master · one OPEN custody per asset · photo ≤1MB · overdue detection injectable-now · flagOverdueCustody spawns TaskFlow task tag custody-overdue:<recordId> assignee=holder idempotent) · Reception Diary (FD-16 COMPUTED · never stored · visitors/mail/custody/tomorrow appointments digest) · Gate bridge (linkVisitorToGateEntry · READ-ONLY gate-entry check · updates visitor.gateEntryRef via frontdesk-engine additive update) · 1 NEW SIBLING frontdesk-records-engine · §H + dispatch gate types (gate-entry/gate-pass/weighbridge) + asset masters (asset-master/fixed-asset/asset-tag) + Comply360 + approval-workflow + push-notification-bridge + taskflow files ALL 0-DIFF · ID-CAPTURE CANON scopes to VISITOR fields only (mail.notes free-text 12-digit string does NOT throw — explicit boundary test) · sidebar items carry ZERO requiredCards (S146.T2 parity guard) · headSha TBD_AT_BANK
+  {
+    sprintNumber: 147, code: 'T-FrontDesk-A6F.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'c06202c9', loc: 1500,
+    newSiblings: ['frontdesk-records-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];

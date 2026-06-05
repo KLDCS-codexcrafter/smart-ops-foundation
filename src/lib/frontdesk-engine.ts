@@ -625,3 +625,16 @@ export function listVisitors(entityCode: string, status?: VisitorStatus): Visito
   const rows = loadVisitors(entityCode);
   return status ? rows.filter((v) => v.status === status) : rows;
 }
+
+// ─── S147 ADDITIVE · gate-entry bridge update path (DP-FD-1: READ from gate-entry, WRITE only visitor.gateEntryRef) ──
+export function setVisitorGateRef(entityCode: string, visitorId: string, gateEntryRef: string | null, byUserId: string): Visitor {
+  const rows = loadVisitors(entityCode);
+  const idx = rows.findIndex((v) => v.id === visitorId);
+  if (idx < 0) throw new Error(`Visitor not found: ${visitorId}`);
+  const before = { gateEntryRef: rows[idx].gateEntryRef ?? null };
+  rows[idx] = { ...rows[idx], gateEntryRef, updatedAt: nowISO() };
+  saveVisitors(entityCode, rows);
+  audit(entityCode, 'update', rows[idx].id, rows[idx].name,
+    before, { gateEntryRef }, `gate-entry link set by ${byUserId}`);
+  return rows[idx];
+}
