@@ -33,10 +33,6 @@ import { MailEditDialog, MAIL_INWARD_CSV_COLUMNS } from './mail-shared';
 
 export { MAIL_INWARD_CSV_COLUMNS, MAIL_EDITABLE_KEYS } from './mail-shared';
 
-const KINDS_ARR: { value: MailKind; label: string }[] = [
-  { value: 'letter', label: 'Letter' }, { value: 'document', label: 'Document' },
-  { value: 'parcel', label: 'Parcel' }, { value: 'gift', label: 'Gift' },
-];
 
 function firstOfMonth(): string {
   const d = new Date(); d.setUTCDate(1);
