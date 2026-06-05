@@ -30,8 +30,6 @@ function toDateInput(d: Date): string {
   const dd = String(d.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
 }
-function toTimeInput(d: Date): string {
-}
 function combine(dateStr: string, timeStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number);
   const [hh, mm] = timeStr.split(':').map(Number);
