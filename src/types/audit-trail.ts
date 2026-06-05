@@ -379,7 +379,17 @@ export type AuditEntityType =
   // no edit path · no bulk delete · voidFollowUp(reason) is the only correction.
   // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow-engine + Comply360 + push-notification-bridge.
   // DP-RX-1 delta canon · receivx-engine.ts + receivx.ts types 0-DIFF.
-  | 'receivx_followup_event';
+  | 'receivx_followup_event'
+  // Sprint 149 · T-WebStoreX-A11.1 · WebStoreX PIM + Catalog (module: 'mca-roc')
+  // Logged by webstorex-engine on every mutation: publishItem · updateStoreItem · setVisibility ·
+  // image add/remove/reorder · variant CRUD (with allocation guard) · brand CRUD ·
+  // category CRUD · store settings update · relations setters.
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call (mirrors chat_event /
+  // taskflow_event / document_control_event / frontdesk_event / receivx_followup_event precedent).
+  // Action discriminator carried via reason / record_label.
+  // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow + Comply360 + push-notification-bridge.
+  // DP-WS-2 PIM canon · item/stock master is READ-ONLY · wrapped by reference · never copied or edited.
+  | 'webstorex_event';
 
 
 export interface AuditTrailEntry {
