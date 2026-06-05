@@ -131,3 +131,56 @@ $ git diff de6e6e61..HEAD --name-only | grep -E "(approval-workflow-engine|push-
 - `src/pages/erp/frontdesk/contacts/ContactBookPage.tsx` (reload-callback pattern · tick removed)
 
 **§N count: 36 it() in S146 suite · 129 it() across S144–S146 scoped run.**
+
+---
+
+## T1 · ROLE_DEFAULT_CARDS GAP (S146.T1 HOTFIX)
+
+**Honest record:** S146 shipped a sidebar invisible to all non-admin roles —
+`frontdesk` was active in `applications.ts` and present in the `CardId` union, but
+absent from every entry in `ROLE_DEFAULT_CARDS`. `filterSidebarByMatrix` therefore
+stripped the entire FrontDesk sidebar for `hr` / `operations` / every non-admin
+profile. Caught by founder screenshot verification (not by any §N test — the gap
+was institutional, not behavioral). A sweep found the twin gap on `taskflow`
+(universal task surface, never registered for any role).
+
+**Corrections at T1:**
+- `ROLE_DEFAULT_CARDS.hr` += `frontdesk`, `taskflow`
+- `ROLE_DEFAULT_CARDS.operations` += `frontdesk`, `taskflow`
+- `ROLE_DEFAULT_CARDS.finance` += `taskflow`
+- `ROLE_DEFAULT_CARDS.sales` += `taskflow`
+- NEW `ADMIN_ONLY_CARDS` allowlist in `src/types/card-entitlement.ts` —
+  explicit exception register for cards intentionally admin-gated.
+- NEW standing assertion (S146.T1 · institutional/meta): every `applications.ts`
+  card with status `'active'` must appear in `CardId` AND in ≥1
+  `ROLE_DEFAULT_CARDS` list OR in `ADMIN_ONLY_CARDS`. This is the moat against
+  the next invisible card.
+- +4 `it()` in `src/test/sprint-146/frontdesk-scheduling.test.ts`
+  (hr→frontdesk resolution · operations sidebar non-empty · sales→taskflow ·
+  standing assertion).
+
+**T1 gates-last (real outputs):**
+
+```
+$ npx tsc --noEmit -p tsconfig.app.json
+(no output · 0 errors)
+
+$ npx eslint . --max-warnings 0
+(no output · 0 errors · 0 warnings · repo-wide)
+
+$ NODE_OPTIONS="--max-old-space-size=7168" npx vitest run \
+    src/test/sprint-144/ src/test/sprint-145/ src/test/sprint-146/
+ ✓ src/test/sprint-144/docvault-governance.test.ts (51 tests)
+ ✓ src/test/sprint-145/frontdesk.test.ts          (42 tests)
+ ✓ src/test/sprint-146/frontdesk-scheduling.test.ts (40 tests)
+ Test Files  3 passed (3)
+      Tests  133 passed (133)
+```
+
+**T1 files changed:**
+- edited `src/types/card-entitlement.ts` (role defaults + ADMIN_ONLY_CARDS)
+- edited `src/test/sprint-146/frontdesk-scheduling.test.ts` (+4 it())
+- edited `audit_workspace/S146_close_evidence/close_summary.md` (this T1 section)
+
+**Walls unchanged.** §H + dispatch gate types + Comply360 + taskflow-engine
+internals: ZERO diff. S146 stays `TBD_AT_BANK`.
