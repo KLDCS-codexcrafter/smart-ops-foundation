@@ -21,7 +21,7 @@
  * canon boundary asserted in tests.
  */
 import { logAudit } from '@/lib/audit-trail-engine';
-import { setVisitorGateRef, loadVisitors } from '@/lib/frontdesk-engine';
+import { setVisitorGateRef, loadVisitors, getGreetingsToday } from '@/lib/frontdesk-engine';
 import { createTask } from '@/lib/taskflow-engine';
 import { ASSETS_KEY, type Asset } from '@/types/asset-master';
 import { gateEntriesKey, type GateEntry } from '@/types/gate-entry';
@@ -682,14 +682,8 @@ export function buildReceptionDiary(entityCode: string, dateISO: string): Recept
     .map((a) => ({ title: a.title, executiveName: a.executiveName, startAt: a.startAt }))
     .sort((a, b) => a.startAt.localeCompare(b.startAt));
 
-  // S148 Rider 1c · greetings today (optional · empty array if no contacts)
-  let greetingsToday: { contactId: string; partyId: string; name: string; kind: 'birthday' | 'anniversary' }[] = [];
-  try {
-    // late-require avoids a hard circular ref at engine load
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    greetingsToday = (require('@/lib/frontdesk-engine') as typeof import('@/lib/frontdesk-engine'))
-      .getGreetingsToday(entityCode, dateISO);
-  } catch { /* greetings optional */ }
+  // S148 Rider 1c · greetings today (birthday/anniversary digest)
+  const greetingsToday = getGreetingsToday(entityCode, dateISO);
 
   return {
     dateISO: day,
@@ -699,6 +693,7 @@ export function buildReceptionDiary(entityCode: string, dateISO: string): Recept
     greetingsToday,
   };
 }
+
 
 
 // ─────────────────────────────────────────────────────────────────────
