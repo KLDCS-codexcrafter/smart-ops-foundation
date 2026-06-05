@@ -14,12 +14,14 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, MessageSquare, ShoppingCart, Minus, Plus } from 'lucide-react';
+import { ArrowLeft, MessageSquare, ShoppingCart, Minus, Plus, GitCompare } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   PreviewRibbon, useStorefrontCart, getSelectedStoreItemId, setSelectedStoreItemId, fmtINR,
+  useCompareSet, COMPARE_MAX, pickRelationIds, type RailKind,
 } from './storefront-shared';
 import type { WebStoreXModule } from '../WebStoreXSidebar.types';
+import type { WebStoreItem } from '@/types/webstorex';
 
 interface Props { onNavigate: (m: WebStoreXModule) => void; }
 
@@ -32,6 +34,7 @@ export function StorefrontProductPage({ onNavigate }: Props): JSX.Element {
   const [variantId, setVariantId] = useState<string>('');
   const [qty, setQty] = useState<number>(item?.moq ?? 1);
   const cart = useStorefrontCart(entityCode);
+  const compare = useCompareSet(entityCode);
 
   if (!entityCode) return <div className="p-6 text-sm text-muted-foreground">Select a company to continue.</div>;
   if (!item) {
