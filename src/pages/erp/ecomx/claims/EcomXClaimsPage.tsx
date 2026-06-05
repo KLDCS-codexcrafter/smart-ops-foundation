@@ -30,6 +30,7 @@ export function EcomXClaimsPage(): JSX.Element {
   }, [entityCode, mpId, statusFilter, tick]);
   const stats = useMemo(
     () => entityCode ? getClaimsStats(entityCode, mpId || undefined) : { openCount: 0, openAmount: 0, recoveredAmount: 0, totalAmount: 0 },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, mpId, tick],
   );
 

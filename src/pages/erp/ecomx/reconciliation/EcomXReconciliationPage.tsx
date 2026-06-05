@@ -32,11 +32,13 @@ export function EcomXReconciliationPage(): JSX.Element {
   const marketplaces = useMemo(() => entityCode ? listMarketplaces(entityCode) : [], [entityCode]);
   const runs = useMemo(
     () => entityCode && mpId ? listReconRuns(entityCode, mpId) : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, mpId, tick],
   );
   const latestRun = runs.length > 0 ? runs[runs.length - 1] : null;
   const lines = useMemo(
     () => latestRun && entityCode ? listReconLines(entityCode, { runId: latestRun.id }) : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, latestRun, tick],
   );
 

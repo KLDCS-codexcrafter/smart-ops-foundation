@@ -26,14 +26,17 @@ export function EcomXSettlementsPage(): JSX.Element {
   const marketplaces = useMemo(() => entityCode ? listMarketplaces(entityCode) : [], [entityCode]);
   const templates = useMemo(
     () => entityCode && mpId ? listSettlementTemplates(entityCode, mpId) : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, mpId, tick],
   );
   const rows = useMemo(
     () => entityCode && mpId ? listSettlementRows(entityCode, { marketplaceId: mpId }) : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, mpId, tick],
   );
   const taxCredits = useMemo(
     () => entityCode && mpId ? getTaxCreditSummary(entityCode, mpId) : { tds194oTotal: 0, gstTcsTotal: 0, rowCount: 0 },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, mpId, tick],
   );
 

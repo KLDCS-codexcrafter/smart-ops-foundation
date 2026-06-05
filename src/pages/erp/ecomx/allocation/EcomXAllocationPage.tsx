@@ -27,6 +27,7 @@ export function EcomXAllocationPage(): JSX.Element {
   );
   const rows = useMemo(
     () => entityCode && mpId ? listAllocations(entityCode, { marketplaceId: mpId }) : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, mpId, tick],
   );
 
