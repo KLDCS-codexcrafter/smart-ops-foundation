@@ -46,7 +46,7 @@ export function buildEcomxCockpit(
 ): EcCockpit {
   const marketplaces: EcMarketplace[] = listMarketplaces(entityCode);
   const allOrders: EcOrder[] = listEcOrders(entityCode).filter((o) =>
-    inPeriod(o.bookedAt ?? o.marketplaceOrderDate, periodFrom, periodTo),
+    inPeriod(o.orderDate ?? o.createdAt, periodFrom, periodTo),
   );
 
   const channels: EcCockpitChannelRow[] = marketplaces.map((mp) => {
@@ -60,7 +60,7 @@ export function buildEcomxCockpit(
       : 0;
     const runs = listReconRuns(entityCode, mp.id);
     const lastRun = runs.length > 0
-      ? runs.reduce((latest, r) => (r.runAt > latest.runAt ? r : latest), runs[0])
+      ? runs.reduce((latest, r) => (r.createdAt > latest.createdAt ? r : latest), runs[0])
       : null;
     const lastReconVariance = lastRun ? round2(lastRun.totalVariance ?? 0) : null;
     const claims = getClaimsStats(entityCode, mp.id);
