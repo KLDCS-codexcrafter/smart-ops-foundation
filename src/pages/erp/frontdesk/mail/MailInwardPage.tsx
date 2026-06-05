@@ -29,15 +29,14 @@ const KINDS: { value: MailKind; label: string }[] = [
   { value: 'parcel', label: 'Parcel' }, { value: 'gift', label: 'Gift' },
 ];
 
-// S148.T1 · CSV column shape (asserted in tests)
-export const MAIL_INWARD_CSV_COLUMNS = [
-  'Mail No', 'Received', 'Kind', 'Description', 'Addressee', 'From', 'Status',
-] as const;
+import { MailEditDialog, MAIL_INWARD_CSV_COLUMNS } from './mail-shared';
 
-// S148.T1 · UI-level editable field allowlist (immutable facts disabled in the form)
-export const MAIL_EDITABLE_KEYS = [
-  'description', 'courierName', 'awbDocketNo', 'notes', 'fromText', 'toText',
-] as const;
+export { MAIL_INWARD_CSV_COLUMNS, MAIL_EDITABLE_KEYS } from './mail-shared';
+
+const KINDS_ARR: { value: MailKind; label: string }[] = [
+  { value: 'letter', label: 'Letter' }, { value: 'document', label: 'Document' },
+  { value: 'parcel', label: 'Parcel' }, { value: 'gift', label: 'Gift' },
+];
 
 function firstOfMonth(): string {
   const d = new Date(); d.setUTCDate(1);
