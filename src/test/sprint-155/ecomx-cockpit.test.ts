@@ -259,7 +259,7 @@ describe('S155 · packing evidence (DP-EC-11)', () => {
     const mp = createMarketplace(ENT, { name: 'Amazon IN', type: 'amazon' });
     const o = injectOrder(mp.id, 'A1', 100, '2026-06-05');
     const ev = recordPackingEvidence(ENT, { ecOrderId: o.id, fileName: 'big.mp4', sizeBytes: 999_999, durationSec: 30, capturedVia: 'camera', note: '', uploadedBy: 'u', originatingDepartmentId: 'ecomx' });
-    const docs = JSON.parse(localStorage.getItem(`docvault_documents_${ENT}`) || '[]') as Array<{ id: string; current_version?: { file_url: string } }>;
+    const docs = JSON.parse(localStorage.getItem(`erp_documents_${ENT}`) || '[]') as Array<{ id: string; current_version?: { file_url: string } }>;
     const doc = docs.find(d => d.id === ev.docVaultDocumentId);
     expect(doc).toBeDefined();
     expect(doc?.current_version?.file_url ?? '').toBe('');
