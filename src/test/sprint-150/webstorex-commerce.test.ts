@@ -349,7 +349,7 @@ describe('S150 · Testimonials + Registers', () => {
   });
   it('audit emitted (issueCredit creates a webstorex_event log)', () => {
     issueCredit(ENT, 'P1', 100, 'test');
-    const raw = localStorage.getItem('audit_trail_TST') || '[]';
+    const raw = localStorage.getItem('erp_audit_trail_TST') || '[]';
     expect(raw).toContain('webstorex_event');
   });
 });
