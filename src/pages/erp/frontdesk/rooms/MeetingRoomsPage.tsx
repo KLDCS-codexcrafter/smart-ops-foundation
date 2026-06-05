@@ -36,15 +36,17 @@ const EMPTY_FORM: RoomInput = { name: '', floor: '', capacity: 8, amenities: [],
 export function MeetingRoomsPage({ onNavigate }: Props = {}): JSX.Element {
   const { entityCode } = useEntityCode();
   const me = useCurrentUser();
-  const compute = useCallback((): MeetingRoom[] => listRooms(entityCode), [entityCode]);
-  const [rows, setRows] = useState<MeetingRoom[]>(() => compute());
-  const reload = useCallback(() => setRows(compute()), [compute]);
+  const computeAll = useCallback(() => {
+    const r = listRooms(entityCode);
+    const tb = listBookings(entityCode, { dateISO: new Date().toISOString() })
+      .filter((b) => b.status !== 'cancelled');
+    return { rooms: r, todayBookings: tb };
+  }, [entityCode]);
+  const [snap, setSnap] = useState(() => computeAll());
+  const reload = useCallback(() => setSnap(computeAll()), [computeAll]);
   useEffect(() => { reload(); }, [reload]);
-
-  const todayBookings = useMemo<RoomBooking[]>(
-    () => listBookings(entityCode, { dateISO: new Date().toISOString() }).filter((b) => b.status !== 'cancelled'),
-    [entityCode, rows],
-  );
+  const rows = snap.rooms;
+  const todayBookings: RoomBooking[] = snap.todayBookings;
 
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<MeetingRoom | null>(null);
