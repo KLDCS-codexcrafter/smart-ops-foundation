@@ -941,8 +941,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint 155 T-EcomX-CF.3 · EcomX Cockpit + Packing Evidence · ARC CLOSE · DP-EC-10 pure-read cockpit aggregation across ecomx-engine + ecomx-recon-engine (orders/recon/claims/returns/tax/evidence · zero recomputation · deterministic period via defaultCockpitPeriod · returnsPct zero-safe) · DP-EC-11 packing evidence METADATA ONLY (binary NEVER persisted · file_url stays empty · DocVault doc created via docvault-engine.createDocument call-only · no DocumentLinkRef extension) · 1 NEW SIBLING ecomx-cockpit-engine (N=178) · 2 additive exports on ecomx-engine (recordPackingEvidence + listPackingEvidence) · ecomx-recon-engine + webstorex-* + party-master-engine + fincore-engine + docvault-engine + applications.ts ZERO diff · 1 NEW page (Cockpit) + Orders page Paperclip-attach inline · audit literal reused · S154 headSha bc8ec128 backfilled · ARC CLOSE invariant locked: 33 active · 0 coming_soon · 0 wip · headSha TBD_AT_BANK
   {
     sprintNumber: 155, code: 'T-EcomX-CF.3', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'bc8ec128', loc: 720,
+    headSha: 'c5f59599', predecessorSha: 'bc8ec128', loc: 720,
     newSiblings: ['ecomx-cockpit-engine'],
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 155.T1 T-EcomX-CF.3.T1 · S155 follow-on · MediaRecorder camera capture path (≤30s hard cap · countdown · stop→blob→immediate browser download · file-upload fallback w/ capture="environment" mobile attr) · DP-EC-11 honesty banner constant exported from ecomx-engine + rendered verbatim · Orders module Evidence Register tab (full EcPackingEvidence list · marketplace/order filters · DocVault doc id link) · +4 it() sprint-155 (no-blob structural · camera metadata capturedVia/durationSec · banner string · register filter) · regenerated close_summary 1:1 vs Blocks 0.1-7+T1 · gates last · ZERO new siblings · ZERO new engines · UI-only delta · headSha TBD_AT_BANK
+  {
+    sprintNumber: 1551, code: 'T-EcomX-CF.3.T1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'c5f59599', loc: 280,
+    newSiblings: [],
     bankDate: '2026-06-05', provenance: 'CONFIRMED',
   },
 ];
