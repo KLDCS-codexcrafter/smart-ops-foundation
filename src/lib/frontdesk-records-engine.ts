@@ -21,13 +21,15 @@
  * canon boundary asserted in tests.
  */
 import { logAudit } from '@/lib/audit-trail-engine';
-import { setVisitorGateRef, loadVisitors } from '@/lib/frontdesk-engine';
+import { setVisitorGateRef, loadVisitors, getGreetingsToday } from '@/lib/frontdesk-engine';
 import { createTask } from '@/lib/taskflow-engine';
 import { ASSETS_KEY, type Asset } from '@/types/asset-master';
 import { gateEntriesKey, type GateEntry } from '@/types/gate-entry';
 import {
   fdCustodyKey,
   fdMailKey,
+  fdMailSeqInKey,
+  fdMailSeqOutKey,
   type AssetCustodyRecord,
   type DispatchMode,
   type MailDirection,
@@ -35,6 +37,7 @@ import {
   type MailKind,
   type ReceptionDiaryEntry,
 } from '@/types/frontdesk';
+
 
 // ─── storage helpers ─────────────────────────────────────────────────
 function readJSON<T>(key: string, fallback: T): T {
@@ -101,6 +104,98 @@ export function getMail(entityCode: string, id: string): MailItem | null {
   return loadMail(entityCode).find((m) => m.id === id) ?? null;
 }
 
+// ─── S148 Rider 1b · mailNo sequence (per-entity per-direction, 4-digit pad) ──
+function pad4(n: number): string { return n.toString().padStart(4, '0'); }
+function nextMailNo(entityCode: string, direction: MailDirection): string {
+  const key = direction === 'inward' ? fdMailSeqInKey(entityCode) : fdMailSeqOutKey(entityCode);
+  const cur = Number(readJSON<number>(key, 0)) || 0;
+  const nxt = cur + 1;
+  writeJSON(key, nxt);
+  return `${direction === 'inward' ? 'IN' : 'OUT'}-${pad4(nxt)}`;
+}
+
+/**
+ * S148 Rider 1b · backfill mailNo for legacy items missing it.
+ * Sequential by createdAt within each direction. Idempotent: items with an existing
+ * mailNo are skipped. Returns the number of items assigned.
+ */
+export function backfillMailNumbers(entityCode: string, byUserId: string): number {
+  const rows = loadMail(entityCode);
+  let assigned = 0;
+  for (const dir of ['inward', 'outward'] as const) {
+    const missing = rows
+      .filter((m) => m.direction === dir && !m.mailNo)
+      .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    for (const m of missing) {
+      const before = { mailNo: m.mailNo ?? null };
+      m.mailNo = nextMailNo(entityCode, dir);
+      m.updatedAt = nowISO();
+      audit(entityCode, 'update', m.id, m.description, before,
+        { mailNo: m.mailNo }, `mailNo backfill by ${byUserId}`);
+      assigned++;
+    }
+  }
+  saveMail(entityCode, rows);
+  return assigned;
+}
+
+/**
+ * S148 Rider 1b · IMMUTABLE mail facts — attempts to change any of these throw.
+ * Direction · kind · mailNo · receivedAt · sentAt · acknowledgment trio ·
+ * dispatchMode · proofOfDispatchDocId · deliveryConfirmed · deliveryConfirmedAt.
+ */
+const MAIL_IMMUTABLE_FIELDS = [
+  'direction', 'kind', 'mailNo', 'receivedAt', 'sentAt',
+  'acknowledgedAt', 'acknowledgedByUserId', 'acknowledgedViaOverride', 'acknowledgedOverrideReason',
+  'dispatchMode', 'proofOfDispatchDocId', 'deliveryConfirmed', 'deliveryConfirmedAt',
+] as const;
+
+export type MailEditableFields = Pick<MailItem,
+  'description' | 'courierName' | 'awbDocketNo' | 'notes' |
+  'fromPartyId' | 'fromText' | 'toPartyId' | 'toText'
+>;
+
+export function updateMail(
+  entityCode: string,
+  mailId: string,
+  patch: Partial<MailItem>,
+  byUserId: string,
+): MailItem {
+  for (const k of MAIL_IMMUTABLE_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(patch, k)) {
+      throw new Error(`Mail field is immutable: ${k}`);
+    }
+  }
+  const rows = loadMail(entityCode);
+  const idx = rows.findIndex((m) => m.id === mailId);
+  if (idx < 0) throw new Error(`Mail not found: ${mailId}`);
+  const before = rows[idx];
+  const after: MailItem = {
+    ...before,
+    description: patch.description ?? before.description,
+    courierName: patch.courierName ?? before.courierName,
+    awbDocketNo: patch.awbDocketNo ?? before.awbDocketNo,
+    notes: patch.notes ?? before.notes,
+    fromPartyId: patch.fromPartyId ?? before.fromPartyId,
+    fromText: patch.fromText ?? before.fromText,
+    toPartyId: patch.toPartyId ?? before.toPartyId,
+    toText: patch.toText ?? before.toText,
+    updatedAt: nowISO(),
+  };
+  rows[idx] = after;
+  saveMail(entityCode, rows);
+  audit(entityCode, 'update', mailId, after.description,
+    { description: before.description, courierName: before.courierName, awbDocketNo: before.awbDocketNo,
+      notes: before.notes, fromPartyId: before.fromPartyId, fromText: before.fromText,
+      toPartyId: before.toPartyId, toText: before.toText },
+    { description: after.description, courierName: after.courierName, awbDocketNo: after.awbDocketNo,
+      notes: after.notes, fromPartyId: after.fromPartyId, fromText: after.fromText,
+      toPartyId: after.toPartyId, toText: after.toText },
+    `mail descriptive fields updated by ${byUserId}`);
+  return after;
+}
+
+
 export interface InwardMailInput {
   kind: MailKind;
   description: string;
@@ -142,8 +237,10 @@ export function createInwardMail(entityCode: string, input: InwardMailInput): Ma
   const mail: MailItem = {
     id: mkId('mail'),
     entityId: input.entityId,
+    mailNo: nextMailNo(entityCode, 'inward'),
     direction: 'inward',
     kind: input.kind,
+
     description: input.description.trim(),
     courierName: input.courierName ?? null,
     awbDocketNo: input.awbDocketNo ?? null,
@@ -261,8 +358,10 @@ export function createOutwardMail(entityCode: string, input: OutwardMailInput): 
   const mail: MailItem = {
     id: mkId('mail'),
     entityId: input.entityId,
+    mailNo: nextMailNo(entityCode, 'outward'),
     direction: 'outward',
     kind: input.kind,
+
     description: input.description.trim(),
     courierName: input.courierName ?? null,
     awbDocketNo: input.awbDocketNo ?? null,
@@ -583,13 +682,19 @@ export function buildReceptionDiary(entityCode: string, dateISO: string): Recept
     .map((a) => ({ title: a.title, executiveName: a.executiveName, startAt: a.startAt }))
     .sort((a, b) => a.startAt.localeCompare(b.startAt));
 
+  // S148 Rider 1c · greetings today (birthday/anniversary digest)
+  const greetingsToday = getGreetingsToday(entityCode, dateISO);
+
   return {
     dateISO: day,
     visitorsIn, visitorsOut, overstaysOpen,
     unclaimedInwardMail, unconfirmedOutward,
     custodyOverdue, tomorrowsAppointments, expectedCouriers,
+    greetingsToday,
   };
 }
+
+
 
 // ─────────────────────────────────────────────────────────────────────
 // GATE-ENTRY BRIDGE · DP-FD-1 (gate-entry READ-ONLY)
