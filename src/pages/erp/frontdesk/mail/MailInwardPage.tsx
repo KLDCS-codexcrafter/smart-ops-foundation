@@ -29,9 +29,9 @@ const KINDS: { value: MailKind; label: string }[] = [
   { value: 'parcel', label: 'Parcel' }, { value: 'gift', label: 'Gift' },
 ];
 
-import { MailEditDialog, MAIL_INWARD_CSV_COLUMNS } from './mail-shared';
-
-export { MAIL_INWARD_CSV_COLUMNS, MAIL_EDITABLE_KEYS } from './mail-shared';
+import { MailEditDialog } from './mail-shared';
+import { MAIL_INWARD_CSV_COLUMNS } from './mail-constants';
+export { MAIL_INWARD_CSV_COLUMNS, MAIL_EDITABLE_KEYS } from './mail-constants';
 
 
 function firstOfMonth(): string {

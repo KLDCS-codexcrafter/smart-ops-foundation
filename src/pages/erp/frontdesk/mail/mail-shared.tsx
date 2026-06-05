@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
-export { MAIL_INWARD_CSV_COLUMNS, MAIL_OUTWARD_CSV_COLUMNS, MAIL_EDITABLE_KEYS } from './mail-constants';
+
 
 export function MailEditDialog({ target, onClose, entityCode, userId }: {
   target: MailItem | null;
