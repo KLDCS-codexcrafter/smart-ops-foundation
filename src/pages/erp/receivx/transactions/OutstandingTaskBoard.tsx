@@ -271,7 +271,114 @@ export function OutstandingTaskBoardPanel({ entityCode, onNavigate: _onNavigate 
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <FollowUpDrawer task={followUpFor} entityCode={entityCode} onClose={() => setFollowUpFor(null)} />
     </div>
+  );
+}
+
+// ─── S148.T1 · Follow-ups drawer (additive — reuses receivx-followup-engine) ──
+const CHANNELS: FollowUpChannel[] = ['call', 'whatsapp', 'email', 'sms', 'meeting', 'visit'];
+
+export function FollowUpDrawer({ task, entityCode, onClose }: {
+  task: OutstandingTask | null; entityCode: string; onClose: () => void;
+}) {
+  const [history, setHistory] = useState<CollectionFollowUp[]>([]);
+  const [channel, setChannel] = useState<FollowUpChannel>('call');
+  const [remarks, setRemarks] = useState('');
+  const [nextDate, setNextDate] = useState('');
+  const [voidId, setVoidId] = useState<string | null>(null);
+  const [voidReason, setVoidReason] = useState('');
+
+  const reload = useCallback(() => {
+    if (!task) { setHistory([]); return; }
+    setHistory(listFollowUps(entityCode, { taskId: task.id }));
+  }, [task, entityCode]);
+
+  useEffect(() => { reload(); }, [reload]);
+
+  function submit() {
+    if (!task) return;
+    try {
+      logFollowUp(entityCode, {
+        taskId: task.id, followedUpByUserId: 'current-user', followedUpByName: 'Current User',
+        channel, remarks, nextFollowUpDate: nextDate || null,
+      });
+      toast.success('Follow-up logged');
+      setRemarks(''); setNextDate('');
+      reload();
+    } catch (e) { toast.error((e as Error).message); }
+  }
+
+  function doVoid() {
+    if (!voidId) return;
+    try {
+      voidFollowUp(entityCode, voidId, voidReason, 'current-user');
+      toast.success('Voided');
+      setVoidId(null); setVoidReason('');
+      reload();
+    } catch (e) { toast.error((e as Error).message); }
+  }
+
+  return (
+    <Sheet open={task !== null} onOpenChange={(o) => !o && onClose()}>
+      <SheetContent side="right" className="w-[440px] sm:w-[440px] overflow-y-auto">
+        <SheetHeader>
+          <SheetTitle>Follow-ups · {task?.party_name}</SheetTitle>
+        </SheetHeader>
+        {task && (
+          <div className="space-y-4 mt-4">
+            <div className="rounded-md border p-3 space-y-2">
+              <p className="text-xs font-semibold">Log follow-up</p>
+              <Select value={channel} onValueChange={(v) => setChannel(v as FollowUpChannel)}>
+                <SelectTrigger className="h-8 text-xs"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {CHANNELS.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Input placeholder="Remarks (mandatory)" value={remarks}
+                onChange={(e) => setRemarks(e.target.value)} className="h-8 text-xs" />
+              <Input type="date" value={nextDate} onChange={(e) => setNextDate(e.target.value)} className="h-8 text-xs" />
+              <Button size="sm" onClick={submit} disabled={!remarks.trim()}>Log</Button>
+            </div>
+            <div className="space-y-2">
+              <p className="text-xs font-semibold">History · newest first ({history.length})</p>
+              {history.length === 0 ? (
+                <p className="text-xs text-muted-foreground">No follow-ups yet.</p>
+              ) : history.map((fu) => (
+                <div key={fu.id} className={`rounded-md border p-2 text-xs space-y-1 ${fu.voidedAt ? 'opacity-50 line-through' : ''}`}>
+                  <div className="flex items-center justify-between">
+                    <Badge variant="outline">{fu.channel}</Badge>
+                    <span className="font-mono text-[10px]">{new Date(fu.at).toLocaleString('en-IN')}</span>
+                  </div>
+                  <p>{fu.remarks}</p>
+                  {fu.nextFollowUpDate && (
+                    <p className="text-muted-foreground">next: {fu.nextFollowUpDate}</p>
+                  )}
+                  {fu.voidedAt ? (
+                    <p className="text-destructive">voided: {fu.voidReason}</p>
+                  ) : (
+                    <button className="text-[10px] text-muted-foreground hover:text-destructive"
+                      onClick={() => setVoidId(fu.id)}>Void with reason</button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        <Dialog open={voidId !== null} onOpenChange={(o) => !o && setVoidId(null)}>
+          <DialogContent>
+            <DialogHeader><DialogTitle>Void follow-up</DialogTitle></DialogHeader>
+            <Input placeholder="Reason (mandatory)" value={voidReason}
+              onChange={(e) => setVoidReason(e.target.value)} />
+            <DialogFooter>
+              <Button variant="ghost" onClick={() => setVoidId(null)}>Cancel</Button>
+              <Button onClick={doVoid} disabled={!voidReason.trim()}>Void</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </SheetContent>
+    </Sheet>
   );
 }
 
