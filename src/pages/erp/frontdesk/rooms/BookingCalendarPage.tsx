@@ -114,10 +114,10 @@ export function BookingCalendarPage(): JSX.Element {
     setDateISO(d.toISOString());
   }
 
-  // current-user bookings
-  const myBookings = useMemo<RoomBooking[]>(() =>
-    listBookings(entityCode).filter((b) => b.organizerEmployeeId === (me?.id ?? '__none__')),
-    [entityCode, me?.id, day, week]);
+  // current-user bookings · refreshes when `day` changes via the reload-callback
+  const myBookings: RoomBooking[] = day && me?.id
+    ? listBookings(entityCode).filter((b) => b.organizerEmployeeId === me.id)
+    : [];
 
   function handleCancel(b: RoomBooking): void {
     try { cancelBooking(entityCode, b.id); toast.success('Cancelled'); reload(); }
