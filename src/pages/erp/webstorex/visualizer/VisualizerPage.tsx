@@ -56,7 +56,10 @@ export function VisualizerPage(): JSX.Element {
   }, [compositions, active]);
 
   const catalog: WebStoreItem[] = useMemo(
-    () => entityCode ? getCatalog(entityCode, { visibility: 'published' }) : [],
+    () => {
+      void tick; // refresh signal — re-read catalog on reload()
+      return entityCode ? getCatalog(entityCode, { visibility: 'published' }) : [];
+    },
     [entityCode, tick],
   );
   const cutoutItems = useMemo(
