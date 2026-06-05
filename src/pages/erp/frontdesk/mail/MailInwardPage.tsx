@@ -1,0 +1,256 @@
+/**
+ * @file        src/pages/erp/frontdesk/mail/MailInwardPage.tsx
+ * @sprint      Sprint 147 · T-FrontDesk-A6F.3 · Block 4 · Mail Room — Inward
+ */
+import { useCallback, useEffect, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import { useEmployees } from '@/hooks/useEmployees';
+import {
+  createInwardMail, acknowledgeInwardMail, getUnclaimedInward, listMail,
+} from '@/lib/frontdesk-records-engine';
+import type { MailItem, MailKind } from '@/types/frontdesk';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
+
+const KINDS: { value: MailKind; label: string }[] = [
+  { value: 'letter', label: 'Letter' }, { value: 'document', label: 'Document' },
+  { value: 'parcel', label: 'Parcel' }, { value: 'gift', label: 'Gift' },
+];
+
+export function MailInwardPage(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const { user } = useCurrentUser();
+  const { employees } = useEmployees();
+  const [kind, setKind] = useState<MailKind | 'all'>('all');
+  const [openCreate, setOpenCreate] = useState(false);
+  const [ackTarget, setAckTarget] = useState<MailItem | null>(null);
+  const [overrideReason, setOverrideReason] = useState('');
+
+  const compute = useCallback((): MailItem[] => {
+    const items = listMail(entityCode, { direction: 'inward' });
+    return kind === 'all' ? items : items.filter((m) => m.kind === kind);
+  }, [entityCode, kind]);
+  const [rows, setRows] = useState<MailItem[]>(() => compute());
+  const reload = useCallback(() => setRows(compute()), [compute]);
+  useEffect(() => { reload(); }, [reload]);
+
+  const unclaimed = getUnclaimedInward(entityCode);
+
+  function ageBadge(m: MailItem): JSX.Element {
+    if (m.acknowledgedAt) return <Badge variant="outline">acknowledged</Badge>;
+    const days = Math.floor((Date.now() - new Date(m.receivedAt ?? m.createdAt).getTime()) / 86400000);
+    if (days >= 3) return <Badge variant="destructive">{days}d unclaimed</Badge>;
+    return <Badge variant="secondary">{days}d unclaimed</Badge>;
+  }
+
+  function handleAck(): void {
+    if (!ackTarget) return;
+    try {
+      acknowledgeInwardMail(entityCode, ackTarget.id, user?.id ?? 'reception',
+        overrideReason ? { overrideReason } : {});
+      toast.success('Acknowledged');
+      setAckTarget(null); setOverrideReason(''); reload();
+    } catch (e) { toast.error((e as Error).message); }
+  }
+
+  return (
+    <div className="p-6 space-y-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Inward Mail · {unclaimed.length} unclaimed</CardTitle>
+          <Button onClick={() => setOpenCreate(true)}>Log inward</Button>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Tabs value={kind} onValueChange={(v) => setKind(v as MailKind | 'all')}>
+            <TabsList>
+              <TabsTrigger value="all">All</TabsTrigger>
+              {KINDS.map((k) => <TabsTrigger key={k.value} value={k.value}>{k.label}</TabsTrigger>)}
+            </TabsList>
+          </Tabs>
+          {rows.length === 0 ? (
+            <div className="text-sm text-muted-foreground p-8 text-center">No inward mail.</div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Received</TableHead><TableHead>Kind</TableHead>
+                  <TableHead>Description</TableHead><TableHead>Addressee / Declared by</TableHead>
+                  <TableHead>From</TableHead><TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((m) => (
+                  <TableRow key={m.id}>
+                    <TableCell className="font-mono text-xs">
+                      {m.receivedAt ? new Date(m.receivedAt).toLocaleString('en-IN') : '—'}
+                    </TableCell>
+                    <TableCell><Badge variant="outline">{m.kind}</Badge></TableCell>
+                    <TableCell>
+                      <div className="text-sm">{m.description}</div>
+                      {m.kind === 'gift' && m.giftApproxValue != null && (
+                        <div className="text-xs text-muted-foreground font-mono">approx ₹{m.giftApproxValue}</div>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {m.kind === 'gift'
+                        ? (employees.find((e) => e.id === m.giftDeclaredByEmployeeId)?.name ?? m.giftDeclaredByEmployeeId ?? '—')
+                        : (m.toEmployeeName ?? '—')}
+                    </TableCell>
+                    <TableCell className="text-sm">{m.fromText ?? m.fromPartyId ?? '—'}</TableCell>
+                    <TableCell>{ageBadge(m)}</TableCell>
+                    <TableCell className="text-right">
+                      {!m.acknowledgedAt && (
+                        <Button size="sm" variant="outline" onClick={() => setAckTarget(m)}>Acknowledge</Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
+      </Card>
+
+      <InwardCreateDialog
+        open={openCreate} onClose={() => { setOpenCreate(false); reload(); }}
+        entityCode={entityCode} userId={user?.id ?? 'reception'}
+        employees={employees.map((e) => ({ id: e.id, name: e.name }))}
+      />
+
+      <Dialog open={!!ackTarget} onOpenChange={(v) => { if (!v) { setAckTarget(null); setOverrideReason(''); } }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Acknowledge inward mail</DialogTitle></DialogHeader>
+          {ackTarget && (
+            <div className="space-y-3">
+              <div className="text-sm">{ackTarget.description}</div>
+              <div className="text-xs text-muted-foreground">
+                Addressee: {ackTarget.toEmployeeName ?? '—'} ({ackTarget.toEmployeeId ?? '—'})
+              </div>
+              <div>
+                <Label>Reception override reason (leave blank for addressee self-ack)</Label>
+                <Input value={overrideReason} onChange={(e) => setOverrideReason(e.target.value)}
+                  placeholder="e.g. addressee on leave, parcel handed to assistant" />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setAckTarget(null); setOverrideReason(''); }}>Cancel</Button>
+            <Button onClick={handleAck}>Acknowledge</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+interface CreateProps {
+  open: boolean; onClose: () => void;
+  entityCode: string; userId: string;
+  employees: { id: string; name: string }[];
+}
+function InwardCreateDialog({ open, onClose, entityCode, userId, employees }: CreateProps): JSX.Element {
+  const [kind, setKind] = useState<MailKind>('letter');
+  const [description, setDescription] = useState('');
+  const [fromText, setFromText] = useState('');
+  const [toEmployeeId, setToEmployeeId] = useState<string>('');
+  const [giftGiverText, setGiftGiverText] = useState('');
+  const [giftDeclaredBy, setGiftDeclaredBy] = useState<string>('');
+  const [giftValue, setGiftValue] = useState('');
+  const [notes, setNotes] = useState('');
+
+  function submit(): void {
+    try {
+      const emp = employees.find((e) => e.id === toEmployeeId);
+      const declared = employees.find((e) => e.id === giftDeclaredBy);
+      createInwardMail(entityCode, {
+        entityId: entityCode, createdByUserId: userId,
+        kind, description, fromText: fromText || null,
+        toEmployeeId: kind === 'gift' ? null : (emp?.id ?? null),
+        toEmployeeName: kind === 'gift' ? null : (emp?.name ?? null),
+        giftGiverText: kind === 'gift' ? (giftGiverText || null) : null,
+        giftDeclaredByEmployeeId: kind === 'gift' ? (declared?.id ?? null) : null,
+        giftApproxValue: kind === 'gift' && giftValue ? Number(giftValue) : null,
+        notes: notes || null,
+      });
+      toast.success('Inward mail logged');
+      setKind('letter'); setDescription(''); setFromText(''); setToEmployeeId('');
+      setGiftGiverText(''); setGiftDeclaredBy(''); setGiftValue(''); setNotes('');
+      onClose();
+    } catch (e) { toast.error((e as Error).message); }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader><DialogTitle>Log inward mail</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div>
+            <Label>Kind</Label>
+            <Select value={kind} onValueChange={(v) => setKind(v as MailKind)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>{KINDS.map((k) => <SelectItem key={k.value} value={k.value}>{k.label}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Description</Label>
+            <Input value={description} onChange={(e) => setDescription(e.target.value)} />
+          </div>
+          <div>
+            <Label>From (sender)</Label>
+            <Input value={fromText} onChange={(e) => setFromText(e.target.value)} placeholder="Free-text" />
+          </div>
+          {kind === 'gift' ? (
+            <>
+              <div>
+                <Label>Gift giver</Label>
+                <Input value={giftGiverText} onChange={(e) => setGiftGiverText(e.target.value)} />
+              </div>
+              <div>
+                <Label>Declared by (employee)</Label>
+                <Select value={giftDeclaredBy} onValueChange={setGiftDeclaredBy}>
+                  <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                  <SelectContent>
+                    {employees.map((e) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Approx value (₹)</Label>
+                <Input type="number" value={giftValue} onChange={(e) => setGiftValue(e.target.value)} />
+              </div>
+            </>
+          ) : (
+            <div>
+              <Label>Addressee (employee)</Label>
+              <Select value={toEmployeeId} onValueChange={setToEmployeeId}>
+                <SelectTrigger><SelectValue placeholder="Select" /></SelectTrigger>
+                <SelectContent>
+                  {employees.map((e) => <SelectItem key={e.id} value={e.id}>{e.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          <div>
+            <Label>Notes (tracking #, AWB, etc.)</Label>
+            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button onClick={submit}>Log</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
