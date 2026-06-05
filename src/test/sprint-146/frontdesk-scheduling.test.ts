@@ -358,21 +358,21 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
       expect(s145?.headSha).toBe('de6e6e61');
     });
 
-    it('S146 is the most recent sprint entry', () => {
-      const last = SPRINTS[SPRINTS.length - 1];
-      expect(last.sprintNumber).toBe(146);
-      expect(last.code).toBe('T-FrontDesk-A6F.2');
-      expect(last.newSiblings).toContain('frontdesk-scheduling-engine');
+    it('S146 entry remains pinned · headSha c06202c9 · sibling frontdesk-scheduling-engine', () => {
+      const s146 = SPRINTS.find((s) => s.sprintNumber === 146);
+      expect(s146?.code).toBe('T-FrontDesk-A6F.2');
+      expect(s146?.headSha).toBe('c06202c9');
+      expect(s146?.newSiblings).toContain('frontdesk-scheduling-engine');
     });
 
-    it('sibling-register contains frontdesk-scheduling-engine (215th entry)', () => {
+    it('sibling-register contains frontdesk-scheduling-engine (registry has grown to ≥215 entries since S146)', () => {
       const ids = SIBLINGS.map((s) => s.id);
       expect(ids).toContain('frontdesk-scheduling-engine');
-      expect(SIBLINGS.length).toBe(215);
+      expect(SIBLINGS.length).toBeGreaterThanOrEqual(215);
     });
 
-    it('NO S147 entry exists', () => {
-      expect(SPRINTS.find((s) => s.sprintNumber === 147)).toBeUndefined();
+    it('NO S148 entry exists (arc-forward guard, updated at S147)', () => {
+      expect(SPRINTS.find((s) => s.sprintNumber === 148)).toBeUndefined();
     });
   });
 

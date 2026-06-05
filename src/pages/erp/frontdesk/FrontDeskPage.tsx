@@ -20,6 +20,10 @@ import { WatchlistPage } from './contacts/WatchlistPage';
 import { MeetingRoomsPage } from './rooms/MeetingRoomsPage';
 import { BookingCalendarPage } from './rooms/BookingCalendarPage';
 import { ExecutiveDeskPage } from './exec/ExecutiveDeskPage';
+import { MailInwardPage } from './mail/MailInwardPage';
+import { MailOutwardPage } from './mail/MailOutwardPage';
+import { AssetCustodyPage } from './records/AssetCustodyPage';
+import { ReceptionDiaryPage } from './records/ReceptionDiaryPage';
 import type { FrontDeskModule } from './FrontDeskSidebar.types';
 
 export default function FrontDeskPage(): JSX.Element {
@@ -38,6 +42,10 @@ export default function FrontDeskPage(): JSX.Element {
       case 'meeting-rooms':    return <MeetingRoomsPage onNavigate={setActive} />;
       case 'booking-calendar': return <BookingCalendarPage />;
       case 'executive-desk':   return <ExecutiveDeskPage />;
+      case 'mail-inward':      return <MailInwardPage />;
+      case 'mail-outward':     return <MailOutwardPage />;
+      case 'asset-custody':    return <AssetCustodyPage />;
+      case 'reception-diary':  return <ReceptionDiaryPage />;
       default:                 return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };

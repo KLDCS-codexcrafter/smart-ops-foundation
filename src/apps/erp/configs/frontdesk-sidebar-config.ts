@@ -9,9 +9,10 @@
  */
 import {
   Home, Users, UserPlus, LogIn, BookUser, ShieldAlert, ClipboardList,
-  DoorOpen, CalendarRange, Briefcase,
+  DoorOpen, CalendarRange, Briefcase, Mail, Inbox, Send, Package, ClipboardCheck,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
+
 
 export const frontdeskSidebarItems: SidebarItem[] = [
   {
@@ -41,6 +42,20 @@ export const frontdeskSidebarItems: SidebarItem[] = [
     ],
   },
   {
+    id: 'mail-room-group', type: 'group', label: 'Mail Room', icon: Mail,
+    children: [
+      { id: 'mail-inward', type: 'item', label: 'Inward', icon: Inbox, moduleId: 'mail-inward', keyboard: 'f n' },
+      { id: 'mail-outward', type: 'item', label: 'Outward', icon: Send, moduleId: 'mail-outward', keyboard: 'f o' },
+    ],
+  },
+  {
+    id: 'records-group', type: 'group', label: 'Records', icon: ClipboardCheck,
+    children: [
+      { id: 'asset-custody', type: 'item', label: 'Asset Custody', icon: Package, moduleId: 'asset-custody', keyboard: 'f a' },
+      { id: 'reception-diary', type: 'item', label: 'Reception Diary', icon: ClipboardCheck, moduleId: 'reception-diary', keyboard: 'f d' },
+    ],
+  },
+  {
     id: 'contacts-group', type: 'group', label: 'Contacts', icon: BookUser,
     children: [
       { id: 'contact-book', type: 'item', label: 'Contact Book', icon: BookUser, moduleId: 'contact-book', keyboard: 'f c' },
@@ -48,3 +63,4 @@ export const frontdeskSidebarItems: SidebarItem[] = [
     ],
   },
 ];
+
