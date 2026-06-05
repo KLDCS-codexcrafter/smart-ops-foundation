@@ -261,11 +261,11 @@ export const applications: AppDefinition[] = [
   {
     id: 'webstorex',
     name: 'WebStoreX',
-    description: 'B2B/B2C e-commerce shopfront · distributor and customer self-service. MOAT #11. Tier 3 stub now · Phase 1.1.3 / 1.1.4 full implementation.',
+    description: 'B2B/B2C e-commerce shopfront · distributor and customer self-service. MOAT #11. Sprint 149 (PIM + Catalog · publication wrapper · inventory master READ-ONLY · variants/brands/categories/settings).',
     category: 'Sales Hub',
     route: '/erp/webstorex',
     icon: 'ShoppingBag',
-    status: 'coming_soon',
+    status: 'active',  // Sprint 149 · T-WebStoreX-A11.1 · Pillar A.11 Block 4 · PIM + Catalog plan-complete
   },
   {
     id: 'unicomm',
