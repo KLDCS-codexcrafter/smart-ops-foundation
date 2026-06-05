@@ -20,6 +20,10 @@ import { WatchlistPage } from './contacts/WatchlistPage';
 import { MeetingRoomsPage } from './rooms/MeetingRoomsPage';
 import { BookingCalendarPage } from './rooms/BookingCalendarPage';
 import { ExecutiveDeskPage } from './exec/ExecutiveDeskPage';
+import { MailInwardPage } from './mail/MailInwardPage';
+import { MailOutwardPage } from './mail/MailOutwardPage';
+import { AssetCustodyPage } from './records/AssetCustodyPage';
+import { ReceptionDiaryPage } from './records/ReceptionDiaryPage';
 import type { FrontDeskModule } from './FrontDeskSidebar.types';
 
 export default function FrontDeskPage(): JSX.Element {
