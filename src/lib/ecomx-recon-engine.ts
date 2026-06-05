@@ -30,7 +30,7 @@ import {
   ecParseReportsKey,
 } from '@/types/ecomx';
 import {
-  listMarketplaces, listEcOrders, resolveListing, markOrderReturned,
+  listMarketplaces, listEcOrders, markOrderReturned,
 } from '@/lib/ecomx-engine';
 import { logAudit } from '@/lib/audit-trail-engine';
 import { dAdd, dSub, dMul, round2, dEq } from '@/lib/decimal-helpers';
