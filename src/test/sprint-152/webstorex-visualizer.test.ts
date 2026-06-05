@@ -2,7 +2,7 @@
  * @file   src/test/sprint-152/webstorex-visualizer.test.ts
  * @sprint Sprint 152 · T-WebStoreX-A11.4 · ARC CLOSER · §N hard floor ≥34 it() · count stated below.
  *
- * COUNT: 38 it() blocks (floor 34 satisfied).
+ * COUNT: 37 it() blocks (floor 34 satisfied).
  * Covers: computePxPerCm (math · zero/negative throw) · suggestedScaleFor (no dims ⇒ null ·
  *         positive math · invalid pxPerCm ⇒ null) · dimensionChipText (honesty branches) ·
  *         createComposition (name/photo required · ≤2MB throw · honestyLabel:true literal) ·
