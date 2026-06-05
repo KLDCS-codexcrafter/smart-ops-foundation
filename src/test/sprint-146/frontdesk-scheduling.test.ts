@@ -321,7 +321,7 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
       // visitor hosted by clerk → must NOT appear in CEO day view
       createPlannedVisitor(E, 'u-recep', { name: 'Other', purpose: 'General Visit', hostEmployeeId: 'emp-clerk', hostName: 'Babu', plannedAt: T('09:30') });
 
-      const view = buildExecutiveDayView(E, 'emp-ceo', T('00:00'));
+      const view = buildExecutiveDayView(E, 'emp-ceo', T('10:00'));
       expect(view.appointments.map((a) => a.id)).toContain(res.appointment.id);
       expect(view.expectedVisitors.map((v) => v.name)).toEqual(['Vee']);
       expect(view.roomBookings).toHaveLength(1);
@@ -337,7 +337,7 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
       const r = createRoom(E, { name: 'A', floor: '1', capacity: 5 }, CTX);
       createBooking(E, { roomId: r.id, title: 'X', organizerEmployeeId: 'u1', organizerName: 'U', startAt: T('10:00'), endAt: T('11:00') }, CTX);
       createExecAppointment(E, { executiveEmployeeId: 'emp-ceo', executiveName: 'Asha', title: 'A', startAt: T('12:00'), endAt: T('13:00') }, CTX);
-      const s = getSchedulingStats(E, T('09:00'));
+      const s = getSchedulingStats(E, T('12:00'));
       expect(s.bookingsToday).toBe(1);
       expect(s.executivesWithAppointments).toBe(1);
     });
