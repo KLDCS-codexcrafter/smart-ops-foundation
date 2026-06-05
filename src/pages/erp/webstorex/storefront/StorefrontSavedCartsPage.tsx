@@ -20,7 +20,7 @@ interface Props { onNavigate: (m: WebStoreXModule) => void; }
 
 export function StorefrontSavedCartsPage({ onNavigate }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
-  const { user } = useCurrentUser();
+  const user = useCurrentUser();
   const [tick, setTick] = useState(0);
   const cart = useStorefrontCart(entityCode);
   const [open, setOpen] = useState(false);

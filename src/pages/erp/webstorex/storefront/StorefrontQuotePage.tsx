@@ -9,7 +9,6 @@ import { loadPartyMaster } from '@/lib/party-master-engine';
 import { requestQuote } from '@/lib/webstorex-order-engine';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -22,7 +21,7 @@ interface Props { onNavigate: (m: WebStoreXModule) => void; }
 
 export function StorefrontQuotePage({ onNavigate }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
-  const { user } = useCurrentUser();
+  const user = useCurrentUser();
   const cart = useStorefrontCart(entityCode);
   const [partyId, setPartyId] = useState('');
   const [note, setNote] = useState('');

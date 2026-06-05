@@ -25,7 +25,7 @@ interface Props { onNavigate: (m: WebStoreXModule) => void; }
 
 export function StorefrontProductPage({ onNavigate }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
-  const { user } = useCurrentUser();
+  const user = useCurrentUser();
   const selectedId = entityCode ? getSelectedStoreItemId(entityCode) : null;
   const item = useMemo(() => (entityCode && selectedId) ? getStoreItem(entityCode, selectedId) : null, [entityCode, selectedId]);
   const variants = useMemo(() => (entityCode && item) ? listVariants(entityCode, item.id) : [], [entityCode, item]);

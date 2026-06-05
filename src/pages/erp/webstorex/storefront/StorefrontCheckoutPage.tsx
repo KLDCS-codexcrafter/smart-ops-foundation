@@ -21,7 +21,7 @@ interface Props { onNavigate: (m: WebStoreXModule) => void; }
 
 export function StorefrontCheckoutPage({ onNavigate }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
-  const { user } = useCurrentUser();
+  const user = useCurrentUser();
   const cart = useStorefrontCart(entityCode);
   const [partyId, setPartyId] = useState('');
   const [coupon, setCoupon] = useState('');
