@@ -64,7 +64,7 @@ export function StorefrontHomePage({ onNavigate }: Props): JSX.Element {
           const eff = getEffectivePrice(entityCode, it.id);
           const isOffer = eff.source !== 'list';
           const inCompare = compare.has(it.id);
-          const onCompare = (e: React.MouseEvent): void => {
+          const onCompare = (e: MouseEvent): void => {
             e.stopPropagation();
             const r = compare.toggle(it.id);
             if (r.full) toast.error(`Compare limit ${COMPARE_MAX}`);
