@@ -208,3 +208,33 @@ export interface ReceptionDiaryEntry {      // DP-FD-16 · COMPUTED · never sto
 
 export const fdMailKey = (entityCode: string): string => `fd_mail_${entityCode}`;
 export const fdCustodyKey = (entityCode: string): string => `fd_custody_${entityCode}`;
+
+// ─── S148 Rider 1b · per-entity per-direction mail-number sequence keys ──
+export const fdMailSeqInKey  = (entityCode: string): string => `fd_mail_seq_in_${entityCode}`;
+export const fdMailSeqOutKey = (entityCode: string): string => `fd_mail_seq_out_${entityCode}`;
+
+// ─── S148 Rider 1c · Contact Book Depth · VERBATIM per spec ──
+export interface PartyContact {
+  id: string; entityId: string;
+  partyId: string;
+  name: string;
+  designation?: string | null; department?: string | null;
+  phone?: string | null; extn?: string | null; mobile?: string | null;
+  email?: string | null;
+  birthday?: string | null;      // MM-DD or full ISO accepted · stored normalized
+  anniversary?: string | null;
+  isPrimary?: boolean;
+  createdAt: string; createdByUserId: string; updatedAt: string;
+}
+export const fdPartyContactsKey = (entityCode: string): string => `fd_party_contacts_${entityCode}`;
+export const fdLabelPrefsKey    = (entityCode: string): string => `fd_label_prefs_${entityCode}`;
+
+export interface LabelPrefs {
+  /** Label dimensions in centimeters. */
+  widthCm: number; heightCm: number;
+  /** A4 sheet inner dimensions in centimeters (default 21.0 × 29.7). */
+  sheetWidthCm?: number; sheetHeightCm?: number;
+  /** Margins in centimeters. */
+  marginCm?: number; gutterCm?: number;
+}
+
