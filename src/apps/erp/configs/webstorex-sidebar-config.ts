@@ -8,7 +8,7 @@
 import {
   Home, ShoppingBag, Boxes, Tag, FolderTree, Settings,
   IndianRupee, Percent, Gift, CreditCard, Megaphone, Star, ImageIcon, Layers,
-  Store, ShoppingCart, FileText, Zap, Bookmark, Receipt, GitCompare,
+  Store, ShoppingCart, FileText, Zap, Bookmark, Receipt, GitCompare, BarChart3,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
