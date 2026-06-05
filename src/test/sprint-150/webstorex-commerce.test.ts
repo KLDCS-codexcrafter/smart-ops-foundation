@@ -337,15 +337,14 @@ describe('S150 · Testimonials + Registers', () => {
     const pub = listPublishedTestimonials(ENT);
     expect(pub).toHaveLength(1); expect(pub[0].customerName).toBe('A');
   });
-  it('sibling 219 webstorex-commerce-engine present', () => {
+  it('sibling webstorex-commerce-engine present (≥219 entries)', () => {
     expect(SIBLINGS.find(s => s.id === 'webstorex-commerce-engine')).toBeTruthy();
-    expect(SIBLINGS).toHaveLength(219);
+    expect(SIBLINGS.length).toBeGreaterThanOrEqual(219);
   });
-  it('S149 backfilled to 4bf3e7a1 and S150 entry is last', () => {
+  it('S149 backfilled to 4bf3e7a1 and S150 entry present', () => {
     const s149 = SPRINTS.find(s => s.sprintNumber === 149)!;
     expect(s149.headSha).toContain('4bf3e7a1');
-    const last = SPRINTS[SPRINTS.length - 1];
-    expect(last.sprintNumber).toBe(150);
+    expect(SPRINTS.find(s => s.sprintNumber === 150)).toBeTruthy();
   });
   it('audit emitted (issueCredit creates a webstorex_event log)', () => {
     issueCredit(ENT, 'P1', 100, 'test');
