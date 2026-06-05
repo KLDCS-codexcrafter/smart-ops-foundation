@@ -1,28 +1,16 @@
 /**
- * @file        src/pages/erp/webstorex/storefront/storefront-shared.tsx
- * @purpose     S151 storefront — preview ribbon + cart hook + storage keys.
+ * @file        src/pages/erp/webstorex/storefront/storefront-shared.ts
+ * @purpose     S151 storefront — cart hook + storage keys + helpers.
  * @sprint      Sprint 151 · T-WebStoreX-A11.3 · DP-WS-22 mobile-first
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle } from 'lucide-react';
 import type { WsCartLine } from '@/types/webstorex';
+
+export { PreviewRibbon } from './PreviewRibbon';
 
 export const wsStorefrontCartKey = (e: string): string => `ws_storefront_cart_${e}`;
 export const wsStorefrontSelectedItemKey = (e: string): string => `ws_storefront_selected_item_${e}`;
 export const wsStorefrontEvent = 'ws_storefront_changed';
-
-// ─── Preview ribbon — appears on every storefront surface (DP-WS-22 wall) ───
-export function PreviewRibbon(): JSX.Element {
-  return (
-    <div className="bg-warning/10 border-b border-warning/30 px-4 py-2 flex items-center gap-2 text-xs">
-      <AlertTriangle className="h-3.5 w-3.5 text-warning" />
-      <span className="font-medium text-warning">Storefront Preview</span>
-      <span className="text-muted-foreground">
-        · This is the in-app preview. Customer auth + real payment capture land P2BB (DP-WS-20).
-      </span>
-    </div>
-  );
-}
 
 // ─── Cart hook (localStorage-backed · cross-page) ────────────────────
 function readCart(entityCode: string): WsCartLine[] {
@@ -90,7 +78,6 @@ export function useStorefrontCart(entityCode: string): StorefrontCart {
   return { lines, totalQty, addLine, setQty, removeLine, replaceAll, clear };
 }
 
-// ─── Selected product id (cross-page navigation) ─────────────────────
 export function setSelectedStoreItemId(entityCode: string, id: string | null): void {
   if (id) localStorage.setItem(wsStorefrontSelectedItemKey(entityCode), id);
   else localStorage.removeItem(wsStorefrontSelectedItemKey(entityCode));
@@ -100,7 +87,6 @@ export function getSelectedStoreItemId(entityCode: string): string | null {
   return localStorage.getItem(wsStorefrontSelectedItemKey(entityCode));
 }
 
-// ─── Money format (₹ · paise-aware not needed here · rupee values from engine) ──
 export function fmtINR(amount: number): string {
   return `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
