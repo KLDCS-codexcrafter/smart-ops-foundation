@@ -13,7 +13,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import {
   listMarketplaces, createMarketplace, setMarketplaceActive,
-  listListings, createListing, resolveListing,
+  listListings as _listListings,
   listUnmappedSkus, recordUnmappedSku, resolveUnmappedSku,
   listTemplates, saveTemplate, suggestColumnMap,
   parseOrderFile, commitImport, listEcOrders, resolveUnmatchedOrder,
