@@ -4,13 +4,16 @@
  * @sprint      Sprint 151 · T-WebStoreX-A11.3 · DP-WS-22 mobile-first
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { WsCartLine } from '@/types/webstorex';
+import type { WsCartLine, WebStoreItem } from '@/types/webstorex';
 
 export { PreviewRibbon } from './PreviewRibbon';
 
 export const wsStorefrontCartKey = (e: string): string => `ws_storefront_cart_${e}`;
 export const wsStorefrontSelectedItemKey = (e: string): string => `ws_storefront_selected_item_${e}`;
+export const wsStorefrontCompareKey = (e: string): string => `ws_storefront_compare_${e}`;
 export const wsStorefrontEvent = 'ws_storefront_changed';
+export const wsStorefrontCompareEvent = 'ws_storefront_compare_changed';
+export const COMPARE_MAX = 4;
 
 // ─── Cart hook (localStorage-backed · cross-page) ────────────────────
 function readCart(entityCode: string): WsCartLine[] {
@@ -89,4 +92,83 @@ export function getSelectedStoreItemId(entityCode: string): string | null {
 
 export function fmtINR(amount: number): string {
   return `₹${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+// ─── Compare set (DP-WS-19.4 · S151.T1 hotfix · max 4 · persisted) ───
+function readCompare(entityCode: string): string[] {
+  try {
+    const raw = localStorage.getItem(wsStorefrontCompareKey(entityCode));
+    const arr = raw ? (JSON.parse(raw) as string[]) : [];
+    return Array.isArray(arr) ? arr.slice(0, COMPARE_MAX) : [];
+  } catch { return []; }
+}
+
+function writeCompare(entityCode: string, ids: string[]): void {
+  // [JWT] POST /api/storefront/compare
+  localStorage.setItem(wsStorefrontCompareKey(entityCode), JSON.stringify(ids));
+  window.dispatchEvent(new CustomEvent(wsStorefrontCompareEvent));
+}
+
+export interface ToggleCompareResult { ids: string[]; added: boolean; full: boolean; }
+
+export function toggleCompare(entityCode: string, id: string): ToggleCompareResult {
+  const cur = readCompare(entityCode);
+  if (cur.includes(id)) {
+    const next = cur.filter(x => x !== id);
+    writeCompare(entityCode, next);
+    return { ids: next, added: false, full: false };
+  }
+  if (cur.length >= COMPARE_MAX) return { ids: cur, added: false, full: true };
+  const next = [...cur, id];
+  writeCompare(entityCode, next);
+  return { ids: next, added: true, full: false };
+}
+
+export function clearCompare(entityCode: string): void { writeCompare(entityCode, []); }
+export function getCompareIds(entityCode: string): string[] { return readCompare(entityCode); }
+
+export interface CompareSet {
+  ids: string[];
+  has: (id: string) => boolean;
+  toggle: (id: string) => ToggleCompareResult;
+  clear: () => void;
+  full: boolean;
+}
+
+export function useCompareSet(entityCode: string): CompareSet {
+  const [ids, setIds] = useState<string[]>(() => entityCode ? readCompare(entityCode) : []);
+  useEffect(() => {
+    if (!entityCode) return;
+    setIds(readCompare(entityCode));
+    const onChange = (): void => setIds(readCompare(entityCode));
+    window.addEventListener(wsStorefrontCompareEvent, onChange);
+    return () => window.removeEventListener(wsStorefrontCompareEvent, onChange);
+  }, [entityCode]);
+  const has = useCallback((id: string) => ids.includes(id), [ids]);
+  const toggle = useCallback((id: string) => toggleCompare(entityCode, id), [entityCode]);
+  const clear = useCallback(() => clearCompare(entityCode), [entityCode]);
+  return { ids, has, toggle, clear, full: ids.length >= COMPARE_MAX };
+}
+
+// ─── Pure helpers (tested) ───────────────────────────────────────────
+export function unionSpecLabels(items: Pick<WebStoreItem, 'specifications'>[]): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const it of items) {
+    for (const row of it.specifications ?? []) {
+      if (!seen.has(row.label)) { seen.add(row.label); out.push(row.label); }
+    }
+  }
+  return out;
+}
+
+export function specLookup(item: Pick<WebStoreItem, 'specifications'>, label: string): string {
+  return item.specifications?.find(s => s.label === label)?.value ?? '—';
+}
+
+export type RailKind = 'crossSell' | 'upsell' | 'frequentlyBought';
+export function pickRelationIds(item: WebStoreItem, kind: RailKind): string[] {
+  if (kind === 'crossSell') return item.crossSellIds ?? [];
+  if (kind === 'upsell') return item.upsellIds ?? [];
+  return item.frequentlyBoughtIds ?? [];
 }

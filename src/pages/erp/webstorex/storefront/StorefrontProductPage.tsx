@@ -14,12 +14,14 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, MessageSquare, ShoppingCart, Minus, Plus } from 'lucide-react';
+import { ArrowLeft, MessageSquare, ShoppingCart, Minus, Plus, GitCompare } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   PreviewRibbon, useStorefrontCart, getSelectedStoreItemId, setSelectedStoreItemId, fmtINR,
+  useCompareSet, COMPARE_MAX, pickRelationIds, type RailKind,
 } from './storefront-shared';
 import type { WebStoreXModule } from '../WebStoreXSidebar.types';
+import type { WebStoreItem } from '@/types/webstorex';
 
 interface Props { onNavigate: (m: WebStoreXModule) => void; }
 
@@ -32,6 +34,7 @@ export function StorefrontProductPage({ onNavigate }: Props): JSX.Element {
   const [variantId, setVariantId] = useState<string>('');
   const [qty, setQty] = useState<number>(item?.moq ?? 1);
   const cart = useStorefrontCart(entityCode);
+  const compare = useCompareSet(entityCode);
 
   if (!entityCode) return <div className="p-6 text-sm text-muted-foreground">Select a company to continue.</div>;
   if (!item) {
@@ -124,10 +127,36 @@ export function StorefrontProductPage({ onNavigate }: Props): JSX.Element {
               <Button className="flex-1" onClick={onAdd}><ShoppingCart className="h-4 w-4 mr-1" />Add to cart</Button>
               <Button className="flex-1" variant="outline" onClick={onAsk}><MessageSquare className="h-4 w-4 mr-1" />Ask about this</Button>
             </div>
-            <Button variant="ghost" size="sm" className="w-full" onClick={() => onNavigate('storefront-quote')}>Request a quote</Button>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" className="flex-1" onClick={() => onNavigate('storefront-quote')}>Request a quote</Button>
+              <Button
+                variant={compare.has(item.id) ? 'default' : 'outline'} size="sm" className="flex-1"
+                onClick={() => {
+                  const r = compare.toggle(item.id);
+                  if (r.full) toast.error(`Compare limit ${COMPARE_MAX}`);
+                  else if (r.added) toast.success('Added to compare');
+                }}
+              >
+                <GitCompare className="h-4 w-4 mr-1" />
+                {compare.has(item.id) ? 'In compare' : 'Add to compare'}
+              </Button>
+              {compare.ids.length > 0 && (
+                <Button size="sm" variant="ghost" onClick={() => onNavigate('storefront-compare')} className="font-mono">
+                  View ({compare.ids.length})
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
+
+      <AccessoryRails
+        item={item}
+        entityCode={entityCode}
+        onAdd={(id, q) => cart.addLine(id, q, null)}
+        onOpen={(id) => { setSelectedStoreItemId(entityCode, id); onNavigate('storefront-product'); setQty(1); }}
+      />
+
 
       {/* mobile sticky add bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border p-3 flex gap-2">
@@ -136,6 +165,71 @@ export function StorefrontProductPage({ onNavigate }: Props): JSX.Element {
           <ShoppingCart className="h-4 w-4" />{cart.totalQty > 0 && <span className="ml-1 font-mono">{cart.totalQty}</span>}
         </Button>
       </div>
+    </div>
+  );
+}
+
+// ─── Accessory Rails (DP-WS-19.5 · S151.T1 hotfix) ───────────────────
+interface RailProps {
+  item: WebStoreItem;
+  entityCode: string;
+  onAdd: (storeItemId: string, qty: number) => void;
+  onOpen: (storeItemId: string) => void;
+}
+
+const RAILS: { kind: RailKind; title: string; cta?: 'add-all' }[] = [
+  { kind: 'crossSell',        title: 'Goes well with' },
+  { kind: 'upsell',           title: 'Consider instead' },
+  { kind: 'frequentlyBought', title: 'Frequently bought together', cta: 'add-all' },
+];
+
+function AccessoryRails({ item, entityCode, onAdd, onOpen }: RailProps): JSX.Element {
+  return (
+    <div className="px-4 space-y-4 pb-4">
+      {RAILS.map(({ kind, title, cta }) => {
+        const ids = pickRelationIds(item, kind);
+        if (ids.length === 0) return null; // hidden when empty (DP-WS-19.5)
+        const rows = ids
+          .map((id) => getStoreItem(entityCode, id))
+          .filter((x): x is WebStoreItem => !!x && x.visibility === 'published');
+        if (rows.length === 0) return null;
+        return (
+          <section key={`rail-${kind}`} className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold">{title}</h2>
+              {cta === 'add-all' && (
+                <Button size="sm" variant="outline" onClick={() => { for (const r of rows) onAdd(r.id, 1); toast.success(`Added ${rows.length} items`); }}>
+                  Add all to cart
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+              {rows.map((r) => {
+                const eff = getEffectivePrice(entityCode, r.id);
+                return (
+                  <div key={`${kind}-${r.id}`} className="min-w-[150px] max-w-[150px] glass-card rounded-lg overflow-hidden">
+                    <button type="button" className="block w-full text-left" onClick={() => onOpen(r.id)} aria-label={`View ${r.storeTitle}`}>
+                      <div className="aspect-square bg-muted">
+                        {r.images[0]?.dataUrl
+                          ? <img src={r.images[0].dataUrl} alt={r.storeTitle} className="w-full h-full object-cover" />
+                          : <div className="w-full h-full" />}
+                      </div>
+                      <div className="p-2 space-y-1">
+                        <div className="text-xs font-medium line-clamp-2 min-h-[2rem]">{r.storeTitle}</div>
+                        <div className="font-mono text-xs font-semibold">{fmtINR(eff.effective)}</div>
+                      </div>
+                    </button>
+                    <Button size="sm" variant="ghost" className="w-full h-7 rounded-none border-t border-border"
+                      onClick={() => { onAdd(r.id, 1); toast.success('Added'); }}>
+                      <Plus className="h-3 w-3 mr-1" />Add
+                    </Button>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }

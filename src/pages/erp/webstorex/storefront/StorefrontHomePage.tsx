@@ -2,7 +2,7 @@
  * @file        src/pages/erp/webstorex/storefront/StorefrontHomePage.tsx
  * @sprint      Sprint 151 · T-WebStoreX-A11.3 · DP-WS-22 mobile-first browse
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type MouseEvent } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { getCatalog } from '@/lib/webstorex-engine';
 import { getEffectivePrice } from '@/lib/webstorex-commerce-engine';
@@ -10,8 +10,9 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Search, ShoppingCart, Eye } from 'lucide-react';
-import { PreviewRibbon, useStorefrontCart, setSelectedStoreItemId, fmtINR } from './storefront-shared';
+import { Search, ShoppingCart, Eye, GitCompare } from 'lucide-react';
+import { toast } from 'sonner';
+import { PreviewRibbon, useStorefrontCart, setSelectedStoreItemId, fmtINR, useCompareSet, COMPARE_MAX } from './storefront-shared';
 import type { WebStoreXModule } from '../WebStoreXSidebar.types';
 
 interface Props { onNavigate: (m: WebStoreXModule) => void; }
@@ -20,6 +21,7 @@ export function StorefrontHomePage({ onNavigate }: Props): JSX.Element {
   const { entityCode } = useEntityCode();
   const [q, setQ] = useState('');
   const cart = useStorefrontCart(entityCode);
+  const compare = useCompareSet(entityCode);
 
   const items = useMemo(
     () => entityCode ? getCatalog(entityCode, { visibility: 'published', search: q }) : [],
@@ -39,6 +41,12 @@ export function StorefrontHomePage({ onNavigate }: Props): JSX.Element {
       <div className="sticky top-0 z-10 backdrop-blur-xl bg-background/80 border-b border-border px-4 py-3 flex items-center gap-2">
         <Search className="h-4 w-4 text-muted-foreground" />
         <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search products" className="h-9" />
+        <Button size="sm" variant="outline" onClick={() => onNavigate('storefront-compare')} className="relative" aria-label="Open compare">
+          <GitCompare className="h-4 w-4" />
+          {compare.ids.length > 0 && (
+            <Badge className="absolute -top-2 -right-2 h-5 min-w-[20px] px-1 font-mono">{compare.ids.length}</Badge>
+          )}
+        </Button>
         <Button size="sm" variant="outline" onClick={() => onNavigate('storefront-cart')} className="relative">
           <ShoppingCart className="h-4 w-4" />
           {cart.totalQty > 0 && (
@@ -55,8 +63,14 @@ export function StorefrontHomePage({ onNavigate }: Props): JSX.Element {
         ) : items.map((it) => {
           const eff = getEffectivePrice(entityCode, it.id);
           const isOffer = eff.source !== 'list';
+          const inCompare = compare.has(it.id);
+          const onCompare = (e: MouseEvent): void => {
+            e.stopPropagation();
+            const r = compare.toggle(it.id);
+            if (r.full) toast.error(`Compare limit ${COMPARE_MAX}`);
+          };
           return (
-            <Card key={it.id} className="glass-card overflow-hidden hover:shadow-elevated transition-shadow">
+            <Card key={it.id} className="glass-card overflow-hidden hover:shadow-elevated transition-shadow relative">
               <button
                 type="button"
                 onClick={() => openItem(it.id)}
@@ -81,6 +95,14 @@ export function StorefrontHomePage({ onNavigate }: Props): JSX.Element {
                   {isOffer && <Badge variant="secondary" className="text-[10px]">{eff.source === 'campaign' ? 'Offer' : 'B2B'}</Badge>}
                 </div>
               </button>
+              <Button
+                size="icon" variant={inCompare ? 'default' : 'outline'}
+                className="absolute top-2 right-2 h-7 w-7"
+                onClick={onCompare}
+                aria-label={inCompare ? 'Remove from compare' : 'Add to compare'}
+              >
+                <GitCompare className="h-3 w-3" />
+              </Button>
             </Card>
           );
         })}

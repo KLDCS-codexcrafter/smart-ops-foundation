@@ -387,3 +387,62 @@ describe('S151 · Institutional registers + meta-assertion', () => {
     expect(SIBLINGS.find(s => s.id === 'webstorex-commerce-engine')).toBeTruthy();
   });
 });
+
+// ═══════════════════════════════════════════════════════════════════════
+// S151.T1 hotfix · DP-WS-19.4 Compare + DP-WS-19.5 Accessory Rails (+5 it)
+// ═══════════════════════════════════════════════════════════════════════
+import {
+  toggleCompare, getCompareIds, clearCompare, COMPARE_MAX,
+  unionSpecLabels, pickRelationIds,
+} from '@/pages/erp/webstorex/storefront/storefront-shared';
+import { getStoreItem } from '@/lib/webstorex-engine';
+
+describe('S151.T1 · DP-WS-19.4 Compare + DP-WS-19.5 Rails', () => {
+  it('compare set enforces max 4 (5th rejected · full=true · existing untouched)', () => {
+    clearCompare(ENT);
+    const r1 = toggleCompare(ENT, 'a');
+    const r2 = toggleCompare(ENT, 'b');
+    const r3 = toggleCompare(ENT, 'c');
+    const r4 = toggleCompare(ENT, 'd');
+    expect([r1, r2, r3, r4].every(r => r.added)).toBe(true);
+    const r5 = toggleCompare(ENT, 'e');
+    expect(r5.added).toBe(false);
+    expect(r5.full).toBe(true);
+    expect(getCompareIds(ENT)).toHaveLength(COMPARE_MAX);
+    expect(getCompareIds(ENT)).not.toContain('e');
+  });
+
+  it('unionSpecLabels: rows = union of labels across items (no duplicates · preserves order)', () => {
+    const items = [
+      { specifications: [{ label: 'Material', value: 'Cotton' }, { label: 'Weight', value: '300g' }] },
+      { specifications: [{ label: 'Weight', value: '500g' }, { label: 'Color', value: 'Blue' }] },
+      { specifications: [{ label: 'Material', value: 'Wool' }, { label: 'Origin', value: 'IN' }] },
+    ];
+    const out = unionSpecLabels(items);
+    expect(out).toEqual(['Material', 'Weight', 'Color', 'Origin']);
+  });
+
+  it('rails read crossSellIds for "Goes well with"', () => {
+    const { shirt, mug } = publishItems();
+    const raw = JSON.parse(localStorage.getItem(`ws_items_${ENT}`) ?? '[]');
+    raw.find((x: { id: string }) => x.id === shirt).crossSellIds = [mug];
+    localStorage.setItem(`ws_items_${ENT}`, JSON.stringify(raw));
+    const it = getStoreItem(ENT, shirt)!;
+    expect(pickRelationIds(it, 'crossSell')).toEqual([mug]);
+  });
+
+  it('rails read upsellIds for "Consider instead"', () => {
+    const { shirt, mug } = publishItems();
+    const raw = JSON.parse(localStorage.getItem(`ws_items_${ENT}`) ?? '[]');
+    raw.find((x: { id: string }) => x.id === shirt).upsellIds = [mug];
+    localStorage.setItem(`ws_items_${ENT}`, JSON.stringify(raw));
+    const it = getStoreItem(ENT, shirt)!;
+    expect(pickRelationIds(it, 'upsell')).toEqual([mug]);
+  });
+
+  it('rails read frequentlyBoughtIds (empty list → rail hidden contract: returns [])', () => {
+    const { shirt } = publishItems();
+    const it = getStoreItem(ENT, shirt)!;
+    expect(pickRelationIds(it, 'frequentlyBought')).toEqual([]);
+  });
+});

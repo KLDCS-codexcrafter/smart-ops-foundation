@@ -56,11 +56,31 @@
 | Saved carts      | `src/pages/erp/webstorex/storefront/StorefrontSavedCartsPage.tsx` | `60-105` |
 | My orders        | `src/pages/erp/webstorex/storefront/StorefrontOrdersPage.tsx` | `54-101` |
 | Request a quote  | `src/pages/erp/webstorex/storefront/StorefrontQuotePage.tsx` | `42-78` |
+| **Compare drawer/page (DP-WS-19.4)** | `src/pages/erp/webstorex/storefront/StorefrontComparePage.tsx` | `36-119` |
+| **Compare toggle on storefront cards (DP-WS-19.4)** | `src/pages/erp/webstorex/storefront/StorefrontHomePage.tsx` | `42-47, 98-105` |
+| **Add to compare on product page (DP-WS-19.4)** | `src/pages/erp/webstorex/storefront/StorefrontProductPage.tsx` | `132-152` |
+| **Accessory rails: cross-sell · upsell · FBT (DP-WS-19.5)** | `src/pages/erp/webstorex/storefront/StorefrontProductPage.tsx` | `162-209` |
+| **FBT "Add all to cart" CTA (DP-WS-19.5)** | `src/pages/erp/webstorex/storefront/StorefrontProductPage.tsx` | `177-180` |
+| Compare helpers (toggle · max-4 · union · pickRelationIds) | `src/pages/erp/webstorex/storefront/storefront-shared.ts` | `91-167` |
 | Preview ribbon (DP-WS-22) | `src/pages/erp/webstorex/storefront/PreviewRibbon.tsx` | `7-17` |
 | Cart hook        | `src/pages/erp/webstorex/storefront/storefront-shared.ts` | `39-80` |
-| Shell wiring (8 storefront cases) | `src/pages/erp/webstorex/WebStoreXPage.tsx` | `61-68` |
-| Sidebar group `Storefront` (8 items) | `src/apps/erp/configs/webstorex-sidebar-config.ts` | `33-39` |
+| Shell wiring (9 storefront cases) | `src/pages/erp/webstorex/WebStoreXPage.tsx` | `62-72` |
+| Sidebar group `Storefront` (9 items) | `src/apps/erp/configs/webstorex-sidebar-config.ts` | `33-40` |
 | PWA guarded SW registration | `src/main.tsx` | `7-28` |
+
+> **Honesty note (T1 hotfix):** DP-WS-19.4 and DP-WS-19.5 were omitted from
+> the initial S151 close without a `DEFERRED` declaration — the completeness
+> rule was violated. Corrected at S151.T1 (this hotfix). Both items now ship
+> in the diff with file:line citations + 5 new `it()` blocks (compare max-4,
+> spec-row union math, 3 relation-rail id reads incl. empty-hidden).
+
+## STANDING RULE · enumerate-or-fail (NEW · added at T1)
+
+The **disposition table above** must enumerate **EVERY numbered item** of
+the source prompt's Block list 1:1. An item absent from this table is
+**treated as NOT DELIVERED at audit** — regardless of whether code ships.
+Deferred items must be listed with a `DEFERRED` row + reason. This rule
+applies to all future sprint close summaries.
 
 ## Block-0 voucher-shape report (reproduced)
 
@@ -83,15 +103,15 @@
 
 ## Tests
 
-* **`src/test/sprint-151/webstorex-storefront.test.ts` · 47 `it()` blocks**
-  (§N floor 36 satisfied).
-* S145–S151 scoped vitest: **299 passed / 299** (7 files).
+* **`src/test/sprint-151/webstorex-storefront.test.ts` · 52 `it()` blocks**
+  (§N floor 36 satisfied · +5 at T1 hotfix for compare/rails).
+* S145–S151 scoped vitest: **304 passed / 304** (7 files).
 
 ## Gates (final action before commit)
 
 * `bunx tsc --noEmit` — **0 errors**
 * `bunx eslint --max-warnings 0 .` — **0 errors · 0 warnings**
-* `bunx vitest run src/test/sprint-145…151` — **299 / 299 passed**
+* `bunx vitest run src/test/sprint-145…151` — **304 / 304 passed**
 
 ## Registers
 
