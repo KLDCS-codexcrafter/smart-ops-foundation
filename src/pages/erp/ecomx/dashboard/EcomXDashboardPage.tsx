@@ -4,11 +4,13 @@
  */
 import { useMemo } from 'react';
 import { getImportStats } from '@/lib/ecomx-engine';
-import { useFactoryContext } from '@/hooks/useFactoryContext';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function EcomXDashboardPage(): JSX.Element {
-  const { selectedEntity } = useFactoryContext();
-  const entityCode = selectedEntity?.entityCode ?? 'DEFAULT';
+  const { entityCode } = useEntityCode();
+  if (!entityCode) {
+    return <div className="p-6 text-sm text-muted-foreground">Select an entity to view EcomX dashboard.</div>;
+  }
   const stats = useMemo(() => getImportStats(entityCode), [entityCode]);
 
   const cards: Array<{ label: string; value: number }> = [
