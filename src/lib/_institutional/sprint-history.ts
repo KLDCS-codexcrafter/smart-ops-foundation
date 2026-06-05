@@ -938,6 +938,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['ecomx-recon-engine'],
     bankDate: '2026-06-05', provenance: 'CONFIRMED',
   },
+  // 🎬 Sprint 155 T-EcomX-CF.3 · EcomX Cockpit + Packing Evidence · ARC CLOSE · DP-EC-10 pure-read cockpit aggregation across ecomx-engine + ecomx-recon-engine (orders/recon/claims/returns/tax/evidence · zero recomputation · deterministic period via defaultCockpitPeriod · returnsPct zero-safe) · DP-EC-11 packing evidence METADATA ONLY (binary NEVER persisted · file_url stays empty · DocVault doc created via docvault-engine.createDocument call-only · no DocumentLinkRef extension) · 1 NEW SIBLING ecomx-cockpit-engine (N=178) · 2 additive exports on ecomx-engine (recordPackingEvidence + listPackingEvidence) · ecomx-recon-engine + webstorex-* + party-master-engine + fincore-engine + docvault-engine + applications.ts ZERO diff · 1 NEW page (Cockpit) + Orders page Paperclip-attach inline · audit literal reused · S154 headSha bc8ec128 backfilled · ARC CLOSE invariant locked: 33 active · 0 coming_soon · 0 wip · headSha TBD_AT_BANK
+  {
+    sprintNumber: 155, code: 'T-EcomX-CF.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'bc8ec128', loc: 720,
+    newSiblings: ['ecomx-cockpit-engine'],
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
 ];
 
 
