@@ -27,10 +27,7 @@ const MODES: { value: DispatchMode; label: string }[] = [
   { value: 'courier', label: 'Courier' }, { value: 'hand_delivery', label: 'Hand Delivery' },
 ];
 
-// S148.T1 · CSV column shape (asserted in tests)
-export const MAIL_OUTWARD_CSV_COLUMNS = [
-  'Mail No', 'Created', 'Kind', 'Description', 'Recipient', 'Mode', 'Status', 'Proof',
-] as const;
+import { MAIL_OUTWARD_CSV_COLUMNS } from './mail-constants';
 
 function firstOfMonth(): string {
   const d = new Date(); d.setUTCDate(1);

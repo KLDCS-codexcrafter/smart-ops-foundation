@@ -455,16 +455,17 @@ describe('S148 · audit trail emission', () => {
 // ── S148.T1 hotfix · UI-wiring guards ────────────────────────────────
 describe('S148.T1 · UI-wiring guards', () => {
   it('Mail Inward CSV column shape is sourced from the page path', async () => {
-    const { MAIL_INWARD_CSV_COLUMNS } =
-      await import('@/pages/erp/frontdesk/mail/MailInwardPage');
+    const { MAIL_INWARD_CSV_COLUMNS, MAIL_OUTWARD_CSV_COLUMNS } =
+      await import('@/pages/erp/frontdesk/mail/mail-constants');
     expect(MAIL_INWARD_CSV_COLUMNS[0]).toBe('Mail No');
     expect(MAIL_INWARD_CSV_COLUMNS).toContain('Description');
     expect(MAIL_INWARD_CSV_COLUMNS).toContain('Status');
+    expect(MAIL_OUTWARD_CSV_COLUMNS[0]).toBe('Mail No');
   });
 
   it('Mail edit dialog (UI-level) blocks all immutable mail fields', async () => {
     const { MAIL_EDITABLE_KEYS } =
-      await import('@/pages/erp/frontdesk/mail/MailInwardPage');
+      await import('@/pages/erp/frontdesk/mail/mail-constants');
     const IMMUTABLE = ['direction', 'kind', 'mailNo', 'receivedAt', 'sentAt',
       'acknowledgedAt', 'dispatchMode', 'deliveryConfirmed'];
     for (const k of IMMUTABLE) {
