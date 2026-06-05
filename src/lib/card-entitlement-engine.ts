@@ -97,7 +97,9 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('sitex'), // active default · A.15a Q-LOCK-16a STATUS FLIP · MOAT #22 banks
     one('eximx'),  // EX-1 STATUS FLIP · 1st EximX sprint · D-NEW-CT 17th canonical extension · matches sitex/maintainpro/servicedesk precedent
     one('fpa-planning'),  // Sprint 116 · T-Phase-7.D.0.1 · Phase 7 opener · NEW card (D-NEW-CT seed parity for additive cards)
+    one('webstorex'),     // S152.T2 · S149 3-step ceremony gap · founder PV catch
   ];
+
 }
 
 export function seedDemoProfile(tenantId: string, userId: string): UserEntitlementProfile {
