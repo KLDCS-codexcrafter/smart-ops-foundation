@@ -39,6 +39,7 @@ export default function FrontDeskPage(): JSX.Element {
       case 'check-in':         return <CheckInPage onDone={() => setActive('visitors')} />;
       case 'roll-call':        return <RollCallPage />;
       case 'contact-book':     return <ContactBookPage />;
+      case 'address-book':     return <AddressBookReportPage />;
       case 'watchlist':        return <WatchlistPage />;
       case 'meeting-rooms':    return <MeetingRoomsPage onNavigate={setActive} />;
       case 'booking-calendar': return <BookingCalendarPage />;
