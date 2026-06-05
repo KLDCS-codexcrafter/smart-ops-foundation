@@ -9,6 +9,7 @@ import { ecomxShellConfig } from '@/apps/erp/configs/ecomx-shell-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { EcomXWelcome } from './EcomXWelcome';
 import { EcomXDashboardPage } from './dashboard/EcomXDashboardPage';
+import { EcomXCockpitPage } from './cockpit/EcomXCockpitPage';
 import { EcomXMarketplacesPage } from './marketplaces/EcomXMarketplacesPage';
 import { EcomXListingsPage } from './listings/EcomXListingsPage';
 import { EcomXUnmappedPage } from './unmapped/EcomXUnmappedPage';
@@ -29,6 +30,7 @@ export default function EcomXPage(): JSX.Element {
     switch (active) {
       case 'welcome':        return <EcomXWelcome onNavigate={setActive} />;
       case 'dashboard':      return <EcomXDashboardPage />;
+      case 'cockpit':        return <EcomXCockpitPage />;
       case 'marketplaces':   return <EcomXMarketplacesPage />;
       case 'listings':       return <EcomXListingsPage />;
       case 'unmapped':       return <EcomXUnmappedPage />;

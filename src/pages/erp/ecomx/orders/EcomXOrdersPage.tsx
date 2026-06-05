@@ -2,11 +2,11 @@
  * @file   src/pages/erp/ecomx/orders/EcomXOrdersPage.tsx
  * @sprint Sprint 153 · EcomX · dual-layer order register + Parked B2B resolution
  */
-import { useCallback, useMemo, useState } from 'react';
-import { Receipt } from 'lucide-react';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { Paperclip, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import { listEcOrders, resolveUnmatchedOrder } from '@/lib/ecomx-engine';
+import { listEcOrders, resolveUnmatchedOrder, recordPackingEvidence, listPackingEvidence } from '@/lib/ecomx-engine';
 import { loadPartyMaster } from '@/lib/party-master-engine';
 import type { EcOrderLayer } from '@/types/ecomx';
 import { Button } from '@/components/ui/button';
@@ -34,6 +34,44 @@ export function EcomXOrdersPage(): JSX.Element {
   }, [entityCode, tab, tick]);
 
   const parties = useMemo(() => entityCode ? loadPartyMaster(entityCode) : [], [entityCode]);
+
+  const evidenceByOrder = useMemo(() => {
+    if (!entityCode) return new Map<string, number>();
+    const m = new Map<string, number>();
+    listPackingEvidence(entityCode).forEach((e) => m.set(e.ecOrderId, (m.get(e.ecOrderId) ?? 0) + 1));
+    return m;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityCode, tick]);
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const pendingOrderId = useRef<string | null>(null);
+
+  const onAttachClick = useCallback((ecOrderId: string) => {
+    pendingOrderId.current = ecOrderId;
+    fileInputRef.current?.click();
+  }, []);
+
+  const onFileSelected = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
+    const file = ev.target.files?.[0];
+    const ecOrderId = pendingOrderId.current;
+    ev.target.value = '';
+    if (!file || !ecOrderId || !entityCode) return;
+    try {
+      // Binary is NEVER persisted — metadata only.  [JWT] P2BB · upload to CDN, replace file_url.
+      recordPackingEvidence(entityCode, {
+        ecOrderId,
+        fileName: file.name,
+        sizeBytes: file.size,
+        durationSec: null,
+        capturedVia: 'file_upload',
+        note: '',
+        uploadedBy: 'self',
+        originatingDepartmentId: 'ecomx',
+      });
+      toast.success('Packing evidence recorded (metadata only).');
+      setTick((t) => t + 1);
+    } catch (e) { toast.error((e as Error).message); }
+  }, [entityCode]);
 
   const onResolve = useCallback((ecOrderId: string, partyId: string) => {
     if (!entityCode || !partyId) return;
@@ -77,6 +115,7 @@ export function EcomXOrdersPage(): JSX.Element {
                   <th className="text-left">State</th>
                   <th className="text-right">Gross ₹</th>
                   <th className="text-left">Status</th>
+                  <th className="text-left">Evidence</th>
                   {tab === 'parked' && <th className="text-left">Resolve → party</th>}
                 </tr>
               </thead>
@@ -91,6 +130,17 @@ export function EcomXOrdersPage(): JSX.Element {
                     <td>{o.endCustomerState || '—'}</td>
                     <td className="text-right font-mono">{o.grossAmount.toFixed(2)}</td>
                     <td>{o.status}</td>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => onAttachClick(o.id)}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-border text-xs hover:bg-accent"
+                        title="Attach packing evidence (metadata only)"
+                      >
+                        <Paperclip className="h-3 w-3" />
+                        <span className="font-mono">{evidenceByOrder.get(o.id) ?? 0}</span>
+                      </button>
+                    </td>
                     {tab === 'parked' && (
                       <td>
                         <select
@@ -110,6 +160,13 @@ export function EcomXOrdersPage(): JSX.Element {
           </div>
         )}
       </section>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*"
+        className="hidden"
+        onChange={onFileSelected}
+      />
     </div>
   );
 }
