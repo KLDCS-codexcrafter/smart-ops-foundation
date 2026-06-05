@@ -9,7 +9,8 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listMarketplaces, listTemplates, parseOrderFile, commitImport,
 } from '@/lib/ecomx-engine';
-import type { EcParseReport, CommitResult } from '@/lib/ecomx-engine';
+import type { CommitResult } from '@/lib/ecomx-engine';
+import type { EcParseReport, EcParseRowError } from '@/types/ecomx';
 import { Button } from '@/components/ui/button';
 
 function parseCsv(text: string): Record<string, string>[] {
@@ -126,7 +127,7 @@ export function EcomXImportCenterPage(): JSX.Element {
             <details>
               <summary className="text-xs text-muted-foreground cursor-pointer">Errors ({report.errors.length}, capped at 200)</summary>
               <ul className="text-xs mt-2 space-y-1 max-h-48 overflow-auto">
-                {report.errors.map((e, i) => (
+                {report.errors.map((e: EcParseRowError, i: number) => (
                   <li key={`${e.rowIndex}-${i}`} className="font-mono">row {e.rowIndex}: {e.reason}</li>
                 ))}
               </ul>
