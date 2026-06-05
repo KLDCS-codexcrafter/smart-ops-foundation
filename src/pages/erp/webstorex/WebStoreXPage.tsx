@@ -72,6 +72,8 @@ export default function WebStoreXPage(): JSX.Element {
       case 'storefront-orders':     return <StorefrontOrdersPage onNavigate={setActive} />;
       case 'storefront-quote':      return <StorefrontQuotePage onNavigate={setActive} />;
       case 'storefront-compare':    return <StorefrontComparePage onNavigate={setActive} />;
+      case 'visualizer':             return <VisualizerPage />;
+      case 'store-stats':            return <StoreStatsPage />;
       case 'storefront-coming-soon': return <ComingSoon label="Layered views — TBD" />;
       case 'visualizer-coming-soon': return <ComingSoon label="Visualizer — S152" />;
       default:             return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
