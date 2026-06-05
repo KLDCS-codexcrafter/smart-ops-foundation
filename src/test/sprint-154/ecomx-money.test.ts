@@ -319,7 +319,7 @@ describe('S154 · rate-anomaly note (no overwrite of file-reported amounts)', ()
   it('produces a note when reported TDS differs from configured % AND file amount is preserved', () => {
     const mp = createMarketplace(ENT, { name: 'Amazon', type: 'amazon', tds194oPct: 0.5 }); // 0.5%
     const pim = publishItem(ENT, 'm-pen', 'tester', { storeTitle: 'Pen' });
-    createListing(ENT, { marketplaceId: mp.id, marketplaceSku: 'SKU-X', kind: 'simple', storeItemId: pim.id, variantId: null, mrp: 10, sellingPrice: 9 });
+    createListing(ENT, { marketplaceId: mp.id, marketplaceSku: 'SKU-X', title: 'X', kind: 'simple', storeItemId: pim.id, variantId: null });
     injectEcOrder(mp.id, 'ORD-A', 1000);
     const t = saveSettlementTemplate(ENT, { marketplaceId: mp.id, name: 'd', columnMap: { ...defaultColumnMap() } });
     const rep = parseSettlementFile(ENT, mp.id, t.id, { rows: [
@@ -450,8 +450,8 @@ describe('S154 · allocation Σ-guard + stock-export math (DP-EC-9)', () => {
     const pim = publishItem(ENT, 'm-pen', 'tester', { storeTitle: 'Pen' });
     const mpA = createMarketplace(ENT, { name: 'A', type: 'amazon' });
     const mpB = createMarketplace(ENT, { name: 'B', type: 'flipkart' });
-    createListing(ENT, { marketplaceId: mpA.id, marketplaceSku: 'A-PEN', kind: 'simple', storeItemId: pim.id, variantId: null, mrp: 10, sellingPrice: 9 });
-    createListing(ENT, { marketplaceId: mpB.id, marketplaceSku: 'B-PEN', kind: 'simple', storeItemId: pim.id, variantId: null, mrp: 10, sellingPrice: 9 });
+    createListing(ENT, { marketplaceId: mpA.id, marketplaceSku: 'A-PEN', title: 'A', kind: 'simple', storeItemId: pim.id, variantId: null });
+    createListing(ENT, { marketplaceId: mpB.id, marketplaceSku: 'B-PEN', title: 'B', kind: 'simple', storeItemId: pim.id, variantId: null });
     return { mpA: mpA.id, mpB: mpB.id, storeItemId: pim.id };
   }
   it('upsertAllocation persists row', () => {
