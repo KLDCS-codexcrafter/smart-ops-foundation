@@ -25,8 +25,8 @@ import { getStoreItem } from '@/lib/webstorex-engine';
 import type {
   WsPriceList, WsScheme, AppliedScheme, CartEvaluation,
   WsLoyaltyRule, WsPointsEntry, WsGiftVoucher, WsVoucherEntry,
-  WsCreditEntry, WsCampaign, WsTestimonial, EffectivePriceResult,
-  SchemeType,
+  WsCreditEntry, WsCampaign, WsTestimonial, EffectivePriceResult, SchemeType,
+
 } from '@/types/webstorex';
 import {
   wsPriceListsKey, wsSchemesKey, wsLoyaltyRuleKey, wsPointsKey,
