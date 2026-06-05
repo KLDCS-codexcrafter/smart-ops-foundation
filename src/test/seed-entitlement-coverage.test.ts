@@ -72,3 +72,67 @@ describe('A.13.T2 · Demo Seed Coverage Invariant · D-NEW-CT 17th canonical', (
     expect(hookSource).not.toMatch(/A13T2_REQUIRED\s*:\s*CardId\[\]\s*=/);
   });
 });
+
+// ─── S152.T2 · active-card⇒seed invariant (replaces requiredCards blindness) ───
+// S146.T2 abolished per-item requiredCards; A.13.T2 invariant derived expectations
+// from requiredCards and was therefore blind to all post-T2 cards (webstorex caught
+// this at founder PV). New invariant parses applications.ts directly: every entry
+// with status:'active' MUST be present in seedDemoEntitlements (minus an explicit,
+// documented exception list — empty today).
+
+const APPLICATIONS_FILE = 'src/components/operix-core/applications.ts';
+
+/** Cards that are intentionally NOT in the demo seed. MUST be documented. */
+const SEED_EXEMPT_ACTIVE_CARDS: ReadonlySet<string> = new Set<string>([
+  // (empty today — every active card_id must seed)
+]);
+
+function extractActiveCardIdsFromApplications(source: string): Set<string> {
+  // Match object literals of shape { id: '...', ..., status: 'active', ... }
+  const blockRe = /\{\s*id:\s*'([^']+)'[\s\S]*?status:\s*'([^']+)'/g;
+  const out = new Set<string>();
+  for (const m of source.matchAll(blockRe)) {
+    if (m[2] === 'active') out.add(m[1]);
+  }
+  return out;
+}
+
+describe('S152.T2 · Active-card ⇒ seed invariant (enumerate-or-fail · founder-PV credit)', () => {
+  const seeded = new Set(
+    seedDemoEntitlements('test-tenant').map((e) => e.card_id as string),
+  );
+  const appsSource = readFileSync(APPLICATIONS_FILE, 'utf-8');
+  const activeIds = extractActiveCardIdsFromApplications(appsSource);
+
+  it('S152.T2 · webstorex present in seedDemoEntitlements (S149 3-step ceremony gap repaired)', () => {
+    expect(seeded.has('webstorex')).toBe(true);
+  });
+
+  it('S152.T2 · every active card in applications.ts is present in seedDemoEntitlements (minus documented exemptions)', () => {
+    expect(activeIds.size).toBeGreaterThan(0); // sanity: parser found something
+    const missing = [...activeIds]
+      .filter((c) => !SEED_EXEMPT_ACTIVE_CARDS.has(c))
+      .filter((c) => !seeded.has(c));
+    expect(
+      missing,
+      `Active cards in applications.ts but missing from seedDemoEntitlements: ${missing.join(', ')}. Either add to seedDemoEntitlements() OR add to SEED_EXEMPT_ACTIVE_CARDS with documented reason.`,
+    ).toEqual([]);
+  });
+
+  it('S152.T2 · negative-control · invariant FAILS when a synthetic active card is absent from seed', () => {
+    // Synthesize an active-card source missing from the seed to prove the
+    // invariant has teeth (not vacuously true). Uses the same parser the
+    // real invariant uses.
+    const synthetic = `
+      export const applications = [
+        { id: 'synthetic-not-in-seed', name: 'X', description: 'x',
+          category: 'Ops Hub', route: '/x', icon: 'X', status: 'active' },
+      ];
+    `;
+    const syntheticActive = extractActiveCardIdsFromApplications(synthetic);
+    expect(syntheticActive.has('synthetic-not-in-seed')).toBe(true);
+    const missing = [...syntheticActive].filter((c) => !seeded.has(c));
+    expect(missing).toEqual(['synthetic-not-in-seed']);
+  });
+});
+

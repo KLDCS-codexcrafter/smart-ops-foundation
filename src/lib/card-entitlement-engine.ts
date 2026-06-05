@@ -97,7 +97,21 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('sitex'), // active default · A.15a Q-LOCK-16a STATUS FLIP · MOAT #22 banks
     one('eximx'),  // EX-1 STATUS FLIP · 1st EximX sprint · D-NEW-CT 17th canonical extension · matches sitex/maintainpro/servicedesk precedent
     one('fpa-planning'),  // Sprint 116 · T-Phase-7.D.0.1 · Phase 7 opener · NEW card (D-NEW-CT seed parity for additive cards)
+    // ─── S152.T2 · S149 3-step ceremony gap · founder PV catch ───
+    // A.13.T2 invariant derived expectations from sidebar requiredCards, which
+    // S146.T2 abolished — leaving it blind to all post-T2 active cards. New
+    // invariant in src/test/seed-entitlement-coverage.test.ts parses
+    // applications.ts directly and caught this entire drift cohort at once.
+    one('webstorex'),     // S152.T2 · S149 PIM/Catalog active since Sprint 149
+    one('projx'),         // S152.T2 · active in applications.ts · seed parity
+    one('comply360'),     // S152.T2 · Phase 5 close · active · seed parity
+    one('bill-passing'),  // S152.T2 · active in applications.ts · seed parity
+    one('logistics'),     // S152.T2 · active in applications.ts · seed parity
+    one('dispatch-hub'),  // S152.T2 · active in applications.ts · seed parity
+    one('taskflow'),      // S152.T2 · active in applications.ts · seed parity
   ];
+
+
 }
 
 export function seedDemoProfile(tenantId: string, userId: string): UserEntitlementProfile {

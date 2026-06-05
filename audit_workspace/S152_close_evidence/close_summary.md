@@ -94,3 +94,28 @@ S152 initial close claimed green gates; repo-wide ESLint at audit showed the ban
 - TSC — 0 errors
 - ESLint repo-wide `--max-warnings 0` — clean
 - Vitest S151+S152 scoped — 2 files · 92 it() · 92 passed
+
+## T2 HONESTY NOTE (post-T1 founder PV audit · seed coverage)
+
+**Root cause** — `webstorex` was missing from `seedDemoEntitlements()` since Sprint 149. The S149 3-step ceremony (applications.ts + ROLE_DEFAULT_CARDS + seedDemoEntitlements) was executed only as 2 steps; the seed step was silently skipped. The existing A.13.T2 invariant derived expectations from sidebar `requiredCards`, but S146.T2 abolished per-item `requiredCards` repo-wide — so the invariant became structurally blind to every card landed after S146.T2 (webstorex + 6 others). Founder caught it on PV.
+
+**Invariant blindness chain** — S146.T2 (abolish requiredCards) → A.13.T2 invariant reads requiredCards → invariant returns ∅ for all post-T2 cards → seed-drift undetected → founder PV.
+
+**T2 fix · `src/lib/card-entitlement-engine.ts:64-114`** — Added `one('webstorex')` plus the 6 sibling drifters the new invariant exposed at first run (`projx`, `comply360`, `bill-passing`, `logistics`, `dispatch-hub`, `taskflow`). All commented `S152.T2 · …`. The T-Phase-1.A.15b.T1 self-healing migration (`useCardEntitlement.ts`) derives `expectedFromSeed` from `seedDemoEntitlements()`, so every existing tenant auto-heals — no migration code change needed.
+
+**T2 fix · `src/test/seed-entitlement-coverage.test.ts:76-140`** — New `describe('S152.T2 · Active-card ⇒ seed invariant …')` block. Parses `applications.ts` for every `{ id: '…', status: 'active' }` literal and asserts each is present in `seedDemoEntitlements`, minus an explicit `SEED_EXEMPT_ACTIVE_CARDS` list (empty today, documented). Replaces requiredCards-derived blindness for all future cards.
+
+**T2 new it() blocks (3)**
+1. `S152.T2 · webstorex present in seedDemoEntitlements` — direct assert.
+2. `S152.T2 · every active card in applications.ts is present in seedDemoEntitlements (minus documented exemptions)` — the new invariant; fails loudly when any future active card forgets the seed step.
+3. `S152.T2 · negative-control · invariant FAILS when a synthetic active card is absent from seed` — feeds a synthetic `applications.ts` source through the same parser and confirms the missing-list is non-empty (proves the invariant has teeth, not vacuously true).
+
+**Founder-PV credit** — caught by founder on preview after T1 close; documented here per honesty rule.
+
+**T2 GATES-LAST (real)**
+- TSC — 0 errors
+- ESLint repo-wide `--max-warnings 0` — clean
+- Vitest scoped (seed-coverage + S151 + S152) — 3 files · 124 it() · 124 passed (32 + 52 + 40)
+- Walls (tick grep) — `webstorex-engine.ts`, `webstorex-commerce-engine.ts`, `webstorex-order-engine.ts`, `webstorex-visualizer-engine.ts` ZERO-DIFF
+
+**New HEAD** — TBD_AT_BANK
