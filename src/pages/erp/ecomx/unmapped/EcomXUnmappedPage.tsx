@@ -10,6 +10,7 @@ import { listUnmappedSkus } from '@/lib/ecomx-engine';
 export function EcomXUnmappedPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [tick] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const rows = useMemo(() => entityCode ? listUnmappedSkus(entityCode) : [], [entityCode, tick]);
 
   if (!entityCode) return <div className="p-6 text-sm text-muted-foreground">Select an entity.</div>;

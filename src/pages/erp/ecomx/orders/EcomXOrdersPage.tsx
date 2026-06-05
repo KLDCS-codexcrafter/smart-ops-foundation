@@ -30,6 +30,7 @@ export function EcomXOrdersPage(): JSX.Element {
     if (tab === 'b2c') return listEcOrders(entityCode, { layer: 'b2c_consolidated' });
     if (tab === 'b2b_matched') return listEcOrders(entityCode, { layer: 'b2b_matched' });
     return listEcOrders(entityCode, { status: 'parked_unmatched' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, tab, tick]);
 
   const parties = useMemo(() => entityCode ? loadPartyMaster(entityCode) : [], [entityCode]);

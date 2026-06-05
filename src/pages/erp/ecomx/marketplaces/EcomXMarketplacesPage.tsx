@@ -24,6 +24,7 @@ export function EcomXMarketplacesPage(): JSX.Element {
     name: '', type: 'amazon', sellerId: '', partyMode: 'end_customer',
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const rows = useMemo(() => entityCode ? listMarketplaces(entityCode) : [], [entityCode, tick]);
 
   const onCreate = useCallback(() => {
