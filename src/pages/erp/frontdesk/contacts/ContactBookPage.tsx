@@ -90,6 +90,7 @@ export function ContactBookPage(): JSX.Element {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-8"></TableHead>
                   <TableHead>Code</TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead>Type</TableHead>
@@ -102,6 +103,10 @@ export function ContactBookPage(): JSX.Element {
               <TableBody>
                 {rows.map((r) => (
                   <TableRow key={r.partyId}>
+                    <TableCell>
+                      <input type="checkbox" checked={selectedIds.includes(r.partyId)}
+                        onChange={() => toggleSelect(r.partyId)} aria-label={`Select ${r.partyName}`} />
+                    </TableCell>
                     <TableCell className="font-mono">{r.partyCode}</TableCell>
                     <TableCell>{r.partyName}</TableCell>
                     <TableCell><Badge variant="outline">{r.partyType}</Badge></TableCell>
@@ -149,6 +154,147 @@ export function ContactBookPage(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      <EnvelopeDialog
+        open={envelopeOpen} onClose={() => setEnvelopeOpen(false)}
+        entityCode={entityCode} partyIds={selectedIds}
+      />
+      <LabelDialog
+        open={labelOpen} onClose={() => setLabelOpen(false)}
+        entityCode={entityCode}
+      />
     </div>
+  );
+}
+
+// ─── Envelope view (S148.T1 · M/S. prefix + Kind Attn picker + From-address toggle) ──
+interface EnvelopeDialogProps {
+  open: boolean; onClose: () => void; entityCode: string; partyIds: string[];
+}
+function EnvelopeDialog({ open, onClose, entityCode, partyIds }: EnvelopeDialogProps): JSX.Element {
+  const [msPrefix, setMsPrefix] = useState(true);
+  const [includeFrom, setIncludeFrom] = useState(false);
+  const [fromBlock, setFromBlock] = useState('4DSmartOps Pvt Ltd\nMumbai · 400001');
+  const [picks, setPicks] = useState<Record<string, string>>({});
+
+  const partyContacts = useMemo(() => {
+    const map: Record<string, PartyContact[]> = {};
+    for (const pid of partyIds) map[pid] = getContactsForParty(entityCode, pid);
+    return map;
+  }, [entityCode, partyIds, open]);
+
+  const envelopes = useMemo(() => buildEnrichedEnvelope(entityCode, partyIds, {
+    msPrefix, kindAttnContactByParty: picks,
+    includeFromAddress: includeFrom, fromAddressBlock: fromBlock,
+  }), [entityCode, partyIds, msPrefix, picks, includeFrom, fromBlock]);
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <DialogContent className="max-w-3xl">
+        <DialogHeader><DialogTitle>Envelope preview · {partyIds.length} parties</DialogTitle></DialogHeader>
+        <div className="space-y-3 print:hidden">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Switch checked={msPrefix} onCheckedChange={setMsPrefix} id="ms" />
+              <Label htmlFor="ms">"M/S. " prefix</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={includeFrom} onCheckedChange={setIncludeFrom} id="fr" />
+              <Label htmlFor="fr">Include from-address</Label>
+            </div>
+          </div>
+          {includeFrom && (
+            <Textarea value={fromBlock} onChange={(e) => setFromBlock(e.target.value)} rows={2} />
+          )}
+        </div>
+        <div className="space-y-3 max-h-[50vh] overflow-auto">
+          {envelopes.map((env) => {
+            const contacts = partyContacts[env.partyId] ?? [];
+            return (
+              <div key={env.partyId} className="border rounded-md p-3 space-y-2">
+                {contacts.length > 0 && (
+                  <div className="flex items-center gap-2 print:hidden">
+                    <Label className="text-xs">Kind Attn:</Label>
+                    <Select value={picks[env.partyId] ?? ''}
+                      onValueChange={(v) => setPicks({ ...picks, [env.partyId]: v })}>
+                      <SelectTrigger className="h-7 text-xs w-60"><SelectValue placeholder="(auto: primary)" /></SelectTrigger>
+                      <SelectContent>
+                        {contacts.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>
+                            {c.name}{c.designation ? ` · ${c.designation}` : ''}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                <pre className="text-sm whitespace-pre-wrap font-sans">{env.toBlock}</pre>
+                {env.fromBlock && (
+                  <pre className="text-xs text-muted-foreground whitespace-pre-wrap font-sans border-t pt-2">
+                    From: {env.fromBlock}
+                  </pre>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => window.print()}>Print</Button>
+          <Button onClick={onClose}>Close</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// ─── Label view (S148.T1 · width × height cm + computed A4 grid) ──
+interface LabelDialogProps { open: boolean; onClose: () => void; entityCode: string }
+function LabelDialog({ open, onClose, entityCode }: LabelDialogProps): JSX.Element {
+  const [prefs, setPrefs] = useState<LabelPrefs>(() => loadLabelPrefs(entityCode));
+
+  useEffect(() => { if (open) setPrefs(loadLabelPrefs(entityCode)); }, [open, entityCode]);
+
+  function save(): void {
+    try { saveLabelPrefs(entityCode, prefs); toast.success('Label prefs saved'); onClose(); }
+    catch (e) { toast.error((e as Error).message); }
+  }
+
+  let grid: { cols: number; rows: number; perPage: number } | null = null;
+  let err: string | null = null;
+  try { grid = computeLabelGrid(prefs); } catch (e) { err = (e as Error).message; }
+
+  return (
+    <Dialog open={open} onOpenChange={(v) => { if (!v) onClose(); }}>
+      <DialogContent>
+        <DialogHeader><DialogTitle>Label sheet · A4 grid</DialogTitle></DialogHeader>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Width (cm)</Label>
+              <Input type="number" step="0.1" value={prefs.widthCm}
+                onChange={(e) => setPrefs({ ...prefs, widthCm: Number(e.target.value) })} />
+            </div>
+            <div>
+              <Label>Height (cm)</Label>
+              <Input type="number" step="0.1" value={prefs.heightCm}
+                onChange={(e) => setPrefs({ ...prefs, heightCm: Number(e.target.value) })} />
+            </div>
+          </div>
+          {err ? (
+            <div className="text-sm text-destructive">{err}</div>
+          ) : grid && (
+            <div className="rounded-md border p-3 bg-muted/40 text-sm">
+              <p>A4 sheet: <span className="font-mono">21.0 × 29.7 cm</span></p>
+              <p>Grid: <span className="font-mono">{grid.cols} cols × {grid.rows} rows</span></p>
+              <p>Labels per page: <span className="font-mono font-bold">{grid.perPage}</span></p>
+            </div>
+          )}
+        </div>
+        <DialogFooter>
+          <Button variant="ghost" onClick={onClose}>Cancel</Button>
+          <Button onClick={save} disabled={!!err}>Save prefs</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
