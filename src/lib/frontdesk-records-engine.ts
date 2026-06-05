@@ -682,13 +682,24 @@ export function buildReceptionDiary(entityCode: string, dateISO: string): Recept
     .map((a) => ({ title: a.title, executiveName: a.executiveName, startAt: a.startAt }))
     .sort((a, b) => a.startAt.localeCompare(b.startAt));
 
+  // S148 Rider 1c · greetings today (optional · empty array if no contacts)
+  let greetingsToday: { contactId: string; partyId: string; name: string; kind: 'birthday' | 'anniversary' }[] = [];
+  try {
+    // late-require avoids a hard circular ref at engine load
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    greetingsToday = (require('@/lib/frontdesk-engine') as typeof import('@/lib/frontdesk-engine'))
+      .getGreetingsToday(entityCode, dateISO);
+  } catch { /* greetings optional */ }
+
   return {
     dateISO: day,
     visitorsIn, visitorsOut, overstaysOpen,
     unclaimedInwardMail, unconfirmedOutward,
     custodyOverdue, tomorrowsAppointments, expectedCouriers,
+    greetingsToday,
   };
 }
+
 
 // ─────────────────────────────────────────────────────────────────────
 // GATE-ENTRY BRIDGE · DP-FD-1 (gate-entry READ-ONLY)
