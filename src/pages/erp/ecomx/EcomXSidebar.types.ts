@@ -5,6 +5,7 @@
 export type EcomXModule =
   | 'welcome'
   | 'dashboard'
+  | 'cockpit'
   | 'marketplaces'
   | 'listings'
   | 'unmapped'
