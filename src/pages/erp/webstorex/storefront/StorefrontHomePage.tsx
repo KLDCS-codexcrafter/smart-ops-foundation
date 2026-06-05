@@ -2,7 +2,7 @@
  * @file        src/pages/erp/webstorex/storefront/StorefrontHomePage.tsx
  * @sprint      Sprint 151 · T-WebStoreX-A11.3 · DP-WS-22 mobile-first browse
  */
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type MouseEvent } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { getCatalog } from '@/lib/webstorex-engine';
 import { getEffectivePrice } from '@/lib/webstorex-commerce-engine';
