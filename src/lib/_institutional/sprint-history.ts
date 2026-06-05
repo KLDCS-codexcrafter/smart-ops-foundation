@@ -906,8 +906,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint 150 T-WebStoreX-A11.2 · WebStoreX Commerce Engines · DP-WS-4/9/10/11/16/17/19.3 · B2B price lists (per-item + percent-off · party assignment move-with-audit) · trade schemes (B1G1 · slab · order-value) + coupons (DP-WS-16 unique code · usage limit · commit-time increment ONLY) · loyalty append-only ledger (earn/redeem/expire/reversal · rule-gated · expiryMonths · double-reversal throws) · gift vouchers + store credit append-only ledgers (reason mandatory · over-balance throws) · festive campaigns (DP-WS-11 windowed · banner ≤1MB) · testimonials (DP-WS-17 curated) · effective-price resolution (lowest-wins precedence · DESIGN-DECISION-FLAG) · 1 NEW SIBLING webstorex-commerce-engine · webstorex-engine.ts + webstorex.ts types READ/CALL only (additive types append) · audit literal webstorex_event REUSED · §H 0-DIFF · time-robust evaluators (injectable nowISO everywhere) · 6 NEW pages under WebStoreX shell · headSha TBD_AT_BANK
   {
     sprintNumber: 150, code: 'T-WebStoreX-A11.2', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '4bf3e7a1', loc: 1500,
+    headSha: 'f56afce2', predecessorSha: '4bf3e7a1', loc: 1500,
     newSiblings: ['webstorex-commerce-engine'],
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
+  // 🚀 Sprint 151 T-WebStoreX-A11.3 · WebStoreX Storefront + Orders (arc centerpiece) · DP-WS-3/8/19/22 · MOBILE-FIRST storefront · ONE-WRITE WALL: checkout creates REAL Sales Order voucher via existing useOrders.createOrder path (Quotation→SO precedent) · Request-a-Quote creates REAL Quotation voucher via useQuotations.createQuotation path · WsStoreOrder is a LINK + evaluation snapshot (NEVER source-of-truth) · SERVER-SIDE TRUTH: checkoutCart re-evaluates via evaluateCart at commit (client totals never trusted) · coupon usedCount commits ONLY at checkoutCart · loyalty earn + points/voucher/credit redemptions commit ONLY at checkoutCart via append-only ledgers · redemption-failure ABORTS atomically · Quick-Order Pad (text + CSV parse) · Saved Carts CRUD · reorder · Store Orders register w/ status mirror + payment-link attach · PWA rider (hand-rolled manifest + minimal SW · NO new dep) · preview ribbon on every storefront surface · NO fake payment capture · 1 NEW SIBLING webstorex-order-engine · webstorex-engine + webstorex-commerce-engine + receivx + salesx engines READ/CALL only · §H + walls 0-DIFF · types VERBATIM appended · 8 NEW storefront pages under WebStoreX shell · audit literal webstorex_event REUSED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 151, code: 'T-WebStoreX-A11.3', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'f56afce2', loc: 1750,
+    newSiblings: ['webstorex-order-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
