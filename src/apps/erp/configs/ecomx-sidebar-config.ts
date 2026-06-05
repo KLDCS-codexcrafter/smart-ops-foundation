@@ -6,7 +6,7 @@
  *              (ZERO per-item requiredCards · matches frontdesk/taskflow/comply360/webstorex).
  */
 import {
-  Home, LayoutDashboard, Store, Boxes, Inbox, Upload, Receipt,
+  Home, LayoutDashboard, Gauge, Store, Boxes, Inbox, Upload, Receipt,
   Banknote, Scale, AlertTriangle, Undo2, Split,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
@@ -14,6 +14,7 @@ import type { SidebarItem } from '@/shell/types';
 export const ecomxSidebarItems: SidebarItem[] = [
   { id: 'welcome',       type: 'item', label: 'Welcome',         icon: Home,            moduleId: 'welcome',       keyboard: 'e w' },
   { id: 'dashboard',     type: 'item', label: 'Dashboard',       icon: LayoutDashboard, moduleId: 'dashboard',     keyboard: 'e d' },
+  { id: 'cockpit',       type: 'item', label: 'Cockpit',         icon: Gauge,           moduleId: 'cockpit',       keyboard: 'e k' },
   { id: 'div-registry',  type: 'divider', label: 'Registry' },
   { id: 'marketplaces',  type: 'item', label: 'Marketplaces',    icon: Store,           moduleId: 'marketplaces',  keyboard: 'e m' },
   { id: 'listings',      type: 'item', label: 'Listings',        icon: Boxes,           moduleId: 'listings',      keyboard: 'e l' },
