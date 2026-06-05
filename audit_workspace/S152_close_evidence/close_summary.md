@@ -149,3 +149,29 @@ Any active card missing any point = silent failure mode. The previous 3-step fra
 - Walls (tick grep) — `webstorex-engine.ts`, `webstorex-commerce-engine.ts`, `webstorex-order-engine.ts`, `webstorex-visualizer-engine.ts` ZERO-DIFF
 
 **New HEAD** — TBD_AT_BANK
+
+## S152.T4 hotfix · founder-PV catch #5 · SW hardening (frozen module graph)
+
+**Root cause** — `public/sw.js` v1 was cache-first on all static assets including HTML and JS modules with `skipWaiting()` + `clients.claim()` and no revalidation. Once installed, the SW served a frozen module graph: every subsequent deploy bricked controlled browsers with `Failed to fetch dynamically imported module: …/WebStoreXPage.tsx?t=<frozen-stamp>`. The `t=` query stamp was minted at the moment of the freeze and never refreshed because the SW always returned cached HTML before the network was even consulted. Worst on the Lovable preview host where deploys are continuous.
+
+**Self-heal mechanism** — three reinforcing layers:
+1. **Kill-switch (Block 3)** — `public/sw.js:23-42`: when `self.location.hostname` ends with `lovableproject.com` or `lovable.app`, the worker registers an install/activate pair that purges all caches and calls `self.registration.unregister()`. No `fetch` handler is attached → all requests pass through. Preview hosts can NEVER again be SW-cached.
+2. **Strategy rewrite (Block 1)** — `public/sw.js:84-148`: navigations (`request.mode === 'navigate'`) AND JS/CSS/module requests (`request.destination === 'script' | 'style'` or `\.(js|mjs|css|map)$`) are NOW network-first with cache fallback only on offline. Cache-first is reserved for `manifest.webmanifest`, `/icons/*`, fonts, and images — assets whose churn is independent of the module graph. `/api/*` network-first preserved unchanged. Queue/replay messaging preserved unchanged.
+3. **Version bump (Block 2)** — `public/sw.js:44`: `CACHE_VERSION = 'opx-v2'`. The activate handler (preserved) deletes every cache key that does not start with `opx-v2` → v1 caches purged on the first new activation. Browsers re-fetch `sw.js` bytes on each navigation ignoring HTTP cache (browser-mandated SW byte check), so any frozen v1 browser SELF-HEALS on next visit: it downloads the new v2 worker → activates → purges v1 → preview hosts go further and self-unregister.
+
+**App-level safety net (Block 4)** — `src/components/ErrorBoundary.tsx:21-28` + `src/lib/chunk-reload-helper.ts:1-49`. On any caught error matching `/Failed to fetch dynamically imported module|Loading chunk N failed|Importing a module script failed/i`, `shouldAutoReloadOnce(error, window.sessionStorage)` sets a `opx:chunk-reload-once` sessionStorage flag and returns `true`. The boundary then calls `window.location.reload()` exactly once per tab session. Second occurrence returns `false` (loop prevention) and the user sees the error screen. Helper is pure and unit-tested separately from React.
+
+**T4 unit tests · `src/test/sprint-152/sw-hardening.test.ts`** — 9 it() blocks across 3 describes:
+- `public/sw.js v2 hardening` (3): CACHE_VERSION constant === `'opx-v2'`; kill-switch text present (hosts + `self.registration.unregister()`); network-first branch present (`request.mode === 'navigate'` + `isCodeAsset`).
+- `isChunkLoadError` (3): matches `Failed to fetch dynamically imported module`; matches `Loading chunk N failed`; rejects unrelated errors and nullish.
+- `shouldAutoReloadOnce` (3): true on first chunk error + flag set; false on second (loop prevention); false on non-chunk error + flag unset.
+
+**Founder-PV credit** — PV catch #5 in the S152 series. Founder reported a frozen `t=` query stamp across hours on the preview while the published bundle had advanced. Symptom signature confirmed root cause without instrumentation. S152 bank still stands (post-bank PV-fix · S146 precedent).
+
+**T4 GATES-LAST (real)**
+- TSC — 0 errors
+- ESLint repo-wide `--max-warnings 0` — clean
+- Vitest scoped (seed-coverage + S151 + S152 + sw-hardening) — 4 files · 135 it() · 135 passed (seed-coverage 34 + S151 52 + S152-visualizer 40 + S152-T4 9)
+- Walls (tick grep) — `webstorex-engine.ts`, `webstorex-commerce-engine.ts`, `webstorex-order-engine.ts`, `webstorex-visualizer-engine.ts` ZERO-DIFF
+
+**New HEAD** — TBD_AT_BANK
