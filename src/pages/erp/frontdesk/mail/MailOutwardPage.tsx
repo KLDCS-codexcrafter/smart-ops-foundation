@@ -10,7 +10,7 @@ import {
   backfillMailNumbers,
 } from '@/lib/frontdesk-records-engine';
 import type { DispatchMode, MailItem, MailKind } from '@/types/frontdesk';
-import { MailEditDialog } from './MailInwardPage';
+import { MailEditDialog } from './mail-shared';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

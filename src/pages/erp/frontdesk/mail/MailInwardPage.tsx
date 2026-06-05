@@ -8,7 +8,7 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { useEmployees } from '@/hooks/useEmployees';
 import {
   createInwardMail, acknowledgeInwardMail, getUnclaimedInward, listMail,
-  backfillMailNumbers, updateMail,
+  backfillMailNumbers,
 } from '@/lib/frontdesk-records-engine';
 import type { MailItem, MailKind } from '@/types/frontdesk';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
