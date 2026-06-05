@@ -127,10 +127,36 @@ export function StorefrontProductPage({ onNavigate }: Props): JSX.Element {
               <Button className="flex-1" onClick={onAdd}><ShoppingCart className="h-4 w-4 mr-1" />Add to cart</Button>
               <Button className="flex-1" variant="outline" onClick={onAsk}><MessageSquare className="h-4 w-4 mr-1" />Ask about this</Button>
             </div>
-            <Button variant="ghost" size="sm" className="w-full" onClick={() => onNavigate('storefront-quote')}>Request a quote</Button>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="sm" className="flex-1" onClick={() => onNavigate('storefront-quote')}>Request a quote</Button>
+              <Button
+                variant={compare.has(item.id) ? 'default' : 'outline'} size="sm" className="flex-1"
+                onClick={() => {
+                  const r = compare.toggle(item.id);
+                  if (r.full) toast.error(`Compare limit ${COMPARE_MAX}`);
+                  else if (r.added) toast.success('Added to compare');
+                }}
+              >
+                <GitCompare className="h-4 w-4 mr-1" />
+                {compare.has(item.id) ? 'In compare' : 'Add to compare'}
+              </Button>
+              {compare.ids.length > 0 && (
+                <Button size="sm" variant="ghost" onClick={() => onNavigate('storefront-compare')} className="font-mono">
+                  View ({compare.ids.length})
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>
+
+      <AccessoryRails
+        item={item}
+        entityCode={entityCode}
+        onAdd={(id, q) => cart.addLine(id, q, null)}
+        onOpen={(id) => { setSelectedStoreItemId(entityCode, id); onNavigate('storefront-product'); setQty(1); }}
+      />
+
 
       {/* mobile sticky add bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border p-3 flex gap-2">
