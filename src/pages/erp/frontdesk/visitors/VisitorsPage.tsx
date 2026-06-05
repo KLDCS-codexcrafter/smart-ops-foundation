@@ -1,9 +1,8 @@
 /**
  * @file        src/pages/erp/frontdesk/visitors/VisitorsPage.tsx
- * @sprint      Sprint 145 · T-FrontDesk-A6F.1 · Block 4
- * @purpose     Visitors register · status filter · check-out action.
+ * @sprint      Sprint 145 + S146 (Book-a-room shortcut · tick→reload-callback)
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listVisitors, checkOutVisitor } from '@/lib/frontdesk-engine';
 import type { Visitor, VisitorStatus } from '@/types/frontdesk';
@@ -13,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import { DoorOpen } from 'lucide-react';
 import { toast } from 'sonner';
 
 const STATUSES: { value: VisitorStatus | 'all'; label: string }[] = [
@@ -30,13 +30,15 @@ function statusVariant(s: VisitorStatus): 'default' | 'secondary' | 'destructive
   return 'outline';
 }
 
-export function VisitorsPage(): JSX.Element {
+interface Props { onBookRoom?: (visitorId: string) => void }
+
+export function VisitorsPage({ onBookRoom }: Props = {}): JSX.Element {
   const { entityCode } = useEntityCode();
   const [filter, setFilter] = useState<VisitorStatus | 'all'>('on_site');
   const [q, setQ] = useState('');
-  const [tick, setTick] = useState(0);
 
-  const rows = useMemo<Visitor[]>(() => {
+  // S145.T1 reload-callback pattern · no tick-in-deps.
+  const compute = useCallback((): Visitor[] => {
     const all = listVisitors(entityCode);
     const filtered = filter === 'all' ? all : all.filter((v) => v.status === filter);
     const needle = q.trim().toLowerCase();
@@ -46,15 +48,17 @@ export function VisitorsPage(): JSX.Element {
           (v.company ?? '').toLowerCase().includes(needle) ||
           v.badgeNo.toLowerCase().includes(needle))
       : filtered;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entityCode, filter, q, tick]);
+  }, [entityCode, filter, q]);
+  const [rows, setRows] = useState<Visitor[]>(() => compute());
+  const reload = useCallback(() => setRows(compute()), [compute]);
+  useEffect(() => { reload(); }, [reload]);
 
   function handleCheckOut(v: Visitor): void {
     try {
       const allItemIds = v.itemsCarried.map((i) => i.id);
       checkOutVisitor(entityCode, v.id, allItemIds);
       toast.success(`Checked out ${v.name} (${v.badgeNo})`);
-      setTick((n) => n + 1);
+      reload();
     } catch (e) {
       toast.error((e as Error).message);
     }
@@ -63,9 +67,7 @@ export function VisitorsPage(): JSX.Element {
   return (
     <div className="p-6 space-y-4">
       <Card>
-        <CardHeader>
-          <CardTitle>Visitors</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle>Visitors</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between gap-4">
             <Tabs value={filter} onValueChange={(v) => setFilter(v as VisitorStatus | 'all')}>
@@ -95,7 +97,7 @@ export function VisitorsPage(): JSX.Element {
                   <TableHead>Status</TableHead>
                   <TableHead>Check-in</TableHead>
                   <TableHead>Items</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -109,7 +111,12 @@ export function VisitorsPage(): JSX.Element {
                     <TableCell><Badge variant={statusVariant(v.status)}>{v.status}</Badge></TableCell>
                     <TableCell className="font-mono text-xs">{v.checkInAt ? new Date(v.checkInAt).toLocaleString('en-IN') : '—'}</TableCell>
                     <TableCell className="font-mono">{v.itemsCarried.length}</TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right space-x-2">
+                      {v.status === 'planned' && onBookRoom && (
+                        <Button size="sm" variant="ghost" onClick={() => onBookRoom(v.id)} title="Book a room for this visitor">
+                          <DoorOpen className="h-3 w-3 mr-1" /> Book room
+                        </Button>
+                      )}
                       {v.status === 'on_site' && (
                         <Button size="sm" variant="outline" onClick={() => handleCheckOut(v)}>Check-out</Button>
                       )}
