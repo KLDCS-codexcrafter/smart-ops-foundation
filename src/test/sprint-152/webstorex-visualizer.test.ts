@@ -220,12 +220,17 @@ describe('S152 · buildStoreStats (DP-WS-21 read-only aggregation)', () => {
     expect(s.topItems[1].storeItemId).toBe(sofa);
   });
   it('top items truncated to 5', () => {
-    const ids: string[] = [];
-    for (let i = 0; i < 7; i++) {
-      const itId = pubWithCutout('m-sofa', 5000);
-      ids.push(itId);
-    }
-    const lines = ids.map((id, i) => ({ storeItemId: id, qty: i + 1 }));
+    // Seed 7 fake catalog items directly (one wrapper per master constraint avoided).
+    const items = Array.from({ length: 7 }, (_, i) => ({
+      id: `ws-fake-${i}`, entityId: ENT, itemRefId: `m-fake-${i}`, itemRefName: `Fake ${i}`,
+      visibility: 'published', storeTitle: `Fake ${i}`,
+      images: [], hasVariants: false, listPrice: 100, searchKeywords: [], highlights: [], faqs: [],
+      specifications: [], returnable: false, codAvailable: false,
+      crossSellIds: [], upsellIds: [], frequentlyBoughtIds: [], stockDisplayMode: 'count', backorderAllowed: false,
+      createdAt: '', createdByUserId: '', updatedAt: '',
+    }));
+    localStorage.setItem(`ws_items_${ENT}`, JSON.stringify(items));
+    const lines = items.map((it, i) => ({ storeItemId: it.id, qty: i + 1 }));
     localStorage.setItem(wsStoreOrdersKey(ENT), JSON.stringify([
       { id: 'o1', placedVia: 'storefront', evaluation: { lines, payable: 0, appliedSchemes: [] } },
     ]));
