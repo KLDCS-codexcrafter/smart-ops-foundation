@@ -54,6 +54,10 @@ function seedParty(): void {
 function publishItems(): { shirt: string; mug: string } {
   const a = publishItem(ENT, 'm-shirt', 'u-1', { listPrice: 500 });
   const b = publishItem(ENT, 'm-mug',   'u-1', { listPrice: 200 });
+  // Force-publish (skip image/category guard — orthogonal to S151 storefront tests).
+  const raw = JSON.parse(localStorage.getItem(`ws_items_${ENT}`) ?? '[]');
+  for (const r of raw) r.visibility = 'published';
+  localStorage.setItem(`ws_items_${ENT}`, JSON.stringify(raw));
   return { shirt: a.id, mug: b.id };
 }
 
