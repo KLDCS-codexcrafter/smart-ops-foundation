@@ -451,3 +451,46 @@ describe('S148 · audit trail emission', () => {
     expect(loadFollowUps(E).find((x) => x.id === fu.id)).toBeTruthy();
   });
 });
+
+// ── S148.T1 hotfix · UI-wiring guards ────────────────────────────────
+describe('S148.T1 · UI-wiring guards', () => {
+  it('Mail Inward CSV column shape is sourced from the page path', async () => {
+    const { MAIL_INWARD_CSV_COLUMNS, MAIL_OUTWARD_CSV_COLUMNS } =
+      await import('@/pages/erp/frontdesk/mail/mail-constants');
+    expect(MAIL_INWARD_CSV_COLUMNS[0]).toBe('Mail No');
+    expect(MAIL_INWARD_CSV_COLUMNS).toContain('Description');
+    expect(MAIL_INWARD_CSV_COLUMNS).toContain('Status');
+    expect(MAIL_OUTWARD_CSV_COLUMNS[0]).toBe('Mail No');
+  });
+
+  it('Mail edit dialog (UI-level) blocks all immutable mail fields', async () => {
+    const { MAIL_EDITABLE_KEYS } =
+      await import('@/pages/erp/frontdesk/mail/mail-constants');
+    const IMMUTABLE = ['direction', 'kind', 'mailNo', 'receivedAt', 'sentAt',
+      'acknowledgedAt', 'dispatchMode', 'deliveryConfirmed'];
+    for (const k of IMMUTABLE) {
+      expect((MAIL_EDITABLE_KEYS as readonly string[]).includes(k)).toBe(false);
+    }
+    expect((MAIL_EDITABLE_KEYS as readonly string[]).includes('description')).toBe(true);
+  });
+
+  it('Reception Diary surfaces greetings today for a seeded birthday', async () => {
+    upsertPartyContact(E, { partyId: 'p-1', name: 'Birthday Person',
+      birthday: '2024-06-15', createdByUserId: 'u' });
+    const { buildReceptionDiary } = await import('@/lib/frontdesk-records-engine');
+    const diary = buildReceptionDiary(E, '2026-06-15T00:00:00.000Z');
+    expect(diary.greetingsToday?.some((g) => g.name === 'Birthday Person')).toBe(true);
+  });
+
+  it('Follow-ups drawer lists follow-ups for a seeded task (newest-first via listFollowUps)', () => {
+    seedTask();
+    logFollowUp(E, { taskId: 'tsk-1', followedUpByUserId: 'u', followedUpByName: 'U',
+      channel: 'call', remarks: 'first', at: '2026-06-01T10:00:00.000Z' });
+    logFollowUp(E, { taskId: 'tsk-1', followedUpByUserId: 'u', followedUpByName: 'U',
+      channel: 'whatsapp', remarks: 'second', at: '2026-06-02T10:00:00.000Z' });
+    const drawerRows = listFollowUps(E, { taskId: 'tsk-1' });
+    expect(drawerRows).toHaveLength(2);
+    expect(drawerRows[0].remarks).toBe('second'); // newest first
+    expect(drawerRows[1].remarks).toBe('first');
+  });
+});

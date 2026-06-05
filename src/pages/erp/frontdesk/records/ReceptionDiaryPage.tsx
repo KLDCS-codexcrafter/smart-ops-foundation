@@ -35,6 +35,14 @@ export function ReceptionDiaryPage(): JSX.Element {
             </div>
           </section>
 
+          <Section title={`Greetings today (${diary.greetingsToday?.length ?? 0})`}
+            empty="No birthdays or anniversaries today.">
+            {(diary.greetingsToday ?? []).map((g) => (
+              <Row key={g.contactId} left={g.name}
+                right={<Badge variant="outline">{g.kind}</Badge>} />
+            ))}
+          </Section>
+
           <Section title={`Unclaimed inward mail (${diary.unclaimedInwardMail.length})`}
             empty="None — clean board.">
             {diary.unclaimedInwardMail.map((m) => (
