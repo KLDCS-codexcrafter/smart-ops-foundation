@@ -268,13 +268,14 @@ export const applications: AppDefinition[] = [
     status: 'active',  // Sprint 149 · T-WebStoreX-A11.1 · Pillar A.11 Block 4 · PIM + Catalog plan-complete
   },
   {
-    id: 'unicomm',
-    name: 'UniComm',
-    description: 'Omni-channel communications · WhatsApp, email, SMS coordination. MOAT #12. Tier 3 stub now · Phase 2 deferred per D-174.',
+    // S153 · DP-EC-1 rename ceremony · unicomm→ecomx · founder ruling: comms wording removed (OperixChat canonical)
+    id: 'ecomx',
+    name: 'EcomX',
+    description: 'Marketplace commerce hub · Amazon/Flipkart/Meesho/quick-commerce listings · order-file ingestion → SalesX vouchers · settlement reconciliation (194-O TDS · GST-TCS) · claims recovery. MOAT #12.',
     category: 'Sales Hub',
-    route: '/erp/unicomm',
-    icon: 'Network',
-    status: 'coming_soon',
+    route: '/erp/ecomx',
+    icon: 'Store',
+    status: 'active',
   },
   // ⚠️ Display name 'Fin Core' (with space) intentional · keep as-is
   {
