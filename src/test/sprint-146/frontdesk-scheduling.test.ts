@@ -436,4 +436,30 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
       expect(orphans).toEqual([]);
     });
   });
+
+  // ── S146.T2 · sidebar pattern-parity (per-item requiredCards removed) ──
+  describe('S146.T2 · sidebar pattern-parity', () => {
+    it('filterSidebarByMatrix returns ALL items for tenant_admin with EMPTY entitlements', async () => {
+      const { filterSidebarByMatrix } = await import('@/shell/utils/filterSidebarByMatrix');
+      const { frontdeskSidebarItems } = await import('@/apps/erp/configs/frontdesk-sidebar-config');
+      const profile = {
+        user_id: 'u-admin', tenant_id: E, role: 'tenant_admin' as const,
+        explicit_allow: [], explicit_deny: [], updated_at: new Date().toISOString(),
+      };
+      const filtered = filterSidebarByMatrix(frontdeskSidebarItems, profile, []);
+      const countItems = (items: typeof frontdeskSidebarItems): number =>
+        items.reduce((n, i) => n + 1 + (i.children ? countItems(i.children) : 0), 0);
+      expect(countItems(filtered)).toBe(countItems(frontdeskSidebarItems));
+    });
+
+    it('frontdesk-sidebar-config contains ZERO requiredCards (parity with taskflow/comply360)', async () => {
+      const { frontdeskSidebarItems } = await import('@/apps/erp/configs/frontdesk-sidebar-config');
+      const walk = (items: typeof frontdeskSidebarItems): number =>
+        items.reduce((n, i) =>
+          n + (i.requiredCards && i.requiredCards.length > 0 ? 1 : 0) +
+              (i.children ? walk(i.children) : 0), 0);
+      expect(walk(frontdeskSidebarItems)).toBe(0);
+    });
+  });
 });
+
