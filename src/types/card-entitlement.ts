@@ -23,7 +23,7 @@ export type CardId =
   | 'eximx'                   // T1 #14 · International Trade (existing card · was missing)
   | 'docvault'                // T1 #4 · prereq for EngineeringX (existing card · was missing)
   | 'taskflow'                // Tier 3 stub (existing card · was missing)
-  | 'unicomm'                 // Tier 3 stub (existing card · was missing)
+  | 'ecomx'                  // S153 · DP-EC-1 rename · was 'unicomm' · MOAT #12 marketplace commerce hub (active)
   | 'webstorex'               // Tier 3 stub · MOAT #11 (existing card · was missing)
   | 'comply360'              // Tier 4 deferred · Phase 1.4+ (existing card · was missing)
   | 'vendor-portal'           // Sprint T-Phase-1.A.1 · NEW · D-282-REV · Vendor Portal card (parallels Distributor Hub · 6th FR-81 application)
