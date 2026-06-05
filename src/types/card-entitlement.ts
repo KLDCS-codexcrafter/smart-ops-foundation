@@ -60,7 +60,7 @@ export const ROLE_DEFAULT_CARDS: Record<UserRole, CardId[]> = {
   finance: ['fincore', 'receivx', 'payout', 'insightx', 'command-center', 'fpa-planning', 'taskflow'],
   // S146.T1 · role-default visibility fix · 'taskflow' added (tasks are universal)
   // S149 · 'webstorex' added (MOAT #11 · PIM + Catalog active per T-WebStoreX-A11.1)
-  sales: ['salesx', 'distributor-hub', 'customer-hub', 'insightx', 'taskflow', 'webstorex'],
+  sales: ['salesx', 'distributor-hub', 'customer-hub', 'insightx', 'taskflow', 'webstorex', 'ecomx'],
   // S146.T1 · role-default visibility fix · 'frontdesk' + 'taskflow' added (reception management + universal tasks)
   operations: ['procure360', 'inventory-hub', 'production', 'qualicheck', 'gateflow',
     'maintainpro', 'requestx', 'logistics', 'dispatch-hub', 'frontdesk', 'taskflow'],
