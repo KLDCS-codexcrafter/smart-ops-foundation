@@ -17,6 +17,9 @@ import { CheckInPage } from './visitors/CheckInPage';
 import { RollCallPage } from './visitors/RollCallPage';
 import { ContactBookPage } from './contacts/ContactBookPage';
 import { WatchlistPage } from './contacts/WatchlistPage';
+import { MeetingRoomsPage } from './rooms/MeetingRoomsPage';
+import { BookingCalendarPage } from './rooms/BookingCalendarPage';
+import { ExecutiveDeskPage } from './exec/ExecutiveDeskPage';
 import type { FrontDeskModule } from './FrontDeskSidebar.types';
 
 export default function FrontDeskPage(): JSX.Element {
@@ -25,14 +28,17 @@ export default function FrontDeskPage(): JSX.Element {
 
   const render = (): JSX.Element => {
     switch (active) {
-      case 'welcome':      return <FrontDeskWelcome onNavigate={setActive} />;
-      case 'visitors':     return <VisitorsPage />;
-      case 'plan-visit':   return <PlanVisitPage onDone={() => setActive('visitors')} />;
-      case 'check-in':     return <CheckInPage onDone={() => setActive('visitors')} />;
-      case 'roll-call':    return <RollCallPage />;
-      case 'contact-book': return <ContactBookPage />;
-      case 'watchlist':    return <WatchlistPage />;
-      default:             return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
+      case 'welcome':          return <FrontDeskWelcome onNavigate={setActive} />;
+      case 'visitors':         return <VisitorsPage onBookRoom={(visitorId) => { sessionStorage.setItem('fd_prefill_visitor', visitorId); setActive('booking-calendar'); }} />;
+      case 'plan-visit':       return <PlanVisitPage onDone={() => setActive('visitors')} />;
+      case 'check-in':         return <CheckInPage onDone={() => setActive('visitors')} />;
+      case 'roll-call':        return <RollCallPage />;
+      case 'contact-book':     return <ContactBookPage />;
+      case 'watchlist':        return <WatchlistPage />;
+      case 'meeting-rooms':    return <MeetingRoomsPage onNavigate={setActive} />;
+      case 'booking-calendar': return <BookingCalendarPage />;
+      case 'executive-desk':   return <ExecutiveDeskPage />;
+      default:                 return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
 

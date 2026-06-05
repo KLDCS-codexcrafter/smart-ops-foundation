@@ -1,8 +1,8 @@
 /**
  * @file        src/pages/erp/frontdesk/contacts/ContactBookPage.tsx
- * @sprint      Sprint 145 · T-FrontDesk-A6F.1 · Block 4
+ * @sprint      Sprint 145 + S146 hotfix (tick→reload-callback)
  */
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { listContactBook, addContactNote, deleteContactNote } from '@/lib/frontdesk-engine';
@@ -16,28 +16,31 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 
+type Row = ReturnType<typeof listContactBook>[number];
+
 export function ContactBookPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const me = useCurrentUser();
   const [q, setQ] = useState('');
-  const [tick, setTick] = useState(0);
   const [openFor, setOpenFor] = useState<string | null>(null);
   const [noteText, setNoteText] = useState('');
 
-  const rows = useMemo(() => {
+  const compute = useCallback((): Row[] => {
     const all = listContactBook(entityCode);
     const needle = q.trim().toLowerCase();
     return needle
       ? all.filter((r) => r.partyName.toLowerCase().includes(needle) || r.partyCode.toLowerCase().includes(needle))
       : all;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [entityCode, q, tick]);
+  }, [entityCode, q]);
+  const [rows, setRows] = useState<Row[]>(() => compute());
+  const reload = useCallback(() => setRows(compute()), [compute]);
+  useEffect(() => { reload(); }, [reload]);
 
   function submitNote(partyId: string): void {
     try {
       addContactNote(entityCode, partyId, noteText, me?.id ?? 'demo-user');
       toast.success('Note added');
-      setNoteText(''); setOpenFor(null); setTick((n) => n + 1);
+      setNoteText(''); setOpenFor(null); reload();
     } catch (e) {
       toast.error((e as Error).message);
     }
@@ -46,9 +49,7 @@ export function ContactBookPage(): JSX.Element {
   return (
     <div className="p-6 space-y-4">
       <Card>
-        <CardHeader>
-          <CardTitle>Contact Book</CardTitle>
-        </CardHeader>
+        <CardHeader><CardTitle>Contact Book</CardTitle></CardHeader>
         <CardContent className="space-y-4">
           <Input
             placeholder="Search party name / code"
@@ -90,7 +91,7 @@ export function ContactBookPage(): JSX.Element {
                               <button
                                 aria-label="Delete note"
                                 className="text-muted-foreground hover:text-destructive"
-                                onClick={() => { deleteContactNote(entityCode, n.id); setTick((x) => x + 1); }}
+                                onClick={() => { deleteContactNote(entityCode, n.id); reload(); }}
                               >
                                 <Trash2 className="h-3 w-3" />
                               </button>
