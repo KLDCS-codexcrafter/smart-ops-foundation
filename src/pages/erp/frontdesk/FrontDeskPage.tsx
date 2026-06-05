@@ -16,6 +16,7 @@ import { PlanVisitPage } from './visitors/PlanVisitPage';
 import { CheckInPage } from './visitors/CheckInPage';
 import { RollCallPage } from './visitors/RollCallPage';
 import { ContactBookPage } from './contacts/ContactBookPage';
+import { AddressBookReportPage } from './contacts/AddressBookReportPage';
 import { WatchlistPage } from './contacts/WatchlistPage';
 import { MeetingRoomsPage } from './rooms/MeetingRoomsPage';
 import { BookingCalendarPage } from './rooms/BookingCalendarPage';
