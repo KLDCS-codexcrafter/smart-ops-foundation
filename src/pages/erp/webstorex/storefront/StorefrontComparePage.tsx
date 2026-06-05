@@ -120,10 +120,12 @@ export function StorefrontComparePage({ onNavigate }: Props): JSX.Element {
   );
 }
 
+import type { WebStoreItem } from '@/types/webstorex';
+
 interface RowProps {
   label: string;
-  items: ReturnType<typeof Array.prototype.slice> extends infer _ ? Array<{ id: string }> : never;
-  render: (it: any) => JSX.Element;
+  items: WebStoreItem[];
+  render: (it: WebStoreItem) => JSX.Element;
 }
 function CompareRow({ label, items, render }: RowProps): JSX.Element {
   return (
