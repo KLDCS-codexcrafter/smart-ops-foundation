@@ -113,7 +113,7 @@ const LANES: LaneDef[] = [
     label: 'Sales',
     borderColor: 'border-l-amber-500',
     labelColor: 'text-amber-600 dark:text-amber-400',
-    ids: ['salesx', 'distributor-hub', 'customer-hub', 'projx', 'webstorex', 'unicomm'],
+    ids: ['salesx', 'distributor-hub', 'customer-hub', 'projx', 'webstorex', 'ecomx'],
   },
   {
     id: 'people',
