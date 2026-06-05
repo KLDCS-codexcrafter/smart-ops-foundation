@@ -117,3 +117,137 @@ export interface EcStagedOrder {
   buyerGstin: string | null;
   lines: Array<{ marketplaceSku: string; qty: number; unitPrice: number; lineTotal: number }>;
 }
+
+// ─── S154 · Money Suite (DP-EC-6/7/8/9) ─────────────────────────────────
+// ADDITIVE ONLY · all prior exports above this line are 0-DIFF.
+
+export type EcSettlementColumnKey =
+  | 'order_id' | 'event_type' | 'gross' | 'commission' | 'fixed_fee'
+  | 'shipping_fee' | 'other_fee' | 'tds_194o' | 'gst_tcs' | 'net'
+  | 'cod_flag' | 'return_flag' | 'settlement_date' | 'ignore';
+
+export interface EcSettlementTemplate {
+  id: string;
+  marketplaceId: string;
+  name: string;                          // "Flipkart settlement report"
+  columnMap: Record<string, EcSettlementColumnKey>;
+  createdAt: string;
+}
+
+export interface EcSettlementRow {
+  id: string;
+  settlementImportId: string;
+  marketplaceId: string;
+  marketplaceOrderId: string;
+  ecOrderId: string | null;              // matched EcOrder · null = unmatched_settlement
+  eventType: 'sale' | 'return' | 'cod_remittance' | 'other';
+  gross: number;
+  commission: number;
+  fees: number;                          // fixed + shipping + other, summed
+  tds194o: number;                       // as reported by the file (cross-check vs configured %)
+  gstTcs: number;
+  net: number;
+  settlementDate: string;                // ISO yyyy-mm-dd
+  createdAt: string;
+}
+
+/** S154 · staged settlement-side parse rows — cleared at commitSettlementImport. */
+export interface EcStagedSettlementRow {
+  marketplaceOrderId: string;
+  eventType: 'sale' | 'return' | 'cod_remittance' | 'other';
+  gross: number;
+  commission: number;
+  fees: number;
+  tds194o: number;
+  gstTcs: number;
+  net: number;
+  settlementDate: string;
+  codFlag: boolean;
+  returnFlag: boolean;
+}
+
+export type EcVarianceClass =
+  | 'clean'                              // booked − (commission+fees+taxes) = net, within tolerance
+  | 'short_pay' | 'over_pay'
+  | 'return_adjustment'
+  | 'unmatched_settlement'               // settlement row with no EcOrder
+  | 'missing_settlement';                // booked EcOrder with no settlement row (report-time class)
+
+export interface EcReconLine {           // computed, persisted per run for the register
+  id: string;
+  reconRunId: string;
+  marketplaceId: string;
+  ecOrderId: string | null;
+  marketplaceOrderId: string;
+  bookedGross: number | null;
+  settlementGross: number | null;
+  deductions: number | null;             // commission + fees + tds + tcs
+  netReceived: number | null;
+  varianceAmount: number;                // signed
+  varianceClass: EcVarianceClass;
+  rateAnomalyNote: string | null;        // populated when reported TDS/TCS deviates from configured %
+  claimId: string | null;
+  createdAt: string;
+}
+
+export interface EcReconRun {
+  id: string;
+  marketplaceId: string;
+  periodFrom: string;
+  periodTo: string;
+  tolerancePaise: number;
+  lineCounts: Record<EcVarianceClass, number>;
+  totalVariance: number;
+  createdAt: string;
+}
+
+export type EcClaimStatus = 'open' | 'raised' | 'settled' | 'rejected';
+
+export interface EcClaim {               // DP-EC-7 · "recover every rupee"
+  id: string;
+  marketplaceId: string;
+  reconLineId: string;
+  marketplaceOrderId: string;
+  amount: number;
+  reason: string;                        // from varianceClass + user note
+  claimRef: string;                      // marketplace-side case/claim id, user-entered
+  status: EcClaimStatus;
+  recoveredAmount: number;
+  statusHistory: { status: EcClaimStatus; at: string; note: string }[];  // append-only
+  createdAt: string;
+}
+
+export interface EcReturn {              // DP-EC-8
+  id: string;
+  ecOrderId: string;
+  marketplaceId: string;
+  marketplaceOrderId: string;
+  kind: 'customer_return' | 'courier_rto';
+  facilityGodownId: string | null;       // per 0.5 adaptive rule (null → free-text facilityLabel)
+  facilityLabel: string;
+  settlementRowId: string | null;
+  createdAt: string;
+}
+
+export interface EcChannelAllocation {   // DP-EC-9
+  id: string;
+  marketplaceId: string;
+  storeItemId: string;
+  variantId: string | null;
+  marketplaceSku: string;                // via resolveListing, denormalized for export
+  allocatedQty: number;
+  bufferPct: number;                     // exported qty = floor(allocatedQty × (1 − bufferPct/100))
+  availableQtyEntered: number | null;    // per 0.4 adaptive rule (null when live read exists)
+  updatedAt: string;
+}
+
+export const ecSettlementTemplatesKey = (e: string) => `ecomx_settlement_templates_${e}`;
+export const ecSettlementRowsKey = (e: string) => `ecomx_settlement_rows_${e}`;
+export const ecStagedSettlementKey = (e: string, importId: string) =>
+  `ecomx_staged_settlement_${e}_${importId}`;
+export const ecReconRunsKey = (e: string) => `ecomx_recon_runs_${e}`;
+export const ecReconLinesKey = (e: string) => `ecomx_recon_lines_${e}`;
+export const ecClaimsKey = (e: string) => `ecomx_claims_${e}`;
+export const ecReturnsKey = (e: string) => `ecomx_returns_${e}`;
+export const ecAllocationsKey = (e: string) => `ecomx_channel_allocations_${e}`;
+

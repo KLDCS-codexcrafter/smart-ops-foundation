@@ -819,3 +819,27 @@ export function getImportStats(entityCode: string): EcImportStats {
     parkedB2B: eco.filter((o) => o.status === 'parked_unmatched').length,
   };
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+// S154 · ONE PERMITTED ADDITIVE EXPORT (existing 19 exports 0-DIFF above)
+// ═══════════════════════════════════════════════════════════════════════
+/**
+ * S154 · DP-EC-8 · flip an EcOrder status to 'returned'.
+ * Called by ecomx-recon-engine when a settlement row's eventType='return' is committed.
+ * Idempotent: re-marking a 'returned' order is a no-op (returns the row unchanged).
+ */
+export function markOrderReturned(entityCode: string, ecOrderId: string): EcOrder | null {
+  const all = ls<EcOrder>(ecOrdersKey(entityCode));
+  const idx = all.findIndex((o) => o.id === ecOrderId);
+  if (idx < 0) return null;
+  if (all[idx].status === 'returned') return all[idx];
+  const before = { ...all[idx] };
+  all[idx] = { ...all[idx], status: 'returned' };
+  ss(ecOrdersKey(entityCode), all);
+  safeAudit(entityCode, 'update', all[idx].id,
+    `EcomX markOrderReturned · ${all[idx].marketplaceOrderId}`,
+    before as unknown as Record<string, unknown>,
+    all[idx] as unknown as Record<string, unknown>);
+  return all[idx];
+}
+
