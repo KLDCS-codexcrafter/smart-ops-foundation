@@ -920,9 +920,9 @@ export const SPRINTS: SprintEntry[] = [
   // 🏁 Sprint 152 T-WebStoreX-A11.4 · WebStoreX Visualizer + Store Stats (ARC CLOSER) · DP-WS-12 (product-agnostic: machines · drones · robots · furniture · décor · wearables) · DP-WS-20/21/22 register handoff · 2D <canvas> overlay aid (NO new dep · NO AI try-on · NO 3D/AR — all named [JWT] P2BB+ seams) · §O HONESTY: permanent on-canvas label "Visual approximation — verify dimensions against site measurements" + honestyLabel:true literal on every composition · reference-scale assist (mark known distance → pxPerCm → suggestedScaleFor uses dimensionsCm.w to render true-width · no dims ⇒ null · never guessed) · dimensions chip honest (absent ⇒ "dimensions not on record") · multi-product placements (drag/pinch/rotate/flip) · saved compositions gallery · PNG export via toDataURL · items WITHOUT cutout image NEVER show Visualize button (asset discipline) · wearable preview-mode label variant · StoreStats aggregation (catalog partition · orders byVia · top-items · scheme appliedCount from snapshots · loyalty earned/redeemed · quote count) · 1 NEW SIBLING webstorex-visualizer-engine · webstorex-engine + webstorex-commerce-engine + webstorex-order-engine + ALL masters READ/CALL only · §H + walls 0-DIFF · types VERBATIM appended · 2 NEW pages (VisualizerPage + StoreStatsPage) · audit literal webstorex_event REUSED · headSha TBD_AT_BANK
   {
     sprintNumber: 152, code: 'T-WebStoreX-A11.4', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '0dd18a09', loc: 1300,
+    headSha: '4af7cbdd', predecessorSha: '0dd18a09', loc: 1300,
     newSiblings: ['webstorex-visualizer-engine'],
-    bankDate: null, provenance: 'CONFIRMED',
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
   },
 ];
 
