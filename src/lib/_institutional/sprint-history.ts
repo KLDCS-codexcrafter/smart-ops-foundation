@@ -899,8 +899,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint 149 T-WebStoreX-A11.1 · WebStoreX PIM + Catalog · card 'webstorex' coming_soon→active · DP-WS-2/8/13/14/15/18 · PIM publication wrapper (item/stock master READ-ONLY · wrapped by reference · never copied · never edited) · variants with allocation guard (Σ active stockAllocation ≤ master qty · over-allocation throws naming excess · reconciliation re-reads master live) · brands · categories (3-level tree · cycle throw) · store settings · catalog manager · webstorex added to sales ROLE_DEFAULT_CARDS · NEW audit literal webstorex_event ADDITIVE under mca-roc · 1 NEW SIBLING webstorex-engine · §H + approval-workflow + Comply360 + push-notification-bridge + all masters 0-DIFF · FR-44 READ-ONLY consume from erp_inventory_items + party-master-engine + audit-trail-engine · headSha TBD_AT_BANK
   {
     sprintNumber: 149, code: 'T-WebStoreX-A11.1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '6f2f05df', loc: 1500,
+    headSha: '4bf3e7a1', predecessorSha: '6f2f05df', loc: 1500,
     newSiblings: ['webstorex-engine'],
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 150 T-WebStoreX-A11.2 · WebStoreX Commerce Engines · DP-WS-4/9/10/11/16/17/19.3 · B2B price lists (per-item + percent-off · party assignment move-with-audit) · trade schemes (B1G1 · slab · order-value) + coupons (DP-WS-16 unique code · usage limit · commit-time increment ONLY) · loyalty append-only ledger (earn/redeem/expire/reversal · rule-gated · expiryMonths · double-reversal throws) · gift vouchers + store credit append-only ledgers (reason mandatory · over-balance throws) · festive campaigns (DP-WS-11 windowed · banner ≤1MB) · testimonials (DP-WS-17 curated) · effective-price resolution (lowest-wins precedence · DESIGN-DECISION-FLAG) · 1 NEW SIBLING webstorex-commerce-engine · webstorex-engine.ts + webstorex.ts types READ/CALL only (additive types append) · audit literal webstorex_event REUSED · §H 0-DIFF · time-robust evaluators (injectable nowISO everywhere) · 6 NEW pages under WebStoreX shell · headSha TBD_AT_BANK
+  {
+    sprintNumber: 150, code: 'T-WebStoreX-A11.2', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '4bf3e7a1', loc: 1500,
+    newSiblings: ['webstorex-commerce-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
