@@ -301,13 +301,13 @@ describe('S149 · institutional registers · sidebar parity · application statu
     expect(s148.headSha).toBe('6f2f05df');
   });
 
-  it('S149 still TBD_AT_BANK before commit', () => {
+  it('S149 banked (backfilled to 4bf3e7a1 at S150.B1)', () => {
     const s149 = SPRINTS.find(s => s.sprintNumber === 149)!;
-    expect(s149.headSha).toBe('TBD_AT_BANK');
+    expect(s149.headSha).toContain('4bf3e7a1');
   });
 
-  it('NO S150 entry exists yet', () => {
-    expect(SPRINTS.find(s => s.sprintNumber === 150)).toBeUndefined();
+  it('S150 entry exists (added in S150.B1)', () => {
+    expect(SPRINTS.find(s => s.sprintNumber === 150)).toBeDefined();
   });
 
   it('webstorex sidebar items carry ZERO requiredCards (parity guard)', () => {
