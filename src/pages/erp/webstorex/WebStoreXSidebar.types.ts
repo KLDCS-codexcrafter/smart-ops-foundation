@@ -27,6 +27,9 @@ export type WebStoreXModule =
   | 'storefront-orders'
   | 'storefront-quote'
   | 'storefront-compare'
+  // S152 · Visualizer + Stats (ARC CLOSER)
+  | 'visualizer'
+  | 'store-stats'
   // Coming-soon panes
   | 'storefront-coming-soon'
   | 'visualizer-coming-soon';

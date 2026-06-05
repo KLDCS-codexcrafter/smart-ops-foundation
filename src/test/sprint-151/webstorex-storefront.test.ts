@@ -379,8 +379,8 @@ describe('S151 · Institutional registers + meta-assertion', () => {
     expect(s151).toBeTruthy();
     expect(s151!.newSiblings).toContain('webstorex-order-engine');
   });
-  it('NO S152 entry exists (sprint discipline)', () => {
-    expect(SPRINTS.find(s => s.sprintNumber === 152)).toBeUndefined();
+  it('S152 entry now exists (backfilled after S152 commit)', () => {
+    expect(SPRINTS.find(s => s.sprintNumber === 152)).toBeTruthy();
   });
   it('meta: webstorex-engine + commerce-engine remain in registry (0-DIFF wall)', () => {
     expect(SIBLINGS.find(s => s.id === 'webstorex-engine')).toBeTruthy();
