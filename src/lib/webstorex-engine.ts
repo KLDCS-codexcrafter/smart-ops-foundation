@@ -282,7 +282,7 @@ export function removeImage(entityCode: string, storeItemId: string, imageId: st
   if (!before) return;
   items[idx] = { ...cur, images: cur.images.filter(im => im.id !== imageId), updatedAt: nowISO() };
   saveItems(entityCode, items);
-  audit(entityCode, 'delete', imageId, `removeImage`,
+  audit(entityCode, 'cancel', imageId, `removeImage`,
     before as unknown as Record<string, unknown>, null, 'webstorex.removeImage');
 }
 
@@ -532,7 +532,7 @@ export function deleteCategory(entityCode: string, id: string): void {
   }
   const next = cats.filter(c => c.id !== id);
   saveCategories(entityCode, next);
-  audit(entityCode, 'delete', id, 'deleteCategory', null, null, 'webstorex.deleteCategory');
+  audit(entityCode, 'cancel', id, 'deleteCategory', null, null, 'webstorex.deleteCategory');
 }
 
 export interface CategoryTreeNode extends WsCategory { children: CategoryTreeNode[]; }
@@ -596,7 +596,7 @@ export function updateBrand(entityCode: string, id: string, patch: Partial<Brand
 export function deleteBrand(entityCode: string, id: string): void {
   const brands = loadBrands(entityCode);
   saveBrands(entityCode, brands.filter(b => b.id !== id));
-  audit(entityCode, 'delete', id, 'deleteBrand', null, null, 'webstorex.deleteBrand');
+  audit(entityCode, 'cancel', id, 'deleteBrand', null, null, 'webstorex.deleteBrand');
 }
 
 // ─── settings ────────────────────────────────────────────────────────
