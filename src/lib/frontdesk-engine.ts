@@ -645,12 +645,8 @@ export function setVisitorGateRef(entityCode: string, visitorId: string, gateEnt
 }
 
 // ─── S148 Rider 1c · Contact Book Depth · PartyContact CRUD ──────────
-import {
-  type PartyContact,
-  type LabelPrefs,
-  fdPartyContactsKey,
-  fdLabelPrefsKey,
-} from '@/types/frontdesk';
+
+
 
 export function loadPartyContacts(entityCode: string): PartyContact[] {
   return readJSON<PartyContact[]>(fdPartyContactsKey(entityCode), []);
