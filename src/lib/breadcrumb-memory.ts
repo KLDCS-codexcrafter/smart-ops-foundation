@@ -91,7 +91,6 @@ export function buildCardRoute(cardId: CardId): string {
   const base = CARD_BASE_ROUTES[cardId] ?? LEGACY_CARD_ROUTE_ALIASES[cardId as string];
   if (!base) {
     // S152.T3 · defensive: never navigate(undefined) silently — log + safe fallback.
-    // eslint-disable-next-line no-console
     console.error(`[breadcrumb-memory] buildCardRoute: no CARD_BASE_ROUTES entry for cardId="${cardId}". 4-point registration ceremony (catalog + seed + role-default + route-map) violated.`);
     return '/';
   }
