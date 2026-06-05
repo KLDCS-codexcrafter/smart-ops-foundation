@@ -110,3 +110,131 @@ export const wsVariantsKey   = (e: string): string => `ws_variants_${e}`;
 export const wsBrandsKey     = (e: string): string => `ws_brands_${e}`;
 export const wsCategoriesKey = (e: string): string => `ws_categories_${e}`;
 export const wsSettingsKey   = (e: string): string => `ws_settings_${e}`;
+
+// ─── S150 · Commerce Engines · DP-WS-4/9/10/11/16/17/19.3 ───────────
+export interface WsPriceList {
+  id: string; entityId: string;
+  name: string;
+  mode: 'per_item' | 'percent_off_list';
+  percentOff?: number | null;                  // mode percent_off_list
+  itemRates: { storeItemId: string; rate: number }[];   // mode per_item
+  assignedPartyIds: string[];
+  isActive: boolean; createdAt: string; updatedAt: string;
+}
+
+export type SchemeType = 'buy_x_get_y' | 'slab_discount' | 'order_value_discount' | 'coupon';
+
+export interface WsScheme {
+  id: string; entityId: string;
+  name: string; type: SchemeType;
+  // buy_x_get_y:
+  buyStoreItemId?: string | null; buyQty?: number | null;
+  getStoreItemId?: string | null; getQty?: number | null;     // free goods · zero-rate lines
+  // slab_discount (per item):
+  slabStoreItemId?: string | null;
+  slabs?: { minQty: number; discountPct: number }[];
+  // order_value_discount:
+  minOrderValue?: number | null; orderDiscountPct?: number | null;
+  // coupon (DP-WS-16):
+  couponCode?: string | null;                  // unique per entity (throw)
+  couponUsageLimit?: number | null;            // null = unlimited
+  couponUsedCount: number;
+  couponDiscountPct?: number | null; couponDiscountFlat?: number | null;  // exactly one
+  // common:
+  partyGroupFilter?: string | null;            // null = all (key = party.group per Block 0)
+  validFrom: string; validTo: string;
+  stackable: boolean;                          // default false · best-single-wins
+  isActive: boolean; createdAt: string; updatedAt: string;
+}
+
+export interface AppliedScheme {
+  schemeId: string; schemeName: string; type: SchemeType;
+  freeLines: { storeItemId: string; qty: number }[];
+  discountAmount: number;
+  displayText: string;                          // "Scheme: 2 pcs free"
+}
+
+export interface CartEvaluation {
+  lines: { storeItemId: string; qty: number; unitPrice: number; lineTotal: number }[];
+  appliedSchemes: AppliedScheme[];
+  freeLines: { storeItemId: string; qty: number }[];
+  schemeDiscount: number; couponDiscount: number;
+  loyaltyRedeemed: number; voucherRedeemed: number; creditRedeemed: number;
+  subtotal: number; totalDiscount: number; payable: number;
+}
+
+export interface WsLoyaltyRule {
+  entityId: string;
+  earnPointsPerRupee: number;                  // e.g. 0.01 = 1 pt / ₹100
+  minOrderValue: number;
+  redeemValuePerPoint: number;                 // ₹ per point
+  expiryMonths: number | null;                 // null = never
+  isActive: boolean; updatedAt: string;
+}
+
+export type LedgerEntryKind = 'earn' | 'redeem' | 'expire' | 'reversal' | 'issue';
+
+export interface WsPointsEntry {               // APPEND-ONLY
+  id: string; entityId: string; partyId: string;
+  kind: LedgerEntryKind; points: number;       // signed by kind at computation, stored positive
+  orderRef?: string | null; reason?: string | null;
+  reversesEntryId?: string | null;
+  at: string; byUserId: string;
+}
+
+export interface WsGiftVoucher {
+  id: string; entityId: string;
+  code: string;                                // unique per entity (throw)
+  initialValue: number;
+  issuedToPartyId?: string | null;
+  expiresAt?: string | null;
+  isActive: boolean; issuedAt: string; issuedByUserId: string;
+}
+export interface WsVoucherEntry {              // APPEND-ONLY redemptions/reversals
+  id: string; entityId: string; voucherId: string;
+  kind: 'redeem' | 'reversal'; amount: number;
+  orderRef?: string | null; reason?: string | null; reversesEntryId?: string | null;
+  at: string; byUserId: string;
+}
+
+export interface WsCreditEntry {               // store credit · APPEND-ONLY
+  id: string; entityId: string; partyId: string;
+  kind: 'issue' | 'redeem' | 'reversal'; amount: number;
+  orderRef?: string | null; reason: string;    // mandatory
+  reversesEntryId?: string | null;
+  at: string; byUserId: string;
+}
+
+export interface WsCampaign {                  // DP-WS-11
+  id: string; entityId: string;
+  name: string; bannerDataUrl?: string | null; // ≤1MB
+  startsAt: string; endsAt: string;            // auto window · time-robust
+  collectionItemIds: string[];
+  offerPrices: { storeItemId: string; offerPrice: number }[];
+  isActive: boolean; createdAt: string;
+}
+
+export interface WsTestimonial {               // DP-WS-17 · curated NOW · live reviews P2BB
+  id: string; entityId: string;
+  customerName: string; company?: string | null;
+  text: string; rating?: number | null;        // 1-5
+  isPublished: boolean; createdAt: string; createdByUserId: string;
+}
+
+export interface EffectivePriceResult {
+  storeItemId: string; listPrice: number;
+  campaignPrice?: number | null; priceListPrice?: number | null;
+  effective: number;
+  source: 'list' | 'campaign' | 'price_list';
+}
+
+// ─── S150 storage keys (entity-scoped) ──────────────────────────────
+export const wsPriceListsKey   = (e: string): string => `ws_price_lists_${e}`;
+export const wsSchemesKey      = (e: string): string => `ws_schemes_${e}`;
+export const wsLoyaltyRuleKey  = (e: string): string => `ws_loyalty_rule_${e}`;
+export const wsPointsKey       = (e: string): string => `ws_points_${e}`;
+export const wsGiftVouchersKey = (e: string): string => `ws_gift_vouchers_${e}`;
+export const wsVoucherEntriesKey = (e: string): string => `ws_voucher_entries_${e}`;
+export const wsCreditEntriesKey  = (e: string): string => `ws_credit_entries_${e}`;
+export const wsCampaignsKey    = (e: string): string => `ws_campaigns_${e}`;
+export const wsTestimonialsKey = (e: string): string => `ws_testimonials_${e}`;
