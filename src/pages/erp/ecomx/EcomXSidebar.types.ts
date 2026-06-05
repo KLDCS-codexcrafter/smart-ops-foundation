@@ -1,6 +1,6 @@
 /**
  * @file   src/pages/erp/ecomx/EcomXSidebar.types.ts
- * @sprint Sprint 153 · EcomX Channel Foundation · DP-EC-1 4-point rename ceremony
+ * @sprint Sprint 153/154 · EcomX
  */
 export type EcomXModule =
   | 'welcome'
@@ -9,4 +9,9 @@ export type EcomXModule =
   | 'listings'
   | 'unmapped'
   | 'import-center'
-  | 'orders';
+  | 'orders'
+  | 'settlements'
+  | 'reconciliation'
+  | 'claims'
+  | 'returns'
+  | 'allocation';

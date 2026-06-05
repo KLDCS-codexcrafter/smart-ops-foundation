@@ -14,6 +14,11 @@ import { EcomXListingsPage } from './listings/EcomXListingsPage';
 import { EcomXUnmappedPage } from './unmapped/EcomXUnmappedPage';
 import { EcomXImportCenterPage } from './import-center/EcomXImportCenterPage';
 import { EcomXOrdersPage } from './orders/EcomXOrdersPage';
+import { EcomXSettlementsPage } from './settlements/EcomXSettlementsPage';
+import { EcomXReconciliationPage } from './reconciliation/EcomXReconciliationPage';
+import { EcomXClaimsPage } from './claims/EcomXClaimsPage';
+import { EcomXReturnsPage } from './returns/EcomXReturnsPage';
+import { EcomXAllocationPage } from './allocation/EcomXAllocationPage';
 import type { EcomXModule } from './EcomXSidebar.types';
 
 export default function EcomXPage(): JSX.Element {
@@ -22,14 +27,19 @@ export default function EcomXPage(): JSX.Element {
 
   const render = (): JSX.Element => {
     switch (active) {
-      case 'welcome':       return <EcomXWelcome onNavigate={setActive} />;
-      case 'dashboard':     return <EcomXDashboardPage />;
-      case 'marketplaces':  return <EcomXMarketplacesPage />;
-      case 'listings':      return <EcomXListingsPage />;
-      case 'unmapped':      return <EcomXUnmappedPage />;
-      case 'import-center': return <EcomXImportCenterPage />;
-      case 'orders':        return <EcomXOrdersPage />;
-      default:              return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
+      case 'welcome':        return <EcomXWelcome onNavigate={setActive} />;
+      case 'dashboard':      return <EcomXDashboardPage />;
+      case 'marketplaces':   return <EcomXMarketplacesPage />;
+      case 'listings':       return <EcomXListingsPage />;
+      case 'unmapped':       return <EcomXUnmappedPage />;
+      case 'import-center':  return <EcomXImportCenterPage />;
+      case 'orders':         return <EcomXOrdersPage />;
+      case 'settlements':    return <EcomXSettlementsPage />;
+      case 'reconciliation': return <EcomXReconciliationPage />;
+      case 'claims':         return <EcomXClaimsPage />;
+      case 'returns':        return <EcomXReturnsPage />;
+      case 'allocation':     return <EcomXAllocationPage />;
+      default:               return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
 
