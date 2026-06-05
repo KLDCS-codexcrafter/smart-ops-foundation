@@ -346,7 +346,7 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
       const r = createRoom(E, { name: 'A', floor: '1', capacity: 5 }, CTX);
       createBooking(E, { roomId: r.id, title: 'X', organizerEmployeeId: 'u1', organizerName: 'U', startAt: T('10:00'), endAt: T('11:00') }, CTX);
       const trail = readAuditTrail(E);
-      const fd = trail.filter((t) => t.entityType === 'frontdesk_event');
+      const fd = trail.filter((t) => t.entity_type === "frontdesk_event");
       expect(fd.length).toBeGreaterThanOrEqual(2);
     });
   });
