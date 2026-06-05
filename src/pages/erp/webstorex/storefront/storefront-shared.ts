@@ -4,13 +4,16 @@
  * @sprint      Sprint 151 · T-WebStoreX-A11.3 · DP-WS-22 mobile-first
  */
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { WsCartLine } from '@/types/webstorex';
+import type { WsCartLine, WebStoreItem } from '@/types/webstorex';
 
 export { PreviewRibbon } from './PreviewRibbon';
 
 export const wsStorefrontCartKey = (e: string): string => `ws_storefront_cart_${e}`;
 export const wsStorefrontSelectedItemKey = (e: string): string => `ws_storefront_selected_item_${e}`;
+export const wsStorefrontCompareKey = (e: string): string => `ws_storefront_compare_${e}`;
 export const wsStorefrontEvent = 'ws_storefront_changed';
+export const wsStorefrontCompareEvent = 'ws_storefront_compare_changed';
+export const COMPARE_MAX = 4;
 
 // ─── Cart hook (localStorage-backed · cross-page) ────────────────────
 function readCart(entityCode: string): WsCartLine[] {
