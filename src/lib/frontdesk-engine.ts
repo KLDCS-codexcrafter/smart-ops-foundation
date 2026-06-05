@@ -638,3 +638,217 @@ export function setVisitorGateRef(entityCode: string, visitorId: string, gateEnt
     before, { gateEntryRef }, `gate-entry link set by ${byUserId}`);
   return rows[idx];
 }
+
+// ─── S148 Rider 1c · Contact Book Depth · PartyContact CRUD ──────────
+import {
+  type PartyContact,
+  type LabelPrefs,
+  fdPartyContactsKey,
+  fdLabelPrefsKey,
+} from '@/types/frontdesk';
+
+export function loadPartyContacts(entityCode: string): PartyContact[] {
+  return readJSON<PartyContact[]>(fdPartyContactsKey(entityCode), []);
+}
+function savePartyContacts(entityCode: string, rows: PartyContact[]): void {
+  writeJSON(fdPartyContactsKey(entityCode), rows);
+}
+
+export function getContactsForParty(entityCode: string, partyId: string): PartyContact[] {
+  return loadPartyContacts(entityCode).filter((c) => c.partyId === partyId);
+}
+
+function normalizeDayMD(s: string | null | undefined): string | null {
+  if (!s) return null;
+  const t = s.trim();
+  if (!t) return null;
+  // accept MM-DD or full ISO; output MM-DD storage hint normalized
+  if (/^\d{2}-\d{2}$/.test(t)) return t;
+  const d = new Date(t);
+  if (!isNaN(d.getTime())) {
+    return `${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+  }
+  return t;
+}
+
+export interface UpsertPartyContactInput {
+  id?: string;
+  partyId: string;
+  name: string;
+  designation?: string | null; department?: string | null;
+  phone?: string | null; extn?: string | null; mobile?: string | null;
+  email?: string | null;
+  birthday?: string | null; anniversary?: string | null;
+  isPrimary?: boolean;
+  createdByUserId: string;
+}
+
+export function upsertPartyContact(entityCode: string, input: UpsertPartyContactInput): PartyContact {
+  if (!input.partyId) throw new Error('partyId required');
+  if (!input.name?.trim()) throw new Error('Contact: name is required');
+  // ID-CAPTURE CANON · scope statement: contact phone/mobile may be 12+ digits with country code
+  // → DO NOT apply the visitor 12+ digit guard here. Boundary asserted in tests.
+  const rows = loadPartyContacts(entityCode);
+  const now = nowISO();
+  const normalized: Partial<PartyContact> = {
+    name: input.name.trim(),
+    designation: input.designation ?? null,
+    department: input.department ?? null,
+    phone: input.phone ?? null,
+    extn: input.extn ?? null,
+    mobile: input.mobile ?? null,
+    email: input.email ?? null,
+    birthday: normalizeDayMD(input.birthday ?? null),
+    anniversary: normalizeDayMD(input.anniversary ?? null),
+    isPrimary: !!input.isPrimary,
+  };
+  // Enforce one isPrimary per party (upsert clears the prior primary).
+  if (normalized.isPrimary) {
+    for (const c of rows) {
+      if (c.partyId === input.partyId && c.id !== input.id && c.isPrimary) {
+        c.isPrimary = false;
+        c.updatedAt = now;
+      }
+    }
+  }
+  if (input.id) {
+    const idx = rows.findIndex((c) => c.id === input.id);
+    if (idx < 0) throw new Error(`PartyContact not found: ${input.id}`);
+    const before = { ...rows[idx] };
+    rows[idx] = { ...rows[idx], ...normalized, updatedAt: now };
+    savePartyContacts(entityCode, rows);
+    audit(entityCode, 'update', rows[idx].id, rows[idx].name,
+      before as unknown as Record<string, unknown>,
+      rows[idx] as unknown as Record<string, unknown>, 'party-contact updated');
+    return rows[idx];
+  }
+  const created: PartyContact = {
+    id: mkId('pc'),
+    entityId: entityCode,
+    partyId: input.partyId,
+    createdAt: now, updatedAt: now,
+    createdByUserId: input.createdByUserId,
+    name: normalized.name!,
+    designation: normalized.designation ?? null,
+    department: normalized.department ?? null,
+    phone: normalized.phone ?? null,
+    extn: normalized.extn ?? null,
+    mobile: normalized.mobile ?? null,
+    email: normalized.email ?? null,
+    birthday: normalized.birthday ?? null,
+    anniversary: normalized.anniversary ?? null,
+    isPrimary: normalized.isPrimary,
+  };
+  rows.push(created);
+  savePartyContacts(entityCode, rows);
+  audit(entityCode, 'create', created.id, created.name, null,
+    created as unknown as Record<string, unknown>, 'party-contact created');
+  return created;
+}
+
+export function deletePartyContact(entityCode: string, contactId: string): void {
+  const rows = loadPartyContacts(entityCode);
+  const idx = rows.findIndex((c) => c.id === contactId);
+  if (idx < 0) return;
+  const before = { ...rows[idx] };
+  rows.splice(idx, 1);
+  savePartyContacts(entityCode, rows);
+  audit(entityCode, 'cancel', contactId, before.name,
+    before as unknown as Record<string, unknown>, null, 'party-contact removed');
+}
+
+/**
+ * S148 Rider 1c · birthday/anniversary digest for a given day (month-day match).
+ * 29-Feb tolerance: in non-leap years, falls back to 28-Feb.
+ */
+export function getGreetingsToday(entityCode: string, dateISO: string): {
+  contactId: string; partyId: string; name: string; kind: 'birthday' | 'anniversary';
+}[] {
+  const d = new Date(dateISO);
+  const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(d.getUTCDate()).padStart(2, '0');
+  const md = `${mm}-${dd}`;
+  // 29-Feb tolerance: on 28-Feb of non-leap years, surface 29-Feb birthdays too
+  const yr = d.getUTCFullYear();
+  const isLeap = (yr % 4 === 0 && yr % 100 !== 0) || yr % 400 === 0;
+  const altMd = (!isLeap && md === '02-28') ? '02-29' : null;
+  const out: { contactId: string; partyId: string; name: string; kind: 'birthday' | 'anniversary' }[] = [];
+  for (const c of loadPartyContacts(entityCode)) {
+    const bd = normalizeDayMD(c.birthday);
+    const an = normalizeDayMD(c.anniversary);
+    if (bd && (bd === md || bd === altMd)) {
+      out.push({ contactId: c.id, partyId: c.partyId, name: c.name, kind: 'birthday' });
+    }
+    if (an && (an === md || an === altMd)) {
+      out.push({ contactId: c.id, partyId: c.partyId, name: c.name, kind: 'anniversary' });
+    }
+  }
+  return out;
+}
+
+// ─── Label grid math · cm → A4 cols/rows ─────────────────────────────
+export interface LabelGrid { cols: number; rows: number; perPage: number }
+
+export function computeLabelGrid(prefs: LabelPrefs): LabelGrid {
+  const sheetW = prefs.sheetWidthCm  ?? 21.0;
+  const sheetH = prefs.sheetHeightCm ?? 29.7;
+  const margin = prefs.marginCm ?? 0.5;
+  const gutter = prefs.gutterCm ?? 0.2;
+  if (!(prefs.widthCm > 0) || !(prefs.heightCm > 0)) {
+    throw new Error('Label dimensions must be positive');
+  }
+  const usableW = sheetW - 2 * margin;
+  const usableH = sheetH - 2 * margin;
+  const cols = Math.max(0, Math.floor((usableW + gutter) / (prefs.widthCm  + gutter)));
+  const rows = Math.max(0, Math.floor((usableH + gutter) / (prefs.heightCm + gutter)));
+  return { cols, rows, perPage: cols * rows };
+}
+
+export function loadLabelPrefs(entityCode: string): LabelPrefs {
+  return readJSON<LabelPrefs>(fdLabelPrefsKey(entityCode), { widthCm: 9.9, heightCm: 3.39 });
+}
+export function saveLabelPrefs(entityCode: string, prefs: LabelPrefs): void {
+  if (!(prefs.widthCm > 0) || !(prefs.heightCm > 0)) {
+    throw new Error('Label dimensions must be positive');
+  }
+  writeJSON(fdLabelPrefsKey(entityCode), prefs);
+}
+
+// ─── Envelope upgrades · S148 Rider 1c ───────────────────────────────
+export interface EnvelopeUpgradeOptions {
+  /** "M/S. " prefix on company name (default true). */
+  msPrefix?: boolean;
+  /** Pick a "Kind Attn:" contact id from fd_party_contacts (per party). */
+  kindAttnContactByParty?: Record<string, string>;
+  /** Include company return address block. */
+  includeFromAddress?: boolean;
+  fromAddressBlock?: string;
+}
+export interface EnrichedEnvelopeRow {
+  partyId: string;
+  toBlock: string;          // M/S. company / Kind Attn / phone etc
+  fromBlock: string | null; // company return address
+}
+export function buildEnrichedEnvelope(
+  entityCode: string,
+  partyIds: string[],
+  options: EnvelopeUpgradeOptions = {},
+): EnrichedEnvelopeRow[] {
+  const msPrefix = options.msPrefix !== false;
+  const parties = loadPartyMaster(entityCode);
+  const contacts = loadPartyContacts(entityCode);
+  const set = new Set(partyIds);
+  return parties.filter((p) => set.has(p.id)).map<EnrichedEnvelopeRow>((p) => {
+    const ctcId = options.kindAttnContactByParty?.[p.id];
+    const ctc = ctcId
+      ? contacts.find((c) => c.id === ctcId && c.partyId === p.id)
+      : contacts.find((c) => c.partyId === p.id && c.isPrimary);
+    const head = `${msPrefix ? 'M/S. ' : ''}${p.party_name}`;
+    const attn = ctc ? `\nKind Attn: ${ctc.name}${ctc.designation ? ` (${ctc.designation})` : ''}` : '';
+    return {
+      partyId: p.id,
+      toBlock: `${head}${attn}`,
+      fromBlock: options.includeFromAddress ? (options.fromAddressBlock ?? null) : null,
+    };
+  });
+}
