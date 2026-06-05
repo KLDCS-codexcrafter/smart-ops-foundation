@@ -160,6 +160,13 @@ export function EcomXOrdersPage(): JSX.Element {
           </div>
         )}
       </section>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*,video/*"
+        className="hidden"
+        onChange={onFileSelected}
+      />
     </div>
   );
 }
