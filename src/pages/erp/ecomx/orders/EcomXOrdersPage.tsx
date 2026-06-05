@@ -2,11 +2,11 @@
  * @file   src/pages/erp/ecomx/orders/EcomXOrdersPage.tsx
  * @sprint Sprint 153 · EcomX · dual-layer order register + Parked B2B resolution
  */
-import { useCallback, useMemo, useState } from 'react';
-import { Receipt } from 'lucide-react';
+import { useCallback, useMemo, useRef, useState } from 'react';
+import { Paperclip, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
-import { listEcOrders, resolveUnmatchedOrder } from '@/lib/ecomx-engine';
+import { listEcOrders, resolveUnmatchedOrder, recordPackingEvidence, listPackingEvidence } from '@/lib/ecomx-engine';
 import { loadPartyMaster } from '@/lib/party-master-engine';
 import type { EcOrderLayer } from '@/types/ecomx';
 import { Button } from '@/components/ui/button';
