@@ -26,6 +26,7 @@ export type WebStoreXModule =
   | 'storefront-saved'
   | 'storefront-orders'
   | 'storefront-quote'
+  | 'storefront-compare'
   // Coming-soon panes
   | 'storefront-coming-soon'
   | 'visualizer-coming-soon';

@@ -8,7 +8,7 @@
 import {
   Home, ShoppingBag, Boxes, Tag, FolderTree, Settings,
   IndianRupee, Percent, Gift, CreditCard, Megaphone, Star, ImageIcon, Layers,
-  Store, ShoppingCart, FileText, Zap, Bookmark, Receipt,
+  Store, ShoppingCart, FileText, Zap, Bookmark, Receipt, GitCompare,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -36,6 +36,7 @@ export const webstorexSidebarItems: SidebarItem[] = [
   { id: 'storefront-saved',      type: 'item', label: 'Saved carts',    icon: Bookmark,     moduleId: 'storefront-saved',      keyboard: 'w d' },
   { id: 'storefront-orders',     type: 'item', label: 'My orders',      icon: Receipt,      moduleId: 'storefront-orders',     keyboard: 'w m' },
   { id: 'storefront-quote',      type: 'item', label: 'Request quote',  icon: FileText,     moduleId: 'storefront-quote',      keyboard: 'w e' },
+  { id: 'storefront-compare',    type: 'item', label: 'Compare',        icon: GitCompare,   moduleId: 'storefront-compare',    keyboard: 'w n' },
   // ── Coming soon ────────────────────────────────────────────────────
   { id: 'div-soon', type: 'divider', label: 'Coming Soon' },
   { id: 'visualizer-coming-soon', type: 'item', label: 'Visualizer — S152', icon: ImageIcon, moduleId: 'visualizer-coming-soon', comingSoon: true },
