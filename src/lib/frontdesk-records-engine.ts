@@ -518,7 +518,7 @@ export function flagOverdueCustody(entityCode: string, nowISO_?: string): FlagOv
       departmentId: null,
       priority: 'high',
       category: 'general',
-      dueDate: r.dueBackAt,
+      dueDate: r.dueBackAt ?? null,
       tags: [`custody-overdue:${r.id}`],
       entityId: r.entityId,
     });
