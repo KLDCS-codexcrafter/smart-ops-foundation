@@ -28,6 +28,8 @@ import { StorefrontSavedCartsPage } from './storefront/StorefrontSavedCartsPage'
 import { StorefrontOrdersPage } from './storefront/StorefrontOrdersPage';
 import { StorefrontQuotePage } from './storefront/StorefrontQuotePage';
 import { StorefrontComparePage } from './storefront/StorefrontComparePage';
+import { VisualizerPage } from './visualizer/VisualizerPage';
+import { StoreStatsPage } from './visualizer/StoreStatsPage';
 import type { WebStoreXModule } from './WebStoreXSidebar.types';
 
 function ComingSoon({ label }: { label: string }): JSX.Element {
