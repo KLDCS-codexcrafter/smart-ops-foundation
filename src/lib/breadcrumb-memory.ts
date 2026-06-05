@@ -69,7 +69,7 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'eximx':           '/erp/eximx',
   'docvault':        '/erp/docvault',
   'taskflow':        '/erp/taskflow',
-  'unicomm':         '/erp/unicomm',
+  'ecomx':           '/erp/ecomx',  // S153 · DP-EC-1 rename · 4-point ceremony
   'webstorex':       '/erp/webstorex',  // S152.T3 · S149 4th registration point missed · founder PV catch #4 (entry confirmed present; ceremony documented in src/lib/card-context-relay.ts CARD_BASE_ROUTES canonical mirror)
   'comply360':       '/erp/comply360',
   'vendor-portal':   '/erp/vendor-portal',
