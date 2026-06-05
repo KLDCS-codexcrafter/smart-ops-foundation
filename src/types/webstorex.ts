@@ -238,3 +238,48 @@ export const wsVoucherEntriesKey = (e: string): string => `ws_voucher_entries_${
 export const wsCreditEntriesKey  = (e: string): string => `ws_credit_entries_${e}`;
 export const wsCampaignsKey    = (e: string): string => `ws_campaigns_${e}`;
 export const wsTestimonialsKey = (e: string): string => `ws_testimonials_${e}`;
+
+// ─── S151 · Storefront + Orders · DP-WS-3/8/19/22 ───────────────────
+export interface WsCartLine {
+  storeItemId: string; variantId?: string | null;
+  qty: number;                                  // ≥1 · MOQ enforced at checkout
+}
+
+export interface WsSavedCart {                  // DP-WS-19.6
+  id: string; entityId: string;
+  partyId?: string | null;                      // assisted mode customer
+  name: string;                                 // e.g. "Sharma Traders monthly"
+  lines: WsCartLine[];
+  createdAt: string; updatedAt: string; createdByUserId: string;
+}
+
+export interface WsStoreOrder {                 // LINK + SNAPSHOT · never the order itself (DP-WS-3)
+  id: string; entityId: string;
+  soVoucherId: string; soVoucherNo: string;     // THE order = the voucher
+  partyId: string; partyName: string;
+  evaluation: CartEvaluation;                   // priced snapshot at commit
+  couponSchemeId?: string | null;
+  pointsRedeemed: number; voucherCodeUsed?: string | null; creditRedeemed: number;
+  paymentLinkRef?: string | null;               // ReceivX attach · [JWT] capture
+  placedVia: 'storefront' | 'quick_order' | 'reorder';
+  createdAt: string; createdByUserId: string;
+}
+
+export interface WsQuoteRequest {               // DP-WS-19.2
+  id: string; entityId: string;
+  quotationVoucherId: string; quotationVoucherNo: string;
+  partyId: string; partyName: string;
+  lines: WsCartLine[];
+  note?: string | null;
+  createdAt: string; createdByUserId: string;
+}
+
+export interface QuickOrderParseResult {        // DP-WS-19.1
+  lines: WsCartLine[];
+  unknownSkus: string[];
+  invalidRows: string[];
+}
+
+export const wsSavedCartsKey   = (e: string): string => `ws_saved_carts_${e}`;
+export const wsStoreOrdersKey  = (e: string): string => `ws_store_orders_${e}`;
+export const wsQuoteRequestsKey = (e: string): string => `ws_quote_requests_${e}`;
