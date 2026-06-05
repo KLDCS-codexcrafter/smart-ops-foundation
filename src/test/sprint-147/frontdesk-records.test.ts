@@ -337,7 +337,7 @@ describe('S147 · Audit + Registers', () => {
     createInwardMail(E, { ...CTX, kind: 'letter', description: 'A',
       toEmployeeId: 'e1', toEmployeeName: 'Alice' });
     const trail = readAuditTrail(E);
-    expect(trail.some((t) => t.entityType === 'frontdesk_event' && t.action === 'create')).toBe(true);
+    expect(trail.some((t) => t.entity_type === 'frontdesk_event' && t.action === 'create')).toBe(true);
   });
 
   it('audit emitted on custody return', () => {
@@ -345,7 +345,7 @@ describe('S147 · Audit + Registers', () => {
     const r = issueAsset(E, { ...CTX, assetRefId: 'a-1', employeeId: 'e1', employeeName: 'A' });
     returnAsset(E, r.id);
     const trail = readAuditTrail(E);
-    expect(trail.filter((t) => t.entityType === 'frontdesk_event').length).toBeGreaterThanOrEqual(2);
+    expect(trail.filter((t) => t.entity_type === 'frontdesk_event').length).toBeGreaterThanOrEqual(2);
   });
 
   it('registers: S146 banked SHA c06202c9', () => {
