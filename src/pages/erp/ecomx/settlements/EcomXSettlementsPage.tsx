@@ -12,7 +12,7 @@ import {
   parseSettlementFile, commitSettlementImport, listSettlementRows, getTaxCreditSummary,
 } from '@/lib/ecomx-recon-engine';
 import { Button } from '@/components/ui/button';
-import type { EcParseReport, EcSettlementColumnKey } from '@/types/ecomx';
+import type { EcParseReport } from '@/types/ecomx';
 import { exportEcomxCsv } from '../lib/ecomx-csv';
 
 export function EcomXSettlementsPage(): JSX.Element {
