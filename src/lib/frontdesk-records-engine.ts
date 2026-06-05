@@ -28,6 +28,8 @@ import { gateEntriesKey, type GateEntry } from '@/types/gate-entry';
 import {
   fdCustodyKey,
   fdMailKey,
+  fdMailSeqInKey,
+  fdMailSeqOutKey,
   type AssetCustodyRecord,
   type DispatchMode,
   type MailDirection,
@@ -35,6 +37,7 @@ import {
   type MailKind,
   type ReceptionDiaryEntry,
 } from '@/types/frontdesk';
+
 
 // ─── storage helpers ─────────────────────────────────────────────────
 function readJSON<T>(key: string, fallback: T): T {
