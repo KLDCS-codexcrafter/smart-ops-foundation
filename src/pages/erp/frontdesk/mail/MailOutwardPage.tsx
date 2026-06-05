@@ -1,14 +1,16 @@
 /**
  * @file        src/pages/erp/frontdesk/mail/MailOutwardPage.tsx
- * @sprint      Sprint 147 · T-FrontDesk-A6F.3 · Block 4 · Mail Room — Outward
+ * @sprint      Sprint 147 + S148.T1 hotfix · Mail Room — Outward (TDL-parity UI)
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import {
   createOutwardMail, markSent, confirmDelivery, getUnconfirmedOutward, listMail,
+  backfillMailNumbers,
 } from '@/lib/frontdesk-records-engine';
 import type { DispatchMode, MailItem, MailKind } from '@/types/frontdesk';
+import { MailEditDialog } from './MailInwardPage';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,27 +20,57 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Pencil, Printer, FileDown, Hash } from 'lucide-react';
 
 const MODES: { value: DispatchMode; label: string }[] = [
   { value: 'rpad', label: 'RPAD' }, { value: 'speed_post', label: 'Speed Post' },
   { value: 'courier', label: 'Courier' }, { value: 'hand_delivery', label: 'Hand Delivery' },
 ];
 
+// S148.T1 · CSV column shape (asserted in tests)
+export const MAIL_OUTWARD_CSV_COLUMNS = [
+  'Mail No', 'Created', 'Kind', 'Description', 'Recipient', 'Mode', 'Status', 'Proof',
+] as const;
+
+function firstOfMonth(): string {
+  const d = new Date(); d.setUTCDate(1);
+  return d.toISOString().slice(0, 10);
+}
+function todayISO(): string { return new Date().toISOString().slice(0, 10); }
+function csvEscape(s: string | number | null | undefined): string {
+  const v = s == null ? '' : String(s);
+  return /[",\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v;
+}
+
 export function MailOutwardPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const user = useCurrentUser();
   const [openCreate, setOpenCreate] = useState(false);
   const [sendTarget, setSendTarget] = useState<MailItem | null>(null);
+  const [editTarget, setEditTarget] = useState<MailItem | null>(null);
   const [mode, setMode] = useState<DispatchMode>('courier');
+  const [search, setSearch] = useState('');
+  const [from, setFrom] = useState<string>(firstOfMonth());
+  const [to, setTo] = useState<string>(todayISO());
 
-  const compute = useCallback((): MailItem[] => listMail(entityCode, { direction: 'outward' }),
-    [entityCode]);
+  const compute = useCallback((): MailItem[] => {
+    const fromIso = from ? `${from}T00:00:00.000Z` : undefined;
+    const toIso = to ? `${to}T23:59:59.999Z` : undefined;
+    const items = listMail(entityCode, { direction: 'outward', dateFromISO: fromIso, dateToISO: toIso });
+    const needle = search.trim().toLowerCase();
+    return needle
+      ? items.filter((m) =>
+          (m.mailNo ?? '').toLowerCase().includes(needle) ||
+          m.description.toLowerCase().includes(needle) ||
+          (m.toText ?? '').toLowerCase().includes(needle))
+      : items;
+  }, [entityCode, search, from, to]);
+
   const [rows, setRows] = useState<MailItem[]>(() => compute());
   const reload = useCallback(() => setRows(compute()), [compute]);
   useEffect(() => { reload(); }, [reload]);
 
-  const ageing = getUnconfirmedOutward(entityCode);
+  const ageing = useMemo(() => getUnconfirmedOutward(entityCode), [entityCode, rows]);
 
   function statusBadge(m: MailItem): JSX.Element {
     if (m.deliveryConfirmed) return <Badge variant="outline">delivered</Badge>;
@@ -60,20 +92,77 @@ export function MailOutwardPage(): JSX.Element {
     catch (e) { toast.error((e as Error).message); }
   }
 
+  function handleAssignNumbers(): void {
+    try {
+      const n = backfillMailNumbers(entityCode, user?.id ?? 'reception');
+      toast.success(n > 0 ? `Assigned ${n} mail numbers` : 'All mail already numbered');
+      reload();
+    } catch (e) { toast.error((e as Error).message); }
+  }
+
+  function exportCSV(): void {
+    const header = MAIL_OUTWARD_CSV_COLUMNS.join(',');
+    const lines = rows.map((m) => {
+      const ageRow = ageing.find((a) => a.mail.id === m.id);
+      return [
+        m.mailNo ?? '',
+        new Date(m.createdAt).toLocaleDateString('en-IN'),
+        m.kind,
+        m.description,
+        m.toText ?? m.toPartyId ?? '',
+        m.dispatchMode ?? '',
+        m.deliveryConfirmed ? 'delivered' : (m.sentAt ? 'sent' : 'pending'),
+        ageRow?.missingProofWarn ? 'MISSING' : (m.proofOfDispatchDocId ? 'attached' : ''),
+      ].map(csvEscape).join(',');
+    });
+    const blob = new Blob([[header, ...lines].join('\n')], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `mail-outward-${from}-${to}.csv`; a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4 print:p-2">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between print:hidden">
           <CardTitle>Outward Mail · {ageing.length} unconfirmed</CardTitle>
-          <Button onClick={() => setOpenCreate(true)}>New outward</Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={handleAssignNumbers}>
+              <Hash className="h-3 w-3 mr-1" /> Assign numbers
+            </Button>
+            <Button variant="outline" size="sm" onClick={exportCSV}>
+              <FileDown className="h-3 w-3 mr-1" /> CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => window.print()}>
+              <Printer className="h-3 w-3 mr-1" /> Print
+            </Button>
+            <Button onClick={() => setOpenCreate(true)}>New outward</Button>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          <div className="flex flex-wrap items-end gap-3 print:hidden">
+            <div>
+              <Label className="text-xs">From</Label>
+              <Input type="date" value={from} onChange={(e) => setFrom(e.target.value)} className="h-8 w-40" />
+            </div>
+            <div>
+              <Label className="text-xs">To</Label>
+              <Input type="date" value={to} onChange={(e) => setTo(e.target.value)} className="h-8 w-40" />
+            </div>
+            <div className="flex-1 min-w-[200px]">
+              <Label className="text-xs">Search</Label>
+              <Input value={search} onChange={(e) => setSearch(e.target.value)}
+                placeholder="mail no / description / recipient" className="h-8" />
+            </div>
+          </div>
           {rows.length === 0 ? (
-            <div className="text-sm text-muted-foreground p-8 text-center">No outward mail.</div>
+            <div className="text-sm text-muted-foreground p-8 text-center">No outward mail in range.</div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Mail No</TableHead>
                   <TableHead>Created</TableHead><TableHead>Kind</TableHead>
                   <TableHead>Description</TableHead><TableHead>Recipient</TableHead>
                   <TableHead>Mode</TableHead><TableHead>Status</TableHead>
@@ -86,6 +175,7 @@ export function MailOutwardPage(): JSX.Element {
                   const ageRow = ageing.find((a) => a.mail.id === m.id);
                   return (
                     <TableRow key={m.id}>
+                      <TableCell className="font-mono text-xs">{m.mailNo ?? '—'}</TableCell>
                       <TableCell className="font-mono text-xs">{new Date(m.createdAt).toLocaleDateString('en-IN')}</TableCell>
                       <TableCell><Badge variant="outline">{m.kind}</Badge></TableCell>
                       <TableCell className="text-sm">{m.description}</TableCell>
@@ -104,12 +194,15 @@ export function MailOutwardPage(): JSX.Element {
                           </Badge>
                         ) : (m.proofOfDispatchDocId ? <Badge variant="outline">attached</Badge> : '—')}
                       </TableCell>
-                      <TableCell className="text-right space-x-2">
+                      <TableCell className="text-right space-x-1 print:hidden">
+                        <Button size="sm" variant="ghost" onClick={() => setEditTarget(m)} title="Edit descriptive fields">
+                          <Pencil className="h-3 w-3" />
+                        </Button>
                         {!m.sentAt && (
-                          <Button size="sm" variant="outline" onClick={() => setSendTarget(m)}>Mark sent</Button>
+                          <Button size="sm" variant="outline" onClick={() => setSendTarget(m)}>Sent</Button>
                         )}
                         {m.sentAt && !m.deliveryConfirmed && (
-                          <Button size="sm" variant="outline" onClick={() => handleConfirm(m)}>Confirm delivery</Button>
+                          <Button size="sm" variant="outline" onClick={() => handleConfirm(m)}>Confirm</Button>
                         )}
                       </TableCell>
                     </TableRow>
@@ -124,6 +217,13 @@ export function MailOutwardPage(): JSX.Element {
       <OutwardCreateDialog
         open={openCreate} onClose={() => { setOpenCreate(false); reload(); }}
         entityCode={entityCode} userId={user?.id ?? 'reception'}
+      />
+
+      <MailEditDialog
+        target={editTarget}
+        onClose={() => { setEditTarget(null); reload(); }}
+        entityCode={entityCode}
+        userId={user?.id ?? 'reception'}
       />
 
       <Dialog open={!!sendTarget} onOpenChange={(v) => { if (!v) setSendTarget(null); }}>
