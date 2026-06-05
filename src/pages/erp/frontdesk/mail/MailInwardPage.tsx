@@ -31,7 +31,6 @@ const KINDS: { value: MailKind; label: string }[] = [
 
 import { MailEditDialog } from './mail-shared';
 import { MAIL_INWARD_CSV_COLUMNS } from './mail-constants';
-export { MAIL_INWARD_CSV_COLUMNS, MAIL_EDITABLE_KEYS } from './mail-constants';
 
 
 function firstOfMonth(): string {
