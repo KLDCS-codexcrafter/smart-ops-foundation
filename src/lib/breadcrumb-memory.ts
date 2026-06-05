@@ -70,7 +70,7 @@ export const CARD_BASE_ROUTES: Record<CardId, string> = {
   'docvault':        '/erp/docvault',
   'taskflow':        '/erp/taskflow',
   'unicomm':         '/erp/unicomm',
-  'webstorex':       '/erp/webstorex',
+  'webstorex':       '/erp/webstorex',  // S152.T3 · S149 4th registration point missed · founder PV catch #4 (entry confirmed present; ceremony documented in src/lib/card-context-relay.ts CARD_BASE_ROUTES canonical mirror)
   'comply360':       '/erp/comply360',
   'vendor-portal':   '/erp/vendor-portal',
   'fpa-planning':    '/erp/fpa-planning',  // Sprint 116 · T-Phase-7.D.0.1 · Phase 7 opener · new card landing
@@ -89,6 +89,12 @@ export const LEGACY_CARD_ROUTE_ALIASES: Record<string, string> = {
 
 export function buildCardRoute(cardId: CardId): string {
   const base = CARD_BASE_ROUTES[cardId] ?? LEGACY_CARD_ROUTE_ALIASES[cardId as string];
+  if (!base) {
+    // S152.T3 · defensive: never navigate(undefined) silently — log + safe fallback.
+    // eslint-disable-next-line no-console
+    console.error(`[breadcrumb-memory] buildCardRoute: no CARD_BASE_ROUTES entry for cardId="${cardId}". 4-point registration ceremony (catalog + seed + role-default + route-map) violated.`);
+    return '/';
+  }
   const mod = recallModule(cardId);
   return mod ? `${base}#${mod}` : base;
 }
