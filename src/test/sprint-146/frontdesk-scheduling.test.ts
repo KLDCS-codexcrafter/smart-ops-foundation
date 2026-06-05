@@ -371,8 +371,10 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
       expect(SIBLINGS.length).toBeGreaterThanOrEqual(215);
     });
 
-    it('NO S148 entry exists (arc-forward guard, updated at S147)', () => {
-      expect(SPRINTS.find((s) => s.sprintNumber === 148)).toBeUndefined();
+    it('S148 entry exists (arc-forward guard updated post-S147)', () => {
+      const s148 = SPRINTS.find((s) => s.sprintNumber === 148);
+      expect(s148).toBeTruthy();
+      expect(s148?.code).toBe('T-ReceivX-CF.1');
     });
   });
 
