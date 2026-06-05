@@ -2,7 +2,7 @@
  * @file        src/pages/erp/frontdesk/rooms/MeetingRoomsPage.tsx
  * @sprint      Sprint 146 · T-FrontDesk-A6F.2 · Block 4 · Room Board + CRUD.
  */
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import {
