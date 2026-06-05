@@ -882,14 +882,22 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['frontdesk-scheduling-engine'],
     bankDate: '2026-06-05', provenance: 'CONFIRMED',
   },
-  // 🏁 Sprint 147 T-FrontDesk-A6F.3 · 🏁 FRONTDESK ARC CLOSE · Pillar A.6-F · Mail Room + Asset Custody + Reception Diary + gate-entry bridge · DP-FD-4 + DP-FD-9 + DP-FD-15 + DP-FD-16 · inward mail register with TF-29a acknowledgment (addressee identity check + reception-override recorded) + ageing board · outward register with mark-sent + proof-of-dispatch (rpad/speed_post WARN when proof missing >2 days) + confirm-delivery + unconfirmed-ageing · gift register (giver + declaredBy + approxValue mandatory when kind=gift) · Asset Custody (assetRefId READ-ONLY check vs asset-master · one OPEN custody per asset · photo ≤1MB · overdue detection injectable-now · flagOverdueCustody spawns TaskFlow task tag custody-overdue:<recordId> assignee=holder idempotent) · Reception Diary (FD-16 COMPUTED · never stored · visitors/mail/custody/tomorrow appointments digest) · Gate bridge (linkVisitorToGateEntry · READ-ONLY gate-entry check · updates visitor.gateEntryRef via frontdesk-engine additive update) · 1 NEW SIBLING frontdesk-records-engine · §H + dispatch gate types (gate-entry/gate-pass/weighbridge) + asset masters (asset-master/fixed-asset/asset-tag) + Comply360 + approval-workflow + push-notification-bridge + taskflow files ALL 0-DIFF · ID-CAPTURE CANON scopes to VISITOR fields only (mail.notes free-text 12-digit string does NOT throw — explicit boundary test) · sidebar items carry ZERO requiredCards (S146.T2 parity guard) · headSha TBD_AT_BANK
+  // 🏁 Sprint 147 T-FrontDesk-A6F.3 · 🏁 FRONTDESK ARC CLOSE · Pillar A.6-F · Mail Room + Asset Custody + Reception Diary + gate-entry bridge · DP-FD-4 + DP-FD-9 + DP-FD-15 + DP-FD-16 · headSha 8764b8f1
   {
     sprintNumber: 147, code: 'T-FrontDesk-A6F.3', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'c06202c9', loc: 1500,
+    headSha: '8764b8f1', predecessorSha: 'c06202c9', loc: 1500,
     newSiblings: ['frontdesk-records-engine'],
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 148 T-ReceivX-CF.1 · Collections Follow-Up (append-only · Today board · on-open prompt · Planned Reminders · Last-3) + Mail TDL-Parity Rider (mailNo IN-/OUT-NNNN per-entity per-direction · period filter · universal search · Print/CSV · immutable-field edit guards) + Contact Book Depth Rider (PartyContact CRUD · one isPrimary · greetings · Address Book report exploding party→contact rows · envelope M/S. + Kind Attn + From-toggle · label cm + A4 grid math) · DP-RX-1 delta canon: receivx-engine.ts + receivx.ts types 0-DIFF (one documented additive write rides existing task save path: last_contact_at/channel/next_action_date) · DP-RX-2 APPEND-ONLY: no edit · no bulk delete · voidFollowUp(reason) sole correction · DP-RX-3 once-per-day prompt · 1 NEW SIBLING receivx-followup-engine · §H 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 148, code: 'T-ReceivX-CF.1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '8764b8f1', loc: 1250,
+    newSiblings: ['receivx-followup-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
+
 
 
 

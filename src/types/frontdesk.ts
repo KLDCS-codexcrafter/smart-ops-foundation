@@ -150,6 +150,8 @@ export type DispatchMode = 'rpad' | 'speed_post' | 'courier' | 'hand_delivery';
 
 export interface MailItem {
   id: string; entityId: string;
+  /** S148 Rider 1b · TDL mailNo · IN-/OUT- + 4-digit per-entity per-direction sequence · assigned at create · backfillable */
+  mailNo?: string | null;
   direction: MailDirection;
   kind: MailKind;
   description: string;
@@ -177,6 +179,7 @@ export interface MailItem {
   notes?: string | null;
   createdAt: string; createdByUserId: string; updatedAt: string;
 }
+
 
 export type CustodyStatus = 'issued' | 'returned' | 'overdue';
 
