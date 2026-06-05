@@ -843,3 +843,88 @@ export function markOrderReturned(entityCode: string, ecOrderId: string): EcOrde
   return all[idx];
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// S155 · TWO PERMITTED ADDITIVE EXPORTS (existing 20 exports 0-DIFF above)
+// DP-EC-11 · Packing Evidence — METADATA ONLY · binary clip NEVER persisted
+// to localStorage (downloaded to the user's machine at capture time).
+// In-app cloud video storage is a named [JWT] P2BB seam.
+// ═══════════════════════════════════════════════════════════════════════
+import type { EcPackingEvidence } from '@/types/ecomx';
+import { ecPackingEvidenceKey } from '@/types/ecomx';
+import { createDocument as docvaultCreate } from '@/lib/docvault-engine';
+
+export interface RecordPackingEvidenceInput {
+  ecOrderId: string;
+  fileName: string;
+  durationSec: number | null;
+  sizeBytes: number;
+  capturedVia: 'camera' | 'file_upload';
+  note: string;
+  uploadedBy: string;
+  originatingDepartmentId: string;
+}
+
+export function recordPackingEvidence(
+  entityCode: string,
+  input: RecordPackingEvidenceInput,
+  nowISO?: string,
+): EcPackingEvidence {
+  const order = ls<EcOrder>(ecOrdersKey(entityCode)).find((o) => o.id === input.ecOrderId);
+  if (!order) throw new Error(`EcOrder not found: ${input.ecOrderId}`);
+  const mp = listMarketplaces(entityCode).find((m) => m.id === order.marketplaceId);
+  const mpName = mp?.name ?? order.marketplaceId;
+  const ts = nowIso(nowISO);
+  // DocVault metadata document — file_url intentionally empty (no binary persisted).
+  // [JWT] P2BB · in-app cloud video storage — replace file_url with CDN URL.
+  const doc = docvaultCreate(
+    entityCode,
+    {
+      entity_id: entityCode,
+      title: `Packing evidence · ${mpName} · ${order.marketplaceOrderId}`,
+      description: input.note || undefined,
+      document_type: 'other',
+      tags: { custom_tags: ['ecomx', 'packing-evidence', order.marketplaceId] },
+      originating_department_id: input.originatingDepartmentId,
+      project_id: null, customer_id: null, vendor_id: null,
+      equipment_id: null, nc_id: null, work_order_id: null,
+    },
+    {
+      version_no: '1',
+      file_url: '',                       // metadata only — no binary
+      file_size_bytes: input.sizeBytes,
+      uploaded_at: ts,
+      uploaded_by: input.uploadedBy,
+    },
+    input.uploadedBy,
+  );
+  const row: EcPackingEvidence = {
+    id: newId('ecpe'),
+    ecOrderId: order.id,
+    marketplaceId: order.marketplaceId,
+    marketplaceOrderId: order.marketplaceOrderId,
+    docVaultDocumentId: doc.id,
+    fileName: input.fileName,
+    durationSec: input.durationSec,
+    sizeBytes: input.sizeBytes,
+    capturedVia: input.capturedVia,
+    note: input.note,
+    createdAt: ts,
+  };
+  const all = ls<EcPackingEvidence>(ecPackingEvidenceKey(entityCode));
+  all.push(row);
+  ss(ecPackingEvidenceKey(entityCode), all);
+  safeAudit(entityCode, 'create', row.id,
+    `EcomX packing evidence · ${order.marketplaceOrderId}`,
+    null, row as unknown as Record<string, unknown>);
+  return row;
+}
+
+export function listPackingEvidence(
+  entityCode: string,
+  ecOrderId?: string,
+): EcPackingEvidence[] {
+  const all = ls<EcPackingEvidence>(ecPackingEvidenceKey(entityCode));
+  return ecOrderId ? all.filter((r) => r.ecOrderId === ecOrderId) : all;
+}
+
+
