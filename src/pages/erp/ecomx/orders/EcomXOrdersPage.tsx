@@ -115,6 +115,7 @@ export function EcomXOrdersPage(): JSX.Element {
                   <th className="text-left">State</th>
                   <th className="text-right">Gross ₹</th>
                   <th className="text-left">Status</th>
+                  <th className="text-left">Evidence</th>
                   {tab === 'parked' && <th className="text-left">Resolve → party</th>}
                 </tr>
               </thead>
@@ -129,6 +130,17 @@ export function EcomXOrdersPage(): JSX.Element {
                     <td>{o.endCustomerState || '—'}</td>
                     <td className="text-right font-mono">{o.grossAmount.toFixed(2)}</td>
                     <td>{o.status}</td>
+                    <td>
+                      <button
+                        type="button"
+                        onClick={() => onAttachClick(o.id)}
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md border border-border text-xs hover:bg-accent"
+                        title="Attach packing evidence (metadata only)"
+                      >
+                        <Paperclip className="h-3 w-3" />
+                        <span className="font-mono">{evidenceByOrder.get(o.id) ?? 0}</span>
+                      </button>
+                    </td>
                     {tab === 'parked' && (
                       <td>
                         <select
