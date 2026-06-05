@@ -7,6 +7,8 @@
 import { describe, it, expect } from 'vitest';
 import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { seedDemoEntitlements } from '@/lib/card-entitlement-engine';
+import { buildCardRoute } from '@/lib/breadcrumb-memory';
+import type { CardId } from '@/types/card-entitlement';
 
 const CONFIG_DIR = 'src/apps/erp/configs';
 
@@ -133,6 +135,37 @@ describe('S152.T2 · Active-card ⇒ seed invariant (enumerate-or-fail · founde
     expect(syntheticActive.has('synthetic-not-in-seed')).toBe(true);
     const missing = [...syntheticActive].filter((c) => !seeded.has(c));
     expect(missing).toEqual(['synthetic-not-in-seed']);
+  });
+});
+
+// ─── S152.T3 · 4-point registration ceremony invariant (canonical) ──────────
+// The 4 registration points for any active card are: (1) applications.ts catalog,
+// (2) seedDemoEntitlements, (3) ROLE_DEFAULT_CARDS, (4) CARD_BASE_ROUTES route map.
+// CardTile → buildCardRoute() → CARD_BASE_ROUTES; a missing entry resolved to
+// undefined → navigate(undefined) silent no-op (founder PV catch #4 on webstorex).
+// This invariant closes point #4 mechanically.
+
+describe('S152.T3 · 4-point ceremony · buildCardRoute coverage (founder-PV catch #4)', () => {
+  const appsSource = readFileSync(APPLICATIONS_FILE, 'utf-8');
+  const activeIds = extractActiveCardIdsFromApplications(appsSource);
+
+  it('S152.T3 · buildCardRoute("webstorex") returns "/erp/webstorex"', () => {
+    expect(buildCardRoute('webstorex' as CardId)).toBe('/erp/webstorex');
+  });
+
+  it('S152.T3 · every active card in applications.ts resolves to a defined, non-empty route starting with "/"', () => {
+    expect(activeIds.size).toBeGreaterThan(0);
+    const broken: string[] = [];
+    for (const id of activeIds) {
+      const route = buildCardRoute(id as CardId);
+      if (!route || typeof route !== 'string' || !route.startsWith('/') || route === '/') {
+        broken.push(`${id}→${String(route)}`);
+      }
+    }
+    expect(
+      broken,
+      `Active cards with no CARD_BASE_ROUTES entry (point #4 of the 4-point ceremony missed): ${broken.join(', ')}. Add to CARD_BASE_ROUTES in src/lib/breadcrumb-memory.ts.`,
+    ).toEqual([]);
   });
 });
 
