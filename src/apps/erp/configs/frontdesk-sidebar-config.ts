@@ -9,7 +9,7 @@
  */
 import {
   Home, Users, UserPlus, LogIn, BookUser, ShieldAlert, ClipboardList,
-  DoorOpen, CalendarRange, Briefcase, Mail, Inbox, Send, Package, ClipboardCheck,
+  DoorOpen, CalendarRange, Briefcase, Mail, Inbox, Send, Package, ClipboardCheck, NotebookText,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
