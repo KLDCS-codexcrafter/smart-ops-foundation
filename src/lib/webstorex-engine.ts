@@ -105,7 +105,7 @@ function getMasterOrThrow(itemRefId: string): { name: string; qty: number } {
 // ─── audit helper ────────────────────────────────────────────────────
 function audit(
   entityCode: string,
-  action: 'create' | 'update' | 'delete' | 'cancel',
+  action: 'create' | 'update' | 'cancel',
   recordId: string,
   recordLabel: string,
   before: Record<string, unknown> | null,
