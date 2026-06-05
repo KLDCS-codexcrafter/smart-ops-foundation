@@ -31,7 +31,6 @@ function toDateInput(d: Date): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 function toTimeInput(d: Date): string {
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
 }
 function combine(dateStr: string, timeStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number);
@@ -97,7 +96,7 @@ export function BookingCalendarPage(): JSX.Element {
         roomId: form.roomId,
         title: form.title,
         organizerEmployeeId: organizer.id,
-        organizerName: organizer.fullName ?? organizer.name ?? 'Unknown',
+        organizerName: organizer.displayName || organizer.empCode,
         visitorId: form.visitorId || null,
         startAt: combine(form.startDate, form.startTime),
         endAt: combine(form.startDate, form.endTime),
@@ -270,7 +269,7 @@ export function BookingCalendarPage(): JSX.Element {
                 <Select value={form.organizerId} onValueChange={(v) => setForm({ ...form, organizerId: v })}>
                   <SelectTrigger><SelectValue placeholder="Select employee" /></SelectTrigger>
                   <SelectContent>
-                    {employees.slice(0, 50).map((e) => <SelectItem key={e.id} value={e.id}>{e.fullName ?? e.name ?? e.empCode}</SelectItem>)}
+                    {employees.slice(0, 50).map((e) => <SelectItem key={e.id} value={e.id}>{e.displayName || e.empCode}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
