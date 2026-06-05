@@ -63,8 +63,14 @@ export function StorefrontHomePage({ onNavigate }: Props): JSX.Element {
         ) : items.map((it) => {
           const eff = getEffectivePrice(entityCode, it.id);
           const isOffer = eff.source !== 'list';
+          const inCompare = compare.has(it.id);
+          const onCompare = (e: React.MouseEvent): void => {
+            e.stopPropagation();
+            const r = compare.toggle(it.id);
+            if (r.full) toast.error(`Compare limit ${COMPARE_MAX}`);
+          };
           return (
-            <Card key={it.id} className="glass-card overflow-hidden hover:shadow-elevated transition-shadow">
+            <Card key={it.id} className="glass-card overflow-hidden hover:shadow-elevated transition-shadow relative">
               <button
                 type="button"
                 onClick={() => openItem(it.id)}
@@ -89,6 +95,14 @@ export function StorefrontHomePage({ onNavigate }: Props): JSX.Element {
                   {isOffer && <Badge variant="secondary" className="text-[10px]">{eff.source === 'campaign' ? 'Offer' : 'B2B'}</Badge>}
                 </div>
               </button>
+              <Button
+                size="icon" variant={inCompare ? 'default' : 'outline'}
+                className="absolute top-2 right-2 h-7 w-7"
+                onClick={onCompare}
+                aria-label={inCompare ? 'Remove from compare' : 'Add to compare'}
+              >
+                <GitCompare className="h-3 w-3" />
+              </Button>
             </Card>
           );
         })}
