@@ -83,7 +83,7 @@ function loadPartyGroup(partyId: string): string | null {
 
 // ─── audit ───────────────────────────────────────────────────────────
 function audit(
-  entityCode: string, action: 'create' | 'update' | 'delete',
+  entityCode: string, action: 'create' | 'update' | 'cancel',
   recordId: string, label: string,
   before: Record<string, unknown> | null, after: Record<string, unknown> | null,
   reason?: string,
@@ -143,7 +143,7 @@ export function deletePriceList(entityCode: string, id: string): void {
   const row = all.find(p => p.id === id);
   if (!row) return;
   savePriceLists(entityCode, all.filter(p => p.id !== id));
-  audit(entityCode, 'delete', id, `Price list ${row.name}`, row as unknown as Record<string, unknown>, null);
+  audit(entityCode, 'cancel', id, `Price list ${row.name}`, row as unknown as Record<string, unknown>, null);
 }
 
 /** Assign party to price list — moves from any prior list (audited). */
@@ -206,7 +206,7 @@ export function deleteCampaign(entityCode: string, id: string): void {
   const all = loadCampaigns(entityCode);
   const row = all.find(c => c.id === id); if (!row) return;
   saveCampaigns(entityCode, all.filter(c => c.id !== id));
-  audit(entityCode, 'delete', id, `Campaign ${row.name}`, row as unknown as Record<string, unknown>, null);
+  audit(entityCode, 'cancel', id, `Campaign ${row.name}`, row as unknown as Record<string, unknown>, null);
 }
 
 export function getActiveCampaign(entityCode: string, nowISO?: string): WsCampaign | null {
@@ -317,7 +317,7 @@ export function deleteScheme(entityCode: string, id: string): void {
   const all = loadSchemes(entityCode);
   const row = all.find(s => s.id === id); if (!row) return;
   saveSchemes(entityCode, all.filter(s => s.id !== id));
-  audit(entityCode, 'delete', id, `Scheme ${row.name}`, row as unknown as Record<string, unknown>, null);
+  audit(entityCode, 'cancel', id, `Scheme ${row.name}`, row as unknown as Record<string, unknown>, null);
 }
 
 // ─── cart evaluation ────────────────────────────────────────────────
@@ -748,7 +748,7 @@ export function deleteTestimonial(entityCode: string, id: string): void {
   const all = loadTestimonials(entityCode);
   const row = all.find(t => t.id === id); if (!row) return;
   saveTestimonials(entityCode, all.filter(t => t.id !== id));
-  audit(entityCode, 'delete', id, `Testimonial ${row.customerName}`, row as unknown as Record<string, unknown>, null);
+  audit(entityCode, 'cancel', id, `Testimonial ${row.customerName}`, row as unknown as Record<string, unknown>, null);
 }
 
 export function setTestimonialPublished(entityCode: string, id: string, isPublished: boolean): WsTestimonial {
@@ -760,5 +760,3 @@ export type { CartLineInput };
 // types are imported from '@/types/webstorex' — consumers do not need re-export here.
 // Engine ensures: no exported `updatePointEntry` / `updateVoucherEntry` / `updateCreditEntry`
 // (APPEND-ONLY canon · S148). Structural assertion lives in §N tests.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type _AppendOnlySurfaceMarker = SchemeType; // touch import to keep TS aware
