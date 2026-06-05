@@ -119,3 +119,33 @@ S152 initial close claimed green gates; repo-wide ESLint at audit showed the ban
 - Walls (tick grep) — `webstorex-engine.ts`, `webstorex-commerce-engine.ts`, `webstorex-order-engine.ts`, `webstorex-visualizer-engine.ts` ZERO-DIFF
 
 **New HEAD** — TBD_AT_BANK
+
+## S152.T3 hotfix · founder-PV catch #4 · 4-point registration ceremony (CANON)
+
+**Root cause** — `CardTile` → `buildCardRoute(id)` → `CARD_BASE_ROUTES[id]` in `src/lib/breadcrumb-memory.ts`. For `'webstorex'` the lookup resolved → `navigate(undefined)` silently no-op'd → tile click stayed on previous card. The `applications.ts` `route` field was correct but the tile never reads it; `buildCardRoute` is the source of truth.
+
+**Ceremony — STATED AS CANON (4 points, not 3)**
+1. `applications.ts` catalog entry (visibility on /erp/dashboard)
+2. `seedDemoEntitlements()` (S152.T2 invariant guards)
+3. `ROLE_DEFAULT_CARDS` (default access)
+4. `CARD_BASE_ROUTES` in `breadcrumb-memory.ts` (navigation target) ← **new at T3**
+
+Any active card missing any point = silent failure mode. The previous 3-step framing was incomplete.
+
+**T3 fix · `src/lib/breadcrumb-memory.ts:73`** — `'webstorex': '/erp/webstorex'` entry annotated with `S152.T3 · S149 4th registration point missed · founder PV catch #4`. Entry was already present (HK precedent: confirm-and-annotate rather than reintroduce) but the surrounding diagnostic was missing.
+
+**T3 fix · `src/lib/breadcrumb-memory.ts:90-100`** — `buildCardRoute` now defensively `console.error`s the violating `cardId` and returns `'/'` when no base resolves; eliminates the silent `navigate(undefined)` failure mode for all future cards.
+
+**T3 fix · `src/test/seed-entitlement-coverage.test.ts:137-167`** — New `describe('S152.T3 · 4-point ceremony · buildCardRoute coverage …')`:
+1. `buildCardRoute('webstorex') === '/erp/webstorex'` — direct assert.
+2. For every active card in `applications.ts`, `buildCardRoute(id)` returns a defined, non-empty string starting with `/` (and not the `'/'` fallback) — closes ceremony point #4 mechanically across all current + future active cards.
+
+**Founder-PV credit** — caught by founder on preview after T2 close (third PV screenshot); documented here per honesty rule. This is PV catch #4 in the S152 series; the bank holds (post-bank PV-fix · S146 precedent).
+
+**T3 GATES-LAST (real)**
+- TSC — 0 errors
+- ESLint repo-wide `--max-warnings 0` — clean (initial run flagged an unused eslint-disable directive on the new console.error; corrected by removing the directive since the rule did not fire)
+- Vitest scoped (seed-coverage + S151 + S152) — 3 files · 126 it() · 126 passed (34 + 52 + 40 · seed-coverage +2 from T3)
+- Walls (tick grep) — `webstorex-engine.ts`, `webstorex-commerce-engine.ts`, `webstorex-order-engine.ts`, `webstorex-visualizer-engine.ts` ZERO-DIFF
+
+**New HEAD** — TBD_AT_BANK
