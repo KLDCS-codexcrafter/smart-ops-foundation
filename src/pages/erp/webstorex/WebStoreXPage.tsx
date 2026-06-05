@@ -19,6 +19,14 @@ import { LoyaltyPage } from './commerce/LoyaltyPage';
 import { GiftVouchersPage } from './commerce/GiftVouchersPage';
 import { CampaignsPage } from './commerce/CampaignsPage';
 import { TestimonialsPage } from './commerce/TestimonialsPage';
+import { StorefrontHomePage } from './storefront/StorefrontHomePage';
+import { StorefrontProductPage } from './storefront/StorefrontProductPage';
+import { StorefrontCartPage } from './storefront/StorefrontCartPage';
+import { StorefrontCheckoutPage } from './storefront/StorefrontCheckoutPage';
+import { StorefrontQuickOrderPage } from './storefront/StorefrontQuickOrderPage';
+import { StorefrontSavedCartsPage } from './storefront/StorefrontSavedCartsPage';
+import { StorefrontOrdersPage } from './storefront/StorefrontOrdersPage';
+import { StorefrontQuotePage } from './storefront/StorefrontQuotePage';
 import type { WebStoreXModule } from './WebStoreXSidebar.types';
 
 function ComingSoon({ label }: { label: string }): JSX.Element {
@@ -52,7 +60,15 @@ export default function WebStoreXPage(): JSX.Element {
       case 'vouchers':     return <GiftVouchersPage />;
       case 'campaigns':    return <CampaignsPage />;
       case 'testimonials': return <TestimonialsPage />;
-      case 'storefront-coming-soon': return <ComingSoon label="Storefront — S151" />;
+      case 'storefront-home':       return <StorefrontHomePage onNavigate={setActive} />;
+      case 'storefront-product':    return <StorefrontProductPage onNavigate={setActive} />;
+      case 'storefront-cart':       return <StorefrontCartPage onNavigate={setActive} />;
+      case 'storefront-checkout':   return <StorefrontCheckoutPage onNavigate={setActive} />;
+      case 'storefront-quickorder': return <StorefrontQuickOrderPage onNavigate={setActive} />;
+      case 'storefront-saved':      return <StorefrontSavedCartsPage onNavigate={setActive} />;
+      case 'storefront-orders':     return <StorefrontOrdersPage onNavigate={setActive} />;
+      case 'storefront-quote':      return <StorefrontQuotePage onNavigate={setActive} />;
+      case 'storefront-coming-soon': return <ComingSoon label="Layered views — TBD" />;
       case 'visualizer-coming-soon': return <ComingSoon label="Visualizer — S152" />;
       default:             return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }

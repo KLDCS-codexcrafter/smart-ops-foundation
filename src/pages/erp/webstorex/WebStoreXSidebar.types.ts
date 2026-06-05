@@ -17,6 +17,15 @@ export type WebStoreXModule =
   | 'vouchers'
   | 'campaigns'
   | 'testimonials'
+  // S151 · Storefront + Orders
+  | 'storefront-home'
+  | 'storefront-product'
+  | 'storefront-cart'
+  | 'storefront-checkout'
+  | 'storefront-quickorder'
+  | 'storefront-saved'
+  | 'storefront-orders'
+  | 'storefront-quote'
   // Coming-soon panes
   | 'storefront-coming-soon'
   | 'visualizer-coming-soon';
