@@ -283,3 +283,39 @@ export interface QuickOrderParseResult {        // DP-WS-19.1
 export const wsSavedCartsKey   = (e: string): string => `ws_saved_carts_${e}`;
 export const wsStoreOrdersKey  = (e: string): string => `ws_store_orders_${e}`;
 export const wsQuoteRequestsKey = (e: string): string => `ws_quote_requests_${e}`;
+
+// ─── S152 · Visualizer + Stats · DP-WS-12 (product-agnostic) · arc closer
+export interface VisualizerPlacement {
+  storeItemId: string;
+  cutoutImageId: string;
+  x: number; y: number;             // canvas-space center
+  scale: number;                    // 1 = natural cutout pixels
+  rotationDeg: number;
+  flipped: boolean;
+}
+
+export interface VisualizerComposition {
+  id: string; entityId: string;
+  name: string;
+  roomPhotoDataUrl: string;         // ≤2MB · throw over
+  placements: VisualizerPlacement[];      // multi-product placement supported
+  // Reference-scale assist (DP-WS-12 · founder default-IN):
+  referenceLine?: {
+    x1: number; y1: number; x2: number; y2: number;
+    realLengthCm: number;           // user-stated, e.g. door = 213cm
+  } | null;
+  pxPerCm?: number | null;          // derived when referenceLine set
+  honestyLabel: true;               // literal true · label always rendered
+  createdAt: string; createdByUserId: string; updatedAt: string;
+}
+
+export interface StoreStats {
+  catalog: { total: number; published: number; draft: number; hidden: number; withVariants: number; withCutout: number };
+  orders: { count: number; totalPayable: number; byVia: { storefront: number; quick_order: number; reorder: number } };
+  topItems: { storeItemId: string; title: string; orderedQty: number }[];   // top 5
+  schemes: { schemeId: string; name: string; appliedCount: number }[];      // from order snapshots
+  loyalty: { totalEarned: number; totalRedeemed: number };
+  quotes: { count: number };
+}
+
+export const wsCompositionsKey = (e: string): string => `ws_compositions_${e}`;

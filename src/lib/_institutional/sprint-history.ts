@@ -913,8 +913,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🚀 Sprint 151 T-WebStoreX-A11.3 · WebStoreX Storefront + Orders (arc centerpiece) · DP-WS-3/8/19/22 · MOBILE-FIRST storefront · ONE-WRITE WALL: checkout creates REAL Sales Order voucher via existing useOrders.createOrder path (Quotation→SO precedent) · Request-a-Quote creates REAL Quotation voucher via useQuotations.createQuotation path · WsStoreOrder is a LINK + evaluation snapshot (NEVER source-of-truth) · SERVER-SIDE TRUTH: checkoutCart re-evaluates via evaluateCart at commit (client totals never trusted) · coupon usedCount commits ONLY at checkoutCart · loyalty earn + points/voucher/credit redemptions commit ONLY at checkoutCart via append-only ledgers · redemption-failure ABORTS atomically · Quick-Order Pad (text + CSV parse) · Saved Carts CRUD · reorder · Store Orders register w/ status mirror + payment-link attach · PWA rider (hand-rolled manifest + minimal SW · NO new dep) · preview ribbon on every storefront surface · NO fake payment capture · 1 NEW SIBLING webstorex-order-engine · webstorex-engine + webstorex-commerce-engine + receivx + salesx engines READ/CALL only · §H + walls 0-DIFF · types VERBATIM appended · 8 NEW storefront pages under WebStoreX shell · audit literal webstorex_event REUSED · headSha TBD_AT_BANK
   {
     sprintNumber: 151, code: 'T-WebStoreX-A11.3', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'f56afce2', loc: 1750,
+    headSha: '0dd18a09', predecessorSha: 'f56afce2', loc: 1750,
     newSiblings: ['webstorex-order-engine'],
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
+  // 🏁 Sprint 152 T-WebStoreX-A11.4 · WebStoreX Visualizer + Store Stats (ARC CLOSER) · DP-WS-12 (product-agnostic: machines · drones · robots · furniture · décor · wearables) · DP-WS-20/21/22 register handoff · 2D <canvas> overlay aid (NO new dep · NO AI try-on · NO 3D/AR — all named [JWT] P2BB+ seams) · §O HONESTY: permanent on-canvas label "Visual approximation — verify dimensions against site measurements" + honestyLabel:true literal on every composition · reference-scale assist (mark known distance → pxPerCm → suggestedScaleFor uses dimensionsCm.w to render true-width · no dims ⇒ null · never guessed) · dimensions chip honest (absent ⇒ "dimensions not on record") · multi-product placements (drag/pinch/rotate/flip) · saved compositions gallery · PNG export via toDataURL · items WITHOUT cutout image NEVER show Visualize button (asset discipline) · wearable preview-mode label variant · StoreStats aggregation (catalog partition · orders byVia · top-items · scheme appliedCount from snapshots · loyalty earned/redeemed · quote count) · 1 NEW SIBLING webstorex-visualizer-engine · webstorex-engine + webstorex-commerce-engine + webstorex-order-engine + ALL masters READ/CALL only · §H + walls 0-DIFF · types VERBATIM appended · 2 NEW pages (VisualizerPage + StoreStatsPage) · audit literal webstorex_event REUSED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 152, code: 'T-WebStoreX-A11.4', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '0dd18a09', loc: 1300,
+    newSiblings: ['webstorex-visualizer-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
