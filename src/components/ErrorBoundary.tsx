@@ -1,4 +1,5 @@
 import React from 'react';
+import { shouldAutoReloadOnce } from '@/lib/chunk-reload-helper';
 
 interface State { hasError: boolean; error?: Error; }
 
@@ -21,6 +22,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     // [JWT] POST /api/logs/error
     console.error('[ErrorBoundary]', error, info);
+    // S152.T4 · Block 4 — auto-reload-once on chunk-load failures (post-deploy
+    // self-heal). Flag in sessionStorage prevents reload loops.
+    if (typeof window !== 'undefined' && shouldAutoReloadOnce(error, window.sessionStorage)) {
+      window.location.reload();
+    }
   }
   render() {
     if (this.state.hasError) {
