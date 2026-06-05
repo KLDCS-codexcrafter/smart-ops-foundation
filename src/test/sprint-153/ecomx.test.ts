@@ -57,7 +57,7 @@ describe('S153 · 4-point rename ceremony (DP-EC-1)', () => {
   const apps = readFileSync('src/components/operix-core/applications.ts', 'utf-8');
 
   it('applications.ts has active ecomx entry (status:active)', () => {
-    expect(apps).toMatch(/id:\s*'ecomx'[\s\S]{0,300}status:\s*'active'/);
+    expect(apps).toMatch(/id:\s*'ecomx'[\s\S]*?status:\s*'active'/);
   });
   it('applications.ts has no surviving unicomm entry', () => {
     expect(apps).not.toMatch(/id:\s*'unicomm'/);

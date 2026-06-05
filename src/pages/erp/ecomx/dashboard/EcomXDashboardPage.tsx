@@ -8,10 +8,13 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function EcomXDashboardPage(): JSX.Element {
   const { entityCode } = useEntityCode();
+  const stats = useMemo(
+    () => entityCode ? getImportStats(entityCode) : { marketplacesActive: 0, listingsLive: 0, unmappedInbox: 0, ordersBooked: 0, parkedB2B: 0 },
+    [entityCode],
+  );
   if (!entityCode) {
     return <div className="p-6 text-sm text-muted-foreground">Select an entity to view EcomX dashboard.</div>;
   }
-  const stats = useMemo(() => getImportStats(entityCode), [entityCode]);
 
   const cards: Array<{ label: string; value: number }> = [
     { label: 'Marketplaces · Active', value: stats.marketplacesActive },
