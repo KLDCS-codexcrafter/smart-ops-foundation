@@ -42,6 +42,10 @@ export default function FrontDeskPage(): JSX.Element {
       case 'meeting-rooms':    return <MeetingRoomsPage onNavigate={setActive} />;
       case 'booking-calendar': return <BookingCalendarPage />;
       case 'executive-desk':   return <ExecutiveDeskPage />;
+      case 'mail-inward':      return <MailInwardPage />;
+      case 'mail-outward':     return <MailOutwardPage />;
+      case 'asset-custody':    return <AssetCustodyPage />;
+      case 'reception-diary':  return <ReceptionDiaryPage />;
       default:                 return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };
