@@ -39,9 +39,9 @@ function seedMaster(): void {
   ]));
 }
 function publishAll(): { shirt: string; mug: string; pen: string } {
-  const a = publishItem(ENT, { itemRefId: 'm-shirt', listPrice: 500, categoryId: null, brandId: null }, 'u-1');
-  const b = publishItem(ENT, { itemRefId: 'm-mug',   listPrice: 200, categoryId: null, brandId: null }, 'u-1');
-  const c = publishItem(ENT, { itemRefId: 'm-pen',   listPrice: 50,  categoryId: null, brandId: null }, 'u-1');
+  const a = publishItem(ENT, 'm-shirt', 'u-1', { listPrice: 500 });
+  const b = publishItem(ENT, 'm-mug',   'u-1', { listPrice: 200 });
+  const c = publishItem(ENT, 'm-pen',   'u-1', { listPrice: 50 });
   return { shirt: a.id, mug: b.id, pen: c.id };
 }
 function seedParty(id: string, group: string | null): void {
