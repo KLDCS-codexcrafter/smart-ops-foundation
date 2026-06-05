@@ -12,18 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 
-// S148.T1 · CSV column shape (asserted in tests)
-export const MAIL_INWARD_CSV_COLUMNS = [
-  'Mail No', 'Received', 'Kind', 'Description', 'Addressee', 'From', 'Status',
-] as const;
-export const MAIL_OUTWARD_CSV_COLUMNS = [
-  'Mail No', 'Created', 'Kind', 'Description', 'Recipient', 'Mode', 'Status', 'Proof',
-] as const;
-
-// S148.T1 · UI-level editable field allowlist (immutable facts disabled in the form)
-export const MAIL_EDITABLE_KEYS = [
-  'description', 'courierName', 'awbDocketNo', 'notes', 'fromText', 'toText',
-] as const;
+export { MAIL_INWARD_CSV_COLUMNS, MAIL_OUTWARD_CSV_COLUMNS, MAIL_EDITABLE_KEYS } from './mail-constants';
 
 export function MailEditDialog({ target, onClose, entityCode, userId }: {
   target: MailItem | null;
