@@ -184,3 +184,56 @@ $ NODE_OPTIONS="--max-old-space-size=7168" npx vitest run \
 
 **Walls unchanged.** §H + dispatch gate types + Comply360 + taskflow-engine
 internals: ZERO diff. S146 stays `TBD_AT_BANK`.
+
+---
+
+## S146.T2 · sidebar pattern-deviation hotfix
+
+FrontDesk sidebar deviated from the institutional sidebar pattern (sole user
+of per-item `requiredCards` across the entire repo — taskflow / comply360 /
+docvault / engineeringx / gateflow / store-hub / requestx / vendor-portal /
+fpa-planning / insightx / eximx all ship with zero per-item gating). Founder
+PV screenshot caught it twice (T0 close + T1 hotfix); reverted to pattern at
+T2. Role-default additions from T1 retained (correct for card-level access).
+
+**Root cause:** `frontdesk-sidebar-config.ts` declared `requiredCards: ['frontdesk']`
+on all 10 leaf items. Combined with `filterSidebarByMatrix` + a persisted
+profile whose entitlements list did not contain a matching active `frontdesk`
+CardEntitlement row, every item was filtered out → blank sidebar at runtime.
+Card-level access is already enforced at the dashboard layer; per-item gating
+was a deviation, not a defense-in-depth measure.
+
+**Fix:**
+1. Removed all `requiredCards` from `frontdesk-sidebar-config.ts` (10 entries
+   stripped · items keep id/type/label/icon/moduleId/keyboard).
+2. +2 it() in S146 suite:
+   (a) `filterSidebarByMatrix(frontdeskSidebarItems, <tenant_admin>, [])`
+       returns ALL items even with EMPTY entitlements;
+   (b) structural assertion: `frontdesk-sidebar-config` contains zero
+       `requiredCards` (pattern-parity guard).
+
+### T2 gates-last
+
+```
+$ npx tsc --noEmit
+(0 errors)
+
+$ npx eslint . --max-warnings 0
+(0 errors · 0 warnings · repo-wide)
+
+$ NODE_OPTIONS="--max-old-space-size=7168" npx vitest run \
+    src/test/sprint-144/ src/test/sprint-145/ src/test/sprint-146/
+ ✓ src/test/sprint-144/docvault-governance.test.ts (51 tests)
+ ✓ src/test/sprint-145/frontdesk.test.ts          (42 tests)
+ ✓ src/test/sprint-146/frontdesk-scheduling.test.ts (42 tests)
+ Test Files  3 passed (3)
+      Tests  135 passed (135)
+```
+
+**T2 files changed:**
+- edited `src/apps/erp/configs/frontdesk-sidebar-config.ts` (10 requiredCards stripped)
+- edited `src/test/sprint-146/frontdesk-scheduling.test.ts` (+2 it())
+- edited `audit_workspace/S146_close_evidence/close_summary.md` (this T2 section)
+
+**Walls unchanged.** §H + dispatch gate types + Comply360 + taskflow-engine
+internals: ZERO diff. S146 stays `TBD_AT_BANK`.
