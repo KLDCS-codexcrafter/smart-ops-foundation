@@ -106,7 +106,7 @@ export function MailInwardPage(): JSX.Element {
                     </TableCell>
                     <TableCell className="text-sm">
                       {m.kind === 'gift'
-                        ? (employees.find((e) => e.id === m.giftDeclaredByEmployeeId)?.name ?? m.giftDeclaredByEmployeeId ?? '—')
+                        ? (empOptions.find((e) => e.id === m.giftDeclaredByEmployeeId)?.name ?? m.giftDeclaredByEmployeeId ?? '—')
                         : (m.toEmployeeName ?? '—')}
                     </TableCell>
                     <TableCell className="text-sm">{m.fromText ?? m.fromPartyId ?? '—'}</TableCell>
