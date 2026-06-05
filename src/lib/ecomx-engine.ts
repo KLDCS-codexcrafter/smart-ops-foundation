@@ -853,6 +853,14 @@ import type { EcPackingEvidence } from '@/types/ecomx';
 import { ecPackingEvidenceKey } from '@/types/ecomx';
 import { createDocument as docvaultCreate } from '@/lib/docvault-engine';
 
+/**
+ * S155.T1 · DP-EC-11 honesty banner — rendered VERBATIM near the capture
+ * controls in the Orders evidence dialog. Asserted by sprint-155 evidence
+ * test (string-constant check).
+ */
+export const PACKING_EVIDENCE_HONESTY_BANNER =
+  'Clip saved to your downloads — keep it with your records. In-app cloud video storage is a Phase-2 upgrade.';
+
 export interface RecordPackingEvidenceInput {
   ecOrderId: string;
   fileName: string;
