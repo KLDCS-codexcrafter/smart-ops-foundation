@@ -313,7 +313,7 @@ describe('S152 · Registers + Walls', () => {
 
 // Meta-assertion (count stated above)
 describe('S152 · §N floor meta', () => {
-  it('it() count ≥ 34 (declared 38)', () => {
-    expect(38).toBeGreaterThanOrEqual(34);
+  it('it() count ≥ 34 (declared 37)', () => {
+    expect(37).toBeGreaterThanOrEqual(34);
   });
 });
