@@ -2,7 +2,7 @@
  * @file   src/test/sprint-151/webstorex-storefront.test.ts
  * @sprint Sprint 151 · T-WebStoreX-A11.3 · §N hard floor ≥36 it() · count stated below.
  *
- * COUNT: 42 it() blocks (floor 36 satisfied).
+ * COUNT: 47 it() blocks (floor 36 satisfied).
  * Covers: saved carts CRUD + qty guard · parseQuickOrder (text + CSV + variant SKU first +
  *         invalid + unknown) · checkoutCart ONE-WRITE WALL (REAL Order voucher · ordersKey
  *         shape preserved · synthetic discount line · free-goods zero-rate lines) ·
