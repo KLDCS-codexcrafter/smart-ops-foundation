@@ -40,8 +40,8 @@ import {
   listReturns, listSettlementRows, getTaxCreditSummary,
   upsertAllocation, listAllocations, buildStockExportRows,
 } from '@/lib/ecomx-recon-engine';
-import { ecOrdersKey, ecListingsKey } from '@/types/ecomx';
-import type { EcOrder, EcListing } from '@/types/ecomx';
+import { ecOrdersKey } from '@/types/ecomx';
+import type { EcOrder } from '@/types/ecomx';
 import { SIBLINGS } from '@/lib/_institutional/sibling-register';
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
 
@@ -57,8 +57,8 @@ function makeMpAndListing(): { mpId: string; storeItemId: string; listingId: str
   const mp = createMarketplace(ENT, { name: 'Amazon IN', type: 'amazon' });
   const pim = publishItem(ENT, 'm-pen', 'tester', { storeTitle: 'Pen' });
   const lst = createListing(ENT, {
-    marketplaceId: mp.id, marketplaceSku: 'AMZ-PEN-1',
-    kind: 'simple', storeItemId: pim.id, variantId: null, mrp: 10, sellingPrice: 9,
+    marketplaceId: mp.id, marketplaceSku: 'AMZ-PEN-1', title: 'Pen',
+    kind: 'simple', storeItemId: pim.id, variantId: null,
   });
   return { mpId: mp.id, storeItemId: pim.id, listingId: lst.id, sku: 'AMZ-PEN-1' };
 }
@@ -68,19 +68,19 @@ function injectEcOrder(mpId: string, mpOrderId: string, gross: number, dateISO =
   const o: EcOrder = {
     id: `eco-${mpOrderId}`,
     marketplaceId: mpId,
-    layer: 'b2c_consolidated',
     marketplaceOrderId: mpOrderId,
-    orderDate: dateISO,
-    status: 'booked',
-    partyId: 'p-b2c',
-    matchedPartyId: null,
+    importId: 'imp-1',
     soVoucherId: 'v-1',
     soDocNo: 'SO/0001',
-    grossAmount: gross,
-    lineCount: 1,
-    importId: 'imp-1',
+    orderDate: dateISO,
+    layer: 'b2c_consolidated',
     endCustomerName: '',
     endCustomerState: '',
+    buyerGstin: null,
+    matchedPartyId: null,
+    lineCount: 1,
+    grossAmount: gross,
+    status: 'booked',
     createdAt: new Date().toISOString(),
   };
   all.push(o);
@@ -88,7 +88,7 @@ function injectEcOrder(mpId: string, mpOrderId: string, gross: number, dateISO =
   return o;
 }
 
-const HEADERS = ['Order ID', 'Event Type', 'Gross', 'Commission', 'Fixed Fee', 'TDS', 'TCS', 'Net', 'Settlement Date'];
+// HEADERS list (CSV column headers used by makeRow + defaultColumnMap)
 function makeRow(orderId: string, ev: string, gross: number, commission: number, fee: number, tds: number, tcs: number, net: number, date = '2026-06-02'): Record<string, string> {
   return {
     'Order ID': orderId, 'Event Type': ev,
