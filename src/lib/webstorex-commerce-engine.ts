@@ -21,7 +21,7 @@
  * §H 0-DIFF: approval-workflow-engine · Comply360 · push-notification-bridge UNTOUCHED.
  */
 import { logAudit } from '@/lib/audit-trail-engine';
-import { listStoreItems, getStoreItem } from '@/lib/webstorex-engine';
+import { getStoreItem } from '@/lib/webstorex-engine';
 import type {
   WsPriceList, WsScheme, AppliedScheme, CartEvaluation,
   WsLoyaltyRule, WsPointsEntry, WsGiftVoucher, WsVoucherEntry,
