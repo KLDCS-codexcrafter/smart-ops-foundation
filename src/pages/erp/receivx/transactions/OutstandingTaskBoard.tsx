@@ -15,7 +15,10 @@ import {
   Select, SelectTrigger, SelectContent, SelectItem, SelectValue,
 } from '@/components/ui/select';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { RefreshCw, MessageCircle, Mail, CalendarClock, UserPlus } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { RefreshCw, MessageCircle, Mail, CalendarClock, UserPlus, History } from 'lucide-react';
+import { listFollowUps, logFollowUp, voidFollowUp } from '@/lib/receivx-followup-engine';
+import type { CollectionFollowUp, FollowUpChannel } from '@/types/receivx-followup';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
