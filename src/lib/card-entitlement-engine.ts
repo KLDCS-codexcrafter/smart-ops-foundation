@@ -109,6 +109,7 @@ export function seedDemoEntitlements(tenantId: string): CardEntitlement[] {
     one('logistics'),     // S152.T2 · active in applications.ts · seed parity
     one('dispatch-hub'),  // S152.T2 · active in applications.ts · seed parity
     one('taskflow'),      // S152.T2 · active in applications.ts · seed parity
+    one('ecomx'),         // S153 · DP-EC-1 rename ceremony (was 'unicomm') · 4-point seed parity
   ];
 
 
