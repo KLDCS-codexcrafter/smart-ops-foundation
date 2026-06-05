@@ -26,6 +26,7 @@ export function EcomXClaimsPage(): JSX.Element {
       ...(mpId ? { marketplaceId: mpId } : {}),
       ...(statusFilter ? { status: statusFilter } : {}),
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entityCode, mpId, statusFilter, tick]);
   const stats = useMemo(
     () => entityCode ? getClaimsStats(entityCode, mpId || undefined) : { openCount: 0, openAmount: 0, recoveredAmount: 0, totalAmount: 0 },
