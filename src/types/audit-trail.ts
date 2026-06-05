@@ -369,7 +369,18 @@ export type AuditEntityType =
   // document_control_event precedent). Action discriminator carried via reason/record_label.
   // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow-engine + Comply360 + push-notification-bridge.
   // SCOPE WALL DP-FD-1 · gate-entry.ts + gate-pass.ts + weighbridge are 0-DIFF — FrontDesk owns PEOPLE.
-  | 'frontdesk_event';
+  | 'frontdesk_event'
+  // Sprint 148 · T-ReceivX-CF.1 · ReceivX Collections Follow-Up (module: 'mca-roc')
+  // Logged by receivx-followup-engine on every follow-up mutation: logFollowUp · voidFollowUp ·
+  // and additive task-side-effect writes (last_contact_at/channel/next_action_date).
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call (mirrors chat_event /
+  // taskflow_event / document_control_event / frontdesk_event precedent).
+  // Action discriminator carried via reason / record_label. APPEND-ONLY canon (DP-RX-2):
+  // no edit path · no bulk delete · voidFollowUp(reason) is the only correction.
+  // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow-engine + Comply360 + push-notification-bridge.
+  // DP-RX-1 delta canon · receivx-engine.ts + receivx.ts types 0-DIFF.
+  | 'receivx_followup_event';
+
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
