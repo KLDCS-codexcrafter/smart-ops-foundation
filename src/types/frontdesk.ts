@@ -83,3 +83,62 @@ export const fdVisitorsKey = (entityCode: string): string => `fd_visitors_${enti
 export const fdWatchlistKey = (entityCode: string): string => `fd_watchlist_${entityCode}`;
 export const fdContactNotesKey = (entityCode: string): string => `fd_contact_notes_${entityCode}`;
 export const fdBadgeSeqKey = (entityCode: string): string => `fd_badge_seq_${entityCode}`;
+
+// ─── S146 · Meeting Rooms + Executive Desk · DP-FD-2 + DP-FD-10 ──────
+export type RoomAmenity = 'Projector' | 'Whiteboard' | 'Video Conference' | 'TV Screen' | 'Mic System' | 'AC' | 'Catering';
+export type RoomComputedStatus = 'available' | 'in_use' | 'reserved';   // COMPUTED from bookings · never stored
+
+export interface MeetingRoom {
+  id: string; entityId: string;
+  name: string;
+  floor: string;
+  capacity: number;                  // > 0 · throw otherwise
+  amenities: RoomAmenity[];
+  isActive: boolean;
+  createdAt: string; createdByUserId: string;
+}
+
+export type BookingStatus = 'booked' | 'completed' | 'cancelled';
+
+export interface RoomBooking {
+  id: string; entityId: string;
+  roomId: string;
+  title: string;                     // purpose/agenda line
+  organizerEmployeeId: string;
+  organizerName: string;             // denormalized
+  visitorId?: string | null;         // visitor↔booking link
+  execAppointmentId?: string | null; // set when created from Executive Desk
+  startAt: string; endAt: string;    // endAt > startAt · throw otherwise
+  attendeeCount?: number | null;     // warn (not throw) if > room capacity
+  status: BookingStatus;
+  createdAt: string; createdByUserId: string;
+}
+
+export type ExecAppointmentStatus = 'scheduled' | 'completed' | 'cancelled';
+
+export interface ExecAppointment {   // DP-FD-10 · PA/reception-operated · pre-auth honesty
+  id: string; entityId: string;
+  executiveEmployeeId: string;
+  executiveName: string;             // denormalized
+  title: string;
+  partyId?: string | null;           // external party link
+  visitorId?: string | null;         // expected-visitor link
+  roomBookingId?: string | null;     // optional room hold
+  startAt: string; endAt: string;
+  notes?: string | null;
+  reminderTaskId?: string | null;    // TaskFlow task spawned for the reminder
+  status: ExecAppointmentStatus;
+  createdAt: string; createdByUserId: string;
+}
+
+export interface ExecutiveDayView {
+  executiveEmployeeId: string; dateISO: string;
+  appointments: ExecAppointment[];
+  expectedVisitors: { visitorId: string; name: string; company?: string | null; plannedAt: string }[];
+  roomBookings: RoomBooking[];
+  reminderTasks: { taskId: string; code: string; title: string; dueDate: string | null; acknowledged: boolean }[];
+}
+
+export const fdRoomsKey = (entityCode: string): string => `fd_rooms_${entityCode}`;
+export const fdBookingsKey = (entityCode: string): string => `fd_bookings_${entityCode}`;
+export const fdExecAppointmentsKey = (entityCode: string): string => `fd_exec_appointments_${entityCode}`;

@@ -871,8 +871,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint 145 T-FrontDesk-A6F.1 · Pillar A.6-F · FrontDesk MVP · card 'frontdesk' coming_soon→active · Visitors (planned + walk-in · badge B-#### + watchlist gate + ID-CAPTURE CANON DP-FD-18 · last4 only · 12+ digit string throws · photo ≤1MB) · Items-Carried + checkout mismatch · Contact Book + per-party notes · Evacuation Roll-Call print · Watchlist (mandatory reason + flaggedBy) · 1 NEW SIBLING frontdesk-engine · NEW audit literal frontdesk_event ADDITIVE under mca-roc · SCOPE WALL DP-FD-1: gate-entry.ts + gate-pass.ts + weighbridge 0-DIFF (FrontDesk owns PEOPLE not goods) · §H + approval-workflow + Comply360 + push-notification-bridge ALL 0-DIFF · FR-44 READ-ONLY consume from useEmployees + party-master-engine + useCurrentUser + S144 AttachDocuments · headSha TBD_AT_BANK
   {
     sprintNumber: 145, code: 'T-FrontDesk-A6F.1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '293b0c1e', loc: 1500,
+    headSha: 'de6e6e61', predecessorSha: '293b0c1e', loc: 1500,
     newSiblings: ['frontdesk-engine'],
+    bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint 146 T-FrontDesk-A6F.2 · Pillar A.6-F · Meeting Rooms + Executive Desk · DP-FD-2 + DP-FD-10 · room master CRUD (capacity>0) · COMPUTED room status (in_use/reserved/available · never stored) · booking calendar day/week grid · conflict discipline (overlap throws · touching boundaries OK · capacity overflow warns not throws) · executive picker via Employee.designation regex (path A) · Executive Day View (appointments + expected visitors filtered by host + room bookings + reminder tasks) · TaskFlow-reminder reuse (taskflow-engine.createTask CALL-ONLY · tag exec-reminder:<apptId> · TF-29a acknowledgment) · visitor↔booking link via frontdesk-engine read · 1 NEW SIBLING frontdesk-scheduling-engine · §H + dispatch gate types + Comply360 + approval-workflow + push-notification-bridge + taskflow files ALL 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 146, code: 'T-FrontDesk-A6F.2', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'de6e6e61', loc: 1400,
+    newSiblings: ['frontdesk-scheduling-engine'],
     bankDate: null, provenance: 'CONFIRMED',
   },
 ];
