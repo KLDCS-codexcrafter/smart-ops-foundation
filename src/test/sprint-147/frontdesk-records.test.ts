@@ -293,18 +293,18 @@ describe('S147 · Reception Diary (FD-16 · COMPUTED)', () => {
 
 describe('S147 · Gate-entry bridge (DP-FD-1 READ-ONLY)', () => {
   it('missing gate entry throws', () => {
-    const v = createPlannedVisitor(E, {
+    const v = createPlannedVisitor(E, 'u-recep', {
       name: 'V1', purpose: 'General Visit', hostEmployeeId: 'h1', hostName: 'Host',
       plannedAt: new Date().toISOString(),
-    }, { entityId: E, userId: 'u-recep' });
+    });
     expect(() => linkVisitorToGateEntry(E, v.id, 'missing', 'u-recep')).toThrow(/Gate entry/);
   });
 
   it('ref stored on visitor via additive update path', () => {
     seedGateEntry('ge-7');
-    const v = checkInVisitor(E, {
+    const v = checkInVisitor(E, 'u-recep', {
       name: 'V2', purpose: 'General Visit', hostEmployeeId: 'h1', hostName: 'Host',
-    }, { entityId: E, userId: 'u-recep' });
+    });
     linkVisitorToGateEntry(E, v.id, 'ge-7', 'u-recep');
     const after = getVisitor(E, v.id);
     expect(after!.gateEntryRef).toBe('ge-7');
