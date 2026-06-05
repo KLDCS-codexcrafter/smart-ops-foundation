@@ -127,7 +127,7 @@ export function MailInwardPage(): JSX.Element {
       <InwardCreateDialog
         open={openCreate} onClose={() => { setOpenCreate(false); reload(); }}
         entityCode={entityCode} userId={user?.id ?? 'reception'}
-        employees={employees.map((e) => ({ id: e.id, name: e.name }))}
+        employees={empOptions}
       />
 
       <Dialog open={!!ackTarget} onOpenChange={(v) => { if (!v) { setAckTarget(null); setOverrideReason(''); } }}>
