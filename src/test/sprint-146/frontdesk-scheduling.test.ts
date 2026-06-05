@@ -18,7 +18,7 @@ import {
 } from '@/lib/frontdesk-scheduling-engine';
 import { createPlannedVisitor } from '@/lib/frontdesk-engine';
 import { listTasks } from '@/lib/taskflow-engine';
-import { loadAuditTrail } from '@/lib/audit-trail-engine';
+import { readAuditTrail } from "@/lib/audit-trail-engine";
 import { EMPLOYEES_KEY, type Employee } from '@/types/employee';
 import { SIBLINGS } from '@/lib/_institutional/sibling-register';
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
@@ -189,10 +189,10 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
 
     it('linkBookingToVisitor succeeds with valid visitor', () => {
       const r = createRoom(E, { name: 'A', floor: '1', capacity: 5 }, CTX);
-      const v = createPlannedVisitor(E, {
+      const v = createPlannedVisitor(E, 'u-recep', {
         name: 'Vee', purpose: 'General Visit', hostEmployeeId: 'emp-ceo', hostName: 'Asha',
         plannedAt: T('10:00'),
-      }, { entityId: E, userId: 'u-recep' });
+      });
       const { booking } = createBooking(E, { roomId: r.id, title: 'X', organizerEmployeeId: 'u1', organizerName: 'U', startAt: T('10:00'), endAt: T('11:00') }, CTX);
       const linked = linkBookingToVisitor(E, booking.id, v.id);
       expect(linked.visitorId).toBe(v.id);
@@ -317,9 +317,9 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
         startAt: T('10:00'), endAt: T('11:00'), withRoomId: r.id, withReminderMinutesBefore: 10,
       }, CTX);
       // visitor hosted by CEO that day → expected
-      createPlannedVisitor(E, { name: 'Vee', purpose: 'General Visit', hostEmployeeId: 'emp-ceo', hostName: 'Asha', plannedAt: T('09:30') }, { entityId: E, userId: 'u-recep' });
+      createPlannedVisitor(E, 'u-recep', { name: 'Vee', purpose: 'General Visit', hostEmployeeId: 'emp-ceo', hostName: 'Asha', plannedAt: T('09:30') });
       // visitor hosted by clerk → must NOT appear in CEO day view
-      createPlannedVisitor(E, { name: 'Other', purpose: 'General Visit', hostEmployeeId: 'emp-clerk', hostName: 'Babu', plannedAt: T('09:30') }, { entityId: E, userId: 'u-recep' });
+      createPlannedVisitor(E, 'u-recep', { name: 'Other', purpose: 'General Visit', hostEmployeeId: 'emp-clerk', hostName: 'Babu', plannedAt: T('09:30') });
 
       const view = buildExecutiveDayView(E, 'emp-ceo', T('00:00'));
       expect(view.appointments.map((a) => a.id)).toContain(res.appointment.id);
@@ -345,7 +345,7 @@ describe('S146 · Meeting Rooms + Executive Desk', () => {
     it('mutations emit frontdesk_event audit entries', () => {
       const r = createRoom(E, { name: 'A', floor: '1', capacity: 5 }, CTX);
       createBooking(E, { roomId: r.id, title: 'X', organizerEmployeeId: 'u1', organizerName: 'U', startAt: T('10:00'), endAt: T('11:00') }, CTX);
-      const trail = loadAuditTrail();
+      const trail = readAuditTrail(E);
       const fd = trail.filter((t) => t.entityType === 'frontdesk_event');
       expect(fd.length).toBeGreaterThanOrEqual(2);
     });
