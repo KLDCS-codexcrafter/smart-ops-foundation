@@ -291,8 +291,8 @@ describe('S148 · Rider 1b · mail numbering + updateMail guards', () => {
   });
 
   it('createOutwardMail assigns OUT-NNNN sequence independently', () => {
-    const o1 = createOutwardMail(E, { description: 'x', toText: 'recipient', createdByUserId: 'u', entityId: E });
-    const o2 = createOutwardMail(E, { description: 'y', toText: 'recipient', createdByUserId: 'u', entityId: E });
+    const o1 = createOutwardMail(E, { kind: 'letter', description: 'x', toText: 'recipient', createdByUserId: 'u', entityId: E });
+    const o2 = createOutwardMail(E, { kind: 'letter', description: 'y', toText: 'recipient', createdByUserId: 'u', entityId: E });
     expect(o1.mailNo).toBe('OUT-0001');
     expect(o2.mailNo).toBe('OUT-0002');
   });
@@ -328,7 +328,7 @@ describe('S148 · Rider 1b · mail numbering + updateMail guards', () => {
   });
 
   it('updateMail throws for sentAt / dispatch / delivery mutations', () => {
-    const o = createOutwardMail(E, { description: 'x', toText: 'r', createdByUserId: 'u', entityId: E });
+    const o = createOutwardMail(E, { kind: 'letter', description: 'x', toText: 'r', createdByUserId: 'u', entityId: E });
     expect(() => updateMail(E, o.id, { sentAt: '2026-06-05' }, 'u')).toThrow(/immutable/);
     expect(() => updateMail(E, o.id, { dispatchMode: 'rpad' }, 'u')).toThrow(/immutable/);
     expect(() => updateMail(E, o.id, { deliveryConfirmed: true }, 'u')).toThrow(/immutable/);
