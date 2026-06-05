@@ -42,7 +42,7 @@ export function AddressBookReportPage(): JSX.Element {
         out.push({
           partyId: p.id, partyName: p.party_name, partyCode: p.party_code,
           contactId: null, contactName: '—', designation: '',
-          phone: p.phone ?? '', mobile: '', email: p.email ?? '', isPrimary: false,
+          phone: '', mobile: '', email: '', isPrimary: false,
         });
       } else {
         for (const c of cs) {
@@ -50,9 +50,9 @@ export function AddressBookReportPage(): JSX.Element {
             partyId: p.id, partyName: p.party_name, partyCode: p.party_code,
             contactId: c.id, contactName: c.name,
             designation: c.designation ?? '',
-            phone: c.phone ?? p.phone ?? '',
+            phone: c.phone ?? '',
             mobile: c.mobile ?? '',
-            email: c.email ?? p.email ?? '',
+            email: c.email ?? '',
             isPrimary: !!c.isPrimary,
           });
         }
