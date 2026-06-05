@@ -236,6 +236,8 @@ const QualiCheckPage = lazy(() => import('./pages/erp/qualicheck/QualiCheckPage'
 
 const DocVaultPage = lazy(() => import('./pages/erp/docvault/DocVaultPage'));
 const FrontDeskPage = lazy(() => import('./pages/erp/frontdesk/FrontDeskPage'));
+// Sprint 149 · T-WebStoreX-A11.1 · WebStoreX PIM + Catalog
+const WebStoreXPage = lazy(() => import('./pages/erp/webstorex/WebStoreXPage'));
 const RFQPublicForm = lazy(() => import('./pages/vendor-portal/RFQPublicForm'));
 // Sprint T-Phase-1.2.6f-b-1 · vendor portal public surface (token replaces auth · NO <P> wrapper)
 const VendorLogin = lazy(() => import('./pages/vendor-portal/VendorLogin'));
@@ -643,6 +645,9 @@ const App = () => (
               {/* Sprint 145 · T-FrontDesk-A6F.1 · FrontDesk MVP */}
               <Route path="/erp/frontdesk" element={<P><FrontDeskPage /></P>} />
               <Route path="/erp/frontdesk/*" element={<P><FrontDeskPage /></P>} />
+              {/* Sprint 149 · T-WebStoreX-A11.1 · WebStoreX */}
+              <Route path="/erp/webstorex" element={<P><WebStoreXPage /></P>} />
+              <Route path="/erp/webstorex/*" element={<P><WebStoreXPage /></P>} />
               <Route path="/erp/requestx" element={<P><RequestX /></P>} />
               <Route path="/erp/vendor-portal" element={<P><VendorPortal /></P>} />
               <Route path="/erp/vendor-portal/*" element={<P><VendorPortal /></P>} />
