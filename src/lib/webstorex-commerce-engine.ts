@@ -596,9 +596,9 @@ export function getVoucherBalance(entityCode: string, code: string, nowISO?: str
   const reversedIds = new Set(entries.filter(e => e.kind === 'reversal' && e.reversesEntryId).map(e => e.reversesEntryId!));
   let bal = v.initialValue;
   for (const e of entries) {
-    if (reversedIds.has(e.id)) continue;
+    if (e.kind === 'reversal') continue;                  // reversal cancels source · skip both
+    if (reversedIds.has(e.id)) continue;                   // skip reversed redeem
     if (e.kind === 'redeem') bal -= e.amount;
-    else if (e.kind === 'reversal') bal += e.amount;
   }
   return { balance: Math.max(0, bal), expired: false, voucher: v };
 }
