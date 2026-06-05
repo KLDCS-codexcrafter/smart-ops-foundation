@@ -8,9 +8,9 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import {
   listExecutives, listRooms, buildExecutiveDayView,
   createExecAppointment, cancelExecAppointment,
-  type ExecutiveDayView,
 } from '@/lib/frontdesk-scheduling-engine';
 import { loadVisitors } from '@/lib/frontdesk-engine';
+import type { ExecutiveDayView } from '@/types/frontdesk';
 import type { Employee } from '@/types/employee';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
