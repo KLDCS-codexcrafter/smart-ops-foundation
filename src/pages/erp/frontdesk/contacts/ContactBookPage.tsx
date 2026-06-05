@@ -181,7 +181,7 @@ function EnvelopeDialog({ open, onClose, entityCode, partyIds }: EnvelopeDialogP
     const map: Record<string, PartyContact[]> = {};
     for (const pid of partyIds) map[pid] = getContactsForParty(entityCode, pid);
     return map;
-  }, [entityCode, partyIds, open]);
+  }, [entityCode, partyIds]);
 
   const envelopes = useMemo(() => buildEnrichedEnvelope(entityCode, partyIds, {
     msPrefix, kindAttnContactByParty: picks,
