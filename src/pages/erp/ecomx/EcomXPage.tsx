@@ -9,6 +9,7 @@ import { ecomxShellConfig } from '@/apps/erp/configs/ecomx-shell-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { EcomXWelcome } from './EcomXWelcome';
 import { EcomXDashboardPage } from './dashboard/EcomXDashboardPage';
+import { EcomXCockpitPage } from './cockpit/EcomXCockpitPage';
 import { EcomXMarketplacesPage } from './marketplaces/EcomXMarketplacesPage';
 import { EcomXListingsPage } from './listings/EcomXListingsPage';
 import { EcomXUnmappedPage } from './unmapped/EcomXUnmappedPage';
