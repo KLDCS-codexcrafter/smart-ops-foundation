@@ -22,6 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Save, Shield, Plus, Trash2, BadgeIndianRupee, FileText, Truck } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · fincore_settings_event
 import { useEntityList } from '@/hooks/useEntityList';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
