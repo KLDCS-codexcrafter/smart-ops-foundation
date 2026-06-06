@@ -139,6 +139,17 @@ export default function DistributorBroadcast() {
       };
       // [JWT] POST /api/sales/broadcasts
       setLs(distributorBroadcastsKey(entityCode), [broadcast, ...broadcasts]);
+      logAudit({
+        entityCode: String(entityCode || DEFAULT_ENTITY_SHORTCODE),
+        action: 'create',
+        entityType: 'salesx_txn_event',
+        recordId: broadcast.id,
+        recordLabel: `Distributor Broadcast · ${broadcast.title} · ${broadcast.status}`,
+        beforeState: null,
+        afterState: broadcast as unknown as Record<string, unknown>,
+        reason: 'distributor_broadcast_created',
+        sourceModule: 'DistributorBroadcast',
+      });
       toast.success(isScheduled ? 'Broadcast scheduled' : `Sent to ${recipientCount} partner${recipientCount === 1 ? '' : 's'}`);
       form.reset({ ...form.getValues(), title: '', body: '', scheduled_for: '' });
       setRefresh(x => x + 1);
