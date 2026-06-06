@@ -82,6 +82,17 @@ export function createIso9001Doc(
     subtitle: draft.clause,
     deep_link: `/erp/qualicheck#iso9001-register/${id}`,
   });
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `ISO 9001 Doc · ${draft.title}`,
+    beforeState: null,
+    afterState: { iso_doc_id: id, clause: draft.clause, title: draft.title },
+    sourceModule: 'qualicheck',
+    reason: 'iso9001_doc_created',
+  });
   return doc;
 }
 
