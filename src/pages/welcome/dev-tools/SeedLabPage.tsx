@@ -160,8 +160,41 @@ export function SeedLabPagePanel() {
         </section>
 
         <section>
+          <h2 className="text-lg font-semibold text-foreground mb-1">Remove demo data</h2>
+          <p className="text-xs text-muted-foreground mb-4">
+            Survivor-safe purge · only removes records the seeders wrote (tracked
+            in <code>demo_seed_manifest_&lt;entity&gt;</code>). User-created records
+            are preserved.
+          </p>
+          {entities.length === 0 ? (
+            <div className="text-xs text-muted-foreground italic border border-dashed rounded-lg p-4">
+              No entities found. Create an entity from the welcome flow first.
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {entities.map((e) => (
+                <div key={e.id}
+                  className="flex items-center justify-between rounded-lg border bg-card/60 p-3">
+                  <div className="text-sm">
+                    <div className="font-medium text-foreground">{e.name}</div>
+                    <div className="text-[11px] text-muted-foreground font-mono">{e.shortCode}</div>
+                  </div>
+                  <Button size="sm" variant="outline"
+                    disabled={purging === e.shortCode}
+                    onClick={() => handlePurge(e.shortCode, e.name)}>
+                    <Trash2 className="h-3.5 w-3.5 mr-1.5" />
+                    {purging === e.shortCode ? 'Removing…' : 'Remove demo data'}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section>
           <h2 className="text-lg font-semibold text-foreground mb-1">Six Stakeholder Modes</h2>
           <p className="text-xs text-muted-foreground mb-4">
+
             Same seed data, six lenses. Mode selector functional in Phase 3.
           </p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
