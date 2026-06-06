@@ -98,6 +98,18 @@ export function createRecipe(input: CreateRecipeInput): Recipe {
   all.unshift(recipe);
   lsWrite(recipesKey(input.entity_id), all);
 
+  logAudit({
+    entityCode: input.entity_id,
+    action: 'create',
+    entityType: 'production_event' as unknown as AuditEntityType,
+    recordId: recipe.id,
+    recordLabel: `Recipe ${recipe.recipe_code} v${recipe.version}`,
+    beforeState: null,
+    afterState: { recipe_code: recipe.recipe_code, version: recipe.version, status: recipe.status },
+    sourceModule: 'production',
+    reason: 'recipe_master_created',
+  });
+
   return recipe;
 }
 
