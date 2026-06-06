@@ -384,6 +384,17 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
       converted_enquiry_id: null, converted_at: null, campaign_code: null,
       is_active: true,
     });
+    logAudit({
+      entityCode: String(entityCode),
+      action: 'create',
+      entityType: 'salesx_txn_event',
+      recordId: `lead-unknown-${Date.now()}`,
+      recordLabel: `Telecaller Unknown-Lead · ${unknownLeadForm.contact_name} · ${cleaned}`,
+      beforeState: null,
+      afterState: { ...unknownLeadForm, phone: cleaned, source: 'incoming_call' } as unknown as Record<string, unknown>,
+      reason: 'telecaller_unknown_lead_created',
+      sourceModule: 'Telecaller',
+    });
     toast.success('New lead created');
     setUnknownLeadForm({ contact_name: '', company_name: '', city: '' });
     setIncomingActive(false); setIncomingPhone('');
