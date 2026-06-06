@@ -73,7 +73,19 @@ export function ChallanRegisterPanel({ entityCode }: Props) {
       const idx = store.findIndex(c => c.id === editId);
       if (idx >= 0) store[idx] = { ...store[idx], ...form, updated_at: now };
     } else {
-      store.push({ ...form, id: `ch-${Date.now()}`, entity_id: entityCode, created_at: now, updated_at: now });
+      const created: ChallanEntry = { ...form, id: `ch-${Date.now()}`, entity_id: entityCode, created_at: now, updated_at: now };
+      store.push(created);
+      logAudit({
+        entityCode: String(entityCode),
+        action: 'create',
+        entityType: 'fincore_settings_event',
+        recordId: created.id,
+        recordLabel: `Challan · ${created.challan_no} · u/s ${created.tds_section}`,
+        beforeState: null,
+        afterState: created as unknown as Record<string, unknown>,
+        reason: 'tds_challan_created',
+        sourceModule: 'ChallanRegister',
+      });
     }
     // [JWT] POST /api/compliance/tds-challans
     ss(challansKey(entityCode), store);
