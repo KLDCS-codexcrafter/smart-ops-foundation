@@ -24,6 +24,7 @@ import {
   Edit2, XCircle, FolderTree, Layers, Package, TreePine,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · fincore_settings_event
 import { L1_PRIMARIES, L2_PARENT_GROUPS, L3_FINANCIAL_GROUPS } from '@/data/finframe-seed-data';
 
 // ─── Types ──────────────────────────────────────────────────────
