@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates } from '@/data/india-geography';
 import { UAE_EMIRATES } from '@/data/geo-seed-data';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 interface StateRecord {
   code: string; name: string; countryCode: string;
@@ -102,6 +103,14 @@ export function StateMasterPanel() {
     } else {
       const next = [...records, {...formData}];
       setRecords(next); saveRecords(next);
+      logAudit({
+        entityCode: formData.countryCode || 'GLOBAL',
+        action: 'create', entityType: 'foundation_master_event',
+        recordId: `state|${formData.code}`,
+        recordLabel: `State · ${formData.code} · ${formData.name}`,
+        beforeState: null, afterState: formData as unknown as Record<string, unknown>,
+        reason: 'state_created', sourceModule: 'StateMaster',
+      });
       toast.success(`State ${formData.code} created`);
     }
     setFormOpen(false);

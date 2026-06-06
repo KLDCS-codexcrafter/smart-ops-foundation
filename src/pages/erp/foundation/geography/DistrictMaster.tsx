@@ -20,6 +20,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates, getDistrictsByState } from '@/data/india-geography';
 import { UAE_EMIRATES, UAE_DISTRICTS } from '@/data/geo-seed-data';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 interface DistrictRecord {
   code: string; name: string; stateCode: string; countryCode: string;
@@ -126,6 +127,14 @@ export function DistrictMasterPanel() {
       }
       const next = [...records, fd];
       setRecords(next); saveRecords(next);
+      logAudit({
+        entityCode: fd.countryCode || 'GLOBAL',
+        action: 'create', entityType: 'foundation_master_event',
+        recordId: `district|${fd.code}`,
+        recordLabel: `District · ${fd.code} · ${fd.name}`,
+        beforeState: null, afterState: fd as unknown as Record<string, unknown>,
+        reason: 'district_created', sourceModule: 'DistrictMaster',
+      });
       toast.success(`District ${fd.code} created`);
     }
     setFormOpen(false);

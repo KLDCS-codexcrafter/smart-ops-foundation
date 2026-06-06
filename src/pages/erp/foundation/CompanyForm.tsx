@@ -36,6 +36,7 @@ import {
   getSectorLabel, getActivityLabel,
   OPERATING_SCALES, type OperatingScale,
 } from '@/data/industry-taxonomy';
+import { logAudit } from '@/lib/audit-trail-engine';
 // ── Types ────────────────────────────────────────────────────────────────────
 export type EntityFormType = 'company' | 'subsidiary';
 
@@ -453,6 +454,16 @@ export function CompanyFormPanel({ entityType, mode, entityId }: CompanyFormProp
       localStorage.setItem(settingsKey, JSON.stringify(settings));
       /* [JWT] POST /api/company/settings */
 
+      if (isNew) {
+        logAudit({
+          entityCode: String((record as Record<string, unknown>).shortCode ?? currentId),
+          action: 'create', entityType: 'foundation_master_event',
+          recordId: currentId,
+          recordLabel: `${entityType === 'company' ? 'Company' : 'Subsidiary'} · ${String((record as Record<string, unknown>).legalEntityName ?? label)}`,
+          beforeState: null, afterState: record as unknown as Record<string, unknown>,
+          reason: `${entityType}_created`, sourceModule: 'CompanyForm',
+        });
+      }
       toast.success(`${label} saved`, { description: '[JWT] Will persist to database.' });
       setSetupOpen(true);
     }, 800);

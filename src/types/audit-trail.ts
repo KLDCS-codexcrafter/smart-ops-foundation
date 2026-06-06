@@ -400,7 +400,11 @@ export type AuditEntityType =
   | 'procure_master_event'     // budget-allocation-engine · rate-contract-engine · procure360-vendor-agreements-engine
   | 'eximx_event'              // bcd-calculator-engine · fx-what-if-engine
   | 'fincore_settings_event'   // register-config-storage (+ Pass 1b hooks: fiscal/period/templates/currencies)
-  | 'salesx_master_event';     // (Pass 1b: campaigns / sam / enquiry-source / call-quality / etc.)
+  | 'salesx_master_event'      // (Pass 1b: campaigns / sam / enquiry-source / call-quality / etc.)
+  // Sprint P8.3 · T-P83-Audit-Expansion-W1 · Block 2a · Class-C page wiring (Wave 1)
+  // Foundation/geography/top-level masters direct-write create paths.
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call.
+  | 'foundation_master_event'; // BranchOffice · CompanyForm · ParentCompany · geography · BusinessUnit · LogisticMaster
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sprint R0 · Block 5.2 · Audit-aggregator catalog consolidation (reading (c))
@@ -425,6 +429,8 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   'eximx_event',
   'fincore_settings_event',
   'salesx_master_event',
+  // Sprint P8.3 · Block 2a · Wave 1 audit expansion (1 new domain literal)
+  'foundation_master_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];

@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 import { indianStates, indianDistricts, getCitiesByState, getCitiesByDistrict } from '@/data/india-geography';
 import { UAE_EMIRATES } from '@/data/geo-seed-data';
 import { CITY_CATEGORIES } from './CityMaster.constants';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 
 const CITY_CAT_COLORS: Record<string, string> = {
@@ -186,6 +187,14 @@ export function CityMasterPanel() {
     } else {
       const next = [...records, {...formData}];
       setRecords(next); saveRecords(next);
+      logAudit({
+        entityCode: formData.countryCode || 'GLOBAL',
+        action: 'create', entityType: 'foundation_master_event',
+        recordId: `city|${formData.code}`,
+        recordLabel: `City · ${formData.name} · ${formData.stateCode}`,
+        beforeState: null, afterState: formData as unknown as Record<string, unknown>,
+        reason: 'city_created', sourceModule: 'CityMaster',
+      });
       toast.success(`City ${formData.name} created`);
     }
     setFormOpen(false);

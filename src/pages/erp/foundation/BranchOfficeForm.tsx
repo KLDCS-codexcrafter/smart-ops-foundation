@@ -32,6 +32,7 @@ import {
   getSectorLabel, getActivityLabel,
   OPERATING_SCALES, type OperatingScale,
 } from '@/data/industry-taxonomy';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 const BRANCH_TYPES = [
@@ -199,6 +200,16 @@ export function BranchOfficeFormPanel({ mode, entityId }: BranchOfficeFormProps)
             target_state_code: stateCode,
           });
         }).catch(() => { /* hook isolation */ });
+      }
+      if (isNew) {
+        logAudit({
+          entityCode: String((record as Record<string, unknown>).shortCode ?? currentId),
+          action: 'create', entityType: 'foundation_master_event',
+          recordId: currentId,
+          recordLabel: `Branch Office · ${String((record as Record<string, unknown>).name ?? 'Branch')}`,
+          beforeState: null, afterState: record as unknown as Record<string, unknown>,
+          reason: 'branch_office_created', sourceModule: 'BranchOfficeForm',
+        });
       }
       toast.success('Branch Office saved', { description: '[JWT] Will persist to database.' });
       setSetupOpen(true);

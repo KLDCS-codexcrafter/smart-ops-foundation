@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { countries as worldCountries, type WorldCountry } from '@/data/world-geography';
 import { useNavigate } from 'react-router-dom';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const _COUNTRY_REGIONS = ['Asia','Middle East','Europe','Americas','Africa','Oceania','SAARC'];
 void _COUNTRY_REGIONS;
@@ -101,6 +102,14 @@ export function CountryMasterPanel() {
     } else {
       const next = [...localCountries, {...formData}];
       setLocalCountries(next); saveCountries(next);
+      logAudit({
+        entityCode: 'GLOBAL',
+        action: 'create', entityType: 'foundation_master_event',
+        recordId: `country|${formData.code}`,
+        recordLabel: `Country · ${formData.code} · ${formData.name}`,
+        beforeState: null, afterState: formData as unknown as Record<string, unknown>,
+        reason: 'country_created', sourceModule: 'CountryMaster',
+      });
       toast.success(`Country ${formData.code} created`);
     }
     setFormOpen(false);

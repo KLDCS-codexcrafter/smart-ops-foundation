@@ -16,6 +16,7 @@ import { MODE_OF_PAYMENT_SEED, type ModeOfPayment } from '@/data/masters-seed-da
 // Sprint Hardening-B Block 2C-i · Q3.2 scoped-first read + dual-write (one-FY safety)
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { modeOfPaymentKey } from '@/types/cc-masters';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const STORAGE_KEY = 'erp_group_mode_of_payment';
 
@@ -81,6 +82,13 @@ export function ModeOfPaymentMasterPanel() {
       };
       const updated = [...allModes, newMode];
       saveModes(entityCode, updated); setModes(updated);
+      logAudit({
+        entityCode, action: 'create', entityType: 'salesx_master_event',
+        recordId: newMode.id,
+        recordLabel: `Mode of Payment · ${newMode.code} · ${newMode.name}`,
+        beforeState: null, afterState: newMode as unknown as Record<string, unknown>,
+        reason: 'mode_of_payment_created', sourceModule: 'ModeOfPaymentMaster',
+      });
       toast.success(`${newMode.name} added`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);

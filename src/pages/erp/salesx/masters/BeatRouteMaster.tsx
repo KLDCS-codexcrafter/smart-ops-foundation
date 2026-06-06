@@ -28,6 +28,7 @@ import {
 } from '@/types/beat-route';
 import { type Territory, territoriesKey } from '@/types/territory';
 import { type SAMPerson, samPersonsKey } from '@/types/sam-person';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 interface Props { entityCode: string }
 
@@ -169,6 +170,15 @@ export function BeatRouteMasterPanel({ entityCode }: Props) {
       : [...beats, next];
     setBeats(updated);
     saveBeats(entityCode, updated);
+    if (!form.editingId) {
+      logAudit({
+        entityCode, action: 'create', entityType: 'salesx_master_event',
+        recordId: next.id,
+        recordLabel: `Beat · ${next.beat_code} · ${next.beat_name} · ${next.stops.length} stops`,
+        beforeState: null, afterState: next as unknown as Record<string, unknown>,
+        reason: 'beat_route_created', sourceModule: 'BeatRouteMaster',
+      });
+    }
     toast.success(form.editingId ? 'Beat updated' : 'Beat added');
     setForm(BLANK);
   }, [form, beats, entityCode]);
