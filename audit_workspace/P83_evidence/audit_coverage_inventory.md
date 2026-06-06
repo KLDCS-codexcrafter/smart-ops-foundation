@@ -73,9 +73,9 @@ Architect baseline reconciliation: 91 create-pages / 88 page-silent. Our scan: 9
 | 63 | `src/pages/erp/payout/VendorPaymentEntry.tsx` | A | fincore-engine.ts | — |
 | 64 | `src/pages/erp/procure-hub/masters/BudgetAllocationMaster.tsx` | B | budget-allocation-engine.ts, useEntityCode.ts | engine create-export |
 | 65 | `src/pages/erp/procure-hub/panels.tsx` | A | audit-trail-hash-chain.ts, bill-passing-engine.ts, finance-pi-bridge.ts, git-eng | — |
-| 66 | `src/pages/erp/procure-hub/transactions/POEntryFromAwardDialog.tsx` | A | po-management-engine.ts | — |
+| 66 | `src/pages/erp/procure-hub/transactions/POEntryFromAwardDialog.tsx` | C-FIXED (was A) | po-management-engine.ts (appendAuditEntry only — no logAudit/safeAudit) | page success path · `src/pages/erp/procure-hub/transactions/POEntryFromAwardDialog.tsx:103` · literal `procure_master_event` |
 | 67 | `src/pages/erp/procure-hub/transactions/Procure360VendorAgreementEntry.tsx` | B | form-carry-forward-kit.ts, procure360-vendor-agreements-engine.ts, useEntityCode | engine create-export |
-| 68 | `src/pages/erp/procure-hub/transactions/VendorAdvanceEntry.tsx` | A | po-management-engine.ts | — |
+| 68 | `src/pages/erp/procure-hub/transactions/VendorAdvanceEntry.tsx` | C-FIXED (was A) | po-management-engine.ts (false class-A — engine import was read-only and the engine never logged) | page success path · `src/pages/erp/procure-hub/transactions/VendorAdvanceEntry.tsx:55` · literal `treasury_event` |
 | 69 | `src/pages/erp/receivx/masters/CollectionExecMaster.tsx` | C | (direct write) | page success path |
 | 70 | `src/pages/erp/receivx/masters/IncentiveSchemeMaster.tsx` | C | (direct write) | page success path |
 | 71 | `src/pages/erp/receivx/masters/ReceivXConfig.tsx` | C | (direct write) | page success path |
