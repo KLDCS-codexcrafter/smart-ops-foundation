@@ -5,6 +5,7 @@
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · salesx_master_event
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -111,6 +112,19 @@ export function TargetMasterPanel({ entityCode }: Props) {
       : [...list, next];
     saveTargets(entityCode, updated);
     setTargets(updated);
+    if (!form.editingId) {
+      logAudit({
+        entityCode: String(entityCode),
+        action: 'create',
+        entityType: 'salesx_master_event',
+        recordId: next.id,
+        recordLabel: `Sales Target · ${next.financial_year} · ${next.period_label} · ${next.target_type}`,
+        beforeState: null,
+        afterState: next as unknown as Record<string, unknown>,
+        reason: 'sales_target_created',
+        sourceModule: 'TargetMaster',
+      });
+    }
     toast.success(form.editingId ? 'Target updated' : 'Target added');
     setForm(BLANK);
   }, [form, entityCode]);

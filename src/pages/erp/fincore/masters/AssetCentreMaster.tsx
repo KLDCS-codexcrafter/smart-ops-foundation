@@ -37,6 +37,7 @@ import type { AssetCentre, AssetCentreCategory } from '@/types/fincore/asset-cen
 import { ASSET_CENTRE_CATEGORY_LABELS, assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/fincore/asset-centre';
 import { DEMO_ASSET_CENTRES } from '@/data/demo-asset-centres';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · fincore_settings_event
 
 interface FormState {
   name: string;
@@ -147,6 +148,17 @@ export function AssetCentreMasterPanel() {
       toast.success(`Updated ${editing.code}`);
     } else {
       const created = createAssetCentre(form);
+      logAudit({
+        entityCode: String(created.code || entityCode || DEFAULT_ENTITY_SHORTCODE),
+        action: 'create',
+        entityType: 'fincore_settings_event',
+        recordId: created.id,
+        recordLabel: `Asset Centre · ${created.code} · ${created.name}`,
+        beforeState: null,
+        afterState: created as unknown as Record<string, unknown>,
+        reason: 'asset_centre_created',
+        sourceModule: 'AssetCentreMaster',
+      });
       toast.success(`Created ${created.code} — ${created.name}`);
     }
     setSheetOpen(false);

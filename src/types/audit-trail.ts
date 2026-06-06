@@ -404,7 +404,12 @@ export type AuditEntityType =
   // Sprint P8.3 · T-P83-Audit-Expansion-W1 · Block 2a · Class-C page wiring (Wave 1)
   // Foundation/geography/top-level masters direct-write create paths.
   // ADDITIVE inline emission ONLY · NO registerAuditEntityType call.
-  | 'foundation_master_event'; // BranchOffice · CompanyForm · ParentCompany · geography · BusinessUnit · LogisticMaster
+  | 'foundation_master_event' // BranchOffice · CompanyForm · ParentCompany · geography · BusinessUnit · LogisticMaster
+  // Sprint P8.3 · T-P83-Audit-Expansion-W1 · Block 2b · Class-C page wiring (Wave 1, Pass 2b)
+  // Heavy/domain masters + Receivx + Salesx direct-write create paths.
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call.
+  | 'receivx_master_event'    // CollectionExecMaster · IncentiveSchemeMaster · ReceivXConfig · ReminderTemplateMaster
+  | 'salesx_txn_event';       // DistributorBroadcast · Telecaller · AgentInvoiceDialog (salesx transactional create paths)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sprint R0 · Block 5.2 · Audit-aggregator catalog consolidation (reading (c))
@@ -431,6 +436,9 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   'salesx_master_event',
   // Sprint P8.3 · Block 2a · Wave 1 audit expansion (1 new domain literal)
   'foundation_master_event',
+  // Sprint P8.3 · Block 2b · Wave 1 audit expansion (2 new domain literals)
+  'receivx_master_event',
+  'salesx_txn_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];

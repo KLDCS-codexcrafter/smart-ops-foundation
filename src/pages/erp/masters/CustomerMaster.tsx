@@ -51,6 +51,7 @@ import {
 import { LayoutGrid, List as ListIcon } from 'lucide-react';
 import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
 import type { ImportSchema } from '@/lib/master-import-engine';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · foundation_master_event
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -546,6 +547,17 @@ export function CustomerMasterPanel() {
       };
       const updated = [...all, def];
       saveCustomers(updated); setCustomers(updated);
+      logAudit({
+        entityCode: String(def.partyCode || def.id),
+        action: 'create',
+        entityType: 'foundation_master_event',
+        recordId: def.id,
+        recordLabel: `Customer · ${def.partyName}`,
+        beforeState: null,
+        afterState: def as unknown as Record<string, unknown>,
+        reason: 'customer_master_created',
+        sourceModule: 'CustomerMaster',
+      });
       toast.success(`${def.partyName} created`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);

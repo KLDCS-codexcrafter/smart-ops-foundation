@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { receivxSchemesKey, type IncentiveScheme } from '@/types/receivx';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · receivx_master_event
 
 interface Props { entityCode: string }
 
@@ -54,6 +55,17 @@ export function IncentiveSchemeMasterPanel({ entityCode }: Props) {
       is_active: true, created_at: now, updated_at: now,
     };
     persist([...list, s]);
+    logAudit({
+      entityCode: String(entityCode || DEFAULT_ENTITY_SHORTCODE),
+      action: 'create',
+      entityType: 'receivx_master_event',
+      recordId: s.id,
+      recordLabel: `Incentive Scheme · ${s.scheme_code} · ${s.scheme_name}`,
+      beforeState: null,
+      afterState: s as unknown as Record<string, unknown>,
+      reason: 'incentive_scheme_created',
+      sourceModule: 'IncentiveSchemeMaster',
+    });
     setSelectedId(s.id);
   };
 

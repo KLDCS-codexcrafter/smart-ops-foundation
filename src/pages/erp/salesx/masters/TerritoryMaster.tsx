@@ -5,6 +5,7 @@
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · salesx_master_event
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -120,6 +121,19 @@ export function TerritoryMasterPanel({ entityCode }: Props) {
       : [...territories, next];
     setTerritories(updated);
     saveTerritories(entityCode, updated);
+    if (!form.editingId) {
+      logAudit({
+        entityCode: String(entityCode),
+        action: 'create',
+        entityType: 'salesx_master_event',
+        recordId: next.id,
+        recordLabel: `Territory · ${next.territory_code} · ${next.territory_name}`,
+        beforeState: null,
+        afterState: next as unknown as Record<string, unknown>,
+        reason: 'territory_created',
+        sourceModule: 'TerritoryMaster',
+      });
+    }
     toast.success(form.editingId ? 'Territory updated' : 'Territory added');
     setForm(BLANK);
   }, [form, territories, entityCode]);

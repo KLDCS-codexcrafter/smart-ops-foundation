@@ -24,6 +24,7 @@ import {
   Edit2, XCircle, FolderTree, Layers, Package, TreePine,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · fincore_settings_event
 import { L1_PRIMARIES, L2_PARENT_GROUPS, L3_FINANCIAL_GROUPS } from '@/data/finframe-seed-data';
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -190,6 +191,17 @@ export function FinFramePanel() {
         status: 'active',
       };
       saveGroups([...userGroups, newGroup]);
+      logAudit({
+        entityCode: 'GLOBAL',
+        action: 'create',
+        entityType: 'fincore_settings_event',
+        recordId: newGroup.id,
+        recordLabel: `FinFrame Group · ${newGroup.code} · ${newGroup.name}`,
+        beforeState: null,
+        afterState: newGroup as unknown as Record<string, unknown>,
+        reason: 'finframe_user_group_created',
+        sourceModule: 'FinFrame',
+      });
       toast.success(`${createForm.name} added under ${parentName}`);
     }
     setCreateOpen(false);

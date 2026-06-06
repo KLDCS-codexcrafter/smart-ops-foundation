@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · salesx_txn_event
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -95,6 +96,21 @@ export function AgentInvoiceDialog({
       updated_at: new Date().toISOString(),
     };
     saveRegister(entityCode, list);
+    // P8.3 · Block 2b · classify as 'create' on first agent-invoice attachment; 'update' thereafter
+    const wasFirstAttach = !entry.agent_invoice_no;
+    if (wasFirstAttach) {
+      logAudit({
+        entityCode: String(entityCode),
+        action: 'create',
+        entityType: 'salesx_txn_event',
+        recordId: list[idx].id,
+        recordLabel: `Agent Invoice · ${agentInvNo.trim()} · ${nextStatus}`,
+        beforeState: null,
+        afterState: list[idx] as unknown as Record<string, unknown>,
+        reason: 'agent_invoice_attached',
+        sourceModule: 'AgentInvoiceDialog',
+      });
+    }
     setAgentInvNo('');
     setAgentInvGross('');
     setAgentInvGST('');

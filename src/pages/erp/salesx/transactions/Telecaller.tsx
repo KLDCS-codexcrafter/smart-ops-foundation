@@ -19,6 +19,7 @@ import {
   Activity, Award, Trophy, Flame, TrendingUp, Coffee, PhoneOff, CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · salesx_txn_event
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useEnquiries } from '@/hooks/useEnquiries';
 import { useCallSessions } from '@/hooks/useCallSessions';
@@ -382,6 +383,17 @@ export function TelecallerPanel({ entityCode, onNavigate }: Props) {
       next_follow_up: null, notes: 'Created from incoming call',
       converted_enquiry_id: null, converted_at: null, campaign_code: null,
       is_active: true,
+    });
+    logAudit({
+      entityCode: String(entityCode),
+      action: 'create',
+      entityType: 'salesx_txn_event',
+      recordId: `lead-unknown-${Date.now()}`,
+      recordLabel: `Telecaller Unknown-Lead · ${unknownLeadForm.contact_name} · ${cleaned}`,
+      beforeState: null,
+      afterState: { ...unknownLeadForm, phone: cleaned, source: 'incoming_call' } as unknown as Record<string, unknown>,
+      reason: 'telecaller_unknown_lead_created',
+      sourceModule: 'Telecaller',
     });
     toast.success('New lead created');
     setUnknownLeadForm({ contact_name: '', company_name: '', city: '' });

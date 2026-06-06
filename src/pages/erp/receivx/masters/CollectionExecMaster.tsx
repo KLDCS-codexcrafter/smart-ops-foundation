@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { receivxExecsKey, type CollectionExec } from '@/types/receivx';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · receivx_master_event
 
 interface Props { entityCode: string }
 
@@ -53,6 +54,17 @@ export function CollectionExecMasterPanel({ entityCode }: Props) {
       created_at: now, updated_at: now,
     };
     persist([...list, e]);
+    logAudit({
+      entityCode: String(entityCode || DEFAULT_ENTITY_SHORTCODE),
+      action: 'create',
+      entityType: 'receivx_master_event',
+      recordId: e.id,
+      recordLabel: `Collection Exec · ${e.exec_code} · ${e.exec_name}`,
+      beforeState: null,
+      afterState: e as unknown as Record<string, unknown>,
+      reason: 'collection_exec_created',
+      sourceModule: 'CollectionExecMaster',
+    });
     setSelectedId(e.id);
   };
 

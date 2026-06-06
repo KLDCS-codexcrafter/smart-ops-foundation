@@ -48,6 +48,7 @@ import type { ImportSchema } from '@/lib/master-import-engine';
 import { divisionsKey, departmentsKey } from '@/types/org-structure';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { modeOfPaymentKey, termsOfPaymentKey, termsOfDeliveryKey } from '@/types/cc-masters';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · foundation_master_event
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -456,6 +457,17 @@ export function VendorMasterPanel() {
       };
       const updated = [...all, def];
       saveVendors(updated); setVendors(updated);
+      logAudit({
+        entityCode: String(def.partyCode || def.id),
+        action: 'create',
+        entityType: 'foundation_master_event',
+        recordId: def.id,
+        recordLabel: `Vendor · ${def.partyName}`,
+        beforeState: null,
+        afterState: def as unknown as Record<string, unknown>,
+        reason: 'vendor_master_created',
+        sourceModule: 'VendorMaster',
+      });
       toast.success(`${def.partyName} created`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);

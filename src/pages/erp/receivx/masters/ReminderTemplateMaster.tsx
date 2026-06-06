@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · receivx_master_event
 import {
   receivxTemplatesKey, type ReminderTemplate, type CadenceMessage, type CadenceStep,
 } from '@/types/receivx';
@@ -95,6 +96,17 @@ export function ReminderTemplateMasterPanel({ entityCode }: Props) {
       is_default: false, is_active: true, created_at: now, updated_at: now,
     };
     persist([...templates, t]);
+    logAudit({
+      entityCode: String(entityCode || DEFAULT_ENTITY_SHORTCODE),
+      action: 'create',
+      entityType: 'receivx_master_event',
+      recordId: t.id,
+      recordLabel: `Reminder Template · ${t.template_code} · ${t.template_name}`,
+      beforeState: null,
+      afterState: t as unknown as Record<string, unknown>,
+      reason: 'reminder_template_created',
+      sourceModule: 'ReminderTemplateMaster',
+    });
     setSelectedId(t.id);
   };
 

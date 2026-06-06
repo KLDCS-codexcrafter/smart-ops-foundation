@@ -22,6 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ArrowLeft, Save, Shield, Plus, Trash2, BadgeIndianRupee, FileText, Truck } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · fincore_settings_event
 import { useEntityList } from '@/hooks/useEntityList';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
@@ -366,8 +367,23 @@ export function ComplianceSettingsAutomationPanel() {
   // ── Save handlers ──
 
   const handleSaveGroup = useCallback(() => {
+    // P8.3 · Block 2b · classify as 'create' on first persistence; 'update' thereafter
+    const existed = !!(() => { try { return localStorage.getItem(COMPLY360_GROUP_KEY); } catch { return null; } })();
     // [JWT] PATCH /api/compliance/comply360/group
     localStorage.setItem(COMPLY360_GROUP_KEY, JSON.stringify(groupConfig));
+    if (!existed) {
+      logAudit({
+        entityCode: 'GLOBAL',
+        action: 'create',
+        entityType: 'fincore_settings_event',
+        recordId: 'comply360-group-config',
+        recordLabel: 'Comply360 Group Configuration',
+        beforeState: null,
+        afterState: groupConfig as unknown as Record<string, unknown>,
+        reason: 'comply360_group_config_created',
+        sourceModule: 'ComplianceSettingsAutomation',
+      });
+    }
     toast.success('Group configuration saved');
   }, [groupConfig]);
 
