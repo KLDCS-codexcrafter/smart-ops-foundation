@@ -120,7 +120,7 @@ export function createDrawing(
     }),
   };
 
-  return createDocument(
+  const doc = createDocument(
     entityCode,
     {
       entity_id: entityCode,
@@ -139,6 +139,18 @@ export function createDrawing(
     input.initial_version,
     createdBy,
   );
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'engineeringx_event' as unknown as AuditEntityType,
+    recordId: doc.id,
+    recordLabel: `Drawing ${input.drawing_no} · ${input.title}`,
+    beforeState: null,
+    afterState: { document_id: doc.id, drawing_no: input.drawing_no, drawing_type: input.drawing_type, project_id: input.related_project_id ?? null },
+    sourceModule: 'engineeringx',
+    reason: 'drawing_created',
+  });
+  return doc;
 }
 
 /** Submit a drawing version for approval (DocVault canonical workflow · zero-touch). */
