@@ -282,6 +282,13 @@ export function createRequisition(input: CreateRequisitionInput): CreateRequisit
     req.status = 'approved';
     req.approval_chain.push(makeEntry(0, 'system', 'approve', 'Auto-approved · statutory payment per hardcoded routing'));
     persist(input.entityCode, req);
+    // P8.3 · Block 1a · class-B wiring · treasury_event (auto-approve branch)
+    logAudit({
+      entityCode: input.entityCode, action: 'create', entityType: 'treasury_event',
+      recordId: req.id, recordLabel: `PaymentRequisition · ${PAYMENT_TYPE_LABELS[input.request_type]} · ₹${input.amount.toLocaleString('en-IN')}`,
+      beforeState: null, afterState: req as unknown as Record<string, unknown>,
+      reason: 'payment_requisition_created_auto_approved', sourceModule: 'payment-requisition-engine',
+    });
     // Try to create the voucher immediately (best-effort · stays approved if it fails)
     tryCreatePaymentVoucher(input.entityCode, req.id);
     const final = getRequisition(input.entityCode, req.id);
