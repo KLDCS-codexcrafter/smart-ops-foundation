@@ -941,9 +941,25 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint 155 T-EcomX-CF.3 · EcomX Cockpit + Packing Evidence · ARC CLOSE · DP-EC-10 pure-read cockpit aggregation across ecomx-engine + ecomx-recon-engine (orders/recon/claims/returns/tax/evidence · zero recomputation · deterministic period via defaultCockpitPeriod · returnsPct zero-safe) · DP-EC-11 packing evidence METADATA ONLY (binary NEVER persisted · file_url stays empty · DocVault doc created via docvault-engine.createDocument call-only · no DocumentLinkRef extension) · 1 NEW SIBLING ecomx-cockpit-engine (N=178) · 2 additive exports on ecomx-engine (recordPackingEvidence + listPackingEvidence) · ecomx-recon-engine + webstorex-* + party-master-engine + fincore-engine + docvault-engine + applications.ts ZERO diff · 1 NEW page (Cockpit) + Orders page Paperclip-attach inline · audit literal reused · S154 headSha bc8ec128 backfilled · ARC CLOSE invariant locked: 33 active · 0 coming_soon · 0 wip · headSha TBD_AT_BANK
   {
     sprintNumber: 155, code: 'T-EcomX-CF.3', composite: false, grade: 'A',
-    headSha: 'c5f59599', predecessorSha: 'bc8ec128', loc: 720,
+    // P8.1 Block 0.2(i) · S155 headSha CORRECTION: prior value 'c5f59599' was the
+    // defective pre-T1 push · banked post-T1 SHA is '09682149' (audit-miss acknowledged).
+    headSha: '09682149', predecessorSha: 'bc8ec128', loc: 720,
     newSiblings: ['ecomx-cockpit-engine'],
     bankDate: '2026-06-05', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint R0 T-R0-Completion-Arc-Opener · Reconciliation evidence + ImportHub/SecurityConsole honesty + Quick wins · removed 9 eslint-disables (void <trigger> pattern preserving reactivity) · added ADDITIVE_INLINE_AUDIT_TYPES catalog · scaffolded entity-branding-engine (200KB cap · logo/signature/stamp slots) · 27 behavioral tests · ESLint repo-wide 0/0 · tsc 0 · headSha 3105b174
+  {
+    sprintNumber: 'R0' as unknown as number, code: 'T-R0-Completion-Arc-Opener', composite: false, grade: 'A',
+    headSha: '3105b174', predecessorSha: '09682149', loc: 700,
+    newSiblings: ['entity-branding-engine'],
+    bankDate: '2026-06-06', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint P8.1 T-P81-Demo-Seed-Modernization · Demo-flag/manifest foundation + purgeDemoData + 6 new domain seeders (TaskFlow/OperixChat/FrontDesk/WebStoreX/EcomX showcase chain) wired CALL-ONLY through engine exports · coverage honesty (computeSeedCoverage replaces 7 hand-typed fixtureCoverage literals) · auto-seed CHOICE dialog at entity creation + Remove-demo-data action · test-debt triage (11 stale-assertion FIXES + 5 in-test-ESLint flake isolated + 1 dangling MOAT id) · ZERO diff on engines/applications/seed-entitlements/role/route maps · Sinha anchor block (:516-533) UNTOUCHED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'P8.1' as unknown as number, code: 'T-P81-Demo-Seed-Modernization', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '3105b174', loc: 1500,
+    newSiblings: ['demo-seed-manifest', 'demo-seeders-p81'],
+    bankDate: '2026-06-06', provenance: 'CONFIRMED',
   },
 ];
 
