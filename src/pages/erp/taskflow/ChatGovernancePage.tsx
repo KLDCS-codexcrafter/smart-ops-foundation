@@ -45,7 +45,9 @@ export default function ChatGovernancePage(): JSX.Element {
 
   useEffect(() => { refresh(); }, [refresh]);
 
-  const evaluation = useMemo(() => evaluateRetention(entityCode), [entityCode, policies]); // eslint-disable-line react-hooks/exhaustive-deps
+  // `policies` is a reactivity tripwire: evaluateRetention reads the store directly, so we
+  // include the state slice in deps to re-run on mutation. `void` consumes the dep cleanly.
+  const evaluation = useMemo(() => { void policies; return evaluateRetention(entityCode); }, [entityCode, policies]);
 
   const onSavePolicy = (): void => {
     try {

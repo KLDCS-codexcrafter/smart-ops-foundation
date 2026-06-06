@@ -36,9 +36,10 @@ export default function TemplatesPage(): JSX.Element {
   const { employees } = useEmployees();
   const [tick, setTick] = useState(0);
   const refresh = (): void => setTick((t) => t + 1);
+  // `tick` is a reactivity tripwire bumped by refresh(); listTemplates reads the store.
   const templates: TaskTemplate[] = useMemo(
-    () => listTemplates(entityCode),
-    [entityCode, tick], // eslint-disable-line react-hooks/exhaustive-deps
+    () => { void tick; return listTemplates(entityCode); },
+    [entityCode, tick],
   );
 
   const [open, setOpen] = useState(false);
