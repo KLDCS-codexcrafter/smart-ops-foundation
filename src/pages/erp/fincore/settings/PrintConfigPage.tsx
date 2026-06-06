@@ -141,10 +141,25 @@ export function PrintConfigPagePanel() {
   };
 
   const handleSave = () => {
+    // P8.3 · Block 2b · classify as 'create' on first persistence; 'update' thereafter
+    const existed = !!(() => { try { return localStorage.getItem(printConfigKey(entityCode)); } catch { return null; } })();
     savePrintConfig(entityCode, draft);
     const fresh = loadPrintConfig(entityCode);
     setLoaded(fresh);
     setDraft(fresh);
+    if (!existed) {
+      logAudit({
+        entityCode: String(entityCode),
+        action: 'create',
+        entityType: 'fincore_settings_event',
+        recordId: `printconfig-${entityCode}`,
+        recordLabel: `Print Config · ${entityCode}`,
+        beforeState: null,
+        afterState: fresh as unknown as Record<string, unknown>,
+        reason: 'print_config_created',
+        sourceModule: 'PrintConfigPage',
+      });
+    }
     toast.success('Print configuration saved', {
       description: `${VOUCHER_TYPE_LABELS.invoice.split(' ')[0]}-style overrides applied for ${entityCode}.`,
     });
