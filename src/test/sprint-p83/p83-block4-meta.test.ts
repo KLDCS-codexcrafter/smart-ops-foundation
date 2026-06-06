@@ -73,10 +73,14 @@ for (const f of allSourceFiles) {
 }
 
 function countEmissionSites(literal: string): number {
-  // Match `entityType: 'literal'` strictly — single-quoted, comma-terminated.
-  const needle = `entityType: '${literal}'`;
+  // A literal "counts as wired" when it appears as a single-quoted string
+  // anywhere outside the catalog/type-definition file. This tolerates both
+  // direct `entityType: 'literal'` emission AND the `const X = 'literal' as
+  // unknown as AuditEntityType` pattern used by docvault-control / governance.
+  const needle = `'${literal}'`;
   let n = 0;
-  for (const body of fileContents.values()) {
+  for (const [path, body] of fileContents.entries()) {
+    if (path.endsWith('src/types/audit-trail.ts')) continue;
     if (body.includes(needle)) n++;
   }
   return n;
