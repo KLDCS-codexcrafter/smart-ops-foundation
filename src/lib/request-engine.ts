@@ -19,6 +19,8 @@ import {
 import { serviceRequestsKey, type ServiceRequest, type ServiceRequestLine } from '@/types/service-request';
 import { capitalIndentsKey, type CapitalIndent, type CapitalIndentLine } from '@/types/capital-indent';
 import { APPROVAL_MATRIX } from '@/types/requisition-common';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
+import type { AuditEntityType } from '@/types/audit-trail';
 
 export type IndentKind = 'material' | 'service' | 'capital';
 
@@ -127,6 +129,17 @@ export function createMaterialIndent(input: CreateMaterialIndentInput, entityCod
   const list = readArr<MaterialIndent>(materialIndentsKey(entityCode));
   list.push(indent);
   writeArr(materialIndentsKey(entityCode), list);
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'requestx_event' as unknown as AuditEntityType,
+    recordId: indent.id,
+    recordLabel: `Material Indent ${indent.voucher_no}`,
+    beforeState: null,
+    afterState: { voucher_no: indent.voucher_no, kind: 'material', total: indent.total_estimated_value, status: indent.status },
+    sourceModule: 'requestx',
+    reason: 'material_indent_created',
+  });
   return indent;
 }
 
@@ -154,6 +167,17 @@ export function createServiceRequest(input: CreateServiceRequestInput, entityCod
   const list = readArr<ServiceRequest>(serviceRequestsKey(entityCode));
   list.push(sr);
   writeArr(serviceRequestsKey(entityCode), list);
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'requestx_event' as unknown as AuditEntityType,
+    recordId: sr.id,
+    recordLabel: `Service Request ${sr.voucher_no}`,
+    beforeState: null,
+    afterState: { voucher_no: sr.voucher_no, kind: 'service', total: sr.total_estimated_value, status: sr.status },
+    sourceModule: 'requestx',
+    reason: 'service_request_created',
+  });
   return sr;
 }
 
@@ -181,6 +205,17 @@ export function createCapitalIndent(input: CreateCapitalIndentInput, entityCode:
   const list = readArr<CapitalIndent>(capitalIndentsKey(entityCode));
   list.push(ci);
   writeArr(capitalIndentsKey(entityCode), list);
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'requestx_event' as unknown as AuditEntityType,
+    recordId: ci.id,
+    recordLabel: `Capital Indent ${ci.voucher_no}`,
+    beforeState: null,
+    afterState: { voucher_no: ci.voucher_no, kind: 'capital', total: ci.total_estimated_value, status: ci.status },
+    sourceModule: 'requestx',
+    reason: 'capital_indent_created',
+  });
   return ci;
 }
 
