@@ -969,10 +969,17 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['notification-engine'],
     bankDate: '2026-06-06', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint P8.3 T-P83-Audit-Expansion-W1 · B.5-L1 audit expansion Wave 1 (Fin/Sales/Procure create paths log) · class-B engine-level wiring under instrumentation wall (import+audit+catalog-literal only · jurisdiction/dept/FY from record) · ADDITIVE_INLINE_AUDIT_TYPES extended in same edit · NEW CANON established (each sprint seeds its own SPRINTS row at Block 0/1 with headSha TBD_AT_BANK; next sprint flips it — no sprint may end without its row existing) · headSha TBD_AT_BANK
+  // 🎬 Sprint P8.3 T-P83-Audit-Expansion-W1 · B.5-L1 audit expansion Wave 1 (Fin/Sales/Procure create paths log) · class-B engine-level wiring under instrumentation wall (import+audit+catalog-literal only · jurisdiction/dept/FY from record) · ADDITIVE_INLINE_AUDIT_TYPES extended in same edit · NEW CANON established (each sprint seeds its own SPRINTS row at Block 0/1 with headSha TBD_AT_BANK; next sprint flips it — no sprint may end without its row existing) · headSha 2926ba72c (P8.4 Block 0.2 backfill)
   {
     sprintNumber: 'P8.3' as unknown as number, code: 'T-P83-Audit-Expansion-W1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '2d225c56', loc: 0,
+    headSha: '2926ba72c', predecessorSha: '2d225c56', loc: 1400,
+    newSiblings: [],
+    bankDate: '2026-06-06', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint P8.4 T-P84-Audit-Expansion-W2 · B.5-L1 audit expansion Wave 2 (Ops/HR/Support/Commerce · 23 page trees · system-wide create-path coverage) · STRICT engine-credit meta-rule from day one (engine credits class A only if file contains logAudit(/safeAudit() · staged Pass 1a Shape-A engines · 1b Shape-B hooks · Pass 2a/2b pages · meta-test extension covers both waves' trees + scope-completion assertion · ADDITIVE_INLINE_AUDIT_TYPES extended same-edit · walls: audit-trail-engine CALL-ONLY · catalog additive-only · notification-engine 0-diff · natively-logging engines (taskflow/frontdesk/ecomx/webstorex/dispatch GRN/qualicheck) ZERO diff (class-A evidence not edit targets) · applications/entitlements/routes 0-diff · NO new deps · NO hash-chain work (P8.5 scope) · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'P8.4' as unknown as number, code: 'T-P84-Audit-Expansion-W2', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '2926ba72c', loc: 0,
     newSiblings: [],
     bankDate: '2026-06-06', provenance: 'PENDING_BACKFILL',
   },
