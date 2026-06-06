@@ -51,6 +51,7 @@ import {
 import { LayoutGrid, List as ListIcon } from 'lucide-react';
 import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
 import type { ImportSchema } from '@/lib/master-import-engine';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · foundation_master_event
 
 // ─── Interfaces ──────────────────────────────────────────────
 
