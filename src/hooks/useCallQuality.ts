@@ -64,7 +64,7 @@ export function useCallQuality(entityCode: string) {
     }
     persistCriteria(list);
     return list;
-  }, [cKey, persistCriteria]);
+  }, [cKey, persistCriteria, entityCode]);
 
   const deleteCriterion = useCallback((id: string) => {
     persistCriteria(ls<QualityCriterion>(cKey).filter(c => c.id !== id));
@@ -90,7 +90,7 @@ export function useCallQuality(entityCode: string) {
     }
     persistReviews(list);
     return list;
-  }, [rKey, persistReviews]);
+  }, [rKey, persistReviews, entityCode]);
 
   const deleteReview = useCallback((id: string) => {
     persistReviews(ls<CallReview>(rKey).filter(r => r.id !== id));
@@ -138,7 +138,7 @@ export function useCallQuality(entityCode: string) {
     }
     persistFeedback(list);
     return list;
-  }, [fKey, persistFeedback]);
+  }, [fKey, persistFeedback, entityCode]);
 
   const deleteFeedback = useCallback((id: string) => {
     persistFeedback(ls<CoachingFeedback>(fKey).filter(f => f.id !== id));
