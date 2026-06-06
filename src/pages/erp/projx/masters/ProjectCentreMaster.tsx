@@ -37,6 +37,7 @@ import type { ProjectCentre, ProjectCentreCategory } from '@/types/projx/project
 import { PROJECT_CENTRE_CATEGORY_LABELS, projectCentresKey, PROJECT_CENTRE_SEQ_KEY } from '@/types/projx/project-centre';
 import { DEMO_PROJECT_CENTRES } from '@/data/demo-projects';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 interface FormState {
   name: string;
