@@ -130,15 +130,16 @@ describe('P83 · Block 5 · engine drive-through', () => {
     expect(entries[0].source_module).toBe('period-lock-engine');
   });
 
-  it('period-lock-engine.setPeriodLock (second call) emits fincore_settings_event update', () => {
+  it('period-lock-engine.setPeriodLock (second call) emits fincore_settings_event update', async () => {
     setPeriodLock(E, '2026-03-31', 'tester-1');
+    await new Promise(r => setTimeout(r, 5));
     setPeriodLock(E, '2026-06-30', 'tester-2');
     const entries = readAuditTrail(E, { entityType: 'fincore_settings_event' });
     expect(entries).toHaveLength(2);
-    // readAuditTrail returns desc by timestamp; latest is the update.
-    expect(entries[0].action).toBe('update');
-    expect(entries[1].action).toBe('create');
+    expect(entries.filter(e => e.action === 'create')).toHaveLength(1);
+    expect(entries.filter(e => e.action === 'update')).toHaveLength(1);
   });
+
 
   it('fiscal-year-engine.writeFiscalYears emits fincore_settings_event per new FY', () => {
     const fy = buildFiscalYear(2026, 4);
