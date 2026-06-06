@@ -705,7 +705,7 @@ function SecurityTemplatesPanel() {
               <p className="text-xs text-muted-foreground">{t.description}</p>
               <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => {
                 setApplied([t.name]);
-                toast.success(`${t.name} template applied — policies will take effect shortly`);
+                toast.message(SECURITY_HONESTY_MSG);
               }}>
                 {applied.includes(t.name) ? "Re-Apply" : "Apply Template"}
               </Button>
