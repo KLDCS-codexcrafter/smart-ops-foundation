@@ -55,6 +55,17 @@ export function IncentiveSchemeMasterPanel({ entityCode }: Props) {
       is_active: true, created_at: now, updated_at: now,
     };
     persist([...list, s]);
+    logAudit({
+      entityCode: String(entityCode || DEFAULT_ENTITY_SHORTCODE),
+      action: 'create',
+      entityType: 'receivx_master_event',
+      recordId: s.id,
+      recordLabel: `Incentive Scheme · ${s.scheme_code} · ${s.scheme_name}`,
+      beforeState: null,
+      afterState: s as unknown as Record<string, unknown>,
+      reason: 'incentive_scheme_created',
+      sourceModule: 'IncentiveSchemeMaster',
+    });
     setSelectedId(s.id);
   };
 
