@@ -155,6 +155,18 @@ export function ProjectCentreMasterPanel() {
     } else {
       const created = createProjectCentre(form);
       toast.success(`Created ${created.code} — ${created.name}`);
+      // P8.4 · Block 1b · Class-B page-direct emission · projx_event
+      logAudit({
+        entityCode,
+        action: 'create',
+        entityType: 'projx_event',
+        recordId: created.id,
+        recordLabel: `Project Centre · ${created.code} · ${created.name}`,
+        beforeState: null,
+        afterState: created as unknown as Record<string, unknown>,
+        reason: 'project_centre_created',
+        sourceModule: 'ProjectCentreMaster',
+      });
     }
     setSheetOpen(false);
     setEditing(null);
