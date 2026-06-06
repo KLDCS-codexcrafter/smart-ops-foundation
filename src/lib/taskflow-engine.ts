@@ -481,7 +481,7 @@ export function changeDueDate(
   const next = updateTask(entityCode, taskId, { dueDate: newDate }, byUserId);
   // P82 Block 2 · publisher #3 · taskflow.due_date_changed · success path
   publishNotification({
-    entityCode, userId: t.assigneeId, kind: 'taskflow.due_date_changed', cardId: 'taskflow',
+    entityCode, userId: t.assigneeId ?? byUserId, kind: 'taskflow.due_date_changed', cardId: 'taskflow',
     severity: 'warning', title: `Due date changed: ${t.title}`,
     body: `${t.dueDate ?? '—'} → ${newDate ?? '—'} · ${reason.trim()}`,
     deepLink: `/erp/taskflow/task/${taskId}`, refType: 'task', refId: taskId,

@@ -673,7 +673,7 @@ export function updateClaimStatus(
   // P82 Block 2 · publisher #7b · ecomx.claim_status_changed · success path
   publishNotification({
     entityCode, userId: '*', kind: 'ecomx.claim_status_changed', cardId: 'ecomx',
-    severity: next.status === 'recovered' ? 'success' : next.status === 'rejected' ? 'warning' : 'info',
+    severity: next.status === 'settled' ? 'success' : next.status === 'rejected' ? 'warning' : 'info',
     title: `Claim ${next.status} · ${next.marketplaceOrderId}`,
     body: input.note.trim(),
     deepLink: `/erp/ecomx/claim/${next.id}`, refType: 'claim', refId: next.id,
