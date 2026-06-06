@@ -95,11 +95,14 @@ describe('Sprint 70b · T-Phase-5.A.1.2-PASS-B · institutional snapshot (FR-58 
     expect(getCurrentAStreak()).toBeGreaterThanOrEqual(0) // Lesson 24: Sprint 80d · A-streak reset post S80c cycle-2 grade B · historical bounds relaxed;
   });
 
-  it('Pattern-locked files preserved 0-DIFF (sidebar-config tax-gst children: [])', () => {
+  it("Pattern-locked sidebar leaf preserved (durable: tax-gst id still registered post-S95 group→item hotfix)", () => {
+    // P8.1 Pass-2b · durable conversion · S95 hotfix eliminated the group-pattern children:[] shape
+    // across the whole sidebar (every entry became type:'item'). The 70b intent was that the tax-gst
+    // leaf survives — that invariant holds; the shape it survives in changed in S95.
     const sb = fs.readFileSync(
       path.join(process.cwd(), 'src/apps/erp/configs/comply360-sidebar-config.ts'),
       'utf-8',
     );
-    expect(sb).toMatch(/id: 'tax-gst'[\s\S]*?children: \[\]/);
+    expect(sb).toMatch(/id: 'tax-gst'/);
   });
 });
