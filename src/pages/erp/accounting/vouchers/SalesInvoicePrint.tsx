@@ -26,6 +26,7 @@ import { buildUpiIntent } from '@/lib/payment-gateway-engine';
 import { resolveCustomerAddress, formatDDMMMYYYY, formatDateTimeIST } from '@/lib/customer-address-lookup';
 import { loadPrintConfig } from '@/lib/print-config-storage';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { loadEntityBranding } from '@/lib/entity-branding-engine';
 
 function loadOne<T>(key: string, fallback: T): T {
   try {
@@ -160,11 +161,24 @@ export function SalesInvoicePrintPanel() {
       >
         {/* Top header */}
         <div className="flex items-start justify-between border-b border-border pb-3" style={headerStyle}>
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              {payload.copy_label}
+          <div className="flex items-start gap-3">
+            {(() => {
+              const logo = loadEntityBranding(entityCode).logo;
+              return logo ? (
+                <img
+                  src={logo}
+                  alt={`${payload.supplier_name} logo`}
+                  data-testid="invoice-print-logo"
+                  className="h-12 w-auto max-w-[120px] object-contain"
+                />
+              ) : null;
+            })()}
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                {payload.copy_label}
+              </div>
+              <h1 className="text-xl font-bold tracking-tight">{payload.title}</h1>
             </div>
-            <h1 className="text-xl font-bold tracking-tight">{payload.title}</h1>
           </div>
           <div className="text-right">
             <div className="text-base font-bold">{payload.supplier_name}</div>
@@ -177,6 +191,7 @@ export function SalesInvoicePrintPanel() {
             )}
           </div>
         </div>
+
 
         {/* Invoice meta */}
         <div className="grid grid-cols-2 gap-4 mt-3 text-[11px]">
