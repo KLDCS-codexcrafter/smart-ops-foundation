@@ -391,6 +391,29 @@ export type AuditEntityType =
   // DP-WS-2 PIM canon · item/stock master is READ-ONLY · wrapped by reference · never copied or edited.
   | 'webstorex_event';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Sprint R0 · Block 5.2 · Audit-aggregator catalog consolidation (reading (c))
+// Single source of truth for the "ADDITIVE inline emission · NO registerAuditEntityType"
+// family. The wall stands verbatim: this const is a CATALOG, not a registration call.
+// Consumers (aggregation views, coverage tests, audit filters) MUST import this
+// instead of enumerating the types in-line.
+// Every member's site in AuditEntityType above carries the canonical comment
+// "ADDITIVE inline emission ONLY · NO registerAuditEntityType call" or is the
+// taskflow_event precedent the others reference.
+// ─────────────────────────────────────────────────────────────────────────────
+export const ADDITIVE_INLINE_AUDIT_TYPES = [
+  'taskflow_event',          // :349 — precedent
+  'chat_event',              // :356
+  'document_control_event',  // :365
+  'frontdesk_event',         // :372
+  'receivx_followup_event',  // :382
+  'webstorex_event',         // :392
+] as const satisfies readonly AuditEntityType[];
+
+export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];
+
+
+
 
 export interface AuditTrailEntry {
   /** Stable UUID for this audit record (cannot be edited or deleted) */
