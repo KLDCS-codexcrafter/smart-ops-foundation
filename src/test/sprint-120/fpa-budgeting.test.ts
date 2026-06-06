@@ -39,8 +39,8 @@ import {
 const ROOT = process.cwd();
 const ENGINE_PATH = join(ROOT, 'src/lib/fpa-budgeting-engine.ts');
 const PAGE_PATH = join(ROOT, 'src/features/budgeting/BudgetingPage.tsx');
-const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/command-center-sidebar-config.ts');
-const CC_PAGE_PATH = join(ROOT, 'src/features/command-center/pages/CommandCenterPage.tsx');
+const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/fpa-planning-sidebar-config.ts');
+const CC_PAGE_PATH = join(ROOT, 'src/pages/erp/fpa-planning/FpaPlanningPage.tsx');
 const AUDIT_TYPES_PATH = join(ROOT, 'src/types/audit-trail.ts');
 const DASHBOARD_PATH = join(ROOT, 'src/pages/erp/Dashboard.tsx');
 const BUDGET_ALLOCATION_PATH = join(ROOT, 'src/lib/budget-allocation-engine.ts');
