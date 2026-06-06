@@ -125,7 +125,21 @@ export function SalaryStructureMasterPanel() {
 
     if (!form.name.trim()) return;
     if (editId) updateStructure(editId, form);
-    else createStructure(form);
+    else {
+      const newSS = createStructure(form);
+      // P8.4 · Block 1b · Class-B page-direct emission · payhub_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: newSS.id,
+        recordLabel: `Salary Structure · ${newSS.code} · ${newSS.name}`,
+        beforeState: null,
+        afterState: newSS as unknown as Record<string, unknown>,
+        reason: 'salary_structure_created',
+        sourceModule: 'SalaryStructureMaster',
+      });
+    }
     setSheetOpen(false);
   }, [form, editId, updateStructure, createStructure, sheetOpen]);
 
