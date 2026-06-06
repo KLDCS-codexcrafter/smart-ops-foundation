@@ -297,8 +297,15 @@ describe('S152 · Registers + Walls', () => {
     expect(s?.predecessorSha).toBe('0dd18a09');
     expect(s?.code).toBe('T-WebStoreX-A11.4');
   });
-  it('no S153 entry yet', () => {
-    expect(SPRINTS.find((r) => r.sprintNumber === 153)).toBeUndefined();
+  it('S153 entry · if-present-then-valid (durable: post-S152 the EcomX arc opened S153)', () => {
+    // P8.1 Pass-2b · durable conversion · the original "no S153 yet" was a temporal snapshot. The
+    // honest invariant is: when S153 is banked, it conforms to its canonical T-EcomX shape.
+    const s153 = SPRINTS.find((r) => r.sprintNumber === 153);
+    if (s153) {
+      expect(s153.code).toMatch(/^T-EcomX/);
+      expect(typeof s153.headSha).toBe('string');
+      expect((s153.headSha ?? '').length).toBeGreaterThan(0);
+    }
   });
   it('webstorex-visualizer-engine sibling registered (#221 area)', () => {
     expect(SIBLINGS.find((s) => s.id === 'webstorex-visualizer-engine')).toBeDefined();
