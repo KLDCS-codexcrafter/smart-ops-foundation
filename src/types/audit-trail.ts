@@ -415,7 +415,15 @@ export type AuditEntityType =
   // 3 domain literals — production / qualicheck / engineeringx — for per-domain queryability.
   | 'production_event'        // recipe-formula · process-batch · production · bom-substitution · stock-reservation · production-plan
   | 'qualicheck_event'        // capa · ncr · fai · iso9001 · mtc · qualicheck-ncr-evidence
-  | 'engineeringx_event';     // engineeringx · engineeringx-bom
+  | 'engineeringx_event'      // engineeringx · engineeringx-bom
+  // Sprint P8.4 · Block 1a-ii · Class-B engine wiring (Wave 2, Operations-light)
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call.
+  | 'gateflow_event'          // gateflow · weighbridge · vehicle-master · driver-master
+  | 'maintainpro_event'       // maintainpro (4 master CRUDs share single engine)
+  | 'requestx_event'          // request-engine (material/service/capital indents)
+  | 'storehub_event'          // cycle-count-voucher
+  | 'logistic_event'          // logistic-auth (portal session created)
+  | 'projx_event';            // projx-documents
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sprint R0 · Block 5.2 · Audit-aggregator catalog consolidation (reading (c))
