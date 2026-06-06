@@ -234,6 +234,10 @@ export function PrintConfigPagePanel() {
           </div>
         </div>
 
+        {/* Sprint R0 · Block 5.3 · Entity Branding section */}
+        <EntityBrandingSection entityCode={entityCode} />
+
+
         {/* 14-row matrix */}
         <Accordion type="multiple" className="rounded-2xl border bg-card/60 backdrop-blur-xl divide-y">
           {VOUCHER_ORDER.map(voucher => {
