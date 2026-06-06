@@ -10,6 +10,7 @@ import type {
 import {
   qualityCriteriaKey, callReviewsKey, coachingFeedbackKey,
 } from '@/types/call-quality';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · salesx_master_event
 
 function ls<T>(k: string): T[] {
   try { return JSON.parse(localStorage.getItem(k) || '[]') as T[]; }
@@ -52,7 +53,14 @@ export function useCallQuality(entityCode: string) {
       const idx = list.findIndex(c => c.id === data.id);
       if (idx >= 0) list[idx] = { ...list[idx], ...data, id: data.id, updated_at: now };
     } else {
-      list.push({ ...data, id: `qc-${Date.now()}`, created_at: now, updated_at: now });
+      const rec = { ...data, id: `qc-${Date.now()}`, created_at: now, updated_at: now };
+      list.push(rec);
+      logAudit({
+        entityCode, action: 'create', entityType: 'salesx_master_event',
+        recordId: rec.id, recordLabel: `Quality Criterion · ${rec.name ?? rec.id}`,
+        beforeState: null, afterState: rec as unknown as Record<string, unknown>,
+        reason: 'quality_criterion_created', sourceModule: 'useCallQuality',
+      });
     }
     persistCriteria(list);
     return list;
@@ -71,7 +79,14 @@ export function useCallQuality(entityCode: string) {
       const idx = list.findIndex(r => r.id === data.id);
       if (idx >= 0) list[idx] = { ...list[idx], ...data, id: data.id, updated_at: now };
     } else {
-      list.push({ ...data, id: `rv-${Date.now()}`, created_at: now, updated_at: now });
+      const rec = { ...data, id: `rv-${Date.now()}`, created_at: now, updated_at: now };
+      list.push(rec);
+      logAudit({
+        entityCode, action: 'create', entityType: 'salesx_master_event',
+        recordId: rec.id, recordLabel: `Call Review · ${rec.id}`,
+        beforeState: null, afterState: rec as unknown as Record<string, unknown>,
+        reason: 'call_review_created', sourceModule: 'useCallQuality',
+      });
     }
     persistReviews(list);
     return list;
@@ -112,7 +127,14 @@ export function useCallQuality(entityCode: string) {
       const idx = list.findIndex(f => f.id === data.id);
       if (idx >= 0) list[idx] = { ...list[idx], ...data, id: data.id, updated_at: now };
     } else {
-      list.push({ ...data, id: `cf-${Date.now()}`, created_at: now, updated_at: now });
+      const rec = { ...data, id: `cf-${Date.now()}`, created_at: now, updated_at: now };
+      list.push(rec);
+      logAudit({
+        entityCode, action: 'create', entityType: 'salesx_master_event',
+        recordId: rec.id, recordLabel: `Coaching Feedback · ${rec.id}`,
+        beforeState: null, afterState: rec as unknown as Record<string, unknown>,
+        reason: 'coaching_feedback_created', sourceModule: 'useCallQuality',
+      });
     }
     persistFeedback(list);
     return list;

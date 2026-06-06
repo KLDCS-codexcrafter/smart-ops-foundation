@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { StockGroup, StockGroupFormData } from '@/types/stock-group';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · procure_master_event
 
 const STORAGE_KEY = 'erp_stock_groups';
 
@@ -23,6 +24,12 @@ export function useStockGroups() {
       created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
     const updated = [item, ...groups];
     setGroups(updated); save(updated);
+    logAudit({
+      entityCode: 'GLOBAL', action: 'create', entityType: 'procure_master_event',
+      recordId: item.id, recordLabel: `Stock Group · ${item.name}`,
+      beforeState: null, afterState: item as unknown as Record<string, unknown>,
+      reason: 'stock_group_created', sourceModule: 'useStockGroups',
+    });
     toast.success(`${form.name} created`);
     // [JWT] Replace with POST /api/inventory/stock-groups
   };

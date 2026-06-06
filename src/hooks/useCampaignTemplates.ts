@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import type { CampaignTemplate, TemplateChannelStep } from '@/types/campaign-template';
 import { campaignTemplatesKey } from '@/types/campaign-template';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · salesx_master_event
 
 function ls<T>(k: string): T[] {
   try { return JSON.parse(localStorage.getItem(k) || '[]') as T[]; }
@@ -39,8 +40,15 @@ export function useCampaignTemplates(entityCode: string) {
         }
       }
     } else {
-      list.push({ ...data, id: `ct-${Date.now()}`,
-        use_count: 0, created_at: now, updated_at: now });
+      const rec = { ...data, id: `ct-${Date.now()}`,
+        use_count: 0, created_at: now, updated_at: now };
+      list.push(rec);
+      logAudit({
+        entityCode, action: 'create', entityType: 'salesx_master_event',
+        recordId: rec.id, recordLabel: `Campaign Template · ${rec.name ?? rec.id}`,
+        beforeState: null, afterState: rec as unknown as Record<string, unknown>,
+        reason: 'campaign_template_created', sourceModule: 'useCampaignTemplates',
+      });
     }
     persist(list);
     return list;

@@ -20,6 +20,8 @@
  *   This means existing vouchers/flows continue working until founder explicitly locks a period.
  */
 
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · fincore_settings_event
+
 export interface PeriodLockConfig {
   /** ISO date string YYYY-MM-DD · null means no lock */
   lockedThrough: string | null;
@@ -52,6 +54,7 @@ export function setPeriodLock(
   lockedThrough: string | null,
   actorId: string,
 ): void {
+  const prior = getPeriodLock(entityCode);
   const config: PeriodLockConfig = {
     lockedThrough,
     lastModifiedAt: new Date().toISOString(),
@@ -59,6 +62,14 @@ export function setPeriodLock(
   };
   // [JWT] PUT /api/accounting/period-lock/:entityCode
   localStorage.setItem(periodLockKey(entityCode), JSON.stringify(config));
+  logAudit({
+    entityCode, action: prior ? 'update' : 'create', entityType: 'fincore_settings_event',
+    recordId: periodLockKey(entityCode),
+    recordLabel: `Period Lock · ${lockedThrough ?? 'cleared'}`,
+    beforeState: prior as unknown as Record<string, unknown> | null,
+    afterState: config as unknown as Record<string, unknown>,
+    reason: 'period_lock_set', sourceModule: 'period-lock-engine',
+  });
 }
 
 /**
