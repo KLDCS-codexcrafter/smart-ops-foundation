@@ -31,6 +31,7 @@ import {
 } from '@/lib/audit-engine';
 import type { TDSDeductionEntry, TDSReceivableEntry, ChallanEntry } from '@/types/compliance';
 import { tdsDeductionsKey, tdsReceivableKey, challansKey } from '@/types/compliance';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · fincore_settings_event
 
 const fmt = (n: number) => `₹${Math.abs(n).toLocaleString('en-IN', { minimumFractionDigits: 0 })}`;
 
