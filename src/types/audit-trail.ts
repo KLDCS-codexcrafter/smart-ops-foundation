@@ -429,6 +429,8 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   'eximx_event',
   'fincore_settings_event',
   'salesx_master_event',
+  // Sprint P8.3 · Block 2a · Wave 1 audit expansion (1 new domain literal)
+  'foundation_master_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];
