@@ -7,6 +7,8 @@
 import type { ExportRealisation, FEMAState, RealisationStatus, ForexTriangulation } from '@/types/export-realisation';
 import { exportRealisationKey, FEMA_DAY_BANDS, REALISATION_VALID_TRANSITIONS } from '@/types/export-realisation';
 import { SINHA_EXPORT_REALISATIONS } from '@/data/sinha-export-realisation-seed-data';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1 · eximx_event
+import type { AuditEntityType } from '@/types/audit-trail';
 
 export function loadRealisations(entityCode: string): ExportRealisation[] {
   try {
