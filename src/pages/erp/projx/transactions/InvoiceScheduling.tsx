@@ -125,7 +125,7 @@ export function InvoiceSchedulingPanel() {
         toast.success('Schedule entry updated');
       }
     } else {
-      createSchedule({
+      const created = createSchedule({
         project_id: project.id,
         project_centre_id: project.project_centre_id,
         milestone_id: form.milestone_id,
@@ -134,6 +134,18 @@ export function InvoiceSchedulingPanel() {
         description: form.description,
       });
       toast.success('Ad-hoc schedule entry added');
+      // P8.4 · Block 1b · Class-B page-direct emission · projx_event
+      logAudit({
+        entityCode,
+        action: 'create',
+        entityType: 'projx_event',
+        recordId: created.id,
+        recordLabel: `Invoice Schedule · ${project.project_no} · ${created.description}`,
+        beforeState: null,
+        afterState: created as unknown as Record<string, unknown>,
+        reason: 'invoice_schedule_created',
+        sourceModule: 'InvoiceScheduling',
+      });
     }
     setSheetOpen(false);
     setEditing(null);
