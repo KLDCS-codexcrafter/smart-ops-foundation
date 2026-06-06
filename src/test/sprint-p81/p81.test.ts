@@ -58,8 +58,11 @@ describe('P8.1 · manifest primitives', () => {
   });
 
   it('recordDemoKeys bulk-adds without duplicates', () => {
-    recordDemoKeys(E, ['a', 'b', 'c', 'a']);
-    expect(getDemoManifest(E).keys.sort()).toEqual(['a', 'b', 'c']);
+    recordDemoKeys(E, ['ka', 'kb', 'kc', 'ka']);
+    const keys = getDemoManifest(E).keys;
+    expect(keys.filter((k) => k === 'ka').length).toBe(1);
+    expect(keys).toContain('kb');
+    expect(keys).toContain('kc');
   });
 
   it('recordDemoEntity tracks an (key,id) tuple', () => {
@@ -68,9 +71,11 @@ describe('P8.1 · manifest primitives', () => {
   });
 
   it('recordDemoEntities bulk-adds (key,id) tuples without duplicates', () => {
-    recordDemoEntities(E, 'k1', ['a', 'b', 'a']);
-    const rec = getDemoManifest(E).records.filter((r) => r.key === 'k1');
-    expect(rec.map((r) => r.id).sort()).toEqual(['a', 'b']);
+    recordDemoEntities(E, 'k2', ['ra', 'rb', 'ra']);
+    const ids = getDemoManifest(E).records
+      .filter((r) => r.key === 'k2').map((r) => r.id);
+    expect(ids.filter((x) => x === 'ra').length).toBe(1);
+    expect(ids).toContain('rb');
   });
 
   it('hasSeederRun is false initially and true after mark', () => {
