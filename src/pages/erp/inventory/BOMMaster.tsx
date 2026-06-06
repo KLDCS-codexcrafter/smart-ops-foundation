@@ -436,6 +436,18 @@ export function BOMMasterPanel({ entityCode }: BOMMasterPanelProps) {
       if (created) {
         setEditingId(created.id);
         setCreatingNew(false);
+        // P8.4 · Block 1b · Class-B page-direct emission · inventory_master_event
+        logAudit({
+          entityCode,
+          action: 'create',
+          entityType: 'inventory_master_event',
+          recordId: created.id,
+          recordLabel: `BOM · ${created.product_item_name}`,
+          beforeState: null,
+          afterState: created as unknown as Record<string, unknown>,
+          reason: 'bom_master_created',
+          sourceModule: 'BOMMaster',
+        });
       }
     }
   };
