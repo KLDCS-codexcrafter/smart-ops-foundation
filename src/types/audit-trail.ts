@@ -470,6 +470,10 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   'storehub_event',
   'logistic_event',
   'projx_event',
+  // Sprint P8.4 · Block 1b · Wave 2 audit expansion (3 new domain literals — page-direct)
+  'inventory_master_event',
+  'payhub_master_event',
+  'dispatch_txn_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];
