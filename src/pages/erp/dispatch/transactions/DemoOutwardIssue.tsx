@@ -24,6 +24,7 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Presentation, Send, ArrowLeft, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
+import { logAudit } from '@/lib/audit-trail-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import type { Employee } from '@/types/employee';
