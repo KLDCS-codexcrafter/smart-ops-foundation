@@ -1,3 +1,4 @@
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,9 +11,13 @@ import {
   Presentation,
   Users,
   TrendingUp,
+  Trash2,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { FixtureCoverageHeatmap } from '@/components/dev-tools/FixtureCoverageHeatmap';
+import { purgeDemoData } from '@/lib/demo-seed-manifest';
+import { loadEntities } from '@/services/entity-setup-service';
 
 type ModePhase = 'live' | 'phase2' | 'planned';
 
