@@ -423,7 +423,13 @@ export type AuditEntityType =
   | 'requestx_event'          // request-engine (material/service/capital indents)
   | 'storehub_event'          // cycle-count-voucher
   | 'logistic_event'          // logistic-auth (portal session created)
-  | 'projx_event';            // projx-documents
+  | 'projx_event'             // projx-documents (engine) · projx page-direct masters
+  // Sprint P8.4 · Block 1b · Class-B page-direct wiring (Wave 2, page-direct emissions)
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call.
+  // Three literals for pages whose engines carry no domain semantics (keyboard / utils / decimal only).
+  | 'inventory_master_event'  // BOMMaster · ItemCraft · PriceListManager · ReturnablePackagingMaster · StockMatrix · StorageMatrix · SubstituteMaster
+  | 'payhub_master_event'     // AssetMaster · EmployeeMaster · HolidayCalendarMaster · PayGradeMaster · PayHeadMaster · SalaryStructureMaster
+  | 'dispatch_txn_event';     // DemoOutwardIssue · SampleOutwardIssue (dispatch-side issues)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sprint R0 · Block 5.2 · Audit-aggregator catalog consolidation (reading (c))
