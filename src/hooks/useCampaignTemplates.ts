@@ -45,7 +45,7 @@ export function useCampaignTemplates(entityCode: string) {
       list.push(rec);
       logAudit({
         entityCode, action: 'create', entityType: 'salesx_master_event',
-        recordId: rec.id, recordLabel: `Campaign Template · ${rec.name ?? rec.id}`,
+        recordId: rec.id, recordLabel: `Campaign Template · ${rec.template_name ?? rec.id}`,
         beforeState: null, afterState: rec as unknown as Record<string, unknown>,
         reason: 'campaign_template_created', sourceModule: 'useCampaignTemplates',
       });

@@ -42,7 +42,7 @@ export function useCampaigns(entityCode: string) {
       list.push(rec);
       logAudit({
         entityCode, action: 'create', entityType: 'salesx_master_event',
-        recordId: rec.id, recordLabel: `Campaign · ${rec.name ?? rec.id}`,
+        recordId: rec.id, recordLabel: `Campaign · ${rec.campaign_name ?? rec.id}`,
         beforeState: null, afterState: rec as unknown as Record<string, unknown>,
         reason: 'campaign_created', sourceModule: 'useCampaigns',
       });

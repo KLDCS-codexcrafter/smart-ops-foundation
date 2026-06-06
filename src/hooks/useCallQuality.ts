@@ -57,7 +57,7 @@ export function useCallQuality(entityCode: string) {
       list.push(rec);
       logAudit({
         entityCode, action: 'create', entityType: 'salesx_master_event',
-        recordId: rec.id, recordLabel: `Quality Criterion · ${rec.name ?? rec.id}`,
+        recordId: rec.id, recordLabel: `Quality Criterion · ${rec.criterion_name ?? rec.id}`,
         beforeState: null, afterState: rec as unknown as Record<string, unknown>,
         reason: 'quality_criterion_created', sourceModule: 'useCallQuality',
       });

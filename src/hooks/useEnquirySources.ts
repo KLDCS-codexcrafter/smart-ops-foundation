@@ -42,7 +42,7 @@ export function useEnquirySources(entityCode: string) {
       list.push(rec);
       logAudit({
         entityCode, action: 'create', entityType: 'salesx_master_event',
-        recordId: rec.id, recordLabel: `Enquiry Source · ${rec.name ?? rec.id}`,
+        recordId: rec.id, recordLabel: `Enquiry Source · ${rec.source_name ?? rec.id}`,
         beforeState: null, afterState: rec as unknown as Record<string, unknown>,
         reason: 'enquiry_source_created', sourceModule: 'useEnquirySources',
       });
