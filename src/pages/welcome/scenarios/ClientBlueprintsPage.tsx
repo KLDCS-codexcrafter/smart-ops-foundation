@@ -432,7 +432,7 @@ export function ClientBlueprintsPagePanel() {
     }
 
     toast.success(`${clientName} demo reset · ${keysToReset.length} entity-scoped keys cleared`); bumpCoverage();
-  }, []);
+  }, [bumpCoverage]);
 
   return (
     <div className="min-h-screen bg-background">
