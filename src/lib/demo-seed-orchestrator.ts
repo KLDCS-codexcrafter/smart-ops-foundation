@@ -631,7 +631,7 @@ export function computeSeedCoverage(entityCode: string): SeedCoverageReport {
          || nonEmptyArrayAt(`erp_aop_${entityCode}`),
   };
   const seededCount = Object.values(perDomain).filter(Boolean).length;
-  const totalCount = SEEDABLE_DOMAINS.length;
+  const totalCount = SEEDABLE_DOMAINS.length as number;
   return {
     entityCode, perDomain, seededCount, totalCount,
     percentage: totalCount === 0 ? 0 : Math.round((seededCount / totalCount) * 100),
