@@ -95,7 +95,19 @@ export function PayHeadMasterPanel() {
     if (editId) {
       updatePayHead(editId, form);
     } else {
-      createPayHead(form);
+      const newPH = createPayHead(form);
+      // P8.4 · Block 1b · Class-B page-direct emission · payhub_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: newPH.id,
+        recordLabel: `Pay Head · ${newPH.code} · ${newPH.name}`,
+        beforeState: null,
+        afterState: newPH as unknown as Record<string, unknown>,
+        reason: 'pay_head_created',
+        sourceModule: 'PayHeadMaster',
+      });
     }
     setSheetOpen(false);
   }, [form, editId, updatePayHead, createPayHead, sheetOpen]);
