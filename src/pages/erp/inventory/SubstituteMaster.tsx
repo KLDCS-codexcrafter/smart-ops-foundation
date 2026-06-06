@@ -24,6 +24,7 @@ import {
 import { Replace, Plus, Pencil, Trash2 } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useItemSubstitutes } from '@/hooks/useItemSubstitutes';
+import { logAudit } from '@/lib/audit-trail-engine';
 import type {
   ItemSubstitute, SubstituteApprovalStatus,
 } from '@/types/item-substitute';
