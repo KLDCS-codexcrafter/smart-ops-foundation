@@ -39,8 +39,8 @@ const LANDING_PATH = join(ROOT, 'src/pages/erp/fpa-planning/FpaPlanningPage.tsx'
 const APPS_PATH = join(ROOT, 'src/components/operix-core/applications.ts');
 const CARD_TYPES_PATH = join(ROOT, 'src/types/card-entitlement.ts');
 const AUDIT_TYPES_PATH = join(ROOT, 'src/types/audit-trail.ts');
-const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/command-center-sidebar-config.ts');
-const CC_PAGE_PATH = join(ROOT, 'src/features/command-center/pages/CommandCenterPage.tsx');
+const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/fpa-planning-sidebar-config.ts');
+const CC_PAGE_PATH = join(ROOT, 'src/pages/erp/fpa-planning/FpaPlanningPage.tsx');
 const APP_PATH = join(ROOT, 'src/App.tsx');
 const ORG_STRUCTURE_PATH = join(ROOT, 'src/types/org-structure.ts');
 const GROUP_STRUCTURE_ENGINE_PATH = join(ROOT, 'src/lib/intercompany-group-structure-engine.ts');
@@ -331,14 +331,14 @@ describe('Sprint 116 · NEW card registered (additive · DP-P7-2)', () => {
 });
 
 // ────────────────────────────────────────────────────────────────────────────
-describe('Sprint 116 · Page #43 wiring (NOT a SIBLID · requiredCards fpa-planning)', () => {
-  it('sidebar registers fincore-aop-strategic-plan as type:item with requiredCards fpa-planning', () => {
-    expect(sidebarSrc).toMatch(/fincore-aop-strategic-plan/);
+describe('Sprint 116 · Page #43 wiring (NOT a SIBLID · requiredCards fpa-planning · S124 A1: FP&A self-owned card · module id fpa-aop)', () => {
+  it('sidebar registers fpa-aop as type:item with requiredCards fpa-planning', () => {
+    expect(sidebarSrc).toMatch(/'fpa-aop'/);
     expect(sidebarSrc).toMatch(/requiredCards:\s*\[\s*'fpa-planning'\s*\]/);
   });
-  it('CC page imports AOPStrategicPlanPage and renders a case for it', () => {
+  it('FP&A shell page imports AOPStrategicPlanPage and renders a case for it', () => {
     expect(ccPageSrc).toMatch(/AOPStrategicPlanPage/);
-    expect(ccPageSrc).toMatch(/case\s+'fincore-aop-strategic-plan'/);
+    expect(ccPageSrc).toMatch(/case\s+'fpa-aop'/);
   });
   it('page reads the engine (no dead UI)', () => {
     expect(pageSrc).toMatch(/buildAOP|upsertStrategicTarget/);

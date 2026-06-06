@@ -40,8 +40,8 @@ import { EMPLOYEES_KEY, type Employee } from '@/types/employee';
 const ROOT = process.cwd();
 const ENGINE_PATH = join(ROOT, 'src/lib/org-design-succession-engine.ts');
 const PAGE_PATH = join(ROOT, 'src/features/org-design/OrgDesignSimulatorPage.tsx');
-const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/command-center-sidebar-config.ts');
-const CC_PAGE_PATH = join(ROOT, 'src/features/command-center/pages/CommandCenterPage.tsx');
+const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/fpa-planning-sidebar-config.ts');
+const CC_PAGE_PATH = join(ROOT, 'src/pages/erp/fpa-planning/FpaPlanningPage.tsx');
 const AUDIT_TYPES_PATH = join(ROOT, 'src/types/audit-trail.ts');
 
 const engineSrc = readFileSync(ENGINE_PATH, 'utf8');
@@ -297,12 +297,12 @@ describe('Sprint 119 · Wiring · page + sidebar + CC + audit', () => {
   it('Page UI labels the scenario-copy safety boundary', () => {
     expect(pageSrc).toMatch(/SCENARIO/i);
   });
-  it('Sidebar registers fpa-planning-org-design under the fpa-planning card', () => {
-    expect(sidebarSrc).toMatch(/fpa-planning-org-design/);
+  it('Sidebar registers fpa-org-design under the fpa-planning card (S124 A1: module id renamed from fpa-planning-org-design)', () => {
+    expect(sidebarSrc).toMatch(/'fpa-org-design'/);
     expect(sidebarSrc).toMatch(/requiredCards:\s*\['fpa-planning'\]/);
   });
-  it('CommandCenterPage routes the new module', () => {
-    expect(ccPageSrc).toMatch(/fpa-planning-org-design/);
+  it('FP&A shell page routes the new module', () => {
+    expect(ccPageSrc).toMatch(/'fpa-org-design'/);
     expect(ccPageSrc).toMatch(/OrgDesignSimulatorPage/);
   });
   it('audit-trail.ts declares the new org_design_event type', () => {

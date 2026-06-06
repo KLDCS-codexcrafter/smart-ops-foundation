@@ -46,8 +46,8 @@ import { loadEntities } from '@/data/mock-entities';
 const ROOT = process.cwd();
 const ENGINE_PATH = join(ROOT, 'src/lib/okr-kpi-engine.ts');
 const PAGE_PATH = join(ROOT, 'src/features/okr-framework/OKRFrameworkPage.tsx');
-const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/command-center-sidebar-config.ts');
-const CC_PAGE_PATH = join(ROOT, 'src/features/command-center/pages/CommandCenterPage.tsx');
+const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/fpa-planning-sidebar-config.ts');
+const CC_PAGE_PATH = join(ROOT, 'src/pages/erp/fpa-planning/FpaPlanningPage.tsx');
 const AUDIT_TYPES_PATH = join(ROOT, 'src/types/audit-trail.ts');
 
 const engineSrc = readFileSync(ENGINE_PATH, 'utf8');
@@ -324,12 +324,12 @@ describe('Sprint 118 · Wiring · page + sidebar + CC + audit', () => {
   it('OKRFrameworkPage imports from the OKR engine', () => {
     expect(pageSrc).toMatch(/from '@\/lib\/okr-kpi-engine'/);
   });
-  it('Sidebar registers fpa-planning-okr-framework with the fpa-planning card', () => {
-    expect(sidebarSrc).toMatch(/fpa-planning-okr-framework/);
+  it('Sidebar registers fpa-okr with the fpa-planning card (S124 A1: module id renamed from fpa-planning-okr-framework)', () => {
+    expect(sidebarSrc).toMatch(/'fpa-okr'/);
     expect(sidebarSrc).toMatch(/requiredCards:\s*\['fpa-planning'\]/);
   });
-  it('CommandCenterPage routes the new module', () => {
-    expect(ccPageSrc).toMatch(/fpa-planning-okr-framework/);
+  it('FP&A shell page routes the new module', () => {
+    expect(ccPageSrc).toMatch(/'fpa-okr'/);
     expect(ccPageSrc).toMatch(/OKRFrameworkPage/);
   });
   it('audit-trail.ts declares the new okr_cascade_event type', () => {
