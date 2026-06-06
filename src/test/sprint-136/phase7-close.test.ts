@@ -186,9 +186,13 @@ describe('S136 · Phase-7 Close · institutional registers (S136 last entry · �
     expect(s136?.newSiblings.length).toBe(0);
   });
 
-  it('S137 has opened as the new last entry (Pillar A.6.4 · TaskFlow Arc)', () => {
-    const last = SPRINTS[SPRINTS.length - 1];
-    expect(last.sprintNumber).toBeGreaterThanOrEqual(137);
+  it('S137 exists with its banked sha (durable: existence-with-sha, never last-entry)', () => {
+    // P8.1 Pass-2b · durable conversion · "S137 is LAST" assertions break on every future sprint
+    // bank. Convert to existence + sha-lock so the invariant holds permanently.
+    const s137 = SPRINTS.find((s) => s.sprintNumber === 137);
+    expect(s137).toBeDefined();
+    expect(s137?.headSha).toBe('0742e96b');
+    expect(s137?.code).toBe('T-TaskFlow-A641.1');
   });
 
   it('sprint count is a FLOOR (≥ 21 Phase-7 sprints S116..S136)', () => {
