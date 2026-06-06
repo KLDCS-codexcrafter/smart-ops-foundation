@@ -303,21 +303,21 @@ describe('Sprint 117 · SCOPE WALL (DP-D0-7) — workforce projection only', () 
 });
 
 // ────────────────────────────────────────────────────────────────────────────
-describe('Sprint 117 · Page #44 wiring (NOT a SIBLID · requiredCards fpa-planning)', () => {
-  it('sidebar registers fpa-planning-workforce as type:item with requiredCards fpa-planning', () => {
-    expect(sidebarSrc).toMatch(/fpa-planning-workforce/);
+describe('Sprint 117 · Page #44 wiring (NOT a SIBLID · requiredCards fpa-planning · S124 A1: module id fpa-workforce)', () => {
+  it('sidebar registers fpa-workforce as type:item with requiredCards fpa-planning', () => {
+    expect(sidebarSrc).toMatch(/'fpa-workforce'/);
     expect(sidebarSrc).toMatch(/requiredCards:\s*\[\s*'fpa-planning'\s*\]/);
   });
-  it('CC page imports WorkforcePlanningPage and renders a case for it', () => {
+  it('FP&A shell page imports WorkforcePlanningPage and renders a case for it', () => {
     expect(ccPageSrc).toMatch(/WorkforcePlanningPage/);
-    expect(ccPageSrc).toMatch(/case\s+'fpa-planning-workforce'/);
+    expect(ccPageSrc).toMatch(/case\s+'fpa-workforce'/);
   });
   it('page reads the engine (no dead UI)', () => {
     expect(pageSrc).toMatch(/projectWorkforce|getWorkforceCostVsAOP|upsertHeadcountPlan/);
   });
   it('page #44 is NOT registered as a SIBLID', () => {
     const ids = SIBLINGS.map((s) => s.id);
-    expect(ids).not.toContain('fpa-planning-workforce');
+    expect(ids).not.toContain('fpa-workforce');
     expect(ids).not.toContain('WorkforcePlanningPage');
   });
 });
