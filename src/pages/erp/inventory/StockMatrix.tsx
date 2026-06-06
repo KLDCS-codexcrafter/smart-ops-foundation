@@ -83,6 +83,18 @@ export function StockMatrixPanel() {
       const ng:StockGroup={...form,id:`sg-${Date.now()}`,status:'active',created_at:new Date().toISOString(),updated_at:new Date().toISOString()};
       const u=[...groups,ng];setGroups(u);sv(u);toast.success(`${form.name} created`);
       // [JWT] POST /api/inventory/stock-groups
+      // P8.4 · Block 1b · Class-B page-direct emission · inventory_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: ng.id,
+        recordLabel: `Stock Group · ${ng.code} · ${ng.name}`,
+        beforeState: null,
+        afterState: ng as unknown as Record<string, unknown>,
+        reason: 'stock_group_created',
+        sourceModule: 'StockMatrix',
+      });
     }
     setOpen(false);
   };
