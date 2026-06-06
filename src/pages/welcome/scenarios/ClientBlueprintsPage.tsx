@@ -431,7 +431,7 @@ export function ClientBlueprintsPagePanel() {
       /* ignore parse errors */
     }
 
-    toast.success(`${clientName} demo reset · ${keysToReset.length} entity-scoped keys cleared`);
+    toast.success(`${clientName} demo reset · ${keysToReset.length} entity-scoped keys cleared`); bumpCoverage();
   }, []);
 
   return (
