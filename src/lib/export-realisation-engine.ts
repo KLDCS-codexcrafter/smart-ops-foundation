@@ -7,6 +7,8 @@
 import type { ExportRealisation, FEMAState, RealisationStatus, ForexTriangulation } from '@/types/export-realisation';
 import { exportRealisationKey, FEMA_DAY_BANDS, REALISATION_VALID_TRANSITIONS } from '@/types/export-realisation';
 import { SINHA_EXPORT_REALISATIONS } from '@/data/sinha-export-realisation-seed-data';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1 · eximx_event
+import type { AuditEntityType } from '@/types/audit-trail';
 
 export function loadRealisations(entityCode: string): ExportRealisation[] {
   try {
@@ -67,8 +69,19 @@ export function transitionRealisation(entityCode: string, id: string, newStatus:
   if (!REALISATION_VALID_TRANSITIONS[r.status].includes(newStatus)) {
     throw new Error(`Invalid realisation transition: ${r.status} → ${newStatus}`);
   }
+  const fromStatus = r.status;
   const updated = { ...r, status: newStatus, updated_at: new Date().toISOString() };
   saveRealisations(entityCode, rs.map((x) => (x.id === id ? updated : x)));
+  logAudit({
+    entityCode,
+    action: 'update',
+    entityType: 'eximx_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `Export realisation ${id} ${fromStatus}→${newStatus}`,
+    beforeState: { status: fromStatus },
+    afterState: { status: newStatus },
+    sourceModule: 'eximx',
+  });
   return updated;
 }
 

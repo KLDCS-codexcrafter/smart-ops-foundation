@@ -49,7 +49,7 @@ export function useEnquirySources(entityCode: string) {
     }
     persist(list);
     return list;
-  }, [key, persist]);
+  }, [key, persist, entityCode]);
 
   const deleteSource = useCallback((id: string) => {
     persist(ls<EnquirySource>(key).filter(s => s.id !== id));

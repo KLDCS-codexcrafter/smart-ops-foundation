@@ -91,7 +91,7 @@ export function useLeadDistribution(entityCode: string) {
     }
     persistCapacities(list);
     return list;
-  }, [capKey, persistCapacities]);
+  }, [capKey, persistCapacities, entityCode]);
 
   const deleteCapacity = useCallback((id: string) => {
     persistCapacities(ls<TelecallerCapacity>(capKey).filter(c => c.id !== id));

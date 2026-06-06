@@ -7,6 +7,8 @@
 
 import type { LUT, LUTStatus, LUTTransition } from '@/types/lut';
 import { LUT_LOCALSTORAGE_KEY, LUT_VALID_TRANSITIONS } from '@/types/lut';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1 · eximx_event
+import type { AuditEntityType } from '@/types/audit-trail';
 
 export const listLUTs = (entityId: string): LUT[] => {
   const raw = localStorage.getItem(LUT_LOCALSTORAGE_KEY(entityId));
@@ -17,9 +19,20 @@ export const upsertLUT = (entityId: string, lut: LUT): LUT[] => {
   const all = listLUTs(entityId);
   const idx = all.findIndex(x => x.id === lut.id);
   const now = new Date().toISOString();
+  const isUpdate = idx >= 0;
   if (idx >= 0) all[idx] = { ...lut, updated_at: now };
   else all.push({ ...lut, created_at: now, updated_at: now });
   localStorage.setItem(LUT_LOCALSTORAGE_KEY(entityId), JSON.stringify(all));
+  logAudit({
+    entityCode: entityId,
+    action: isUpdate ? 'update' : 'create',
+    entityType: 'eximx_event' as unknown as AuditEntityType,
+    recordId: lut.id,
+    recordLabel: `LUT ${lut.lut_number ?? lut.id}`,
+    beforeState: null,
+    afterState: { status: lut.status, validity_to: lut.validity_to },
+    sourceModule: 'eximx',
+  });
   return all;
 };
 
@@ -46,11 +59,22 @@ export const transitionLUT = (
     transitioned_by: userId,
     notes,
   };
+  const fromStatus = lut.status;
   lut.status = toStatus;
   lut.workflow_history = [...(lut.workflow_history || []), transition];
   lut.updated_at = new Date().toISOString();
 
   localStorage.setItem(LUT_LOCALSTORAGE_KEY(entityId), JSON.stringify(all));
+  logAudit({
+    entityCode: entityId,
+    action: 'update',
+    entityType: 'eximx_event' as unknown as AuditEntityType,
+    recordId: lut.id,
+    recordLabel: `LUT ${lut.lut_number ?? lut.id} ${fromStatus}→${toStatus}`,
+    beforeState: { status: fromStatus },
+    afterState: { status: toStatus },
+    sourceModule: 'eximx',
+  });
   return { success: true, lut };
 };
 
