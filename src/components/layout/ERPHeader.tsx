@@ -29,6 +29,7 @@ import {
 } from 'lucide-react';
 import { DepartmentSwitcher } from './DepartmentSwitcher';
 import { RecentActivityDrawer } from './RecentActivityDrawer';
+import { NotificationBell } from './NotificationBell';
 import { CommandPalette } from './CommandPalette';
 import { CrossCardSearch } from './CrossCardSearch';
 import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts';
@@ -248,8 +249,9 @@ export function ERPHeader({
             <TooltipContent>Data fresh — synced just now</TooltipContent>
           </Tooltip>
 
-          {/* Notification bell → Recent activity drawer */}
+          {/* Notification bell → Recent activity drawer (legacy) + P82 Notification Center */}
           <RecentActivityDrawer />
+          <NotificationBell />
 
           {/* Ask Dishani */}
           <Tooltip>

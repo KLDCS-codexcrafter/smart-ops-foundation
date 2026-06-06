@@ -31,7 +31,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type {
   NotificationEvent, NotificationSeverity, NotificationKind,
 } from '@/types/notification';
-import type { CardId } from '@/types/card-entitlement';
+
 
 const SEV_CLASS: Record<NotificationSeverity, string> = {
   info: 'bg-primary/15 text-primary border-primary/30',
