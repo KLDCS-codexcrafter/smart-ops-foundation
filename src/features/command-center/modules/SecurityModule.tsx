@@ -303,10 +303,37 @@ function ScopeBadge({ tab }: { tab: ConsoleTab }) {
 }
 
 // ── Shared helper components ──────────────────────────────────
-function SectionHeader({ title, children }: { title: string; children?: React.ReactNode }) {
+// R0 · Block 4 (DP-R0-3) · honesty patch
+// `DemoBadge` is the single shared badge rendered on every fixture-fed panel.
+// `SectionHeader` accepts an optional `demo` flag so each fixture panel marks
+// itself once at its header (no per-chart sprinkling).
+const SECURITY_HONESTY_MSG =
+  "Not wired yet — Security Console rewire is scheduled (CS sprint); roles are enforced by the entitlement engine, not this screen.";
+
+function DemoBadge() {
+  return (
+    <span
+      data-testid="security-demo-badge"
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-warning/30 bg-warning/10 text-warning text-[10px] font-medium ml-2 align-middle"
+      title="This panel renders fixture data for visualization — live data arrives with the CS-sprint rewire."
+    >
+      <AlertTriangle className="w-3 h-3" aria-hidden="true" />
+      Demo visualization
+    </span>
+  );
+}
+
+function SectionHeader({
+  title,
+  children,
+  demo = false,
+}: { title: string; children?: React.ReactNode; demo?: boolean }) {
   return (
     <div className="mb-6">
-      <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
+      <h3 className="text-base font-semibold text-foreground mb-1">
+        {title}
+        {demo && <DemoBadge />}
+      </h3>
       {children && <p className="text-sm text-muted-foreground">{children}</p>}
     </div>
   );
@@ -314,7 +341,11 @@ function SectionHeader({ title, children }: { title: string; children?: React.Re
 
 function SaveButton({ onClick }: { onClick?: () => void }) {
   return (
-    <Button size="sm" className="gap-1.5 mt-4" onClick={onClick ?? (() => toast.success("Settings saved — backend will enforce on next login"))}>
+    <Button
+      size="sm"
+      className="gap-1.5 mt-4"
+      onClick={onClick ?? (() => toast.message(SECURITY_HONESTY_MSG))}
+    >
       <Check className="w-3.5 h-3.5" /> Save Changes
     </Button>
   );
@@ -354,7 +385,7 @@ function OrgAnalyticsPanel() {
   const total = ROLE_DIST.reduce((a, b) => a + b.count, 0);
   return (
     <div className="space-y-5">
-      <SectionHeader title="Org Analytics">Organisation structure, user distribution and activity overview.</SectionHeader>
+      <SectionHeader demo title="Org Analytics">Organisation structure, user distribution and activity overview.</SectionHeader>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {ORG_ENTITIES.map(e => {
           const Icon = e.icon;
@@ -457,7 +488,7 @@ function OrgAnalyticsPanel() {
 function SecurityDashboardPanel() {
   return (
     <div className="space-y-5">
-      <SectionHeader title="Security Dashboard">Live security posture and threat overview.</SectionHeader>
+      <SectionHeader demo title="Security Dashboard">Live security posture and threat overview.</SectionHeader>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card className="bg-card/60 border-border lg:col-span-1">
           <CardContent className="pt-6 flex flex-col items-center">
@@ -569,7 +600,7 @@ function SecurityDashboardPanel() {
 function SystemHealthPanel() {
   return (
     <div className="space-y-5">
-      <SectionHeader title="System Health">Infrastructure metrics and service status for this ERP deployment.</SectionHeader>
+      <SectionHeader demo title="System Health">Infrastructure metrics and service status for this ERP deployment.</SectionHeader>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
           { label: "CPU Usage",    value: 34, unit: "%",  icon: Server,    color: "text-cyan-400",   trend: "down" },
@@ -674,7 +705,7 @@ function SecurityTemplatesPanel() {
               <p className="text-xs text-muted-foreground">{t.description}</p>
               <Button size="sm" variant="outline" className="w-full text-xs" onClick={() => {
                 setApplied([t.name]);
-                toast.success(`${t.name} template applied — policies will take effect shortly`);
+                toast.message(SECURITY_HONESTY_MSG);
               }}>
                 {applied.includes(t.name) ? "Re-Apply" : "Apply Template"}
               </Button>
@@ -984,7 +1015,7 @@ function RoleManagementPanel() {
   const roles = ["superAdmin", "admin", "manager", "user", "viewer"] as const;
   return (
     <div className="space-y-5">
-      <SectionHeader title="Role Management">Define what each role can access and do across the ERP.</SectionHeader>
+      <SectionHeader demo title="Role Management">Define what each role can access and do across the ERP.</SectionHeader>
       <div className="flex flex-wrap gap-3">
         {ROLE_COUNTS.map(r => (
           <div key={r.role} className={cn("flex items-center gap-2 px-3 py-2 rounded-xl border", r.color)}>
@@ -1095,7 +1126,7 @@ function CompliancePanel() {
   const statusColor: Record<string, string> = { enforced: "text-emerald-400", pending: "text-amber-400", violated: "text-red-400" };
   return (
     <div className="space-y-5">
-      <SectionHeader title="Compliance">Policy compliance status across your ERP deployment.</SectionHeader>
+      <SectionHeader demo title="Compliance">Policy compliance status across your ERP deployment.</SectionHeader>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="bg-card/60 border-border">
           <CardContent className="pt-5 flex flex-col items-center">
@@ -1143,7 +1174,7 @@ function AuditLogPanel() {
   });
   return (
     <div className="space-y-5">
-      <SectionHeader title="Audit Log">Complete log of all actions taken in this ERP deployment.</SectionHeader>
+      <SectionHeader demo title="Audit Log">Complete log of all actions taken in this ERP deployment.</SectionHeader>
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
@@ -1224,7 +1255,7 @@ function EmailDigestPanel() {
 function IntegrationsPanel() {
   return (
     <div className="space-y-5">
-      <SectionHeader title="Integrations">Connect external services and manage API integrations.</SectionHeader>
+      <SectionHeader demo title="Integrations">Connect external services and manage API integrations.</SectionHeader>
       <div className="space-y-3">
         {INTEGRATIONS_DATA.map(int => {
           const Icon = int.icon;
@@ -1251,7 +1282,7 @@ function IntegrationsPanel() {
 function ImpersonationPanel() {
   return (
     <div className="space-y-5">
-      <SectionHeader title="Impersonation">Temporarily act as another user to troubleshoot issues. All impersonation sessions are fully logged. This is a User-level setting — specific to each individual user.</SectionHeader>
+      <SectionHeader demo title="Impersonation">Temporarily act as another user to troubleshoot issues. All impersonation sessions are fully logged. This is a User-level setting — specific to each individual user.</SectionHeader>
       <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
         <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
         <p className="text-xs text-amber-400">All impersonation sessions are logged and visible to Super Admins. Use with caution.</p>
@@ -1473,7 +1504,7 @@ function SharedPreviewPanel() {
 function MessageTemplatesPanel() {
   return (
     <div className="space-y-5">
-      <SectionHeader title="Message Templates">Manage notification templates sent to users across all channels.</SectionHeader>
+      <SectionHeader demo title="Message Templates">Manage notification templates sent to users across all channels.</SectionHeader>
       <Button size="sm" variant="outline" className="gap-1.5" onClick={() => toast.info("New template — backend pending")}><Plus className="w-3.5 h-3.5" /> New Template</Button>
       <Card className="bg-card/60 border-border">
         <CardContent className="p-0">
