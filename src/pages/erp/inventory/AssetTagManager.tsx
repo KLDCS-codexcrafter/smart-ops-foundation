@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import type { AssetTag, CustodyTransfer } from '@/types/asset-tag';
 import type { InventoryItem } from '@/types/inventory-item';
 import { useAssetCentres } from '@/hooks/useAssetCentres';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const KEY = 'erp_asset_tags';
 const CTKEY = 'erp_custody_transfers';
@@ -89,6 +91,17 @@ export function AssetTagManagerPanel() {
     } else {
       const nt: AssetTag = { ...form, id: `at-${Date.now()}`, created_at: now, updated_at: now };
       const u = [nt, ...tags]; setTags(u); sv(u); toast.success(`Asset tag ${form.asset_tag_number} created`);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nt.id,
+        recordLabel: `Asset Tag · ${nt.asset_tag_number}`,
+        beforeState: null,
+        afterState: nt as unknown as Record<string, unknown>,
+        reason: 'asset_tag_created',
+        sourceModule: 'AssetTagManager',
+      });
       // [JWT] POST /api/labels/asset-tags
     }
     setOpen(false);

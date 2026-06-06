@@ -18,6 +18,8 @@ import { useAttendanceTypes } from '@/hooks/usePayHubMasters3';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
 import type { AttendanceType } from '@/types/payroll-masters';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · payhub_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const COLORS = ['#22c55e','#ef4444','#f59e0b','#f97316','#8b5cf6','#06b6d4','#3b82f6','#10b981'];
 
@@ -57,7 +59,22 @@ export function AttendanceTypesMasterPanel() {
   const handleSave = useCallback(() => {
     if (!sheetOpen) return;
     if (!form.name.trim()) return;
-    if (editId) update(editId, form); else create(form);
+    if (editId) {
+      update(editId, form);
+    } else {
+      create(form);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: `at-${Date.now()}`,
+        recordLabel: `Attendance Type · ${form.code} · ${form.name}`,
+        beforeState: null,
+        afterState: form as unknown as Record<string, unknown>,
+        reason: 'attendance_type_created',
+        sourceModule: 'AttendanceTypesMaster',
+      });
+    }
     setSheetOpen(false);
   }, [form, editId, sheetOpen, create, update]);
 

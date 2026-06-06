@@ -18,6 +18,7 @@ import {
   validateBatch,
 } from '@/lib/comply360-einvoice-aggregator-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · comply360_event
 
 function inr(n: number): string {
   return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
@@ -63,7 +64,19 @@ export default function EInvoicePage(): JSX.Element {
 
   const handleGenerate = (): void => {
     if (!batch) return;
+    const recordId = `einv-${entityCode}-${period}-${Date.now()}`;
     toast.success(`Generate IRN Batch · ${batch.valid_count} valid items queued`);
+    logAudit({
+      entityCode,
+      action: 'create',
+      entityType: 'comply360_event',
+      recordId,
+      recordLabel: `E-Invoice Batch · ${entityCode} · ${period}`,
+      beforeState: null,
+      afterState: { period, valid_count: batch.valid_count, total_count: batch.items.length },
+      reason: 'einvoice_batch_generated',
+      sourceModule: 'EInvoicePage',
+    });
   };
 
   const handleDownload = (): void => {

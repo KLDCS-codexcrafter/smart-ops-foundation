@@ -16,6 +16,8 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useLoanTypes } from '@/hooks/usePayHubMasters3';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import type { LoanType } from '@/types/payroll-masters';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · payhub_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type LTForm = Omit<LoanType, 'id'|'created_at'|'updated_at'>;
 const BLANK: LTForm = {
@@ -45,7 +47,22 @@ export function LoanTypesMasterPanel() {
   const handleSave = useCallback(() => {
     if (!sheetOpen) return;
     if (!form.name.trim()) return;
-    if (editId) update(editId, form); else create(form);
+    if (editId) {
+      update(editId, form);
+    } else {
+      create(form);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: `loan-${Date.now()}`,
+        recordLabel: `Loan Type · ${form.code} · ${form.name}`,
+        beforeState: null,
+        afterState: form as unknown as Record<string, unknown>,
+        reason: 'loan_type_created',
+        sourceModule: 'LoanTypesMaster',
+      });
+    }
     setSheetOpen(false);
   }, [form, editId, sheetOpen, create, update]);
 

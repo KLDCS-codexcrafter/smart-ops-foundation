@@ -26,6 +26,7 @@ import {
   type EWayBill,
 } from '@/lib/comply360-eway-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · comply360_event
 
 function inr(n: number): string {
   return '₹' + n.toLocaleString('en-IN', { maximumFractionDigits: 2 });
@@ -105,6 +106,17 @@ export default function EWayBillPage(): JSX.Element {
     } else {
       toast.error(`Draft saved with ${ewb.errors.length} error(s)`);
     }
+    logAudit({
+      entityCode,
+      action: 'create',
+      entityType: 'comply360_event',
+      recordId: ewb.ewb_no,
+      recordLabel: `E-Way Bill · ${ewb.ewb_no} · ${ewb.part_a.doc_no}`,
+      beforeState: null,
+      afterState: { status: ewb.status, doc_no: ewb.part_a.doc_no, valid_until: ewb.valid_until },
+      reason: 'eway_bill_generated',
+      sourceModule: 'EWayBillPage',
+    });
     setRefreshTick((t) => t + 1);
   };
 

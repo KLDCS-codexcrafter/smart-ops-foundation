@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { LayoutTemplate, Plus, Search, Edit2, Trash2, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import type { ItemTemplateA3 } from '@/types/item-template-a3';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const KEY = 'erp_item_templates_a3';
 // [JWT] GET /api/inventory/item-templates
@@ -119,6 +121,17 @@ export function ItemTemplatesPanel() {
     } else {
       const nt: ItemTemplateA3 = { ...form, id: `tmpl-${Date.now()}`, created_at: now, updated_at: now };
       const u = [...templates, nt]; setTemplates(u); sv(u); toast.success(`${form.name} created`);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nt.id,
+        recordLabel: `Item Template · ${nt.name}`,
+        beforeState: null,
+        afterState: nt as unknown as Record<string, unknown>,
+        reason: 'item_template_created',
+        sourceModule: 'ItemTemplates',
+      });
       /* [JWT] POST /api/inventory/item-templates */
     }
     setOpen(false);

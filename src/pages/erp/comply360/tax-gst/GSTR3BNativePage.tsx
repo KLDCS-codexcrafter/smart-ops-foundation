@@ -34,6 +34,7 @@ import {
 import { recordFiling } from '@/lib/comply360-statutory-memory';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityGSTINs } from '@/hooks/useEntityGSTINs';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · comply360_event
 
 function defaultPeriod(): string {
   const d = new Date();
@@ -121,11 +122,24 @@ export default function GSTR3BNativePage(): JSX.Element {
 
   const handleARN = (): void => {
     if (!arnInput.trim()) { toast.error('ARN required'); return; }
-    recordFiling(`gstr-3b-${returnPeriod.toLowerCase()}`, arnInput.trim());
+    const recordId = `gstr-3b-${returnPeriod.toLowerCase()}`;
+    recordFiling(recordId, arnInput.trim());
+    logAudit({
+      entityCode: entityId,
+      action: 'create',
+      entityType: 'comply360_event',
+      recordId,
+      recordLabel: `GSTR-3B Filing · ${activeGSTIN} · ${returnPeriod}`,
+      beforeState: null,
+      afterState: { gstin: activeGSTIN, return_period: returnPeriod, arn: arnInput.trim(), net_payable: totalNet },
+      reason: 'gstr3b_filing_recorded',
+      sourceModule: 'GSTR3BNativePage',
+    });
     toast.success(`Filing recorded · ARN ${arnInput}`);
     setArnOpen(false);
     setArnInput('');
   };
+
 
   if (!entityId || entityId === 'all') {
     return (

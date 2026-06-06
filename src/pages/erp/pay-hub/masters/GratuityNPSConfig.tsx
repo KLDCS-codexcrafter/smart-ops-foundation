@@ -15,6 +15,8 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useGratuityNPS } from '@/hooks/usePayHubMasters3';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import type { GratuityNPSSettings } from '@/types/payroll-masters';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · payhub_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 export function GratuityNPSPanel() {
   const { settings, save } = useGratuityNPS();
@@ -22,9 +24,21 @@ export function GratuityNPSPanel() {
 
   const handleSave = useCallback(() => {
     const now = new Date().toISOString();
-    save({
+    const next: GratuityNPSSettings = {
       gratuity: { ...form.gratuity, updated_at: now },
       nps: { ...form.nps, updated_at: now },
+    };
+    save(next);
+    logAudit({
+      entityCode: DEFAULT_ENTITY_SHORTCODE,
+      action: 'update',
+      entityType: 'payhub_master_event',
+      recordId: 'gratuity-nps-config',
+      recordLabel: 'Gratuity & NPS Configuration',
+      beforeState: null,
+      afterState: next as unknown as Record<string, unknown>,
+      reason: 'gratuity_nps_config_saved',
+      sourceModule: 'GratuityNPSConfig',
     });
   }, [form, save]);
 

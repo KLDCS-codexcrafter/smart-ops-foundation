@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import type { BarcodeJob, BarcodeSuperType } from '@/types/barcode-job';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { LabelTemplate } from '@/types/label-template';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const KEY = 'erp_barcode_jobs';
 const IKEY = 'erp_inventory_items';
@@ -147,6 +149,17 @@ export function BarcodeGeneratorPanel() {
       };
       const u = [nj, ...jobs]; setJobs(u); sv(u);
       toast.success(status === 'draft' ? 'Draft saved' : 'Added to queue');
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nj.id,
+        recordLabel: `Barcode Job · ${nj.id}`,
+        beforeState: null,
+        afterState: nj as unknown as Record<string, unknown>,
+        reason: 'barcode_job_created',
+        sourceModule: 'BarcodeGenerator',
+      });
       // [JWT] POST /api/labels/barcode-jobs
     }
     setOpen(false);
