@@ -48,6 +48,7 @@ import type { ImportSchema } from '@/lib/master-import-engine';
 import { divisionsKey, departmentsKey } from '@/types/org-structure';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { modeOfPaymentKey, termsOfPaymentKey, termsOfDeliveryKey } from '@/types/cc-masters';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · foundation_master_event
 
 // ─── Interfaces ──────────────────────────────────────────────
 
