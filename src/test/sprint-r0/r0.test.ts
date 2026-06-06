@@ -57,8 +57,9 @@ describe('Sprint R0 · Block 3 · ImportHub honesty', () => {
   const src = read('src/pages/bridge/ImportHub.tsx');
 
   it('NO fake IMP-005 toast call remains (header comment about deletion is OK)', () => {
-    // The fake call was: toast("IMP-005 created"). Allow comments mentioning the deletion.
-    expect(src).not.toMatch(/toast\([^)]*IMP-005/);
+    // Strip block comments before matching so the documenting header doesn't false-positive.
+    const stripped = src.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*$/gm, '');
+    expect(stripped).not.toMatch(/IMP-005/);
   });
 
   it('honesty panel present', () => {
