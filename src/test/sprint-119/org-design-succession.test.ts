@@ -40,8 +40,8 @@ import { EMPLOYEES_KEY, type Employee } from '@/types/employee';
 const ROOT = process.cwd();
 const ENGINE_PATH = join(ROOT, 'src/lib/org-design-succession-engine.ts');
 const PAGE_PATH = join(ROOT, 'src/features/org-design/OrgDesignSimulatorPage.tsx');
-const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/command-center-sidebar-config.ts');
-const CC_PAGE_PATH = join(ROOT, 'src/features/command-center/pages/CommandCenterPage.tsx');
+const SIDEBAR_PATH = join(ROOT, 'src/apps/erp/configs/fpa-planning-sidebar-config.ts');
+const CC_PAGE_PATH = join(ROOT, 'src/pages/erp/fpa-planning/FpaPlanningPage.tsx');
 const AUDIT_TYPES_PATH = join(ROOT, 'src/types/audit-trail.ts');
 
 const engineSrc = readFileSync(ENGINE_PATH, 'utf8');
