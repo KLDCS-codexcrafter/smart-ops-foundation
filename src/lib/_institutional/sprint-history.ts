@@ -957,7 +957,8 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint P8.1 T-P81-Demo-Seed-Modernization · Demo-flag/manifest foundation + purgeDemoData + 6 new domain seeders (TaskFlow/OperixChat/FrontDesk/WebStoreX/EcomX showcase chain) wired CALL-ONLY through engine exports · coverage honesty (computeSeedCoverage replaces 7 hand-typed fixtureCoverage literals) · auto-seed CHOICE dialog at entity creation + Remove-demo-data action · test-debt triage (11 stale-assertion FIXES + 5 in-test-ESLint flake isolated + 1 dangling MOAT id) · ZERO diff on engines/applications/seed-entitlements/role/route maps · Sinha anchor block (:516-533) UNTOUCHED · headSha TBD_AT_BANK
   {
     sprintNumber: 'P8.1' as unknown as number, code: 'T-P81-Demo-Seed-Modernization', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '3105b174', loc: 1500,
+    // P8.2 Block 0.2(a) · P8.1 headSha backfilled at P8.2 bank (canon: each sprint backfills its IMMEDIATE PREDECESSOR)
+    headSha: '474946fc', predecessorSha: '3105b174', loc: 1500,
     newSiblings: ['demo-seed-manifest', 'demo-seeders-p81'],
     bankDate: '2026-06-06', provenance: 'CONFIRMED',
   },
