@@ -113,9 +113,11 @@ describe('Sprint 95 · T-Phase-5.F.5.7-Final · Phase 5 CLOSE CEREMONY · FINAL 
   });
 
   // ─── S95 HOTFIX · Sidebar inactivity correction (3 new assertions · cycle-2) ───
-  it('All 44 sidebar entries are type:item (post-hotfix · navigable canonical pattern)', async () => {
+  it('Sidebar entries are ALL type:item with a ≥44 FLOOR (post-hotfix navigable canonical · Lesson 24 bounds-check)', async () => {
+    // P8.1 Pass-2b · durable conversion · the literal "44" was the S95-close snapshot; later sprints
+    // legitimately added items (current ≥52). The honest S95 invariants are the floor and the shape.
     const mod = await import('@/apps/erp/configs/comply360-sidebar-config');
-    expect(mod.comply360SidebarItems.length).toBe(44);
+    expect(mod.comply360SidebarItems.length).toBeGreaterThanOrEqual(44);
     const allItem = mod.comply360SidebarItems.every((i) => i.type === 'item');
     expect(allItem).toBe(true);
   });
@@ -126,10 +128,12 @@ describe('Sprint 95 · T-Phase-5.F.5.7-Final · Phase 5 CLOSE CEREMONY · FINAL 
     );
     expect(hasChildren).toBe(false);
   });
-  it('Sidebar navigation contract preserved (id-based setActiveModule · 44 ids stable)', async () => {
+  it('Sidebar navigation contract preserved (id-based setActiveModule · ≥44 unique ids · S95 keystones present)', async () => {
+    // P8.1 Pass-2b · durable conversion · uniqueness + keystone-id presence is the honest invariant.
     const mod = await import('@/apps/erp/configs/comply360-sidebar-config');
     const ids = mod.comply360SidebarItems.map((i) => i.id);
-    expect(new Set(ids).size).toBe(44);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids.length).toBeGreaterThanOrEqual(44);
     expect(ids).toContain('mca-tier2');
     expect(ids).toContain('legal-ipr');
     expect(ids).toContain('home');
