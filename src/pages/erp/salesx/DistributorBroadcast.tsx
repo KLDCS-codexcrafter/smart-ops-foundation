@@ -31,6 +31,7 @@ import {
 } from '@/types/distributor-order';
 import type { Distributor, DistributorTier } from '@/types/distributor';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · salesx_txn_event
 import { dSum } from '@/lib/decimal-helpers';
 
 const INDIGO = 'hsl(231 48% 58%)';
