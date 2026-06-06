@@ -172,6 +172,17 @@ export function addBomEntry(
   };
   const all = loadBomEntries(entityCode);
   ssave(bomEntriesKey(entityCode), [...all, entry]);
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'engineeringx_event' as unknown as AuditEntityType,
+    recordId: entry.id,
+    recordLabel: `BOM Entry · ${entry.material_code} (drawing ${entry.drawing_id})`,
+    beforeState: null,
+    afterState: { bom_entry_id: entry.id, drawing_id: entry.drawing_id, material_code: entry.material_code, qty: entry.qty, unit: entry.unit, status: entry.status },
+    sourceModule: 'engineeringx',
+    reason: 'bom_entry_added',
+  });
   return entry;
 }
 
