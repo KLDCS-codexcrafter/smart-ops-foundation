@@ -334,3 +334,117 @@ export function PrintConfigPagePanel() {
 }
 
 export default PrintConfigPagePanel;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Sprint R0 · Block 5.3 · EntityBrandingSection
+// Three image slots (logo · authorized_signature · stamp) per entity.
+// Hard guards live in entity-branding-engine (MIME + ≤200KB).
+// ─────────────────────────────────────────────────────────────────────────────
+const BRANDING_SLOTS: BrandingSlot[] = ['logo', 'authorized_signature', 'stamp'];
+
+function EntityBrandingSection({ entityCode }: { entityCode: string }): JSX.Element | null {
+  const [branding, setBranding] = useState<EntityBranding>(() => loadEntityBranding(entityCode));
+
+  useEffect(() => {
+    setBranding(loadEntityBranding(entityCode));
+  }, [entityCode]);
+
+  if (!entityCode) return null;
+
+  const onFile = (slot: BrandingSlot, file: File | null) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = String(reader.result ?? '');
+      try {
+        validateBrandingDataUrl(dataUrl);
+        const next = setBrandingSlot(entityCode, slot, dataUrl);
+        setBranding(next);
+        toast.success(`${BRANDING_SLOT_LABELS[slot]} updated`);
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : 'Upload failed');
+      }
+    };
+    reader.onerror = () => toast.error('Failed to read file');
+    reader.readAsDataURL(file);
+  };
+
+  const onClear = (slot: BrandingSlot) => {
+    const next = clearBrandingSlot(entityCode, slot);
+    setBranding(next);
+    toast.info(`${BRANDING_SLOT_LABELS[slot]} cleared`);
+  };
+
+  return (
+    <section
+      data-testid="entity-branding-section"
+      className="rounded-2xl border bg-card/60 backdrop-blur-xl p-5 space-y-4"
+    >
+      <div>
+        <h2 className="text-base font-semibold text-foreground">Entity Branding</h2>
+        <p className="text-xs text-muted-foreground mt-1">
+          Logo · authorized signature · company stamp. Rendered on invoice prints.
+          Each slot accepts PNG/JPEG/WebP/SVG, max {(MAX_SLOT_BYTES / 1024).toFixed(0)} KB.
+          Stored per entity; unset slots render cleanly absent.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {BRANDING_SLOTS.map(slot => {
+          const url = branding[slot];
+          const inputId = `branding-${slot}`;
+          return (
+            <div
+              key={slot}
+              data-testid={`branding-slot-${slot}`}
+              className="rounded-xl border border-border/40 p-3 bg-background/40 space-y-2"
+            >
+              <div className="text-xs font-medium text-foreground">{BRANDING_SLOT_LABELS[slot]}</div>
+              <div className="text-[10px] text-muted-foreground leading-snug">
+                {BRANDING_SLOT_HINTS[slot]}
+              </div>
+              <div className="h-24 rounded-lg border border-dashed border-border/60 bg-background/60 flex items-center justify-center overflow-hidden">
+                {url ? (
+                  <img
+                    src={url}
+                    alt={BRANDING_SLOT_LABELS[slot]}
+                    className="max-h-full max-w-full object-contain"
+                    data-testid={`branding-preview-${slot}`}
+                  />
+                ) : (
+                  <span className="text-[10px] text-muted-foreground">No image</span>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  id={inputId}
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={(e) => onFile(slot, e.target.files?.[0] ?? null)}
+                />
+                <Button asChild size="sm" variant="outline" className="text-xs">
+                  <label htmlFor={inputId} className="cursor-pointer">
+                    {url ? 'Replace' : 'Upload'}
+                  </label>
+                </Button>
+                {url && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-xs text-destructive hover:text-destructive"
+                    onClick={() => onClear(slot)}
+                  >
+                    Clear
+                  </Button>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+
+export default PrintConfigPagePanel;
