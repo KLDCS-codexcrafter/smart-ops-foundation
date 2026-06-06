@@ -39,6 +39,7 @@ import {
 } from '@/types/taskflow';
 import { toast } from 'sonner';
 import { logAudit } from '@/lib/audit-trail-engine';
+import { publish as publishNotification } from '@/lib/notification-engine'; // P82 Block 2 · 3 publishers below (#1 ack · #2 reassign · #3 due-date)
 
 // ── tiny JSON helpers ──────────────────────────────────────────────────────
 const readJSON = <T,>(key: string, fallback: T): T => {
@@ -379,12 +380,20 @@ export function acknowledgeTask(
   if (t.acknowledgedAt) {
     throw new Error('TaskFlow: task already acknowledged');
   }
-  return updateTask(
+  const next = updateTask(
     entityCode,
     taskId,
     { acknowledgedAt: new Date().toISOString(), acknowledgedBy: userId },
     userId,
   );
+  // P82 Block 2 · publisher #1 · taskflow.acknowledged · success path
+  publishNotification({
+    entityCode, userId: t.assigneeId ?? userId, kind: 'taskflow.acknowledged', cardId: 'taskflow',
+    severity: 'success', title: `Task acknowledged: ${t.title}`,
+    body: `by ${userId}`, deepLink: `/erp/taskflow/task/${taskId}`,
+    refType: 'task', refId: taskId,
+  });
+  return next;
 }
 
 export function getUnacknowledgedTasks(
@@ -425,12 +434,20 @@ export function reassignTask(
   };
   const all = readJSON<ReassignmentRecord[]>(taskflowReassignmentsKey(entityCode), []);
   writeJSON(taskflowReassignmentsKey(entityCode), [...all, record]);
-  return updateTask(
+  const next = updateTask(
     entityCode,
     taskId,
     { assigneeId: toUserId, assigneeName: toUserName || toUserId },
     byUserId,
   );
+  // P82 Block 2 · publisher #2 · taskflow.reassigned · success path
+  publishNotification({
+    entityCode, userId: toUserId, kind: 'taskflow.reassigned', cardId: 'taskflow',
+    severity: 'info', title: `Task reassigned to you: ${t.title}`,
+    body: `from ${t.assigneeId} · ${reason.trim()}`,
+    deepLink: `/erp/taskflow/task/${taskId}`, refType: 'task', refId: taskId,
+  });
+  return next;
 }
 export function getReassignmentTrail(entityCode: string, taskId: string): ReassignmentRecord[] {
   return readJSON<ReassignmentRecord[]>(taskflowReassignmentsKey(entityCode), [])
@@ -461,7 +478,15 @@ export function changeDueDate(
   };
   const all = readJSON<DueDateChangeRecord[]>(taskflowDueDateChangesKey(entityCode), []);
   writeJSON(taskflowDueDateChangesKey(entityCode), [...all, record]);
-  return updateTask(entityCode, taskId, { dueDate: newDate }, byUserId);
+  const next = updateTask(entityCode, taskId, { dueDate: newDate }, byUserId);
+  // P82 Block 2 · publisher #3 · taskflow.due_date_changed · success path
+  publishNotification({
+    entityCode, userId: t.assigneeId ?? byUserId, kind: 'taskflow.due_date_changed', cardId: 'taskflow',
+    severity: 'warning', title: `Due date changed: ${t.title}`,
+    body: `${t.dueDate ?? '—'} → ${newDate ?? '—'} · ${reason.trim()}`,
+    deepLink: `/erp/taskflow/task/${taskId}`, refType: 'task', refId: taskId,
+  });
+  return next;
 }
 export function getDueDateHistory(entityCode: string, taskId: string): DueDateChangeRecord[] {
   return readJSON<DueDateChangeRecord[]>(taskflowDueDateChangesKey(entityCode), [])

@@ -23,6 +23,7 @@ import {
   loadPartyMaster, findPartyByName, upsertParty,
 } from '@/lib/party-master-engine';
 import { logAudit } from '@/lib/audit-trail-engine';
+import { publish as publishNotification } from '@/lib/notification-engine'; // P82 Block 2 · publisher #8 · ecomx.unmapped_sku_recorded · NEW-record branch ONLY
 import type {
   EcMarketplace, EcMarketplaceType, EcPartyMode,
   EcListing, EcListingKind, EcKitComponent,
@@ -285,6 +286,13 @@ export function recordUnmappedSku(
     occurrences: 1, resolvedListingId: null,
   };
   ss(ecUnmappedKey(entityCode), [...all, rec]);
+  // P82 Block 2 · publisher #8 · ecomx.unmapped_sku_recorded · NEW-record branch ONLY (existing-increment branch above returns without publishing)
+  publishNotification({
+    entityCode, userId: '*', kind: 'ecomx.unmapped_sku_recorded', cardId: 'ecomx',
+    severity: 'warning', title: `Unmapped SKU · ${marketplaceSku}`,
+    body: sampleTitle || null,
+    deepLink: '/erp/ecomx/unmapped', refType: 'unmapped_sku', refId: rec.id,
+  });
   return rec;
 }
 
