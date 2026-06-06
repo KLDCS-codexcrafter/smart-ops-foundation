@@ -136,18 +136,21 @@ describe('Sprint 102 · T-Phase-6.A.1.1 · institutional debt cleanup', () => {
   });
 
   // ── Block 4 · S102 + meta + scope ──────────────────────────────────
-  it('AC#8 · S102 sprint-history entry exists with TBD headSha + empty siblings', () => {
+  it('AC#8 · S102 sprint-history entry exists with banked headSha + empty siblings (durable: post-bank sha-locked)', () => {
     const s102 = s(102);
     expect(s102.code).toBe('T-Phase-6.A.1.1');
-    expect(s102.headSha).toBe('TBD_AT_BANK');
+    // P8.1 Pass-2b · durable conversion · S102 was banked at ba5a81b7 — assertion now locks the
+    // committed sha rather than the pre-bank TBD_AT_BANK marker (which only ever held for one sprint).
+    expect(s102.headSha).toBe('ba5a81b75132577a7599d6ff0945d0ded2662db5');
     expect(s102.predecessorSha).toBe('e91e813d02075dee90f1e934a83a7b69e4ff843b');
     expect(s102.newSiblings).toEqual([]);
   });
 
-  it('AC#9 · only the single latest sprint entry carries TBD_AT_BANK', () => {
+  it('AC#9 · at most one sprint entry carries TBD_AT_BANK at any time (durable: never assert WHICH sprint is latest)', () => {
+    // P8.1 Pass-2b · durable conversion · the WHICH-sprint-is-latest check broke on every future
+    // bank cycle. The honest invariant is the cardinality: TBD belongs to the in-flight sprint only.
     const tbd = SPRINTS.filter((x) => x.headSha === 'TBD_AT_BANK');
-    expect(tbd.length).toBe(1);
-    expect(tbd[0].sprintNumber).toBe(102);
+    expect(tbd.length).toBeLessThanOrEqual(1);
   });
 
   it('AC#10 · sibling count unchanged (>=172 — no engine added this sprint)', () => {
