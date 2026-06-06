@@ -25,6 +25,7 @@ import { autoPayRulesKey } from '@/types/smart-ap';
 import type { PaymentRequisition } from '@/types/payment-requisition';
 import { paymentRequisitionsKey } from '@/types/payment-requisition';
 import { getCurrentUser } from '@/lib/auth-helpers';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1a · treasury_event
 
 // ── Storage helpers ────────────────────────────────────────────────────
 
@@ -134,6 +135,13 @@ export function createRule(input: CreateAutoPayRuleInput): AutoPayRule {
   const all = readAll(input.entityCode);
   all.push(rule);
   writeAll(input.entityCode, all);
+  // P8.3 · Block 1a · class-B wiring · treasury_event
+  logAudit({
+    entityCode: input.entityCode, action: 'create', entityType: 'treasury_event',
+    recordId: rule.id, recordLabel: `AutoPayRule · ${rule.name}`,
+    beforeState: null, afterState: rule as unknown as Record<string, unknown>,
+    reason: 'auto_pay_rule_created', sourceModule: 'auto-pay-engine',
+  });
   return rule;
 }
 

@@ -8,6 +8,7 @@ import {
   type RateContract, type RateContractLine, type RateContractStatus, rateContractKey,
 } from '@/types/rate-contract';
 import { generateDocNo } from './fincore-engine';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1a · procure_master_event
 
 const now = (): string => new Date().toISOString();
 const newId = (p: string): string =>
@@ -78,6 +79,13 @@ export function createRateContract(input: CreateRateContractInput): RateContract
     updated_at: now(),
   };
   write(input.entity_code, [...list, rec]);
+  // P8.3 · Block 1a · class-B wiring · procure_master_event
+  logAudit({
+    entityCode: input.entity_code, action: 'create', entityType: 'procure_master_event',
+    recordId: rec.id, recordLabel: `RateContract · ${rec.contract_no} · ${rec.vendor_name}`,
+    beforeState: null, afterState: rec as unknown as Record<string, unknown>,
+    reason: 'rate_contract_created', sourceModule: 'rate-contract-engine',
+  });
   return rec;
 }
 

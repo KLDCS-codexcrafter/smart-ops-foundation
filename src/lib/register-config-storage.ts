@@ -20,6 +20,7 @@ import {
   DEFAULT_REGISTER_TOGGLES,
   DEFAULT_REGISTER_GROUP,
 } from '@/types/register-config';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1a · fincore_settings_event
 
 /**
  * @purpose   Canonical localStorage key per entity.
@@ -65,6 +66,13 @@ export function saveRegisterConfig(entityCode: string, config: RegisterConfig): 
   try {
     // [JWT] PUT /api/fincore/register-config/:entityCode
     localStorage.setItem(registerConfigKey(entityCode), JSON.stringify(config));
+    // P8.3 · Block 1a · class-B wiring · fincore_settings_event (singleton-per-entity upsert)
+    logAudit({
+      entityCode, action: 'update', entityType: 'fincore_settings_event',
+      recordId: `register-config:${entityCode}`, recordLabel: `RegisterConfig · ${entityCode}`,
+      beforeState: null, afterState: config as unknown as Record<string, unknown>,
+      reason: 'register_config_saved', sourceModule: 'register-config-storage',
+    });
   } catch (err) {
     // [Analytical] Diagnostic-only; banned-pattern targets console.log, not console.error.
     console.error('Failed to save RegisterConfig:', err);

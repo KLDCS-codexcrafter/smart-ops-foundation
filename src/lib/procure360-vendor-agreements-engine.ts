@@ -18,6 +18,7 @@ import {
   createDocument,
   loadDocuments,
 } from '@/lib/docvault-engine';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1a · procure_master_event
 import type {
   Document,
   DocumentVersion,
@@ -77,7 +78,7 @@ export function createVendorAgreement(
   input: CreateVendorAgreementInput,
   createdBy: string,
 ): Document {
-  return createDocument(
+  const doc = createDocument(
     entityCode,
     {
       entity_id: entityCode,
@@ -96,4 +97,14 @@ export function createVendorAgreement(
     input.initialVersion,
     createdBy,
   );
+  // P8.3 · Block 1a · class-B wiring · procure_master_event (vendor-agreement linkage —
+  // doc body itself is already logged by docvault-control-engine as document_control_event;
+  // this captures the procurement-side relationship for per-domain queryability).
+  logAudit({
+    entityCode, action: 'create', entityType: 'procure_master_event',
+    recordId: doc.id, recordLabel: `VendorAgreement · ${input.title} · vendor:${input.vendorId}`,
+    beforeState: null, afterState: { document_id: doc.id, vendor_id: input.vendorId, document_type: input.documentType, department_id: input.originatingDepartmentId },
+    reason: 'vendor_agreement_linked', sourceModule: 'procure360-vendor-agreements-engine',
+  });
+  return doc;
 }

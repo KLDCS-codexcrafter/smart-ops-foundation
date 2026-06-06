@@ -389,7 +389,18 @@ export type AuditEntityType =
   // Action discriminator carried via reason / record_label.
   // ComplianceModule UNTOUCHED. §H 0-DIFF on approval-workflow + Comply360 + push-notification-bridge.
   // DP-WS-2 PIM canon · item/stock master is READ-ONLY · wrapped by reference · never copied or edited.
-  | 'webstorex_event';
+  | 'webstorex_event'
+  // Sprint P8.3 · T-P83-Audit-Expansion-W1 · Block 1a · Class-B engine wiring (Wave 1)
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call.
+  // Action discriminator carried via reason / record_label.
+  // 5 domain literals — one per Finance/Procure/EximX/Settings/Sales family — to
+  // preserve per-domain queryability (coarser single literal would gut filtering).
+  // ComplianceModule UNTOUCHED. §H 0-DIFF on approval/Comply360/push-notif-bridge.
+  | 'treasury_event'           // auto-pay-engine · bulk-pay-engine · payment-requisition-engine
+  | 'procure_master_event'     // budget-allocation-engine · rate-contract-engine · procure360-vendor-agreements-engine
+  | 'eximx_event'              // bcd-calculator-engine · fx-what-if-engine
+  | 'fincore_settings_event'   // register-config-storage (+ Pass 1b hooks: fiscal/period/templates/currencies)
+  | 'salesx_master_event';     // (Pass 1b: campaigns / sam / enquiry-source / call-quality / etc.)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sprint R0 · Block 5.2 · Audit-aggregator catalog consolidation (reading (c))
@@ -408,6 +419,12 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   'frontdesk_event',         // :372
   'receivx_followup_event',  // :382
   'webstorex_event',         // :392
+  // Sprint P8.3 · Block 1a · Wave 1 audit expansion (5 domain literals)
+  'treasury_event',
+  'procure_master_event',
+  'eximx_event',
+  'fincore_settings_event',
+  'salesx_master_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];
