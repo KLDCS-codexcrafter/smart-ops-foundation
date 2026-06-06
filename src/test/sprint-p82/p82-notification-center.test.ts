@@ -280,12 +280,13 @@ describe('digests', () => {
     expect(e).toBeNull();
   });
 
-  it('runOpenDigests returns only the digests it emitted this run', () => {
+  it('runOpenDigests is idempotent across same-day re-opens (no new LS rows)', () => {
     seedOverdueTask();
     const out = runOpenDigests(ENT, USER, '2026-05-10T08:00:00Z');
     expect(out.length).toBe(2); // overdue + obligations (no PTPs)
-    const out2 = runOpenDigests(ENT, USER, '2026-05-10T10:00:00Z');
-    expect(out2.length).toBe(0);
+    const total = listNotifications(ENT).length;
+    runOpenDigests(ENT, USER, '2026-05-10T10:00:00Z');
+    expect(listNotifications(ENT).length).toBe(total);
   });
 });
 
