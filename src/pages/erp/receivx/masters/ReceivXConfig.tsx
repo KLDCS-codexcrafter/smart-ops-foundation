@@ -103,11 +103,24 @@ export function ReceivXConfigPanel({ entityCode }: Props) {
 
   const handleSave = useCallback(() => {
     try {
+      // P8.3 · Block 2b · classify as 'create' on first persistence; 'update' thereafter
+      const existed = !!(() => { try { return localStorage.getItem(receivxConfigKey(entityCode)); } catch { return null; } })();
+      const stamped = { ...cfg, updated_at: new Date().toISOString() };
       // [JWT] POST /api/receivx/config
-      localStorage.setItem(
-        receivxConfigKey(entityCode),
-        JSON.stringify({ ...cfg, updated_at: new Date().toISOString() }),
-      );
+      localStorage.setItem(receivxConfigKey(entityCode), JSON.stringify(stamped));
+      if (!existed) {
+        logAudit({
+          entityCode: String(entityCode),
+          action: 'create',
+          entityType: 'receivx_master_event',
+          recordId: `receivx-config-${entityCode}`,
+          recordLabel: `ReceivX Config · ${entityCode}`,
+          beforeState: null,
+          afterState: stamped as unknown as Record<string, unknown>,
+          reason: 'receivx_config_created',
+          sourceModule: 'ReceivXConfig',
+        });
+      }
       toast.success('Configuration saved');
     } catch { toast.error('Save failed'); }
   }, [cfg, entityCode]);
