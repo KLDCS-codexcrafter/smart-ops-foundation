@@ -19,6 +19,7 @@ import {
   Activity, Award, Trophy, Flame, TrendingUp, Coffee, PhoneOff, CheckCircle2,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · salesx_txn_event
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useEnquiries } from '@/hooks/useEnquiries';
 import { useCallSessions } from '@/hooks/useCallSessions';
