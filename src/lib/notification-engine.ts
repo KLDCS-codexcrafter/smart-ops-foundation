@@ -154,13 +154,21 @@ export function unsetMute(entityCode: string, userId: string, muteId: string): v
 // ═══════════════════════════════════════════════════════════════════════
 export function listNotifications(
   entityCode: string,
-  filter?: { userId?: string; unreadOnly?: boolean; kind?: NotificationKind },
+  filter?: { userId?: string; userRole?: string; unreadOnly?: boolean; kind?: NotificationKind },
 ): NotificationEvent[] {
   let rows = ls<NotificationEvent>(notificationsKey(entityCode));
-  if (filter?.userId) {
-    rows = rows.filter((n) => n.targetUserId === filter.userId || n.targetUserId === '*');
-    const mutes = activeMutes(entityCode, filter.userId);
-    if (mutes.length > 0) rows = rows.filter((n) => !isMuted(n, mutes));
+  if (filter?.userId || filter?.userRole) {
+    const uid = filter.userId;
+    const role = filter.userRole;
+    rows = rows.filter((n) =>
+      n.targetUserId === '*' ||
+      (uid !== undefined && n.targetUserId === uid) ||
+      (role !== undefined && n.targetRole !== null && n.targetRole === role),
+    );
+    if (uid) {
+      const mutes = activeMutes(entityCode, uid);
+      if (mutes.length > 0) rows = rows.filter((n) => !isMuted(n, mutes));
+    }
   }
   if (filter?.unreadOnly) rows = rows.filter((n) => !n.readAt);
   if (filter?.kind) rows = rows.filter((n) => n.kind === filter.kind);

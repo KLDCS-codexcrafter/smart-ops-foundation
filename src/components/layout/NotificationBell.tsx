@@ -64,11 +64,14 @@ export function NotificationBell() {
 
   const items = useMemo<NotificationEvent[]>(
     () => entityCode ? listNotifications(entityCode, { userId }) : [],
+    // `rev` is the re-render trigger after publish/mute/markRead — intentional.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, userId, rev],
   );
   const unread = entityCode ? getUnreadCount(entityCode, userId) : 0;
   const mutes = useMemo(
     () => entityCode ? getMutes(entityCode, userId) : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, userId, rev],
   );
 
