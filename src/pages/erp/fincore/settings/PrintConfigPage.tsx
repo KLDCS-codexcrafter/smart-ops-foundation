@@ -67,7 +67,9 @@ import {
   savePrintConfig,
   resetPrintConfig,
   resolveToggles,
+  printConfigKey,
 } from '@/lib/print-config-storage';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · fincore_settings_event
 import { loadEntities, type MockEntity } from '@/data/mock-entities';
 import {
   loadEntityBranding,
