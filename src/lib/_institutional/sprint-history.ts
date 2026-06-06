@@ -974,7 +974,7 @@ export const SPRINTS: SprintEntry[] = [
     sprintNumber: 'P8.3' as unknown as number, code: 'T-P83-Audit-Expansion-W1', composite: false, grade: 'A',
     headSha: 'TBD_AT_BANK', predecessorSha: '2d225c56', loc: 0,
     newSiblings: [],
-    bankDate: '2026-06-06', provenance: 'PENDING',
+    bankDate: '2026-06-06', provenance: 'PENDING_BACKFILL',
   },
 ];
 
