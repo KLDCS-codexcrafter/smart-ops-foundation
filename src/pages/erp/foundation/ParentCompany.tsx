@@ -43,6 +43,7 @@ import {
   DEFAULT_MANUFACTURING_MODE,
 } from '@/types/manufacturing-mode';
 import { applyManufacturingModeToEntity } from '@/lib/entity-setup-service';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
 interface GSTReg {
