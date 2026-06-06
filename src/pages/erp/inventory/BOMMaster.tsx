@@ -49,6 +49,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { useBOM } from '@/hooks/useBOM';
 import { useInventoryItems } from '@/hooks/useInventoryItems';
 import { onEnterNext } from '@/lib/keyboard';
+import { logAudit } from '@/lib/audit-trail-engine';
 import type { Bom, BomComponent, BomByProduct, BomComponentType } from '@/types/bom';
 import type { InventoryItem, ItemType } from '@/types/inventory-item';
 
