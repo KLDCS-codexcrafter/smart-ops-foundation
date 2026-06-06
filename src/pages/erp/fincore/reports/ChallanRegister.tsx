@@ -25,6 +25,7 @@ import type { PaymentRequisition } from '@/types/payment-requisition';
 import { paymentRequisitionsKey } from '@/types/payment-requisition';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · fincore_settings_event
 
 function ls<T>(key: string): T[] { try {
   // [JWT] GET /api/compliance/challans/:key
