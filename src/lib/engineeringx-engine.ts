@@ -35,6 +35,8 @@ import type {
 } from '@/types/docvault';
 import type { DrawingType } from '@/types/engineering-drawing';
 import { buildDrawingCustomTags } from '@/types/engineering-drawing';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 /** List all drawings in entity (filter to document_type === 'drawing'). FR-73.2 spoke · 5th consumer. */
 export function listDrawings(entityCode: string): Document[] {

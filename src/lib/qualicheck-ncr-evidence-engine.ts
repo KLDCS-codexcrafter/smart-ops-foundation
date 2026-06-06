@@ -28,6 +28,8 @@ import type {
   DocumentTag,
 } from '@/types/docvault';
 import type { NonConformanceReport } from '@/types/ncr';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 /**
  * List all documents linked to a specific NC (D-NEW-CJ Hub-and-Spoke 4th CONSUMER).

@@ -22,6 +22,8 @@ import type {
 } from '@/types/mtc';
 import { mtcKey } from '@/types/mtc';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 function readAll(entityCode: string): MaterialTestCertificate[] {
   try {

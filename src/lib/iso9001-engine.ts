@@ -10,6 +10,8 @@ import type {
 } from '@/types/iso9001';
 import { iso9001Key } from '@/types/iso9001';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 function readAll(entityCode: string): Iso9001AuditDocument[] {
   try {

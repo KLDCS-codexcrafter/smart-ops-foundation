@@ -19,6 +19,8 @@ import { productionPlansKey } from '@/types/production-plan';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { runCapacityCheck as runCapacityCheckPlanOps } from '@/lib/capacity-planning-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 // ════════════════════════════════════════════════════════════════════
 // Persistence helpers

@@ -20,6 +20,8 @@ import {
   DRAWING_CUSTOM_TAG_KEYS, parseDrawingCustomTags, buildDrawingCustomTags,
 } from '@/types/engineering-drawing';
 import { getDrawing } from '@/lib/engineeringx-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 // D-NEW-BV pattern · localStorage list reader
 function ls<T>(key: string): T[] {

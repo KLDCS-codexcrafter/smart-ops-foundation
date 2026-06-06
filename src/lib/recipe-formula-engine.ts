@@ -434,6 +434,8 @@ export function persistRecipe(entityCode: string, recipe: Recipe): void {
 
 import { appendAuditTrailEntry as cfrAppendAuditTrailEntry } from '@/lib/cfr-part-11-engine';
 import type { CFRPart11AuditEntry, CFRPart11SignatureInput } from '@/types/cfr-part-11';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 export function logRecipeActionWithCFRSig(
   entityCode: string,

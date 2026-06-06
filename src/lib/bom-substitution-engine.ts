@@ -15,6 +15,8 @@ import type {
 import type { ItemSubstitute } from '@/types/item-substitute';
 import type { InventoryItem } from '@/types/inventory-item';
 import { productionOrdersKey } from '@/types/production-order';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 // ════════════════════════════════════════════════════════════════════
 // Tier 1 · Approved master lookup

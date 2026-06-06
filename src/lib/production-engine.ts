@@ -856,6 +856,8 @@ export function buildRepetitiveLineMetricsShell(
 // ALLOWED_TRANSITIONS (lines 338-347) ABSOLUTE 0-DIFF.
 // ============================================================================
 import {
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
   computeCarbonFootprintForOrder as _carbonForOrder,
   rankAlternativesByCarbonIntensity as _rankAltCarbon,
 } from '@/lib/carbon-planning-engine';

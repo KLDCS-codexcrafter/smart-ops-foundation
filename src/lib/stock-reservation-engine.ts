@@ -23,6 +23,8 @@
  */
 
 import {
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
   stockReservationsKey,
   QUOTE_RESERVATION_TTL_MS,
   type StockReservation,
