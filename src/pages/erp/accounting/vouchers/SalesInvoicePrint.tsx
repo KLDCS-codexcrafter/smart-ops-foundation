@@ -430,14 +430,38 @@ export function SalesInvoicePrintPanel() {
             <div />
           )}
           {t.showAuthorisedSignatory ? (
-            <div className="text-right flex flex-col justify-end">
-              <div className="font-semibold">For {payload.supplier_name}</div>
-              <div className="mt-12 border-t border-border pt-1">{payload.authorised_signatory}</div>
-              <div className="text-[9px] text-muted-foreground">Authorised Signatory</div>
-            </div>
+            (() => {
+              const brand = loadEntityBranding(entityCode);
+              return (
+                <div className="text-right flex flex-col justify-end">
+                  <div className="font-semibold">For {payload.supplier_name}</div>
+                  <div className="mt-4 flex items-end justify-end gap-3 min-h-[56px]">
+                    {brand.stamp && (
+                      <img
+                        src={brand.stamp}
+                        alt="Company stamp"
+                        data-testid="invoice-print-stamp"
+                        className="h-14 w-14 object-contain opacity-90"
+                      />
+                    )}
+                    {brand.authorized_signature && (
+                      <img
+                        src={brand.authorized_signature}
+                        alt="Authorized signature"
+                        data-testid="invoice-print-signature"
+                        className="h-10 w-auto max-w-[120px] object-contain"
+                      />
+                    )}
+                  </div>
+                  <div className="border-t border-border pt-1">{payload.authorised_signatory}</div>
+                  <div className="text-[9px] text-muted-foreground">Authorised Signatory</div>
+                </div>
+              );
+            })()
           ) : (
             <div />
           )}
+
         </div>
       </div>
     </div>
