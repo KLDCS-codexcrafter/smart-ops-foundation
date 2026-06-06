@@ -170,6 +170,18 @@ export function createProcessBatch(
   all.unshift(batch);
   lsWrite(processBatchesKey(input.entity_id), all);
 
+  logAudit({
+    entityCode: input.entity_id,
+    action: 'create',
+    entityType: 'production_event' as unknown as AuditEntityType,
+    recordId: batch.id,
+    recordLabel: `Process Batch ${batch.batch_no}`,
+    beforeState: null,
+    afterState: { batch_no: batch.batch_no, recipe_id: batch.recipe_id, status: batch.status, planned_yield: batch.planned_yield },
+    sourceModule: 'production',
+    reason: 'process_batch_created',
+  });
+
   return batch;
 }
 
@@ -368,6 +380,8 @@ export function persistProcessBatch(entityCode: string, batch: ProcessBatch): vo
 
 import { appendAuditTrailEntry as cfrAppendAuditTrailEntry } from '@/lib/cfr-part-11-engine';
 import type { CFRPart11AuditEntry, CFRPart11SignatureInput } from '@/types/cfr-part-11';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 export function logBatchActionWithCFRSig(
   entityCode: string,

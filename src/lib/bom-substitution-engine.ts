@@ -15,6 +15,8 @@ import type {
 import type { ItemSubstitute } from '@/types/item-substitute';
 import type { InventoryItem } from '@/types/inventory-item';
 import { productionOrdersKey } from '@/types/production-order';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 // ════════════════════════════════════════════════════════════════════
 // Tier 1 · Approved master lookup
@@ -167,6 +169,18 @@ export function applySubstitution(
   } catch {
     // best-effort; engine still returns updated order
   }
+
+  logAudit({
+    entityCode: order.entity_id,
+    action: 'update',
+    entityType: 'production_event' as unknown as AuditEntityType,
+    recordId: order.id,
+    recordLabel: `Substitution on PO ${order.doc_no} line ${updatedLine.line_no}`,
+    beforeState: { item_id: line.item_id, item_code: line.item_code, required_qty: line.required_qty },
+    afterState: { item_id: updatedLine.item_id, item_code: updatedLine.item_code, required_qty: updatedLine.required_qty, reason: input.reason },
+    sourceModule: 'production',
+    reason: 'bom_substitution_applied',
+  });
 
   return { order: updatedOrder, line: updatedLine };
 }

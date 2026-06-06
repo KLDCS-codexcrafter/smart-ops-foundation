@@ -35,6 +35,8 @@ import type {
 } from '@/types/docvault';
 import type { DrawingType } from '@/types/engineering-drawing';
 import { buildDrawingCustomTags } from '@/types/engineering-drawing';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 /** List all drawings in entity (filter to document_type === 'drawing'). FR-73.2 spoke · 5th consumer. */
 export function listDrawings(entityCode: string): Document[] {
@@ -118,7 +120,7 @@ export function createDrawing(
     }),
   };
 
-  return createDocument(
+  const doc = createDocument(
     entityCode,
     {
       entity_id: entityCode,
@@ -137,6 +139,18 @@ export function createDrawing(
     input.initial_version,
     createdBy,
   );
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'engineeringx_event' as unknown as AuditEntityType,
+    recordId: doc.id,
+    recordLabel: `Drawing ${input.drawing_no} · ${input.title}`,
+    beforeState: null,
+    afterState: { document_id: doc.id, drawing_no: input.drawing_no, drawing_type: input.drawing_type, project_id: input.related_project_id ?? null },
+    sourceModule: 'engineeringx',
+    reason: 'drawing_created',
+  });
+  return doc;
 }
 
 /** Submit a drawing version for approval (DocVault canonical workflow · zero-touch). */

@@ -21,6 +21,8 @@ import type {
 } from '@/types/fai';
 import { faiKey } from '@/types/fai';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 function readAll(entityCode: string): FirstArticleInspection[] {
   try {
@@ -114,6 +116,18 @@ export function createFai(
     title: `FAI ${id}`,
     subtitle: `${draft.part_no} · ${draft.part_name}`,
     deep_link: `/erp/qualicheck#fai-register/${id}`,
+  });
+
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `FAI ${id} · ${draft.part_no}`,
+    beforeState: null,
+    afterState: { fai_id: id, part_no: draft.part_no, status: fai.status, overall: fai.overall },
+    sourceModule: 'qualicheck',
+    reason: 'fai_created',
   });
 
   return fai;

@@ -32,6 +32,8 @@ import { DEFAULT_8D_LABELS, capaKey } from '@/types/capa';
 import type { NcrId } from '@/types/ncr';
 import { getNcrById, transitionNcr } from '@/lib/ncr-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 function readAll(entityCode: string): CorrectiveAndPreventiveAction[] {
   try {
@@ -125,6 +127,18 @@ export function raiseCapa(
     title: `CAPA ${id}`,
     subtitle: draft.title.slice(0, 80),
     deep_link: `/erp/qualicheck#capa-register/${id}`,
+  });
+
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `CAPA ${id}`,
+    beforeState: null,
+    afterState: { capa_id: id, title: draft.title, severity: draft.severity, source: draft.source, status: capa.status },
+    sourceModule: 'qualicheck',
+    reason: 'capa_raised',
   });
 
   return capa;

@@ -26,6 +26,8 @@ import type {
 } from '@/types/ncr';
 import { ncrKey } from '@/types/ncr';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 function readAll(entityCode: string): NonConformanceReport[] {
   try {
@@ -82,6 +84,18 @@ export function raiseNcr(
     title: `NCR ${id}`,
     subtitle: draft.description.slice(0, 80),
     deep_link: `/erp/qualicheck#ncr-register/${id}`,
+  });
+
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `NCR ${id}`,
+    beforeState: null,
+    afterState: { ncr_id: id, severity: draft.severity, status: ncr.status, source: draft.source },
+    sourceModule: 'qualicheck',
+    reason: 'ncr_raised',
   });
 
   return ncr;

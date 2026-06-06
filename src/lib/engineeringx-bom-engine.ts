@@ -20,6 +20,8 @@ import {
   DRAWING_CUSTOM_TAG_KEYS, parseDrawingCustomTags, buildDrawingCustomTags,
 } from '@/types/engineering-drawing';
 import { getDrawing } from '@/lib/engineeringx-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 // D-NEW-BV pattern · localStorage list reader
 function ls<T>(key: string): T[] {
@@ -170,6 +172,17 @@ export function addBomEntry(
   };
   const all = loadBomEntries(entityCode);
   ssave(bomEntriesKey(entityCode), [...all, entry]);
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'engineeringx_event' as unknown as AuditEntityType,
+    recordId: entry.id,
+    recordLabel: `BOM Entry · ${entry.material_code} (drawing ${entry.drawing_id})`,
+    beforeState: null,
+    afterState: { bom_entry_id: entry.id, drawing_id: entry.drawing_id, material_code: entry.material_code, qty: entry.qty, unit: entry.unit, status: entry.status },
+    sourceModule: 'engineeringx',
+    reason: 'bom_entry_added',
+  });
   return entry;
 }
 

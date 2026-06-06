@@ -28,6 +28,8 @@ import type {
   DocumentTag,
 } from '@/types/docvault';
 import type { NonConformanceReport } from '@/types/ncr';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 /**
  * List all documents linked to a specific NC (D-NEW-CJ Hub-and-Spoke 4th CONSUMER).
@@ -69,7 +71,7 @@ export function createNcrEvidence(
   input: CreateNcrEvidenceInput,
   createdBy: string,
 ): Document {
-  return createDocument(
+  const doc = createDocument(
     entityCode,
     {
       entity_id: entityCode,
@@ -88,4 +90,16 @@ export function createNcrEvidence(
     input.initialVersion,
     createdBy,
   );
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: doc.id,
+    recordLabel: `NCR Evidence · ${input.title}`,
+    beforeState: null,
+    afterState: { document_id: doc.id, nc_id: input.ncId, document_type: input.documentType },
+    sourceModule: 'qualicheck',
+    reason: 'ncr_evidence_uploaded',
+  });
+  return doc;
 }

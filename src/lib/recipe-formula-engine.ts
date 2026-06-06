@@ -98,6 +98,18 @@ export function createRecipe(input: CreateRecipeInput): Recipe {
   all.unshift(recipe);
   lsWrite(recipesKey(input.entity_id), all);
 
+  logAudit({
+    entityCode: input.entity_id,
+    action: 'create',
+    entityType: 'production_event' as unknown as AuditEntityType,
+    recordId: recipe.id,
+    recordLabel: `Recipe ${recipe.recipe_code} v${recipe.version}`,
+    beforeState: null,
+    afterState: { recipe_code: recipe.recipe_code, version: recipe.version, status: recipe.status },
+    sourceModule: 'production',
+    reason: 'recipe_master_created',
+  });
+
   return recipe;
 }
 
@@ -434,6 +446,8 @@ export function persistRecipe(entityCode: string, recipe: Recipe): void {
 
 import { appendAuditTrailEntry as cfrAppendAuditTrailEntry } from '@/lib/cfr-part-11-engine';
 import type { CFRPart11AuditEntry, CFRPart11SignatureInput } from '@/types/cfr-part-11';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 export function logRecipeActionWithCFRSig(
   entityCode: string,

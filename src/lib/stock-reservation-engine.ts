@@ -27,6 +27,8 @@ import {
   QUOTE_RESERVATION_TTL_MS,
   type StockReservation,
 } from '@/types/stock-reservation';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 // ── Internal helpers ────────────────────────────────────────────────
 
@@ -235,6 +237,17 @@ export function createProductionOrderReservations(
     }));
   // [JWT] POST /api/inventory/reservations (production-order-level)
   saveReservations(entityCode, [...remaining, ...fresh]);
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'production_event' as unknown as AuditEntityType,
+    recordId: poId,
+    recordLabel: `Stock reservations for PO ${poNo}`,
+    beforeState: null,
+    afterState: { po_id: poId, po_no: poNo, reservation_count: fresh.length, total_qty: fresh.reduce((s, r) => s + r.reserved_qty, 0) },
+    sourceModule: 'production',
+    reason: 'production_order_reservations_created',
+  });
   return fresh;
 }
 

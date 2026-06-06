@@ -409,7 +409,13 @@ export type AuditEntityType =
   // Heavy/domain masters + Receivx + Salesx direct-write create paths.
   // ADDITIVE inline emission ONLY · NO registerAuditEntityType call.
   | 'receivx_master_event'    // CollectionExecMaster · IncentiveSchemeMaster · ReceivXConfig · ReminderTemplateMaster
-  | 'salesx_txn_event';       // DistributorBroadcast · Telecaller · AgentInvoiceDialog (salesx transactional create paths)
+  | 'salesx_txn_event'        // DistributorBroadcast · Telecaller · AgentInvoiceDialog (salesx transactional create paths)
+  // Sprint P8.4 · T-P84-Audit-Expansion-W2 · Block 1a-i · Class-B engine wiring (Wave 2, Operations-heavy)
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call.
+  // 3 domain literals — production / qualicheck / engineeringx — for per-domain queryability.
+  | 'production_event'        // recipe-formula · process-batch · production · bom-substitution · stock-reservation · production-plan
+  | 'qualicheck_event'        // capa · ncr · fai · iso9001 · mtc · qualicheck-ncr-evidence
+  | 'engineeringx_event';     // engineeringx · engineeringx-bom
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sprint R0 · Block 5.2 · Audit-aggregator catalog consolidation (reading (c))
@@ -439,6 +445,10 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   // Sprint P8.3 · Block 2b · Wave 1 audit expansion (2 new domain literals)
   'receivx_master_event',
   'salesx_txn_event',
+  // Sprint P8.4 · Block 1a-i · Wave 2 audit expansion (3 new domain literals — operations-heavy)
+  'production_event',
+  'qualicheck_event',
+  'engineeringx_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];

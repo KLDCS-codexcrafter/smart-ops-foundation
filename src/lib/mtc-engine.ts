@@ -22,6 +22,8 @@ import type {
 } from '@/types/mtc';
 import { mtcKey } from '@/types/mtc';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 function readAll(entityCode: string): MaterialTestCertificate[] {
   try {
@@ -113,6 +115,18 @@ export function createMtc(
     title: `MTC ${id}`,
     subtitle: `${draft.supplier_name} · ${draft.certificate_no}`,
     deep_link: `/erp/qualicheck#mtc-register/${id}`,
+  });
+
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `MTC ${id} · ${draft.certificate_no}`,
+    beforeState: null,
+    afterState: { mtc_id: id, certificate_no: draft.certificate_no, supplier_name: draft.supplier_name, status: mtc.status, overall: mtc.overall },
+    sourceModule: 'qualicheck',
+    reason: 'mtc_created',
   });
 
   return mtc;

@@ -10,6 +10,8 @@ import type {
 } from '@/types/iso9001';
 import { iso9001Key } from '@/types/iso9001';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 function readAll(entityCode: string): Iso9001AuditDocument[] {
   try {
@@ -79,6 +81,17 @@ export function createIso9001Doc(
     title: `ISO 9001: ${draft.title}`,
     subtitle: draft.clause,
     deep_link: `/erp/qualicheck#iso9001-register/${id}`,
+  });
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `ISO 9001 Doc · ${draft.title}`,
+    beforeState: null,
+    afterState: { iso_doc_id: id, clause: draft.clause, title: draft.title },
+    sourceModule: 'qualicheck',
+    reason: 'iso9001_doc_created',
   });
   return doc;
 }

@@ -19,6 +19,8 @@ import { productionPlansKey } from '@/types/production-plan';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { runCapacityCheck as runCapacityCheckPlanOps } from '@/lib/capacity-planning-engine';
+import { logAudit } from "@/lib/audit-trail-engine"; // P8.4 · Block 1a-i
+import type { AuditEntityType } from "@/types/audit-trail";
 
 // ════════════════════════════════════════════════════════════════════
 // Persistence helpers
@@ -202,6 +204,17 @@ export function createProductionPlan(
   };
 
   upsertPlan(input.entity_id, plan);
+  logAudit({
+    entityCode: input.entity_id,
+    action: 'create',
+    entityType: 'production_event' as unknown as AuditEntityType,
+    recordId: plan.id,
+    recordLabel: `Production Plan ${plan.doc_no}`,
+    beforeState: null,
+    afterState: { doc_no: plan.doc_no, plan_type: plan.plan_type, status: plan.status, line_count: plan.lines.length, total_planned_qty: plan.total_planned_qty },
+    sourceModule: 'production',
+    reason: 'production_plan_created',
+  });
   return plan;
 }
 
