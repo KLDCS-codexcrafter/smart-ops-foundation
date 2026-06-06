@@ -79,13 +79,14 @@ export default function TaskRoomPage(): JSX.Element {
   }, [id, entityCode]);
   useEffect(() => { refresh(); }, [refresh]);
 
-  const subTasks = useMemo(() => (id ? getSubTasks(entityCode, id) : []), [entityCode, id, task]); // eslint-disable-line react-hooks/exhaustive-deps
-  const blockers = useMemo(() => (id ? getBlockingBadges(entityCode, id) : []), [entityCode, id, task]); // eslint-disable-line react-hooks/exhaustive-deps
-  const auditChain = useMemo(() => (id ? getTaskAuditChain(entityCode, id) : []), [entityCode, id, task]); // eslint-disable-line react-hooks/exhaustive-deps
-  const chainVerdict = useMemo(() => (id ? verifyAuditChain(entityCode, id) : { valid: true }), [entityCode, id, task]); // eslint-disable-line react-hooks/exhaustive-deps
-  const reassignments = useMemo(() => (id ? getReassignmentTrail(entityCode, id) : []), [entityCode, id, task]); // eslint-disable-line react-hooks/exhaustive-deps
-  const dueHistory = useMemo(() => (id ? getDueDateHistory(entityCode, id) : []), [entityCode, id, task]); // eslint-disable-line react-hooks/exhaustive-deps
-  const comments = useMemo(() => (id ? listComments(entityCode, id) : []), [entityCode, id, task]); // eslint-disable-line react-hooks/exhaustive-deps
+  // `task` is a reactivity tripwire: refresh() resets it after mutations so derived store reads re-run.
+  const subTasks = useMemo(() => { void task; return id ? getSubTasks(entityCode, id) : []; }, [entityCode, id, task]);
+  const blockers = useMemo(() => { void task; return id ? getBlockingBadges(entityCode, id) : []; }, [entityCode, id, task]);
+  const auditChain = useMemo(() => { void task; return id ? getTaskAuditChain(entityCode, id) : []; }, [entityCode, id, task]);
+  const chainVerdict = useMemo(() => { void task; return id ? verifyAuditChain(entityCode, id) : { valid: true }; }, [entityCode, id, task]);
+  const reassignments = useMemo(() => { void task; return id ? getReassignmentTrail(entityCode, id) : []; }, [entityCode, id, task]);
+  const dueHistory = useMemo(() => { void task; return id ? getDueDateHistory(entityCode, id) : []; }, [entityCode, id, task]);
+  const comments = useMemo(() => { void task; return id ? listComments(entityCode, id) : []; }, [entityCode, id, task]);
 
   const handleAcknowledge = (): void => {
     if (!task) return;
