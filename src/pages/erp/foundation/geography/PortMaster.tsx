@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 import {
   INDIA_PORTS, UAE_PORTS, type PortRecord, type PortType, type CustomsZone,
 } from '@/data/geo-seed-data';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const PORT_TYPE_COLORS: Record<PortType, string> = {
   sea_port: 'bg-blue-500/10 text-blue-700 border-blue-500/20',
@@ -116,6 +117,14 @@ export function PortMasterPanel() {
     } else {
       const next = [...records, {...formData}];
       setRecords(next); saveRecords(next);
+      logAudit({
+        entityCode: (formData as { countryCode?: string }).countryCode || 'GLOBAL',
+        action: 'create', entityType: 'foundation_master_event',
+        recordId: `port|${formData.portCode}`,
+        recordLabel: `Port · ${formData.portCode} · ${formData.portName}`,
+        beforeState: null, afterState: formData as unknown as Record<string, unknown>,
+        reason: 'port_created', sourceModule: 'PortMaster',
+      });
       toast.success(`Port ${formData.portCode} created`);
     }
     setFormOpen(false);

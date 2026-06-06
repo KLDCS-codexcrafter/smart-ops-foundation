@@ -17,6 +17,7 @@ import { TERMS_OF_DELIVERY_SEED, type TermsOfDelivery } from '@/data/masters-see
 // Sprint Hardening-B Block 2C-i · Q3.2 scoped-first read + dual-write
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { termsOfDeliveryKey } from '@/types/cc-masters';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const STORAGE_KEY = 'erp_group_terms_of_delivery';
 
@@ -94,6 +95,13 @@ export function TermsOfDeliveryMasterPanel() {
       };
       const updated = [...allTerms, newTerm];
       saveTerms(entityCode, updated); setTerms(updated);
+      logAudit({
+        entityCode, action: 'create', entityType: 'salesx_master_event',
+        recordId: newTerm.id,
+        recordLabel: `Terms of Delivery · ${newTerm.code} · ${newTerm.name}`,
+        beforeState: null, afterState: newTerm as unknown as Record<string, unknown>,
+        reason: 'terms_of_delivery_created', sourceModule: 'TermsOfDeliveryMaster',
+      });
       toast.success(`${newTerm.name} added`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);

@@ -28,6 +28,7 @@ import { indianStates, getDistrictsByState, getCitiesByDistrict } from '@/data/i
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { loadEntities } from '@/data/mock-entities';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 // ─── Interfaces ──────────────────────────────────────────────
 
@@ -211,6 +212,14 @@ export function BusinessUnitMasterPanel() {
       // [JWT] POST /api/masters/business-units
       localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
       // [JWT] POST /api/group/masters/business-units
+      logAudit({
+        entityCode: String(newUnit.parentEntityId || 'GLOBAL'),
+        action: 'create', entityType: 'foundation_master_event',
+        recordId: newUnit.id,
+        recordLabel: `Business Unit · ${newUnit.partyCode} · ${newUnit.name}`,
+        beforeState: null, afterState: newUnit as unknown as Record<string, unknown>,
+        reason: 'business_unit_created', sourceModule: 'BusinessUnitMaster',
+      });
       toast.success(`${form.name} created`);
     }
     setUnits(loadUnits());

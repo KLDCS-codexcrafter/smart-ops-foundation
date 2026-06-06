@@ -36,6 +36,7 @@ import {
   INDUSTRY_SECTORS, getActivitiesForSector,
   OPERATING_SCALES, type OperatingScale,
 } from '@/data/industry-taxonomy';
+import { logAudit } from '@/lib/audit-trail-engine';
 // ── T-H1.5-C-S5 — Logistic Master Redesign (reuse party-master S4 components) ──
 import {
   PartyTreeList, PartyStepSidebar,
@@ -482,6 +483,14 @@ export function LogisticMasterPanel() {
       };
       const updated = [...all, def];
       saveLogistics(updated); setLogistics(updated);
+      logAudit({
+        entityCode: entityCode || 'GLOBAL',
+        action: 'create', entityType: 'foundation_master_event',
+        recordId: def.id,
+        recordLabel: `Logistic Party · ${def.partyCode} · ${def.partyName} · ${def.logisticType}`,
+        beforeState: null, afterState: def as unknown as Record<string, unknown>,
+        reason: 'logistic_master_created', sourceModule: 'LogisticMaster',
+      });
       toast.success(`${def.partyName} created`);
       setJustSaved(true);
       setTimeout(() => setJustSaved(false), 1500);

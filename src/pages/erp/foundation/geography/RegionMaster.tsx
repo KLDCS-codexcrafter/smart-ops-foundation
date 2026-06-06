@@ -17,6 +17,7 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { indianStates } from '@/data/india-geography';
 import { UAE_EMIRATES, INDIA_REGIONS, UAE_REGIONS } from '@/data/geo-seed-data';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 interface RegionRecord {
   code: string; name: string; countryCode: string;
@@ -109,6 +110,14 @@ export function RegionMasterPanel() {
     } else {
       const next = [...records, {...formData}];
       setRecords(next); saveRecords(next);
+      logAudit({
+        entityCode: formData.countryCode || 'GLOBAL',
+        action: 'create', entityType: 'foundation_master_event',
+        recordId: `region|${formData.code}`,
+        recordLabel: `Region · ${formData.code} · ${formData.name}`,
+        beforeState: null, afterState: formData as unknown as Record<string, unknown>,
+        reason: 'region_created', sourceModule: 'RegionMaster',
+      });
       toast.success(`Region ${formData.code} created`);
     }
     setFormOpen(false);
