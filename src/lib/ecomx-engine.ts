@@ -288,7 +288,9 @@ export function recordUnmappedSku(
   ss(ecUnmappedKey(entityCode), [...all, rec]);
   // P82 Block 2 · publisher #8 · ecomx.unmapped_sku_recorded · NEW-record branch ONLY (existing-increment branch above returns without publishing)
   publishNotification({
-    entityCode, userId: '*', kind: 'ecomx.unmapped_sku_recorded', cardId: 'ecomx',
+    eventKey: `ecomx:unmapped:${entityCode}:${rec.id}`,
+    entityCode, targetUserId: '*', kind: 'ecomx.unmapped_sku_recorded',
+    source: 'ecomx-engine', cardId: 'ecomx',
     severity: 'warning', title: `Unmapped SKU · ${marketplaceSku}`,
     body: sampleTitle || null,
     deepLink: '/erp/ecomx/unmapped', refType: 'unmapped_sku', refId: rec.id,

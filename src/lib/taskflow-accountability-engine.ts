@@ -335,7 +335,9 @@ export function createEvidence(entityCode: string, input: CreateEvidenceInput): 
   });
   // P82 Block 2 · publisher #4 · taskflow.evidence_created · success path
   publishNotification({
-    entityCode, userId: input.uploadedBy, kind: 'taskflow.evidence_created', cardId: 'taskflow',
+    eventKey: `taskflow:evidence:${entityCode}:${ev.id}`,
+    entityCode, targetUserId: input.uploadedBy, kind: 'taskflow.evidence_created',
+    source: 'taskflow-accountability-engine', cardId: 'taskflow',
     severity: 'info', title: `Evidence added: ${ev.fileName}`,
     body: `task ${ev.taskId} · ${ev.type}`,
     deepLink: `/erp/taskflow/task/${ev.taskId}`, refType: 'evidence', refId: ev.id,
