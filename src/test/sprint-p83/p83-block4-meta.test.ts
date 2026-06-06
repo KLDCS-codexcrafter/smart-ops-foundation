@@ -153,8 +153,6 @@ describe('Sprint P8.3 · Block 4 · meta-test · ≤10% exemption ceiling', () =
 // ───────────────────────────────────────────────────────────────────────────
 describe('Sprint P8.3 · Block 4 · meta-test · negative-proof fixture', () => {
   it('a fabricated literal NOT in the catalog reports zero emission sites', () => {
-    // If the scan were "always green", a fake literal would still show
-    // results. Asserting zero proves the grep is doing real work.
     const fake = countEmissionSites('p83_meta_fake_literal_does_not_exist');
     expect(fake).toBe(0);
     expect(
@@ -165,5 +163,115 @@ describe('Sprint P8.3 · Block 4 · meta-test · negative-proof fixture', () => 
   it('reason-length gate trips on a sub-20-char reason (self-test of the rule)', () => {
     const bad: Exemption = { file: 'src/fake.tsx', reason: 'too short' };
     expect(bad.reason.trim().length).toBeLessThan(20);
+  });
+});
+
+// ───────────────────────────────────────────────────────────────────────────
+// (e) P8.3.T1 · STRICT engine-credit rule
+//
+// Failure of P83 Block 0 dispositioning: rows 66 + 68 were classed A because
+// the page imported po-management-engine.ts, but that engine appendAuditEntry's
+// to the hash-chain — it never reaches logAudit/safeAudit. Import alone is
+// NOT coverage. This block re-parses the Block-0 inventory and rejects any
+// class-A page whose cited engines do not themselves contain a logAudit or
+// safeAudit call.
+// ───────────────────────────────────────────────────────────────────────────
+const INVENTORY_PATH = resolve(__dirname, '../../../audit_workspace/P83_evidence/audit_coverage_inventory.md');
+
+interface InventoryRow { num: string; page: string; klass: string; deps: string[]; }
+
+function parseInventory(md: string): InventoryRow[] {
+  const out: InventoryRow[] = [];
+  for (const line of md.split('\n')) {
+    if (!/^\| *\d+ +\|/.test(line)) continue;
+    const cols = line.split('|').map(s => s.trim());
+    // cols: ['', '#', 'page', 'class', 'deps', 'note', '']
+    if (cols.length < 6) continue;
+    const num = cols[1];
+    const page = cols[2].replace(/`/g, '');
+    const klass = cols[3];
+    const depsRaw = cols[4];
+    const deps = depsRaw
+      .split(',')
+      .map(s => s.trim().replace(/`/g, '').replace(/\s*\(.*$/, ''))
+      .filter(s => /\.ts$/.test(s));
+    out.push({ num, page, klass, deps });
+  }
+  return out;
+}
+
+/** True iff at least one cited engine file exists AND contains logAudit/safeAudit. */
+function engineCredits(deps: string[]): { credited: boolean; checked: string[] } {
+  const checked: string[] = [];
+  for (const d of deps) {
+    const candidates = [
+      resolve(SRC, '../src/lib', d),
+      resolve(SRC, '../src/hooks', d),
+    ];
+    for (const c of candidates) {
+      const body = fileContents.get(c);
+      if (body === undefined) continue;
+      checked.push(c);
+      if (/\blogAudit\s*\(|\bsafeAudit\s*\(/.test(body)) {
+        return { credited: true, checked };
+      }
+    }
+  }
+  return { credited: false, checked };
+}
+
+describe('Sprint P8.3.T1 · Block 4 · meta-test · STRICT engine-credit rule', () => {
+  const inventory = parseInventory(readFileSync(INVENTORY_PATH, 'utf8'));
+
+  it('inventory parser finds the full 97-row Block-0 universe', () => {
+    expect(inventory.length).toBe(97);
+  });
+
+  it('every class-A page is backed by an engine that itself calls logAudit/safeAudit · OR has been demoted to C-FIXED', () => {
+    const orphans: string[] = [];
+    for (const row of inventory) {
+      if (row.klass !== 'A') continue; // C-FIXED rows are explicitly outside the strict-A set
+      if (row.deps.length === 0) {
+        orphans.push(`#${row.num} ${row.page} (no engine deps cited)`);
+        continue;
+      }
+      const { credited } = engineCredits(row.deps);
+      if (!credited) orphans.push(`#${row.num} ${row.page} (deps: ${row.deps.join(', ')})`);
+    }
+    expect(
+      orphans,
+      `STRICT-RULE orphans (engine imports but engine never calls logAudit/safeAudit): ${orphans.join(' · ')}`,
+    ).toEqual([]);
+  });
+
+  it('NEGATIVE FIXTURE · a read-only-import engine fixture is rejected by the strict rule', () => {
+    // Synthetic engine body that consumes the audit hash-chain helper WITHOUT
+    // reaching logAudit — exactly the failure mode that mis-classed rows 66+68.
+    const fakeBody = `
+      import { appendAuditEntry } from './audit-trail-hash-chain';
+      export function createThing(x: unknown) { appendAuditEntry(x as never); }
+      // explicit references in comments must not credit:
+      // logAudit safeAudit
+    `;
+    // The strict check is a function-call regex; mention alone in comments
+    // or string literals must NOT credit.
+    const hasCall = /\blogAudit\s*\(|\bsafeAudit\s*\(/.test(fakeBody);
+    expect(hasCall).toBe(false);
+
+    // And a positive control — a real call DOES credit.
+    const realBody = `
+      import { logAudit } from './audit-trail-engine';
+      export function createThing() { logAudit({ entityCode: 'X' } as never); }
+    `;
+    expect(/\blogAudit\s*\(|\bsafeAudit\s*\(/.test(realBody)).toBe(true);
+  });
+
+  it('FIX FIXTURE · rows 66 + 68 (POEntryFromAwardDialog · VendorAdvanceEntry) now emit at the page', () => {
+    const r66 = readFileSync(resolve(SRC, '../src/pages/erp/procure-hub/transactions/POEntryFromAwardDialog.tsx'), 'utf8');
+    const r68 = readFileSync(resolve(SRC, '../src/pages/erp/procure-hub/transactions/VendorAdvanceEntry.tsx'), 'utf8');
+    expect(r66, 'POEntryFromAwardDialog must call logAudit on the success path').toMatch(/logAudit\s*\(/);
+    expect(r66).toMatch(/procure_master_event/);
+    expect(r68, 'VendorAdvanceEntry must call logAudit on the success path').toMatch(/logAudit\s*\(/);
+    expect(r68).toMatch(/treasury_event/);
   });
 });
