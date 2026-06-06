@@ -34,6 +34,7 @@ import {
 } from '@/lib/ecomx-engine';
 import { logAudit } from '@/lib/audit-trail-engine';
 import { dAdd, dSub, dMul, round2, dEq } from '@/lib/decimal-helpers';
+import { publish as publishNotification } from '@/lib/notification-engine'; // P82 Block 2 · publishers #6 (runRecon) · #7a (createClaimFromLine) · #7b (updateClaimStatus)
 
 // ─── tiny LS helpers ─────────────────────────────────────────────────
 function ls<T>(key: string): T[] {
@@ -515,6 +516,14 @@ export function runRecon(
     `EcomX recon run · ${marketplaceId} · ${periodFrom}…${periodTo}`,
     null, run as unknown as Record<string, unknown>);
 
+  // P82 Block 2 · publisher #6 · ecomx.recon_completed · success path
+  publishNotification({
+    entityCode, userId: '*', kind: 'ecomx.recon_completed', cardId: 'ecomx',
+    severity: counts.short_pay + counts.unmatched_settlement + counts.missing_settlement > 0 ? 'warning' : 'success',
+    title: `Recon completed · ${marketplace.name}`,
+    body: `${periodFrom}…${periodTo} · variance ₹${run.totalVariance} · ${lines.length} lines`,
+    deepLink: `/erp/ecomx/recon/${runId}`, refType: 'recon_run', refId: runId,
+  });
   return run;
 }
 
@@ -614,6 +623,13 @@ export function createClaimFromLine(
 
   safeAudit(entityCode, 'create', claim.id, `EcomX claim · ${claim.marketplaceOrderId}`,
     null, claim as unknown as Record<string, unknown>);
+  // P82 Block 2 · publisher #7a · ecomx.claim_created · success path
+  publishNotification({
+    entityCode, userId: '*', kind: 'ecomx.claim_created', cardId: 'ecomx',
+    severity: 'info', title: `Claim raised · ${claim.marketplaceOrderId}`,
+    body: `${claim.reason} · ₹${claim.amount}`,
+    deepLink: `/erp/ecomx/claim/${claim.id}`, refType: 'claim', refId: claim.id,
+  });
   return claim;
 }
 
@@ -654,6 +670,14 @@ export function updateClaimStatus(
   safeAudit(entityCode, 'update', next.id, `EcomX claim status · ${next.status}`,
     before as unknown as Record<string, unknown>,
     next as unknown as Record<string, unknown>);
+  // P82 Block 2 · publisher #7b · ecomx.claim_status_changed · success path
+  publishNotification({
+    entityCode, userId: '*', kind: 'ecomx.claim_status_changed', cardId: 'ecomx',
+    severity: next.status === 'recovered' ? 'success' : next.status === 'rejected' ? 'warning' : 'info',
+    title: `Claim ${next.status} · ${next.marketplaceOrderId}`,
+    body: input.note.trim(),
+    deepLink: `/erp/ecomx/claim/${next.id}`, refType: 'claim', refId: next.id,
+  });
   return next;
 }
 

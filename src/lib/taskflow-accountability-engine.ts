@@ -36,6 +36,7 @@ import {
 import { GST_RATES, TDS_SECTIONS } from '@/data/compliance-seed-data';
 import { logAudit } from '@/lib/audit-trail-engine';
 import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
+import { publish as publishNotification } from '@/lib/notification-engine'; // P82 Block 2 · publisher #4 · taskflow.evidence_created
 
 // ── tiny JSON helpers (mirror taskflow-engine pattern) ─────────────────────
 const readJSON = <T,>(key: string, fallback: T): T => {
@@ -331,6 +332,13 @@ export function createEvidence(entityCode: string, input: CreateEvidenceInput): 
     recordId: ev.id,
     recordLabel: `evidence ${ev.id} · ${ev.type}`,
     afterState: { id: ev.id, taskId: ev.taskId, type: ev.type, fileName: ev.fileName } as Record<string, unknown>
+  });
+  // P82 Block 2 · publisher #4 · taskflow.evidence_created · success path
+  publishNotification({
+    entityCode, userId: input.uploadedBy, kind: 'taskflow.evidence_created', cardId: 'taskflow',
+    severity: 'info', title: `Evidence added: ${ev.fileName}`,
+    body: `task ${ev.taskId} · ${ev.type}`,
+    deepLink: `/erp/taskflow/task/${ev.taskId}`, refType: 'evidence', refId: ev.id,
   });
   return ev;
 }

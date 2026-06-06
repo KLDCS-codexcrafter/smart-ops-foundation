@@ -23,6 +23,7 @@
 
 import { logAudit } from '@/lib/audit-trail-engine';
 import type { AuditEntityType } from '@/types/audit-trail';
+import { publish as publishNotification } from '@/lib/notification-engine'; // P82 Block 2 · publishers #5a/5b · approval.approved + approval.rejected
 
 export type ApprovalStatus =
   | 'draft' | 'submitted' | 'approved' | 'rejected' | 'posted' | 'cancelled';
@@ -176,6 +177,13 @@ export function approve<T extends ApprovalRecord>(
     [f.approverName]: approver.name,
   }, f);
   audit(ctx, 'approve', rec, next);
+  // P82 Block 2 · publisher #5a · approval.approved · success path
+  publishNotification({
+    entityCode: ctx.entityCode || 'GLOBAL', userId: '*', kind: 'approval.approved',
+    cardId: 'command-center', severity: 'success',
+    title: `${ctx.sourceModule}: ${ctx.recordLabel?.(next) ?? next.id} approved`,
+    body: `by ${approver.name}`, refType: ctx.auditEntityType, refId: next.id,
+  });
   return { ok: true, next };
 }
 
@@ -203,6 +211,13 @@ export function reject<T extends ApprovalRecord>(
     [f.rejectionReason]: reason,
   }, f);
   audit(ctx, 'reject', rec, next, reason);
+  // P82 Block 2 · publisher #5b · approval.rejected · success path
+  publishNotification({
+    entityCode: ctx.entityCode || 'GLOBAL', userId: '*', kind: 'approval.rejected',
+    cardId: 'command-center', severity: 'warning',
+    title: `${ctx.sourceModule}: ${ctx.recordLabel?.(next) ?? next.id} rejected`,
+    body: `by ${approver.name} · ${reason}`, refType: ctx.auditEntityType, refId: next.id,
+  });
   return { ok: true, next };
 }
 
