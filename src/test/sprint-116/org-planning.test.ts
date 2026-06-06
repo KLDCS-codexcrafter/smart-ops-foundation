@@ -331,14 +331,14 @@ describe('Sprint 116 · NEW card registered (additive · DP-P7-2)', () => {
 });
 
 // ────────────────────────────────────────────────────────────────────────────
-describe('Sprint 116 · Page #43 wiring (NOT a SIBLID · requiredCards fpa-planning)', () => {
-  it('sidebar registers fincore-aop-strategic-plan as type:item with requiredCards fpa-planning', () => {
-    expect(sidebarSrc).toMatch(/fincore-aop-strategic-plan/);
+describe('Sprint 116 · Page #43 wiring (NOT a SIBLID · requiredCards fpa-planning · S124 A1: FP&A self-owned card · module id fpa-aop)', () => {
+  it('sidebar registers fpa-aop as type:item with requiredCards fpa-planning', () => {
+    expect(sidebarSrc).toMatch(/'fpa-aop'/);
     expect(sidebarSrc).toMatch(/requiredCards:\s*\[\s*'fpa-planning'\s*\]/);
   });
-  it('CC page imports AOPStrategicPlanPage and renders a case for it', () => {
+  it('FP&A shell page imports AOPStrategicPlanPage and renders a case for it', () => {
     expect(ccPageSrc).toMatch(/AOPStrategicPlanPage/);
-    expect(ccPageSrc).toMatch(/case\s+'fincore-aop-strategic-plan'/);
+    expect(ccPageSrc).toMatch(/case\s+'fpa-aop'/);
   });
   it('page reads the engine (no dead UI)', () => {
     expect(pageSrc).toMatch(/buildAOP|upsertStrategicTarget/);
