@@ -16,6 +16,8 @@ import { weighbridgeTicketsKey } from '@/types/weighbridge-ticket';
 import { generateDocNo } from '@/lib/fincore-engine';
 import { dSub, round2 } from '@/lib/decimal-helpers';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
+import type { AuditEntityType } from '@/types/audit-trail';
 
 // ============================================================
 // PUBLIC INPUT TYPES
@@ -107,6 +109,18 @@ export async function createTicket(
       direction: ticket.direction,
       vehicle_no: ticket.vehicle_no,
     },
+  });
+
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'gateflow_event' as unknown as AuditEntityType,
+    recordId: ticket.id,
+    recordLabel: `Weighbridge Ticket ${ticket.ticket_no}`,
+    beforeState: null,
+    afterState: { ticket_no: ticket.ticket_no, gate_pass_no: ticket.gate_pass_no, direction: ticket.direction, vehicle_no: ticket.vehicle_no },
+    sourceModule: 'gateflow',
+    reason: 'weighbridge_ticket_created',
   });
 
   return ticket;

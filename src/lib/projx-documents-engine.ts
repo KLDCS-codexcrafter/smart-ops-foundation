@@ -24,6 +24,8 @@ import type {
   DocumentType,
   DocumentTag,
 } from '@/types/docvault';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
+import type { AuditEntityType } from '@/types/audit-trail';
 
 /**
  * List all documents linked to a specific project (D-NEW-CJ Hub-and-Spoke consumer).
@@ -60,7 +62,7 @@ export function createProjectDocument(
   input: CreateProjectDocumentInput,
   createdBy: string,
 ): Document {
-  return createDocument(
+  const doc = createDocument(
     entityCode,
     {
       entity_id: entityCode,
@@ -79,4 +81,16 @@ export function createProjectDocument(
     input.initialVersion,
     createdBy,
   );
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'projx_event' as unknown as AuditEntityType,
+    recordId: doc.id,
+    recordLabel: `Project Document · ${input.title}`,
+    beforeState: null,
+    afterState: { document_id: doc.id, project_id: input.projectId, document_type: input.documentType },
+    sourceModule: 'projx',
+    reason: 'project_document_created',
+  });
+  return doc;
 }

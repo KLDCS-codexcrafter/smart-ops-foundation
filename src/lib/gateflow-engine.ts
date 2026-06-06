@@ -19,6 +19,8 @@ import type {
 import { gatePassesKey } from '@/types/gate-pass';
 import { generateDocNo } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
+import type { AuditEntityType } from '@/types/audit-trail';
 
 // ============================================================
 // PUBLIC TYPES
@@ -132,6 +134,18 @@ async function createPass(
     action: `gate_pass_created_${direction}`,
     actorUserId: byUserId,
     payload: { gate_pass_no: gp.gate_pass_no, direction, vehicle_no: gp.vehicle_no },
+  });
+
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'gateflow_event' as unknown as AuditEntityType,
+    recordId: gp.id,
+    recordLabel: `Gate Pass ${gp.gate_pass_no}`,
+    beforeState: null,
+    afterState: { gate_pass_no: gp.gate_pass_no, direction, vehicle_no: gp.vehicle_no, status: gp.status },
+    sourceModule: 'gateflow',
+    reason: `gate_pass_created_${direction}`,
   });
 
   return gp;

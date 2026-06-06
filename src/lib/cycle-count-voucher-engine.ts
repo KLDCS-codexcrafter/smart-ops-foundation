@@ -15,6 +15,8 @@ import type {
 } from '@/types/cycle-count-voucher';
 import { cycleAdjustmentVoucherKey } from '@/types/cycle-count-voucher';
 import type { CycleCount } from '@/types/cycle-count';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
+import type { AuditEntityType } from '@/types/audit-trail';
 
 export function generateCycleAdjustmentVoucher(
   cycleCount: CycleCount,
@@ -191,6 +193,17 @@ export function createDraftCycleAdjustmentVoucher(
   const existing = all.find((v) => v.id === voucher.id);
   if (existing) return existing;
   saveCycleAdjustmentVouchers(entityCode, [...all, voucher]);
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'storehub_event' as unknown as AuditEntityType,
+    recordId: voucher.id,
+    recordLabel: `Cycle Adjustment Voucher ${voucher.voucher_no}`,
+    beforeState: null,
+    afterState: { voucher_no: voucher.voucher_no, cycle_count_no: voucher.related_cycle_count_no, net_value_inr: voucher.net_value_inr, status: voucher.status },
+    sourceModule: 'store-hub',
+    reason: 'cycle_adjustment_voucher_created',
+  });
   return voucher;
 }
 

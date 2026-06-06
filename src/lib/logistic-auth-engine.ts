@@ -11,6 +11,8 @@ import {
   type LogisticPortalSession, type LogisticActivity, type LogisticActivityKind,
   logisticActivityKey,
 } from '@/types/logistic-portal';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
+import type { AuditEntityType } from '@/types/audit-trail';
 
 /** Minimal LogisticMaster shape for auth (avoids importing the full interface). */
 export interface LogisticMasterLite {
@@ -93,7 +95,7 @@ export function createLogisticSession(
 ): LogisticPortalSession {
   const now = new Date();
   const expires = new Date(now.getTime() + SESSION_HOURS * 3600 * 1000);
-  return {
+  const session: LogisticPortalSession = {
     logistic_id: logistic.id,
     party_code: logistic.partyCode,
     party_name: logistic.partyName,
@@ -104,6 +106,18 @@ export function createLogisticSession(
     expires_at: expires.toISOString(),
     must_change_password: logistic.must_change_password ?? false,
   };
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'logistic_event' as unknown as AuditEntityType,
+    recordId: logistic.id,
+    recordLabel: `Logistic Portal Session · ${logistic.partyCode}`,
+    beforeState: null,
+    afterState: { logistic_id: logistic.id, party_code: logistic.partyCode, logistic_type: logistic.logisticType, issued_at: session.issued_at, expires_at: session.expires_at },
+    sourceModule: 'logistic-portal',
+    reason: 'login session created',
+  });
+  return session;
 }
 
 /** Persist session to localStorage. [JWT] Replace with secure cookie on server. */

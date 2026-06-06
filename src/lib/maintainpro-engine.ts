@@ -25,6 +25,8 @@ import {
   fireSafetyEquipmentKey,
   pmScheduleTemplateKey,
 } from '@/types/maintainpro';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
+import type { AuditEntityType } from '@/types/audit-trail';
 
 const newId = (prefix: string): string =>
   `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -71,6 +73,17 @@ export function createEquipment(
   } catch {
     /* quota silent */
   }
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'maintainpro_event' as unknown as AuditEntityType,
+    recordId: equipment.id,
+    recordLabel: `Equipment ${equipment.id}`,
+    beforeState: null,
+    afterState: { id: equipment.id, status: equipment.status },
+    sourceModule: 'maintainpro',
+    reason: 'equipment_master_created',
+  });
   return equipment;
 }
 
@@ -157,6 +170,17 @@ export function createCalibrationInstrument(
   } catch {
     /* ignore */
   }
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'maintainpro_event' as unknown as AuditEntityType,
+    recordId: instrument.id,
+    recordLabel: `Calibration Instrument ${instrument.id}`,
+    beforeState: null,
+    afterState: { id: instrument.id, status: instrument.status },
+    sourceModule: 'maintainpro',
+    reason: 'calibration_instrument_created',
+  });
   return instrument;
 }
 
@@ -221,6 +245,17 @@ export function createFireSafetyEquipment(
   } catch {
     /* ignore */
   }
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'maintainpro_event' as unknown as AuditEntityType,
+    recordId: equipment.id,
+    recordLabel: `Fire Safety Equipment ${equipment.id}`,
+    beforeState: null,
+    afterState: { id: equipment.id, status: equipment.status },
+    sourceModule: 'maintainpro',
+    reason: 'fire_safety_equipment_created',
+  });
   return equipment;
 }
 
@@ -284,6 +319,17 @@ export function createPMScheduleTemplate(
   } catch {
     /* ignore */
   }
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'maintainpro_event' as unknown as AuditEntityType,
+    recordId: template.id,
+    recordLabel: `PM Schedule Template ${template.id}`,
+    beforeState: null,
+    afterState: { id: template.id, status: template.status },
+    sourceModule: 'maintainpro',
+    reason: 'pm_schedule_template_created',
+  });
   return template;
 }
 

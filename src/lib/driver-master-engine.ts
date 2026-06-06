@@ -7,6 +7,8 @@
 
 import type { DriverMaster } from '@/types/driver-master';
 import { driverMasterKey } from '@/types/driver-master';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
+import type { AuditEntityType } from '@/types/audit-trail';
 
 export type CreateDriverInput = Omit<
   DriverMaster,
@@ -38,6 +40,17 @@ export function createDriver(
   };
   list.push(d);
   write(entityCode, list);
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'gateflow_event' as unknown as AuditEntityType,
+    recordId: d.id,
+    recordLabel: `Driver ${d.driver_name} (${d.driver_license_no})`,
+    beforeState: null,
+    afterState: { driver_name: d.driver_name, driver_license_no: d.driver_license_no, status: d.status },
+    sourceModule: 'gateflow',
+    reason: 'driver_master_created',
+  });
   return d;
 }
 

@@ -7,6 +7,8 @@
 
 import type { VehicleMaster } from '@/types/vehicle-master';
 import { vehicleMasterKey } from '@/types/vehicle-master';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
+import type { AuditEntityType } from '@/types/audit-trail';
 
 export type CreateVehicleInput = Omit<
   VehicleMaster,
@@ -38,6 +40,17 @@ export function createVehicle(
   };
   list.push(v);
   write(entityCode, list);
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'gateflow_event' as unknown as AuditEntityType,
+    recordId: v.id,
+    recordLabel: `Vehicle ${v.vehicle_no}`,
+    beforeState: null,
+    afterState: { vehicle_no: v.vehicle_no, status: v.status },
+    sourceModule: 'gateflow',
+    reason: 'vehicle_master_created',
+  });
   return v;
 }
 
