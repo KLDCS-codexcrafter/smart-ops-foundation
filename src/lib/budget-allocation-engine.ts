@@ -64,7 +64,7 @@ export function createBudget(
   // P8.3 · Block 1a · class-B wiring · procure_master_event
   logAudit({
     entityCode, action: 'create', entityType: 'procure_master_event',
-    recordId: rec.id, recordLabel: `Budget · ${rec.fiscal_year} · ${rec.scope_type ?? 'entity'} · ₹${rec.allocated_amount.toLocaleString('en-IN')}`,
+    recordId: rec.id, recordLabel: `Budget · ${rec.fiscal_year} · ${rec.scope} · ₹${rec.allocated_amount.toLocaleString('en-IN')}`,
     beforeState: null, afterState: rec as unknown as Record<string, unknown>,
     reason: 'budget_allocation_created', sourceModule: 'budget-allocation-engine',
   });
