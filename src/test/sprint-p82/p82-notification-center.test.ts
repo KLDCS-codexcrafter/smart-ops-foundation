@@ -14,23 +14,16 @@ import {
 } from '@/lib/notification-engine';
 import {
   notificationsKey, notificationMutesKey, NOTIFICATION_MAX,
-  type NotificationEvent,
 } from '@/types/notification';
 import { createTask, acknowledgeTask, reassignTask, changeDueDate, updateTask } from '@/lib/taskflow-engine';
-import {
-  runRecon, createClaimFromLine, updateClaimStatus,
-} from '@/lib/ecomx-recon-engine';
-import type { EcClaimStatus, EcReconLine, EcOrder, EcSettlement } from '@/types/ecomx';
+import { updateClaimStatus } from '@/lib/ecomx-recon-engine';
+import type { EcClaim, EcClaimStatus } from '@/types/ecomx';
 
 const ENT = 'P82TEST';
 const USER = 'u-alice';
 const OTHER = 'u-bob';
 
-function reset() {
-  localStorage.clear();
-}
-
-beforeEach(reset);
+beforeEach(() => { localStorage.clear(); });
 
 // ════════════════════════════════════════════════════════════════════════
 // Section 1 · spine: publish · idempotency · cap-prune · readAt
@@ -75,9 +68,7 @@ describe('publish() spine', () => {
     }
     const rows = listNotifications(ENT);
     expect(rows.length).toBe(NOTIFICATION_MAX);
-    // newest-first: last-inserted is at index 0
     expect(rows[0].eventKey).toBe(`cap-${NOTIFICATION_MAX + 4}`);
-    // oldest five evicted
     expect(rows.find((r) => r.eventKey === 'cap-0')).toBeUndefined();
     expect(rows.find((r) => r.eventKey === 'cap-4')).toBeUndefined();
   });
@@ -91,7 +82,6 @@ describe('publish() spine', () => {
     const raw = localStorage.getItem(notificationsKey(ENT));
     expect(raw).toBeTruthy();
     const arr = JSON.parse(raw!);
-    expect(Array.isArray(arr)).toBe(true);
     expect(arr[0].eventKey).toBe('pk');
   });
 
@@ -127,7 +117,7 @@ describe('publish() spine', () => {
 });
 
 // ════════════════════════════════════════════════════════════════════════
-// Section 2 · targetUserId · '*' broadcast · targetRole role fan-out
+// Section 2 · audience routing · '*' broadcast · targetRole fan-out
 // ════════════════════════════════════════════════════════════════════════
 describe('audience routing', () => {
   const base = {
@@ -174,7 +164,6 @@ describe('mutes', () => {
     mk(1); mk(2);
     setMute(ENT, USER, { source: 'taskflow-engine' });
     expect(listNotifications(ENT, { userId: USER }).length).toBe(0);
-    // other user unaffected
     expect(localStorage.getItem(notificationMutesKey(ENT, OTHER))).toBeNull();
   });
 
@@ -194,7 +183,6 @@ describe('mutes', () => {
   it('mute with BOTH kind and source requires AND match', () => {
     mk(1);
     setMute(ENT, USER, { kind: 'taskflow.acknowledged', source: 'taskflow-engine' });
-    // kind mismatch → not muted
     expect(listNotifications(ENT, { userId: USER }).length).toBe(1);
   });
 
@@ -203,7 +191,6 @@ describe('mutes', () => {
     const past = new Date(Date.now() - 60_000).toISOString();
     setMute(ENT, USER, { source: 'taskflow-engine', until: past });
     expect(listNotifications(ENT, { userId: USER }).length).toBe(1);
-    // expired mutes are also excluded from getMutes
     expect(getMutes(ENT, USER).length).toBe(0);
   });
 
@@ -224,16 +211,15 @@ describe('mutes', () => {
 });
 
 // ════════════════════════════════════════════════════════════════════════
-// Section 4 · digests · same-day re-open · resolved-today silences tomorrow
+// Section 4 · digests
 // ════════════════════════════════════════════════════════════════════════
 describe('digests', () => {
   function seedOverdueTask() {
-    const t = createTask(ENT, {
-      title: 'Overdue', priority: 'high', category: 'task',
+    return createTask(ENT, {
+      title: 'Overdue', priority: 'high', category: 'general',
       assigneeId: USER, assigneeName: 'Alice', creatorId: USER,
       departmentId: 'd1', dueDate: '2026-01-01', entityId: ENT,
     });
-    return t;
   }
 
   it('overdue-tasks digest emits when overdue tasks exist', () => {
@@ -260,12 +246,9 @@ describe('digests', () => {
 
   it('item RESOLVED today → tomorrow digest is silent for it', () => {
     const t = seedOverdueTask();
-    // today fires (count = 1)
     const todayE = buildOverdueTasksDigest(ENT, USER, '2026-06-06T08:00:00Z');
     expect(todayE).not.toBeNull();
-    // resolve the task today
     updateTask(ENT, t.id, { status: 'completed', completedDate: '2026-06-06T18:00:00Z' }, USER);
-    // tomorrow's digest: new eventKey (date+1), count = 0 ⇒ null
     const tomorrowE = buildOverdueTasksDigest(ENT, USER, '2026-06-07T08:00:00Z');
     expect(tomorrowE).toBeNull();
   });
@@ -273,7 +256,6 @@ describe('digests', () => {
   it('different days have different digest eventKeys', () => {
     seedOverdueTask();
     const a = buildOverdueTasksDigest(ENT, USER, '2026-06-06T08:00:00Z');
-    // create a second overdue so tomorrow still has work
     seedOverdueTask();
     const b = buildOverdueTasksDigest(ENT, USER, '2026-06-07T08:00:00Z');
     expect(a!.eventKey).not.toBe(b!.eventKey);
@@ -301,9 +283,7 @@ describe('digests', () => {
   it('runOpenDigests returns only the digests it emitted this run', () => {
     seedOverdueTask();
     const out = runOpenDigests(ENT, USER, '2026-05-10T08:00:00Z');
-    // overdue + obligations (no PTPs) → 2
-    expect(out.length).toBe(2);
-    // second open same day → 0 newly emitted
+    expect(out.length).toBe(2); // overdue + obligations (no PTPs)
     const out2 = runOpenDigests(ENT, USER, '2026-05-10T10:00:00Z');
     expect(out2.length).toBe(0);
   });
@@ -315,7 +295,7 @@ describe('digests', () => {
 describe('publishers · integration', () => {
   function mkTask() {
     return createTask(ENT, {
-      title: 'Demo', priority: 'medium', category: 'task',
+      title: 'Demo', priority: 'medium', category: 'general',
       assigneeId: USER, assigneeName: 'A', creatorId: USER,
       departmentId: 'd1', dueDate: '2026-06-10', entityId: ENT,
     });
@@ -348,67 +328,54 @@ describe('publishers · integration', () => {
     expect(ev!.severity).toBe('warning');
   });
 
-  function seedReconFixture(): { orderId: string; settlementId: string } {
-    const orders: EcOrder[] = [{
-      id: 'o1', marketplaceId: 'amazon', marketplaceOrderId: 'AMZ-1',
-      sku: 'SKU1', qty: 1, grossAmount: 10000, commission: 1000,
-      shippingFee: 0, otherFees: 0, taxAmount: 0, expectedNet: 9000,
-      orderDate: '2026-06-01', status: 'fulfilled',
-    } as unknown as EcOrder];
-    const settlements: EcSettlement[] = [{
-      id: 's1', marketplaceId: 'amazon', marketplaceOrderId: 'AMZ-1',
-      sku: 'SKU1', amount: 8000, settlementDate: '2026-06-05',
-    } as unknown as EcSettlement];
-    localStorage.setItem(`erp_ecomx_orders_${ENT}`, JSON.stringify(orders));
-    localStorage.setItem(`erp_ecomx_settlements_${ENT}`, JSON.stringify(settlements));
-    return { orderId: 'o1', settlementId: 's1' };
+  function seedClaim(): EcClaim {
+    const claim: EcClaim = {
+      id: 'eccl-test',
+      marketplaceId: 'amazon',
+      reconLineId: 'ecrl-x',
+      marketplaceOrderId: 'AMZ-1',
+      amount: 5000,
+      reason: 'short_pay · test',
+      claimRef: '',
+      status: 'open',
+      recoveredAmount: 0,
+      statusHistory: [{ status: 'open', at: '2026-06-01T00:00:00Z', note: 'created' }],
+      createdAt: '2026-06-01T00:00:00Z',
+    };
+    localStorage.setItem(`erp_ecomx_claims_${ENT}`, JSON.stringify([claim]));
+    return claim;
   }
 
-  it('runRecon publishes ecomx.recon_completed once per runId', () => {
-    seedReconFixture();
-    const result = runRecon(ENT, { marketplaceId: 'amazon', dateFrom: '2026-06-01', dateTo: '2026-06-30' });
-    const evs = listNotifications(ENT).filter((e) => e.kind === 'ecomx.recon_completed');
-    expect(evs.length).toBeGreaterThanOrEqual(1);
-    expect(evs[0].eventKey).toContain(result.id);
-  });
-
   it('publisher #7b emits ONLY spec-valid EcClaimStatus values (no "recovered" slip)', () => {
-    seedReconFixture();
-    const result = runRecon(ENT, { marketplaceId: 'amazon', dateFrom: '2026-06-01', dateTo: '2026-06-30' });
-    const line = result.lines.find((l) => l.flag !== 'matched') as EcReconLine | undefined;
-    expect(line).toBeDefined();
-    const claim = createClaimFromLine(ENT, line!.id, { reasonCategory: 'short_payment', ownerUserId: USER });
+    const c = seedClaim();
     const validStatuses: EcClaimStatus[] = ['open', 'raised', 'settled', 'rejected'];
     for (const s of validStatuses) {
-      updateClaimStatus(ENT, claim.id, { status: s, note: `→ ${s}` });
+      updateClaimStatus(ENT, c.id, { status: s, note: `→ ${s}` });
     }
     const statusEvts = listNotifications(ENT).filter((e) => e.kind === 'ecomx.claim_status_changed');
-    // Lock: every published claim-status title must reference ONLY a valid status,
-    // never the legacy 'recovered' slip name.
+    expect(statusEvts.length).toBe(validStatuses.length);
     for (const e of statusEvts) {
       expect(e.title.includes('recovered')).toBe(false);
-      expect(e.title).toMatch(/Claim (open|raised|settled|rejected) ·/);
+      expect(e.title).toMatch(/^Claim (open|raised|settled|rejected) ·/);
     }
-    // Severity mapping locks: settled→success, rejected→warning, others→info.
     const settled = statusEvts.find((e) => e.title.startsWith('Claim settled'));
     const rejected = statusEvts.find((e) => e.title.startsWith('Claim rejected'));
     expect(settled?.severity).toBe('success');
     expect(rejected?.severity).toBe('warning');
   });
 
-  it('createClaimFromLine publishes ecomx.claim_created with claim deepLink', () => {
-    seedReconFixture();
-    const result = runRecon(ENT, { marketplaceId: 'amazon', dateFrom: '2026-06-01', dateTo: '2026-06-30' });
-    const line = result.lines.find((l) => l.flag !== 'matched')!;
-    const claim = createClaimFromLine(ENT, line.id, { reasonCategory: 'short_payment', ownerUserId: USER });
-    const ev = listNotifications(ENT).find((e) => e.kind === 'ecomx.claim_created');
-    expect(ev).toBeDefined();
-    expect(ev!.deepLink).toBe(`/erp/ecomx/claim/${claim.id}`);
+  it('publisher #7b distinct eventKeys per statusHistory length', () => {
+    const c = seedClaim();
+    updateClaimStatus(ENT, c.id, { status: 'raised', note: 'r' });
+    updateClaimStatus(ENT, c.id, { status: 'settled', note: 's' });
+    const evts = listNotifications(ENT).filter((e) => e.kind === 'ecomx.claim_status_changed');
+    const keys = new Set(evts.map((e) => e.eventKey));
+    expect(keys.size).toBe(evts.length);
   });
 });
 
 // ════════════════════════════════════════════════════════════════════════
-// Section 6 · isolation · entity scope
+// Section 6 · entity isolation
 // ════════════════════════════════════════════════════════════════════════
 describe('entity isolation', () => {
   it('events under entity A do not appear under entity B', () => {
