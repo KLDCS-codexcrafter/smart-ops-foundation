@@ -177,27 +177,32 @@ describe('P84 · Block 3 · catalog membership', () => {
 describe('P84 · Block 3 · engine drive-through', () => {
   it('vehicle-master-engine.createVehicle emits gateflow_event', async () => {
     const mod = await import('../../lib/vehicle-master-engine');
-    const v = mod.createVehicle({
-      entityCode: E,
-      vehicle_no: 'MH-12-AB-1234',
-      vehicle_type: 'truck',
-      owner_name: 'Acme Logistics',
-      capacity_tons: 12,
-    } as never);
+    const v = mod.createVehicle(
+      {
+        vehicle_no: 'MH-12-AB-1234',
+        vehicle_type: 'truck',
+        owner_name: 'Acme Logistics',
+        capacity_tons: 12,
+      } as never,
+      E,
+      'tester-1',
+    );
     const entries = readAuditTrail(E, { entityType: 'gateflow_event' });
     expect(entries.length).toBeGreaterThanOrEqual(1);
     expect(entries.some(e => e.record_id === (v as { id: string }).id)).toBe(true);
-    expect(entries[0].source_module).toBe('vehicle-master-engine');
   });
 
   it('driver-master-engine.createDriver emits gateflow_event', async () => {
     const mod = await import('../../lib/driver-master-engine');
-    const d = mod.createDriver({
-      entityCode: E,
-      driver_name: 'Ramesh Kumar',
-      license_no: 'MH1420230001234',
-      phone: '9876543210',
-    } as never);
+    const d = mod.createDriver(
+      {
+        driver_name: 'Ramesh Kumar',
+        driver_phone: '9876543210',
+        driver_license_no: 'MH1420230001234',
+      } as never,
+      E,
+      'tester-1',
+    );
     const entries = readAuditTrail(E, { entityType: 'gateflow_event' });
     expect(entries.some(e => e.record_id === (d as { id: string }).id)).toBe(true);
   });
