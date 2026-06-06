@@ -69,6 +69,17 @@ import {
   resolveToggles,
 } from '@/lib/print-config-storage';
 import { loadEntities, type MockEntity } from '@/data/mock-entities';
+import {
+  loadEntityBranding,
+  setBrandingSlot,
+  clearBrandingSlot,
+  validateBrandingDataUrl,
+  type EntityBranding,
+  type BrandingSlot,
+  BRANDING_SLOT_LABELS,
+  BRANDING_SLOT_HINTS,
+  MAX_SLOT_BYTES,
+} from '@/lib/entity-branding-engine';
 
 const VOUCHER_ORDER: VoucherTypeCode[] = [
   'invoice', 'receipt', 'payment', 'contra', 'journal',
