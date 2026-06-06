@@ -22,12 +22,13 @@ import {
   logAudit,
   readAuditTrail,
   AUDIT_TRAIL_DISABLED,
-  auditTrailKey,
 } from '../../lib/audit-trail-engine';
 import {
   ADDITIVE_INLINE_AUDIT_TYPES,
+  auditTrailKey,
   type AuditEntityType,
 } from '../../types/audit-trail';
+
 
 // Real engines (Class-B wiring under test)
 import { createBudget } from '../../lib/budget-allocation-engine';
