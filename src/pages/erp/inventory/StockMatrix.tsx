@@ -15,6 +15,8 @@ import { Boxes, Plus, Search, Edit2, Trash2, List, Network, ChevronRight, Chevro
 import { toast } from 'sonner';
 import type { StockGroup, StockGroupFormData, CostingMethod } from '@/types/stock-group';
 import { onEnterNext } from '@/lib/keyboard';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const CATEGORY_TYPES=['Raw Material','Finished Goods','Semi-Finished','Component','By-Product','Co-Product','Scrap','Consumables','Stores & Consumables','Fixed Assets','Service','Spare Parts','Equipment','Tools','Packaging'];
 const MATERIAL_TYPES=['Non-Perishable','Perishable','Service'];
