@@ -170,6 +170,18 @@ export function applySubstitution(
     // best-effort; engine still returns updated order
   }
 
+  logAudit({
+    entityCode: order.entity_id,
+    action: 'update',
+    entityType: 'production_event' as unknown as AuditEntityType,
+    recordId: order.id,
+    recordLabel: `Substitution on PO ${order.doc_no} line ${updatedLine.line_no}`,
+    beforeState: { item_id: line.item_id, item_code: line.item_code, required_qty: line.required_qty },
+    afterState: { item_id: updatedLine.item_id, item_code: updatedLine.item_code, required_qty: updatedLine.required_qty, reason: input.reason },
+    sourceModule: 'production',
+    reason: 'bom_substitution_applied',
+  });
+
   return { order: updatedOrder, line: updatedLine };
 }
 
