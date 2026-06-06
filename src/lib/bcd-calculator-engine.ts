@@ -10,6 +10,7 @@
 import type { BCDCalcSnapshot } from '@/types/bcd-calc-snapshot';
 import { bcdCalcSnapshotKey } from '@/types/bcd-calc-snapshot';
 import { computeDutyWaterfall } from '@/lib/duty-waterfall-engine';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1a · eximx_event
 
 const SEED_SNAPSHOTS: BCDCalcSnapshot[] = [
   { id: 'bcds-001', snapshot_no: 'BCD-SINHA-2026-001', entity_id: 'sinha-steel', cth_code: '7208', country_code: 'CN', cif_value_inr: 1000000, effective_date: '2026-05-15', fta_treaty_code: null, bcd_inr: 100000, sws_inr: 10000, igst_inr: 198000, comp_cess_inr: 0, anti_dumping_inr: 50000, safeguard_inr: 0, landing_inr: 10000, total_custom_duty_inr: 368000, total_landed_value_inr: 1378000, scenario_label: 'China hot-rolled steel · current rate · DGTR anti-dumping live', notes: 'Baseline for comparison vs FTA scenarios', created_at: '2026-05-15T00:00:00.000Z', created_by_user: 'CFO Sinha' },
@@ -103,5 +104,12 @@ export function saveSnapshot(entityCode: string, input: BCDCalcInput, output: BC
   };
   const all = loadBCDSnapshots(entityCode);
   saveBCDSnapshots(entityCode, [...all, snapshot]);
+  // P8.3 · Block 1a · class-B wiring · eximx_event
+  logAudit({
+    entityCode, action: 'create', entityType: 'eximx_event',
+    recordId: snapshot.id, recordLabel: `BCD Snapshot · ${snapshot.snapshot_no} · CTH ${snapshot.cth_code}`,
+    beforeState: null, afterState: snapshot as unknown as Record<string, unknown>,
+    reason: 'bcd_snapshot_saved', sourceModule: 'bcd-calculator-engine',
+  });
   return snapshot;
 }

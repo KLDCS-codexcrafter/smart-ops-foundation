@@ -20,6 +20,7 @@ import {
   DEFAULT_REGISTER_TOGGLES,
   DEFAULT_REGISTER_GROUP,
 } from '@/types/register-config';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1a · fincore_settings_event
 
 /**
  * @purpose   Canonical localStorage key per entity.

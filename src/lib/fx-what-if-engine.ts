@@ -8,6 +8,7 @@
 import type { FXScenario, FXScenarioTargetKind } from '@/types/fx-scenario';
 import { fxScenarioKey } from '@/types/fx-scenario';
 import { loadRealisations } from '@/lib/export-realisation-engine';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1a · eximx_event
 
 const SEED_FX_SCENARIOS: FXScenario[] = [
   { id: 'fxs-001', scenario_no: 'FXS-SINHA-2026-001', entity_id: 'sinha-trading', target_kind: 'realisation', target_id: 'real-sinha-001', target_ref: 'REAL-SINHA-2026-001', base_currency: 'USD', base_rate_inr: 83.5, base_amount_foreign: 224000, base_amount_inr: 18704000, rate_change_pct: 5, scenario_rate_inr: 87.675, scenario_amount_inr: 19639200, delta_inr: 935200, delta_pct: 5, impact_on_fema_state: 'safe', impact_summary: 'USD up 5% · realisation INR up ₹9.35L · upside scenario', scenario_label: 'USD strengthens 5%', notes: 'Hypothetical · used in board pack scenario analysis', created_at: '2026-05-18T00:00:00.000Z', created_by_user: 'CFO Sinha' },
@@ -94,5 +95,12 @@ export function saveScenario(entityCode: string, input: FXWhatIfInput, output: F
   };
   const all = loadFXScenarios(entityCode);
   saveFXScenarios(entityCode, [...all, scenario]);
+  // P8.3 · Block 1a · class-B wiring · eximx_event
+  logAudit({
+    entityCode, action: 'create', entityType: 'eximx_event',
+    recordId: scenario.id, recordLabel: `FX Scenario · ${scenario.scenario_no} · ${scenario.base_currency} ${scenario.rate_change_pct}%`,
+    beforeState: null, afterState: scenario as unknown as Record<string, unknown>,
+    reason: 'fx_scenario_saved', sourceModule: 'fx-what-if-engine',
+  });
   return scenario;
 }
