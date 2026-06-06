@@ -117,6 +117,18 @@ export function createMtc(
     deep_link: `/erp/qualicheck#mtc-register/${id}`,
   });
 
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `MTC ${id} · ${draft.certificate_no}`,
+    beforeState: null,
+    afterState: { mtc_id: id, certificate_no: draft.certificate_no, supplier_name: draft.supplier_name, status: mtc.status, overall: mtc.overall },
+    sourceModule: 'qualicheck',
+    reason: 'mtc_created',
+  });
+
   return mtc;
 }
 
