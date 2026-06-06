@@ -83,6 +83,18 @@ export function StorageMatrixPanel(){
         } else {
             const ng:Godown={...gf,id:`gdn-${Date.now()}`,status:'active',zones:[],agreements,created_at:new Date().toISOString(),updated_at:new Date().toISOString()};
             const u=[ng,...godowns];setGodowns(u);sv(u);toast.success(`${gf.name} created`); // [JWT] POST /api/inventory/godowns
+            // P8.4 · Block 1b · Class-B page-direct emission · inventory_master_event
+            logAudit({
+              entityCode: safeEntity,
+              action: 'create',
+              entityType: 'inventory_master_event',
+              recordId: ng.id,
+              recordLabel: `Godown · ${ng.code} · ${ng.name}`,
+              beforeState: null,
+              afterState: ng as unknown as Record<string, unknown>,
+              reason: 'godown_created',
+              sourceModule: 'StorageMatrix',
+            });
         }
         setOpen(false);
     };
