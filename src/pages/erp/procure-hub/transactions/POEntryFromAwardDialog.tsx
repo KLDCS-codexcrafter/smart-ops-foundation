@@ -32,6 +32,7 @@ import { tierFor } from '@/lib/approval-tier-helper';
 import { publishProcurementPulse } from '@/lib/procurement-pulse-stub';
 // ─── NEW · HK-5 Block B · D-NEW-GL · additive budget pre-check badge ───
 import { checkBudgetForAmount } from '@/lib/budget-allocation-engine';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 interface POEntryFromAwardDialogProps {
   open: boolean;
@@ -98,6 +99,19 @@ export function POEntryFromAwardDialog({
         expected_delivery_days: expectedDays,
       });
       if (po) {
+        // P8.3.T1 · row-66 C-FIXED · po-management-engine appends a hash-chain entry but
+        // never calls logAudit/safeAudit, so the page must emit the Rule 3(1) record itself.
+        logAudit({
+          entityCode,
+          action: 'create',
+          entityType: 'procure_master_event',
+          recordId: po.id,
+          recordLabel: `PO ${po.po_no} from Award ${award.quotation_no} · ${award.vendor_name}`,
+          beforeState: null,
+          afterState: po as unknown as Record<string, unknown>,
+          reason: 'po_created_from_award',
+          sourceModule: 'POEntryFromAwardDialog',
+        });
         toast.success(`PO ${po.po_no} created from award ${award.quotation_no}`);
         // Sprint B.2 · pulse publisher per B2-Q4=B (D-NEW-ET)
         publishProcurementPulse({
