@@ -460,13 +460,41 @@ export function ClientBlueprintsPagePanel() {
 
                 <div className="pt-3 border-t border-border/40 space-y-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Fixture coverage</span>
-                    <span className="font-medium text-foreground">{b.fixtureCoverage}%</span>
+                    <span className="text-muted-foreground inline-flex items-center gap-1">
+                      Fixture coverage
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            aria-label="Per-domain seed coverage breakdown"
+                            className="inline-flex items-center text-muted-foreground/70 hover:text-foreground"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-3 text-xs space-y-1">
+                          <p className="font-semibold text-foreground mb-1">Per-domain seeded ({b.entityCode})</p>
+                          {SEEDABLE_DOMAINS.map((d) => {
+                            const cov = coverages[b.entityCode];
+                            const ok = cov?.perDomain[d] ?? false;
+                            return (
+                              <div key={d} className="flex items-center justify-between gap-2">
+                                <span className="font-mono text-muted-foreground">{d}</span>
+                                <span className={cn('font-medium', ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground/50')}>
+                                  {ok ? '✓' : '—'}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </PopoverContent>
+                      </Popover>
+                    </span>
+                    <span className="font-medium text-foreground">{coverages[b.entityCode]?.percentage ?? 0}%</span>
                   </div>
                   <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full bg-primary/60 transition-all"
-                      style={{ width: `${b.fixtureCoverage}%` }}
+                      style={{ width: `${coverages[b.entityCode]?.percentage ?? 0}%` }}
                     />
                   </div>
                   <p className="text-[11px] text-muted-foreground/60 italic">{b.pattern}</p>
@@ -486,6 +514,14 @@ export function ClientBlueprintsPagePanel() {
                       disabled={loadingEntity !== null}
                     >
                       Reset
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handlePurgeDemo(b.entityCode, b.title)}
+                      disabled={loadingEntity !== null}
+                    >
+                      Remove demo data
                     </Button>
                     <Button
                       size="sm"
