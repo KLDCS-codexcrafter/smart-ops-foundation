@@ -962,7 +962,22 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['demo-seed-manifest', 'demo-seeders-p81'],
     bankDate: '2026-06-06', provenance: 'CONFIRMED',
   },
+  // 🎬 Sprint P8.2 T-P82-Notification-Center · B.4 Notification Center spine (NotificationEvent w/ eventKey idempotency + targetUserId/targetRole broadcast + source · cap-500 oldest-prune · NotificationMutePref with expiry filter) + 8 event publishers across 5 engines (taskflow ack/done · taskflow-accountability overdue/escalate · approval-workflow request/decision · ecomx-recon claim-status · ecomx returns-RTO) + 3 on-open digest builders (overdue-tasks · ptp-due · obligations-due — date-scoped eventKeys for same-day idempotency) + ProjX bell+drawer UI mounted at ERPHeader:252 (380px Sheet · All/Unread/Mutes tabs · severity chips · markRead+navigate(deepLink|buildCardRoute)) · 36 behavioral tests · engine-only diff wall held (8 instrumentation lines · zero engine moves) · row appended at P8.3 Block 0.2 — P8.2 omitted self-seeding its history row; gap closed, chain verified 474946fc → 2d225c56
+  {
+    sprintNumber: 'P8.2' as unknown as number, code: 'T-P82-Notification-Center', composite: false, grade: 'A',
+    headSha: '2d225c56', predecessorSha: '474946fc', loc: 1200,
+    newSiblings: ['notification-engine'],
+    bankDate: '2026-06-06', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint P8.3 T-P83-Audit-Expansion-W1 · B.5-L1 audit expansion Wave 1 (Fin/Sales/Procure create paths log) · class-B engine-level wiring under instrumentation wall (import+audit+catalog-literal only · jurisdiction/dept/FY from record) · ADDITIVE_INLINE_AUDIT_TYPES extended in same edit · NEW CANON established (each sprint seeds its own SPRINTS row at Block 0/1 with headSha TBD_AT_BANK; next sprint flips it — no sprint may end without its row existing) · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'P8.3' as unknown as number, code: 'T-P83-Audit-Expansion-W1', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '2d225c56', loc: 0,
+    newSiblings: [],
+    bankDate: '2026-06-06', provenance: 'PENDING_BACKFILL',
+  },
 ];
+
 
 
 
