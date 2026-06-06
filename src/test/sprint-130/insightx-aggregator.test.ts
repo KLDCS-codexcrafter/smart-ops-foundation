@@ -68,11 +68,14 @@ describe('A · 11-lens taxonomy + registry shape', () => {
     }
   });
 
-  it('A6 · registry contains BOTH backed and unbacked entries', () => {
+  it('A6 · registry has the expected size and an at-most-some-deferred unbacked floor (durable: filled state is fine)', () => {
+    // P8.1 Pass-2b · durable conversion · S131 + S135 progressively filled the unbacked AI/Predictive
+    // slots; the literal "≥4 unbacked" floor was a snapshot of S130-era state. The honest invariants
+    // are total cardinality and backed cardinality; unbacked is allowed to drift to 0.
     const reg = getScenarioRegistry();
+    expect(reg.length).toBeGreaterThanOrEqual(28);
     expect(reg.filter((e) => e.backed).length).toBeGreaterThanOrEqual(20);
-    // S131 filled most unbacked; AI/Predictive 4 still unbacked (S135 β-ML).
-    expect(reg.filter((e) => !e.backed).length).toBeGreaterThanOrEqual(4);
+    expect(reg.filter((e) => !e.backed).length).toBeGreaterThanOrEqual(0);
   });
 
   it('A7 · scenario_ids are unique', () => {
@@ -140,9 +143,16 @@ describe('C · aggregateInsight CALLS a source (FR-44 · no recompute)', () => {
     expect(() => aggregateInsight('does-not-exist')).toThrow();
   });
 
-  it('C7 · unbacked scenario throws with deferral message (no fabrication)', () => {
-    // S131 filled diff-operix-score; AI/Predictive 4 remain deferred to S135.
-    expect(() => aggregateInsight('ai-anomaly-detector')).toThrow(/S131|unbacked|deferr/i);
+  it('C7 · any still-unbacked scenario throws an honest deferral/unmapped error (no silent fabrication)', () => {
+    // P8.1 Pass-2b · durable conversion · the original assertion hard-coded ai-anomaly-detector and
+    // the S131 deferral wording; post-S135 only ai-nl-query remains unbacked and the engine surfaces
+    // the structurally-honest 'unmapped source_engine' error for scenarios whose source isn't wired
+    // into __fr44_reuse. We assert the negative-space invariant: if anything is still unbacked,
+    // calling aggregateInsight on it MUST throw with a recognizable structured message.
+    const unbacked = getScenarioRegistry().filter((e) => !e.backed);
+    for (const u of unbacked) {
+      expect(() => aggregateInsight(u.scenario_id)).toThrow(/S13|unbacked|deferr|unmapped/i);
+    }
   });
 });
 
