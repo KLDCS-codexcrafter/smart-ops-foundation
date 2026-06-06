@@ -329,13 +329,13 @@ describe('§G · Dashboard lane fix · sidebar · CC · registry', () => {
     expect(financeLane![1]).toMatch(/'fpa-planning'/);
   });
 
-  it('sidebar exposes the new fpa-planning-budgeting item under requiredCards fpa-planning', () => {
-    expect(sidebarSrc).toMatch(/fpa-planning-budgeting/);
+  it('sidebar exposes the fpa-budgeting item under requiredCards fpa-planning (S124 A1: module id renamed from fpa-planning-budgeting)', () => {
+    expect(sidebarSrc).toMatch(/'fpa-budgeting'/);
     expect(sidebarSrc).toMatch(/requiredCards:\s*\['fpa-planning'\]/);
   });
 
-  it('CommandCenterPage wires the fpa-planning-budgeting case to BudgetingPage', () => {
-    expect(ccPageSrc).toMatch(/case 'fpa-planning-budgeting':\s*return <BudgetingPage \/>;/);
+  it('FP&A shell page wires the fpa-budgeting case to BudgetingPage', () => {
+    expect(ccPageSrc).toMatch(/case 'fpa-budgeting':\s*return <BudgetingPage \/>;/);
   });
 
   it('BudgetingPage reads the engine (no dead UI)', () => {
