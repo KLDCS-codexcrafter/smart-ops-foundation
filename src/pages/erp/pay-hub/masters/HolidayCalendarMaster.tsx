@@ -23,6 +23,8 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useHolidayCalendars } from '@/hooks/usePayHubMasters3';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { toast } from 'sonner';
 import type { HolidayCalendar, Holiday, CalendarLevel } from '@/types/payroll-masters';
