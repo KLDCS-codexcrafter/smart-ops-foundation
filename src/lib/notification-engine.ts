@@ -25,9 +25,12 @@ import {
   NOTIFICATION_MAX,
 } from '@/types/notification';
 import type { CardId } from '@/types/card-entitlement';
-// NOTE: digest builders use dynamic imports for taskflow-engine / receivx-engine /
-// comply360-statutory-memory to avoid a circular module init (those engines
-// statically import publish() from here).
+// Digest reads are CALL-ONLY at runtime; the cycle is safe because every
+// reference lives inside a function body (no top-level evaluation).
+import { listTasks, getUnacknowledgedTasks } from '@/lib/taskflow-engine';
+import { evaluatePTPs } from '@/lib/receivx-engine';
+import { loadObligations } from '@/lib/comply360-statutory-memory';
+import type { PTP } from '@/types/receivx';
 
 // ── tiny LS helpers (house pattern) ────────────────────────────────────────
 function ls<T>(key: string): T[] {
