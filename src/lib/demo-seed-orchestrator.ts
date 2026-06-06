@@ -621,12 +621,12 @@ export function computeSeedCoverage(entityCode: string): SeedCoverageReport {
     fincore_vouchers: nonEmptyArrayAt('erp_group_vouchers')
          || nonEmptyArrayAt(`erp_group_vouchers_${entityCode}`),
     bank_statements: nonEmptyArrayAt(`erp_bank_statements_${entityCode}`),
-    taskflow: nonEmptyArrayAt(`tf_tasks_${entityCode}`),
-    operix_chat: nonEmptyArrayAt(`chat_conversations_${entityCode}`),
+    taskflow: nonEmptyArrayAt(`taskflow_v1_${entityCode}`),
+    operix_chat: nonEmptyArrayAt(`oc_conversations_${entityCode}`),
     frontdesk: nonEmptyArrayAt(`fd_visitors_${entityCode}`)
          || nonEmptyArrayAt(`fd_mail_${entityCode}`),
     webstorex: nonEmptyArrayAt(`ws_items_${entityCode}`),
-    ecomx: nonEmptyArrayAt(`ec_marketplaces_${entityCode}`),
+    ecomx: nonEmptyArrayAt(`ecomx_marketplaces_${entityCode}`),
     fpa_planning: nonEmptyArrayAt(`erp_strategic_targets_${entityCode}`)
          || nonEmptyArrayAt(`erp_aop_${entityCode}`),
   };
