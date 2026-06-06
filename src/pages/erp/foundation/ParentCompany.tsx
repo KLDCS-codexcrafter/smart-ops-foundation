@@ -428,6 +428,15 @@ export default function ParentCompany() {
       if (showMfgModeSelector && form.shortCode) {
         applyManufacturingModeToEntity(form.shortCode, manufacturingMode);
       }
+      logAudit({
+        entityCode: String(form.shortCode || 'GLOBAL'),
+        action: 'create', entityType: 'foundation_master_event',
+        recordId: String(form.shortCode || 'parent-root'),
+        recordLabel: `Parent Company · ${String(form.legalEntityName ?? 'Parent')}`,
+        beforeState: null,
+        afterState: { ...form, gstRegs, lutBonds } as unknown as Record<string, unknown>,
+        reason: 'parent_company_saved', sourceModule: 'ParentCompany',
+      });
       setSaving(false);
       setConfetti(true);
       toast.success('Parent Company saved', {
