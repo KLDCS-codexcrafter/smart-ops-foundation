@@ -328,6 +328,18 @@ export function createProductionOrder(
     if (plan) linkProductionOrder(plan, po.id, user);
   }
 
+  logAudit({
+    entityCode: input.entity_id,
+    action: 'create',
+    entityType: 'production_event' as unknown as AuditEntityType,
+    recordId: po.id,
+    recordLabel: `Production Order ${po.doc_no}`,
+    beforeState: null,
+    afterState: { doc_no: po.doc_no, bom_id: po.bom_id, planned_qty: po.planned_qty, status: po.status },
+    sourceModule: 'production',
+    reason: 'production_order_created',
+  });
+
   return po;
 }
 
