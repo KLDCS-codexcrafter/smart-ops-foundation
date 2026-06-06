@@ -445,6 +445,10 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   // Sprint P8.3 · Block 2b · Wave 1 audit expansion (2 new domain literals)
   'receivx_master_event',
   'salesx_txn_event',
+  // Sprint P8.4 · Block 1a-i · Wave 2 audit expansion (3 new domain literals — operations-heavy)
+  'production_event',
+  'qualicheck_event',
+  'engineeringx_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];
