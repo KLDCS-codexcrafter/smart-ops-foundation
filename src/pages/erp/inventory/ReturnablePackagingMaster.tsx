@@ -25,6 +25,7 @@ import {
 import { Recycle, Plus, ChevronDown, AlertCircle, Pencil, Trash2 } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useReturnablePackaging } from '@/hooks/useReturnablePackaging';
+import { logAudit } from '@/lib/audit-trail-engine';
 import {
   type ReturnablePackaging, type PackagingKind, type PackagingStatus,
   PACKAGING_KIND_LABELS, PACKAGING_STATUS_LABELS,
