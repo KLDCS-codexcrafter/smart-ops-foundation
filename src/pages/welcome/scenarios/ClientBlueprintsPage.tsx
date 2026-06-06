@@ -1,8 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Popover, PopoverContent, PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   ArrowLeft,
   Building,
@@ -13,9 +16,13 @@ import {
   Home,
   FlaskConical,
   Wrench,
+  Info,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { seedEntityDemoData } from '@/lib/demo-seed-orchestrator';
+import {
+  seedEntityDemoData, computeSeedCoverage, SEEDABLE_DOMAINS,
+} from '@/lib/demo-seed-orchestrator';
+import { purgeDemoData } from '@/lib/demo-seed-manifest';
 import type { DemoArchetype } from '@/data/demo-customers-vendors';
 
 type ScenarioPhase = 'live' | 'phase2' | 'planned';
@@ -29,7 +36,7 @@ interface ClientBlueprint {
   details: string;
   pattern: string;
   phase: ScenarioPhase;
-  fixtureCoverage: number;
+  // P8.1 · Block 3 · fixtureCoverage REMOVED · computed live via computeSeedCoverage()
   founderAnchor?: boolean;
   entityCode: string;
   archetype: DemoArchetype;
