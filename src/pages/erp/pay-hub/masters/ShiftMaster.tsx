@@ -20,6 +20,8 @@ import { useShifts } from '@/hooks/usePayHubMasters3';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
 import type { Shift } from '@/types/payroll-masters';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · payhub_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const COLORS = ['#6366f1','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#ec4899','#f97316'];
 const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
@@ -58,6 +60,17 @@ export function ShiftMasterPanel() {
       update(editId, form);
     } else {
       create(form);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: `shift-${Date.now()}`,
+        recordLabel: `Shift · ${form.code} · ${form.name}`,
+        beforeState: null,
+        afterState: form as unknown as Record<string, unknown>,
+        reason: 'shift_created',
+        sourceModule: 'ShiftMaster',
+      });
     }
     setSheetOpen(false);
   }, [form, editId, sheetOpen, create, update]);

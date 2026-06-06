@@ -20,6 +20,8 @@ import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import type { LeaveType } from '@/types/payroll-masters';
 import { LEAVE_TYPES_KEY } from '@/types/payroll-masters';
 import { MasterPropagationDialog } from '@/components/pay-hub/MasterPropagationDialog';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · payhub_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type LTForm = Omit<LeaveType, 'id' | 'created_at' | 'updated_at'>;
 const BLANK: LTForm = {
@@ -65,7 +67,22 @@ export function LeaveTypesMasterPanel() {
     if (!sheetOpen) return;
     if (!form.name.trim()) return;
     const generatedId = editId || `lt-${Date.now()}`;
-    if (editId) update(editId, form); else create(form);
+    if (editId) {
+      update(editId, form);
+    } else {
+      create(form);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: generatedId,
+        recordLabel: `Leave Type · ${form.code} · ${form.name}`,
+        beforeState: null,
+        afterState: form as unknown as Record<string, unknown>,
+        reason: 'leave_type_created',
+        sourceModule: 'LeaveTypesMaster',
+      });
+    }
     setLastSavedName(form.name);
     setLastSavedId(generatedId);
     setSheetOpen(false);

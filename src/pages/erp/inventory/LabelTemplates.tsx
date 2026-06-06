@@ -15,6 +15,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tag, Plus, Search, Edit2, Trash2, Copy, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import type { LabelTemplate, LabelType, LabelSize, LabelBarcodeType } from '@/types/label-template';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const KEY = 'erp_label_templates';
 // [JWT] GET /api/inventory/label-templates
@@ -111,6 +113,17 @@ export function LabelTemplatesPanel() {
     } else {
       const nt: LabelTemplate = { ...form, id: `lt-${Date.now()}`, created_at: now, updated_at: now };
       const u = [nt, ...templates]; setTemplates(u); sv(u); toast.success(`${form.name} created`);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nt.id,
+        recordLabel: `Label Template · ${nt.name}`,
+        beforeState: null,
+        afterState: nt as unknown as Record<string, unknown>,
+        reason: 'label_template_created',
+        sourceModule: 'LabelTemplates',
+      });
       // [JWT] POST /api/labels/templates
     }
     setOpen(false);

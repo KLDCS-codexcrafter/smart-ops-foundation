@@ -17,6 +17,8 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useBonusConfigs } from '@/hooks/usePayHubMasters3';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import type { BonusConfig } from '@/types/payroll-masters';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · payhub_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const BONUS_TYPE_LABELS: Record<BonusConfig['bonusType'],string> = {
   statutory:'Statutory',ex_gratia:'Ex-Gratia',performance:'Performance',festival:'Festival',annual:'Annual',
@@ -51,7 +53,22 @@ export function BonusConfigMasterPanel() {
   const handleSave = useCallback(() => {
     if (!sheetOpen) return;
     if (!form.name.trim()) return;
-    if (editId) update(editId, form); else create(form);
+    if (editId) {
+      update(editId, form);
+    } else {
+      create(form);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: `bc-${Date.now()}`,
+        recordLabel: `Bonus Config · ${form.code} · ${form.name}`,
+        beforeState: null,
+        afterState: form as unknown as Record<string, unknown>,
+        reason: 'bonus_config_created',
+        sourceModule: 'BonusConfigMaster',
+      });
+    }
     setSheetOpen(false);
   }, [form, editId, sheetOpen, create, update]);
 

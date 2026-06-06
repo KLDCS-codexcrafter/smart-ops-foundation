@@ -18,6 +18,8 @@ import {
 import { toast } from 'sonner';
 import type { LocationReorderRule, DepartmentTag, ReorderPriority } from '@/types/location-reorder-rule';
 import type { InventoryItem } from '@/types/inventory-item';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const RRKEY = 'erp_location_reorder_rules';
 const DTKEY = 'erp_department_tags';
@@ -348,6 +350,17 @@ export function ReorderAlertsPanel() {
     } else {
       const nr: LocationReorderRule = { ...ruleForm, id: `rr-${Date.now()}`, department_tag_id: ruleForm.department_tag_id || null, department_tag_name: ruleForm.department_tag_name || null, created_at: now, updated_at: now };
       const u = [nr, ...rules]; setRules(u); saveRules(u); toast.success('Reorder rule created');
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nr.id,
+        recordLabel: `Reorder Rule · ${nr.item_name} @ ${nr.godown_name}`,
+        beforeState: null,
+        afterState: nr as unknown as Record<string, unknown>,
+        reason: 'reorder_rule_created',
+        sourceModule: 'ReorderAlerts',
+      });
     }
     setRuleOpen(false);
   };

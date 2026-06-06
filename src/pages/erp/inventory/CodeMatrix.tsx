@@ -14,6 +14,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Hash, Plus, Edit2, Trash2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import type { CodeMatrixRule, BarcodeType } from '@/types/code-matrix';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const BARCODE_TYPES: { value: BarcodeType; label: string; desc: string }[] = [
   { value: 'EAN13', label: 'EAN-13', desc: 'Standard retail barcode (13 digits)' },
@@ -88,6 +90,17 @@ export function CodeMatrixPanel() {
         created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
       };
       const u = [nr, ...rules]; setRules(u); sv(u); toast.success(`${form.name} created`);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nr.id,
+        recordLabel: `Code Rule · ${nr.name}`,
+        beforeState: null,
+        afterState: nr as unknown as Record<string, unknown>,
+        reason: 'code_matrix_rule_created',
+        sourceModule: 'CodeMatrix',
+      });
       // [JWT] POST /api/inventory/code-matrix
     }
     setOpen(false);

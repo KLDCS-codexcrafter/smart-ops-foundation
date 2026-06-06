@@ -30,6 +30,7 @@ import { buildGSTR1A, type GSTRBuilderResult } from '@/lib/comply360-gstr-builde
 import { recordFiling } from '@/lib/comply360-statutory-memory';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityGSTINs } from '@/hooks/useEntityGSTINs';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · comply360_event
 
 function defaultPeriod(monthsBack: number): string {
   const d = new Date();
@@ -104,11 +105,24 @@ export default function GSTR1ANativePage(): JSX.Element {
       toast.error('ARN required');
       return;
     }
-    recordFiling(`gstr-1a-${returnPeriod.toLowerCase()}`, arnInput.trim());
+    const recordId = `gstr-1a-${returnPeriod.toLowerCase()}`;
+    recordFiling(recordId, arnInput.trim());
+    logAudit({
+      entityCode: entityId,
+      action: 'create',
+      entityType: 'comply360_event',
+      recordId,
+      recordLabel: `GSTR-1A Amendment · ${activeGSTIN} · ${returnPeriod}`,
+      beforeState: null,
+      afterState: { gstin: activeGSTIN, return_period: returnPeriod, orig_period: origPeriod, arn: arnInput.trim() },
+      reason: 'gstr1a_filing_recorded',
+      sourceModule: 'GSTR1ANativePage',
+    });
     toast.success(`Amendment filing recorded · ARN ${arnInput}`);
     setArnDialogOpen(false);
     setArnInput('');
   };
+
 
   const errorCount = builderResult?.errors.length ?? 0;
   const warnCount = builderResult?.warnings.length ?? 0;

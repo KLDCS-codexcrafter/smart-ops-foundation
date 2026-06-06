@@ -32,6 +32,7 @@ import { buildGSTR1, type GSTRBuilderResult } from '@/lib/comply360-gstr-builder
 import { recordFiling } from '@/lib/comply360-statutory-memory';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityGSTINs } from '@/hooks/useEntityGSTINs';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · comply360_event
 
 type TabKey = 'b2b' | 'b2cl' | 'b2cs' | 'export' | 'cdnr' | 'hsn';
 
@@ -122,11 +123,24 @@ export default function GSTR1NativePage(): JSX.Element {
       toast.error('ARN required');
       return;
     }
-    recordFiling(`gstr-1-${returnPeriod.toLowerCase()}`, arnInput.trim());
+    const recordId = `gstr-1-${returnPeriod.toLowerCase()}`;
+    recordFiling(recordId, arnInput.trim());
+    logAudit({
+      entityCode: entityId,
+      action: 'create',
+      entityType: 'comply360_event',
+      recordId,
+      recordLabel: `GSTR-1 Filing · ${activeGSTIN} · ${returnPeriod}`,
+      beforeState: null,
+      afterState: { gstin: activeGSTIN, return_period: returnPeriod, arn: arnInput.trim() },
+      reason: 'gstr1_filing_recorded',
+      sourceModule: 'GSTR1NativePage',
+    });
     toast.success(`Filing recorded · ARN ${arnInput}`);
     setArnDialogOpen(false);
     setArnInput('');
   };
+
 
   const errorCount = builderResult?.errors.length ?? 0;
   const warnCount = builderResult?.warnings.length ?? 0;

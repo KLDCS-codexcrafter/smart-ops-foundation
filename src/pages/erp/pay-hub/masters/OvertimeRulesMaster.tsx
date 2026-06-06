@@ -16,6 +16,8 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useOvertimeRules } from '@/hooks/usePayHubMasters3';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import type { OvertimeRule, OvertimeSlab } from '@/types/payroll-masters';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · payhub_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 type OTForm = Omit<OvertimeRule, 'id'|'created_at'|'updated_at'>;
 const BLANK: OTForm = {
@@ -46,7 +48,22 @@ export function OvertimeRulesMasterPanel() {
   const handleSave = useCallback(() => {
     if (!sheetOpen) return;
     if (!form.name.trim()) return;
-    if (editId) update(editId, form); else create(form);
+    if (editId) {
+      update(editId, form);
+    } else {
+      create(form);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: `otr-${Date.now()}`,
+        recordLabel: `OT Rule · ${form.code} · ${form.name}`,
+        beforeState: null,
+        afterState: form as unknown as Record<string, unknown>,
+        reason: 'overtime_rule_created',
+        sourceModule: 'OvertimeRulesMaster',
+      });
+    }
     setSheetOpen(false);
   }, [form, editId, sheetOpen, create, update]);
 

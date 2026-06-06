@@ -12,6 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { MapPin, Plus, Search, Edit2, Trash2, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import type { BinLabel } from '@/types/bin-label';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const KEY = 'erp_bin_labels';
 const GKEY = 'erp_godowns';
@@ -77,6 +79,17 @@ export function BinLocationLabelsPanel() {
     } else {
       const nl: BinLabel = { ...finalForm, id: `bl-${Date.now()}`, created_at: now, updated_at: now };
       const u = [nl, ...labels]; setLabels(u); sv(u); toast.success(`Bin ${code} created`);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nl.id,
+        recordLabel: `Bin Label · ${nl.location_code}`,
+        beforeState: null,
+        afterState: nl as unknown as Record<string, unknown>,
+        reason: 'bin_label_created',
+        sourceModule: 'BinLocationLabels',
+      });
       // [JWT] POST /api/labels/bin-labels
     }
     setOpen(false);

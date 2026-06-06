@@ -13,6 +13,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Wifi, Plus, Search, Edit2, Trash2, Radio, Zap, Info, ScanLine, Package, MapPin, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import type { RFIDTag, RFIDTagStatus, RFIDEvent } from '@/types/rfid-tag';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const TAG_KEY = 'erp_rfid_tags';
 const EVT_KEY = 'erp_rfid_events';
@@ -109,6 +111,17 @@ export function RFIDManagerPanel() {
       const t: RFIDTag = { ...form, id: crypto.randomUUID(), created_at: now, updated_at: now };
       const u = [t, ...tags]; setTags(u); sv(TAG_KEY, u);
       toast.success('RFID tag registered');
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: t.id,
+        recordLabel: `RFID Tag · ${t.tag_uid}`,
+        beforeState: null,
+        afterState: t as unknown as Record<string, unknown>,
+        reason: 'rfid_tag_registered',
+        sourceModule: 'RFIDManager',
+      });
       // [JWT] POST /api/rfid/tags
     }
     setOpen(false);

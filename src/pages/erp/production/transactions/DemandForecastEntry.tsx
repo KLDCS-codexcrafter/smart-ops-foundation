@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { generateForecast, persistForecast } from '@/lib/demand-forecast-engine';
 import type { ForecastHorizon, ForecastAlgorithm } from '@/types/forecast';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 4 residue · production_event
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -51,6 +52,22 @@ export default function DemandForecastEntry(): JSX.Element {
         user: { id: 'current-user', name: 'Current User' },
       });
       persistForecast(record);
+      logAudit({
+        entityCode,
+        action: 'create',
+        entityType: 'production_event',
+        recordId: record.id,
+        recordLabel: `Demand Forecast · ${record.item_name} · ${record.horizon}`,
+        beforeState: null,
+        afterState: {
+          item_id: record.item_id,
+          horizon: record.horizon,
+          algorithm: record.algorithm,
+          data_points: record.data_points.length,
+        },
+        reason: 'demand_forecast_generated',
+        sourceModule: 'DemandForecastEntry',
+      });
       toast.success(
         `Forecast generated · ${record.data_points.length} periods · ${record.metadata.holiday_adjustments_applied} holiday adjustments`,
       );

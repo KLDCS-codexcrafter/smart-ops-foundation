@@ -27,6 +27,7 @@ import {
   type HazmatProfile, type DGClass, type PackingGroup,
   DG_CLASS_LABELS,
 } from '@/types/hazmat-profile';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
 
 const BLANK = (entity: string): HazmatProfile => ({
   id: '', entity_id: entity, profile_name: '',
@@ -68,9 +69,22 @@ export function HazmatProfileMasterPanel() {
     if (form.id) {
       updateProfile(form.id, form);
     } else {
-      createProfile({
-        ...form, id: `hzm-${crypto.randomUUID()}`,
+      const newId = `hzm-${crypto.randomUUID()}`;
+      const created: HazmatProfile = {
+        ...form, id: newId,
         created_at: now, updated_at: now,
+      };
+      createProfile(created);
+      logAudit({
+        entityCode: safeEntity,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: newId,
+        recordLabel: `Hazmat · ${created.profile_name}`,
+        beforeState: null,
+        afterState: created as unknown as Record<string, unknown>,
+        reason: 'hazmat_profile_created',
+        sourceModule: 'HazmatProfileMaster',
       });
     }
     setOpen(false);

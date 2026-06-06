@@ -12,6 +12,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Ruler, Plus, Search, Edit2, Trash2, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import type { UnitOfMeasure, UOMCategory, UOMType } from '@/types/uom';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const CATS: { value: UOMCategory; label: string }[] = [
   { value: 'weight', label: 'Weight / Mass' },
@@ -62,6 +64,17 @@ export function MeasureXPanel() {
     } else {
       const nu: UnitOfMeasure = { ...form, id: `uom-${Date.now()}`, is_system: false, is_active: true, status: 'active', created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
       const u = [...units, nu]; setUnits(u); sv(u); toast.success(`${form.name} created`); // [JWT] POST /api/inventory/uom
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nu.id,
+        recordLabel: `UOM · ${nu.name} (${nu.symbol})`,
+        beforeState: null,
+        afterState: nu as unknown as Record<string, unknown>,
+        reason: 'uom_created',
+        sourceModule: 'MeasureX',
+      });
     }
     setOpen(false);
   };

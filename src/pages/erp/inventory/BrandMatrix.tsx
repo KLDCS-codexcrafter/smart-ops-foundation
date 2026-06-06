@@ -13,6 +13,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Plus, Search, Edit2, Trash2, Tag, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Brand, SubBrand } from '@/types/brand';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const COUNTRIES = ['India', 'China', 'USA', 'Germany', 'Japan', 'South Korea',
   'UK', 'France', 'Italy', 'Taiwan', 'Netherlands', 'Sweden', 'Switzerland',
@@ -64,6 +66,17 @@ export function BrandMatrixPanel() {
       const updated = [newBrand, ...brands];
       setBrands(updated); saveBrands(updated);
       toast.success(`${bForm.name} created`);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: newBrand.id,
+        recordLabel: `Brand · ${newBrand.code} · ${newBrand.name}`,
+        beforeState: null,
+        afterState: newBrand as unknown as Record<string, unknown>,
+        reason: 'brand_created',
+        sourceModule: 'BrandMatrix',
+      });
       // [JWT] Replace with POST /api/inventory/brands
     }
     setBrandDialogOpen(false); setEditBrand(null);
@@ -85,6 +98,17 @@ export function BrandMatrixPanel() {
       const updated = [newSub, ...subBrands];
       setSubBrands(updated); saveSubBrands(updated);
       toast.success(`${sbForm.name} created`);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: newSub.id,
+        recordLabel: `Sub-Brand · ${newSub.code} · ${newSub.name}`,
+        beforeState: null,
+        afterState: newSub as unknown as Record<string, unknown>,
+        reason: 'sub_brand_created',
+        sourceModule: 'BrandMatrix',
+      });
       // [JWT] Replace with POST /api/inventory/sub-brands
     }
     setSubBrandDialogOpen(false); setEditSubBrand(null);

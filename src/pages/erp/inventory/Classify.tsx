@@ -15,6 +15,8 @@ import { Tags, Plus, Search, Edit2, Trash2, List, Network, ChevronRight, Chevron
 import { toast } from 'sonner';
 import type { Classification } from '@/types/classification';
 import type { Brand } from '@/types/brand';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const CLASS_TYPES = ['category', 'subcategory', 'group', 'class'];
 const CAT_LVLS = ['L1', 'L2', 'L3'];
@@ -83,6 +85,17 @@ export function ClassifyPanel() {
         status: 'active', created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
       };
       const u = [...items, nc]; setItems(u); sv(u); toast.success(`${form.name} created`); // [JWT] POST /api/inventory/classifications
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nc.id,
+        recordLabel: `Classification · ${nc.name}`,
+        beforeState: null,
+        afterState: nc as unknown as Record<string, unknown>,
+        reason: 'classification_created',
+        sourceModule: 'Classify',
+      });
     }
     setOpen(false);
   };

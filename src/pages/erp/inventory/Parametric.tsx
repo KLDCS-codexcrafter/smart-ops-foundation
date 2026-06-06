@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Search, Plus, Lock, Settings2, Boxes, Trash2, Edit2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Class-C · inventory_master_event
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 export interface ParameterEntry {
   id: string;
@@ -203,6 +205,17 @@ export function ParametricPanel() {
       };
       setTemplates(prev => [...prev, newTemplate]);
       toast.success(`${tplForm.name} created`);
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: newTemplate.id,
+        recordLabel: `Parameter Template · ${newTemplate.name}`,
+        beforeState: null,
+        afterState: newTemplate as unknown as Record<string, unknown>,
+        reason: 'parameter_template_created',
+        sourceModule: 'Parametric',
+      });
       // [JWT] Replace with POST /api/inventory/parameter-templates
     }
     setTemplateDialogOpen(false);
