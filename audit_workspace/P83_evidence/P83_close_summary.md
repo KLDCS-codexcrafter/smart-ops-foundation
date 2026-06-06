@@ -89,9 +89,32 @@ Catalog growth this sprint: **8 new literals** (Pass-1 = 5 · Pass-2a = 1 · Pas
 
 ---
 
+## P8.3.T1 · Correction note (strict engine-credit rule)
+
+Block-0 mis-classed two rows as A because the page imported `po-management-engine.ts`,
+which only calls `appendAuditEntry` (hash-chain sibling) and never reaches
+`logAudit` / `safeAudit`. Import alone is not coverage. Both rows are now
+C-FIXED with page-level emission:
+
+| Inventory # | Page | Was | Now | Literal | Fix-site | Correction note |
+|---|---|---|---|---|---|---|
+| 66 | `src/pages/erp/procure-hub/transactions/POEntryFromAwardDialog.tsx` | A | C-FIXED | `procure_master_event` | `src/pages/erp/procure-hub/transactions/POEntryFromAwardDialog.tsx:103` | false class-A — engine import was read-only and the engine never logged |
+| 68 | `src/pages/erp/procure-hub/transactions/VendorAdvanceEntry.tsx` | A | C-FIXED | `treasury_event` (vendor advance is a payment-side / treasury record — `createVendorAdvance` writes `status:'paid'` + `advance_amount` to `erp_vendor_advances_<entity>`) | `src/pages/erp/procure-hub/transactions/VendorAdvanceEntry.tsx:55` | false class-A — engine import was read-only and the engine never logged |
+
+Updated class counts after T1 correction: A = 35 · B = 28 · C = 34 (sum still 97).
+
+The Block-4 meta-test is strengthened (suite `Sprint P8.3.T1 · STRICT engine-credit rule`):
+an imported engine credits coverage **only if** that engine file itself contains
+`logAudit(` or `safeAudit(` (function-call regex — comments / strings do not credit).
+A negative-control fixture proves a read-only-import body is rejected; a positive
+control proves a real call credits. Re-running the strict rule against the full
+97-row inventory surfaces **zero** additional orphans beyond 66 + 68.
+
+---
+
 ## Block 4 · Exemption ledger (reproduced verbatim)
 
-`AUDIT_META_EXEMPT` declared in `src/test/sprint-p83/p83-block4-meta.test.ts` is **empty** ([]). Every class-A page is covered upstream by `fincore-engine.ts`, `useVoucherTypes.ts`, `useOrders.ts`, or `card-audit-engine.ts`; every B and C page now reaches `logAudit` (above). Exemption ratio = **0/97 = 0.00%** (ceiling 10%).
+`AUDIT_META_EXEMPT` declared in `src/test/sprint-p83/p83-block4-meta.test.ts` is **empty** ([]). Every remaining class-A page is covered upstream by `fincore-engine.ts`, `useVoucherTypes.ts`, `useOrders.ts`, `bill-passing-engine.ts`, `git-engine.ts`, or `card-audit-engine.ts` (each verified by the strict rule); every B and C page now reaches `logAudit` (above). Exemption ratio = **0/97 = 0.00%** (ceiling 10%).
 
 ---
 

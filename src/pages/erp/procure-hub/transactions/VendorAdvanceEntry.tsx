@@ -18,6 +18,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadPartyMaster } from '@/lib/party-master-engine';
 import { listPurchaseOrders } from '@/lib/po-management-engine';
 import { createVendorAdvance } from '@/lib/vendor-advance-engine';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 export function VendorAdvanceEntry(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -42,7 +43,7 @@ export function VendorAdvanceEntry(): JSX.Element {
 
     const po = poId !== 'none' ? pos.find((p) => p.id === poId) : null;
 
-    createVendorAdvance({
+    const advance = createVendorAdvance({
       entity_id: entityCode,
       vendor_id: vendor.id,
       vendor_name: vendor.party_name,
@@ -50,6 +51,21 @@ export function VendorAdvanceEntry(): JSX.Element {
       po_no: po?.po_no ?? null,
       advance_amount: amt,
       notes: notes || undefined,
+    });
+
+    // P8.3.T1 · row-68 C-FIXED · vendor advance is a payment-side (treasury) record:
+    // createVendorAdvance writes status:'paid' + advance_amount to erp_vendor_advances_<entity>,
+    // i.e. a treasury outflow staged for later invoice adjustment. Literal: treasury_event.
+    logAudit({
+      entityCode,
+      action: 'create',
+      entityType: 'treasury_event',
+      recordId: advance.id,
+      recordLabel: `Vendor Advance · ${advance.vendor_name} · ₹${amt.toLocaleString('en-IN')}${advance.po_no ? ` · PO ${advance.po_no}` : ''}`,
+      beforeState: null,
+      afterState: advance as unknown as Record<string, unknown>,
+      reason: 'vendor_advance_paid',
+      sourceModule: 'VendorAdvanceEntry',
     });
 
     toast.success(`Vendor advance of ₹${amt.toLocaleString('en-IN')} recorded`);

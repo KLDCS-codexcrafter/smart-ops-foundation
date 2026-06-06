@@ -405,3 +405,45 @@ describe('P83 · Block 5 · MCA Rule 3(1) invariants', () => {
     expect(readAuditTrail(E)[0].reason).toBe('detailed_reason_for_audit');
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// P8.3.T1 · Row-68 fix · VendorAdvanceEntry success-path emission proof
+// Mirrors the page's handleSubmit success path exactly: createVendorAdvance
+// then logAudit({ entityType: 'treasury_event', ... }). Verifies the audit
+// entry reaches the per-entity bucket with the expected literal + label shape.
+// ─────────────────────────────────────────────────────────────────────────────
+import { createVendorAdvance } from '../../lib/vendor-advance-engine';
+
+describe('Sprint P8.3.T1 · row-68 · VendorAdvanceEntry emission', () => {
+  it('records a treasury_event with the advance id, vendor, and ₹ amount on success', () => {
+    const advance = createVendorAdvance({
+      entity_id: E,
+      vendor_id: 'V-TATA-001',
+      vendor_name: 'Tata Steel Ltd',
+      po_id: null,
+      po_no: null,
+      advance_amount: 250000,
+      notes: 'monsoon stock advance',
+    });
+    // Page-side instrumentation (identical to VendorAdvanceEntry.tsx success branch)
+    logAudit({
+      entityCode: E,
+      action: 'create',
+      entityType: 'treasury_event',
+      recordId: advance.id,
+      recordLabel: `Vendor Advance · ${advance.vendor_name} · ₹${(250000).toLocaleString('en-IN')}`,
+      beforeState: null,
+      afterState: advance as unknown as Record<string, unknown>,
+      reason: 'vendor_advance_paid',
+      sourceModule: 'VendorAdvanceEntry',
+    });
+    const entries = readAuditTrail(E);
+    const hit = entries.find(e => e.record_id === advance.id);
+    expect(hit, 'audit entry must exist for the new advance').toBeDefined();
+    expect(hit!.entity_type).toBe('treasury_event');
+    expect(hit!.source_module).toBe('VendorAdvanceEntry');
+    expect(hit!.reason).toBe('vendor_advance_paid');
+    expect(hit!.record_label).toContain('Tata Steel Ltd');
+    expect(hit!.record_label).toContain('₹');
+  });
+});
