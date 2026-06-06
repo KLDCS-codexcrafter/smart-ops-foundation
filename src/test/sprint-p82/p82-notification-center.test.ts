@@ -343,7 +343,7 @@ describe('publishers · integration', () => {
       statusHistory: [{ status: 'open', at: '2026-06-01T00:00:00Z', note: 'created' }],
       createdAt: '2026-06-01T00:00:00Z',
     };
-    localStorage.setItem(`erp_ecomx_claims_${ENT}`, JSON.stringify([claim]));
+    localStorage.setItem(`ecomx_claims_${ENT}`, JSON.stringify([claim]));
     return claim;
   }
 
