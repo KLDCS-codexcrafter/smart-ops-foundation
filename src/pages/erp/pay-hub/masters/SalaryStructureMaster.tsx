@@ -22,6 +22,8 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { usePayHubSalaryStructures } from '@/hooks/usePayHubSalaryStructures';
 import { usePayHeads } from '@/hooks/usePayHeads';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
 import type { SalaryStructure, SalaryStructureComponent, PayHeadType } from '@/types/pay-hub';
