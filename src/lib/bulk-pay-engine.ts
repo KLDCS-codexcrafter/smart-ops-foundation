@@ -28,6 +28,7 @@ import type {
   BulkPaymentBatch, BulkBatchStatus, BatchApprovalEntry,
   BatchExecutionResult, BankCode, BankFileFormat,
 } from '@/types/smart-ap';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1a · treasury_event
 import { smartApBatchesKey } from '@/types/smart-ap';
 import type { PaymentRequisition } from '@/types/payment-requisition';
 import { paymentRequisitionsKey } from '@/types/payment-requisition';
@@ -195,6 +196,13 @@ export function createBulkBatch(input: CreateBulkBatchInput): BulkPaymentBatch {
   appendEntry(batch, 'system', 'create',
     `Batch created with ${validReqs.length} requisitions · ₹${totalAmount.toLocaleString('en-IN')}`);
   persist(input.entityCode, batch);
+  // P8.3 · Block 1a · class-B wiring · treasury_event
+  logAudit({
+    entityCode: input.entityCode, action: 'create', entityType: 'treasury_event',
+    recordId: batch.id, recordLabel: `BulkBatch · ${batch.batch_no}`,
+    beforeState: null, afterState: batch as unknown as Record<string, unknown>,
+    reason: 'bulk_batch_created', sourceModule: 'bulk-pay-engine',
+  });
   return batch;
 }
 
