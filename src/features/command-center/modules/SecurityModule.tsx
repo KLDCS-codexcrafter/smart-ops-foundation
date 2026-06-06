@@ -303,10 +303,37 @@ function ScopeBadge({ tab }: { tab: ConsoleTab }) {
 }
 
 // ── Shared helper components ──────────────────────────────────
-function SectionHeader({ title, children }: { title: string; children?: React.ReactNode }) {
+// R0 · Block 4 (DP-R0-3) · honesty patch
+// `DemoBadge` is the single shared badge rendered on every fixture-fed panel.
+// `SectionHeader` accepts an optional `demo` flag so each fixture panel marks
+// itself once at its header (no per-chart sprinkling).
+const SECURITY_HONESTY_MSG =
+  "Not wired yet — Security Console rewire is scheduled (CS sprint); roles are enforced by the entitlement engine, not this screen.";
+
+function DemoBadge() {
+  return (
+    <span
+      data-testid="security-demo-badge"
+      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-warning/30 bg-warning/10 text-warning text-[10px] font-medium ml-2 align-middle"
+      title="This panel renders fixture data for visualization — live data arrives with the CS-sprint rewire."
+    >
+      <AlertTriangle className="w-3 h-3" aria-hidden="true" />
+      Demo visualization
+    </span>
+  );
+}
+
+function SectionHeader({
+  title,
+  children,
+  demo = false,
+}: { title: string; children?: React.ReactNode; demo?: boolean }) {
   return (
     <div className="mb-6">
-      <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
+      <h3 className="text-base font-semibold text-foreground mb-1">
+        {title}
+        {demo && <DemoBadge />}
+      </h3>
       {children && <p className="text-sm text-muted-foreground">{children}</p>}
     </div>
   );
@@ -314,7 +341,11 @@ function SectionHeader({ title, children }: { title: string; children?: React.Re
 
 function SaveButton({ onClick }: { onClick?: () => void }) {
   return (
-    <Button size="sm" className="gap-1.5 mt-4" onClick={onClick ?? (() => toast.success("Settings saved — backend will enforce on next login"))}>
+    <Button
+      size="sm"
+      className="gap-1.5 mt-4"
+      onClick={onClick ?? (() => toast.message(SECURITY_HONESTY_MSG))}
+    >
       <Check className="w-3.5 h-3.5" /> Save Changes
     </Button>
   );
