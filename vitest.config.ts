@@ -18,6 +18,7 @@ export default defineConfig({
     poolMatchGlobs: [
       ["src/test/sprint-81a/**", "forks"],
       ["src/test/sprint-81c/**", "forks"],
+      ["src/test/sprint-81d/**", "forks"],
       ["src/test/sprint-83/**", "forks"],
       ["src/test/sprint-84/**", "forks"],
       ["src/test/sprint-85/**", "forks"],
