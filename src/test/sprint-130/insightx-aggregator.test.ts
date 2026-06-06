@@ -68,11 +68,14 @@ describe('A · 11-lens taxonomy + registry shape', () => {
     }
   });
 
-  it('A6 · registry contains BOTH backed and unbacked entries', () => {
+  it('A6 · registry has the expected size and an at-most-some-deferred unbacked floor (durable: filled state is fine)', () => {
+    // P8.1 Pass-2b · durable conversion · S131 + S135 progressively filled the unbacked AI/Predictive
+    // slots; the literal "≥4 unbacked" floor was a snapshot of S130-era state. The honest invariants
+    // are total cardinality and backed cardinality; unbacked is allowed to drift to 0.
     const reg = getScenarioRegistry();
+    expect(reg.length).toBeGreaterThanOrEqual(28);
     expect(reg.filter((e) => e.backed).length).toBeGreaterThanOrEqual(20);
-    // S131 filled most unbacked; AI/Predictive 4 still unbacked (S135 β-ML).
-    expect(reg.filter((e) => !e.backed).length).toBeGreaterThanOrEqual(4);
+    expect(reg.filter((e) => !e.backed).length).toBeGreaterThanOrEqual(0);
   });
 
   it('A7 · scenario_ids are unique', () => {
