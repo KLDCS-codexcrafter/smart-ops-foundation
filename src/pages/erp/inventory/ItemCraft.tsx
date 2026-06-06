@@ -302,6 +302,18 @@ export function ItemCraftPanel() {
       const ni = { ...form, ...sync, id: sid, created_at: now, updated_at: now } as InventoryItem;
       const u = [ni, ...items]; setItems(u); sv(u);
       // [JWT] POST /api/inventory/items
+      // P8.4 · Block 1b · Class-B page-direct emission · inventory_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: ni.id,
+        recordLabel: `Item · ${ni.code} · ${ni.name}`,
+        beforeState: null,
+        afterState: ni as unknown as Record<string, unknown>,
+        reason: 'inventory_item_created',
+        sourceModule: 'ItemCraft',
+      });
     }
     svR(VKEY, [...ls<ItemVendor>(VKEY).filter(v => v.item_id !== sid), ...vendors.map(v => ({ ...v, item_id: sid }))]);
     svR(QKEY, [...ls<ItemQCParam>(QKEY).filter(q => q.item_id !== sid), ...qcParams.map(q => ({ ...q, item_id: sid }))]);
