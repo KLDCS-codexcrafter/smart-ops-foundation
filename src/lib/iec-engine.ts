@@ -7,6 +7,8 @@
 
 import type { IEC } from '@/types/iec';
 import { IEC_LOCALSTORAGE_KEY } from '@/types/iec';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1 · eximx_event
+import type { AuditEntityType } from '@/types/audit-trail';
 
 export const listIECs = (entityId: string): IEC[] => {
   const raw = localStorage.getItem(IEC_LOCALSTORAGE_KEY(entityId));
@@ -17,9 +19,20 @@ export const upsertIEC = (entityId: string, iec: IEC): IEC[] => {
   const all = listIECs(entityId);
   const idx = all.findIndex(x => x.id === iec.id);
   const now = new Date().toISOString();
+  const isUpdate = idx >= 0;
   if (idx >= 0) all[idx] = { ...iec, updated_at: now };
   else all.push({ ...iec, created_at: now, updated_at: now });
   localStorage.setItem(IEC_LOCALSTORAGE_KEY(entityId), JSON.stringify(all));
+  logAudit({
+    entityCode: entityId,
+    action: isUpdate ? 'update' : 'create',
+    entityType: 'eximx_event' as unknown as AuditEntityType,
+    recordId: iec.id,
+    recordLabel: `IEC ${iec.iec_number ?? iec.id}`,
+    beforeState: null,
+    afterState: { iec_number: iec.iec_number, validity: iec.validity },
+    sourceModule: 'eximx',
+  });
   return all;
 };
 
