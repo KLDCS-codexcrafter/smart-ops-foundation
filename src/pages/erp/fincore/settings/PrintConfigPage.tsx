@@ -447,4 +447,3 @@ function EntityBrandingSection({ entityCode }: { entityCode: string }): JSX.Elem
 }
 
 
-export default PrintConfigPagePanel;
