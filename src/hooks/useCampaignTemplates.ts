@@ -52,7 +52,7 @@ export function useCampaignTemplates(entityCode: string) {
     }
     persist(list);
     return list;
-  }, [key, persist]);
+  }, [key, persist, entityCode]);
 
   const deleteTemplate = useCallback((id: string) => {
     const list = ls<CampaignTemplate>(key);
