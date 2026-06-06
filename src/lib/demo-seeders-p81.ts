@@ -49,20 +49,22 @@ import {
 } from '@/lib/ecomx-recon-engine';
 
 // ─── Engine-owned storage keys (record-sweep targets) ──────────────────
-const TF_TASKS_KEY = (e: string) => `tf_tasks_${e}`;
+// Aligned to actual engine key functions in @/types/{taskflow,frontdesk,
+// webstorex,ecomx} and @/lib/operix-chat-engine · P8.1 Pass-2 correction.
+const TF_TASKS_KEY = (e: string) => `taskflow_v1_${e}`;
 const TF_EVIDENCE_KEY = (e: string) => `tf_evidence_${e}`;
-const CHAT_CONVS_KEY = (e: string) => `chat_conversations_${e}`;
-const CHAT_MSGS_KEY = (e: string) => `chat_messages_${e}`;
-const CHAT_FOLLOWUPS_KEY = (e: string) => `chat_followups_${e}`;
+const CHAT_CONVS_KEY = (e: string) => `oc_conversations_${e}`;
+const CHAT_MSGS_KEY = (e: string) => `oc_messages_${e}`;
+const CHAT_FOLLOWUPS_KEY = (e: string) => `oc_followups_${e}`;
 const FD_VISITORS_KEY = (e: string) => `fd_visitors_${e}`;
 const FD_MAIL_KEY = (e: string) => `fd_mail_${e}`;
 const FD_CONTACTS_KEY = (e: string) => `fd_party_contacts_${e}`;
 const WS_ITEMS_KEY = (e: string) => `ws_items_${e}`;
 const WS_CAMPAIGNS_KEY = (e: string) => `ws_campaigns_${e}`;
 const WS_TESTIMONIALS_KEY = (e: string) => `ws_testimonials_${e}`;
-const EC_MARKETPLACES_KEY = (e: string) => `ec_marketplaces_${e}`;
-const EC_LISTINGS_KEY = (e: string) => `ec_listings_${e}`;
-const EC_CLAIMS_KEY = (e: string) => `ec_claims_${e}`;
+const EC_MARKETPLACES_KEY = (e: string) => `ecomx_marketplaces_${e}`;
+const EC_LISTINGS_KEY = (e: string) => `ecomx_listings_${e}`;
+const EC_CLAIMS_KEY = (e: string) => `ecomx_claims_${e}`;
 
 const SEED_USER = 'demo-seeder';
 
