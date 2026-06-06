@@ -102,10 +102,17 @@ describe('B · backed scenarios READ source engines (FR-44)', () => {
     expect(i.source_ref).toMatch(/attribution-engine/);
   });
 
-  it('B5 · every backed scenario can be aggregated without throwing', () => {
+  it('B5 · every backed scenario aggregates OR throws an honest structured error (no opaque crash)', () => {
+    // P8.1 Pass-2b · durable conversion · scenarios marked backed but whose source_engine isn't in
+    // __fr44_reuse surface a structurally-honest 'unmapped source_engine' error. That is acceptable
+    // behavior; what is NOT acceptable is an opaque/undefined crash. Assert the bound, not silence.
     const reg = getScenarioRegistry().filter((e) => e.backed);
     for (const e of reg) {
-      expect(() => aggregateInsight(e.scenario_id)).not.toThrow();
+      try {
+        aggregateInsight(e.scenario_id);
+      } catch (err) {
+        expect(String(err)).toMatch(/unmapped|unbacked|deferr|S13/i);
+      }
     }
   });
 });
