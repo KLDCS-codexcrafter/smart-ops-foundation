@@ -12,6 +12,7 @@ import { Switch } from '@/components/ui/switch';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { receivxSchemesKey, type IncentiveScheme } from '@/types/receivx';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · receivx_master_event
 
 interface Props { entityCode: string }
 
