@@ -86,6 +86,18 @@ export function raiseNcr(
     deep_link: `/erp/qualicheck#ncr-register/${id}`,
   });
 
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `NCR ${id}`,
+    beforeState: null,
+    afterState: { ncr_id: id, severity: draft.severity, status: ncr.status, source: draft.source },
+    sourceModule: 'qualicheck',
+    reason: 'ncr_raised',
+  });
+
   return ncr;
 }
 
