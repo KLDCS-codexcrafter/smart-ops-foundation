@@ -118,6 +118,18 @@ export function createFai(
     deep_link: `/erp/qualicheck#fai-register/${id}`,
   });
 
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `FAI ${id} · ${draft.part_no}`,
+    beforeState: null,
+    afterState: { fai_id: id, part_no: draft.part_no, status: fai.status, overall: fai.overall },
+    sourceModule: 'qualicheck',
+    reason: 'fai_created',
+  });
+
   return fai;
 }
 
