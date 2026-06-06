@@ -29,6 +29,7 @@ import { onEnterNext, useCtrlS, amountInputProps, toIndianFormat } from '@/lib/k
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 type EmployeeView = 'list' | 'profile' | 'create' | 'edit';
 
