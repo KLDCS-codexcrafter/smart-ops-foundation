@@ -5,6 +5,7 @@
  */
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · salesx_master_event
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
