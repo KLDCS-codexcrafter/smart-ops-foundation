@@ -49,7 +49,7 @@ export function useCampaigns(entityCode: string) {
     }
     persist(list);
     return list;
-  }, [key, persist]);
+  }, [key, persist, entityCode]);
 
   const deleteCampaign = useCallback((id: string) => {
     persist(ls<Campaign>(key).filter(c => c.id !== id));
