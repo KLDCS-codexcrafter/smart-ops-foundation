@@ -47,7 +47,7 @@ describe('Sprint R0 · Block 1 + 2 · evidence docs', () => {
     expect(exists('audit_workspace/R0_evidence/Trident_Scatter_Routing_v1.md')).toBe(true);
     const md = read('audit_workspace/R0_evidence/Trident_Scatter_Routing_v1.md');
     // 11 routed items — at minimum count of verdict rows
-    const verdicts = md.match(/[✅🔶❌🔵]/g) ?? [];
+    const verdicts = md.match(/[✅🔶❌🔵]/gu) ?? [];
     expect(verdicts.length).toBeGreaterThanOrEqual(11);
   });
 });
