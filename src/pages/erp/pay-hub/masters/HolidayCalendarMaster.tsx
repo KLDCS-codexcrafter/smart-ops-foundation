@@ -231,6 +231,18 @@ export function HolidayCalendarMasterPanel() {
       update(editId, form);
     } else {
       create(form);
+      // P8.4 · Block 1b · Class-B page-direct emission · payhub_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: `hc-${Date.now()}`,
+        recordLabel: `Holiday Calendar · ${form.name}`,
+        beforeState: null,
+        afterState: form as unknown as Record<string, unknown>,
+        reason: 'holiday_calendar_created',
+        sourceModule: 'HolidayCalendarMaster',
+      });
     }
     setSheetOpen(false); setEditId(null); setForm({...BLANK_CAL, holidays:[]});
   }, [form, editId, sheetOpen, create, update]);
