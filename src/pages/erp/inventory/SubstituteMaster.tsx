@@ -98,9 +98,22 @@ export function SubstituteMasterPanel() {
     if (form.id) {
       updateSubstitute(form.id, payload);
     } else {
-      createSubstitute({
+      const newSub = {
         ...payload, id: `sub-${crypto.randomUUID()}`,
         created_at: now, updated_at: now,
+      };
+      createSubstitute(newSub);
+      // P8.4 · Block 1b · Class-B page-direct emission · inventory_master_event
+      logAudit({
+        entityCode: safeEntity,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: newSub.id,
+        recordLabel: `Substitute · ${newSub.primary_item_code} → ${newSub.substitute_item_code}`,
+        beforeState: null,
+        afterState: newSub as unknown as Record<string, unknown>,
+        reason: 'item_substitute_created',
+        sourceModule: 'SubstituteMaster',
       });
     }
     setOpen(false);
