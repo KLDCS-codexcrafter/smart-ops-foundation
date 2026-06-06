@@ -388,7 +388,7 @@ export function acknowledgeTask(
   );
   // P82 Block 2 · publisher #1 · taskflow.acknowledged · success path
   publishNotification({
-    entityCode, userId: t.assigneeId, kind: 'taskflow.acknowledged', cardId: 'taskflow',
+    entityCode, userId: t.assigneeId ?? userId, kind: 'taskflow.acknowledged', cardId: 'taskflow',
     severity: 'success', title: `Task acknowledged: ${t.title}`,
     body: `by ${userId}`, deepLink: `/erp/taskflow/task/${taskId}`,
     refType: 'task', refId: taskId,
