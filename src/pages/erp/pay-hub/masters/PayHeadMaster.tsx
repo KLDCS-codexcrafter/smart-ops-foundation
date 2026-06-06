@@ -22,6 +22,8 @@ import { cn } from '@/lib/utils';
 import type { PayHead, PayHeadType, PayHeadCalcType } from '@/types/pay-hub';
 import { PAY_HEAD_TYPE_LABELS, CALC_TYPE_LABELS } from '@/types/pay-hub';
 import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const TYPE_COLORS: Record<PayHeadType, string> = {
   earning: 'bg-green-500/10 text-green-700 border-green-500/30',
