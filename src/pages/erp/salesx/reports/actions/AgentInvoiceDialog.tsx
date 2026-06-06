@@ -11,6 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · salesx_txn_event
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
