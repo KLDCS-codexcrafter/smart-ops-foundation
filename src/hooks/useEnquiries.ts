@@ -18,6 +18,7 @@ import {
   canConvertEnquiryToQuotation,
   logConversionEvent,
 } from '@/lib/salesx-conversion-engine';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · salesx_master_event
 
 function load(entityCode: string): Enquiry[] {
   try {
@@ -79,6 +80,12 @@ export function useEnquiries(entityCode: string) {
     const updated = [...all, enq];
     setEnquiries(updated); save(entityCode, updated);
     // [JWT] POST /api/salesx/enquiries
+    logAudit({
+      entityCode, action: 'create', entityType: 'salesx_master_event',
+      recordId: enq.id, recordLabel: `Enquiry · ${enq.enquiry_no}`,
+      beforeState: null, afterState: enq as unknown as Record<string, unknown>,
+      reason: 'enquiry_created', sourceModule: 'useEnquiries',
+    });
     toast.success(`Enquiry ${enq.enquiry_no} created`);
     return enq;
   };

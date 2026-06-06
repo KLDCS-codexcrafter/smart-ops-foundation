@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import type { SAMPerson, SAMHierarchyLevel, SAMPersonType } from '@/types/sam-person';
 import { samPersonsKey, samHierarchyKey, genPersonCode, SAM_GROUP_CODE } from '@/types/sam-person';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · salesx_master_event
 
 // ── internal helpers ──────────────────────────────────────────────────
 function loadPersons(entityCode: string): SAMPerson[] {
@@ -80,6 +81,12 @@ export function useSAMPersons(entityCode: string) {
     setPersons(updated);
     savePersons(entityCode, updated);
     autoCreateLedgerEntry(person);
+    logAudit({
+      entityCode, action: 'create', entityType: 'salesx_master_event',
+      recordId: person.id, recordLabel: `SAM Person · ${person.person_code} · ${person.display_name}`,
+      beforeState: null, afterState: person as unknown as Record<string, unknown>,
+      reason: 'sam_person_created', sourceModule: 'useSAMPersons',
+    });
     toast.success(`${person.display_name} (${code}) created`);
     // [JWT] POST /api/salesx/sam/persons
     return person;

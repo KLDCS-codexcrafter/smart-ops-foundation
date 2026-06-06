@@ -5,6 +5,7 @@
 import { useState, useCallback } from 'react';
 import type { Campaign } from '@/types/campaign';
 import { campaignsKey } from '@/types/campaign';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · salesx_master_event
 
 function ls<T>(k: string): T[] {
   try {
@@ -32,11 +33,18 @@ export function useCampaigns(entityCode: string) {
         list[idx] = { ...list[idx], ...data, id: data.id, updated_at: now };
       }
     } else {
-      list.push({
+      const rec = {
         ...data,
         id: `camp-${Date.now()}`,
         created_at: now,
         updated_at: now,
+      };
+      list.push(rec);
+      logAudit({
+        entityCode, action: 'create', entityType: 'salesx_master_event',
+        recordId: rec.id, recordLabel: `Campaign · ${rec.campaign_name ?? rec.id}`,
+        beforeState: null, afterState: rec as unknown as Record<string, unknown>,
+        reason: 'campaign_created', sourceModule: 'useCampaigns',
       });
     }
     persist(list);

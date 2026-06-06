@@ -5,6 +5,7 @@
 import { useState, useCallback } from 'react';
 import type { EnquirySource } from '@/types/enquiry-source';
 import { enquirySourcesKey } from '@/types/enquiry-source';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · salesx_master_event
 
 function ls<T>(k: string): T[] {
   try {
@@ -32,11 +33,18 @@ export function useEnquirySources(entityCode: string) {
         list[idx] = { ...list[idx], ...data, id: data.id, updated_at: now };
       }
     } else {
-      list.push({
+      const rec = {
         ...data,
         id: `esrc-${Date.now()}`,
         created_at: now,
         updated_at: now,
+      };
+      list.push(rec);
+      logAudit({
+        entityCode, action: 'create', entityType: 'salesx_master_event',
+        recordId: rec.id, recordLabel: `Enquiry Source · ${rec.source_name ?? rec.id}`,
+        beforeState: null, afterState: rec as unknown as Record<string, unknown>,
+        reason: 'enquiry_source_created', sourceModule: 'useEnquirySources',
       });
     }
     persist(list);

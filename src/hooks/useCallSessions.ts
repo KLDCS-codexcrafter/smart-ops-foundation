@@ -6,6 +6,7 @@ import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import type { CallSession, DialerSession } from '@/types/call-session';
 import { callSessionsKey, dialerSessionsKey } from '@/types/call-session';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · salesx_master_event
 
 function ls<T>(k: string): T[] {
   try { return JSON.parse(localStorage.getItem(k) || '[]') as T[]; }
@@ -47,6 +48,12 @@ export function useCallSessions(entityCode: string) {
     };
     const updated = [...all, s];
     persistCs(updated);
+    logAudit({
+      entityCode, action: 'create', entityType: 'salesx_master_event',
+      recordId: s.id, recordLabel: `Call Session · ${s.session_no}`,
+      beforeState: null, afterState: s as unknown as Record<string, unknown>,
+      reason: 'call_session_created', sourceModule: 'useCallSessions',
+    });
     toast.success(`Call session ${s.session_no} saved`);
     return s;
   }, [csKey, entityCode, persistCs]);

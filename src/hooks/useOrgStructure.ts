@@ -9,6 +9,7 @@ import { DIVISIONS_KEY, DEPARTMENTS_KEY } from '@/types/org-structure';
 import { resolvePreset, type OrgPresetPackage } from '@/data/org-presets';
 // Sprint 97 T1 · Block 1 — emit tier-scope-registered for hierarchical ledger auto-creation.
 import { emitTierScopeRegistered } from '@/lib/entity-setup-service';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · fincore_settings_event
 
 // ── Loaders ──────────────────────────────────────────────────────────────
 
@@ -61,6 +62,12 @@ export function useOrgStructure() {
     const d: Division = { ...form, id: `div-${Date.now()}`, code: genDivCode(divisions), created_at: now, updated_at: now };
     const updated = [...divisions, d];
     setDivisions(updated); saveDivisions(updated);
+    logAudit({
+      entityCode: 'GLOBAL', action: 'create', entityType: 'fincore_settings_event',
+      recordId: d.id, recordLabel: `Division · ${d.code} · ${d.name}`,
+      beforeState: null, afterState: d as unknown as Record<string, unknown>,
+      reason: 'division_created', sourceModule: 'useOrgStructure',
+    });
     toast.success(`Division '${d.name}' created`);
     // [JWT] POST /api/foundation/divisions
     emitTierScopeRegistered({
@@ -99,6 +106,12 @@ export function useOrgStructure() {
     const d: Department = { ...form, id: `dept-${Date.now()}`, code: genDeptCode(departments), created_at: now, updated_at: now };
     const updated = [...departments, d];
     setDepartments(updated); saveDepartments(updated);
+    logAudit({
+      entityCode: 'GLOBAL', action: 'create', entityType: 'fincore_settings_event',
+      recordId: d.id, recordLabel: `Department · ${d.code} · ${d.name}`,
+      beforeState: null, afterState: d as unknown as Record<string, unknown>,
+      reason: 'department_created', sourceModule: 'useOrgStructure',
+    });
     toast.success(`Department '${d.name}' created`);
     // [JWT] POST /api/foundation/departments
     emitTierScopeRegistered({

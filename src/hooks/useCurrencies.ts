@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Currency, ForexRate } from '@/types/currency';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · fincore_settings_event
 
 const KEY = 'erp_currencies';
 const RATES_KEY = 'erp_forex_rates';
@@ -83,6 +84,12 @@ export function useCurrencies() {
     const updated = [...currencies, c];
     setCurrencies(updated);
     saveCurrencies(updated);
+    logAudit({
+      entityCode: 'GLOBAL', action: 'create', entityType: 'fincore_settings_event',
+      recordId: c.id, recordLabel: `Currency · ${c.iso_code} · ${c.name}`,
+      beforeState: null, afterState: c as unknown as Record<string, unknown>,
+      reason: 'currency_created', sourceModule: 'useCurrencies',
+    });
     toast.success(`${c.name} (${c.iso_code}) created`);
     // [JWT] POST /api/accounting/currencies
     return c;

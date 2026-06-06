@@ -8,6 +8,7 @@
 
 import type { FiscalYear, FiscalPeriod } from '@/types/fiscal-year';
 import { fiscalYearStorageKey } from '@/types/fiscal-year';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · fincore_settings_event
 
 const MONTH_LABELS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -51,10 +52,21 @@ export function readFiscalYears(entityCode: string): FiscalYear[] {
 }
 
 export function writeFiscalYears(entityCode: string, years: FiscalYear[]): void {
+  const prior = readFiscalYears(entityCode);
+  const priorIds = new Set(prior.map(y => y.id));
+  const newOnes = years.filter(y => !priorIds.has(y.id));
   try {
     // [JWT] PUT /api/fiscal-years?entity=:entityCode
     localStorage.setItem(fiscalYearStorageKey(entityCode), JSON.stringify(years));
   } catch { /* ignore quota */ }
+  for (const fy of newOnes) {
+    logAudit({
+      entityCode, action: 'create', entityType: 'fincore_settings_event',
+      recordId: fy.id, recordLabel: `Fiscal Year · ${fy.label}`,
+      beforeState: null, afterState: fy as unknown as Record<string, unknown>,
+      reason: 'fiscal_year_created', sourceModule: 'fiscal-year-engine',
+    });
+  }
 }
 
 /**

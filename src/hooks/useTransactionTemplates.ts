@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import type { TransactionTemplate, TransactionTemplateType } from '@/types/transaction-template';
 import { TEMPLATES_KEY, getTemplateSeedData } from '@/types/transaction-template';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 1b · fincore_settings_event
 
 const loadTemplates = (): TransactionTemplate[] => {
   try {
@@ -55,6 +56,12 @@ export function useTransactionTemplates() {
     }
     const final = [...updated, t];
     setTemplates(final); saveTemplates(final);
+    logAudit({
+      entityCode: 'GLOBAL', action: 'create', entityType: 'fincore_settings_event',
+      recordId: t.id, recordLabel: `Transaction Template · ${t.code} · ${t.name}`,
+      beforeState: null, afterState: t as unknown as Record<string, unknown>,
+      reason: 'transaction_template_created', sourceModule: 'useTransactionTemplates',
+    });
     toast.success(`'${t.name}' created`);
     // [JWT] POST /api/accounting/transaction-templates
     return t;
