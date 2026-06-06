@@ -84,6 +84,20 @@ export function PayGradeMasterPanel() {
       const newGrade = createGrade(form);
       setLastSavedName(form.name);
       setLastSavedId(newGrade?.id || '');
+      // P8.4 · Block 1b · Class-B page-direct emission · payhub_master_event
+      if (newGrade) {
+        logAudit({
+          entityCode: DEFAULT_ENTITY_SHORTCODE,
+          action: 'create',
+          entityType: 'payhub_master_event',
+          recordId: newGrade.id,
+          recordLabel: `Pay Grade · ${newGrade.code} · ${newGrade.name}`,
+          beforeState: null,
+          afterState: newGrade as unknown as Record<string, unknown>,
+          reason: 'pay_grade_created',
+          sourceModule: 'PayGradeMaster',
+        });
+      }
     }
     setSheetOpen(false);
     if (!editId) setPropagateOpen(true);
