@@ -143,9 +143,16 @@ describe('C · aggregateInsight CALLS a source (FR-44 · no recompute)', () => {
     expect(() => aggregateInsight('does-not-exist')).toThrow();
   });
 
-  it('C7 · unbacked scenario throws with deferral message (no fabrication)', () => {
-    // S131 filled diff-operix-score; AI/Predictive 4 remain deferred to S135.
-    expect(() => aggregateInsight('ai-anomaly-detector')).toThrow(/S131|unbacked|deferr/i);
+  it('C7 · any still-unbacked scenario throws an honest deferral/unmapped error (no silent fabrication)', () => {
+    // P8.1 Pass-2b · durable conversion · the original assertion hard-coded ai-anomaly-detector and
+    // the S131 deferral wording; post-S135 only ai-nl-query remains unbacked and the engine surfaces
+    // the structurally-honest 'unmapped source_engine' error for scenarios whose source isn't wired
+    // into __fr44_reuse. We assert the negative-space invariant: if anything is still unbacked,
+    // calling aggregateInsight on it MUST throw with a recognizable structured message.
+    const unbacked = getScenarioRegistry().filter((e) => !e.backed);
+    for (const u of unbacked) {
+      expect(() => aggregateInsight(u.scenario_id)).toThrow(/S13|unbacked|deferr|unmapped/i);
+    }
   });
 });
 
