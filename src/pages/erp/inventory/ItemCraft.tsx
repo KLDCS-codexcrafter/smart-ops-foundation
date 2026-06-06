@@ -28,6 +28,8 @@ import type { ItemPartyCode } from '@/types/item-party-code';
 import type { ItemOpeningStockEntry } from '@/types/item-opening-stock';
 import { onEnterNext } from '@/lib/keyboard';
 import { roundTo, resolveQtyPrecision } from '@/lib/decimal-helpers';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 /* ─── constants ─── */
 const ITEM_TYPES: ItemType[] = [
