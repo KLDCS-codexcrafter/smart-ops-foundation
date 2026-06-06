@@ -19,6 +19,7 @@ import { useProjectResources } from '@/hooks/useProjectResources';
 import { useSAMPersons } from '@/hooks/useSAMPersons';
 import type { ProjectResource } from '@/types/projx/project-resource';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const fmtINR = (n: number) => `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -110,7 +111,7 @@ export function ResourceAllocationPanel() {
       });
       toast.success('Resource updated');
     } else {
-      createResource({
+      const created = createResource({
         project_id: project.id,
         project_centre_id: project.project_centre_id,
         person_id: person.id,
@@ -124,6 +125,18 @@ export function ResourceAllocationPanel() {
         is_active: form.is_active,
       });
       toast.success(`${person.display_name} allocated to ${project.project_no}`);
+      // P8.4 · Block 1b · Class-B page-direct emission · projx_event
+      logAudit({
+        entityCode,
+        action: 'create',
+        entityType: 'projx_event',
+        recordId: created.id,
+        recordLabel: `Resource Allocation · ${person.display_name} → ${project.project_no}`,
+        beforeState: null,
+        afterState: created as unknown as Record<string, unknown>,
+        reason: 'project_resource_allocated',
+        sourceModule: 'ResourceAllocation',
+      });
     }
     setSheetOpen(false);
     setEditing(null);

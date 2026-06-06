@@ -15,6 +15,8 @@ import { Boxes, Plus, Search, Edit2, Trash2, List, Network, ChevronRight, Chevro
 import { toast } from 'sonner';
 import type { StockGroup, StockGroupFormData, CostingMethod } from '@/types/stock-group';
 import { onEnterNext } from '@/lib/keyboard';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const CATEGORY_TYPES=['Raw Material','Finished Goods','Semi-Finished','Component','By-Product','Co-Product','Scrap','Consumables','Stores & Consumables','Fixed Assets','Service','Spare Parts','Equipment','Tools','Packaging'];
 const MATERIAL_TYPES=['Non-Perishable','Perishable','Service'];
@@ -81,6 +83,18 @@ export function StockMatrixPanel() {
       const ng:StockGroup={...form,id:`sg-${Date.now()}`,status:'active',created_at:new Date().toISOString(),updated_at:new Date().toISOString()};
       const u=[...groups,ng];setGroups(u);sv(u);toast.success(`${form.name} created`);
       // [JWT] POST /api/inventory/stock-groups
+      // P8.4 · Block 1b · Class-B page-direct emission · inventory_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: ng.id,
+        recordLabel: `Stock Group · ${ng.code} · ${ng.name}`,
+        beforeState: null,
+        afterState: ng as unknown as Record<string, unknown>,
+        reason: 'stock_group_created',
+        sourceModule: 'StockMatrix',
+      });
     }
     setOpen(false);
   };

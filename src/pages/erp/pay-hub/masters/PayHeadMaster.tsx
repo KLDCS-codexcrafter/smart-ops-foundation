@@ -22,6 +22,8 @@ import { cn } from '@/lib/utils';
 import type { PayHead, PayHeadType, PayHeadCalcType } from '@/types/pay-hub';
 import { PAY_HEAD_TYPE_LABELS, CALC_TYPE_LABELS } from '@/types/pay-hub';
 import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const TYPE_COLORS: Record<PayHeadType, string> = {
   earning: 'bg-green-500/10 text-green-700 border-green-500/30',
@@ -93,7 +95,19 @@ export function PayHeadMasterPanel() {
     if (editId) {
       updatePayHead(editId, form);
     } else {
-      createPayHead(form);
+      const newPH = createPayHead(form);
+      // P8.4 · Block 1b · Class-B page-direct emission · payhub_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: newPH.id,
+        recordLabel: `Pay Head · ${newPH.code} · ${newPH.name}`,
+        beforeState: null,
+        afterState: newPH as unknown as Record<string, unknown>,
+        reason: 'pay_head_created',
+        sourceModule: 'PayHeadMaster',
+      });
     }
     setSheetOpen(false);
   }, [form, editId, updatePayHead, createPayHead, sheetOpen]);

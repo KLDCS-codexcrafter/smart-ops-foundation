@@ -22,6 +22,8 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { usePayHubSalaryStructures } from '@/hooks/usePayHubSalaryStructures';
 import { usePayHeads } from '@/hooks/usePayHeads';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
 import type { SalaryStructure, SalaryStructureComponent, PayHeadType } from '@/types/pay-hub';
@@ -123,7 +125,21 @@ export function SalaryStructureMasterPanel() {
 
     if (!form.name.trim()) return;
     if (editId) updateStructure(editId, form);
-    else createStructure(form);
+    else {
+      const newSS = createStructure(form);
+      // P8.4 · Block 1b · Class-B page-direct emission · payhub_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: newSS.id,
+        recordLabel: `Salary Structure · ${newSS.code} · ${newSS.name}`,
+        beforeState: null,
+        afterState: newSS as unknown as Record<string, unknown>,
+        reason: 'salary_structure_created',
+        sourceModule: 'SalaryStructureMaster',
+      });
+    }
     setSheetOpen(false);
   }, [form, editId, updateStructure, createStructure, sheetOpen]);
 

@@ -37,6 +37,7 @@ import type { ProjectCentre, ProjectCentreCategory } from '@/types/projx/project
 import { PROJECT_CENTRE_CATEGORY_LABELS, projectCentresKey, PROJECT_CENTRE_SEQ_KEY } from '@/types/projx/project-centre';
 import { DEMO_PROJECT_CENTRES } from '@/data/demo-projects';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 interface FormState {
   name: string;
@@ -154,6 +155,18 @@ export function ProjectCentreMasterPanel() {
     } else {
       const created = createProjectCentre(form);
       toast.success(`Created ${created.code} — ${created.name}`);
+      // P8.4 · Block 1b · Class-B page-direct emission · projx_event
+      logAudit({
+        entityCode,
+        action: 'create',
+        entityType: 'projx_event',
+        recordId: created.id,
+        recordLabel: `Project Centre · ${created.code} · ${created.name}`,
+        beforeState: null,
+        afterState: created as unknown as Record<string, unknown>,
+        reason: 'project_centre_created',
+        sourceModule: 'ProjectCentreMaster',
+      });
     }
     setSheetOpen(false);
     setEditing(null);

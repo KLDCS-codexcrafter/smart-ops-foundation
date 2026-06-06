@@ -23,6 +23,8 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useHolidayCalendars } from '@/hooks/usePayHubMasters3';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { toast } from 'sonner';
 import type { HolidayCalendar, Holiday, CalendarLevel } from '@/types/payroll-masters';
@@ -229,6 +231,18 @@ export function HolidayCalendarMasterPanel() {
       update(editId, form);
     } else {
       create(form);
+      // P8.4 · Block 1b · Class-B page-direct emission · payhub_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'payhub_master_event',
+        recordId: `hc-${Date.now()}`,
+        recordLabel: `Holiday Calendar · ${form.name}`,
+        beforeState: null,
+        afterState: form as unknown as Record<string, unknown>,
+        reason: 'holiday_calendar_created',
+        sourceModule: 'HolidayCalendarMaster',
+      });
     }
     setSheetOpen(false); setEditId(null); setForm({...BLANK_CAL, holidays:[]});
   }, [form, editId, sheetOpen, create, update]);

@@ -24,6 +24,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAssetMaster } from '@/hooks/useAssetMaster';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import type { Asset, AssetCategory, AssetCondition } from '@/types/asset-master';
 import { BLANK_ASSET, ASSET_CATEGORY_LABELS, ASSET_STATUS_COLORS } from '@/types/asset-master';
 import type { Employee } from '@/types/employee';
@@ -116,7 +118,21 @@ export function AssetMasterPanel() {
     if (editId) {
       updateAsset(editId, form);
     } else {
-      try { createAsset(form, customCode || undefined); } catch { return; }
+      try {
+        const created = createAsset(form, customCode || undefined);
+        // P8.4 · Block 1b · Class-B page-direct emission · payhub_master_event
+        logAudit({
+          entityCode: DEFAULT_ENTITY_SHORTCODE,
+          action: 'create',
+          entityType: 'payhub_master_event',
+          recordId: created.id,
+          recordLabel: `Asset · ${created.assetCode} · ${created.name}`,
+          beforeState: null,
+          afterState: created as unknown as Record<string, unknown>,
+          reason: 'asset_created',
+          sourceModule: 'AssetMaster',
+        });
+      } catch { return; }
     }
     setSheetOpen(false);
   }, [sheetOpen, form, editId, customCode, createAsset, updateAsset]);

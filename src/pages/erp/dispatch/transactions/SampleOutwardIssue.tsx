@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
+import { logAudit } from '@/lib/audit-trail-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { samPersonsKey, type SAMPerson } from '@/types/sam-person';
 import type { Employee } from '@/types/employee';
@@ -157,6 +158,18 @@ export function SampleOutwardIssuePanel({ entityCode }: Props) {
     setAllSOMs(next);
     setSelectedId('');
     toast.success(`SOM ${updated.memo_no} issued · ${isRefundable ? 'Refundable' : 'Consumed'}`);
+    // P8.4 · Block 1b · Class-B page-direct emission · dispatch_txn_event (SOM dispatch-side issue)
+    logAudit({
+      entityCode,
+      action: 'create',
+      entityType: 'dispatch_txn_event',
+      recordId: updated.id,
+      recordLabel: `SOM ${updated.memo_no} · ${updated.customer_name ?? ''}`,
+      beforeState: null,
+      afterState: updated as unknown as Record<string, unknown>,
+      reason: 'som_dispatch_issued',
+      sourceModule: 'SampleOutwardIssue',
+    });
   }, [
     selected, customerName, salesmanId, agentId, brokerId,
     engineerId, engineerFreeText, isRefundable, returnDueDate,

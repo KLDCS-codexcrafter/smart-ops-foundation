@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import type { PriceList, PriceListItem, PriceListType } from '@/types/price-list';
 import type { InventoryItem } from '@/types/inventory-item';
 import { dPct, dSub, roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const PLKEY = 'erp_price_lists';
 const PLIKEY = 'erp_price_list_items';
@@ -261,6 +263,18 @@ export function PriceListsPanel() {
       }
       const u = [nl, ...lists]; setLists(u); saveLists(u); toast.success(`${listForm.name} created`);
       // [JWT] POST /api/inventory/price-lists
+      // P8.4 · Block 1b · Class-B page-direct emission · inventory_master_event
+      logAudit({
+        entityCode: DEFAULT_ENTITY_SHORTCODE,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: nl.id,
+        recordLabel: `Price List · ${nl.name}`,
+        beforeState: null,
+        afterState: nl as unknown as Record<string, unknown>,
+        reason: 'price_list_created',
+        sourceModule: 'PriceListManager',
+      });
     }
     setListOpen(false);
   };

@@ -25,6 +25,7 @@ import {
 import { Recycle, Plus, ChevronDown, AlertCircle, Pencil, Trash2 } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useReturnablePackaging } from '@/hooks/useReturnablePackaging';
+import { logAudit } from '@/lib/audit-trail-engine';
 import {
   type ReturnablePackaging, type PackagingKind, type PackagingStatus,
   PACKAGING_KIND_LABELS, PACKAGING_STATUS_LABELS,
@@ -104,7 +105,22 @@ export function ReturnablePackagingMasterPanel() {
     if (!form.unit_no.trim()) { toast.error('Unit No. required'); return; }
     const now = new Date().toISOString();
     if (form.id) updateUnit(form.id, form);
-    else createUnit({ ...form, id: `pkg-${crypto.randomUUID()}`, created_at: now, updated_at: now });
+    else {
+      const newUnit = { ...form, id: `pkg-${crypto.randomUUID()}`, created_at: now, updated_at: now };
+      createUnit(newUnit);
+      // P8.4 · Block 1b · Class-B page-direct emission · inventory_master_event
+      logAudit({
+        entityCode: safeEntity,
+        action: 'create',
+        entityType: 'inventory_master_event',
+        recordId: newUnit.id,
+        recordLabel: `Returnable Packaging · ${newUnit.unit_no}`,
+        beforeState: null,
+        afterState: newUnit as unknown as Record<string, unknown>,
+        reason: 'returnable_packaging_created',
+        sourceModule: 'ReturnablePackagingMaster',
+      });
+    }
     setOpen(false);
   };
 
