@@ -388,7 +388,9 @@ export function acknowledgeTask(
   );
   // P82 Block 2 · publisher #1 · taskflow.acknowledged · success path
   publishNotification({
-    entityCode, userId: t.assigneeId ?? userId, kind: 'taskflow.acknowledged', cardId: 'taskflow',
+    eventKey: `taskflow:ack:${entityCode}:${taskId}`,
+    entityCode, targetUserId: t.assigneeId ?? userId, kind: 'taskflow.acknowledged',
+    source: 'taskflow-engine', cardId: 'taskflow',
     severity: 'success', title: `Task acknowledged: ${t.title}`,
     body: `by ${userId}`, deepLink: `/erp/taskflow/task/${taskId}`,
     refType: 'task', refId: taskId,
@@ -442,7 +444,9 @@ export function reassignTask(
   );
   // P82 Block 2 · publisher #2 · taskflow.reassigned · success path
   publishNotification({
-    entityCode, userId: toUserId, kind: 'taskflow.reassigned', cardId: 'taskflow',
+    eventKey: `taskflow:reassign:${entityCode}:${taskId}:${record.id}`,
+    entityCode, targetUserId: toUserId, kind: 'taskflow.reassigned',
+    source: 'taskflow-engine', cardId: 'taskflow',
     severity: 'info', title: `Task reassigned to you: ${t.title}`,
     body: `from ${t.assigneeId} · ${reason.trim()}`,
     deepLink: `/erp/taskflow/task/${taskId}`, refType: 'task', refId: taskId,
@@ -481,7 +485,9 @@ export function changeDueDate(
   const next = updateTask(entityCode, taskId, { dueDate: newDate }, byUserId);
   // P82 Block 2 · publisher #3 · taskflow.due_date_changed · success path
   publishNotification({
-    entityCode, userId: t.assigneeId ?? byUserId, kind: 'taskflow.due_date_changed', cardId: 'taskflow',
+    eventKey: `taskflow:duedate:${entityCode}:${taskId}:${record.id}`,
+    entityCode, targetUserId: t.assigneeId ?? byUserId, kind: 'taskflow.due_date_changed',
+    source: 'taskflow-engine', cardId: 'taskflow',
     severity: 'warning', title: `Due date changed: ${t.title}`,
     body: `${t.dueDate ?? '—'} → ${newDate ?? '—'} · ${reason.trim()}`,
     deepLink: `/erp/taskflow/task/${taskId}`, refType: 'task', refId: taskId,

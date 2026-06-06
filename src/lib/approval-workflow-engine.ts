@@ -179,8 +179,9 @@ export function approve<T extends ApprovalRecord>(
   audit(ctx, 'approve', rec, next);
   // P82 Block 2 · publisher #5a · approval.approved · success path
   publishNotification({
-    entityCode: ctx.entityCode || 'GLOBAL', userId: '*', kind: 'approval.approved',
-    cardId: 'command-center', severity: 'success',
+    eventKey: `approval:approved:${ctx.entityCode || 'GLOBAL'}:${ctx.auditEntityType}:${next.id}`,
+    entityCode: ctx.entityCode || 'GLOBAL', targetUserId: '*', kind: 'approval.approved',
+    source: 'approval-workflow-engine', cardId: 'command-center', severity: 'success',
     title: `${ctx.sourceModule}: ${ctx.recordLabel?.(next) ?? next.id} approved`,
     body: `by ${approver.name}`, refType: ctx.auditEntityType, refId: next.id,
   });
@@ -213,8 +214,9 @@ export function reject<T extends ApprovalRecord>(
   audit(ctx, 'reject', rec, next, reason);
   // P82 Block 2 · publisher #5b · approval.rejected · success path
   publishNotification({
-    entityCode: ctx.entityCode || 'GLOBAL', userId: '*', kind: 'approval.rejected',
-    cardId: 'command-center', severity: 'warning',
+    eventKey: `approval:rejected:${ctx.entityCode || 'GLOBAL'}:${ctx.auditEntityType}:${next.id}`,
+    entityCode: ctx.entityCode || 'GLOBAL', targetUserId: '*', kind: 'approval.rejected',
+    source: 'approval-workflow-engine', cardId: 'command-center', severity: 'warning',
     title: `${ctx.sourceModule}: ${ctx.recordLabel?.(next) ?? next.id} rejected`,
     body: `by ${approver.name} · ${reason}`, refType: ctx.auditEntityType, refId: next.id,
   });

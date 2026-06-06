@@ -518,7 +518,9 @@ export function runRecon(
 
   // P82 Block 2 · publisher #6 · ecomx.recon_completed · success path
   publishNotification({
-    entityCode, userId: '*', kind: 'ecomx.recon_completed', cardId: 'ecomx',
+    eventKey: `ecomx:recon:${entityCode}:${runId}`,
+    entityCode, targetUserId: '*', kind: 'ecomx.recon_completed',
+    source: 'ecomx-recon-engine', cardId: 'ecomx',
     severity: counts.short_pay + counts.unmatched_settlement + counts.missing_settlement > 0 ? 'warning' : 'success',
     title: `Recon completed · ${marketplace.name}`,
     body: `${periodFrom}…${periodTo} · variance ₹${run.totalVariance} · ${lines.length} lines`,
@@ -625,7 +627,9 @@ export function createClaimFromLine(
     null, claim as unknown as Record<string, unknown>);
   // P82 Block 2 · publisher #7a · ecomx.claim_created · success path
   publishNotification({
-    entityCode, userId: '*', kind: 'ecomx.claim_created', cardId: 'ecomx',
+    eventKey: `ecomx:claim-create:${entityCode}:${claim.id}`,
+    entityCode, targetUserId: '*', kind: 'ecomx.claim_created',
+    source: 'ecomx-recon-engine', cardId: 'ecomx',
     severity: 'info', title: `Claim raised · ${claim.marketplaceOrderId}`,
     body: `${claim.reason} · ₹${claim.amount}`,
     deepLink: `/erp/ecomx/claim/${claim.id}`, refType: 'claim', refId: claim.id,
@@ -672,7 +676,9 @@ export function updateClaimStatus(
     next as unknown as Record<string, unknown>);
   // P82 Block 2 · publisher #7b · ecomx.claim_status_changed · success path
   publishNotification({
-    entityCode, userId: '*', kind: 'ecomx.claim_status_changed', cardId: 'ecomx',
+    eventKey: `ecomx:claim-status:${entityCode}:${claimId}:${next.statusHistory.length}`,
+    entityCode, targetUserId: '*', kind: 'ecomx.claim_status_changed',
+    source: 'ecomx-recon-engine', cardId: 'ecomx',
     severity: next.status === 'settled' ? 'success' : next.status === 'rejected' ? 'warning' : 'info',
     title: `Claim ${next.status} · ${next.marketplaceOrderId}`,
     body: input.note.trim(),
