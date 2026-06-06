@@ -297,12 +297,12 @@ describe('Sprint 119 · Wiring · page + sidebar + CC + audit', () => {
   it('Page UI labels the scenario-copy safety boundary', () => {
     expect(pageSrc).toMatch(/SCENARIO/i);
   });
-  it('Sidebar registers fpa-planning-org-design under the fpa-planning card', () => {
-    expect(sidebarSrc).toMatch(/fpa-planning-org-design/);
+  it('Sidebar registers fpa-org-design under the fpa-planning card (S124 A1: module id renamed from fpa-planning-org-design)', () => {
+    expect(sidebarSrc).toMatch(/'fpa-org-design'/);
     expect(sidebarSrc).toMatch(/requiredCards:\s*\['fpa-planning'\]/);
   });
-  it('CommandCenterPage routes the new module', () => {
-    expect(ccPageSrc).toMatch(/fpa-planning-org-design/);
+  it('FP&A shell page routes the new module', () => {
+    expect(ccPageSrc).toMatch(/'fpa-org-design'/);
     expect(ccPageSrc).toMatch(/OrgDesignSimulatorPage/);
   });
   it('audit-trail.ts declares the new org_design_event type', () => {
