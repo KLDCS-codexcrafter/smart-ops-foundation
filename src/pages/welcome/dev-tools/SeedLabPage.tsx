@@ -108,10 +108,29 @@ const PHASE_CONFIG: Record<ModePhase, { label: string; color: string }> = {
 
 export function SeedLabPagePanel() {
   const navigate = useNavigate();
+  const entities = useMemo(() => loadEntities(), []);
+  const [purging, setPurging] = useState<string | null>(null);
+
+  const handlePurge = (entityCode: string, entityName: string) => {
+    setPurging(entityCode);
+    try {
+      const r = purgeDemoData(entityCode);
+      toast.success(
+        `Demo data removed from ${entityName}: ` +
+        `${r.keysRemoved} key${r.keysRemoved === 1 ? '' : 's'}, ` +
+        `${r.recordsRemoved} record${r.recordsRemoved === 1 ? '' : 's'}.`,
+      );
+    } catch {
+      toast.error('Purge failed — see console for details.');
+    } finally {
+      setPurging(null);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-5xl mx-auto p-6 space-y-8">
+
 
         <Button variant="ghost" size="sm" onClick={() => navigate('/welcome/dev-tools')}>
           <ArrowLeft className="h-4 w-4 mr-1" />Back to Engineering Console
