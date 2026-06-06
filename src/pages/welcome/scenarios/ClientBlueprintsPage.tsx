@@ -367,14 +367,31 @@ export function ClientBlueprintsPagePanel() {
           `${clientName} demo loaded · ${result.customers}c · ${result.vendors}v · ${result.items}i · ${result.enquiries}e · ${result.quotations}q · ${result.salesInvoices}si · ${result.receipts}r · ${result.ptps}ptp`,
           { duration: 6000 },
         );
+        bumpCoverage();
       } catch (err) {
         toast.error(`Failed to load ${clientName} demo · ${(err as Error).message}`);
       } finally {
         setLoadingEntity(null);
       }
     },
-    [],
+    [bumpCoverage],
   );
+
+  // P8.1 · Block 5 · Remove demo data (purge-safe · removes only flagged/manifested records)
+  const handlePurgeDemo = useCallback((entityCode: string, clientName: string) => {
+    if (!window.confirm(
+      `Remove ALL demo data for ${clientName}? Only records seeded by demo loaders are removed; any data you created yourself is preserved.`,
+    )) return;
+    try {
+      const r = purgeDemoData(entityCode);
+      toast.success(
+        `${clientName} demo removed · ${r.keysRemoved} keys · ${r.recordsRemoved} records`,
+      );
+      bumpCoverage();
+    } catch (err) {
+      toast.error(`Purge failed · ${(err as Error).message}`);
+    }
+  }, [bumpCoverage]);
 
   const handleResetEntity = useCallback((entityCode: string, clientName: string) => {
     if (!window.confirm(`Reset ALL demo data for ${clientName}? This clears entity-scoped localStorage keys for ${entityCode}. Shared masters (customers/vendors/items) are preserved.`)) return;
