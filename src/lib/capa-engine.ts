@@ -129,6 +129,18 @@ export function raiseCapa(
     deep_link: `/erp/qualicheck#capa-register/${id}`,
   });
 
+  logAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'qualicheck_event' as unknown as AuditEntityType,
+    recordId: id,
+    recordLabel: `CAPA ${id}`,
+    beforeState: null,
+    afterState: { capa_id: id, title: draft.title, severity: draft.severity, source: draft.source, status: capa.status },
+    sourceModule: 'qualicheck',
+    reason: 'capa_raised',
+  });
+
   return capa;
 }
 
