@@ -5,6 +5,7 @@
 import { useState, useCallback } from 'react';
 import { Save, Send, CreditCard, ShieldAlert, MailWarning } from 'lucide-react';
 import { toast } from 'sonner';
+import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · receivx_master_event
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
