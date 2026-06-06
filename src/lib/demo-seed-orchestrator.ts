@@ -134,7 +134,11 @@ function safeSetObj(key: string, data: unknown): boolean {
 export function seedEntityDemoData(
   entityCode: string,
   archetype: DemoArchetype,
-  options?: { includeFAUniverse?: boolean },
+  options?: {
+    includeFAUniverse?: boolean;
+    // P8.1 · Block 2.6 · new domain-pack flags (default ON for forward seeds).
+    includeP81Pack?: boolean;
+  },
 ): SeedResult {
   // 🆕 Sprint 64 FAR-0 · Theme 5 wiring (additive · OPTIONAL flag · backward-compat)
   if (options?.includeFAUniverse) {
@@ -535,6 +539,17 @@ export function seedEntityDemoData(
 
 
 
+  // ─── P8.1 · Block 2.6 · NEW DOMAIN PACK (TaskFlow / OperixChat / FrontDesk
+  // / WebStoreX / EcomX showcase) · wired behind the existing optional-flags
+  // pattern · default ON for new seeds · backward-compat preserved.
+  if (options?.includeP81Pack !== false) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const p81 = require('@/lib/demo-seeders-p81') as typeof import('@/lib/demo-seeders-p81');
+      p81.seedP81DomainPack(entityCode);
+    } catch { /* optional module · safe to skip */ }
+  }
+
   return {
     entityCode, archetype,
     customers, vendors, items, samPersons, enquiries, quotations,
@@ -542,6 +557,84 @@ export function seedEntityDemoData(
     creditNotes: txnResult.creditNotes, outstanding: txnResult.outstanding,
     reminderTemplates, collectionExecs, ptps, commLog, commissions,
     skipped: false,
+  };
+}
+
+// ═════════════════════════════════════════════════════════════════════
+// P8.1 · Block 3 · COVERAGE HONESTY
+// computeSeedCoverage(entityCode) — replaces 7 hand-typed fixtureCoverage
+// literals on ClientBlueprintsPage with a real, presence-derived number.
+// ═════════════════════════════════════════════════════════════════════
+
+/** Every seedable domain Operix demo orchestrator can populate (Block 3 catalog). */
+export const SEEDABLE_DOMAINS = [
+  'masters_customers',
+  'masters_vendors',
+  'masters_items',
+  'salesx',
+  'receivx',
+  'production',
+  'inventory',
+  'fincore_vouchers',
+  'bank_statements',
+  // P8.1 · Block 2 NEW domains (six)
+  'taskflow',
+  'operix_chat',
+  'frontdesk',
+  'webstorex',
+  'ecomx',
+  'fpa_planning',
+] as const;
+export type SeedableDomain = typeof SEEDABLE_DOMAINS[number];
+
+export interface SeedCoverageReport {
+  entityCode: string;
+  perDomain: Record<SeedableDomain, boolean>;
+  seededCount: number;
+  totalCount: number;
+  percentage: number;
+}
+
+function nonEmptyArrayAt(key: string): boolean {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0;
+  } catch { return false; }
+}
+
+/** Pure read · no writes · safe to call from render. */
+export function computeSeedCoverage(entityCode: string): SeedCoverageReport {
+  const perDomain: Record<SeedableDomain, boolean> = {
+    masters_customers: nonEmptyArrayAt('erp_group_customer_master'),
+    masters_vendors: nonEmptyArrayAt('erp_group_vendor_master'),
+    masters_items: nonEmptyArrayAt('erp_inventory_items'),
+    salesx: nonEmptyArrayAt(`erp_sam_persons_${entityCode}`)
+         || nonEmptyArrayAt(`erp_enquiries_${entityCode}`),
+    receivx: nonEmptyArrayAt(`erp_receivx_ptps_${entityCode}`)
+         || nonEmptyArrayAt(`erp_receivx_comm_log_${entityCode}`),
+    production: nonEmptyArrayAt(`erp_production_orders_${entityCode}`)
+         || nonEmptyArrayAt(`erp_production_plans_${entityCode}`),
+    inventory: nonEmptyArrayAt(`erp_grns_${entityCode}`)
+         || nonEmptyArrayAt(`erp_bom_${entityCode}`),
+    fincore_vouchers: nonEmptyArrayAt('erp_group_vouchers')
+         || nonEmptyArrayAt(`erp_group_vouchers_${entityCode}`),
+    bank_statements: nonEmptyArrayAt(`erp_bank_statements_${entityCode}`),
+    taskflow: nonEmptyArrayAt(`tf_tasks_${entityCode}`),
+    operix_chat: nonEmptyArrayAt(`chat_conversations_${entityCode}`),
+    frontdesk: nonEmptyArrayAt(`fd_visitors_${entityCode}`)
+         || nonEmptyArrayAt(`fd_mail_${entityCode}`),
+    webstorex: nonEmptyArrayAt(`ws_items_${entityCode}`),
+    ecomx: nonEmptyArrayAt(`ec_marketplaces_${entityCode}`),
+    fpa_planning: nonEmptyArrayAt(`erp_strategic_targets_${entityCode}`)
+         || nonEmptyArrayAt(`erp_aop_${entityCode}`),
+  };
+  const seededCount = Object.values(perDomain).filter(Boolean).length;
+  const totalCount = SEEDABLE_DOMAINS.length as number;
+  return {
+    entityCode, perDomain, seededCount, totalCount,
+    percentage: totalCount === 0 ? 0 : Math.round((seededCount / totalCount) * 100),
   };
 }
 

@@ -1,8 +1,11 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  Popover, PopoverContent, PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   ArrowLeft,
   Building,
@@ -13,9 +16,13 @@ import {
   Home,
   FlaskConical,
   Wrench,
+  Info,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { seedEntityDemoData } from '@/lib/demo-seed-orchestrator';
+import {
+  seedEntityDemoData, computeSeedCoverage, SEEDABLE_DOMAINS,
+} from '@/lib/demo-seed-orchestrator';
+import { purgeDemoData } from '@/lib/demo-seed-manifest';
 import type { DemoArchetype } from '@/data/demo-customers-vendors';
 
 type ScenarioPhase = 'live' | 'phase2' | 'planned';
@@ -29,7 +36,7 @@ interface ClientBlueprint {
   details: string;
   pattern: string;
   phase: ScenarioPhase;
-  fixtureCoverage: number;
+  // P8.1 · Block 3 · fixtureCoverage REMOVED · computed live via computeSeedCoverage()
   founderAnchor?: boolean;
   entityCode: string;
   archetype: DemoArchetype;
@@ -49,7 +56,6 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
       "1967 · 2500+ employees · 10 mfg facilities · 90+ countries served. Clients include Unilever, P&G, Serum Institute, Novartis, Dr Reddy's. Pattern: large diversified conglomerate.",
     pattern: 'Multi-BU Conglomerate + Contract Mfg + Export + FMCG',
     phase: 'live',
-    fixtureCoverage: 100,
     entityCode: 'ABDOS',
     archetype: 'manufacturing',
   },
@@ -64,7 +70,6 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
       'Pune factory · Mumbai HQ · ~150 vending devices · razor-blade pod consumables model · Live on Blinkit quick-commerce. Pattern: next-gen IoT+D2C business model.',
     pattern: 'IoT-Connected Device + D2C + Quick-Commerce + Export',
     phase: 'live',
-    fixtureCoverage: 100,
     entityCode: 'CHRSE',
     archetype: 'manufacturing',
   },
@@ -79,7 +84,6 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
       'Kolkata HQ · Central PSU · Privatisation ongoing. Validates PSU procurement (GeM), CAG audit, tender lifecycle, parliamentary scrutiny. Needs PSU Pack.',
     pattern: 'PSU / Regulated Entity + Pharma + Heavy Chemicals + FMCG',
     phase: 'live',
-    fixtureCoverage: 100,
     entityCode: 'BCPL',
     archetype: 'manufacturing',
   },
@@ -94,7 +98,6 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
       'Kolkata · Regional leader · B2B + institutional. Clients include Garden Reach Shipbuilders (GRSE). AMC is primary revenue. Validates post-sale model for capital-equipment mfrs.',
     pattern: 'Manufacturer + Installation Project + AMC (primary) + Dealer Network',
     phase: 'live',
-    fixtureCoverage: 100,
     entityCode: 'SMRTP',
     archetype: 'manufacturing',
   },
@@ -109,7 +112,6 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
       'Since 2001 · Howrah/Kolkata · Franchise expansion. Kajaria partnership. Validates distribution-heavy retail pattern common in building-materials, furniture, luxury.',
     pattern: 'Import Trader + Showroom Retail + Franchise Network + B2B Interior',
     phase: 'live',
-    fixtureCoverage: 100,
     entityCode: 'AMITH',
     archetype: 'manufacturing',
   },
@@ -124,7 +126,6 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
       '3 companies (parent + 2 subsidiaries + SEZ branch) · 6-tier hierarchy · ~200 customers · ~400 items · 18 months of transactions.',
     pattern: 'Complex 3-Company Group + 6-Tier Hierarchy + Pharma Focus',
     phase: 'live',
-    fixtureCoverage: 100,
     entityCode: 'SHKPH',
     archetype: 'manufacturing',
   },
@@ -139,7 +140,6 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
       'Proprietor Mr. Prosenjit Sinha · Kolkata · 81 skilled workmen + 18 staff · SSI + NSIC registered. ★ Founder Motivation anchor — the person who motivated Operix to exist. Validates Engineer-to-Order pattern distinct from make-to-stock manufacturing.',
     pattern: 'Engineer-to-Order + Turnkey Projects + Spares + Export',
     phase: 'live',
-    fixtureCoverage: 100,
     founderAnchor: true,
     entityCode: 'SINHA',
     archetype: 'manufacturing',
@@ -319,10 +319,25 @@ function removeFYScopedSequences(entityCode: string): void {
 export function ClientBlueprintsPagePanel() {
   const navigate = useNavigate();
   const [loadingEntity, setLoadingEntity] = useState<string | null>(null);
+  // P8.1 · Block 3 · live-computed coverage per entity (replaces 7 hand-typed literals)
+  const [coverageTick, setCoverageTick] = useState(0);
+  const coverages = useMemo(() => {
+    void coverageTick;
+    const out: Record<string, ReturnType<typeof computeSeedCoverage>> = {};
+    for (const b of CLIENT_BLUEPRINTS) out[b.entityCode] = computeSeedCoverage(b.entityCode);
+    return out;
+  }, [coverageTick]);
+  const bumpCoverage = useCallback(() => setCoverageTick((t) => t + 1), []);
+
 
   const handleLoadDemo = useCallback(
     (entityCode: string, archetype: DemoArchetype, clientName: string) => {
+      // P8.1 · Block 5 · auto-seed CHOICE dialog (fully removable later)
+      if (!window.confirm(
+        `Load demo data for ${clientName}? You can remove it any time via "Remove demo data".`,
+      )) return;
       setLoadingEntity(entityCode);
+
       try {
         // Ensure entity exists in MOCK_ENTITIES / localStorage (lazy creation)
         // [JWT] GET /api/foundation/entities
@@ -352,14 +367,31 @@ export function ClientBlueprintsPagePanel() {
           `${clientName} demo loaded · ${result.customers}c · ${result.vendors}v · ${result.items}i · ${result.enquiries}e · ${result.quotations}q · ${result.salesInvoices}si · ${result.receipts}r · ${result.ptps}ptp`,
           { duration: 6000 },
         );
+        bumpCoverage();
       } catch (err) {
         toast.error(`Failed to load ${clientName} demo · ${(err as Error).message}`);
       } finally {
         setLoadingEntity(null);
       }
     },
-    [],
+    [bumpCoverage],
   );
+
+  // P8.1 · Block 5 · Remove demo data (purge-safe · removes only flagged/manifested records)
+  const handlePurgeDemo = useCallback((entityCode: string, clientName: string) => {
+    if (!window.confirm(
+      `Remove ALL demo data for ${clientName}? Only records seeded by demo loaders are removed; any data you created yourself is preserved.`,
+    )) return;
+    try {
+      const r = purgeDemoData(entityCode);
+      toast.success(
+        `${clientName} demo removed · ${r.keysRemoved} keys · ${r.recordsRemoved} records`,
+      );
+      bumpCoverage();
+    } catch (err) {
+      toast.error(`Purge failed · ${(err as Error).message}`);
+    }
+  }, [bumpCoverage]);
 
   const handleResetEntity = useCallback((entityCode: string, clientName: string) => {
     if (!window.confirm(`Reset ALL demo data for ${clientName}? This clears entity-scoped localStorage keys for ${entityCode}. Shared masters (customers/vendors/items) are preserved.`)) return;
@@ -399,8 +431,8 @@ export function ClientBlueprintsPagePanel() {
       /* ignore parse errors */
     }
 
-    toast.success(`${clientName} demo reset · ${keysToReset.length} entity-scoped keys cleared`);
-  }, []);
+    toast.success(`${clientName} demo reset · ${keysToReset.length} entity-scoped keys cleared`); bumpCoverage();
+  }, [bumpCoverage]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -460,13 +492,41 @@ export function ClientBlueprintsPagePanel() {
 
                 <div className="pt-3 border-t border-border/40 space-y-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Fixture coverage</span>
-                    <span className="font-medium text-foreground">{b.fixtureCoverage}%</span>
+                    <span className="text-muted-foreground inline-flex items-center gap-1">
+                      Fixture coverage
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            type="button"
+                            aria-label="Per-domain seed coverage breakdown"
+                            className="inline-flex items-center text-muted-foreground/70 hover:text-foreground"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-3 text-xs space-y-1">
+                          <p className="font-semibold text-foreground mb-1">Per-domain seeded ({b.entityCode})</p>
+                          {SEEDABLE_DOMAINS.map((d) => {
+                            const cov = coverages[b.entityCode];
+                            const ok = cov?.perDomain[d] ?? false;
+                            return (
+                              <div key={d} className="flex items-center justify-between gap-2">
+                                <span className="font-mono text-muted-foreground">{d}</span>
+                                <span className={cn('font-medium', ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground/50')}>
+                                  {ok ? '✓' : '—'}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </PopoverContent>
+                      </Popover>
+                    </span>
+                    <span className="font-medium text-foreground">{coverages[b.entityCode]?.percentage ?? 0}%</span>
                   </div>
                   <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                     <div
                       className="h-full bg-primary/60 transition-all"
-                      style={{ width: `${b.fixtureCoverage}%` }}
+                      style={{ width: `${coverages[b.entityCode]?.percentage ?? 0}%` }}
                     />
                   </div>
                   <p className="text-[11px] text-muted-foreground/60 italic">{b.pattern}</p>
@@ -486,6 +546,14 @@ export function ClientBlueprintsPagePanel() {
                       disabled={loadingEntity !== null}
                     >
                       Reset
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handlePurgeDemo(b.entityCode, b.title)}
+                      disabled={loadingEntity !== null}
+                    >
+                      Remove demo data
                     </Button>
                     <Button
                       size="sm"

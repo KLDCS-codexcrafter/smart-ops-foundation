@@ -225,12 +225,14 @@ describe('Sprint R0 · Block 5.3 · entity-branding-engine', () => {
   });
 });
 
-// ─── S155 backfill (Block 0.2) ────────────────────────────────────────────────
+// ─── S155 backfill (R0 Block 0.2 · P8.1 Block 0.2(i) CORRECTED) ──────────────
+// CORRECTION: prior assertion enshrined 'c5f59599' which was the defective
+// pre-T1 push. The actual banked POST-T1 headSha is '09682149'.
 describe('Sprint R0 · S155 headSha backfill', () => {
-  it('S155 headSha is no longer TBD_AT_BANK', () => {
+  it('S155 headSha is locked to the post-T1 banked value 09682149', () => {
     const s155 = SPRINTS.find(s => s.sprintNumber === 155);
     expect(s155).toBeDefined();
     expect(s155!.headSha).not.toBe('TBD_AT_BANK');
-    expect(s155!.headSha).toBeTruthy();
+    expect(s155!.headSha).toBe('09682149');
   });
 });
