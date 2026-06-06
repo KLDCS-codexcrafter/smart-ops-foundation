@@ -30,7 +30,7 @@ import type { CardId } from '@/types/card-entitlement';
 import { listTasks, getUnacknowledgedTasks } from '@/lib/taskflow-engine';
 import { evaluatePTPs } from '@/lib/receivx-engine';
 import { loadObligations } from '@/lib/comply360-statutory-memory';
-import type { PTP } from '@/types/receivx';
+
 
 // ── tiny LS helpers (house pattern) ────────────────────────────────────────
 function ls<T>(key: string): T[] {
