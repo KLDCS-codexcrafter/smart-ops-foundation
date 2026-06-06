@@ -16,6 +16,8 @@ import { toast } from 'sonner';
 import type { PriceList, PriceListItem, PriceListType } from '@/types/price-list';
 import type { InventoryItem } from '@/types/inventory-item';
 import { dPct, dSub, roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
+import { logAudit } from '@/lib/audit-trail-engine';
+import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 const PLKEY = 'erp_price_lists';
 const PLIKEY = 'erp_price_list_items';
