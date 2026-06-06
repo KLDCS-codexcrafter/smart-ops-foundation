@@ -109,20 +109,21 @@ export function seedTaskFlowDemo(entityCode: string): void {
   recordDemoEntity(entityCode, TF_TASKS_KEY(entityCode), spine.id);
 
   safe(() => acknowledgeTask(entityCode, spine.id, 'emp-001'));
-  safe(() => reassignTask(entityCode, spine.id, {
-    toUserId: 'emp-002', toUserName: 'Rajat Verma',
-    reason: 'Anita on planned leave · reassigning to backup',
-    byUserId: SEED_USER,
-  }));
-  safe(() => changeDueDate(entityCode, spine.id, {
-    newDate: dayAfterISO, reason: 'Buffer for vendor invoice reconciliation', byUserId: SEED_USER,
-  }));
+  safe(() => reassignTask(
+    entityCode, spine.id, 'emp-002',
+    'Anita on planned leave · reassigning to backup',
+    SEED_USER, 'Rajat Verma',
+  ));
+  safe(() => changeDueDate(
+    entityCode, spine.id, dayAfterISO,
+    'Buffer for vendor invoice reconciliation', SEED_USER,
+  ));
 
   // Evidence-mandatory close: tiny text data URL artifact via DocVault metadata path
   const evidenceDataUrl = 'data:text/plain;base64,' +
     btoa('Demo evidence · GSTR-2B reconciliation summary · all matched.');
   const ev = safe(() => createEvidence(entityCode, {
-    taskId: spine.id, type: 'file',
+    taskId: spine.id, type: 'proof',
     fileUrl: evidenceDataUrl,
     fileName: 'gstr2b-recon-summary.txt', fileType: 'text/plain',
     notes: 'Demo evidence (text artifact) for evidence-mandatory close',
@@ -198,15 +199,15 @@ export function seedFrontDeskDemo(entityCode: string): void {
   // Visitors
   const v1 = safe(() => checkInVisitor(entityCode, SEED_USER, {
     name: 'Suresh Kumar', company: 'Apex Components',
-    purpose: 'meeting', hostEmployeeId: 'emp-001', hostName: 'Anita Sharma',
+    purpose: 'Vendor Meeting', hostEmployeeId: 'emp-001', hostName: 'Anita Sharma',
   } as Parameters<typeof checkInVisitor>[2]));
   if (v1) {
     recordDemoEntity(entityCode, FD_VISITORS_KEY(entityCode), v1.id);
-    safe(() => checkOutVisitor(entityCode, v1.id, SEED_USER));
+    safe(() => checkOutVisitor(entityCode, v1.id, []));
   }
   const v2 = safe(() => checkInVisitor(entityCode, SEED_USER, {
     name: 'Meera Joshi', company: 'Bharat Logistics',
-    purpose: 'delivery', hostEmployeeId: 'emp-002', hostName: 'Rajat Verma',
+    purpose: 'Delivery', hostEmployeeId: 'emp-002', hostName: 'Rajat Verma',
   } as Parameters<typeof checkInVisitor>[2]));
   if (v2) recordDemoEntity(entityCode, FD_VISITORS_KEY(entityCode), v2.id);
 
@@ -391,8 +392,8 @@ export function seedEcomXDemo(entityCode: string, publishedStoreItemIds: string[
       tds: '2.2', tcs: '22', net: '1843.8', settlement_date: today },
   ];
   const stParse = safe(() => parseSettlementFile(entityCode, mkt.id, stTmpl.id, {
-    rows: settlementRows,
-  } as Parameters<typeof parseSettlementFile>[3]));
+    rows: settlementRows, fileName: 'demo-settlement.csv',
+  }));
   if (!stParse) { markSeederRun(entityCode, 'ecomx'); return; }
   safe(() => commitSettlementImport(entityCode, mkt.id, stParse.importId));
 
@@ -400,7 +401,7 @@ export function seedEcomXDemo(entityCode: string, publishedStoreItemIds: string[
   safe(() => runRecon(entityCode, mkt.id, today, today));
 
   // Claim on first short-pay recon line
-  const lines = safe(() => listReconLines(entityCode, mkt.id), []) ?? [];
+  const lines = safe(() => listReconLines(entityCode, { marketplaceId: mkt.id }), []) ?? [];
   const shortPay = lines.find((l) => l.varianceClass === 'short_pay');
   if (shortPay) {
     const claim = safe(() => createClaimFromLine(
