@@ -19,6 +19,7 @@ import { useProjectResources } from '@/hooks/useProjectResources';
 import { useSAMPersons } from '@/hooks/useSAMPersons';
 import type { ProjectResource } from '@/types/projx/project-resource';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const fmtINR = (n: number) => `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
