@@ -122,6 +122,9 @@ const RECORD_TYPE_POLICY_MAP: Record<string, RetentionPolicyId> = {
   'distributor-order': 'customer_app_friendly',
   'invoice-dispute': 'gst_8yr',
   'commission-register': 'companies_act_8yr',
+  // Sprint WMS1 · additive — new record types born under P8.6 floor
+  picklist: 'operational_log_only',
+  'pack-group': 'operational_log_only',
 };
 
 // ─── localStorage helpers (typed + defensive) ─────────────────────────────
