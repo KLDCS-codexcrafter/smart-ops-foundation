@@ -144,7 +144,7 @@ export function CapitalIndentEntry(): JSX.Element {
     date,
     branch_id: 'branch-default',
     division_id: 'div-default',
-    originating_department_id: user?.department_id ?? 'dept-default',
+    originating_department_id: user?.department_id ?? ''  /* P8.7 AC3: honest empty over fabricated 'dept-default' */,
     originating_department_name: user?.department_code ?? 'Department',
     cost_center_id: 'cc-default',
     capital_sub_type: subType,
