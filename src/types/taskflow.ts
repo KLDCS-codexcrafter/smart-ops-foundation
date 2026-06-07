@@ -63,6 +63,9 @@ export interface Task {
   acknowledgedBy?: string | null;  // TF-29a
   createdAt: string;
   updatedAt: string;
+  // Sprint B1S1 · approval-rail mirror-task meta (additive · only set when category='approval')
+  // Engine: src/lib/approval-rail-engine.ts · Type: src/types/approval-rail.ts ApprovalTaskMeta
+  approval?: import('./approval-rail').ApprovalTaskMeta;
 }
 
 // Accountability Spine records (TF-29 b/c)
