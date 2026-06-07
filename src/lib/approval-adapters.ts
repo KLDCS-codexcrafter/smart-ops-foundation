@@ -53,6 +53,21 @@ import type { Dispute } from '@/types/freight-reconciliation';
 import { materialIndentsKey } from '@/types/material-indent';
 import type { MaterialIndent } from '@/types/material-indent';
 
+// ── B1S2 ADAPTER-READY (4) consumer reads ────────────────────────────────
+import {
+  listExpenses, approveExpense, rejectExpense,
+} from '@/lib/taskflow-accountability-engine';
+
+import {
+  listPendingQa, transitionQaStatus,
+} from '@/lib/qa-inspection-engine';
+
+import {
+  listRequisitions, approveDeptLevel, approveAccountsLevel, rejectRequisition,
+  ROUTING_RULES,
+} from '@/lib/payment-requisition-engine';
+import type { PaymentRequestType } from '@/types/payment-requisition';
+
 // ── small read helper (LS) ────────────────────────────────────────────────
 function safeReadList<T>(key: string): T[] {
   try {
