@@ -128,6 +128,11 @@ const RECORD_TYPE_POLICY_MAP: Record<string, RetentionPolicyId> = {
   // WMS2 · additive only (the sole retention-engine touch this sprint)
   asn: 'operational_log_only',
   'bin-placement': 'operational_log_only',
+  // WMS3 · additive — manifest is GST/e-way adjacent (transport doc) ·
+  //   shipment + manifest-ack are operational lifecycle ledgers.
+  manifest: 'gst_8yr',
+  'shipment-operational': 'operational_log_only',
+  'manifest-ack': 'operational_log_only',
 };
 
 // ─── localStorage helpers (typed + defensive) ─────────────────────────────
