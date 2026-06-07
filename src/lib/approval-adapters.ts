@@ -187,7 +187,7 @@ const requestxIndentAdapter: ApprovalAdapter = {
       updated_by: by,
       approval_history: [
         ...(list[idx].approval_history ?? []),
-        { actor_user_id: by, actor_name: by, decision: 'approve', reason: null, acted_at: now },
+        { id: `ae_${Date.now().toString(36)}`, approver_user_id: by, approver_role: 'rail', action: 'approved', remarks: '', acted_at: now },
       ] as MaterialIndent['approval_history'],
     };
     safeWriteList(key, list);
