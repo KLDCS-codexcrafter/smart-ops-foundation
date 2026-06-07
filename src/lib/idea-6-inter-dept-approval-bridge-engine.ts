@@ -72,6 +72,8 @@ export interface InterDeptApprovalEvaluation {
   variance_pct: number;
   workflow_id?: string;
   template_id?: string | null;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 /**

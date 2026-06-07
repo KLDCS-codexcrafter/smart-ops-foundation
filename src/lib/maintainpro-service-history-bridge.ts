@@ -48,6 +48,8 @@ export interface MaintenanceCostEvent {
   cash_ledger_id?: string;         // cash/bank/vendor payable ledger
   cash_ledger_name?: string;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface ServiceHistorySyncResult {
@@ -55,6 +57,8 @@ export interface ServiceHistorySyncResult {
   expense_history_id: string | null;
   voucher_id: string | null;
   resolution: 'matched_pau' | 'matched_name' | 'unmatched';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface ServiceHistorySummary {
@@ -64,6 +68,8 @@ export interface ServiceHistorySummary {
   event_count: number;
   by_kind: Record<MaintenanceEventKind, { count: number; total: number }>;
   last_event_date: string | null;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 const newId = (p: string): string =>

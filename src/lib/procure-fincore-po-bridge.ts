@@ -29,6 +29,8 @@ export interface BridgeLinkRecord {
   bridge_status: 'linked' | 'gate_disabled' | 'failed';
   failure_reason: string | null;
   created_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export const bridgeLinkKey = (entityCode: string): string =>

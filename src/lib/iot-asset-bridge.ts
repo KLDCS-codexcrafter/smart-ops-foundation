@@ -20,6 +20,8 @@ export interface IoTBridgeState {
   last_signal?: IoTSignal;
   signal_count_today: number;
   is_streaming: boolean;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 function readStream(entityCode: string, asset_id: string): IoTSignal[] {

@@ -126,6 +126,8 @@ export interface VehicleRegistryRow {
   assetUnitRecord: AssetUnitRecord | null;
   lastUtilization: number;
   lastRecordedAt: string | null;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export function getVehicleRegistryWithFA(entityCode: string): VehicleRegistryRow[] {

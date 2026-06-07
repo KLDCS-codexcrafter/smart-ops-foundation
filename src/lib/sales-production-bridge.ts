@@ -68,6 +68,8 @@ export interface ConvertSalesOrderResult {
   plan_id: string;
   line_count: number;
   warnings: string[];
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface SOFulfillmentRow {
@@ -80,6 +82,8 @@ export interface SOFulfillmentRow {
   pending_qty: number;
   fulfillment_pct: number;
   status: 'not_started' | 'partial' | 'completed' | 'over_produced';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface SOProductionLineage {
@@ -89,6 +93,8 @@ export interface SOProductionLineage {
   total_planned_qty: number;
   total_completed_qty: number;
   fulfillment_pct: number;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 // ─── Export 1 · Convert SO → ProductionPlan draft ────────────────────

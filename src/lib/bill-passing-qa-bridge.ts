@@ -74,6 +74,8 @@ export interface QaInspectionFinalizedDetail {
   passed: boolean;
   inspection_id: string;
   actor_user_id: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export const QA_FINALIZED_EVENT = 'qa:inspection-finalized';

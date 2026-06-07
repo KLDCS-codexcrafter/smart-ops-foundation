@@ -34,6 +34,8 @@ export interface FcpiDraftLine {
   sgst: number;
   igst: number;
   line_total: number;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface FcpiDraftRecord {
@@ -85,6 +87,8 @@ export interface FcpiDraftRecord {
 
   created_at: string;
   updated_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export const fcpiDraftKey = (entityCode: string): string =>

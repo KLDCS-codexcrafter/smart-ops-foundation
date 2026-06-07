@@ -47,6 +47,8 @@ export interface TelemetryRecord {
   source: 'mqtt' | 'rest' | 'manual' | 'simulated';
   payload: TelemetryPayload;
   ingested_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 /** Breakdown event detected from telemetry pattern. */
@@ -59,6 +61,8 @@ export interface BreakdownEvent {
   value: number;
   recommended_action: string;
   suggested_alternates: string[];
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 /** Machine health score 0-100 (100 = healthy · 0 = critical breakdown). */
@@ -68,6 +72,8 @@ export interface MachineHealth {
   status: 'healthy' | 'degraded' | 'critical';
   last_telemetry_at: string | null;
   recent_breach_count: number;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export const telemetryKey = (entityCode: string): string =>
@@ -268,6 +274,8 @@ export interface EnergyMeterReading {
   kwh_consumed: number;
   tariff_per_kwh: number;
   source: 'csv_upload' | 'iot_meter' | 'manual';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export const energyReadingsKey = (entityCode: string): string =>
@@ -302,6 +310,8 @@ export interface POEnergyCost {
   per_unit_cost: number;
   energy_intensity_rating: 'low' | 'medium' | 'high';
   reading_count: number;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 /**
@@ -412,6 +422,8 @@ export interface MachineFailurePrediction {
   }[];
   generated_at: string;
   generated_by: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface TrendRegressionResult {

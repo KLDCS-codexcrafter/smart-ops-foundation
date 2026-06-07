@@ -44,6 +44,8 @@ export interface QaHandoffPayload {
   reason: string;
   actor_id: string;
   entity_code: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface QaOutcomePayload {
@@ -54,6 +56,8 @@ export interface QaOutcomePayload {
   outcome: NcrOutcome;
   quality_score_delta: number;
   entity_code: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 const QA_DELTA_BY_SEVERITY: Record<NcrSeverity, number> = {
@@ -128,6 +132,8 @@ export interface VendorQaDimEntry {
   applied_at: string;
   capa_effective?: boolean | null;
   entity_code: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 const VENDOR_QA_DIM_KEY = (e: string): string => `erp_vendor_qa_dim_${e}`;
@@ -156,6 +162,8 @@ export interface CapaQaEventPayload {
   ncr_id: string;
   entity_code: string;
   vendor_id?: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export function subscribeQaForVendorScoring(): () => void {
@@ -252,6 +260,8 @@ export interface PcMatch {
   confirmation_date: string;
   status: string;
   heat_no: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export function findPcMatchesForHeat(entityCode: string, heatNo: string | null | undefined): PcMatch[] {
@@ -296,6 +306,8 @@ export interface ReworkJobCardMatch {
   started_at: string | null;
   status: string;
   source_ncr_id: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export function findReworkJobCardsForNcr(

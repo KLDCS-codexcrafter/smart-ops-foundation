@@ -26,6 +26,8 @@ export interface SiteXMaintainProHandoff {
   floor: string;
   kw_rating: number | null;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export type MaintenancePulseEventType = 'maintenance:equipment.down' | 'maintenance:equipment.restored';
@@ -39,6 +41,8 @@ export interface MaintenancePulseEvent {
   severity: 'low' | 'medium' | 'high' | 'critical';
   capacity_impact_pct: number;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface SparePartReorderEvent {
@@ -48,6 +52,8 @@ export interface SparePartReorderEvent {
   historical_median: number;
   recommended_order_qty: number;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface InternalTicketEscalationEvent {
@@ -59,6 +65,8 @@ export interface InternalTicketEscalationEvent {
   severity: string;
   escalated_to_user_id: string;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface QualiCheckCalibrationFailEvent {
@@ -66,6 +74,8 @@ export interface QualiCheckCalibrationFailEvent {
   instrument_id: string;
   qc_inspector_user_id: string;
   attempted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface SiteXPTWRequestEvent {
@@ -73,6 +83,8 @@ export interface SiteXPTWRequestEvent {
   site_id: string;
   zone: string;
   requested_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 // === BRIDGE 1 · consumeSiteXMaintainProHandoff (IN · Q-LOCK-8 · A.15a → A.16b CAPEX end-to-end) ===

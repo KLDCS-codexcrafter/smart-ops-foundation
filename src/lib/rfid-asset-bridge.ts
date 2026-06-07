@@ -18,6 +18,8 @@ export interface RFIDLinkRecord {
   linked_at: string;
   last_seen_at?: string;
   last_seen_location?: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 function readRegistry(entityCode: string): RFIDLinkRecord[] {

@@ -16,6 +16,8 @@ export interface BillMasterFields {
   terms_of_delivery_id?: string | null;
   narration?: string;
   terms_conditions?: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 /**
