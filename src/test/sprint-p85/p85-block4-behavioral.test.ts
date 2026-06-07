@@ -29,9 +29,9 @@ function reset(entity: string): void {
   localStorage.removeItem(typedChainKey(entity));
 }
 
-/** Wait one tick so chainAuditEntry's detached microtask settles. */
-function flush(): Promise<void> {
-  return new Promise((r) => setTimeout(r, 0));
+/** Drain all pending chain-append work across entities. */
+async function flush(): Promise<void> {
+  await drainChainQueue();
 }
 
 describe('P8.5 · B.5-L2 · audit-trail-chain-engine — append + cross-isolation', () => {
