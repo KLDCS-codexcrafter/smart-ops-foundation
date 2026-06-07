@@ -431,7 +431,12 @@ export type AuditEntityType =
   | 'payhub_master_event'     // AssetMaster · EmployeeMaster · HolidayCalendarMaster · PayGradeMaster · PayHeadMaster · SalaryStructureMaster · ShiftMaster · LeaveTypesMaster · LoanTypesMaster · OvertimeRulesMaster · AttendanceTypesMaster · BonusConfigMaster · GratuityNPSConfig
   | 'dispatch_txn_event'      // DemoOutwardIssue · SampleOutwardIssue (dispatch-side issues)
   // Sprint P8.4 · Block 4 residue · stricter-rule additions (filings/returns produced by comply360)
-  | 'comply360_event';        // EInvoicePage · EWayBillPage · GSTR1NativePage · GSTR1ANativePage · GSTR3BNativePage
+  | 'comply360_event'         // EInvoicePage · EWayBillPage · GSTR1NativePage · GSTR1ANativePage · GSTR3BNativePage
+  // Sprint P8.4.T1 · escaped-path wiring · 13th P8.4 literal · servicedesk previously had none.
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call. Carries OEM-claim lifecycle
+  // (create/submit/approve/pay/reject). Rationale: ServiceDesk OEM Claim packets flow into
+  // Procure360 and represent operator-mutating state — MCA Rule 3(1) requires trail coverage.
+  | 'service_event';          // servicedesk-oem-engine (createOEMClaim · transitionOEMClaim)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sprint R0 · Block 5.2 · Audit-aggregator catalog consolidation (reading (c))
@@ -478,6 +483,8 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   'dispatch_txn_event',
   // Sprint P8.4 · Block 4 residue · stricter-rule additions (1 new domain literal)
   'comply360_event',
+  // Sprint P8.4.T1 · escaped-path wiring (1 new domain literal · 13th P8.4 literal)
+  'service_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];

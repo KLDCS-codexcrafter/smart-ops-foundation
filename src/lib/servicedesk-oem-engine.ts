@@ -12,6 +12,10 @@ import type { OEMClaimPacket, OEMClaimStatus } from '@/types/oem-claim';
 import { oemClaimKey } from '@/types/oem-claim';
 import type { AuditEntry } from '@/types/servicedesk';
 import { emitOEMClaimPacketToProcure360 } from '@/lib/servicedesk-bridges';
+// Sprint P8.4.T1 · escaped-path wiring · service_event (13th P8.4 literal · servicedesk had none).
+// Rationale: ServiceDesk OEM Claim packets are operator-mutating records (create/submit/approve/
+// pay/reject) that flow into Procure360 — they must appear in the MCA Rule 3(1) trail.
+import { logAudit } from '@/lib/audit-trail-engine';
 
 const DEFAULT_ENTITY = 'OPRX';
 const nowIso = (): string => new Date().toISOString();
@@ -61,6 +65,25 @@ export function createOEMClaim(
   const list = readJson<OEMClaimPacket>(oemClaimKey(input.entity_id));
   // [JWT] POST /api/servicedesk/oem-claims
   writeJson(oemClaimKey(input.entity_id), [...list, claim]);
+
+  // Sprint P8.4.T1 · escaped-path wiring · oem claim create.
+  logAudit({
+    entityCode: input.entity_id,
+    action: 'create',
+    entityType: 'service_event',
+    recordId: claim.id,
+    recordLabel: `oem claim created · ${claim.claim_no}`,
+    beforeState: null,
+    afterState: {
+      claim_no: claim.claim_no,
+      oem_name: claim.oem_name,
+      ticket_id: claim.ticket_id,
+      total_claim_value_paise: claim.total_claim_value_paise,
+      status: claim.status,
+    },
+    sourceModule: 'servicedesk',
+  });
+
   return claim;
 }
 
@@ -84,6 +107,20 @@ function transitionOEMClaim(
   };
   list[idx] = next;
   writeJson(oemClaimKey(entity_id), list);
+
+  // Sprint P8.4.T1 · escaped-path wiring · oem claim state mutation (submit/approve/pay/reject).
+  logAudit({
+    entityCode: entity_id,
+    action: to_status === 'rejected' ? 'reject' : to_status === 'approved' ? 'approve' : 'update',
+    entityType: 'service_event',
+    recordId: next.id,
+    recordLabel: `oem claim ${to_status} · ${next.claim_no}`,
+    beforeState: { status: list[idx].status },
+    afterState: { status: to_status, claim_no: next.claim_no, oem_claim_no: next.oem_claim_no },
+    reason: reason ?? null,
+    sourceModule: 'servicedesk',
+  });
+
   return next;
 }
 
