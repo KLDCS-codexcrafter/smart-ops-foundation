@@ -74,12 +74,15 @@ function currentUserName(): string {
   }
 }
 
-// ─── Source attribution · honest narration sniff ──────────────────────────
-// Why narration: EcomX writes "EcomX · <marketplace> · ..." (ecomx-engine.ts
-// ~674) and WebStoreX writes "WebStoreX order · ..." (webstorex-order-engine.ts
-// ~374). Manual SalesX entries write everything else. No `source` field
-// exists on Order today — this is the only honest read. See §L disclosure.
+// ─── Source attribution · WMS2 rider: field-first, narration-sniff fallback ─
+// Order.source (added in WMS2) is the honest birth-site tag written by
+// ecomx-engine.ts (~675) and webstorex-order-engine.ts (~376). Legacy rows
+// without `source` fall through to the original narration sniffer below.
+// See §L disclosure in WMS2 close summary.
 export function classifyOrderSource(order: Order): PickSource {
+  if (order.source === 'ecomx' || order.source === 'webstorex' || order.source === 'salesx') {
+    return order.source;
+  }
   const n = order.narration ?? '';
   if (n.startsWith('EcomX')) return 'ecomx';
   if (n.startsWith('WebStoreX')) return 'webstorex';
