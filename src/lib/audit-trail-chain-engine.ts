@@ -169,6 +169,24 @@ export function chainAuditEntry(entry: AuditTrailEntry): void {
   chainQueueByEntity.set(entityCode, next);
 }
 
+/**
+ * Test/UI helper — await every in-flight chain append across all entities.
+ * The Audit Integrity UI calls this before verifyAllChains so freshly-fired
+ * logAudit appends settle before verification reads.
+ */
+export async function drainChainQueue(): Promise<void> {
+  // Take a snapshot — new appends added during await are picked up in the
+  // next loop iteration until the map is steady.
+  // Bounded: each pass shrinks pending work; converges quickly.
+  for (let i = 0; i < 8; i++) {
+    const pending = Array.from(chainQueueByEntity.values());
+    if (pending.length === 0) return;
+    await Promise.allSettled(pending);
+    const stillPending = Array.from(chainQueueByEntity.values());
+    if (stillPending.every((p, idx) => p === pending[idx])) return;
+  }
+}
+
 async function chainAuditEntryAsync(entry: AuditTrailEntry): Promise<void> {
   const entityCode = entry.entity_id || 'UNKNOWN';
   const entityType = entry.entity_type as string;

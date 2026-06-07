@@ -17,6 +17,7 @@ import {
   readTypedChainStore,
   listChainTypes,
   typedChainKey,
+  drainChainQueue,
 } from '@/lib/audit-trail-chain-engine';
 import { auditTrailKey } from '@/types/audit-trail';
 
