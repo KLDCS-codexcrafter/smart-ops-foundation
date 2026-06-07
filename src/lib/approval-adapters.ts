@@ -350,6 +350,152 @@ const logisticsDisputeAdapter: ApprovalAdapter = {
   recordRoute: (id) => `/erp/logistic/dispute/${id}`,
 };
 
+// ═══════════════════════════════════════════════════════════════════════
+// 9 · taskflow_expense — taskflow-accountability-engine (S1 hardening)
+// ═══════════════════════════════════════════════════════════════════════
+const taskflowExpenseAdapter: ApprovalAdapter = {
+  id: 'adapter:taskflow_expense',
+  source_card: 'taskflow',
+  object_type: 'taskflow_expense',
+  listPending: (entityCode) =>
+    listExpenses(entityCode)
+      .filter((e) => e.status === 'submitted')
+      .map((e) => ({
+        source_record_id: e.id,
+        source_record_no: e.id,
+        amount: e.amount,
+        creator_name: e.submittedBy,
+      })),
+  approve: (entityCode, recordId, by, reason) => {
+    try { approveExpense(entityCode, recordId, by, reason); return true; } catch { return false; }
+  },
+  reject: (entityCode, recordId, by, reason) => {
+    try { rejectExpense(entityCode, recordId, by, reason); return true; } catch { return false; }
+  },
+  recordRoute: () => `/erp/taskflow#expense-center`,
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// 10 · qualicheck_deviation — qa-inspection-engine (S1 hardening)
+//   "failed" inspections are the deviation queue. approve → 'passed'
+//   (concession-allowed precedent · see qa-inspection-engine §C 'concession')
+//   reject → 'cancelled' (record archived · reason audited at source).
+// ═══════════════════════════════════════════════════════════════════════
+const qualicheckDeviationAdapter: ApprovalAdapter = {
+  id: 'adapter:qualicheck_deviation',
+  source_card: 'qualicheck',
+  object_type: 'qualicheck_deviation',
+  listPending: (entityCode) =>
+    listPendingQa(entityCode)
+      .filter((q) => q.status === 'failed' || q.status === 'partial_pass')
+      .map((q) => ({
+        source_record_id: q.id,
+        source_record_no: q.qa_no,
+        creator_name: q.inspector_user_id,
+      })),
+  approve: (entityCode, recordId, by) => {
+    try { void transitionQaStatus(recordId, 'passed', entityCode, by); return true; } catch { return false; }
+  },
+  reject: (entityCode, recordId, by) => {
+    try { void transitionQaStatus(recordId, 'cancelled', entityCode, by); return true; } catch { return false; }
+  },
+  recordRoute: (id) => `/erp/qualicheck/inspection/${id}`,
+};
+
+// ═══════════════════════════════════════════════════════════════════════
+// Stage-aware payment-requisition adapter pair (§L mapping in close summary)
+//   · 'payout_requisition'      filters vendor/treasury/director/statutory types
+//   · 'peoplepay_reimbursement' filters employee_* types
+//
+// The engine's hardcoded dept→accounts chain (ROUTING_RULES) maps to the rail
+// rule row's slab-2 two-step:
+//   · listPending splits by status:
+//       status=pending_dept_head    → step 1 mirror
+//       status=pending_accounts     → step 2 mirror
+//   · approve() delegates by current stage (dept vs accounts).
+//   · reject() always calls rejectRequisition (engine sets fromLevel by status).
+//
+// payment-requisition-engine.ts stays ZERO-DIFF.
+// ═══════════════════════════════════════════════════════════════════════
+const PEOPLEPAY_TYPES: ReadonlySet<PaymentRequestType> = new Set<PaymentRequestType>([
+  'employee_reimbursement',
+  'employee_advance',
+  'employee_loan_disbursement',
+  'loan_emi',
+]);
+
+function isPeoplepayType(t: PaymentRequestType): boolean {
+  return PEOPLEPAY_TYPES.has(t);
+}
+
+function reqStageLabel(status: string): string {
+  if (status === 'pending_dept_head') return 'L1';
+  if (status === 'pending_accounts') return 'L2';
+  return status;
+}
+
+function reqApproveByStage(entityCode: string, recordId: string, by: string, reason?: string): boolean {
+  const req = listRequisitions(entityCode).find((r) => r.id === recordId);
+  if (!req) return false;
+  const comment = reason ?? 'rail-approved';
+  if (req.status === 'pending_dept_head') {
+    const r = approveDeptLevel(entityCode, recordId, comment);
+    return !!r.ok;
+  }
+  if (req.status === 'pending_accounts') {
+    const r = approveAccountsLevel(entityCode, recordId, comment);
+    return !!r.ok;
+  }
+  return false;
+}
+
+const payoutRequisitionAdapter: ApprovalAdapter = {
+  id: 'adapter:payout_requisition',
+  source_card: 'pay-out',
+  object_type: 'payout_requisition',
+  listPending: (entityCode) =>
+    listRequisitions(entityCode)
+      .filter((r) => (r.status === 'pending_dept_head' || r.status === 'pending_accounts') && !isPeoplepayType(r.request_type))
+      .map((r) => {
+        const rule = ROUTING_RULES[r.request_type];
+        const stage = reqStageLabel(r.status);
+        return {
+          source_record_id: r.id,
+          source_record_no: `${r.id} · ${rule.levels}L · ${stage}`,
+          amount: r.amount,
+          creator_name: r.requested_by_name,
+          liability_ref: r.linked_purchase_invoice_id ?? r.linked_purchase_invoice_no ?? undefined,
+        };
+      }),
+  approve: (entityCode, recordId, by, reason) => reqApproveByStage(entityCode, recordId, by, reason),
+  reject: (entityCode, recordId, _by, reason) => {
+    const r = rejectRequisition(entityCode, recordId, reason);
+    return !!r.ok;
+  },
+  recordRoute: (id) => `/erp/pay-out/requisition/${id}`,
+};
+
+const peoplepayReimbursementAdapter: ApprovalAdapter = {
+  id: 'adapter:peoplepay_reimbursement',
+  source_card: 'peoplepay',
+  object_type: 'peoplepay_reimbursement',
+  listPending: (entityCode) =>
+    listRequisitions(entityCode)
+      .filter((r) => (r.status === 'pending_dept_head' || r.status === 'pending_accounts') && isPeoplepayType(r.request_type))
+      .map((r) => ({
+        source_record_id: r.id,
+        source_record_no: `${r.id} · ${reqStageLabel(r.status)}`,
+        amount: r.amount,
+        creator_name: r.requested_by_name,
+      })),
+  approve: (entityCode, recordId, by, reason) => reqApproveByStage(entityCode, recordId, by, reason),
+  reject: (entityCode, recordId, _by, reason) => {
+    const r = rejectRequisition(entityCode, recordId, reason);
+    return !!r.ok;
+  },
+  recordRoute: (id) => `/erp/peoplepay/reimbursement/${id}`,
+};
+
 // ── self-register on import ───────────────────────────────────────────────
 export function registerAllApprovalAdapters(): void {
   registerApprovalAdapter(procurePoAdapter);
@@ -360,15 +506,26 @@ export function registerAllApprovalAdapters(): void {
   registerApprovalAdapter(salesxDiscountAdapter);
   registerApprovalAdapter(servicedeskProposalAdapter);
   registerApprovalAdapter(logisticsDisputeAdapter);
+  // ── B1S2 ADAPTER-READY (4) ───────────────────────────────────────────
+  registerApprovalAdapter(taskflowExpenseAdapter);
+  registerApprovalAdapter(qualicheckDeviationAdapter);
+  registerApprovalAdapter(payoutRequisitionAdapter);
+  registerApprovalAdapter(peoplepayReimbursementAdapter);
 }
 
 // auto-fire on module import
 registerAllApprovalAdapters();
 
 /**
- * SEAM-ONLY · adapters land in B1S2 (Matrix tier):
- *   · taskflow_expense — TaskExpense status union exists but taskflow-engine.ts
- *     does not export approve/reject. Surface ratification needed first.
- *   · qualicheck_deviation — qa-inspection-engine has listPendingQa +
- *     transitionQaStatus but no dedicated approve/reject for deviation/concession.
+ * SEAM-ONLY · 6 rule rows are SEEDED in defaultRules() for visibility but have
+ * NO adapter today. They activate when the source records ship in tree:
+ *   · fincore_pending_voucher  — postVoucher hard-writes status='posted'; no
+ *     pending_approval state exists yet (engine-surgery required to add one).
+ *   · receivx_writeoff         — no write-off store exists yet.
+ *   · credit_note              — credit-note-print-engine is print-only.
+ *   · scheme_grant             — scheme-engine is pure calc.
+ *   · projx_budget             — projx-engine has no projectBudgetKey store.
+ *   · eximx_duty_payment       — duty-waterfall-engine is calc only.
+ * Each activates by writing a new adapter here (engine remains 0-DIFF if the
+ * approve/reject exports already exist; otherwise scheduled with the store).
  */
