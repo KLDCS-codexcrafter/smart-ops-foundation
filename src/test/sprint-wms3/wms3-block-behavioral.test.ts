@@ -329,7 +329,11 @@ describe('WMS3 · manifest engine', () => {
 
   it('AC6: LogisticManifestQueue contains zero direct setItem calls (writes via engine only)', () => {
     const src = readFileSync(resolve(process.cwd(), 'src/pages/erp/logistic/LogisticManifestQueue.tsx'), 'utf8');
-    expect(src).not.toMatch(/localStorage\.setItem/);
+    // Strip block + line comments; check for actual setItem call expressions only
+    const stripped = src
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\/\/.*$/gm, '');
+    expect(stripped).not.toMatch(/localStorage\s*\.\s*setItem\s*\(/);
   });
 
   it('history self-seed: WMS3 row present', () => {
