@@ -17,7 +17,7 @@
  * engines + universal logAudit/readAuditTrail + FS walk.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
-import { readFileSync, readdirSync, statSync, existsSync } from 'node:fs';
+import { readdirSync, statSync, existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { readAuditTrail } from '../../lib/audit-trail-engine';
 import { postDebitNote } from '../../lib/vendor-return-engine';
