@@ -133,8 +133,11 @@ export function upsertPackageType(
     entityCode,
     action: 'create',
     entityType: 'dispatch_txn_event',
-    entityId: row.id,
-    summary: `Package type ${row.code} ${existingIdx >= 0 ? 'updated' : 'created'}`,
+    recordId: row.id,
+    recordLabel: `Package type ${row.code} ${existingIdx >= 0 ? 'updated' : 'created'}`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
   });
   return row;
 }
@@ -171,8 +174,11 @@ export function upsertToleranceGroup(
     entityCode,
     action: 'create',
     entityType: 'dispatch_txn_event',
-    entityId: row.id,
-    summary: `Tolerance group for ${row.transporter_name} ${existingIdx >= 0 ? 'updated' : 'created'}`,
+    recordId: row.id,
+    recordLabel: `Tolerance group for ${row.transporter_name} ${existingIdx >= 0 ? 'updated' : 'created'}`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
   });
   return row;
 }
@@ -257,12 +263,15 @@ export function createShipmentsFromPacked(entityCode: string): Shipment[] {
   writeShipments(entityCode, list);
   if (created.length) {
     logAudit({
-      entityCode,
+    entityCode,
       action: 'create',
       entityType: 'dispatch_txn_event',
-      entityId: created[0].id,
-      summary: `Created ${created.length} domestic shipment(s) from packed groups`,
-    });
+    recordId: created[0].id,
+    recordLabel: `Created ${created.length} domestic shipment(s) from packed groups`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
+  });
   }
   return created;
 }
@@ -306,8 +315,11 @@ export function createExportShipment(
     entityCode,
     action: 'create',
     entityType: 'dispatch_txn_event',
-    entityId: row.id,
-    summary: `Export shipment ${row.shipment_no} created for export PO ${exportPoId}`,
+    recordId: row.id,
+    recordLabel: `Export shipment ${row.shipment_no} created for export PO ${exportPoId}`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
   });
   return row;
 }
@@ -350,8 +362,11 @@ export function buildManifest(
     entityCode,
     action: 'create',
     entityType: 'dispatch_txn_event',
-    entityId: row.id,
-    summary: `Manifest ${row.manifest_no} draft built · ${members.length} shipments · ${transporterName}`,
+    recordId: row.id,
+    recordLabel: `Manifest ${row.manifest_no} draft built · ${members.length} shipments · ${transporterName}`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
   });
   return row;
 }
@@ -404,8 +419,11 @@ export function finalizeManifest(entityCode: string, manifestId: string): Manife
     entityCode,
     action: 'update',
     entityType: 'dispatch_txn_event',
-    entityId: updated.id,
-    summary: `Manifest ${updated.manifest_no} finalized · ${members.length} shipments`,
+    recordId: updated.id,
+    recordLabel: `Manifest ${updated.manifest_no} finalized · ${members.length} shipments`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
   });
   return updated;
 }
@@ -423,12 +441,15 @@ export function recordHandover(entityCode: string, manifestId: string): void {
   writeShipments(entityCode, ships);
   if (changed) {
     logAudit({
-      entityCode,
+    entityCode,
       action: 'update',
       entityType: 'dispatch_txn_event',
-      entityId: manifestId,
-      summary: `Manifest ${manifestId} handover recorded · ${changed} shipments → handed_over`,
-    });
+    recordId: manifestId,
+    recordLabel: `Manifest ${manifestId} handover recorded · ${changed} shipments → handed_over`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
+  });
   }
 }
 
@@ -493,8 +514,11 @@ export function acknowledgeManifest(
     entityCode,
     action: 'update',
     entityType: 'dispatch_txn_event',
-    entityId: updated.id,
-    summary: `Manifest ${updated.manifest_no} acknowledged by ${input.acknowledged_by}${input.discrepancy_note ? ' · discrepancy' : ''}`,
+    recordId: updated.id,
+    recordLabel: `Manifest ${updated.manifest_no} acknowledged by ${input.acknowledged_by}${input.discrepancy_note ? ' · discrepancy' : ''}`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
   });
   return { ack, manifest: updated };
 }
@@ -550,12 +574,15 @@ export function checkToleranceAndDispute(
     list[idx] = updated;
     writeManifests(entityCode, list);
     logAudit({
-      entityCode,
+    entityCode,
       action: 'update',
       entityType: 'dispatch_txn_event',
-      entityId: updated.id,
-      summary: `Manifest ${updated.manifest_no} accepted variance ${varianceKg.toFixed(2)}kg (${variancePct.toFixed(1)}%)`,
-    });
+    recordId: updated.id,
+    recordLabel: `Manifest ${updated.manifest_no} accepted variance ${varianceKg.toFixed(2)}kg (${variancePct.toFixed(1)}%)`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
+  });
     return {
       status: 'within_tolerance',
       variance_kg: varianceKg,
@@ -614,8 +641,11 @@ export function checkToleranceAndDispute(
     entityCode,
     action: 'update',
     entityType: 'dispatch_txn_event',
-    entityId: updated.id,
-    summary: `Manifest ${updated.manifest_no} tolerance breach · dispute ${dispute.id} raised`,
+    recordId: updated.id,
+    recordLabel: `Manifest ${updated.manifest_no} tolerance breach · dispute ${dispute.id} raised`,
+    beforeState: null,
+    afterState: null,
+    sourceModule: 'wms-manifest-engine',
   });
   return {
     status: 'breach_dispute_raised',
