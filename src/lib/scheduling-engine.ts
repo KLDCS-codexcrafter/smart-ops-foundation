@@ -12,6 +12,8 @@ import type { JobCard } from '@/types/job-card';
 import type { Machine } from '@/types/machine';
 import type { GanttBar, RescheduleResult } from '@/types/scheduling-snapshot';
 import { productionOrdersKey } from '@/types/production-order';
+// Sprint P8.4.T1 · escaped-path wiring · production_event reschedule branches.
+import { logAudit } from '@/lib/audit-trail-engine';
 
 export interface BuildGanttDataInput {
   factory_id: string | null;
