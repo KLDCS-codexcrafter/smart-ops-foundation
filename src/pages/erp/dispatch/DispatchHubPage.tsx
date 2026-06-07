@@ -42,6 +42,9 @@ import { EWBMonitorPanel } from './reports/EWBMonitor';
 // Sprint WMS1 · Warehouse · Pick & Pack
 import { WMS1PickingConsolePanel } from './wms/PickingConsole';
 import { WMS1PackingConsolePanel } from './wms/PackingConsole';
+// Sprint WMS2 · Warehouse · ASN/Putaway + Shelf View
+import { WMS2PutawayConsolePanel } from './wms/PutawayConsole';
+import { WMS2ShelfViewPanel } from './wms/ShelfView';
 
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
@@ -85,6 +88,9 @@ function renderModule(
     // Sprint WMS1
     case 'dh-w-picking-console':              return <WMS1PickingConsolePanel />;
     case 'dh-w-packing-console':              return <WMS1PackingConsolePanel />;
+    // Sprint WMS2
+    case 'dh-w-putaway-console':              return <WMS2PutawayConsolePanel />;
+    case 'dh-w-shelf-view':                   return <WMS2ShelfViewPanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }

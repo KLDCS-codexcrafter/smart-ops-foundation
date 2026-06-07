@@ -26,6 +26,10 @@ import {
   Receipt,
   // Sprint WMS1 · Warehouse · Pick & Pack
   Boxes, PackageSearch,
+  // Sprint WMS2 · Warehouse · ASN/Putaway + Shelf View
+  Inbox as InboxIcon, LayoutGrid,
+
+
 
 } from 'lucide-react';
 import {
@@ -66,7 +70,10 @@ export type DispatchHubModule =
   | 'dh-r-ewb-monitor'
   // Sprint WMS1 · Warehouse · Pick & Pack (additive registration · §H allowlist)
   | 'dh-w-picking-console'
-  | 'dh-w-packing-console';
+  | 'dh-w-packing-console'
+  // Sprint WMS2 · Warehouse · ASN + Putaway + Shelf (additive · §H allowlist)
+  | 'dh-w-putaway-console'
+  | 'dh-w-shelf-view';
 
 
 interface DispatchHubSidebarProps {
@@ -104,8 +111,10 @@ const REPORTS_ITEMS: MenuItem[] = [
 
 // Sprint WMS1 · Warehouse · Pick & Pack
 const WAREHOUSE_ITEMS: MenuItem[] = [
-  { label: 'Picking Console', module: 'dh-w-picking-console', icon: PackageSearch, keyboard: 'l w p' },
-  { label: 'Packing Console', module: 'dh-w-packing-console', icon: Boxes,         keyboard: 'l w k' },
+  { label: 'Picking Console',  module: 'dh-w-picking-console',  icon: PackageSearch, keyboard: 'l w p' },
+  { label: 'Packing Console',  module: 'dh-w-packing-console',  icon: Boxes,         keyboard: 'l w k' },
+  { label: 'ASN & Putaway',    module: 'dh-w-putaway-console',  icon: InboxIcon,     keyboard: 'l w a' },
+  { label: 'Shelf View',       module: 'dh-w-shelf-view',       icon: LayoutGrid,    keyboard: 'l w s' },
 ];
 
 // Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
