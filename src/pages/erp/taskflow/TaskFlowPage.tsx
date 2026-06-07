@@ -94,6 +94,7 @@ export default function TaskFlowPage(): JSX.Element {
       case 'close-policies':     return <ClosePoliciesPage />;
       case 'work-diary':         return <WorkDiaryPage />;
       case 'expense-center':     return <ExpenseCenterPage />;
+      case 'approvals-inbox':    return <ApprovalsInboxPage />;
       default:                   return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
   };
