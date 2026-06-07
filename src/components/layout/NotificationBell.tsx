@@ -63,6 +63,10 @@ export function NotificationBell() {
     void import('@/lib/approval-rail-engine').then((m) => {
       try { m.publishApprovalsDigest(entityCode, userId); } catch { /* swallow */ }
     });
+    // Sprint B1S2-R · R3 · My Reminders breach digest · idempotent per day.
+    void import('@/lib/taskflow-reminders-engine').then((m) => {
+      try { m.publishMyRemindersDigest(entityCode, userId); } catch { /* swallow */ }
+    });
     bump();
   }, [open, entityCode, userId, bump]);
 
