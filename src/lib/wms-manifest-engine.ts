@@ -584,7 +584,7 @@ export function checkToleranceAndDispute(
     variance_pct: variancePct,
     status: varianceKg > 0 ? 'over_billed' : 'under_billed',
     tolerance_used: tolerance,
-    payer_model: 'we_pay',
+    payer_model: 'manufacturer',
     auto_decision: 'dispute',
     computed_at: nowISO(),
   };
