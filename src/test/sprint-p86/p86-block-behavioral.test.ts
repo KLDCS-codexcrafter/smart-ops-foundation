@@ -29,7 +29,7 @@ import * as chainEngine from '@/lib/audit-trail-chain-engine';
 import * as comply360Retention from '@/lib/comply360-audit-retention-engine';
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
 import { SIBLINGS } from '@/lib/_institutional/sibling-register';
-import { getAuditTrail, clearAuditTrail } from '@/lib/audit-trail-engine';
+import { readAuditTrail } from '@/lib/audit-trail-engine';
 import type { AuditTrailEntry } from '@/types/audit-trail';
 
 const REPO_ROOT = process.cwd();
@@ -171,9 +171,8 @@ describe('P8.6 · updateRetentionPolicy + audit log', () => {
   });
 
   it('audit-logs the edit via logAudit (retention_policy_event)', () => {
-    clearAuditTrail('GLOBAL');
     updateRetentionPolicy('gst_8yr', { retentionYears: 9 }, 'auditor');
-    const trail: AuditTrailEntry[] = getAuditTrail('GLOBAL');
+    const trail: AuditTrailEntry[] = readAuditTrail('GLOBAL');
     const match = trail.find((e) => e.entity_type === 'retention_policy_event');
     expect(match).toBeDefined();
     expect(match!.record_id).toBe('gst_8yr');
