@@ -45,5 +45,7 @@ export const taskflowSidebarItems: SidebarItem[] = [
   { id: 'close-policies',     type: 'item', label: 'Close Policies',    icon: ShieldCheck,    keyboard: 'k q' },
   { id: 'work-diary',         type: 'item', label: 'Work Diary',        icon: NotebookPen,    keyboard: 'k z' },
   { id: 'expense-center',     type: 'item', label: 'Expense Center',    icon: Receipt,        keyboard: 'k f' },
+  // ── Approval Rail (Sprint B1S1) ────────────────────────────────────
+  { id: 'approvals-inbox',    type: 'item', label: 'Approvals Inbox',   icon: ShieldCheck,    keyboard: 'k 1' },
 ];
 
