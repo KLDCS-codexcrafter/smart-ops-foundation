@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { LogisticLayout } from '@/features/logistic/LogisticLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Truck, FileText, IndianRupee, AlertCircle, Activity } from 'lucide-react';
+import { AlertTriangle, Truck, FileText, IndianRupee, AlertCircle, Activity, ClipboardCheck } from 'lucide-react';
 import { getLogisticSession } from '@/lib/logistic-auth-engine';
 import {
   lrAcceptancesKey, logisticActivityKey,
