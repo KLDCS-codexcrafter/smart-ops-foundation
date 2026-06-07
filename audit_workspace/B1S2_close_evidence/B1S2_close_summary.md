@@ -96,3 +96,96 @@ Both passes ran under `NODE_OPTIONS="--max-old-space-size=7168"` and passed:
 - `npm run build`: **PASS** at sprint close
 
 streak: **91 ⭐** (90 → 91, banked A first-pass).
+
+---
+
+# ─── B1S2 · REMEDIATION PASS · 6 T1s ────────────────────────────────
+
+**Predecessor for this remediation:** original B1S2 close (audit grade B · 6 T1s).
+**Disclosure (R6 · evidence-honesty canon):** Original close claimed Triple Gate
+green; scoped suite failed at ff3655c3 — corrected per evidence-honesty canon.
+
+## §R0 · Remediation deliverables (R1–R7)
+
+| ID | Item | File / Symbol | Status |
+|---|---|---|---|
+| R1 | §2.4b catalog feature added to taskflow-reminders-engine | `REMINDER_CATALOG · getUserPrefs · saveUserPrefs · getMyReminders · publishMyRemindersDigest` | done |
+| R2 | Dashboard widget · additive lazy block | `src/components/dashboard/MyRemindersWidget.tsx` + `Dashboard.tsx` (one `<Suspense>`) | done |
+| R3 | NotificationBell additive call · idempotent | `NotificationBell.tsx:68-71` | done |
+| R4 | Adapter flipped to consume `approveIndent`/`rejectIndent` · LS write block deleted | `approval-adapters.ts:183-209` (engine 0-DIFF) | done |
+| R5 | Tests ≥22 it() + B1S1 brittle test fixed | `b1s2-block-behavioral.test.ts` (24 it) · `b1s1` `toBeGreaterThanOrEqual(8)` | done |
+| R6 | 4 gates re-run after final edit; corrected pastes below | TSC 0 · ESLint 0 · Vitest 311/311 · Build OK | done |
+| R7 | New HEAD short hash reported only | reported by closing line | done |
+
+## §R1 · Catalog source ledger (§2.4b · honest)
+
+| # | Catalog id | Source (file:line) | Status |
+|---|---|---|---|
+| 1 | `approvals_waiting` | `approval-rail-engine#listPendingMirrors` (src/lib/approval-rail-engine.ts:517) | **wired** |
+| 2 | `tasks_due_today` | `taskflow-engine#listTasks` (src/lib/taskflow-engine.ts:158) | **wired** |
+| 3 | `quarantine` | `qa-inspection-engine#listPendingQa` (src/lib/qa-inspection-engine.ts:47) | **wired** |
+| 4 | `birthdays_today` | `customer-reminder` store via `customerReminderKey` (src/types/customer-reminder.ts:32) | **wired** |
+| 5 | `ptps_today` | unavailable: receivx-engine exposes no PTP-by-date count | **unavailable** |
+| 6 | `gst_obligations` | unavailable: comply360 calendar exports no pending-count | **unavailable** |
+| 7 | `amc_expiring` | unavailable: servicedesk-engine has no AMC expiry-index | **unavailable** |
+| 8 | `low_stock` | unavailable: no aggregated low-stock counter | **unavailable** |
+| 9 | `open_picklists` | unavailable: wms-pick-pack-engine has no count export | **unavailable** |
+| 10 | `unacked_manifests` | unavailable: ack join requires per-manifest scan; Wave-2 | **unavailable** |
+| 11 | `retention_reviews` | unavailable: record-retention-policy-engine has no pending-review export | **unavailable** |
+| 12 | `procure_followups` | unavailable: procurement-followups store has no due-today counter | **unavailable** |
+
+Honesty rule: `status='unavailable'` snapshots return `count=null` and a `reason`
+string — never fake zeros. Verified by `B1S2-R · reminder catalog · honesty ledger`.
+
+## §R2 · Bonus scope §L disclosure
+
+The personal note-reminder functions shipped in the original pass
+(`createMyReminder · snoozeMyReminder · dismissMyReminder · fireDueMyReminders ·
+getMyRemindersDigest`) are RETAINED as bonus scope to the §2.4b catalog. They
+serve the freeform user-pinned reminder flow; the catalog serves the live-count
+dashboard widget. Both coexist on the same engine.
+
+## §R3 · Corrected gate pastes (after the final edit)
+
+```
+$ npx tsc --noEmit
+(exit 0 · no output)
+
+$ npx eslint --max-warnings 0 src/lib/taskflow-reminders-engine.ts \
+    src/lib/approval-adapters.ts src/components/dashboard/MyRemindersWidget.tsx \
+    src/components/layout/NotificationBell.tsx src/pages/erp/Dashboard.tsx \
+    src/test/sprint-b1s2/b1s2-block-behavioral.test.ts \
+    src/test/sprint-b1s1/b1s1-block-behavioral.test.ts
+(exit 0 · no output)
+
+$ npx vitest run src/test/sprint-b1s2 src/test/sprint-b1s1 \
+    src/test/sprint-wms1 src/test/sprint-wms2 src/test/sprint-wms3 \
+    src/test/sprint-p83 src/test/sprint-p84 src/test/sprint-p85 \
+    src/test/sprint-p86 src/test/sprint-p87
+Test Files  13 passed (13)
+Tests       311 passed (311)
+
+$ NODE_OPTIONS="--max-old-space-size=7168" npx vite build
+✓ built in 1m 6s
+```
+
+## §R4 · R4 wall · adapters file no longer writes the requestx store
+
+`grep` evidence (verified at test time):
+- `src/lib/approval-adapters.ts` contains **no** `safeWriteList(...materialIndentsKey...)`
+- `src/lib/approval-adapters.ts` contains **no** `localStorage.setItem(...materialIndentsKey...)`
+- `src/lib/request-engine.ts` continues to export `approveIndent` (line 258) and
+  `rejectIndent` (line 284) — 0-DIFF; the additive exports already shipped.
+- adapter now calls `approveRequestxIndent(recordId, 'material', by, 'rail', entityCode, 'rail-approved')`.
+
+## §R5 · B1S1 brittle test fix (architect-owned posture)
+
+- `src/test/sprint-b1s1/b1s1-block-behavioral.test.ts:94`
+  - before: `expect(rules.length).toBe(8)`
+  - after: `expect(rules.length).toBeGreaterThanOrEqual(8)`
+  - comment: `// B1S2-R · architect-owned posture fix · exact-count ban`
+
+## §R7 · Sprint identity
+
+Sprint B1S2 (Remediation Pass) · Pillar B.1 CLOSE retained · target 91 ⭐.
+HEAD short hash: reported separately at bank time (audit verifies independently).
