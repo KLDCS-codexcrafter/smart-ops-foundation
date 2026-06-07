@@ -68,10 +68,7 @@ export default function LogisticManifestQueue() {
         packages_counted: pkgCount ? Number(pkgCount) : undefined,
         discrepancy_note: discrepancy.trim() || undefined,
       });
-      recordLogisticActivity(session.entity_code, {
-        logistic_id: session.logistic_id,
-        entity_code: session.entity_code,
-        kind: 'lr_accept',
+      recordLogisticActivity(session.logistic_id, session.entity_code, 'lr_accept', {
         ref_type: 'lr',
         ref_id: target.id,
         ref_label: target.manifest_no,
