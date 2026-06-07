@@ -139,7 +139,15 @@ function serializeForHash(entry: AuditTrailEntry): string {
 
 // ──────────────────────────────────────────────────────────────────────────
 // Append (synchronous-safe wrapper · fire-and-forget)
+//
+// Per-entity tail-promise queue ensures concurrent logAudit calls within the
+// same event-loop tick serialize their store mutations — without it, each
+// detached chainAuditEntryAsync would loadStore() before its siblings
+// saveStore(), and last-write-wins would drop links. The queue keeps the
+// fire-and-forget guarantee for callers while preserving chain correctness.
 // ──────────────────────────────────────────────────────────────────────────
+
+const chainQueueByEntity = new Map<string, Promise<void>>();
 
 /**
  * Forge a chain link for a freshly-written audit entry.
@@ -151,9 +159,32 @@ function serializeForHash(entry: AuditTrailEntry): string {
  * (entity, entityType) chain, this is a no-op.
  */
 export function chainAuditEntry(entry: AuditTrailEntry): void {
-  void chainAuditEntryAsync(entry).catch((err) => {
-    console.error('[audit-typed-chain] append failed (non-fatal):', err);
-  });
+  const entityCode = entry.entity_id || 'UNKNOWN';
+  const prev = chainQueueByEntity.get(entityCode) ?? Promise.resolve();
+  const next = prev
+    .then(() => chainAuditEntryAsync(entry))
+    .catch((err) => {
+      console.error('[audit-typed-chain] append failed (non-fatal):', err);
+    });
+  chainQueueByEntity.set(entityCode, next);
+}
+
+/**
+ * Test/UI helper — await every in-flight chain append across all entities.
+ * The Audit Integrity UI calls this before verifyAllChains so freshly-fired
+ * logAudit appends settle before verification reads.
+ */
+export async function drainChainQueue(): Promise<void> {
+  // Take a snapshot — new appends added during await are picked up in the
+  // next loop iteration until the map is steady.
+  // Bounded: each pass shrinks pending work; converges quickly.
+  for (let i = 0; i < 8; i++) {
+    const pending = Array.from(chainQueueByEntity.values());
+    if (pending.length === 0) return;
+    await Promise.allSettled(pending);
+    const stillPending = Array.from(chainQueueByEntity.values());
+    if (stillPending.every((p, idx) => p === pending[idx])) return;
+  }
 }
 
 async function chainAuditEntryAsync(entry: AuditTrailEntry): Promise<void> {

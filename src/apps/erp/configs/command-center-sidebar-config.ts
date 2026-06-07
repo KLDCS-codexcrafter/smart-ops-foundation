@@ -13,7 +13,7 @@ import {
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
   Truck, Network, Layers, Briefcase, FileText, ListChecks,
   Receipt, FileSignature, DoorOpen,
-  Factory as FactoryIcon, Cog, Wrench,
+  Factory as FactoryIcon, Cog, Wrench, ShieldCheck,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -345,6 +345,10 @@ export const commandCenterSidebarItems: SidebarItem[] = [
         moduleId: 'mdg-conflict-resolution', requiredCards: ['command-center'] },
       { id: 'mdg-sync-throttle', type: 'item', label: 'Sync Throttle Inspector', icon: Lock,
         moduleId: 'mdg-sync-throttle', requiredCards: ['command-center'] },
+      // 🎬 Sprint P8.5 · B.5-L2 · Audit Integrity (Verify UI for the global hash-chain)
+      // NO requiredCards — Audit Integrity is CC-internal infrastructure, not a card.
+      { id: 'audit-integrity', type: 'item', label: 'Audit Integrity', icon: ShieldCheck,
+        moduleId: 'audit-integrity' },
     ],
   },
   {

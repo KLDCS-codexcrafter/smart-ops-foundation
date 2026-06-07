@@ -158,6 +158,9 @@ import WorkpaperAutoPopPage from '@/features/workpaper-autopop/WorkpaperAutoPopP
 // 🏁 Sprint 115 · T-Phase-6.C.3.1-CLOSE · Inter-Department Governance (Standalone Page #42 · Pillar C.3)
 import InterDeptGovernancePage from '@/features/inter-dept-governance/InterDeptGovernancePage';
 
+// 🎬 Sprint P8.5 · T-P85-Global-Hash-Chain · Audit Integrity (Verify UI for the global hash-chain)
+import AuditIntegrityPage from '@/features/audit-integrity/AuditIntegrityPage';
+
 // 🚚 Sprint 124 · T-Phase-7.D.1.5 · A1 — FP&A pages MOVED to the FP&A self-owned
 // shell (/erp/fpa-planning). The 7 imports/cases/type-union members previously
 // here have been removed. Legacy hashes redirect via the effect below.
@@ -305,7 +308,9 @@ export type CommandCenterModule =
   // Sprint 98 · T-Phase-6.A.0.3 · Master Data Governance
   | 'mdg-field-lock-rules'
   | 'mdg-conflict-resolution'
-  | 'mdg-sync-throttle';
+  | 'mdg-sync-throttle'
+  // 🎬 Sprint P8.5 · B.5-L2 · Audit Integrity Verify UI
+  | 'audit-integrity';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -343,6 +348,7 @@ export default function CommandCenterPage() {
       'plant-ops-factory-master', 'plant-ops-work-center-master', 'plant-ops-machine-master',
       'production',
       'mdg-field-lock-rules', 'mdg-conflict-resolution', 'mdg-sync-throttle',
+      'audit-integrity',
     ].includes(hash)) {
       return hash as CommandCenterModule;
     }
@@ -407,6 +413,7 @@ export default function CommandCenterPage() {
       'fincore-group-consolidation', 'fincore-multi-currency-translation',
       'fincore-consolidated-financials', 'fincore-compliance-approval-rules',
       'fincore-workpaper-autopop', 'fincore-inter-dept-governance',
+      'audit-integrity',
     ]);
     // 🚚 S124 · A1 — legacy FP&A hashes redirect to /erp/fpa-planning#<new-id>.
     const LEGACY_FPA: Record<string, string> = {
@@ -577,6 +584,9 @@ export default function CommandCenterPage() {
       case 'mdg-field-lock-rules':    return <FieldLockRulesPanel />;
       case 'mdg-conflict-resolution': return <MasterConflictResolutionPanel />;
       case 'mdg-sync-throttle':       return <SyncThrottlePanel />;
+
+      // 🎬 Sprint P8.5 · B.5-L2 · Audit Integrity Verify UI
+      case 'audit-integrity':         return <AuditIntegrityPage />;
 
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
