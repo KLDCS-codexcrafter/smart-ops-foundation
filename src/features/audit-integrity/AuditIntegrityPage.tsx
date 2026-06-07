@@ -29,6 +29,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   ensureChainsSeeded,
   verifyAllChains,
+  drainChainQueue,
   type AllChainsVerification,
   type TypedChainVerification,
 } from '@/lib/audit-trail-chain-engine';
@@ -55,6 +56,7 @@ export default function AuditIntegrityPage(): JSX.Element {
     setBusy(true);
     setMigrationNote(null);
     try {
+      await drainChainQueue();
       const mig = await ensureChainsSeeded(entityCode);
       if (mig.newLinks > 0) {
         setMigrationNote(
