@@ -434,7 +434,7 @@ function reqStageLabel(status: string): string {
   return status;
 }
 
-function reqApproveByStage(entityCode: string, recordId: string, by: string, reason?: string): boolean {
+function reqApproveByStage(entityCode: string, recordId: string, _by: string, reason?: string): boolean {
   const req = listRequisitions(entityCode).find((r) => r.id === recordId);
   if (!req) return false;
   const comment = reason ?? 'rail-approved';
