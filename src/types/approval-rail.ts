@@ -143,3 +143,41 @@ export interface ApprovalDecidedByEntry {
   decided_by_name: string;
   decided_at: string;
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+// B1S2 · Delegation ledger (per-entity)
+// "Approver A delegates to Approver B from..to" — applied at decideApproval.
+// ═══════════════════════════════════════════════════════════════════════
+export interface ApprovalDelegation {
+  id: string;
+  delegator_name: string;     // person who is delegating
+  delegate_name: string;      // who acts on their behalf
+  from_date: string;          // ISO
+  to_date: string;            // ISO (inclusive)
+  reason?: string;
+  active: boolean;
+  created_at: string;
+}
+
+export const approvalDelegationsKey = (entityCode: string): string =>
+  `erp_approval_delegations_${entityCode}`;
+
+/** B1S2 · Quorum ledger — per (entity,record) M-of-N vote counter. */
+export interface QuorumVoteEntry {
+  id: string;
+  source_record_id: string;
+  object_type: ApprovalObjectType;
+  step_order: number;
+  voter_name: string;
+  vote: 'approved' | 'rejected';
+  voted_at: string;
+}
+export const approvalQuorumLedgerKey = (entityCode: string): string =>
+  `erp_approval_quorum_${entityCode}`;
+
+/** B1S2 · Per-step quorum config (override on a single chain step). */
+export interface ApprovalChainStepQuorumOverride {
+  step_order: number;
+  required: number;
+  candidates: string[];   // role or person names
+}
