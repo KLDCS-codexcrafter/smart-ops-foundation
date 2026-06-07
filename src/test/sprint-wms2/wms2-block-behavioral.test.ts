@@ -27,7 +27,7 @@ import {
   asnRecordsKey,
   binPlacementsKey,
 } from '@/types/wms-putaway';
-import { ordersKey, type Order } from '@/types/order';
+import { type Order } from '@/types/order';
 import { classifyOrderSource } from '@/lib/wms-pick-pack-engine';
 import { itemLocationsKey, type ItemLocation } from '@/types/item-location';
 import { inwardReceiptsKey, type InwardReceipt } from '@/types/inward-receipt';
