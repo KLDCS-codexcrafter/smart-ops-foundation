@@ -483,6 +483,8 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   'dispatch_txn_event',
   // Sprint P8.4 · Block 4 residue · stricter-rule additions (1 new domain literal)
   'comply360_event',
+  // Sprint P8.4.T1 · escaped-path wiring (1 new domain literal · 13th P8.4 literal)
+  'service_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];
