@@ -58,7 +58,6 @@ import type { MaterialIndent } from '@/types/material-indent';
 import {
   approveIndent as approveRequestxIndent,
   rejectIndent as rejectRequestxIndent,
-  submitIndent as submitRequestxIndent,
 } from '@/lib/request-engine';
 
 // ── B1S2 ADAPTER-READY (4) consumer reads ────────────────────────────────
