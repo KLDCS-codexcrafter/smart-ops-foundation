@@ -6,6 +6,7 @@
  */
 
 import type { ProductionCostStructure } from './production-cost';
+import type { RetentionPolicyId } from './record-retention';
 import type { ApprovalEvent } from './material-indent';
 
 export type ProductionOrderStatus = 'draft' | 'released' | 'in_progress' | 'completed' | 'closed' | 'cancelled';
@@ -215,6 +216,8 @@ export interface ProductionOrder {
   closed_variance_id: string | null;
 
   notes: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   created_by: string;
   updated_at: string;

@@ -5,6 +5,8 @@
  * [JWT] GET/POST/PATCH /api/salesx/invoice-memos
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type IMStatus =
   | 'draft'
   | 'raised'
@@ -94,6 +96,8 @@ export interface InvoiceMemo {
    *  Existing single-ref fields stay populated as the "primary" source · this array
    *  captures additional sources when operator clicks "Add another source." */
   multi_source_refs?: import('./multi-source-ref').MultiSourceRef[] | null;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   updated_at: string;
 }

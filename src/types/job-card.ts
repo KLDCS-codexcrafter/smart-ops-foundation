@@ -10,6 +10,7 @@
  */
 import type { ApprovalEvent } from '@/types/material-indent';
 
+import type { RetentionPolicyId } from './record-retention';
 export type JobCardStatus =
   | 'planned'
   | 'in_progress'
@@ -94,6 +95,8 @@ export interface JobCard {
   linked_test_report_ids: string[];
   routed_to_quarantine: boolean;
 
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   created_by: string;
   updated_at: string;

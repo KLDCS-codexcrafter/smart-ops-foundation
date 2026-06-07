@@ -3,6 +3,7 @@
  * Auto-generated when a Delivery Note is posted.
  * [JWT] GET/POST /api/dispatch/packing-slips
  */
+import type { RetentionPolicyId } from './record-retention';
 
 export interface PackingSlipLine {
   id: string;
@@ -50,6 +51,9 @@ export interface PackingSlip {
   generated_at: string;
   generated_by: string;
   printed_count: number;
+  // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   status: PackingSlipStatus;
 }
 

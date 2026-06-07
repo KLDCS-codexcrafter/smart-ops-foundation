@@ -6,6 +6,8 @@
  * @disciplines FR-22 Type Discipline · FR-50 Multi-entity 6-point
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type BillPassingStatus =
   | 'pending_match'
   | 'matched_clean'
@@ -119,6 +121,9 @@ export interface BillPassingRecord {
   status: BillPassingStatus;
 
   notes: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 

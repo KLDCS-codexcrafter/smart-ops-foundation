@@ -7,6 +7,8 @@
  * @disciplines FR-22 · FR-50 · FR-58
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type GitStage1Status =
   | 'in_transit'
   | 'received_at_gate'
@@ -66,6 +68,9 @@ export interface GitStage1Record {
 
   notes: string;
   received_by_user_id: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }

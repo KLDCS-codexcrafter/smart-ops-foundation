@@ -14,6 +14,8 @@
  * [JWT] GET/POST/PATCH /api/store/stock-receipt-acks
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type StockReceiptAckStatus = 'draft' | 'acknowledged' | 'cancelled';
 
 export interface StockReceiptAckLine {
@@ -74,6 +76,8 @@ export interface StockReceiptAck {
   reference_no?: string | null;
   voucher_hash?: string | null;
 
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   updated_at: string;
   cancelled_at: string | null;

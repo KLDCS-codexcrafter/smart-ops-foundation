@@ -10,6 +10,8 @@
  * @[JWT]       erp_material_indents_<entityCode>
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type IndentStatus =
   | 'draft' | 'submitted' | 'pending_hod' | 'pending_purchase' | 'pending_finance'
   | 'approved' | 'rejected' | 'hold' | 'rfq_created' | 'po_created'
@@ -94,6 +96,8 @@ export interface MaterialIndent {
   approval_history: ApprovalEvent[];
   parent_indent_id: string | null;
   cascade_reason: CascadeReason;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   created_by: string;
   updated_at: string;

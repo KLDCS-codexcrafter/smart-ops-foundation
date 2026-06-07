@@ -5,6 +5,8 @@
  * [JWT] GET/POST /api/dispatch/transporter-invoices
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type InvoiceStatus =
   | 'uploaded'
   | 'reconciling'
@@ -78,6 +80,9 @@ export interface TransporterInvoice {
   reconciled_at?: string | null;
   reconciled_by?: string | null;
   notes?: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }

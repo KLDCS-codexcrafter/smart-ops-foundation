@@ -4,6 +4,8 @@
  * once submitted (FinCore reads it as a Sales Order draft).
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type DistributorOrderStatus =
   | 'draft'           // in cart, not yet submitted
   | 'submitted'       // sent to ERP, awaiting credit/inventory check
@@ -72,6 +74,9 @@ export interface DistributorOrder {
   submitted_at: string;
   reviewed_at: string | null;
   reviewed_by: string | null;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }
@@ -113,6 +118,9 @@ export interface DistributorPaymentIntimation {
   rejection_reason: string | null;
   reviewed_at: string | null;
   reviewed_by: string | null;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }
@@ -143,6 +151,9 @@ export interface BroadcastMessage {
   read_count: number;
   status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
   composed_by: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }

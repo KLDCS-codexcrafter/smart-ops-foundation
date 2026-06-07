@@ -13,6 +13,8 @@
  * [JWT] GET/POST/PATCH /api/salesx/sample-outward-memos
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type SOMStatus = 'draft' | 'dispatched' | 'returned' | 'completed';
 
 export type SOMPurpose =
@@ -149,6 +151,8 @@ export interface SampleOutwardMemo {
   /** Tally-Prime voucher type identity (Q1-b · 1.2.6e-tally-1) · UI dropdown in 2.7-b. */
   voucher_type_id?: string | null;
   voucher_type_name?: string | null;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   updated_at: string;
 }

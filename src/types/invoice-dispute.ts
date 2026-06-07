@@ -3,6 +3,8 @@
  * Sprint 11a. Short supply / damaged / wrong item / mislabelled.
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type DisputeReason =
   | 'short_supply'    // received less than billed
   | 'damaged'         // arrived damaged
@@ -47,6 +49,9 @@ export interface InvoiceDispute {
   approved_amount_paise: number | null;
   rejection_reason: string | null;
   internal_remarks: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }

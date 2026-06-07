@@ -9,6 +9,7 @@
  */
 import type { IndentStatus, Priority, ApprovalEvent } from './material-indent';
 
+import type { RetentionPolicyId } from './record-retention';
 export type ServiceTrack = 'auto_po' | 'direct_po' | 'standard_enquiry';
 export type ServiceCategory = 'maintenance' | 'service' | 'operational';
 export type ServiceSubType =
@@ -59,6 +60,8 @@ export interface ServiceRequest {
   approval_tier: 1 | 2 | 3;
   pending_approver_user_id: string | null;
   approval_history: ApprovalEvent[];
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   created_by: string;
   updated_at: string;

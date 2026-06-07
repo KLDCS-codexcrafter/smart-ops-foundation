@@ -5,6 +5,7 @@
  */
 import type { ItemAllocation, VoucherDispatchDetails } from './voucher';
 
+import type { RetentionPolicyId } from './record-retention';
 export type OrderDispatchDetails = VoucherDispatchDetails;
 
 export interface OrderLine {
@@ -56,6 +57,9 @@ export interface Order {
   status: 'open' | 'partial' | 'closed' | 'preclosed' | 'cancelled';
   preclose_reason?: string;
   cancel_reason?: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string; updated_at: string;
 }
 
