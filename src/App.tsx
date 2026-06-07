@@ -808,6 +808,8 @@ const App = () => (
               <Route path="/erp/logistic/payments" element={<LogisticPayments />} />
               <Route path="/erp/logistic/disputes" element={<LogisticDisputes />} />
               <Route path="/erp/logistic/profile" element={<LogisticProfile />} />
+              {/* Sprint WMS3 · ARC CLOSE · additive route · ack-ledger only */}
+              <Route path="/erp/logistic/manifest-queue" element={<LogisticManifestQueue />} />
               <Route path="/operix-go/distributor" element={<P><DistributorGoMobile /></P>} />
               <Route path="/customer" element={<P><CustomerDashboard /></P>} />
               <Route path="/customer/dashboard" element={<P><CustomerDashboard /></P>} />
