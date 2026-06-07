@@ -5,6 +5,8 @@
  *              + the new My Reminders engine. Vitest scoped via filename pattern.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import {
   listApprovalRules, listRegisteredAdapters,
@@ -18,7 +20,12 @@ import {
   createMyReminder, listMyReminders, snoozeMyReminder,
   dismissMyReminder, deleteMyReminder, fireDueMyReminders,
   getMyRemindersDigest,
+  // B1S2-R · §2.4b catalog API
+  REMINDER_CATALOG, getMyReminders, getUserPrefs, saveUserPrefs,
+  publishMyRemindersDigest,
 } from '@/lib/taskflow-reminders-engine';
+import { notificationsKey } from '@/types/notification';
+import { materialIndentsKey } from '@/types/material-indent';
 
 const E = 'ENT_B1S2';
 
