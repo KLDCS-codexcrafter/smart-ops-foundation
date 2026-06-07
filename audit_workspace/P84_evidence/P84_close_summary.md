@@ -136,8 +136,8 @@ every caller (current and future) credits in one place.
 
 | File | logAudit line | Literal | Note |
 |---|---|---|---|
-| `src/lib/vendor-return-engine.ts` | 326 | `dispatch_txn_event` | escaped Block-0 enumeration — subtree depth · post-DN spine separate from hash-chain (`appendAuditEntry` retained) |
-| `src/lib/scheduling-engine.ts` | 201 (PO) · 263 (Plan) | `production_event` | escaped Block-0 enumeration — subtree depth · true leverage point for `useProductionOrders` / `useProductionPlans` callers (the hooks themselves are read-only) · covers SchedulingBoard + cascade |
+| `src/lib/vendor-return-engine.ts` | 329 | `dispatch_txn_event` | escaped Block-0 enumeration — subtree depth · post-DN spine separate from hash-chain (`appendAuditEntry` retained) |
+| `src/lib/scheduling-engine.ts` | 203 (PO) · 265 (Plan) | `production_event` | escaped Block-0 enumeration — subtree depth · true leverage point for `useProductionOrders` / `useProductionPlans` callers (the hooks themselves are read-only) · covers SchedulingBoard + cascade |
 | `src/lib/servicedesk-oem-engine.ts` | 70 (create) · 112 (transition) | `service_event` | escaped Block-0 enumeration — subtree depth · 13th P8.4 literal · servicedesk previously had no domain literal · rationale captured in catalog comment |
 
 **Catalog delta:** +1 (`service_event`) · total P8.4 additions 13 → 14 · catalog 27 → 28.
