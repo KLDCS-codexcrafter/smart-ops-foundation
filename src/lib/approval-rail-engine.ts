@@ -584,3 +584,123 @@ export function bulkApprove(
     return { taskId: id, ok: r.ok, reason: r.reason };
   });
 }
+
+// ═══════════════════════════════════════════════════════════════════════
+// B1S2 · Delegation ledger — per-entity · applied at decideApproval time
+// ═══════════════════════════════════════════════════════════════════════
+export function listDelegations(entityCode: string): ApprovalDelegation[] {
+  return safeRead<ApprovalDelegation[]>(approvalDelegationsKey(entityCode), []);
+}
+
+export function setDelegation(
+  entityCode: string,
+  input: Omit<ApprovalDelegation, 'id' | 'created_at' | 'active'>,
+): ApprovalDelegation {
+  const all = listDelegations(entityCode);
+  const row: ApprovalDelegation = {
+    id: rid('dlg'),
+    ...input,
+    active: true,
+    created_at: isoNow(),
+  };
+  all.push(row);
+  safeWrite(approvalDelegationsKey(entityCode), all);
+  safeAudit({
+    entityCode,
+    action: 'create',
+    entityType: 'taskflow_event',
+    recordId: row.id,
+    recordLabel: `approval-delegation · ${row.delegator_name} → ${row.delegate_name}`,
+    beforeState: null,
+    afterState: row as unknown as Record<string, unknown>,
+    sourceModule: 'approval-rail-engine',
+  });
+  return row;
+}
+
+export function clearDelegation(entityCode: string, delegationId: string): boolean {
+  const all = listDelegations(entityCode);
+  const idx = all.findIndex((d) => d.id === delegationId);
+  if (idx < 0) return false;
+  all[idx] = { ...all[idx], active: false };
+  safeWrite(approvalDelegationsKey(entityCode), all);
+  return true;
+}
+
+/** Resolve who's actually acting on behalf of `byName` right now. */
+export function resolveActingApprover(entityCode: string, byName: string, nowISO?: string): string {
+  const t = nowISO ? new Date(nowISO).getTime() : Date.now();
+  const active = listDelegations(entityCode).find(
+    (d) =>
+      d.active &&
+      d.delegator_name.toLowerCase() === byName.toLowerCase() &&
+      new Date(d.from_date).getTime() <= t &&
+      new Date(d.to_date).getTime() >= t,
+  );
+  return active ? active.delegate_name : byName;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// B1S2 · Quorum ledger — M-of-N voting on a single chain step
+// recordQuorumVote returns 'pending' | 'reached' | 'rejected'.
+// ═══════════════════════════════════════════════════════════════════════
+export interface QuorumOutcome {
+  state: 'pending' | 'reached' | 'rejected';
+  votes_for: number;
+  votes_against: number;
+  required: number;
+}
+
+export function recordQuorumVote(
+  entityCode: string,
+  args: {
+    source_record_id: string;
+    object_type: ApprovalObjectType;
+    step_order: number;
+    voter_name: string;
+    vote: 'approved' | 'rejected';
+    required: number;
+    candidate_pool: string[];
+  },
+): QuorumOutcome {
+  const ledger = safeRead<QuorumVoteEntry[]>(approvalQuorumLedgerKey(entityCode), []);
+  // Idempotency · one vote per voter per (record, step)
+  const already = ledger.find(
+    (v) =>
+      v.source_record_id === args.source_record_id &&
+      v.step_order === args.step_order &&
+      v.voter_name.toLowerCase() === args.voter_name.toLowerCase(),
+  );
+  if (!already) {
+    ledger.push({
+      id: rid('qv'),
+      source_record_id: args.source_record_id,
+      object_type: args.object_type,
+      step_order: args.step_order,
+      voter_name: args.voter_name,
+      vote: args.vote,
+      voted_at: isoNow(),
+    });
+    safeWrite(approvalQuorumLedgerKey(entityCode), ledger);
+  }
+  const stepVotes = ledger.filter(
+    (v) => v.source_record_id === args.source_record_id && v.step_order === args.step_order,
+  );
+  const votes_for = stepVotes.filter((v) => v.vote === 'approved').length;
+  const votes_against = stepVotes.filter((v) => v.vote === 'rejected').length;
+  const N = args.candidate_pool.length;
+  // Reject is sticky: if rejections make approval impossible, mark rejected.
+  if (votes_against > 0 && votes_for + (N - stepVotes.length) < args.required) {
+    return { state: 'rejected', votes_for, votes_against, required: args.required };
+  }
+  if (votes_for >= args.required) {
+    return { state: 'reached', votes_for, votes_against, required: args.required };
+  }
+  return { state: 'pending', votes_for, votes_against, required: args.required };
+}
+
+export function listQuorumVotes(entityCode: string, source_record_id: string): QuorumVoteEntry[] {
+  return safeRead<QuorumVoteEntry[]>(approvalQuorumLedgerKey(entityCode), []).filter(
+    (v) => v.source_record_id === source_record_id,
+  );
+}
