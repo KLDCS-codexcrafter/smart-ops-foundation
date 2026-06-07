@@ -75,10 +75,9 @@ export default function RetentionConsolePage(): JSX.Element {
     setDrafts(seed as Record<RetentionPolicyId, { years: string; action: RetentionPolicyRow['action'] }>);
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- `report` is read intentionally so the summary refreshes after Run Evaluation
   const summary = useMemo(() => {
     if (!entityCode) return null;
-    // `report` is read intentionally so the summary refreshes after Run Evaluation.
-    void report;
     return getRetentionSummary(entityCode);
   }, [entityCode, report]);
 
