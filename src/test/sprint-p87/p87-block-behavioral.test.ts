@@ -29,7 +29,7 @@ const DEVICE_BRIDGES = [
   'geolocation-bridge.ts','native-bridge.ts','push-notification-bridge.ts',
 ];
 
-const BANNED_LITERALS = ['dept-default', 'default-dept', 'dept_default'];
+const BANNED_LITERALS = ['dept-default', 'default', 'unknown'];
 
 describe('P8.7 · dept-context-resolver-engine', () => {
   it('returns the department for a record carrying dept_id', () => {
