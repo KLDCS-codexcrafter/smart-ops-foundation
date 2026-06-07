@@ -354,6 +354,8 @@ const LogisticLRQueue = lazy(() => import('./pages/erp/logistic/LogisticLRQueue'
 const LogisticPayments = lazy(() => import('./pages/erp/logistic/LogisticPayments'));
 const LogisticDisputes = lazy(() => import('./pages/erp/logistic/LogisticDisputes'));
 const LogisticProfile = lazy(() => import('./pages/erp/logistic/LogisticProfile'));
+// Sprint WMS3 · ARC CLOSE · Logistics-side Manifest Queue (ack ledger only)
+const LogisticManifestQueue = lazy(() => import('./pages/erp/logistic/LogisticManifestQueue'));
 const CustomerDashboard = lazy(() => import('./pages/customer/CustomerDashboard'));
 const Invoices = lazy(() => import('./pages/customer/Invoices'));
 const Payments = lazy(() => import('./pages/customer/Payments'));
