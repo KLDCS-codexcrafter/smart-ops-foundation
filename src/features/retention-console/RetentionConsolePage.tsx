@@ -75,6 +75,11 @@ export default function RetentionConsolePage(): JSX.Element {
     setDrafts(seed as Record<RetentionPolicyId, { years: string; action: RetentionPolicyRow['action'] }>);
   }, []);
 
+  useEffect(() => {
+    setReport(null);
+    setSummary(null);
+  }, [entityCode]);
+
   const [summary, setSummary] = useState<ReturnType<typeof getRetentionSummary> | null>(null);
 
   function saveRow(p: RetentionPolicyRow): void {
@@ -98,6 +103,7 @@ export default function RetentionConsolePage(): JSX.Element {
     try {
       const rows = evaluateRetention(entityCode);
       setReport(rows);
+      setSummary(getRetentionSummary(entityCode));
     } finally {
       setBusy(false);
     }
