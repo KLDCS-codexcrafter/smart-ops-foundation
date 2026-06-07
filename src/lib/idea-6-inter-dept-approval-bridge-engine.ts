@@ -25,6 +25,7 @@ import {
   reject as workflowReject,
   type ApprovalRecord,
 } from '@/lib/approval-workflow-engine';
+import { resolveDeptFromContext } from '@/lib/dept-context-resolver-engine';
 
 export const READS_FROM = {
   engines: ['approval-matrix-engine', 'approval-workflow-engine', 'internal-pricing-engine'],
