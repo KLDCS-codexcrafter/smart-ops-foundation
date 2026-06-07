@@ -89,7 +89,12 @@ export interface ApprovalTaskMeta {
     | 'requestx'
     | 'bill-passing'
     | 'servicedesk'
-    | 'logistic';
+    | 'logistic'
+    // ─ B1S2 additive ───────────────────────────────────────────────────
+    | 'taskflow'
+    | 'qualicheck'
+    | 'pay-out'
+    | 'peoplepay';
   object_type: ApprovalObjectType;
   source_record_id: string;
   source_record_no: string;
