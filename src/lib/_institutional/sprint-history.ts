@@ -1000,8 +1000,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint P8.7 T-P87-DeptId-Bridge-Retrofit · B.5-L4 dept_id payload retrofit across 24 in-scope cross-card bridges + WAVE-1 CLOSE · NEW SIBLING dept-context-resolver-engine.ts (sole engine credit · honest record-derived resolution · NO fallback literal · 'dept-default' grep = 0) · 57 payload interfaces planted with additive optional dept_id? · 2 bridges THREADED (sales-production via Item 3 misassignment fix + idea-6-inter-dept-approval via to_department) · 22 bridges SEAM-ONLY (no honest source at this bridge · header line documents Wave-2 seam) · sales-production-bridge:156 misassignment (so.lines[0]?.id ?? 'dept-default') REMOVED · walls held: 6 device/platform bridges 0-DIFF · audit-trail-hash-chain 0-DIFF · audit-trail-chain-engine 0-DIFF · logAudit entry-write 0-DIFF · comply360-audit-retention-engine 0-DIFF · record-retention-policy-engine 0-DIFF · RetentionConsolePage 0-DIFF · applications/entitlements/sidebars 0-DIFF · NO UI surface · WAVE-1 CLOSE · P8.1→P8.7 · 78→86 ⭐ · Tier-L exhausted · Wave-2 gated on DP-P8-2 founder stack decision · headSha TBD_AT_BANK
   {
     sprintNumber: 'P8.7' as unknown as number, code: 'T-P87-DeptId-Bridge-Retrofit', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '84a4475d', loc: 700,
+    headSha: '9ac7e41f', predecessorSha: '84a4475d', loc: 700,
     newSiblings: ['dept-context-resolver-engine'],
+    bankDate: '2026-06-07', provenance: 'PENDING_BACKFILL',
+  },
+  // 🎬 Sprint WMS1 T-WMS1-Pick-Pack · WMS-ARC opens · Single-Door canon's first consumer · Picklists + Pick-Buckets + Pack-Groups inside Dispatch Hub · NEW SIBLING wms-pick-pack-engine.ts (sole engine credit · Single-Door reads ordersKey ONLY · source attribution from Order.narration prefix sniff EcomX/WebStoreX/salesx · 3 bucket classifier single_item/multi_item/b2b_bulk · item-first walk grouping · BinLabel READ-ONLY hint resolution · packing-slip generated via existing computePackingSlip · BOM resolution via existing resolveActiveBOM) · 2 new record types born under P8.6 floor (picklist + pack-group with retention_policy + created_by · operational_log_only via additive RECORD_TYPE_POLICY_MAP case — the only permitted retention-engine touch) · audit literal dispatch_txn_event REUSED (no new literal) · 2 console pages (PickingConsole + PackingConsole) under additive Dispatch Hub Warehouse section · DispatchHubSidebar/DispatchHubPage additive only · walls held: packing-bom-engine + packing-slip-engine + BinLabel 0-DIFF (consumed) · audit-trail-hash-chain 0-DIFF · audit-trail-chain-engine 0-DIFF · logAudit entry-write 0-DIFF · comply360-audit-retention-engine 0-DIFF · RetentionConsolePage 0-DIFF · applications/entitlements 0-DIFF · ALL EximX 0-DIFF · NO courier APIs · NO barcode camera claims · honesty line verbatim on both consoles · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'WMS1' as unknown as number, code: 'T-WMS1-Pick-Pack', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '9ac7e41f', loc: 1400,
+    newSiblings: ['wms-pick-pack-engine'],
     bankDate: '2026-06-07', provenance: 'PENDING_BACKFILL',
   },
 ];
