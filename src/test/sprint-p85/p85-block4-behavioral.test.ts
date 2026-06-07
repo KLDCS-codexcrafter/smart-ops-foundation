@@ -65,11 +65,11 @@ describe('P8.5 · B.5-L2 · audit-trail-chain-engine — append + cross-isolatio
   it('3 · per-entityType isolation — voucher and approval_workflow grow independently', async () => {
     logAudit({ entityCode: E1, action: 'create', entityType: 'voucher', recordId: 'V1', recordLabel: 'V1', beforeState: null, afterState: null, sourceModule: 't' });
     logAudit({ entityCode: E1, action: 'create', entityType: 'voucher', recordId: 'V2', recordLabel: 'V2', beforeState: null, afterState: null, sourceModule: 't' });
-    logAudit({ entityCode: E1, action: 'submit', entityType: 'approval_workflow', recordId: 'AW1', recordLabel: 'AW1', beforeState: null, afterState: null, sourceModule: 't' });
+    logAudit({ entityCode: E1, action: 'approve', entityType: 'order', recordId: 'AW1', recordLabel: 'AW1', beforeState: null, afterState: null, sourceModule: 't' });
     await flush();
     expect(readTypedChain(E1, 'voucher').length).toBe(2);
-    expect(readTypedChain(E1, 'approval_workflow').length).toBe(1);
-    expect(readTypedChain(E1, 'approval_workflow')[0].prev_hash).toBe('GENESIS');
+    expect(readTypedChain(E1, 'order').length).toBe(1);
+    expect(readTypedChain(E1, 'order')[0].prev_hash).toBe('GENESIS');
   });
 
   it('4 · per-entity isolation — two entities never share a chain store', async () => {
@@ -83,10 +83,10 @@ describe('P8.5 · B.5-L2 · audit-trail-chain-engine — append + cross-isolatio
 
   it('5 · listChainTypes enumerates only types that actually have links', async () => {
     logAudit({ entityCode: E1, action: 'create', entityType: 'voucher', recordId: 'V1', recordLabel: 'V1', beforeState: null, afterState: null, sourceModule: 't' });
-    logAudit({ entityCode: E1, action: 'submit', entityType: 'approval_workflow', recordId: 'AW1', recordLabel: 'AW1', beforeState: null, afterState: null, sourceModule: 't' });
+    logAudit({ entityCode: E1, action: 'approve', entityType: 'order', recordId: 'AW1', recordLabel: 'AW1', beforeState: null, afterState: null, sourceModule: 't' });
     await flush();
     const types = listChainTypes(E1).sort();
-    expect(types).toEqual(['approval_workflow', 'voucher'].sort());
+    expect(types).toEqual(['order', 'voucher'].sort());
   });
 
   it('6 · chainAuditEntry is idempotent on duplicate auditEntryId', async () => {
@@ -307,7 +307,7 @@ describe('P8.5 · B.5-L2 · verifyTypedChain edge cases + verifyAllChains', () =
 
   it('23 · verifyAllChains aggregates intact/broken counts across types', async () => {
     logAudit({ entityCode: E1, action: 'create', entityType: 'voucher', recordId: 'V1', recordLabel: 'V1', beforeState: null, afterState: null, sourceModule: 't' });
-    logAudit({ entityCode: E1, action: 'submit', entityType: 'approval_workflow', recordId: 'AW1', recordLabel: 'AW1', beforeState: null, afterState: null, sourceModule: 't' });
+    logAudit({ entityCode: E1, action: 'approve', entityType: 'order', recordId: 'AW1', recordLabel: 'AW1', beforeState: null, afterState: null, sourceModule: 't' });
     await flush();
     // Tamper the voucher chain only.
     const trail = JSON.parse(localStorage.getItem(auditTrailKey(E1))!);
