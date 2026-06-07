@@ -14,7 +14,7 @@
  * [JWT] Phase-8 Wave-2: server-side enforcement + Rule 46(8) India-resident
  *       daily backup anchor live there.
  */
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ScrollText, ShieldAlert, Save, Play, FileWarning, Info,
 } from 'lucide-react';
@@ -75,11 +75,12 @@ export default function RetentionConsolePage(): JSX.Element {
     setDrafts(seed as Record<RetentionPolicyId, { years: string; action: RetentionPolicyRow['action'] }>);
   }, []);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- `report` is read intentionally so the summary refreshes after Run Evaluation
-  const summary = useMemo(() => {
-    if (!entityCode) return null;
-    return getRetentionSummary(entityCode);
-  }, [entityCode, report]);
+  useEffect(() => {
+    setReport(null);
+    setSummary(null);
+  }, [entityCode]);
+
+  const [summary, setSummary] = useState<ReturnType<typeof getRetentionSummary> | null>(null);
 
   function saveRow(p: RetentionPolicyRow): void {
     const draft = drafts[p.id];
@@ -102,6 +103,7 @@ export default function RetentionConsolePage(): JSX.Element {
     try {
       const rows = evaluateRetention(entityCode);
       setReport(rows);
+      setSummary(getRetentionSummary(entityCode));
     } finally {
       setBusy(false);
     }
