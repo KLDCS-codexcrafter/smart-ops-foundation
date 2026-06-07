@@ -41,7 +41,10 @@ export type NotificationKind =
   // Sprint B1S1 · approval-rail-engine (additive · TWO publishers + ONE digest)
   | 'approval.pending'
   | 'approval.decided'
-  | 'digest.approvals_pending';
+  | 'digest.approvals_pending'
+  // Sprint B1S2 · taskflow-reminders-engine (additive · per-user reminders + digest)
+  | 'reminder.due'
+  | 'digest.my_reminders';
 
 export type NotificationSeverity = 'info' | 'success' | 'warning' | 'critical';
 

@@ -9,7 +9,7 @@ import {
   FileStack, Workflow, Gavel, BookOpen,
   MessageSquare, Hash, Mail, Mic,
   Gauge, ShieldCheck, NotebookPen, Receipt,
-  ListTodo, ShieldAlert, ArrowRightLeft,
+  ListTodo, ShieldAlert, ArrowRightLeft, BellRing,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -47,5 +47,7 @@ export const taskflowSidebarItems: SidebarItem[] = [
   { id: 'expense-center',     type: 'item', label: 'Expense Center',    icon: Receipt,        keyboard: 'k f' },
   // ── Approval Rail (Sprint B1S1) ────────────────────────────────────
   { id: 'approvals-inbox',    type: 'item', label: 'Approvals Inbox',   icon: ShieldCheck,    keyboard: 'k 1' },
+  // ── My Reminders (Sprint B1S2) ─────────────────────────────────────
+  { id: 'my-reminders',       type: 'item', label: 'My Reminders',      icon: BellRing,       keyboard: 'k 2' },
 ];
 

@@ -35,6 +35,7 @@ import FollowUpsPage from './FollowUpsPage';
 import ChatGovernancePage from './ChatGovernancePage';
 import HandoverPage from './HandoverPage';
 import ApprovalsInboxPage from './ApprovalsInboxPage';
+import MyRemindersPage from './MyRemindersPage';
 import type { TaskFlowModule } from './TaskFlowSidebar.types';
 
 const VALID_MODULES: TaskFlowModule[] = [
@@ -47,6 +48,7 @@ const VALID_MODULES: TaskFlowModule[] = [
   'accountability', 'close-policies', 'work-diary',
   'expense-center',
   'approvals-inbox',
+  'my-reminders',
 ];
 
 export default function TaskFlowPage(): JSX.Element {
@@ -95,6 +97,7 @@ export default function TaskFlowPage(): JSX.Element {
       case 'work-diary':         return <WorkDiaryPage />;
       case 'expense-center':     return <ExpenseCenterPage />;
       case 'approvals-inbox':    return <ApprovalsInboxPage />;
+      case 'my-reminders':       return <MyRemindersPage />;
       default:                   return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
   };
