@@ -8,6 +8,7 @@
  */
 import type { ApprovalEvent } from '@/types/material-indent';
 
+import type { RetentionPolicyId } from './record-retention';
 export type JobWorkOutOrderStatus =
   | 'draft' | 'sent' | 'partially_received' | 'received'
   | 'pre_closed'    // NEW · A.2.c · D-NEW-W · operator explicitly closed an incomplete JWO
@@ -130,6 +131,8 @@ export interface JobWorkOutOrder {
   approval_history: ApprovalEvent[];
   status_history: JobWorkOutOrderStatusEvent[];
 
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   created_by: string;
   updated_at: string;

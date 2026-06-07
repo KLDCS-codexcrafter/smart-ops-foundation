@@ -6,6 +6,8 @@
  * [JWT] POST /api/fincore/ewb/generate
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type IRNStatus = 'pending' | 'generated' | 'cancelled' | 'failed';
 
 export type EWBStatus =
@@ -64,6 +66,9 @@ export interface IRNRecord {
 
   generated_by: string;
   generated_at: string | null;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }
@@ -117,6 +122,9 @@ export interface EWBRecord {
 
   generated_by: string;
   generated_at: string | null;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }

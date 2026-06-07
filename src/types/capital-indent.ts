@@ -9,6 +9,7 @@
  */
 import type { ApprovalEvent, CascadeReason, IndentStatus, MaterialIndentLine, Priority } from './material-indent';
 
+import type { RetentionPolicyId } from './record-retention';
 export type CapitalSubType = 'machinery' | 'furniture' | 'computer' | 'vehicle' | 'tools';
 
 export interface CapitalIndentLine extends Omit<MaterialIndentLine, 'cascade_reason'> {
@@ -52,6 +53,8 @@ export interface CapitalIndent {
   finance_gate_required: true;
   parent_indent_id: string | null;
   cascade_reason: CascadeReason;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   created_by: string;
   updated_at: string;

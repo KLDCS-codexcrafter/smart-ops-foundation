@@ -6,6 +6,8 @@
  * @[JWT]    erp_job_work_receipts_<entityCode>
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type JobWorkReceiptStatus = 'draft' | 'received' | 'cancelled';
 
 export interface JobWorkReceiptStatusEvent {
@@ -79,6 +81,8 @@ export interface JobWorkReceipt {
   status_history: JobWorkReceiptStatusEvent[];
 
   notes: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   created_by: string;
   updated_at: string;

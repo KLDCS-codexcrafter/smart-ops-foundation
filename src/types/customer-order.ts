@@ -7,6 +7,7 @@
 
 import type { AppliedScheme } from './scheme';
 
+import type { RetentionPolicyId } from './record-retention';
 export type CustomerOrderStatus =
   | 'draft' | 'placed' | 'confirmed' | 'packed' | 'shipped' | 'delivered'
   | 'cancelled' | 'returned';
@@ -29,6 +30,9 @@ export interface CustomerCart {
   entity_code: string;
   lines: CustomerCartLine[];
   subtotal_paise: number;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }
@@ -53,6 +57,9 @@ export interface CustomerOrder {
   loyalty_points_earned: number;    // earned from this order
   placed_at: string | null;
   delivered_at: string | null;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }

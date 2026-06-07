@@ -11,6 +11,7 @@
  */
 import type { AuditEntry } from '@/types/servicedesk';
 
+import type { RetentionPolicyId } from './record-retention';
 export type WarrantyStatus =
   | 'in_warranty'
   | 'expired'
@@ -34,6 +35,8 @@ export interface CustomerInVoucher {
   photos: { url: string; caption: string }[];
   received_by: string;
   received_at: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   updated_at: string;
   audit_trail: AuditEntry[];
@@ -69,6 +72,8 @@ export interface CustomerOutVoucher {
   delivered_at: string;
   acknowledgement_signed: boolean;
   acknowledgement_signature_url: string | null;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   updated_at: string;
   created_by: string;

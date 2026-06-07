@@ -12,6 +12,8 @@
  * [JWT] GET/POST/PATCH /api/logistic/inward-receipts
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type InwardReceiptStatus =
   | 'draft'
   | 'arrived'
@@ -104,6 +106,8 @@ export interface InwardReceipt {
   ewb_generated_at?: string | null;
   ewb_valid_till?: string | null;
 
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   updated_at: string;
   released_at: string | null;

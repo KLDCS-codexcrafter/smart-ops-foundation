@@ -6,6 +6,8 @@
  * [JWT] GET/POST/PATCH /api/salesx/commission-register
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 // One payment installment — mirrors AdvanceAdjustment
 export interface CommissionPayment {
   id: string;
@@ -18,6 +20,9 @@ export interface CommissionPayment {
   tds_amount: number;
   net_commission_paid: number;
   tds_deduction_entry_id: string | null;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
 }
 
@@ -120,6 +125,9 @@ export interface CommissionEntry {
   receipt_within_window: boolean;
 
   status: 'pending' | 'partial' | 'paid' | 'reversed' | 'cancelled';
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }
