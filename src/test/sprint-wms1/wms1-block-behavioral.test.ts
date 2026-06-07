@@ -39,6 +39,7 @@ import * as slipEngine from '@/lib/packing-slip-engine';
 const E = 'TESTENT';
 
 function makeOrder(o: Partial<Order> & { id: string }): Order {
+  const { id: _id, ...rest } = o;
   return {
     id: o.id,
     order_no: o.order_no ?? `SO/${o.id}`,
@@ -52,7 +53,7 @@ function makeOrder(o: Partial<Order> & { id: string }): Order {
     terms_conditions: '',
     status: o.status ?? 'open',
     created_at: '2026-06-01T00:00:00Z', updated_at: '2026-06-01T00:00:00Z',
-    ...o,
+    ...rest,
   } as Order;
 }
 
