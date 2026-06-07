@@ -47,5 +47,7 @@ export const taskflowSidebarItems: SidebarItem[] = [
   { id: 'expense-center',     type: 'item', label: 'Expense Center',    icon: Receipt,        keyboard: 'k f' },
   // ── Approval Rail (Sprint B1S1) ────────────────────────────────────
   { id: 'approvals-inbox',    type: 'item', label: 'Approvals Inbox',   icon: ShieldCheck,    keyboard: 'k 1' },
+  // ── My Reminders (Sprint B1S2) ─────────────────────────────────────
+  { id: 'my-reminders',       type: 'item', label: 'My Reminders',      icon: BellRing,       keyboard: 'k 2' },
 ];
 
