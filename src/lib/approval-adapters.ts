@@ -52,6 +52,14 @@ import type { Dispute } from '@/types/freight-reconciliation';
 
 import { materialIndentsKey } from '@/types/material-indent';
 import type { MaterialIndent } from '@/types/material-indent';
+// B1S2-R · R4 · request-engine already exports approveIndent/rejectIndent
+// (request-engine.ts:258 + :284) · adapter consumes them instead of writing
+// the LS store directly · request-engine.ts remains 0-DIFF.
+import {
+  approveIndent as approveRequestxIndent,
+  rejectIndent as rejectRequestxIndent,
+  submitIndent as submitRequestxIndent,
+} from '@/lib/request-engine';
 
 // ── B1S2 ADAPTER-READY (4) consumer reads ────────────────────────────────
 import {
