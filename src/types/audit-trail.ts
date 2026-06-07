@@ -436,7 +436,11 @@ export type AuditEntityType =
   // ADDITIVE inline emission ONLY · NO registerAuditEntityType call. Carries OEM-claim lifecycle
   // (create/submit/approve/pay/reject). Rationale: ServiceDesk OEM Claim packets flow into
   // Procure360 and represent operator-mutating state — MCA Rule 3(1) requires trail coverage.
-  | 'service_event';          // servicedesk-oem-engine (createOEMClaim · transitionOEMClaim)
+  | 'service_event'           // servicedesk-oem-engine (createOEMClaim · transitionOEMClaim)
+  // Sprint P8.6 · T-P86-Retention-Floor-Plant · B.5-L3 · Retention policy edits (Retention Console)
+  // ADDITIVE inline emission ONLY · NO registerAuditEntityType call. Logged by
+  // record-retention-policy-engine.updateRetentionPolicy on every operator edit.
+  | 'retention_policy_event'; // record-retention-policy-engine (updateRetentionPolicy)
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Sprint R0 · Block 5.2 · Audit-aggregator catalog consolidation (reading (c))
@@ -485,6 +489,8 @@ export const ADDITIVE_INLINE_AUDIT_TYPES = [
   'comply360_event',
   // Sprint P8.4.T1 · escaped-path wiring (1 new domain literal · 13th P8.4 literal)
   'service_event',
+  // Sprint P8.6 · T-P86-Retention-Floor-Plant · B.5-L3
+  'retention_policy_event',
 ] as const satisfies readonly AuditEntityType[];
 
 export type AdditiveInlineAuditType = typeof ADDITIVE_INLINE_AUDIT_TYPES[number];

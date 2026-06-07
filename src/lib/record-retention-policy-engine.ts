@@ -204,11 +204,11 @@ export function updateRetentionPolicy(
     logAudit({
       entityCode: 'GLOBAL',
       action: 'update',
-      entityType: 'retention_policy',
+      entityType: 'retention_policy_event',
       recordId: id,
       recordLabel: updated.label,
-      beforeState: before,
-      afterState: updated,
+      beforeState: before as unknown as Record<string, unknown>,
+      afterState: updated as unknown as Record<string, unknown>,
       reason: 'Retention policy edited via Retention Console',
       sourceModule: 'record-retention-policy-engine',
     });
