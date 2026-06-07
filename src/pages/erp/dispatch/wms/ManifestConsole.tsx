@@ -11,7 +11,7 @@
  *   4) Handover + billed-weight entry → tolerance check (auto-dispute on breach)
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -110,7 +110,7 @@ export function WMS3ManifestConsolePanel() {
   const handleBuildManifest = () => {
     if (!transporter) { toast.error('Pick a transporter'); return; }
     if (picked.size === 0) { toast.error('Pick at least one shipment'); return; }
-    const m = buildManifest(entityCode, transporter.id, transporter.party_name, Array.from(picked));
+    const m = buildManifest(entityCode, transporter.id, transporter.partyName, Array.from(picked));
     toast.success(`Manifest ${m.manifest_no} draft built`);
     setPicked(new Set());
     setActiveManifestId(m.id);
@@ -236,7 +236,7 @@ export function WMS3ManifestConsolePanel() {
                   {transporters.length === 0 ? (
                     <SelectItem value="__none__" disabled>No logistic masters</SelectItem>
                   ) : transporters.map((t) => (
-                    <SelectItem key={t.id} value={t.id}>{t.party_name}</SelectItem>
+                    <SelectItem key={t.id} value={t.id}>{t.partyName}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
