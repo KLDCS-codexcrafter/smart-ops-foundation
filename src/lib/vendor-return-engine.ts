@@ -23,6 +23,8 @@ import { vendorReturnsKey } from '@/types/vendor-return';
 import type { Voucher, VoucherLedgerLine } from '@/types/voucher';
 import { generateDocNo, postVoucher } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
+// Sprint P8.4.T1 · escaped-path wiring · dispatch_txn_event (debit note posted · vendor return)
+import { logAudit } from '@/lib/audit-trail-engine';
 // Precision Arc · Stage 3 · Block 1 — line_total money math on contract.
 import { dMul, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 const MP = (): number => resolveMoneyPrecision(null, null);
@@ -319,6 +321,25 @@ export async function postDebitNote(
     action: 'vendor_return_dn_posted',
     actorUserId: byUserId,
     payload: { return_no: rtv.return_no, voucher_id: voucher.id, amount: rtv.total_value },
+  });
+
+  // Sprint P8.4.T1 · escaped-path wiring · separate spine from hash-chain.
+  // Hash-chain (appendAuditEntry) is tamper-evidence; logAudit is the MCA Rule 3(1)
+  // append-only audit trail consumed by the audit-trail register UI.
+  logAudit({
+    entityCode,
+    action: 'post',
+    entityType: 'dispatch_txn_event',
+    recordId: rtv.id,
+    recordLabel: `debit note posted · vendor return ${rtv.return_no}`,
+    beforeState: { status: rtv.status, debit_note_id: rtv.debit_note_id ?? null },
+    afterState: {
+      status: 'approved',
+      debit_note_id: voucher.id,
+      debit_note_no: voucher.voucher_no || voucher.id,
+      amount: rtv.total_value,
+    },
+    sourceModule: 'logistic',
   });
 
   return { ok: true, voucher_id: voucher.id, voucher_no: voucher.voucher_no || voucher.id };

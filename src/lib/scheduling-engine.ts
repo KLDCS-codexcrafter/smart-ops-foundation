@@ -196,6 +196,19 @@ export function rescheduleProductionOrder(input: RescheduleProductionOrderInput)
 
   persistProductionOrder(updated);
 
+  // Sprint P8.4.T1 · escaped-path wiring · production_event reschedule branch.
+  // Leverage point: every caller (SchedulingBoard + cascades from reschedulePlan) credits here.
+  logAudit({
+    entityCode: po.entity_id,
+    action: 'update',
+    entityType: 'production_event',
+    recordId: po.id,
+    recordLabel: `production order rescheduled · ${po.doc_no}`,
+    beforeState: { start_date: po.start_date, target_end_date: po.target_end_date },
+    afterState: { start_date: new_start_date, target_end_date: new_target_end_date, reason },
+    sourceModule: 'production',
+  });
+
   return {
     success: true,
     cascaded: false,
@@ -245,6 +258,18 @@ export function reschedulePlan(input: ReschedulePlanInput): RescheduleResult {
       conflicts.push(...r.conflicts);
     }
   }
+
+  // Sprint P8.4.T1 · escaped-path wiring · production_event plan reschedule branch.
+  logAudit({
+    entityCode: plan.entity_id,
+    action: 'update',
+    entityType: 'production_event',
+    recordId: plan.id,
+    recordLabel: `production plan rescheduled · ${plan.doc_no}`,
+    beforeState: { plan_period_start: plan.plan_period_start, plan_period_end: plan.plan_period_end },
+    afterState: { plan_period_start: new_period_start, plan_period_end: new_period_end, cascaded: cascade_to_pos, reason },
+    sourceModule: 'production',
+  });
 
   return {
     success: true,
