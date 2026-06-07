@@ -75,7 +75,9 @@ export type DispatchHubModule =
   | 'dh-w-packing-console'
   // Sprint WMS2 · Warehouse · ASN + Putaway + Shelf (additive · §H allowlist)
   | 'dh-w-putaway-console'
-  | 'dh-w-shelf-view';
+  | 'dh-w-shelf-view'
+  // Sprint WMS3 · Warehouse · Manifest Console (additive · ARC CLOSE)
+  | 'dh-w-manifest-console';
 
 
 interface DispatchHubSidebarProps {
