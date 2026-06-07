@@ -93,6 +93,8 @@ function renderModule(
     // Sprint WMS2
     case 'dh-w-putaway-console':              return <WMS2PutawayConsolePanel />;
     case 'dh-w-shelf-view':                   return <WMS2ShelfViewPanel />;
+    // Sprint WMS3 · ARC CLOSE
+    case 'dh-w-manifest-console':             return <WMS3ManifestConsolePanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
