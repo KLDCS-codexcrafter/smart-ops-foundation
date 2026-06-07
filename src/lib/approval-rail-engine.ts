@@ -117,6 +117,20 @@ function defaultRules(): ApprovalRuleRow[] {
     mk('billpassing_deviation', null, 50000, 'finance-manager', ['finance-head', 'md']),
     mk('servicedesk_proposal', null, 100000, 'service-head', ['md']),
     mk('logistics_dispute', null, 25000, 'dispatch-head', ['logistics-head']),
+    // ─ B1S2 ADAPTER-READY (4) ───────────────────────────────────────────
+    mk('taskflow_expense', 2000, 25000, 'reporting-manager', ['finance-manager', 'finance-head']),
+    mk('qualicheck_deviation', null, 100000, 'qa-manager', ['qa-head', 'plant-head']),
+    // payout_requisition · two-person seed per founder ruling §3 ·
+    // slab-2 chain mirrors the engine's hardcoded dept→accounts chain.
+    mk('payout_requisition', null, 50000, 'department_head', ['department_head', 'accounts']),
+    mk('peoplepay_reimbursement', 1000, 25000, 'department_head', ['department_head', 'accounts']),
+    // ─ B1S2 SEAM-ONLY (6) · registered for visibility · activate when stores ship
+    mk('fincore_pending_voucher', null, 100000, 'finance-manager', ['finance-head']),
+    mk('receivx_writeoff', null, 25000, 'credit-manager', ['finance-head', 'md']),
+    mk('credit_note', null, 25000, 'sales-manager', ['finance-head']),
+    mk('scheme_grant', null, 100000, 'sales-head', ['finance-head', 'md']),
+    mk('projx_budget', null, 500000, 'project-manager', ['project-head', 'finance-head']),
+    mk('eximx_duty_payment', null, 100000, 'eximx-manager', ['finance-head']),
   ];
 }
 
