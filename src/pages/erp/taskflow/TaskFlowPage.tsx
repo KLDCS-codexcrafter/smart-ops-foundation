@@ -97,6 +97,7 @@ export default function TaskFlowPage(): JSX.Element {
       case 'work-diary':         return <WorkDiaryPage />;
       case 'expense-center':     return <ExpenseCenterPage />;
       case 'approvals-inbox':    return <ApprovalsInboxPage />;
+      case 'my-reminders':       return <MyRemindersPage />;
       default:                   return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
   };
