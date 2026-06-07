@@ -113,12 +113,13 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'EWB Monitor',                  module: 'dh-r-ewb-monitor',                  icon: ShieldAlert, keyboard: 'l r e' },
 ];
 
-// Sprint WMS1 · Warehouse · Pick & Pack
+// Sprint WMS1/WMS2/WMS3 · Warehouse · Pick & Pack · Putaway · Manifests
 const WAREHOUSE_ITEMS: MenuItem[] = [
-  { label: 'Picking Console',  module: 'dh-w-picking-console',  icon: PackageSearch, keyboard: 'l w p' },
-  { label: 'Packing Console',  module: 'dh-w-packing-console',  icon: Boxes,         keyboard: 'l w k' },
-  { label: 'ASN & Putaway',    module: 'dh-w-putaway-console',  icon: InboxIcon,     keyboard: 'l w a' },
-  { label: 'Shelf View',       module: 'dh-w-shelf-view',       icon: LayoutGrid,    keyboard: 'l w s' },
+  { label: 'Picking Console',    module: 'dh-w-picking-console',  icon: PackageSearch, keyboard: 'l w p' },
+  { label: 'Packing Console',    module: 'dh-w-packing-console',  icon: Boxes,         keyboard: 'l w k' },
+  { label: 'ASN & Putaway',      module: 'dh-w-putaway-console',  icon: InboxIcon,     keyboard: 'l w a' },
+  { label: 'Shelf View',         module: 'dh-w-shelf-view',       icon: LayoutGrid,    keyboard: 'l w s' },
+  { label: 'Manifest Console',   module: 'dh-w-manifest-console', icon: ClipboardCheck, keyboard: 'l w m' },
 ];
 
 // Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
