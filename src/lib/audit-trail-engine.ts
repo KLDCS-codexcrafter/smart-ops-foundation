@@ -17,6 +17,9 @@ import type {
   AuditTrailEntry, AuditAction, AuditEntityType,
 } from '@/types/audit-trail';
 import { auditTrailKey } from '@/types/audit-trail';
+// P8.5 · B.5-L2 · Global hash-chain instrumentation (the ONE-SITE hook).
+// chainAuditEntry is fire-and-forget — logAudit stays synchronous.
+import { chainAuditEntry } from '@/lib/audit-trail-chain-engine';
 
 // ─── MCA Rule 3(1) compliance · architectural enforcement (Sprint 80d · DP-S80-24) ───
 /**
@@ -139,6 +142,9 @@ export function logAudit(opts: {
       console.error('[audit-trail] write failed', e);
     }
   }
+  // P8.5 · B.5-L2 · Forge a per-(entity,entityType) tamper-evident chain link
+  // for this entry. Fire-and-forget — never blocks the caller.
+  chainAuditEntry(entry);
   return entry;
 }
 

@@ -976,12 +976,19 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-06', provenance: 'CONFIRMED',
   },
-  // 🎬 Sprint P8.4 T-P84-Audit-Expansion-W2 · B.5-L1 audit expansion Wave 2 (Ops/HR/Support/Commerce · 23 page trees · system-wide create-path coverage) · STRICT engine-credit meta-rule from day one (engine credits class A only if file contains logAudit(/safeAudit() · staged Pass 1a Shape-A engines · 1b Shape-B hooks · Pass 2a/2b pages · meta-test extension covers both waves' trees + scope-completion assertion · ADDITIVE_INLINE_AUDIT_TYPES extended same-edit · walls: audit-trail-engine CALL-ONLY · catalog additive-only · notification-engine 0-diff · natively-logging engines (taskflow/frontdesk/ecomx/webstorex/dispatch GRN/qualicheck) ZERO diff (class-A evidence not edit targets) · applications/entitlements/routes 0-diff · NO new deps · NO hash-chain work (P8.5 scope) · headSha TBD_AT_BANK
+  // 🎬 Sprint P8.4 T-P84-Audit-Expansion-W2 · B.5-L1 audit expansion Wave 2 (Ops/HR/Support/Commerce · 23 page trees · system-wide create-path coverage) · STRICT engine-credit meta-rule from day one (engine credits class A only if file contains logAudit(/safeAudit() · staged Pass 1a Shape-A engines · 1b Shape-B hooks · Pass 2a/2b pages · meta-test extension covers both waves' trees + scope-completion assertion · ADDITIVE_INLINE_AUDIT_TYPES extended same-edit · walls: audit-trail-engine CALL-ONLY · catalog additive-only · notification-engine 0-diff · natively-logging engines (taskflow/frontdesk/ecomx/webstorex/dispatch GRN/qualicheck) ZERO diff (class-A evidence not edit targets) · applications/entitlements/routes 0-diff · NO new deps · NO hash-chain work (P8.5 scope) · headSha 803310f12 (P8.5 Block 0.2 backfill)
   {
     sprintNumber: 'P8.4' as unknown as number, code: 'T-P84-Audit-Expansion-W2', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '2926ba72c', loc: 0,
+    headSha: '803310f12', predecessorSha: '2926ba72c', loc: 0,
     newSiblings: [],
-    bankDate: '2026-06-06', provenance: 'PENDING_BACKFILL',
+    bankDate: '2026-06-06', provenance: 'CONFIRMED',
+  },
+  // 🎬 Sprint P8.5 T-P85-Global-Hash-Chain · B.5-L2 GLOBAL hash-chain — every audit-trail entry tamper-evident · one chain per (entityCode, auditEntityType) · NEW SIBLING audit-trail-chain-engine.ts (sibling, ZERO diff on the S137 spine audit-trail-hash-chain.ts which keeps serving its existing consumers · weighbridge/vendor-return/vendor-quotation/bill-passing/git/gateflow bridges/ApprovalActionPanel) · ONE-SITE rule: logAudit instrumented with +import +chainAuditEntry call only · entry-write logic 0-DIFF · safeAudit wrappers (12 module-local) call logAudit so they inherit chaining for free · synchronous contract preserved (fire-and-forget · appendAuditEntrySafe :101 pattern · async hash work detached) · same SHA-256-via-crypto.subtle + FNV-1a-64 fallback primitive as S137 (re-implemented privately because S137 holds 0-DIFF wall) · ensureChainsSeeded retro-genesis migration is idempotent and runs on first verify (NEVER per write) · CC Audit Integrity module (governance group · NO requiredCards · Verify Now · per-type INTACT/BREAK table · plain-language tamper panel · seam footer for Phase-2 server anchoring) · walls: audit-trail-hash-chain.ts 0-DIFF · P8.3/P8.4 80+ instrumented sites 0-DIFF · ComplianceModule/notification/applications/entitlements/routes 0-DIFF · no new deps · no server-anchoring code · retention/dept_id out (P8.6/P8.7) · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'P8.5' as unknown as number, code: 'T-P85-Global-Hash-Chain', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '803310f12', loc: 0,
+    newSiblings: ['audit-trail-chain-engine'],
+    bankDate: '2026-06-07', provenance: 'PENDING_BACKFILL',
   },
 ];
 
