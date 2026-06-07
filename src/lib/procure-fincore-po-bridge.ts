@@ -11,6 +11,7 @@
  * @[JWT]       POST /api/procure-fincore/bridge
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { PurchaseOrderLine } from '@/types/po';
 import { getPurchaseOrder } from './po-management-engine';
 import type { Order, OrderLine } from '@/types/order';
@@ -29,6 +30,8 @@ export interface BridgeLinkRecord {
   bridge_status: 'linked' | 'gate_disabled' | 'failed';
   failure_reason: string | null;
   created_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export const bridgeLinkKey = (entityCode: string): string =>

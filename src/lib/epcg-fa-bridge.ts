@@ -7,6 +7,7 @@
  * Cross-card bridge consuming Sinha export seed data + FA units.
  * [JWT] Replace localStorage reads with /api/eximx/exports + /api/fixed-assets/*
  */
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey } from '@/types/fixed-asset';
 import type {

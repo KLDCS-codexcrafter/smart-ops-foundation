@@ -22,6 +22,7 @@
  * [JWT] PATCH /api/gateflow/passes/:id/attach-linked-voucher
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { InwardReceipt } from '@/types/inward-receipt';
 import { inwardReceiptsKey } from '@/types/inward-receipt';
 import { getInwardReceipt } from '@/lib/inward-receipt-engine';
@@ -31,6 +32,8 @@ import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 export interface InwardBridgeResult {
   ok: boolean;
   reason?: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 /**

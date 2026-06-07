@@ -9,6 +9,7 @@
  * @[JWT]       Phase 2 eventBus.emit wires real cross-card subscribers
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import { createAMCRecord, updateAMCRecord } from './servicedesk-engine';
 import type { AMCRecord, TellicallerWorkItemEvent } from '@/types/servicedesk';
 
@@ -24,6 +25,8 @@ export interface SalesInvoiceForAMCEvent {
   invoice_value_paise: number;
   oem_name: string;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface ReceiptForAMCPaymentEvent {
@@ -32,6 +35,8 @@ export interface ReceiptForAMCPaymentEvent {
   amc_record_id: string;
   paid_amount_paise: number;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface SiteXCommissioningHandoffEvent {
@@ -46,6 +51,8 @@ export interface SiteXCommissioningHandoffEvent {
   warranty_end: string;
   oem_name: string;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface MaintainProTicketEscalationEvent {
@@ -56,6 +63,8 @@ export interface MaintainProTicketEscalationEvent {
   category: string;
   severity: string;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface MaintainProPMScheduleEvent {
@@ -64,18 +73,24 @@ export interface MaintainProPMScheduleEvent {
   customer_id: string;
   scheduled_date: string;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface CallTypeConfigUpdateEvent {
   type: 'cc:call_type.updated';
   call_type_code: string;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface RiskWeightsUpdateEvent {
   type: 'cc:risk_weights.updated';
   entity_id: string;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface AMCReminderEvent {
@@ -83,6 +98,8 @@ export interface AMCReminderEvent {
   amc_record_id: string;
   reminder_window_days: number;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface AMCEnquiryFromCustomerHubEvent {
@@ -90,6 +107,8 @@ export interface AMCEnquiryFromCustomerHubEvent {
   customer_id: string;
   enquiry_notes: string;
   emitted_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 // ============================================================================
@@ -255,6 +274,8 @@ export interface AMCInvoicePostToFinCoreEvent {
   amount_paise: number;
   emitted_at: string;
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface CommissionToPeoplePayEvent {
@@ -267,6 +288,8 @@ export interface CommissionToPeoplePayEvent {
   basis_invoice_id: string;
   emitted_at: string;
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface SalesmanActivityToSalesXEvent {
@@ -277,6 +300,8 @@ export interface SalesmanActivityToSalesXEvent {
   notes: string;
   emitted_at: string;
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface RenewalEmailToTemplateEngineEvent {
@@ -288,6 +313,8 @@ export interface RenewalEmailToTemplateEngineEvent {
   language: string;
   emitted_at: string;
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface AMCReminderToCalendarEvent {
@@ -298,6 +325,8 @@ export interface AMCReminderToCalendarEvent {
   notes: string;
   emitted_at: string;
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 // ============================================================================
@@ -453,6 +482,8 @@ export interface ServiceTicketToMaintainProEvent {
   severity: string;
   emitted_at: string;
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface FinalInvoiceToFinCoreEvent {
@@ -465,6 +496,8 @@ export interface FinalInvoiceToFinCoreEvent {
   amount_paise: number;
   emitted_at: string;
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface SparesIssueToInventoryHubEvent {
@@ -475,6 +508,8 @@ export interface SparesIssueToInventoryHubEvent {
   engineer_id: string;
   emitted_at: string;
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 /** OUTBOUND 7 · ServiceDesk → MaintainPro · 4-Way Repair In-House route (⭐ D-NEW-DJ 4th consumer · FR-72 threshold) */
@@ -580,6 +615,8 @@ export interface OEMClaimPacketToProcure360Event {
   total_claim_value_paise: number;
   emitted_at: string;
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 /** OUTBOUND 10 · ServiceDesk → Procure360 · OEM Warranty Claim Recovery (⭐ D-NEW-DJ 5th consumer · FR-75 proves at scale) */
@@ -650,6 +687,8 @@ export interface ServiceDeskMobileVendorViewEvent {
   requested_at: string;
   view_purpose: 'oem_claim_status' | 'oem_claim_response' | 'vendor_profile_update';
   originating_card_id: 'servicedesk';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export function emitMobileVendorViewToProcure360(

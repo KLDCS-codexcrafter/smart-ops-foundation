@@ -6,6 +6,7 @@
  * @[JWT]       Phase 2 backend wires real event bus
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type {
   SiteMobilizedEvent, CommissioningHandoffEvent, MaintainProHandoffEvent,
   AssetCapitalizationEvent, SnagRaisedEvent,

@@ -25,6 +25,7 @@ import {
   reject as workflowReject,
   type ApprovalRecord,
 } from '@/lib/approval-workflow-engine';
+import { resolveDeptFromContext } from '@/lib/dept-context-resolver-engine';
 
 export const READS_FROM = {
   engines: ['approval-matrix-engine', 'approval-workflow-engine', 'internal-pricing-engine'],
@@ -72,6 +73,8 @@ export interface InterDeptApprovalEvaluation {
   variance_pct: number;
   workflow_id?: string;
   template_id?: string | null;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 /**
@@ -129,6 +132,8 @@ export function evaluateInterDeptApproval(input: {
     variance_pct: variance,
     workflow_id: finalWf.id,
     template_id: template?.id ?? null,
+    // P8.7 · THREADED · target department is the natural dept context for this evaluation
+    dept_id: resolveDeptFromContext({ explicit: input.to_department }),
   };
 }
 

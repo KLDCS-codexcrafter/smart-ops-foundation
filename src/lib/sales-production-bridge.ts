@@ -18,6 +18,7 @@ import { productionPlansKey } from '@/types/production-plan';
 import type { ProductionOrder } from '@/types/production-order';
 import { productionOrdersKey } from '@/types/production-order';
 import { createProductionPlan } from '@/lib/production-plan-engine';
+import { resolveDeptFromContext } from '@/lib/dept-context-resolver-engine';
 
 // ─── ls helpers (FR-93 engine-side) ──────────────────────────────────
 
@@ -68,6 +69,8 @@ export interface ConvertSalesOrderResult {
   plan_id: string;
   line_count: number;
   warnings: string[];
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface SOFulfillmentRow {
@@ -80,6 +83,8 @@ export interface SOFulfillmentRow {
   pending_qty: number;
   fulfillment_pct: number;
   status: 'not_started' | 'partial' | 'completed' | 'over_produced';
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface SOProductionLineage {
@@ -89,6 +94,8 @@ export interface SOProductionLineage {
   total_planned_qty: number;
   total_completed_qty: number;
   fulfillment_pct: number;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 // ─── Export 1 · Convert SO → ProductionPlan draft ────────────────────
@@ -153,7 +160,11 @@ export function convertSalesOrderToProductionPlanDraft(
         so.date,
       ),
       plan_type: 'sales_order',
-      department_id: so.lines[0]?.id ?? 'dept-default',
+      // P8.7 · honesty fix · previous value (so.lines[0]?.id ?? 'dept-default')
+      // assigned an OrderLine id to a department field — a confirmed misassignment.
+      // Now resolver-derived; coerced to '' ONLY because ProductionPlan.department_id
+      // is a required `string` (see §L decision in P8.7 close summary).
+      department_id: resolveDeptFromContext({ sourceRecord: so }) ?? '',
       business_unit_id: null,
       source_links: { sales_order_ids: [sales_order_id] },
       lines: planLines,

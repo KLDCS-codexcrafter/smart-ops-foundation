@@ -7,6 +7,7 @@
  * @reads-from  physical-asset-unit-bridge.ts (PRESERVE LIST · do NOT modify)
  * [JWT] Phase 5: WebSocket /api/iot/stream/:asset_id (real-time signal subscription)
  */
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { IoTSignal } from '@/types/fixed-asset';
 import { findPhysicalAssetUnit } from './physical-asset-unit-bridge';
 
@@ -20,6 +21,8 @@ export interface IoTBridgeState {
   last_signal?: IoTSignal;
   signal_count_today: number;
   is_streaming: boolean;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 function readStream(entityCode: string, asset_id: string): IoTSignal[] {

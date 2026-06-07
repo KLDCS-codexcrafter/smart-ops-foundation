@@ -6,6 +6,7 @@
  * @reads-from  physical-asset-unit-bridge.ts (PRESERVE LIST · do NOT modify)
  * [JWT] Phase 5: POST /api/rfid/link · POST /api/rfid/unlink · GET /api/rfid/registry
  */
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { IoTSignal } from '@/types/fixed-asset';
 import { findPhysicalAssetUnit } from './physical-asset-unit-bridge';
 
@@ -18,6 +19,8 @@ export interface RFIDLinkRecord {
   linked_at: string;
   last_seen_at?: string;
   last_seen_location?: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 function readRegistry(entityCode: string): RFIDLinkRecord[] {

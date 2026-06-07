@@ -9,6 +9,7 @@
  * @[JWT]       Phase 2: POST /api/physical-asset-unit/link
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import type { AssetTag } from '@/types/asset-tag';
 import type { Asset } from '@/types/asset-master';
@@ -41,6 +42,8 @@ export interface PhysicalAssetUnit {
   equipment_synced_at?: string | null;
   created_at: string;
   updated_at: string;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface UnifiedAssetView {
@@ -48,6 +51,8 @@ export interface UnifiedAssetView {
   fa_record: AssetUnitRecord | null;
   asset_tag: AssetTag | null;
   hr_asset: Asset | null;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export interface OrphanReport {

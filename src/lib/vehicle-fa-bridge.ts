@@ -6,6 +6,7 @@
  * @[JWT]       localStorage-backed mock; replace with GET/POST /api/vehicle-fa/* at JWT cutover
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import { faUnitsKey } from '@/types/fixed-asset';
 import type {
@@ -126,6 +127,8 @@ export interface VehicleRegistryRow {
   assetUnitRecord: AssetUnitRecord | null;
   lastUtilization: number;
   lastRecordedAt: string | null;
+  /** P8.7 · P2BB Sub-Arc 9 · dept context · resolved honestly or undefined · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
 }
 
 export function getVehicleRegistryWithFA(entityCode: string): VehicleRegistryRow[] {
