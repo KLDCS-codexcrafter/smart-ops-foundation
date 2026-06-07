@@ -47,7 +47,9 @@
 
 ---
 
-## Triple Gate — Pasted Real Outputs
+## Triple Gate — Pasted Real Outputs (post-T1 re-run)
+
+> T1-disclosure: ESLint gate originally pasted from a pre-final-edit run; corrected per evidence-honesty canon.
 
 ```
 $ NODE_OPTIONS="--max-old-space-size=7168" npx tsc --noEmit
@@ -60,18 +62,28 @@ ESLINT_EXIT=0
 $ NODE_OPTIONS="--max-old-space-size=7168" npx vitest run src/test/sprint-p86 src/test/sprint-p85 src/test/sprint-p84 src/test/sprint-p83
  RUN  v3.2.4 /dev-server
 
- ✓ src/test/sprint-p83/p83-block4-meta.test.ts        (11 tests) 766ms
- ✓ src/test/sprint-p85/p85-block4-behavioral.test.ts  (30 tests) 141ms
- ✓ src/test/sprint-p84/p84-block4-meta.test.ts        (7 tests)  77ms
- ✓ src/test/sprint-p84/p84-block3-behavioral.test.ts  (32 tests) 52ms
- ✓ src/test/sprint-p83/p83-block5-behavioral.test.ts  (32 tests) 38ms
- ✓ src/test/sprint-p86/p86-block-behavioral.test.ts   (29 tests) 22ms
- ✓ src/test/sprint-p84/p84-t1-escaped-paths.test.ts   (4 tests)  24ms
+ ✓ src/test/sprint-p83/p83-block4-meta.test.ts        (11 tests) 487ms
+ ✓ src/test/sprint-p85/p85-block4-behavioral.test.ts  (30 tests) 97ms
+ ✓ src/test/sprint-p84/p84-block4-meta.test.ts        (7 tests)  75ms
+ ✓ src/test/sprint-p84/p84-block3-behavioral.test.ts  (32 tests) 40ms
+ ✓ src/test/sprint-p83/p83-block5-behavioral.test.ts  (32 tests) 33ms
+ ✓ src/test/sprint-p86/p86-block-behavioral.test.ts   (29 tests) 12ms
+ ✓ src/test/sprint-p84/p84-t1-escaped-paths.test.ts   (4 tests)  15ms
 
  Test Files  7 passed (7)
       Tests  145 passed (145)
-   Duration  4.11s
+   Duration  3.16s
 VITEST_EXIT=0
+
+$ NODE_OPTIONS="--max-old-space-size=7168" npm run build
+vite v5.4.19 building for production...
+transforming...
+✓ 6580 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                   2.35 kB │ gzip:   0.85 kB
+…
+BUILD_EXIT=0
 ```
 
 ---
