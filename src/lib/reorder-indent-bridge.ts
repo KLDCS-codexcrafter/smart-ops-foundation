@@ -7,6 +7,7 @@
  * @decisions   D-385 · D-309 (sibling pattern) · D-128 (uses existing Card #3 'MI' prefix)
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { ReorderSuggestion } from '@/lib/store-hub-engine';
 import { createMaterialIndent, type CreateMaterialIndentInput } from '@/lib/request-engine';
 import type { MaterialIndent, MaterialIndentLine, Priority, IndentCategory } from '@/types/material-indent';

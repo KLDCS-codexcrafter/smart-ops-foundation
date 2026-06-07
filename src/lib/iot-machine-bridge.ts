@@ -9,6 +9,7 @@
  *           Q-LOCK-8 Option A: hybrid CSV + IoT energy meter (closes PROD-LEAK-14).
  *           FR-26 entity-scoped · FR-93 engine-side localStorage.
  */
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { Machine, MachineStatus } from '@/types/machine';
 import { machinesKey } from '@/types/machine';
 

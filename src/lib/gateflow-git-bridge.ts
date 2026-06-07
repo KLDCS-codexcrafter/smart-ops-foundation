@@ -9,6 +9,7 @@
  *              · gateflow-engine.attachLinkedVoucher · audit-trail-hash-chain
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { GitStage1Record } from '@/types/git';
 import { gitStage1Key } from '@/types/git';
 import { getGitStage1 } from '@/lib/git-engine';

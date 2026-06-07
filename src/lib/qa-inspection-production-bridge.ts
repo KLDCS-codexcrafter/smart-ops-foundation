@@ -10,6 +10,7 @@
  *
  * [JWT] POST /api/qa/inspections/production
  */
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type {
   QaInspectionRecord,
   QaInspectionLine,

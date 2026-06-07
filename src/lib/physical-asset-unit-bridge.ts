@@ -9,6 +9,7 @@
  * @[JWT]       Phase 2: POST /api/physical-asset-unit/link
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { AssetUnitRecord } from '@/types/fixed-asset';
 import type { AssetTag } from '@/types/asset-tag';
 import type { Asset } from '@/types/asset-master';

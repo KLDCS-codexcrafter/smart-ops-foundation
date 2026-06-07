@@ -9,6 +9,7 @@
  * [JWT] POST /api/weighbridge/tickets · PATCH /api/weighbridge/tickets/:id/weigh-in|weigh-out|close
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type {
   WeighbridgeTicket, WeighbridgeTicketStatus,
 } from '@/types/weighbridge-ticket';

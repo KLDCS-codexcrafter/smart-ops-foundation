@@ -11,6 +11,7 @@
  * @[JWT]       POST /api/procure-fincore/bridge
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { PurchaseOrderLine } from '@/types/po';
 import { getPurchaseOrder } from './po-management-engine';
 import type { Order, OrderLine } from '@/types/order';

@@ -22,6 +22,7 @@
  * [JWT] PATCH /api/gateflow/passes/:id/attach-linked-voucher
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { InwardReceipt } from '@/types/inward-receipt';
 import { inwardReceiptsKey } from '@/types/inward-receipt';
 import { getInwardReceipt } from '@/lib/inward-receipt-engine';

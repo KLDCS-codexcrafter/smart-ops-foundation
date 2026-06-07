@@ -21,6 +21,7 @@
  * (FR-19 sibling), this file owns a minimal CustomEvent bus on `window`.
  * Procure360 outbound side will dispatchEvent on the same channels when wired.
  */
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import { raiseNcr } from '@/lib/ncr-engine';
 import type { NcrSeverity, NcrOutcome } from '@/types/ncr';
 

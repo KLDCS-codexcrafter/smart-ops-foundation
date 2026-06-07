@@ -5,6 +5,7 @@
  * @decisions   EX-4-Q9=b bridge helper · D-284 ZERO TOUCH preserved · git-engine.ts 0-diff
  * @disciplines FR-30 · FR-50 · D-284 invariant honored
  */
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { GitStage1Record } from '@/types/git';
 import type { CostAllocationMethod, AllocationInputLine } from '@/types/cost-allocation';
 import { allocateCosts } from '@/lib/cost-allocation-engine';

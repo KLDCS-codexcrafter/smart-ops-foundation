@@ -3,6 +3,7 @@
  * @purpose     Bridge ExportPO → ExportDispatchMirror · multi-leg-git.ts STAYS 0-diff
  * @sprint      T-Phase-1.EX-7b-ShippingBill-EGM-LEO-DispatchMirror
  */
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { ExportDispatchMirror } from '@/types/export-dispatch-mirror';
 import type { ExportPurchaseOrder } from '@/types/export-purchase-order';
 import { exportDispatchMirrorKey } from '@/types/export-dispatch-mirror';

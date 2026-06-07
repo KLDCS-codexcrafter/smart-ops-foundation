@@ -11,6 +11,7 @@
  * @[JWT]       POST /api/fincore/pi/auto-draft
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { BillPassingRecord, BillPassingLine } from '@/types/bill-passing';
 import { getBillPassing, setFcpiLink } from './bill-passing-engine';
 import { generateDocNo } from './fincore-engine';

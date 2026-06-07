@@ -6,6 +6,7 @@
  *              Restores Sprint 3-c-2 audited-clean discipline (D-285+D-286+D-287 streak).
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { BillPassingRecord } from '@/types/bill-passing';
 import { billPassingKey } from '@/types/bill-passing';
 import { appendAuditEntry } from './audit-trail-hash-chain';

@@ -7,6 +7,7 @@
  * @[JWT]       Phase 2: eventBus.emit() wires real cross-card subscribers
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import { createEquipment, createAssetCapitalization } from './maintainpro-engine';
 
 export interface SiteXMaintainProHandoff {

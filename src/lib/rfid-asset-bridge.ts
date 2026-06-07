@@ -6,6 +6,7 @@
  * @reads-from  physical-asset-unit-bridge.ts (PRESERVE LIST · do NOT modify)
  * [JWT] Phase 5: POST /api/rfid/link · POST /api/rfid/unlink · GET /api/rfid/registry
  */
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { IoTSignal } from '@/types/fixed-asset';
 import { findPhysicalAssetUnit } from './physical-asset-unit-bridge';
 

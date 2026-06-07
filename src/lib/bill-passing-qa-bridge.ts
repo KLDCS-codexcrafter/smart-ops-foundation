@@ -17,6 +17,7 @@
  *              Inbound:  CustomEvent('qa:inspection-finalized') · server bus replaces in production.
  */
 
+// P8.7: dept_id present in payload type · no honest source at this bridge · populated at Wave-2 (auth-derived)
 import type { BillPassingRecord } from '@/types/bill-passing';
 import { billPassingKey } from '@/types/bill-passing';
 import { runMatch } from './bill-passing-engine';
