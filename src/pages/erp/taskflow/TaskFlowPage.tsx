@@ -34,6 +34,7 @@ import MediaVaultPage from './MediaVaultPage';
 import FollowUpsPage from './FollowUpsPage';
 import ChatGovernancePage from './ChatGovernancePage';
 import HandoverPage from './HandoverPage';
+import ApprovalsInboxPage from './ApprovalsInboxPage';
 import type { TaskFlowModule } from './TaskFlowSidebar.types';
 
 const VALID_MODULES: TaskFlowModule[] = [
