@@ -349,6 +349,10 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // NO requiredCards — Audit Integrity is CC-internal infrastructure, not a card.
       { id: 'audit-integrity', type: 'item', label: 'Audit Integrity', icon: ShieldCheck,
         moduleId: 'audit-integrity' },
+      // 🎬 Sprint P8.6 · B.5-L3 · Retention Console (policy table + evaluation report)
+      // NO requiredCards — Retention Console is CC-internal infrastructure, not a card.
+      { id: 'retention-console', type: 'item', label: 'Retention Console', icon: ShieldCheck,
+        moduleId: 'retention-console' },
     ],
   },
   {
