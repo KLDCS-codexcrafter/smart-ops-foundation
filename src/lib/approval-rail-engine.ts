@@ -19,11 +19,14 @@ import {
   type ApprovalAdapter,
   type ApprovalChainStep,
   type ApprovalDecidedByEntry,
+  type ApprovalDelegation,
   type ApprovalObjectType,
   type ApprovalRuleRow,
   type ApprovalTaskMeta,
-  
+  type QuorumVoteEntry,
   approvalDecidedByLedgerKey,
+  approvalDelegationsKey,
+  approvalQuorumLedgerKey,
   approvalRulesKey,
 } from '@/types/approval-rail';
 import type { Task } from '@/types/taskflow';
