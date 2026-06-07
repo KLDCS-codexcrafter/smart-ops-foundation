@@ -124,6 +124,7 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
   const [txOpen, setTxOpen] = useState(activeModule.startsWith('dh-t-'));
   const [reportsOpen, setReportsOpen] = useState(activeModule.startsWith('dh-r-'));
   const [inwardOpen, setInwardOpen] = useState(activeModule.startsWith('dh-i-'));
+  const [warehouseOpen, setWarehouseOpen] = useState(activeModule.startsWith('dh-w-'));
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
