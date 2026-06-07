@@ -34,4 +34,6 @@ export type TaskFlowModule =
   | 'accountability'
   | 'close-policies'
   | 'work-diary'
-  | 'expense-center';
+  | 'expense-center'
+  // ─ Approval Rail (Sprint B1S1) ─────────────────────────────────────
+  | 'approvals-inbox';
