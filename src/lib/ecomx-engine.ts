@@ -675,6 +675,7 @@ function writeSalesOrderVoucher(
     narration: `EcomX · ${marketplace.name} · ${stg.marketplaceOrderId}${stg.buyerName ? ` · ${stg.buyerName}` : ''}${stg.buyerState ? ` · ${stg.buyerState}` : ''}`,
     terms_conditions: '',
     status: 'open',
+    source: 'ecomx', // WMS2 rider · honest birth-site source tag
     created_at: ts, updated_at: ts,
   };
 

@@ -59,6 +59,8 @@ export interface Order {
   cancel_reason?: string;
   // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
   retention_policy?: RetentionPolicyId;
+  /** WMS2 rider · set at birth by card engines · sniffer fallback for legacy rows */
+  source?: 'salesx' | 'ecomx' | 'webstorex';
   created_by?: string;
   created_at: string; updated_at: string;
 }

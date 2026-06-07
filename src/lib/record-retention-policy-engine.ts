@@ -125,6 +125,9 @@ const RECORD_TYPE_POLICY_MAP: Record<string, RetentionPolicyId> = {
   // Sprint WMS1 · additive — new record types born under P8.6 floor
   picklist: 'operational_log_only',
   'pack-group': 'operational_log_only',
+  // WMS2 · additive only (the sole retention-engine touch this sprint)
+  asn: 'operational_log_only',
+  'bin-placement': 'operational_log_only',
 };
 
 // ─── localStorage helpers (typed + defensive) ─────────────────────────────

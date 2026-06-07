@@ -374,6 +374,7 @@ function writeSalesOrderVoucher(
     narration: `WebStoreX order · schemes: ${evaluation.appliedSchemes.map((s) => s.schemeName).join(', ') || 'none'}`,
     terms_conditions: '',
     status: 'open',
+    source: 'webstorex', // WMS2 rider · honest birth-site source tag
     created_at: ts, updated_at: ts,
   };
 
