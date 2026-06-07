@@ -9,7 +9,7 @@ import {
   FileStack, Workflow, Gavel, BookOpen,
   MessageSquare, Hash, Mail, Mic,
   Gauge, ShieldCheck, NotebookPen, Receipt,
-  ListTodo, ShieldAlert, ArrowRightLeft,
+  ListTodo, ShieldAlert, ArrowRightLeft, BellRing,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
