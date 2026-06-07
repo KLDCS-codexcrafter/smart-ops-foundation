@@ -28,6 +28,8 @@ import {
   Boxes, PackageSearch,
   // Sprint WMS2 · Warehouse · ASN/Putaway + Shelf View
   Inbox as InboxIcon, LayoutGrid,
+  // Sprint WMS3 · Warehouse · Manifest Console (ARC CLOSE)
+  ClipboardCheck,
 
 
 
