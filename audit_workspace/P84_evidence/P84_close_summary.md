@@ -124,3 +124,60 @@ The Pass-1 stricter meta-rule (any `handleSubmit|handleSave|handleGenerate|...` 
 ## Class-B residue: **0**
 
 Block 4 meta-test (`src/test/sprint-p84/p84-block4-meta.test.ts`) asserts SCOPE-COMPLETION over all 23 Wave-2 trees with `META_SCOPE_EXEMPT = []`. Zero unexplained silent pages remain.
+
+---
+
+## P8.4.T1 · escaped-path wiring (post-finalize fix · single pass)
+
+Three leverage points that escaped Block-0 enumeration — **subtree depth** (the
+write paths live in `src/lib/*-engine.ts` reached only by deeper page imports,
+not by the page-handler regex itself). Wired at the engine leverage point so
+every caller (current and future) credits in one place.
+
+| File | logAudit line | Literal | Note |
+|---|---|---|---|
+| `src/lib/vendor-return-engine.ts` | 326 | `dispatch_txn_event` | escaped Block-0 enumeration — subtree depth · post-DN spine separate from hash-chain (`appendAuditEntry` retained) |
+| `src/lib/scheduling-engine.ts` | 201 (PO) · 263 (Plan) | `production_event` | escaped Block-0 enumeration — subtree depth · true leverage point for `useProductionOrders` / `useProductionPlans` callers (the hooks themselves are read-only) · covers SchedulingBoard + cascade |
+| `src/lib/servicedesk-oem-engine.ts` | 70 (create) · 112 (transition) | `service_event` | escaped Block-0 enumeration — subtree depth · 13th P8.4 literal · servicedesk previously had no domain literal · rationale captured in catalog comment |
+
+**Catalog delta:** +1 (`service_event`) · total P8.4 additions 13 → 14 · catalog 27 → 28.
+
+### Deepened meta enumerator
+
+`src/test/sprint-p84/p84-block4-meta.test.ts` `walk()` is recursive without
+depth limit and already traverses all subfolders (`reports/`, `transactions/`,
+`oem-claims/`, `masters/`, `inward/`, any nesting). The new
+`src/test/sprint-p84/p84-t1-escaped-paths.test.ts` adds an **explicit depth
+proof fixture** asserting:
+
+- `pages/erp/production/reports/SchedulingBoard.tsx` is reached (anchor for the
+  wired scheduling-engine reschedule path),
+- ≥ 1 nested page is reached under `reports|transactions|oem-claims|masters|inward`,
+- ≥ 20 files are at depth `tree/subfolder/file` or deeper.
+
+Re-running the deeper meta-net surfaced **no additional silent pages** beyond
+these 3 — the three escapes were the full residue. Class-B residue remains **0**.
+
+### Walls held (T1)
+
+- `audit-trail-engine.ts`: unchanged.
+- `audit-trail.ts` catalog: additive only (one literal added with `as const satisfies`).
+- `appendAuditEntry` hash-chain spine in `vendor-return-engine.ts`: **retained** —
+  hash-chain (tamper-evidence) and `logAudit` (MCA Rule 3(1) append-only trail)
+  are separate spines; both fire on DN post.
+- No new dependencies. No Z-evidence regeneration.
+
+### Tests added (+4 it() in `p84-t1-escaped-paths.test.ts`)
+
+1. `vendor-return-engine.postDebitNote` emits `dispatch_txn_event` (action `post`).
+2. `scheduling-engine.rescheduleProductionOrder` emits `production_event` (action `update`).
+3. `servicedesk-oem-engine.createOEMClaim` emits `service_event` (action `create`).
+4. Meta enumerator depth proof — recursive walk reaches nested `/reports/` page.
+
+### Gates (T1 final)
+
+- TSC (7168 MB): **exit 0**
+- ESLint (repo-wide): **exit 0**
+- Vitest sprint-p84 + sprint-p83: **86/86 passed** (4 new T1 tests added)
+- Vitest seed-entitlement-coverage: **35/35 passed**
+
