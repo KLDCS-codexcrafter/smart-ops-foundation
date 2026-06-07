@@ -5,6 +5,8 @@
  *              + the new My Reminders engine. Vitest scoped via filename pattern.
  */
 import { describe, it, expect, beforeEach } from 'vitest';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 import {
   listApprovalRules, listRegisteredAdapters,
@@ -18,7 +20,12 @@ import {
   createMyReminder, listMyReminders, snoozeMyReminder,
   dismissMyReminder, deleteMyReminder, fireDueMyReminders,
   getMyRemindersDigest,
+  // B1S2-R · §2.4b catalog API
+  REMINDER_CATALOG, getMyReminders, getUserPrefs, saveUserPrefs,
+  publishMyRemindersDigest,
 } from '@/lib/taskflow-reminders-engine';
+import { notificationsKey } from '@/types/notification';
+import { materialIndentsKey } from '@/types/material-indent';
 
 const E = 'ENT_B1S2';
 
@@ -175,5 +182,144 @@ describe('B1S2 · My Reminders engine', () => {
     expect(d.pending).toBe(2);
     expect(d.overdue).toBe(1);
     expect(d.due_today).toBeGreaterThanOrEqual(1);
+  });
+});
+
+// ════════════════════════════════════════════════════════════════════════
+// Block F · §2.4b Reminder Catalog · honesty + prefs + threshold + digest
+// ════════════════════════════════════════════════════════════════════════
+describe('B1S2-R · reminder catalog · honesty ledger', () => {
+  it('catalog declares ≥ 12 items, each with a source string', () => {
+    expect(REMINDER_CATALOG.length).toBeGreaterThanOrEqual(12);
+    for (const c of REMINDER_CATALOG) {
+      expect(typeof c.source).toBe('string');
+      expect(c.source.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('items without a real source are status=unavailable in snapshots (no fake zeros)', () => {
+    const snaps = getMyReminders(E, 'op');
+    const unavailable = snaps.filter((s) => s.status === 'unavailable');
+    expect(unavailable.length).toBeGreaterThanOrEqual(7);
+    for (const s of unavailable) {
+      expect(s.count).toBeNull();
+      expect(typeof s.reason).toBe('string');
+    }
+  });
+
+  it('wired sources return numeric count (status=ok) — never null', () => {
+    const snaps = getMyReminders(E, 'op');
+    const wired = snaps.filter((s) =>
+      ['approvals_waiting', 'tasks_due_today', 'quarantine', 'birthdays_today'].includes(s.id),
+    );
+    expect(wired.length).toBe(4);
+    for (const s of wired) {
+      expect(s.status).toBe('ok');
+      expect(typeof s.count).toBe('number');
+    }
+  });
+});
+
+describe('B1S2-R · user prefs round-trip', () => {
+  it('default prefs are returned when nothing is saved', () => {
+    const prefs = getUserPrefs(E, 'op');
+    expect(prefs.user_name).toBe('op');
+    expect(prefs.items.length).toBe(REMINDER_CATALOG.length);
+  });
+
+  it('save → reload returns the same edited prefs', () => {
+    const prefs = getUserPrefs(E, 'op');
+    const edited = {
+      ...prefs,
+      items: prefs.items.map((p) =>
+        p.id === 'approvals_waiting' ? { ...p, threshold: 99, headline: false, show: false } : p,
+      ),
+    };
+    saveUserPrefs(E, edited);
+    const back = getUserPrefs(E, 'op');
+    const apv = back.items.find((p) => p.id === 'approvals_waiting')!;
+    expect(apv.threshold).toBe(99);
+    expect(apv.headline).toBe(false);
+    expect(apv.show).toBe(false);
+  });
+
+  it('threshold drives the snapshot breached flag (count > threshold)', () => {
+    const qakey = 'erp_qa_inspections_' + E;
+    const inspections = Array.from({ length: 7 }).map((_, i) => ({
+      id: `qa${i}`, qa_no: `QA${i}`, status: 'pending', inspector_user_id: 'x',
+    }));
+    localStorage.setItem(qakey, JSON.stringify(inspections));
+    const snap = getMyReminders(E, 'op').find((s) => s.id === 'quarantine')!;
+    expect(snap.status).toBe('ok');
+    expect(snap.count).toBe(7);
+    expect(snap.breached).toBe(true);
+  });
+});
+
+describe('B1S2-R · publishMyRemindersDigest', () => {
+  it('returns 0 and emits nothing when nothing is breached', () => {
+    const r = publishMyRemindersDigest(E, 'op');
+    expect(r.count).toBe(0);
+    const raw = localStorage.getItem(notificationsKey(E));
+    expect(raw === null || !raw.includes('digest.my_reminders')).toBe(true);
+  });
+
+  it('emits digest.my_reminders when at least one snapshot is breached', () => {
+    const qakey = 'erp_qa_inspections_' + E;
+    const inspections = Array.from({ length: 6 }).map((_, i) => ({
+      id: `qa${i}`, qa_no: `QA${i}`, status: 'pending', inspector_user_id: 'x',
+    }));
+    localStorage.setItem(qakey, JSON.stringify(inspections));
+    const r = publishMyRemindersDigest(E, 'op');
+    expect(r.count).toBeGreaterThan(0);
+    expect(localStorage.getItem(notificationsKey(E))).toContain('digest.my_reminders');
+  });
+});
+
+describe('B1S2-R · quorum distinct-signer refusal', () => {
+  const args = {
+    source_record_id: 'REC-DS',
+    object_type: 'payout_requisition' as const,
+    step_order: 1,
+    required: 2,
+    candidate_pool: ['Aman', 'Bina', 'Chitra'],
+  };
+
+  it('the same voter approving twice never counts twice (idempotent)', () => {
+    expect(recordQuorumVote(E, { ...args, voter_name: 'Aman', vote: 'approved' }).state).toBe('pending');
+    const second = recordQuorumVote(E, { ...args, voter_name: 'Aman', vote: 'approved' });
+    expect(second.votes_for).toBe(1);
+    expect(second.state).toBe('pending');
+  });
+
+  it('quorum reached requires distinct signers (M-of-N)', () => {
+    recordQuorumVote(E, { ...args, voter_name: 'Aman', vote: 'approved' });
+    recordQuorumVote(E, { ...args, voter_name: 'Aman', vote: 'approved' });
+    const out = recordQuorumVote(E, { ...args, voter_name: 'Bina', vote: 'approved' });
+    expect(out.votes_for).toBe(2);
+    expect(out.state).toBe('reached');
+  });
+});
+
+describe('B1S2-R · R4 wall · adapters file no longer writes the requestx store', () => {
+  it('approval-adapters.ts contains no setItem against materialIndentsKey', () => {
+    const src = readFileSync(resolve(process.cwd(), 'src/lib/approval-adapters.ts'), 'utf8');
+    expect(src).toMatch(/approveRequestxIndent\b/);
+    expect(src).toMatch(/rejectRequestxIndent\b/);
+    expect(src).not.toMatch(/safeWriteList\([^)]*materialIndentsKey/);
+    expect(src).not.toMatch(/localStorage\.setItem\([^)]*materialIndentsKey/);
+  });
+
+  it('request-engine.ts still exposes approveIndent / rejectIndent (engine wall)', () => {
+    const src = readFileSync(resolve(process.cwd(), 'src/lib/request-engine.ts'), 'utf8');
+    expect(src).toMatch(/export function approveIndent\b/);
+    expect(src).toMatch(/export function rejectIndent\b/);
+  });
+
+  it('materialIndentsKey still imported for read-only listPending visibility', () => {
+    const src = readFileSync(resolve(process.cwd(), 'src/lib/approval-adapters.ts'), 'utf8');
+    expect(src).toMatch(/from '@\/types\/material-indent'/);
+    expect(src).toMatch(/\bmaterialIndentsKey\b/);
+    expect(typeof materialIndentsKey).toBe('function');
   });
 });

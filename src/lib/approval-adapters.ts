@@ -52,6 +52,13 @@ import type { Dispute } from '@/types/freight-reconciliation';
 
 import { materialIndentsKey } from '@/types/material-indent';
 import type { MaterialIndent } from '@/types/material-indent';
+// B1S2-R · R4 · request-engine already exports approveIndent/rejectIndent
+// (request-engine.ts:258 + :284) · adapter consumes them instead of writing
+// the LS store directly · request-engine.ts remains 0-DIFF.
+import {
+  approveIndent as approveRequestxIndent,
+  rejectIndent as rejectRequestxIndent,
+} from '@/lib/request-engine';
 
 // ── B1S2 ADAPTER-READY (4) consumer reads ────────────────────────────────
 import {
@@ -171,10 +178,12 @@ const productionOrderAdapter: ApprovalAdapter = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════
-// 4 · requestx_indent — material-indent store + status writes
-// (request-engine exports transitionState as state-validator only; the
-//  approve/reject writes go straight to the LS store via the type-exported
-//  materialIndentsKey — request-engine.ts remains 0-DIFF.)
+// 4 · requestx_indent — material-indent
+// B1S2-R · R4 · approve/reject now consume request-engine#approveIndent /
+// rejectIndent (additive exports already present at request-engine.ts:258, 284).
+// The previous direct write to materialIndentsKey via safeWriteList has been
+// REMOVED — adapters file no longer touches the store. request-engine.ts
+// remains 0-DIFF. listPending stays a read-only LS lookup for visibility.
 // ═══════════════════════════════════════════════════════════════════════
 const requestxIndentAdapter: ApprovalAdapter = {
   id: 'adapter:requestx_indent',
@@ -189,44 +198,10 @@ const requestxIndentAdapter: ApprovalAdapter = {
         amount: i.total_estimated_value ?? undefined,
         creator_name: i.requested_by_name,
       })),
-  approve: (entityCode, recordId, by) => {
-    const key = materialIndentsKey(entityCode);
-    const list = safeReadList<MaterialIndent>(key);
-    const idx = list.findIndex((i) => i.id === recordId);
-    if (idx < 0) return false;
-    const now = new Date().toISOString();
-    list[idx] = {
-      ...list[idx],
-      status: 'approved',
-      updated_at: now,
-      updated_by: by,
-      approval_history: [
-        ...(list[idx].approval_history ?? []),
-        { id: `ae_${Date.now().toString(36)}`, approver_user_id: by, approver_role: 'rail', action: 'approved', remarks: '', acted_at: now },
-      ] as MaterialIndent['approval_history'],
-    };
-    safeWriteList(key, list);
-    return true;
-  },
-  reject: (entityCode, recordId, by, reason) => {
-    const key = materialIndentsKey(entityCode);
-    const list = safeReadList<MaterialIndent>(key);
-    const idx = list.findIndex((i) => i.id === recordId);
-    if (idx < 0) return false;
-    const now = new Date().toISOString();
-    list[idx] = {
-      ...list[idx],
-      status: 'rejected',
-      updated_at: now,
-      updated_by: by,
-      approval_history: [
-        ...(list[idx].approval_history ?? []),
-        { id: `ae_${Date.now().toString(36)}`, approver_user_id: by, approver_role: 'rail', action: 'rejected', remarks: reason, acted_at: now },
-      ] as MaterialIndent['approval_history'],
-    };
-    safeWriteList(key, list);
-    return true;
-  },
+  approve: (entityCode, recordId, by) =>
+    approveRequestxIndent(recordId, 'material', by, 'rail', entityCode, 'rail-approved'),
+  reject: (entityCode, recordId, by, reason) =>
+    rejectRequestxIndent(recordId, 'material', by, 'rail', reason ?? 'rail-rejected', entityCode),
   recordRoute: (id) => `/erp/requestx/indent/${id}`,
 };
 

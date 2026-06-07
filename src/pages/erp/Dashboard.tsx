@@ -28,6 +28,8 @@ const CommandPalette = lazy(() =>
 const CrossCardSearch = lazy(() =>
   import("@/components/layout/CrossCardSearch").then(m => ({ default: m.CrossCardSearch }))
 );
+// Sprint B1S2-R · R2 · additive lazy My Reminders dashboard widget.
+const MyRemindersWidget = lazy(() => import("@/components/dashboard/MyRemindersWidget"));
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useCardEntitlement } from "@/hooks/useCardEntitlement";
 import { topCardsForUser } from "@/lib/card-frequency-tracker";
@@ -317,6 +319,13 @@ export default function ErpDashboard() {
         <div className="mb-4">
           <SuspendedSessionBanner />
         </div>
+
+        {/* B1S2-R · R2 · My Reminders widget · additive lazy block */}
+        <Suspense fallback={null}>
+          <MyRemindersWidget />
+        </Suspense>
+
+
 
         <div className="relative mb-6 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

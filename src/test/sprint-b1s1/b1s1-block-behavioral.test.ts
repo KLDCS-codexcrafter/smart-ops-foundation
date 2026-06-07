@@ -89,13 +89,17 @@ beforeEach(() => {
 });
 
 describe('B1S1 · Approval Rail · engine', () => {
-  it('seeds 8 default rules on first read', () => {
+  it('seeds at least 8 default rules on first read', () => {
     const rules = listApprovalRules(ENT);
-    expect(rules.length).toBe(8);
-    expect(rules.map((r) => r.object_type).sort()).toEqual([
+    // B1S2-R · architect-owned posture fix · exact-count ban
+    expect(rules.length).toBeGreaterThanOrEqual(8);
+    const types = rules.map((r) => r.object_type);
+    for (const expected of [
       'billpassing_deviation', 'logistics_dispute', 'procure_po', 'production_order',
       'requestx_indent', 'salesx_discount', 'servicedesk_proposal', 'stock_issue',
-    ]);
+    ]) {
+      expect(types).toContain(expected);
+    }
   });
 
   it('resolveSlab · slab 0 below auto-threshold', () => {
