@@ -158,6 +158,18 @@ export default function LogisticDashboard() {
               <p className="text-[10px] text-muted-foreground font-mono">{fmt(data.dspAmt)}</p>
             </CardContent>
           </Card>
+          {/* Sprint WMS3 · ARC CLOSE · additive nav card */}
+          <Card
+            className="cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => navigate('/erp/logistic/manifest-queue')}
+          >
+            <CardContent className="p-4">
+              <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground mt-2">Manifest Queue</p>
+              <p className="text-2xl font-bold font-mono mt-1">→</p>
+              <p className="text-[10px] text-muted-foreground">Acknowledge dispatch manifests</p>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
