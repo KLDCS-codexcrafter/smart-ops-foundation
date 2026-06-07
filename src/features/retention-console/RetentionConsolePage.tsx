@@ -77,6 +77,8 @@ export default function RetentionConsolePage(): JSX.Element {
 
   const summary = useMemo(() => {
     if (!entityCode) return null;
+    // `report` is read intentionally so the summary refreshes after Run Evaluation.
+    void report;
     return getRetentionSummary(entityCode);
   }, [entityCode, report]);
 
