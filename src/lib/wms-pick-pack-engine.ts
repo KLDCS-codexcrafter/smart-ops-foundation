@@ -209,7 +209,7 @@ export function generatePicklists(
       }
     }
     // Item-first walk grouping: stable sort by item_id
-    rawLines.sort((a, b) => a.item_id.localeCompare(b.item_id));
+    rawLines.sort((a, b) => (a.item_id ?? '').localeCompare(b.item_id ?? ''));
 
     const picklist: Picklist = {
       id: `pl-${Date.now()}-${Math.random().toString(36).slice(2, 6)}-${bucket}`,
