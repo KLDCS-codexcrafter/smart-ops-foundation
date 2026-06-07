@@ -67,9 +67,9 @@ export function WMS3ManifestConsolePanel() {
   const [version, setVersion] = useState(0);
   const refresh = () => setVersion((v) => v + 1);
 
-  const shipments = useMemo(() => listShipments(entityCode), [entityCode, version]);
-  const manifests = useMemo(() => listManifests(entityCode), [entityCode, version]);
-  const summary = useMemo(() => getManifestSummary(entityCode), [entityCode, version]);
+  const shipments = useMemo(() => { void version; return listShipments(entityCode); }, [entityCode, version]);
+  const manifests = useMemo(() => { void version; return listManifests(entityCode); }, [entityCode, version]);
+  const summary = useMemo(() => { void version; return getManifestSummary(entityCode); }, [entityCode, version]);
   const transporters: LogisticMasterLite[] = useMemo(() => loadLogistics(entityCode), [entityCode]);
   const exportPOs = useMemo(() => readExportPOs(entityCode), [entityCode]);
 

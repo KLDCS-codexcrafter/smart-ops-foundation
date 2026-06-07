@@ -52,7 +52,7 @@ export default function LogisticManifestQueue() {
 
   const manifests = useMemo(() => {
     if (!session) return [];
-    return listManifestsForTransporter(session.entity_code, session.logistic_id);
+    void version; return listManifestsForTransporter(session.entity_code, session.logistic_id);
   }, [session, version]);
 
   if (!session) return <LogisticLayout title="Manifest Queue"><div /></LogisticLayout>;
