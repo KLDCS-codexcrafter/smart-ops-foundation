@@ -38,12 +38,17 @@ export function WMS1PackingConsolePanel() {
   const { entityCode } = useCardEntitlement();
   const [version, setVersion] = useState(0);
 
-  const summary = useMemo(() => getPickPackSummary(entityCode), [entityCode, version]);
-  const completedPicklists = useMemo(
+  const [summary, setSummary] = useState(() => getPickPackSummary(entityCode));
+  const [completedPicklists, setCompletedPicklists] = useState<Picklist[]>(
     () => readPicklists(entityCode).filter((p) => p.status === 'completed'),
-    [entityCode, version],
   );
-  const packGroups = useMemo(() => readPackGroups(entityCode), [entityCode, version]);
+  const [packGroups, setPackGroups] = useState<PackGroup[]>(() => readPackGroups(entityCode));
+
+  useEffect(() => {
+    setSummary(getPickPackSummary(entityCode));
+    setCompletedPicklists(readPicklists(entityCode).filter((p) => p.status === 'completed'));
+    setPackGroups(readPackGroups(entityCode));
+  }, [entityCode, version]);
 
   function handleCreate(picklistId: string) {
     const pg = createPackGroup(entityCode, picklistId);
