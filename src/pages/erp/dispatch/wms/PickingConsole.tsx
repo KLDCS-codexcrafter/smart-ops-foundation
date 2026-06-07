@@ -45,9 +45,15 @@ export function WMS1PickingConsolePanel() {
   const [version, setVersion] = useState(0);
   const [activePicklistId, setActivePicklistId] = useState<string | null>(null);
 
-  const summary = useMemo(() => getPickPackSummary(entityCode), [entityCode, version]);
-  const pickable = useMemo(() => getOpenPickableOrders(entityCode), [entityCode, version]);
-  const picklists = useMemo(() => readPicklists(entityCode), [entityCode, version]);
+  const [summary, setSummary] = useState(() => getPickPackSummary(entityCode));
+  const [pickable, setPickable] = useState(() => getOpenPickableOrders(entityCode));
+  const [picklists, setPicklists] = useState<Picklist[]>(() => readPicklists(entityCode));
+
+  useEffect(() => {
+    setSummary(getPickPackSummary(entityCode));
+    setPickable(getOpenPickableOrders(entityCode));
+    setPicklists(readPicklists(entityCode));
+  }, [entityCode, version]);
 
   useEffect(() => { setActivePicklistId(null); }, [entityCode]);
 
