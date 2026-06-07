@@ -244,7 +244,7 @@ describe('B1S2-R · user prefs round-trip', () => {
   });
 
   it('threshold drives the snapshot breached flag (count > threshold)', () => {
-    const qakey = 'erp_v1_qa_inspections_' + E;
+    const qakey = 'erp_qa_inspections_' + E;
     const inspections = Array.from({ length: 7 }).map((_, i) => ({
       id: `qa${i}`, qa_no: `QA${i}`, status: 'pending', inspector_user_id: 'x',
     }));
@@ -265,7 +265,7 @@ describe('B1S2-R · publishMyRemindersDigest', () => {
   });
 
   it('emits digest.my_reminders when at least one snapshot is breached', () => {
-    const qakey = 'erp_v1_qa_inspections_' + E;
+    const qakey = 'erp_qa_inspections_' + E;
     const inspections = Array.from({ length: 6 }).map((_, i) => ({
       id: `qa${i}`, qa_no: `QA${i}`, status: 'pending', inspector_user_id: 'x',
     }));
