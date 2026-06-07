@@ -343,10 +343,11 @@ export function suggestBins(
     const headroomBin = bins.find((b) => {
       if (b.godown_id !== godownId) return false;
       if (b.capacity == null) return false; // unmeasured → skip
+      if (suggestions.some((s) => s.bin_label_id === b.id)) return false; // skip bins already proposed
       const used = placedByBin.get(b.id) ?? 0;
       return used < b.capacity;
     });
-    if (headroomBin && !suggestions.some((s) => s.bin_label_id === headroomBin.id)) {
+    if (headroomBin) {
       suggestions.push({
         bin_label_id: headroomBin.id,
         bin_location_code: headroomBin.location_code,
