@@ -11,6 +11,8 @@
  * [JWT] GET/POST/PATCH /api/store/stock-issues
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type StockIssueStatus = 'draft' | 'issued' | 'cancelled';
 
 export interface StockIssueLine {
@@ -65,6 +67,8 @@ export interface StockIssue {
   reference_no?: string | null;
   voucher_hash?: string | null;
 
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   updated_at: string;
   cancelled_at: string | null;

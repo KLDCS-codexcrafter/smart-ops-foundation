@@ -4,6 +4,8 @@
  * [JWT] GET/POST /api/dispatch/pods
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type PODStatus = 'pending' | 'captured' | 'verified' | 'disputed' | 'rejected';
 
 export type POVerificationMethod = 'gps' | 'photo' | 'signature' | 'otp' | 'receiver_id';
@@ -66,6 +68,9 @@ export interface POD {
   exception_type?: PODExceptionType;
   exception_notes?: string;
 
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }

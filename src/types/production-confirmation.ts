@@ -6,6 +6,8 @@
  * @[JWT]    erp_production_confirmations_<entityCode>
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type ProductionConfirmationStatus = 'draft' | 'confirmed' | 'cancelled';
 
 export interface ProductionConfirmationStatusEvent {
@@ -81,6 +83,8 @@ export interface ProductionConfirmation {
   status_history: ProductionConfirmationStatusEvent[];
 
   notes: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   created_by: string;
   updated_at: string;

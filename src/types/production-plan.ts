@@ -6,6 +6,7 @@
  */
 import type { ApprovalEvent } from '@/types/material-indent';
 
+import type { RetentionPolicyId } from './record-retention';
 export type ProductionPlanType =
   | 'standalone'
   | 'sales_plan'
@@ -139,6 +140,8 @@ export interface ProductionPlan {
 
   notes: string;
 
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   created_by: string;
   updated_at: string;

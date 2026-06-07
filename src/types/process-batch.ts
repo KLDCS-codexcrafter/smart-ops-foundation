@@ -7,6 +7,8 @@
  *           ProductionOrder 6-state machine stays 0-diff (invariant #3).
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 /** Process batch 8-state lifecycle (vs discrete 6-state ProductionOrder). */
 export type ProcessBatchStatus =
   | 'draft'
@@ -122,6 +124,9 @@ export interface ProcessBatch {
   status_history: ProcessBatchStatusEvent[];
   cip_record: CIPRecord | null;
   notes: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }

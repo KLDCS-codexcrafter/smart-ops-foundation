@@ -4,6 +4,7 @@
  * [JWT] Replace with GET/POST /api/accounting/vouchers
  */
 import type { VoucherBaseType } from './voucher-type';
+import type { RetentionPolicyId } from './record-retention';
 import type { AssetUnitLine } from './fixed-asset';
 
 export interface VoucherLedgerLine {
@@ -231,6 +232,8 @@ export interface Voucher {
   received_by?: string;
   is_cancelled?: boolean;
   created_by: string;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   updated_at: string;
   posted_at?: string;
@@ -305,6 +308,8 @@ export interface JournalEntry {
   asset_centre_id?: string | null;        // NEW · D-218 two-master architecture · FK to AssetCentre.id
   project_centre_id?: string | null;      // NEW · D-218 reserved for next sprint (T-Phase-1.1.2-a)
   is_cancelled: boolean;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
 }
 
@@ -329,6 +334,8 @@ export interface StockEntry {
   value: number;
   uom: string;
   is_cancelled: boolean;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
 }
 
@@ -354,6 +361,8 @@ export interface OutstandingEntry {
   status: 'open' | 'partial' | 'settled' | 'cancelled';
   asset_centre_id?: string | null;        // NEW · D-218 two-master architecture · FK to AssetCentre.id
   project_centre_id?: string | null;      // NEW · D-218 reserved for next sprint (T-Phase-1.1.2-a)
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
   updated_at: string;
 }
@@ -395,6 +404,8 @@ export interface GSTEntry {
   irn?: string;
   ewb_no?: string;
   is_cancelled: boolean;
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
   created_at: string;
 }
 

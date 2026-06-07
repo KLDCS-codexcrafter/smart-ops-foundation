@@ -4,6 +4,8 @@
  * [JWT] GET/POST/PATCH /api/salesx/sales-return-memos
  */
 
+
+import type { RetentionPolicyId } from './record-retention';
 export type SalesReturnMemoStatus =
   | 'pending'
   | 'approved'
@@ -75,6 +77,9 @@ export interface SalesReturnMemo {
   credit_note_voucher_no: string | null;
   credit_note_posted_at: string | null;
 
+  // // P8.6 floor-plant · TXUI-2 deferral resolved under P2BB-Retention authority.
+  retention_policy?: RetentionPolicyId;
+  created_by?: string;
   created_at: string;
   updated_at: string;
 }
