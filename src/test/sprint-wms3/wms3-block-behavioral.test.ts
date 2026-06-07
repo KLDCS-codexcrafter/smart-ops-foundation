@@ -292,7 +292,13 @@ describe('WMS3 · manifest engine', () => {
   });
 
   it('listManifestsForTransporter filters by transporter_id', () => {
-    seedPackedGroup('pgT1'); seedPackedGroup('pgT2');
+    // Seed two packed groups in a single store write
+    const groups: PackGroup[] = ['pgT1', 'pgT2'].map((id) => ({
+      id, pack_group_no: `PG-${id}`, entity_id: E, picklist_id: 'pl-1', status: 'packed',
+      lines: [{ id: `${id}-l`, picklist_line_id: 'pll', item_id: 'i', item_name: 'X', qty: 1 }],
+      created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
+    }));
+    localStorage.setItem(packGroupsKey(E), JSON.stringify(groups));
     createShipmentsFromPacked(E);
     const ships = listShipments(E);
     const m1 = buildManifest(E, 'tx1', 'BlueDart', [ships[0].id]);
