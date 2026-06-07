@@ -24,6 +24,9 @@ import {
   PackageCheck, ClipboardList, FileCheck2,
   // UPRA-3 Phase A Step 2
   Receipt,
+  // Sprint WMS1 · Warehouse · Pick & Pack
+  Boxes, PackageSearch,
+
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -60,7 +63,11 @@ export type DispatchHubModule =
   // UPRA-3 Phase A Step 2 · Tier-1 NEW
   | 'dh-r-transporter-invoice-register'
   // Sprint 46 Pass 1 · Theme A §1.4 · Inward EWB Monitor (re-scoped per Q1=A1)
-  | 'dh-r-ewb-monitor';
+  | 'dh-r-ewb-monitor'
+  // Sprint WMS1 · Warehouse · Pick & Pack (additive registration · §H allowlist)
+  | 'dh-w-picking-console'
+  | 'dh-w-packing-console';
+
 
 interface DispatchHubSidebarProps {
   activeModule: DispatchHubModule;
@@ -95,6 +102,12 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'EWB Monitor',                  module: 'dh-r-ewb-monitor',                  icon: ShieldAlert, keyboard: 'l r e' },
 ];
 
+// Sprint WMS1 · Warehouse · Pick & Pack
+const WAREHOUSE_ITEMS: MenuItem[] = [
+  { label: 'Picking Console', module: 'dh-w-picking-console', icon: PackageSearch, keyboard: 'l w p' },
+  { label: 'Packing Console', module: 'dh-w-packing-console', icon: Boxes,         keyboard: 'l w k' },
+];
+
 // Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
 const INWARD_ITEMS: MenuItem[] = [
   { label: 'Inward Receipt Entry',    module: 'dh-i-inward-receipt-entry',    icon: PackageOpen,  keyboard: 'l i e' },
@@ -111,6 +124,7 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
   const [txOpen, setTxOpen] = useState(activeModule.startsWith('dh-t-'));
   const [reportsOpen, setReportsOpen] = useState(activeModule.startsWith('dh-r-'));
   const [inwardOpen, setInwardOpen] = useState(activeModule.startsWith('dh-i-'));
+  const [warehouseOpen, setWarehouseOpen] = useState(activeModule.startsWith('dh-w-'));
 
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border">
@@ -217,6 +231,38 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 {INWARD_ITEMS.map(i => (
+                  <SidebarMenuItem key={i.module}>
+                    <SidebarMenuButton
+                      onClick={() => onModuleChange(i.module)}
+                      isActive={activeModule === i.module}
+                      className={cn('pl-8', activeModule === i.module && 'bg-blue-500/15 text-blue-600')}
+                    >
+                      <i.icon className="h-3.5 w-3.5" />
+                      <span className="text-[13px]">{i.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </CollapsibleContent>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </Collapsible>
+
+        {/* Warehouse · Pick & Pack (Sprint WMS1) */}
+        <Collapsible open={warehouseOpen} onOpenChange={setWarehouseOpen} className="mt-2">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <CollapsibleTrigger asChild>
+                <SidebarMenuButton
+                  isActive={activeModule.startsWith('dh-w-')}
+                  className={cn(activeModule.startsWith('dh-w-') && 'bg-blue-500/15 text-blue-600')}
+                >
+                  <Boxes className="h-4 w-4" />
+                  <span>Warehouse · Pick &amp; Pack</span>
+                  <ChevronRight className={`ml-auto h-3 w-3 transition-transform ${warehouseOpen ? 'rotate-90' : ''}`} />
+                </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                {WAREHOUSE_ITEMS.map(i => (
                   <SidebarMenuItem key={i.module}>
                     <SidebarMenuButton
                       onClick={() => onModuleChange(i.module)}

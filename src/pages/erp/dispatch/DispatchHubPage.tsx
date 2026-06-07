@@ -39,6 +39,10 @@ import { PODRegisterPanel } from './reports/PODRegister';
 import { TransporterInvoiceRegisterPanel } from './reports/TransporterInvoiceRegister';
 // Sprint 46 Pass 1 · Theme A §1.4
 import { EWBMonitorPanel } from './reports/EWBMonitor';
+// Sprint WMS1 · Warehouse · Pick & Pack
+import { WMS1PickingConsolePanel } from './wms/PickingConsole';
+import { WMS1PackingConsolePanel } from './wms/PackingConsole';
+
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
@@ -78,6 +82,9 @@ function renderModule(
     case 'dh-r-transporter-invoice-register': return <TransporterInvoiceRegisterPanel />;
     // Sprint 46 Pass 1 · Theme A §1.4
     case 'dh-r-ewb-monitor':                  return <EWBMonitorPanel />;
+    // Sprint WMS1
+    case 'dh-w-picking-console':              return <WMS1PickingConsolePanel />;
+    case 'dh-w-packing-console':              return <WMS1PackingConsolePanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
