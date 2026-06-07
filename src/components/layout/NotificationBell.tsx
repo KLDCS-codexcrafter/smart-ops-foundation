@@ -59,6 +59,10 @@ export function NotificationBell() {
   useEffect(() => {
     if (!open || !entityCode) return;
     runOpenDigests(entityCode, userId);
+    // Sprint B1S1 · additive call alongside the 3 existing digests · idempotent per day.
+    void import('@/lib/approval-rail-engine').then((m) => {
+      try { m.publishApprovalsDigest(entityCode, userId); } catch { /* swallow */ }
+    });
     bump();
   }, [open, entityCode, userId, bump]);
 

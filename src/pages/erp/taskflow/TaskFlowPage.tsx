@@ -34,6 +34,7 @@ import MediaVaultPage from './MediaVaultPage';
 import FollowUpsPage from './FollowUpsPage';
 import ChatGovernancePage from './ChatGovernancePage';
 import HandoverPage from './HandoverPage';
+import ApprovalsInboxPage from './ApprovalsInboxPage';
 import type { TaskFlowModule } from './TaskFlowSidebar.types';
 
 const VALID_MODULES: TaskFlowModule[] = [
@@ -45,6 +46,7 @@ const VALID_MODULES: TaskFlowModule[] = [
   'media-vault', 'follow-ups', 'chat-governance', 'handover',
   'accountability', 'close-policies', 'work-diary',
   'expense-center',
+  'approvals-inbox',
 ];
 
 export default function TaskFlowPage(): JSX.Element {
@@ -92,6 +94,7 @@ export default function TaskFlowPage(): JSX.Element {
       case 'close-policies':     return <ClosePoliciesPage />;
       case 'work-diary':         return <WorkDiaryPage />;
       case 'expense-center':     return <ExpenseCenterPage />;
+      case 'approvals-inbox':    return <ApprovalsInboxPage />;
       default:                   return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
   };

@@ -20,7 +20,8 @@ export type TaskPriority = 'critical' | 'high' | 'medium' | 'low';
 export type TaskCategory =
   | 'operations' | 'finance' | 'compliance' | 'hr' | 'it' | 'sales'
   | 'marketing' | 'support' | 'general'
-  | 'internal_audit' | 'external_audit'; // TF-9 Operix extension
+  | 'internal_audit' | 'external_audit' // TF-9 Operix extension
+  | 'approval'; // Sprint B1S1 · approval-rail-engine mirror tasks
 
 export interface RecurringConfig {
   frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly';
@@ -62,6 +63,9 @@ export interface Task {
   acknowledgedBy?: string | null;  // TF-29a
   createdAt: string;
   updatedAt: string;
+  // Sprint B1S1 · approval-rail mirror-task meta (additive · only set when category='approval')
+  // Engine: src/lib/approval-rail-engine.ts · Type: src/types/approval-rail.ts ApprovalTaskMeta
+  approval?: import('./approval-rail').ApprovalTaskMeta;
 }
 
 // Accountability Spine records (TF-29 b/c)

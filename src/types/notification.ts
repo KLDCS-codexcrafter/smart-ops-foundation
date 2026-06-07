@@ -37,7 +37,11 @@ export type NotificationKind =
   // on-open digests (3 · Pass 2 · Block 1.2 §4)
   | 'digest.overdue_tasks'
   | 'digest.ptp_due'
-  | 'digest.obligations_due';
+  | 'digest.obligations_due'
+  // Sprint B1S1 · approval-rail-engine (additive · TWO publishers + ONE digest)
+  | 'approval.pending'
+  | 'approval.decided'
+  | 'digest.approvals_pending';
 
 export type NotificationSeverity = 'info' | 'success' | 'warning' | 'critical';
 
