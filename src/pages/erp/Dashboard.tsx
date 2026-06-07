@@ -28,6 +28,8 @@ const CommandPalette = lazy(() =>
 const CrossCardSearch = lazy(() =>
   import("@/components/layout/CrossCardSearch").then(m => ({ default: m.CrossCardSearch }))
 );
+// Sprint B1S2-R · R2 · additive lazy My Reminders dashboard widget.
+const MyRemindersWidget = lazy(() => import("@/components/dashboard/MyRemindersWidget"));
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useCardEntitlement } from "@/hooks/useCardEntitlement";
 import { topCardsForUser } from "@/lib/card-frequency-tracker";
