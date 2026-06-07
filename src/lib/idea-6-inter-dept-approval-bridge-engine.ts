@@ -131,6 +131,8 @@ export function evaluateInterDeptApproval(input: {
     variance_pct: variance,
     workflow_id: finalWf.id,
     template_id: template?.id ?? null,
+    // P8.7 · THREADED · target department is the natural dept context for this evaluation
+    dept_id: resolveDeptFromContext({ explicit: input.to_department }),
   };
 }
 
