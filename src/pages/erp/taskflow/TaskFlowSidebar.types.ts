@@ -36,4 +36,6 @@ export type TaskFlowModule =
   | 'work-diary'
   | 'expense-center'
   // ─ Approval Rail (Sprint B1S1) ─────────────────────────────────────
-  | 'approvals-inbox';
+  | 'approvals-inbox'
+  // ─ My Reminders (Sprint B1S2) ──────────────────────────────────────
+  | 'my-reminders';
