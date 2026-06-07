@@ -139,7 +139,15 @@ function serializeForHash(entry: AuditTrailEntry): string {
 
 // ──────────────────────────────────────────────────────────────────────────
 // Append (synchronous-safe wrapper · fire-and-forget)
+//
+// Per-entity tail-promise queue ensures concurrent logAudit calls within the
+// same event-loop tick serialize their store mutations — without it, each
+// detached chainAuditEntryAsync would loadStore() before its siblings
+// saveStore(), and last-write-wins would drop links. The queue keeps the
+// fire-and-forget guarantee for callers while preserving chain correctness.
 // ──────────────────────────────────────────────────────────────────────────
+
+const chainQueueByEntity = new Map<string, Promise<void>>();
 
 /**
  * Forge a chain link for a freshly-written audit entry.
@@ -151,9 +159,14 @@ function serializeForHash(entry: AuditTrailEntry): string {
  * (entity, entityType) chain, this is a no-op.
  */
 export function chainAuditEntry(entry: AuditTrailEntry): void {
-  void chainAuditEntryAsync(entry).catch((err) => {
-    console.error('[audit-typed-chain] append failed (non-fatal):', err);
-  });
+  const entityCode = entry.entity_id || 'UNKNOWN';
+  const prev = chainQueueByEntity.get(entityCode) ?? Promise.resolve();
+  const next = prev
+    .then(() => chainAuditEntryAsync(entry))
+    .catch((err) => {
+      console.error('[audit-typed-chain] append failed (non-fatal):', err);
+    });
+  chainQueueByEntity.set(entityCode, next);
 }
 
 async function chainAuditEntryAsync(entry: AuditTrailEntry): Promise<void> {
