@@ -46,6 +46,7 @@ const VALID_MODULES: TaskFlowModule[] = [
   'media-vault', 'follow-ups', 'chat-governance', 'handover',
   'accountability', 'close-policies', 'work-diary',
   'expense-center',
+  'approvals-inbox',
 ];
 
 export default function TaskFlowPage(): JSX.Element {
