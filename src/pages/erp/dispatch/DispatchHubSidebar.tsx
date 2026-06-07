@@ -102,6 +102,12 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'EWB Monitor',                  module: 'dh-r-ewb-monitor',                  icon: ShieldAlert, keyboard: 'l r e' },
 ];
 
+// Sprint WMS1 · Warehouse · Pick & Pack
+const WAREHOUSE_ITEMS: MenuItem[] = [
+  { label: 'Picking Console', module: 'dh-w-picking-console', icon: PackageSearch, keyboard: 'l w p' },
+  { label: 'Packing Console', module: 'dh-w-packing-console', icon: Boxes,         keyboard: 'l w k' },
+];
+
 // Sprint 6-pre-1 · Card #6 Inward Logistic FOUNDATION
 const INWARD_ITEMS: MenuItem[] = [
   { label: 'Inward Receipt Entry',    module: 'dh-i-inward-receipt-entry',    icon: PackageOpen,  keyboard: 'l i e' },
