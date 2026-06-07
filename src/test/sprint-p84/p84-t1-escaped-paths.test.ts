@@ -91,6 +91,8 @@ describe('P8.4.T1 · scheduling-engine.rescheduleProductionOrder emits productio
       linked_production_plan_ids: [],
       status_history: [],
       machine_id: null,
+      production_team_id: null,
+      lines: [],
       department_id: 'dept-1',
       updated_at: new Date().toISOString(),
       updated_by: 'tester',
