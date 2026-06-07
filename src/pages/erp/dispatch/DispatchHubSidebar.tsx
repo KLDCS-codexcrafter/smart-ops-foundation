@@ -247,6 +247,38 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
           </SidebarMenu>
         </Collapsible>
 
+        {/* Warehouse · Pick & Pack (Sprint WMS1) */}
+        <Collapsible open={warehouseOpen} onOpenChange={setWarehouseOpen} className="mt-2">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <CollapsibleTrigger asChild>
+                <SidebarMenuButton
+                  isActive={activeModule.startsWith('dh-w-')}
+                  className={cn(activeModule.startsWith('dh-w-') && 'bg-blue-500/15 text-blue-600')}
+                >
+                  <Boxes className="h-4 w-4" />
+                  <span>Warehouse · Pick &amp; Pack</span>
+                  <ChevronRight className={`ml-auto h-3 w-3 transition-transform ${warehouseOpen ? 'rotate-90' : ''}`} />
+                </SidebarMenuButton>
+              </CollapsibleTrigger>
+              <CollapsibleContent>
+                {WAREHOUSE_ITEMS.map(i => (
+                  <SidebarMenuItem key={i.module}>
+                    <SidebarMenuButton
+                      onClick={() => onModuleChange(i.module)}
+                      isActive={activeModule === i.module}
+                      className={cn('pl-8', activeModule === i.module && 'bg-blue-500/15 text-blue-600')}
+                    >
+                      <i.icon className="h-3.5 w-3.5" />
+                      <span className="text-[13px]">{i.label}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </CollapsibleContent>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </Collapsible>
+
         {/* Reports */}
         <Collapsible open={reportsOpen} onOpenChange={setReportsOpen} className="mt-2">
           <SidebarMenu>
