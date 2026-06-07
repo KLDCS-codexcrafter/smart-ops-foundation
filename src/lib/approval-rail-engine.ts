@@ -22,7 +22,7 @@ import {
   type ApprovalObjectType,
   type ApprovalRuleRow,
   type ApprovalTaskMeta,
-  type PendingApprovalItem as _PendingApprovalItem,
+  
   approvalDecidedByLedgerKey,
   approvalRulesKey,
 } from '@/types/approval-rail';
