@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { LogisticLayout } from '@/features/logistic/LogisticLayout';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Truck, FileText, IndianRupee, AlertCircle, Activity } from 'lucide-react';
+import { AlertTriangle, Truck, FileText, IndianRupee, AlertCircle, Activity, ClipboardCheck } from 'lucide-react';
 import { getLogisticSession } from '@/lib/logistic-auth-engine';
 import {
   lrAcceptancesKey, logisticActivityKey,
@@ -156,6 +156,18 @@ export default function LogisticDashboard() {
               <p className="text-xs text-muted-foreground mt-2">Open Disputes</p>
               <p className="text-2xl font-bold font-mono mt-1">{data.openDspCount}</p>
               <p className="text-[10px] text-muted-foreground font-mono">{fmt(data.dspAmt)}</p>
+            </CardContent>
+          </Card>
+          {/* Sprint WMS3 · ARC CLOSE · additive nav card */}
+          <Card
+            className="cursor-pointer hover:shadow-md transition-shadow"
+            onClick={() => navigate('/erp/logistic/manifest-queue')}
+          >
+            <CardContent className="p-4">
+              <ClipboardCheck className="h-4 w-4 text-muted-foreground" />
+              <p className="text-xs text-muted-foreground mt-2">Manifest Queue</p>
+              <p className="text-2xl font-bold font-mono mt-1">→</p>
+              <p className="text-[10px] text-muted-foreground">Acknowledge dispatch manifests</p>
             </CardContent>
           </Card>
         </div>

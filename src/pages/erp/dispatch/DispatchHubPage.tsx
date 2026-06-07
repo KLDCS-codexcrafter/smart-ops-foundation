@@ -45,6 +45,8 @@ import { WMS1PackingConsolePanel } from './wms/PackingConsole';
 // Sprint WMS2 · Warehouse · ASN/Putaway + Shelf View
 import { WMS2PutawayConsolePanel } from './wms/PutawayConsole';
 import { WMS2ShelfViewPanel } from './wms/ShelfView';
+// Sprint WMS3 · Warehouse · Manifest Console (ARC CLOSE)
+import { WMS3ManifestConsolePanel } from './wms/ManifestConsole';
 
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
@@ -91,6 +93,8 @@ function renderModule(
     // Sprint WMS2
     case 'dh-w-putaway-console':              return <WMS2PutawayConsolePanel />;
     case 'dh-w-shelf-view':                   return <WMS2ShelfViewPanel />;
+    // Sprint WMS3 · ARC CLOSE
+    case 'dh-w-manifest-console':             return <WMS3ManifestConsolePanel />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
