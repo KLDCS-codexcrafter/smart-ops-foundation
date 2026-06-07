@@ -56,11 +56,14 @@ export default function ApprovalsInboxPage(): JSX.Element {
 
   const digest = useMemo(
     () => (entityCode ? getApprovalsDigest(entityCode) : { waiting: 0, overdue: 0, oldest_days: 0 }),
+    // tick re-runs deliberately after each decision/sync (LS read)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, tick],
   );
 
   const pending = useMemo(
     () => (entityCode ? listPendingMirrors(entityCode) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, tick],
   );
 
@@ -76,6 +79,7 @@ export default function ApprovalsInboxPage(): JSX.Element {
   }, [pending]);
 
   const adapters = useMemo(() => listRegisteredAdapters(), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const rules = useMemo(() => (entityCode ? listApprovalRules(entityCode) : []), [entityCode, tick]);
 
   const ageColor = (p: PendingMirror): string => {
