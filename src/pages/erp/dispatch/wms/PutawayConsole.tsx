@@ -26,7 +26,7 @@ import {
 import { PackageOpen, Inbox, ListChecks } from 'lucide-react';
 import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
-import type { AsnRecord, AsnSource, BinSuggestion } from '@/types/wms-putaway';
+import type { AsnRecord, BinSuggestion } from '@/types/wms-putaway';
 import { ASN_SOURCE_LABELS, ASN_STATUS_LABELS, SUGGESTION_BASIS_LABELS } from '@/types/wms-putaway';
 import {
   listAsns,
