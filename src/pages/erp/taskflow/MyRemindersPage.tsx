@@ -33,7 +33,7 @@ const fmtIST = (iso: string): string =>
 export default function MyRemindersPage(): JSX.Element {
   const { entityCode } = useEntityCode();
   const user = useCurrentUser();
-  const userName = user?.displayName ?? user?.id ?? 'me';
+  const userName = user?.name ?? user?.id ?? 'me';
   const [rows, setRows] = useState<MyReminder[]>([]);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState('');
