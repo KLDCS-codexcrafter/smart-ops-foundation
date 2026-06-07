@@ -24,6 +24,9 @@ import {
   PackageCheck, ClipboardList, FileCheck2,
   // UPRA-3 Phase A Step 2
   Receipt,
+  // Sprint WMS1 · Warehouse · Pick & Pack
+  Boxes, PackageSearch,
+
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -60,7 +63,11 @@ export type DispatchHubModule =
   // UPRA-3 Phase A Step 2 · Tier-1 NEW
   | 'dh-r-transporter-invoice-register'
   // Sprint 46 Pass 1 · Theme A §1.4 · Inward EWB Monitor (re-scoped per Q1=A1)
-  | 'dh-r-ewb-monitor';
+  | 'dh-r-ewb-monitor'
+  // Sprint WMS1 · Warehouse · Pick & Pack (additive registration · §H allowlist)
+  | 'dh-w-picking-console'
+  | 'dh-w-packing-console';
+
 
 interface DispatchHubSidebarProps {
   activeModule: DispatchHubModule;
