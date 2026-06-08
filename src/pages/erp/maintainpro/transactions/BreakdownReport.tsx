@@ -21,6 +21,7 @@ import {
 import type { BreakdownReport as BD } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
+void onEnterNext;
 
 interface Props { onNavigate: (m: string) => void }
 
