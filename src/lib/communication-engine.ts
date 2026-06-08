@@ -379,16 +379,7 @@ export function dispatch(entityCode: string, message: OutboxMessage): DispatchRe
   // Bounded log (institutional pattern).
   lw(outboxKey(entityCode), log.slice(0, 500));
 
-  try {
-    logAudit({
-      action: 'create' as never,
-      recordType: 'outbox_message' as never,
-      recordId: next.id,
-      entityId: entityCode,
-      performedBy: next.created_by ?? 'system',
-      details: { delivery_mode: next.delivery_mode, sender_class: next.sender_class, object_type: next.object_type },
-    });
-  } catch { /* swallow */ }
+  safeAudit({ entityCode: entityCode, action: 'create', recordId: next.id, recordLabel: 'outbox_message', beforeState: null, afterState: null });
 
   return { ok: true, message: next, mailto, eml };
 }
@@ -429,7 +420,7 @@ export function enqueueFromEvent(input: EnqueueEventInput): OutboxMessage | null
     const log = ls<OutboxMessage[]>(outboxKey(input.entityCode), []);
     log.unshift(message);
     lw(outboxKey(input.entityCode), log.slice(0, 500));
-    try { logAudit({ action: 'create' as never, recordType: 'outbox_message' as never, recordId: message.id, entityId: input.entityCode, performedBy: 'system', details: { object_type: message.object_type, sender_class: 'system' } }); } catch { /* swallow */ }
+    safeAudit({ entityCode: input.entityCode, action: 'create', recordId: message.id, recordLabel: 'outbox_message', beforeState: null, afterState: null });
     return message;
   } catch {
     return null;
