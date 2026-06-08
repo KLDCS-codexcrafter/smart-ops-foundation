@@ -36,6 +36,7 @@ import { createMaterialIndent, getApprovalTier, runAutoRules, submitIndent, canc
 import { APPROVAL_MATRIX } from '@/types/requisition-common';
 import type { IndentCategory, MaterialIndent, MaterialIndentLine, Priority } from '@/types/material-indent';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 // useSmartDefaults — re-exported via useSprint27d1Mount (smartLedger / smartWarehouse)
 // Card #2.7-d-1 SD-13 marker · OOB-1 carry-forward
@@ -311,7 +312,7 @@ export function MaterialIndentEntry(): JSX.Element {
           </div>
           <div>
             <Label>Sub-type</Label>
-            <Input value={subType} onChange={e => setSubType(e.target.value)} />
+            <Input value={subType} onChange={e = onKeyDown={onEnterNext} > setSubType(e.target.value)} />
           </div>
           <div>
             <Label>Priority</Label>
@@ -341,7 +342,7 @@ export function MaterialIndentEntry(): JSX.Element {
                 <div key={l.id} className="grid grid-cols-12 gap-2 items-end border-b pb-2">
                   <div className="col-span-3">
                     <Label className="text-[10px]">Item</Label>
-                    <Input value={l.item_name} onChange={e => updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} />
+                    <Input value={l.item_name} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} />
                   </div>
                   <div className="col-span-1">
                     <Label className="text-[10px]">UoM</Label>
@@ -349,7 +350,7 @@ export function MaterialIndentEntry(): JSX.Element {
                   </div>
                   <div className="col-span-1">
                     <Label className="text-[10px]">Qty</Label>
-                    <Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} />
+                    <Input type="number" inputMode="decimal" value={l.qty} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { qty: Number(e.target.value) })} />
                   </div>
                   <div className="col-span-1">
                     <Label className="text-[10px]">Stock</Label>
@@ -357,7 +358,7 @@ export function MaterialIndentEntry(): JSX.Element {
                   </div>
                   <div className="col-span-2">
                     <Label className="text-[10px]">Est. Rate</Label>
-                    <Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} />
+                    <Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { estimated_rate: Number(e.target.value) })} />
                   </div>
                   <div className="col-span-2">
                     <Label className="text-[10px]">Est. Value</Label>
