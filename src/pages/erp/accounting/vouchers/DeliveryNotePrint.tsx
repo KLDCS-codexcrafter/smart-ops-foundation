@@ -50,6 +50,7 @@ export function DeliveryNotePrintPanel() {
         <DocSendBar objectType="delivery-memo" sourceCard="fincore" sourceRecord={{ id: voucherId } as Record<string, unknown>} />
       </div>
       <>
+      <>
         <div className="grid grid-cols-2 gap-4 text-[11px]">
           <div>
             <div className="text-[9px] uppercase tracking-wider text-muted-foreground">Consignor</div>
@@ -166,6 +167,7 @@ export function DeliveryNotePrintPanel() {
           </div>
         )}
       </>
+    </>
     </>
 );
   }, [payload]);
