@@ -99,7 +99,7 @@ export function upsertDepartmentEmail(entityCode: string, row: Omit<DepartmentEm
   const idx = list.findIndex((r) => r.id === id);
   if (idx >= 0) list[idx] = next; else list.push(next);
   lw(departmentEmailsKey(entityCode), list);
-  try { logAudit({ action: row.id ? 'update' : 'create', recordType: 'comm_department_email' as never, recordId: id, entityId: entityCode, performedBy: 'system', details: { card_id: next.card_id } }); } catch { /* swallow */ }
+  safeAudit({ entityCode: entityCode, action: row.id ? 'update' : 'create', recordId: id, recordLabel: 'comm_department_email', beforeState: null, afterState: null });
   return next;
 }
 export function deleteDepartmentEmail(entityCode: string, id: string): boolean {
@@ -107,7 +107,7 @@ export function deleteDepartmentEmail(entityCode: string, id: string): boolean {
   const next = list.filter((r) => r.id !== id);
   if (next.length === list.length) return false;
   lw(departmentEmailsKey(entityCode), next);
-  try { logAudit({ action: 'delete', recordType: 'comm_department_email' as never, recordId: id, entityId: entityCode, performedBy: 'system', details: {} }); } catch { /* swallow */ }
+  safeAudit({ entityCode: entityCode, action: 'cancel', recordId: id, recordLabel: 'comm_department_email', beforeState: null, afterState: null });
   return true;
 }
 
@@ -135,7 +135,7 @@ export function upsertTemplate(entityCode: string, row: Omit<TemplateRow, 'id'> 
   const idx = list.findIndex((r) => r.id === id);
   if (idx >= 0) list[idx] = next; else list.push(next);
   lw(templatesKey(entityCode), list);
-  try { logAudit({ action: row.id ? 'update' : 'create', recordType: 'comm_template' as never, recordId: id, entityId: entityCode, performedBy: 'system', details: { object_type: next.object_type } }); } catch { /* swallow */ }
+  safeAudit({ entityCode: entityCode, action: row.id ? 'update' : 'create', recordId: id, recordLabel: 'comm_template', beforeState: null, afterState: null });
   return next;
 }
 
@@ -157,7 +157,7 @@ export function saveCompanyMailSettings(entityCode: string, s: CompanyMailSettin
     credentials_state: s.credentials_state === 'configured_at_wave2' ? 'configured_at_wave2' : 'not_configured',
   };
   lw(companyMailSettingsKey(entityCode), allowed);
-  try { logAudit({ action: 'update', recordType: 'comm_mail_settings' as never, recordId: 'singleton', entityId: entityCode, performedBy: 'system', details: { credentials_state: allowed.credentials_state } }); } catch { /* swallow */ }
+  safeAudit({ entityCode: entityCode, action: 'update', recordId: 'singleton', recordLabel: 'comm_mail_settings', beforeState: null, afterState: null });
   return allowed;
 }
 
@@ -169,7 +169,7 @@ export function upsertUserMailProfile(entityCode: string, p: UserMailProfile): U
   const idx = list.findIndex((x) => x.user_name === p.user_name);
   if (idx >= 0) list[idx] = p; else list.push(p);
   lw(userMailProfilesKey(entityCode), list);
-  try { logAudit({ action: idx >= 0 ? 'update' : 'create', recordType: 'comm_user_profile' as never, recordId: p.user_name, entityId: entityCode, performedBy: 'system', details: {} }); } catch { /* swallow */ }
+  safeAudit({ entityCode: entityCode, action: idx >= 0 ? 'update' : 'create', recordId: p.user_name, recordLabel: 'comm_user_profile', beforeState: null, afterState: null });
   return p;
 }
 
