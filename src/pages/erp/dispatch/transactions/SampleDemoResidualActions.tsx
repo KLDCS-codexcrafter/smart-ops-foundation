@@ -40,10 +40,13 @@ export function SampleDemoResidualActionsPanel() {
 
   const soms = useMemo(
     () => ls<SampleOutwardMemo>(sampleOutwardMemosKey(entityCode)),
+    // bump is a deliberate refresh trigger after voucher posting
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, bump],
   );
   const doms = useMemo(
     () => ls<DemoOutwardMemo>(demoOutwardMemosKey(entityCode)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [entityCode, bump],
   );
 
