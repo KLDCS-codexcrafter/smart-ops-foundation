@@ -279,7 +279,7 @@ export function emitBomVarianceToSupplier(
   logAudit({
     entityCode,
     action: 'create',
-    entityType: 'dispatch_event',
+    entityType: 'dispatch_txn_event',
     recordId: entry.id,
     recordLabel: `BOM variance feedback · ${variance.length} rows`,
     beforeState: null,
@@ -358,6 +358,7 @@ export function buildDemoSerialRegister(entityCode: string): DemoSerialRow[] {
     for (const it of m.items) {
       const sn = (it.serial_no ?? '').trim();
       if (!sn) continue; // HONEST: no serial → no fabricated row
+      const dueDate = m.demo_end_date ?? null;
       rows.push({
         memo_id: m.id,
         memo_no: m.memo_no,
@@ -367,9 +368,9 @@ export function buildDemoSerialRegister(entityCode: string): DemoSerialRow[] {
         serial_no: sn,
         recipient_name: m.recipient_name,
         status: m.status,
-        return_due_date: m.return_due_date,
+        return_due_date: dueDate,
         is_overdue:
-          !!m.return_due_date && m.return_due_date < today &&
+          !!dueDate && dueDate < today &&
           m.status !== 'returned' && m.status !== 'converted' && m.status !== 'lost',
       });
     }
@@ -440,7 +441,7 @@ export function buildDispatchAnalyticsSnapshot(
     converted: doms.filter((d) => d.status === 'converted').length,
     lost: doms.filter((d) => d.status === 'lost').length,
     overdue: doms.filter(
-      (d) => d.return_due_date && d.return_due_date < today &&
+      (d) => d.demo_end_date && d.demo_end_date < today &&
              d.status !== 'returned' && d.status !== 'converted' && d.status !== 'lost',
     ).length,
   };
