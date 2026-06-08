@@ -3,12 +3,16 @@
  * @sprint      T-Phase-1.A.16b · Block D.3
  * @[JWT]       via createPMTickoff
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { createPMTickoff, listPMTickoffs, listEquipment } from '@/lib/maintainpro-engine';
 import type { PMTickoff } from '@/types/maintainpro';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext as _onEnterNext } from '@/lib/keyboard';
+void _onEnterNext;
 
 interface Props { onNavigate: (m: string) => void }
 const E = 'DEMO';
@@ -38,8 +42,9 @@ export function PMTickoffEntry(_props: Props): JSX.Element {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4" data-keyboard-form>
       <h1 className="text-2xl font-bold">PM Tick-off</h1>
+      <TallyVoucherHeader voucherTypeName="PM Tick-off" baseVoucherType="Memo" voucherFamily="pm_tickoff" voucherNo="" voucherDate={new Date().toISOString().slice(0, 10)} status="draft" />
       <Card><CardContent className="p-4">
         <Button onClick={submit}>Quick Tick-off (demo)</Button>
         <div className="mt-3 text-xs font-mono space-y-1">

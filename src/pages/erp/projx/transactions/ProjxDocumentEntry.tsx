@@ -6,6 +6,7 @@
  *              D-NEW-CE FormCarryForwardKit (12th consumer at v18 · partial coverage)
  */
 
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,6 +24,8 @@ import type { DocumentType } from '@/types/docvault';
 import type { ProjXModule } from '../ProjXSidebar.types';
 import { toast } from 'sonner';
 import { useFormCarryForwardChecklist } from '@/lib/form-carry-forward-kit';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface ProjxDocumentEntryProps {
   onNavigate: (m: ProjXModule) => void;
@@ -89,8 +92,10 @@ export function ProjxDocumentEntryPanel({ onNavigate }: ProjxDocumentEntryProps)
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-4 space-y-4 max-w-2xl">
+      <div className="p-4 space-y-4 max-w-2xl" data-keyboard-form>
         <h2 className="text-2xl font-semibold">New Project Document</h2>
+        <TallyVoucherHeader voucherTypeName="Project Document" baseVoucherType="Memo" voucherFamily="document" voucherNo="" voucherDate={new Date().toISOString().slice(0, 10)} status="draft" />
+
 
         <Card>
           <CardHeader><CardTitle>Document Details</CardTitle></CardHeader>
@@ -111,7 +116,7 @@ export function ProjxDocumentEntryPanel({ onNavigate }: ProjxDocumentEntryProps)
 
             <div>
               <Label htmlFor="title">Title *</Label>
-              <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <Input id="title" value={title} onChange={(e) => setTitle(e.target.value)} onKeyDown={onEnterNext} />
             </div>
 
             <div>
@@ -136,11 +141,11 @@ export function ProjxDocumentEntryPanel({ onNavigate }: ProjxDocumentEntryProps)
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="version">Version No *</Label>
-                <Input id="version" value={versionNo} onChange={(e) => setVersionNo(e.target.value)} />
+                <Input id="version" value={versionNo} onChange={(e) => setVersionNo(e.target.value)} onKeyDown={onEnterNext} />
               </div>
               <div>
                 <Label htmlFor="url">File URL (mock)</Label>
-                <Input id="url" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)} placeholder="auto-generated if blank" />
+                <Input id="url" value={fileUrl} onChange={(e) => setFileUrl(e.target.value)} placeholder="auto-generated if blank" onKeyDown={onEnterNext} />
               </div>
             </div>
 

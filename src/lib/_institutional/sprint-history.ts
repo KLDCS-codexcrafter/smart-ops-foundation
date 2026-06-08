@@ -1063,7 +1063,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🎨 Sprint TXUI-3 T-TXUI3-Voucher-Canonical · UI-floor arc · canonical voucher shell adoption across 16 Inventory/Production/RequestX forms · PRESENTATION-ONLY · business logic byte-identical · 15 ADOPT + 1 SEAM (IndentApprovalInbox · approval queue not entry form) · NO new engine (adoption sprint · honestly declared · sibling-register row carries empty newSiblings) · TallyVoucherHeader + onEnterNext consumed read-only · walls held: TallyVoucherHeader.tsx 0-DIFF · keyboard.ts 0-DIFF · every target form's save/validate/calc/submit/state/store-key 0-DIFF · all card engines 0-DIFF · applications.ts/routes/sidebars 0-DIFF · per-form diff table in TXUI3_close_summary.md confirms "logic touched? NO" for all 16 · B.6 flipped to 5b730d35 · 94→95 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'TXUI3' as unknown as number, code: 'T-TXUI3-Voucher-Canonical', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '5b730d35', loc: 900,
+    headSha: '8eb52305', predecessorSha: '5b730d35', loc: 900,
+    newSiblings: [],
+    bankDate: '2026-06-08', provenance: 'CONFIRMED',
+  },
+  // 🎨 Sprint TXUI-4 T-TXUI4-Voucher-Canonical · UI-floor arc · canonical voucher shell adoption across 17 MaintainPro/ProjX/Payout/QualiCheck forms · PRESENTATION-ONLY · business logic byte-identical · 16 ADOPT + 1 SEAM (AssetCapitalization · read-only list, no entry inputs · adopting TVH would require fabricating header state per row · iron-canon forbids) · NO new engine (adoption sprint · honestly declared · sibling-register row carries empty newSiblings) · TallyVoucherHeader + onEnterNext consumed read-only · COMPLETE adoption from pass 1 (TXUI-3 lesson honored): TVH + onEnterNext on inputs + state-bound props baked in · voucherNo BOUND from state on VendorPaymentEntry (only form holding voucherNo state · all others mint server-side at save = literal-with-reason) · status BOUND from form state on MilestoneTracker + ProjectEntry + ResourceAllocation (mapped via lifecycle → voucher domain) · all other forms create-only literal 'draft' (status set at submit) · 3 textarea-only forms (BreakdownReport · InternalMaintenanceTicket · PMTickoffEntry) consume onEnterNext via void reference to keep the canonical import live without dead-code TS error · walls held: TallyVoucherHeader.tsx 0-DIFF · keyboard.ts 0-DIFF · every target form's save/validate/calc/submit/state/store-key 0-DIFF · payment-engine 0-DIFF · payment-requisition-engine 0-DIFF · projx-engine 0-DIFF · maintainpro-engine 0-DIFF · qualicheck-ncr-evidence-engine 0-DIFF · all card engines 0-DIFF · approval-rail hooks on PaymentRequisitionEntry 0-DIFF · QA evidence logic 0-DIFF · applications.ts/routes/sidebars 0-DIFF · per-form diff table in TXUI4_close_summary.md confirms "logic touched? NO" for all 17 · TXUI-3 flipped to 8eb52305 · 95→96 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'TXUI4' as unknown as number, code: 'T-TXUI4-Voucher-Canonical', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '8eb52305', loc: 950,
     newSiblings: [],
     bankDate: '2026-06-08', provenance: 'PENDING_BACKFILL',
   },

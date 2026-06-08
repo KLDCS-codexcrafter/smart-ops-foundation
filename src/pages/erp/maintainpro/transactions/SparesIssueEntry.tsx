@@ -2,6 +2,7 @@
  * @file        src/pages/erp/maintainpro/transactions/SparesIssueEntry.tsx
  * @sprint      T-Phase-1.A.16b · Block E.1 · OOB-M7 velocity reorder
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { createSparesIssue, listSparesIssues, listEquipment } from '@/lib/maintainpro-engine';
 import type { SparesIssue } from '@/types/maintainpro';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface Props { onNavigate: (m: string) => void }
 const E = 'DEMO';
@@ -44,8 +47,9 @@ export function SparesIssueEntry(_props: Props): JSX.Element {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4" data-keyboard-form>
       <h1 className="text-2xl font-bold">Spares Issue</h1>
+      <TallyVoucherHeader voucherTypeName="Spares Issue" baseVoucherType="Issue" voucherFamily="spares_issue" voucherNo="" voucherDate={new Date().toISOString().slice(0, 10)} status="draft" />
       {last?.velocity_spike_detected && (
         <Card className="border-warning"><CardContent className="p-4 flex items-center gap-2">
           <AlertTriangle className="h-5 w-5 text-warning" />
@@ -53,8 +57,8 @@ export function SparesIssueEntry(_props: Props): JSX.Element {
         </CardContent></Card>
       )}
       <Card><CardContent className="p-4 space-y-3">
-        <div className="space-y-1"><Label>Spare ID</Label><Input value={spareId} onChange={(e) => setSpareId(e.target.value)} /></div>
-        <div className="space-y-1"><Label>Qty</Label><Input type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} /></div>
+        <div className="space-y-1"><Label>Spare ID</Label><Input value={spareId} onChange={(e) => setSpareId(e.target.value)} onKeyDown={onEnterNext} /></div>
+        <div className="space-y-1"><Label>Qty</Label><Input type="number" value={qty} onChange={(e) => setQty(Number(e.target.value))} onKeyDown={onEnterNext} /></div>
         <Button onClick={submit}>Issue Spare</Button>
         <div className="text-xs font-mono">{list.length} issues recorded</div>
       </CardContent></Card>

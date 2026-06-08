@@ -3,6 +3,7 @@
  * Sprint T-Phase-1.1.2-b
  */
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useMemo, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,8 @@ import type { ProjectMilestone, MilestoneStatus } from '@/types/projx/project-mi
 import { isPeriodLocked } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { useT } from '@/lib/i18n-engine';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 const fmtINR = (n: number) =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -161,8 +164,10 @@ export function MilestoneTrackerPanel() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-5 p-6">
+    <div className="max-w-7xl mx-auto space-y-5 p-6" data-keyboard-form>
+      <TallyVoucherHeader voucherTypeName="Milestone Tracker" baseVoucherType="Memo" voucherFamily="milestone" voucherNo="" voucherDate={form.target_date} status={form.status === 'completed' ? 'posted' : form.status === 'cancelled' ? 'cancelled' : 'draft'} />
       <div className="flex items-center justify-between">
+
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Milestone className="h-6 w-6 text-indigo-500" /> {t('projx.milestone_tracker.title', 'Milestone Tracker')}
@@ -251,7 +256,7 @@ export function MilestoneTrackerPanel() {
           <div className="space-y-4 mt-4">
             <div className="space-y-1.5">
               <Label>Milestone Name <span className="text-destructive">*</span></Label>
-              <Input value={form.milestone_name} onChange={e => setForm(f => ({ ...f, milestone_name: e.target.value }))} placeholder="e.g. Foundation Complete" />
+              <Input value={form.milestone_name} onChange={e => setForm(f => ({ ...f, milestone_name: e.target.value }))} placeholder="e.g. Foundation Complete" onKeyDown={onEnterNext} />
             </div>
             <div className="space-y-1.5">
               <Label>Description</Label>
@@ -260,7 +265,7 @@ export function MilestoneTrackerPanel() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label>Target Date</Label>
-                <Input type="date" value={form.target_date} onChange={e => setForm(f => ({ ...f, target_date: e.target.value }))} />
+                <Input type="date" value={form.target_date} onChange={e => setForm(f => ({ ...f, target_date: e.target.value }))} onKeyDown={onEnterNext} />
                 {targetLocked && (
                   <p className="text-[10px] text-amber-600 flex items-center gap-1"><AlertTriangle className="h-3 w-3" />Period locked</p>
                 )}
@@ -281,7 +286,7 @@ export function MilestoneTrackerPanel() {
               <div className="space-y-1.5">
                 <Label>Invoice %</Label>
                 <Input type="number" min={0} max={100} step={0.01} value={form.invoice_pct}
-                  onChange={e => setForm(f => ({ ...f, invoice_pct: Number(e.target.value) }))} />
+                  onChange={e => setForm(f => ({ ...f, invoice_pct: Number(e.target.value) }))} onKeyDown={onEnterNext} />
               </div>
               <div className="space-y-1.5">
                 <Label>Invoice Amount (auto)</Label>

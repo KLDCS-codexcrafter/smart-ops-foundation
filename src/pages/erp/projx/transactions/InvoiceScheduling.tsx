@@ -2,6 +2,7 @@
  * InvoiceScheduling.tsx — Project invoice schedule view + manual ad-hoc edit
  * Sprint T-Phase-1.1.2-b
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useMemo, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +24,8 @@ import {
 import type { ProjectInvoiceSchedule } from '@/types/projx/project-invoice-schedule';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { logAudit } from '@/lib/audit-trail-engine';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 const fmtINR = (n: number) => `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -166,7 +169,8 @@ export function InvoiceSchedulingPanel() {
   }, [form.milestone_id]);
 
   return (
-    <div className="max-w-7xl mx-auto space-y-5 p-6">
+    <div className="max-w-7xl mx-auto space-y-5 p-6" data-keyboard-form>
+      <TallyVoucherHeader voucherTypeName="Invoice Scheduling" baseVoucherType="Memo" voucherFamily="invoice_schedule" voucherNo="" voucherDate={form.scheduled_date} status="draft" />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -269,17 +273,17 @@ export function InvoiceSchedulingPanel() {
                 <div className="space-y-1.5">
                   <Label>Scheduled Date</Label>
                   <Input type="date" value={form.scheduled_date}
-                    onChange={e => setForm(f => ({ ...f, scheduled_date: e.target.value }))} />
+                    onChange={e => setForm(f => ({ ...f, scheduled_date: e.target.value }))} onKeyDown={onEnterNext} />
                 </div>
                 <div className="space-y-1.5">
                   <Label>Amount (₹)</Label>
                   <Input type="number" min={0} value={form.amount}
-                    onChange={e => setForm(f => ({ ...f, amount: Number(e.target.value) }))} />
+                    onChange={e => setForm(f => ({ ...f, amount: Number(e.target.value) }))} onKeyDown={onEnterNext} />
                 </div>
               </div>
               <div className="space-y-1.5">
                 <Label>Description</Label>
-                <Input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+                <Input value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} onKeyDown={onEnterNext} />
               </div>
               <div className="flex items-center justify-between rounded-lg border p-3">
                 <div>

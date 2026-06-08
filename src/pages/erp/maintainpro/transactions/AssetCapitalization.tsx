@@ -2,6 +2,10 @@
  * @file        src/pages/erp/maintainpro/transactions/AssetCapitalization.tsx
  * @purpose     Asset Capitalization read-only list · SiteX CAPEX bridge consumer (Q-LOCK-8)
  * @sprint      T-Phase-1.A.16b · Block G.1
+ *
+ * TXUI-4 · SEAM-ONLY · read-only list page · no entry inputs, no voucher mint here.
+ * Adopting TallyVoucherHeader would require fabricating header state per row;
+ * the iron canon forbids fabricated state. Canonical shell intentionally NOT mounted.
  */
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

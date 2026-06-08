@@ -3,6 +3,7 @@
  * @sprint      T-Phase-1.A.16b · Block D.2
  * @[JWT]       via createWorkOrder
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { createWorkOrder, listWorkOrders, updateWorkOrderStatus, listEquipment } from '@/lib/maintainpro-engine';
 import type { WorkOrder, WorkOrderStatus, WorkOrderType } from '@/types/maintainpro';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface Props { onNavigate: (m: string) => void }
 const E = 'DEMO';
@@ -56,8 +59,9 @@ export function WorkOrderEntry(_props: Props): JSX.Element {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4" data-keyboard-form>
       <h1 className="text-2xl font-bold">Work Order</h1>
+      <TallyVoucherHeader voucherTypeName="Work Order" baseVoucherType="Order" voucherFamily="work_order" voucherNo="" voucherDate={new Date().toISOString().slice(0, 10)} status="draft" />
       <Card><CardContent className="p-4 space-y-3">
         <div className="grid grid-cols-3 gap-3">
           <div className="space-y-1">
@@ -73,7 +77,7 @@ export function WorkOrderEntry(_props: Props): JSX.Element {
               <option value="pm_overdue">PM Overdue</option><option value="inspection">Inspection</option><option value="safety">Safety</option>
             </select>
           </div>
-          <div className="space-y-1"><Label>Est. minutes</Label><Input type="number" value={est} onChange={(e) => setEst(Number(e.target.value))} /></div>
+          <div className="space-y-1"><Label>Est. minutes</Label><Input type="number" value={est} onChange={(e) => setEst(Number(e.target.value))} onKeyDown={onEnterNext} /></div>
         </div>
         <Button onClick={submit}>Create WO</Button>
       </CardContent></Card>

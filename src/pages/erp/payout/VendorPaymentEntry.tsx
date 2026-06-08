@@ -8,6 +8,7 @@
  * MIRROR (not modify) of Payment.tsx · D-127 voucher-form zero-touch streak preserved.
  * Lives in src/pages/erp/payout/ (NEW directory · NOT in vouchers/).
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { roundTo, resolveMoneyPrecision, dPct } from '@/lib/decimal-helpers';
 import { Input } from '@/components/ui/input';
@@ -31,6 +32,7 @@ import { processVendorPayment } from '@/lib/payment-engine';
 import type { BillReference } from '@/types/voucher';
 // [T-T8.3-AdvanceIntel] Advance toggle + proactive banner (additive)
 import { UnmatchedAdvanceBanner } from '@/components/payout/UnmatchedAdvanceBanner';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 interface VendorRef {
   id: string;
@@ -201,6 +203,7 @@ export default function VendorPaymentEntry() {
 
   return (
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
+      <TallyVoucherHeader voucherTypeName="Vendor Payment" baseVoucherType="Payment" voucherFamily="payment" voucherNo={voucherNo} voucherDate={date} status="draft" />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold">Vendor Payment Voucher</h1>

@@ -10,6 +10,7 @@
  * [DEFERRED · Support & Back Office] approval routing UI · attachment upload ·
  *   email/SMS/WhatsApp triggers. See Future_Task_Register · Capabilities 1-3.
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -33,6 +34,8 @@ import { createRequisition, ROUTING_RULES } from '@/lib/payment-requisition-engi
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { DEPARTMENTS_KEY } from '@/types/org-structure';
 import type { Department } from '@/types/org-structure';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 const TYPE_ICON: Record<PaymentRequestType, typeof FileText> = {
   vendor_invoice: FileText, vendor_advance: Wallet,
@@ -201,6 +204,7 @@ export default function PaymentRequisitionEntry() {
 
   return (
     <div className="p-6 space-y-4 animate-fade-in" data-keyboard-form>
+      <TallyVoucherHeader voucherTypeName={`Payment Requisition · ${PAYMENT_TYPE_LABELS[type]}`} baseVoucherType="Payment" voucherFamily="requisition" voucherNo="" voucherDate={new Date().toISOString().slice(0, 10)} status="draft" />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={() => setType(null)} className="h-8">
@@ -245,7 +249,7 @@ export default function PaymentRequisitionEntry() {
             <div className="space-y-1.5">
               <Label className="text-xs">Amount (₹) *</Label>
               <Input type="number" value={form.amount} onChange={e => setForm({ ...form, amount: e.target.value })}
-                placeholder="0.00" className="font-mono" />
+                placeholder="0.00" className="font-mono" onKeyDown={onEnterNext} />
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs">Department</Label>
@@ -262,35 +266,35 @@ export default function PaymentRequisitionEntry() {
           {cat === 'vendor' && (
             <div className="space-y-1.5">
               <Label className="text-xs">Vendor name</Label>
-              <Input value={form.vendorName} onChange={e => setForm({ ...form, vendorName: e.target.value })} placeholder="Vendor / payee" />
+              <Input value={form.vendorName} onChange={e => setForm({ ...form, vendorName: e.target.value })} placeholder="Vendor / payee" onKeyDown={onEnterNext} />
             </div>
           )}
 
           {cat === 'employee' && (
             <div className="space-y-1.5">
               <Label className="text-xs">Employee name</Label>
-              <Input value={form.employeeName} onChange={e => setForm({ ...form, employeeName: e.target.value })} placeholder="Employee name" />
+              <Input value={form.employeeName} onChange={e => setForm({ ...form, employeeName: e.target.value })} placeholder="Employee name" onKeyDown={onEnterNext} />
             </div>
           )}
 
           {cat === 'director' && (
             <div className="space-y-1.5">
               <Label className="text-xs">Payee name (Director / Partner)</Label>
-              <Input value={form.payeeName} onChange={e => setForm({ ...form, payeeName: e.target.value, vendorName: e.target.value })} placeholder="Director name" />
+              <Input value={form.payeeName} onChange={e => setForm({ ...form, payeeName: e.target.value, vendorName: e.target.value })} placeholder="Director name" onKeyDown={onEnterNext} />
             </div>
           )}
 
           {cat === 'other' && (
             <div className="space-y-1.5">
               <Label className="text-xs">Payee name (optional)</Label>
-              <Input value={form.payeeName} onChange={e => setForm({ ...form, payeeName: e.target.value, vendorName: e.target.value })} placeholder="Payee" />
+              <Input value={form.payeeName} onChange={e => setForm({ ...form, payeeName: e.target.value, vendorName: e.target.value })} placeholder="Payee" onKeyDown={onEnterNext} />
             </div>
           )}
 
           <div className="space-y-1.5">
             <Label className="text-xs">Purpose *</Label>
             <Input value={form.purpose} onChange={e => setForm({ ...form, purpose: e.target.value })}
-              placeholder="Brief reason for this payment" />
+              placeholder="Brief reason for this payment" onKeyDown={onEnterNext} />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
