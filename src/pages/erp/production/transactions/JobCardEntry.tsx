@@ -28,6 +28,7 @@ import {
 } from '@/lib/job-card-engine';
 import type { JobCard, JobCardWastageReason } from '@/types/job-card';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 const WASTAGE_REASONS: { value: string; label: string }[] = [
   { value: '__none__', label: 'None' },
@@ -300,7 +301,7 @@ export function JobCardEntryPanel(): JSX.Element {
             </div>
             <div>
               <Label className="text-xs">Planned Qty</Label>
-              <Input type="number" min="0" value={editing?.planned_qty ?? plannedQty} onChange={e => setPlannedQty(e.target.value)} disabled={!!editing} />
+              <Input type="number" min="0" value={editing?.planned_qty ?? plannedQty} onChange={e => setPlannedQty(e.target.value)} disabled={!!editing}  onKeyDown={onEnterNext} />
             </div>
             <div>
               <Label className="text-xs">UOM</Label>
@@ -312,8 +313,8 @@ export function JobCardEntryPanel(): JSX.Element {
             <Card>
               <CardHeader><CardTitle className="text-sm">Output Capture</CardTitle></CardHeader>
               <CardContent className="grid grid-cols-3 gap-3">
-                <div><Label className="text-xs">Produced Qty</Label><Input type="number" value={producedQty} onChange={e => setProducedQty(e.target.value)} /></div>
-                <div><Label className="text-xs">Rejected Qty</Label><Input type="number" value={rejectedQty} onChange={e => setRejectedQty(e.target.value)} /></div>
+                <div><Label className="text-xs">Produced Qty</Label><Input type="number" value={producedQty} onChange={e => setProducedQty(e.target.value)}  onKeyDown={onEnterNext} /></div>
+                <div><Label className="text-xs">Rejected Qty</Label><Input type="number" value={rejectedQty} onChange={e => setRejectedQty(e.target.value)}  onKeyDown={onEnterNext} /></div>
                 <div><Label className="text-xs">Rework Qty</Label><Input type="number" value={reworkQty} onChange={e => setReworkQty(e.target.value)} /></div>
                 <div><Label className="text-xs">Wastage Qty</Label><Input type="number" value={wastageQty} onChange={e => setWastageQty(e.target.value)} /></div>
                 <div>

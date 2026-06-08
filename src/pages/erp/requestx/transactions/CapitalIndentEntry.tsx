@@ -36,6 +36,7 @@ import { createCapitalIndent, submitIndent, runAutoRules, recomputeTotal, cancel
 import type { CapitalIndent, CapitalIndentLine, CapitalSubType } from '@/types/capital-indent';
 import type { Priority } from '@/types/material-indent';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 // useSmartDefaults marker — via useSprint27d1Mount
 
@@ -303,7 +304,7 @@ export function CapitalIndentEntry(): JSX.Element {
                 <TableRow key={l.id}>
                   <TableCell className="text-xs">{l.line_no}</TableCell>
                   <TableCell>
-                    <Input value={l.item_name} onChange={e => updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} placeholder="Item" />
+                    <Input value={l.item_name} onChange={e => updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} placeholder="Item"  onKeyDown={onEnterNext} />
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1">
@@ -326,8 +327,8 @@ export function CapitalIndentEntry(): JSX.Element {
                       <span className="text-xs text-muted-foreground">N/A · skip Store</span>
                     )}
                   </TableCell>
-                  <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} className="w-16" /></TableCell>
-                  <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24" /></TableCell>
+                  <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} className="w-16"  onKeyDown={onEnterNext} /></TableCell>
+                  <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24"  onKeyDown={onEnterNext} /></TableCell>
                   <TableCell className="text-xs font-mono">{l.estimated_value.toLocaleString('en-IN')}</TableCell>
                   <TableCell><Input value={l.cwip_account_id} onChange={e => updateLine(l.id, { cwip_account_id: e.target.value })} className="w-24" /></TableCell>
                   <TableCell><Input type="number" value={l.expected_useful_life_years} onChange={e => updateLine(l.id, { expected_useful_life_years: Number(e.target.value) })} className="w-14" /></TableCell>

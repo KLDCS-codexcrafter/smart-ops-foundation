@@ -154,6 +154,7 @@ import {
 import { useDetailedStockAvailability as _useDetailedStockAvailability_27D1 } from '@/hooks/useStockAvailability';
 import { useDraftAutoSave as _useDraftAutoSave_27D1 } from '@/hooks/useDraftAutoSave';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 const _SPRINT_27D1_REFS = [
   _SRB_27D1, _extractCarryOverFields_27D1, _applyCarryOverToForm_27D1,
   _resolveSmartLedger_27D1, _resolveSmartWarehouse_27D1, _resolvePartyHistoricalRate_27D1,
@@ -656,7 +657,7 @@ export function ConsumptionEntryPanel() {
                   toast.warning(periodLockMessage(v, safeEntity) ?? 'Period locked');
                 }
                 setHeader(h => ({ ...h, consumption_date: v }));
-              }} />
+              }}  onKeyDown={onEnterNext} />
           </div>
           {/* Sprint T-Phase-1.2.6b-fix · effective_date input (D-226 UTS dimension #3) */}
           <div>
@@ -887,12 +888,12 @@ export function ConsumptionEntryPanel() {
               <div>
                 <Label className="text-xs">Standard Qty</Label>
                 <Input type="number" min={0} step="0.001" value={draftLine.standard_qty}
-                  onChange={e => setDraftLine(d => ({ ...d, standard_qty: parseFloat(e.target.value) || 0 }))} />
+                  onChange={e => setDraftLine(d => ({ ...d, standard_qty: parseFloat(e.target.value) || 0 }))}  onKeyDown={onEnterNext} />
               </div>
               <div>
                 <Label className="text-xs">Actual Qty</Label>
                 <Input type="number" min={0} step="0.001" value={draftLine.actual_qty}
-                  onChange={e => setDraftLine(d => ({ ...d, actual_qty: parseFloat(e.target.value) || 0 }))} />
+                  onChange={e => setDraftLine(d => ({ ...d, actual_qty: parseFloat(e.target.value) || 0 }))}  onKeyDown={onEnterNext} />
               </div>
               <div>
                 <Label className="text-xs">Available</Label>

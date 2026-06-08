@@ -85,6 +85,7 @@ import {
 import { useDetailedStockAvailability as _useDetailedStockAvailability_27D1 } from '@/hooks/useStockAvailability';
 import { useDraftAutoSave as _useDraftAutoSave_27D1 } from '@/hooks/useDraftAutoSave';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 const _SPRINT_27D1_REFS = [
   _SRB_27D1, _extractCarryOverFields_27D1, _applyCarryOverToForm_27D1,
   _resolveSmartLedger_27D1, _resolveSmartWarehouse_27D1, _resolvePartyHistoricalRate_27D1,
@@ -488,7 +489,7 @@ export function RTVEntryPanel() {
                           toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');
                         }
                         persist(rtvs.map(r => r.id === active.id ? { ...r, effective_date: v || null } : r));
-                      }} />
+                      }}  onKeyDown={onEnterNext} />
                     <p className="text-[10px] text-muted-foreground mt-1">
                       accounting date · defaults to RTV Date
                     </p>

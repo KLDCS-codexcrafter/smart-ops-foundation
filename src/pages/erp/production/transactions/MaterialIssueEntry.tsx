@@ -30,6 +30,7 @@ import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverla
 import { createMaterialIssue, issueMaterialIssue } from '@/lib/material-issue-engine';
 import type { ProductionOrder } from '@/types/production-order';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 export function MaterialIssueEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -216,11 +217,11 @@ export function MaterialIssueEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Issue Date</Label>
-            <Input type="date" className="font-mono" value={issueDate} onChange={e => setIssueDate(e.target.value)} />
+            <Input type="date" className="font-mono" value={issueDate} onChange={e => setIssueDate(e.target.value)}  onKeyDown={onEnterNext} />
           </div>
           <div className="space-y-2">
             <Label>Department</Label>
-            <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID" />
+            <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID"  onKeyDown={onEnterNext} />
           </div>
           <div className="space-y-2">
             <Label>Destination (WIP) Godown</Label>
