@@ -49,7 +49,6 @@ export function PurchaseInvoicePrintPanel() {
       </div>
       <div className="text-sm text-muted-foreground">Loading voucher…</div>
     </>
-    </>
 );
     const t = payload.resolved_toggles;
 
