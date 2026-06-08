@@ -69,20 +69,27 @@ export interface UserMailProfile {
   send_as_department_grants?: string[];
 }
 
-/** PULSE TemplateMaster-shaped. Merge fields are `{{...}}` incl. `{{signature}}`. */
+/** PULSE TemplateMaster-shaped. Merge fields are `{{...}}` incl. `{{signature}}`.
+ *  B.3 additive: `channel` extended to `'email' | 'whatsapp'`.
+ *  WhatsApp rows MUST keep `body_tpl` ≤ 1024 chars and plain-text (no HTML).
+ */
 export interface TemplateRow {
   id: string;
   object_type: string;                          // 'invoice-memo' | 'po' | 'approval.pending' | 'reminder.digest' | ...
-  channel: 'email';                             // WhatsApp/SMS land with B.3
-  subject_tpl: string;
+  channel: CommChannel;                         // B.3 additive — was 'email' only
+  subject_tpl: string;                          // ignored on WhatsApp (no subject line)
   body_tpl: string;
   lang: 'en';                                   // Hindi templates land later
   sender_class_default: SenderClass;
   department_card_id?: string;                  // when sender_class_default === 'department'
+  /** WhatsApp BSP category (informational, Wave-2). */
+  wa_category?: WaCategory;
   active: boolean;
 }
 
-/** PULSE CommunicationLog-compatible. FY-stamped under the P8.6 floor. */
+/** PULSE CommunicationLog-compatible. FY-stamped under the P8.6 floor.
+ *  B.3 additive: `channel` defaults email for back-compat.
+ */
 export interface OutboxMessage {
   id: string;
   entity_id: string;
@@ -91,8 +98,10 @@ export interface OutboxMessage {
   source_card: string;                          // 'fincore', 'taskflow', 'payout', ...
   source_record_id?: string;
   sender_class: SenderClass;
-  from_resolved: string;                        // resolved email-id at compose time
-  to_resolved: string[];
+  /** B.3 additive · 'email' when omitted (back-compat with B.2 messages). */
+  channel?: CommChannel;
+  from_resolved: string;                        // resolved email-id or sender wa-id at compose time
+  to_resolved: string[];                        // emails OR E.164 phones (per channel)
   subject: string;
   body_html: string;
   attachment_name?: string;
