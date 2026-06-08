@@ -18,6 +18,7 @@ import { Milestone, Plus, ArrowRight, Sparkles, AlertTriangle, Trash2 } from 'lu
 import { toast } from 'sonner';
 import { useProjects } from '@/hooks/useProjects';
 import { useProjectMilestones, computeMilestoneInvoiceAmount } from '@/hooks/useProjectMilestones';
+import { inferMilestonesFromQuotation, DEFAULT_MILESTONE_SPLIT } from '@/lib/projx-engine';
 import {
   MILESTONE_STATUS_LABELS, MILESTONE_STATUS_COLORS, canTransitionMilestoneStatus,
 } from '@/types/projx/project-milestone';
@@ -176,8 +177,31 @@ export function MilestoneTrackerPanel() {
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" className="gap-1.5"
-            onClick={() => toast.info('Auto-generation from quotation lines coming in 1.5.7')}>
-            <Sparkles className="h-4 w-4" /> Quick Auto-Generate
+            disabled={!project || projectMs.length > 0}
+            onClick={() => {
+              if (!project) return;
+              if (projectMs.length > 0) { toast.info('Schedule already exists for this project'); return; }
+              if (!project.current_contract_value || project.current_contract_value <= 0) {
+                toast.error('Project has no contract value — cannot propose schedule'); return;
+              }
+              // A.5 · pure-engine proposal · presentation flow persists via existing hook
+              const proposal = inferMilestonesFromQuotation(project);
+              proposal.forEach(p => {
+                createMilestone({
+                  project_id: project.id,
+                  project_centre_id: project.project_centre_id,
+                  milestone_name: p.milestone_name,
+                  description: p.description,
+                  target_date: p.target_date,
+                  status: 'pending',
+                  invoice_pct: p.invoice_pct,
+                  blocks_milestone_ids: [],
+                }, project.contract_value);
+              });
+              const split = DEFAULT_MILESTONE_SPLIT.map(s => `${s.pct}%`).join(' / ');
+              toast.success(`Proposed ${proposal.length} milestones (${split}) · edit any row to refine`);
+            }}>
+            <Sparkles className="h-4 w-4" /> Generate from Contract
           </Button>
           <Button size="sm" className="gap-1.5" onClick={openCreate} disabled={!project}>
             <Plus className="h-4 w-4" /> Add Milestone

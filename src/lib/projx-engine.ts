@@ -157,9 +157,58 @@ export function nextProjectCode(entityCode: string): string {
   return generateDocNo('PRJ', entityCode);
 }
 
-/** Hookpoint stub for 1.5.7 · returns no milestones in 1.1.2-b */
-export function inferMilestonesFromQuotation(): never[] {
-  return [];
+/**
+ * Sprint A.5 · default milestone schedule split (editable by PM).
+ * Documented constant — keep simple, no over-engineering.
+ * Sum MUST equal 100.
+ */
+export const DEFAULT_MILESTONE_SPLIT: ReadonlyArray<{ pct: number; name: string }> = [
+  { pct: 20, name: 'Advance' },
+  { pct: 50, name: 'On Delivery' },
+  { pct: 30, name: 'On Completion' },
+];
+
+/**
+ * Sprint A.5 · compute milestone invoice amount honestly.
+ * invoice_amount = round2(dMul(invoice_pct / 100, project.current_contract_value)).
+ * Returns 0 when contract value or pct is non-positive — NEVER fabricates a number.
+ */
+export function computeMilestoneInvoiceAmount(project: Project, invoicePct: number): number {
+  if (!Number.isFinite(invoicePct) || invoicePct <= 0) return 0;
+  const cv = project.current_contract_value;
+  if (!Number.isFinite(cv) || cv <= 0) return 0;
+  return round2(dMul(invoicePct / 100, cv));
+}
+
+/**
+ * Sprint A.5 · gap-closure · was `: never[] { return []; }` in 1.1.2-b.
+ * Generates a default 20/50/30 milestone schedule proposal for a Project.
+ * Pure function · no persistence — the UI proposes, the PM edits, the hook persists.
+ * Returns ProjectMilestone[] with all required fields filled (proposal ids only).
+ */
+export function inferMilestonesFromQuotation(project: Project): ProjectMilestone[] {
+  const now = new Date().toISOString();
+  const targetDate = project.target_end_date || project.start_date || now.slice(0, 10);
+  return DEFAULT_MILESTONE_SPLIT.map((step, idx) => ({
+    id: `ms-proposal-${idx + 1}`,
+    entity_id: project.entity_id,
+    project_id: project.id,
+    project_centre_id: project.project_centre_id,
+    milestone_no: `M-${String(idx + 1).padStart(2, '0')}`,
+    milestone_name: step.name,
+    description: `Auto-proposed ${step.pct}% of current contract value`,
+    target_date: targetDate,
+    actual_completion_date: null,
+    status: 'pending',
+    invoice_pct: step.pct,
+    invoice_amount: computeMilestoneInvoiceAmount(project, step.pct),
+    is_billed: false,
+    invoice_voucher_id: null,
+    invoice_voucher_no: null,
+    blocks_milestone_ids: [],
+    created_at: now,
+    updated_at: now,
+  }));
 }
 
 /** Hookpoint stub for 1.6.1 · returns null in 1.1.2-b */
