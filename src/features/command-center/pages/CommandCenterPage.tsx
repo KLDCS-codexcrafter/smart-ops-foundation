@@ -361,6 +361,7 @@ export default function CommandCenterPage() {
       'mdg-field-lock-rules', 'mdg-conflict-resolution', 'mdg-sync-throttle',
       'audit-integrity',
       'retention-console',
+      'communication-console',
     ].includes(hash)) {
       return hash as CommandCenterModule;
     }
