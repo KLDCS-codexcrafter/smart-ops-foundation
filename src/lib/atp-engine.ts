@@ -3,14 +3,14 @@
  * @sprint      A.2 · T-A2-Production-ATP · Pillar-A CLOSE
  * @realizes    A.2 · Available-to-Promise · CONSUMES production-plan-engine.runCapacityCheck
  *              + existing production load. NO capacity logic re-implemented here.
- * @honest      OEE live-sensor-feed-adjusted ATP = Wave-2 (excluded from A.2).
+ * @honest      OEE live telemetry-feed-adjusted ATP = Wave-2 (excluded from A.2).
  *              When load data is absent we return promise_date = null + an explicit
  *              "capacity data unavailable" warning. We NEVER fabricate a date.
  * @consumes    runCapacityCheck (production-plan-engine) · ProductionPlan shape ·
  *              localStorage production-plans store (entity-scoped) for current load.
  * @walls       production-plan-engine · oee-engine · process-genealogy-engine ·
  *              SalesX quote/order save logic — all 0-DIFF.
- * @[JWT]       Wave-2: OEE live-sensor feed → ATP date adjustment.
+ * @[JWT]       Wave-2: OEE live telemetry feed → ATP date adjustment.
  */
 
 import { runCapacityCheck } from '@/lib/production-plan-engine';
