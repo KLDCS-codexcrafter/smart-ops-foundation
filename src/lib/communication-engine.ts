@@ -124,6 +124,12 @@ export function listTemplates(entityCode: string): TemplateRow[] {
     { id: 'tpl-rfq',          object_type: 'rfq',                 channel: 'email', subject_tpl: 'RFQ {{doc_no}} — Quote requested', body_tpl: 'Dear {{recipient_name}},\n\nPlease quote against RFQ {{doc_no}}.\n\n{{signature}}', lang: 'en', sender_class_default: 'user', active: true },
     { id: 'tpl-approval',     object_type: 'approval.pending',    channel: 'email', subject_tpl: 'Approval pending: {{title}}', body_tpl: 'Hi {{recipient_name}},\n\n{{body}}\n\nOpen: {{deep_link}}\n\n— Operix', lang: 'en', sender_class_default: 'system', active: true },
     { id: 'tpl-reminders',    object_type: 'digest.my_reminders', channel: 'email', subject_tpl: 'Your reminders: {{count}} need attention', body_tpl: 'Hi {{recipient_name}},\n\n{{body}}\n\n— Operix', lang: 'en', sender_class_default: 'system', active: true },
+    // B.3 · WhatsApp variants (channel:'whatsapp' rows in the SAME Template Master · 1024-char · plain text · {{merge}} supported)
+    { id: 'tpl-wa-inv-memo',     object_type: 'invoice-memo',       channel: 'whatsapp', subject_tpl: '', body_tpl: 'Hi {{recipient_name}}, invoice {{doc_no}} dated {{doc_date}} for {{amount}} is ready. — {{entity_name}}', lang: 'en', sender_class_default: 'user', wa_category: 'utility', active: true },
+    { id: 'tpl-wa-delivery',     object_type: 'delivery-memo',      channel: 'whatsapp', subject_tpl: '', body_tpl: 'Hi {{recipient_name}}, delivery memo {{doc_no}} dispatched on {{doc_date}}. — {{entity_name}}', lang: 'en', sender_class_default: 'user', wa_category: 'utility', active: true },
+    { id: 'tpl-wa-payment',      object_type: 'payment-advice',     channel: 'whatsapp', subject_tpl: '', body_tpl: 'Hi {{recipient_name}}, payment advice {{doc_no}} for {{amount}} sent. — {{entity_name}}', lang: 'en', sender_class_default: 'department', department_card_id: 'payout', wa_category: 'utility', active: true },
+    { id: 'tpl-wa-approval',     object_type: 'approval.pending',   channel: 'whatsapp', subject_tpl: '', body_tpl: 'Hi {{recipient_name}}, approval pending: {{title}}. Open Operix to act.', lang: 'en', sender_class_default: 'system', wa_category: 'utility', active: true },
+    { id: 'tpl-wa-reminders',    object_type: 'digest.my_reminders',channel: 'whatsapp', subject_tpl: '', body_tpl: 'Hi {{recipient_name}}, {{count}} reminders need attention. Open Operix to review.', lang: 'en', sender_class_default: 'system', wa_category: 'utility', active: true },
   ];
   lw(templatesKey(entityCode), seed);
   return seed;
@@ -391,6 +397,11 @@ export function listOutbox(entityCode: string): OutboxMessage[] {
 // ─── First-customer hook (approval-rail · my-reminders) ─────────────────
 
 export function enqueueFromEvent(input: EnqueueEventInput): OutboxMessage | null {
+  // B.3 · `channel:'whatsapp'` callers should invoke
+  // `whatsapp-channel-engine.enqueueWhatsAppFromEvent` directly (avoids a circular
+  // import here). This entry-point handles email only. The shared EnqueueEventInput
+  // shape keeps approval-rail + reminders engines 0-DIFF (they never set channel).
+  if (input.channel === 'whatsapp') return null;
   try {
     const profile = listUserMailProfiles(input.entityCode).find((p) => p.user_name === input.recipientUserName);
     const to = profile?.email_id;

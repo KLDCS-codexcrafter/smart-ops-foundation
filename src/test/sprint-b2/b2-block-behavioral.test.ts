@@ -209,7 +209,9 @@ describe('B2 · DocSendBar surface', () => {
     expect(fs.existsSync(p)).toBe(true);
     const src = fs.readFileSync(p, 'utf8');
     expect(src).toContain('WhatsApp');
-    expect(src).toContain('disabled');
+    // B.3 architect-owned posture fix: WhatsApp is no longer a `disabled` stub at B.3.
+    // The DocSendBar still mounts all four actions (Email/WhatsApp/Download PDF/Print).
+    expect(src).toContain('Email');
     expect(src).toContain('Download PDF');
     expect(src).toContain('Print');
   });

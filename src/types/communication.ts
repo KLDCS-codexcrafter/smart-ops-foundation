@@ -18,12 +18,19 @@
 
 export type SenderClass = 'user' | 'department' | 'system';
 
+/** Channel union — email (B.2) · whatsapp (B.3 · wa.me deep link for user-class). */
+export type CommChannel = 'email' | 'whatsapp';
+
 export type DeliveryMode =
-  | 'sent_via_user_client'   // user-class: their client = their identity, real send TODAY
+  | 'sent_via_user_client'   // user-class email: their client = their identity, real send TODAY
   | 'eml_exported'            // tier-L manual fallback with embedded attachment
-  | 'queued_for_wave2';       // department/system-class: waits for PULSE Relay
+  | 'queued_for_wave2'        // department/system-class: waits for PULSE Relay
+  | 'opened_in_whatsapp';     // B.3 · user-class wa.me deep link opened (real today)
 
 export type OutboxStatus = 'draft' | 'composed' | 'handed_off' | 'queued';
+
+/** WhatsApp BSP template category (informational only · BSP-shape parity · NO BSP tokens client-side). */
+export type WaCategory = 'utility' | 'marketing' | 'authentication';
 
 /** Department mailbox row — CC Communication "Department Email Registry" tab. */
 export interface DepartmentEmailRow {
@@ -62,20 +69,27 @@ export interface UserMailProfile {
   send_as_department_grants?: string[];
 }
 
-/** PULSE TemplateMaster-shaped. Merge fields are `{{...}}` incl. `{{signature}}`. */
+/** PULSE TemplateMaster-shaped. Merge fields are `{{...}}` incl. `{{signature}}`.
+ *  B.3 additive: `channel` extended to `'email' | 'whatsapp'`.
+ *  WhatsApp rows MUST keep `body_tpl` ≤ 1024 chars and plain-text (no HTML).
+ */
 export interface TemplateRow {
   id: string;
   object_type: string;                          // 'invoice-memo' | 'po' | 'approval.pending' | 'reminder.digest' | ...
-  channel: 'email';                             // WhatsApp/SMS land with B.3
-  subject_tpl: string;
+  channel: CommChannel;                         // B.3 additive — was 'email' only
+  subject_tpl: string;                          // ignored on WhatsApp (no subject line)
   body_tpl: string;
   lang: 'en';                                   // Hindi templates land later
   sender_class_default: SenderClass;
   department_card_id?: string;                  // when sender_class_default === 'department'
+  /** WhatsApp BSP category (informational, Wave-2). */
+  wa_category?: WaCategory;
   active: boolean;
 }
 
-/** PULSE CommunicationLog-compatible. FY-stamped under the P8.6 floor. */
+/** PULSE CommunicationLog-compatible. FY-stamped under the P8.6 floor.
+ *  B.3 additive: `channel` defaults email for back-compat.
+ */
 export interface OutboxMessage {
   id: string;
   entity_id: string;
@@ -84,8 +98,10 @@ export interface OutboxMessage {
   source_card: string;                          // 'fincore', 'taskflow', 'payout', ...
   source_record_id?: string;
   sender_class: SenderClass;
-  from_resolved: string;                        // resolved email-id at compose time
-  to_resolved: string[];
+  /** B.3 additive · 'email' when omitted (back-compat with B.2 messages). */
+  channel?: CommChannel;
+  from_resolved: string;                        // resolved email-id or sender wa-id at compose time
+  to_resolved: string[];                        // emails OR E.164 phones (per channel)
   subject: string;
   body_html: string;
   attachment_name?: string;
@@ -112,7 +128,10 @@ export interface ComposeDocumentInput {
   currentUserName: string;
 }
 
-/** Input for enqueueFromEvent (approval-rail / my-reminders first customers). */
+/** Input for enqueueFromEvent (approval-rail / my-reminders first customers).
+ *  B.3 additive: optional `channel` lets callers route to WhatsApp via the same hook
+ *  (approval-rail-engine + taskflow-reminders-engine stay 0-DIFF — they never set it).
+ */
 export interface EnqueueEventInput {
   entityCode: string;
   fiscalYearId: string;
@@ -121,6 +140,8 @@ export interface EnqueueEventInput {
   sourceRecordId?: string;
   recipientUserName: string;
   mergeData: Record<string, string | number | undefined | null>;
+  /** B.3 additive · defaults 'email'. */
+  channel?: CommChannel;
 }
 
 // ─── Storage keys (entity-scoped per multi-tenant key-scoping canon) ───────
