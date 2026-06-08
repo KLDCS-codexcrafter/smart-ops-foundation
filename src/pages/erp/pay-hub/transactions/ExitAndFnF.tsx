@@ -421,7 +421,7 @@ export function ExitAndFnFPanel({ defaultTab = 'exit' }: ExitAndFnFPanelProps) {
   return (
     <div className="space-y-4" data-keyboard-form>
       {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Exit & Full-and-Final" isLoading={false} isEmpty={false} docSend={ objectType: "fnf-statement", sourceCard: "pay-hub", sourceRecord: { id: "fnf-statement-snapshot" } } />}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Exit & Full-and-Final" isLoading={false} isEmpty={false} docSend={{ objectType: "fnf-statement", sourceCard: "pay-hub", sourceRecord: { id: "fnf-statement-snapshot" } }} />}
       {/* Print CSS */}
       <style>{`
         @media print {

@@ -175,7 +175,7 @@ export function DocumentsAndPoliciesPanel() {
   return (
     <div className="space-y-4" data-keyboard-form>
       {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Documents & Policies" isLoading={false} isEmpty={false} docSend={ objectType: "hr-policy-document", sourceCard: "pay-hub", sourceRecord: { id: "hr-policy-document-snapshot" } } />}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Documents & Policies" isLoading={false} isEmpty={false} docSend={{ objectType: "hr-policy-document", sourceCard: "pay-hub", sourceRecord: { id: "hr-policy-document-snapshot" } }} />}
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <div className="h-10 w-10 rounded-lg bg-violet-500/15 flex items-center justify-center">
