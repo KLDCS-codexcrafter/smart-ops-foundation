@@ -594,7 +594,7 @@ export function QuotationEntryPanel({ entityCode }: Props) {
               requested_date: form.valid_until_date ?? form.quotation_date,
             }))}
             source="quotation"
-            sourceDocNo={form.quotation_no ?? null}
+            sourceDocNo={editingId}
           />
           <Button onClick={handleSave} data-primary className="bg-orange-500 hover:bg-orange-600">
             <Save className="h-4 w-4 mr-2" />Save Quotation
