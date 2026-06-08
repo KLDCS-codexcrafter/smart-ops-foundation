@@ -28,6 +28,7 @@ import { JOB_APPLICATIONS_KEY } from '@/types/recruitment';
 import { EMPLOYEES_KEY, BLANK_EMPLOYEE } from '@/types/employee';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const STATUS_COLORS: Record<JourneyStatus, string> = {
   active: 'bg-green-500/10 text-green-700 border-green-500/30',
@@ -268,6 +269,8 @@ export function OnboardingPanel() {
 
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Onboarding" isLoading={false} isEmpty={false} />}
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <div className="h-10 w-10 rounded-lg bg-violet-500/15 flex items-center justify-center">

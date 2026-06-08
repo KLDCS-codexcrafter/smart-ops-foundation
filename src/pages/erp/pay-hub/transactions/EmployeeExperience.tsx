@@ -30,6 +30,7 @@ import { toIndianFormat, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { roundTo, dPct } from '@/lib/decimal-helpers';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 void PAYROLL_RUNS_KEY;
 
 /* ── helpers ─────────────────────────────────────────────────────── */
@@ -291,6 +292,8 @@ export function EmployeeExperiencePanel({ defaultTab = 'directory' }: EmployeeEx
   /* ── RENDER ─────────────────────────────────────────────────── */
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Employee Experience" isLoading={false} isEmpty={false} />}
       {/* Print CSS */}
       <style>{`
         @media print {

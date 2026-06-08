@@ -32,6 +32,7 @@ import { GRATUITY_NPS_KEY, DEFAULT_GRATUITY_NPS } from '@/types/payroll-masters'
 import type { GratuityNPSSettings } from '@/types/payroll-masters';
 import { toIndianFormat, useCtrlS } from '@/lib/keyboard';
 import { roundTo, dMul } from '@/lib/decimal-helpers';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 // ── loadGratuityConfig ───────────────────────────────────────────
 function loadGratuityConfig(): GratuityNPSSettings['gratuity'] {
@@ -419,6 +420,8 @@ export function ExitAndFnFPanel({ defaultTab = 'exit' }: ExitAndFnFPanelProps) {
 
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Exit & Full-and-Final" isLoading={false} isEmpty={false} docSend={{ objectType: "fnf-statement", sourceCard: "pay-hub", sourceRecord: { id: "fnf-statement-snapshot" } }} />}
       {/* Print CSS */}
       <style>{`
         @media print {

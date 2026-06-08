@@ -28,6 +28,7 @@ import type { Employee } from '@/types/employee';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import type { CourseStatus } from '@/types/learning';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 /* ─────────────────────────────────────────────────────────── */
 
@@ -349,6 +350,8 @@ export function LearningAndDevelopmentPanel({ defaultTab = 'catalog' }: Learning
 
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Learning & Development" isLoading={false} isEmpty={false} />}
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

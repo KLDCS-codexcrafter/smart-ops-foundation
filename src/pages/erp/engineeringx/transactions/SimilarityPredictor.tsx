@@ -29,6 +29,7 @@ import { useDishani } from '@/components/ask-dishani';
 import { parseDrawingCustomTags } from '@/types/engineering-drawing';
 import type { Document } from '@/types/docvault';
 import type { EngineeringXModule } from '../EngineeringXSidebar.types';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface Props {
   onNavigate?: (m: EngineeringXModule) => void;
@@ -71,6 +72,8 @@ Why might these drawings be similar in engineering practice? What's typically di
 
   return (
     <div className="p-6 space-y-6 max-w-5xl">
+      {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Similarity Predictor" isLoading={false} isEmpty={false} />}
       <div className="flex items-center gap-3">
         {onNavigate && (
           <Button variant="ghost" size="sm" onClick={() => onNavigate('welcome')}>
