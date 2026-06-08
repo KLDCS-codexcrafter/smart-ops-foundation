@@ -34,7 +34,7 @@ export interface ConsumerAppShellProps {
    * Optional consumer share / download action — for surfaces that produce
    * a shareable consumer document (e.g. order confirmation receipt).
    * Touch-first, lightweight (download PDF · native share · copy link).
-   * EXPLICITLY NOT the admin DocSendBar — never the back-office outbox.
+   * EXPLICITLY NOT the admin outbox component — never the back-office sender.
    */
   consumerShare?: ReactNode;
   className?: string;
@@ -77,7 +77,7 @@ export function ConsumerAppShell({
         </div>
       </header>
 
-      {/* Consumer share / download — lightweight, NEVER DocSendBar */}
+      {/* Consumer share / download — lightweight, NEVER the admin outbox */}
       {consumerShare && (
         <div
           className="rounded-2xl border border-border bg-card/60 px-3 py-3 min-h-[44px] flex items-center gap-2"
