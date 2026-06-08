@@ -12,6 +12,7 @@
  *  - Conversion logged via logConversionEvent('quotation_to_project') — see updated engine
  */
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -50,6 +51,8 @@ import { isPeriodLocked } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import type { CreateProjectInput } from '@/hooks/useProjects';
 import { useT } from '@/lib/i18n-engine';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -261,6 +264,7 @@ export function ProjectEntryPanel() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-5 p-6" data-keyboard-form>
+      <TallyVoucherHeader voucherTypeName="Project" baseVoucherType="Memo" voucherFamily="project" voucherNo={editing?.project_no ?? ''} voucherDate={form.start_date} status={form.status === 'completed' ? 'posted' : form.status === 'cancelled' ? 'cancelled' : 'draft'} />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
