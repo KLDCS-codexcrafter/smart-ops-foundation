@@ -197,7 +197,7 @@ describe('Sprint A.4-Residual · dispatch-residual-engine', () => {
   it('012 · buildDemoSerialRegister flags overdue when due-date past + not closed', () => {
     const memos = [{
       id: 'd1', memo_no: 'DOM/1', memo_date: '2024-01-01',
-      recipient_name: 'X', status: 'demo_active', return_due_date: '2024-02-01',
+      recipient_name: 'X', status: 'demo_active', demo_end_date: '2024-02-01',
       items: [{ id: 'a', item_name: 'X', serial_no: 'SN-1' }],
     }];
     localStorage.setItem(demoOutwardMemosKey(E), JSON.stringify(memos));
