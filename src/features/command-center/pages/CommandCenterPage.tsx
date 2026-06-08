@@ -428,6 +428,7 @@ export default function CommandCenterPage() {
       'fincore-workpaper-autopop', 'fincore-inter-dept-governance',
       'audit-integrity',
       'retention-console',
+      'communication-console',
     ]);
     // 🚚 S124 · A1 — legacy FP&A hashes redirect to /erp/fpa-planning#<new-id>.
     const LEGACY_FPA: Record<string, string> = {
