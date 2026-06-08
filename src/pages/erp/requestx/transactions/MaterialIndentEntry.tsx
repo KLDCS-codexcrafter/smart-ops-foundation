@@ -35,6 +35,7 @@ import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { createMaterialIndent, getApprovalTier, runAutoRules, submitIndent, cancelIndent } from '@/lib/request-engine';
 import { APPROVAL_MATRIX } from '@/types/requisition-common';
 import type { IndentCategory, MaterialIndent, MaterialIndentLine, Priority } from '@/types/material-indent';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 // useSmartDefaults — re-exported via useSprint27d1Mount (smartLedger / smartWarehouse)
 // Card #2.7-d-1 SD-13 marker · OOB-1 carry-forward
@@ -245,6 +246,8 @@ export function MaterialIndentEntry(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Material Indent" baseVoucherType="Order" voucherFamily="material_indent" voucherNo="" voucherDate={date} status="draft" />
       <DraftRecoveryDialog
         formKey="material-indent-entry"
         entityCode={entityCode}

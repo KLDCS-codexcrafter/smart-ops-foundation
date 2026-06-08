@@ -16,6 +16,7 @@ import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { stockLedgerKey } from '@/lib/fincore-engine';
 import { onEnterNext } from '@/lib/keyboard';
 import { dMul, dAdd, roundTo, resolveMoneyPrecision, resolveQtyPrecision } from '@/lib/decimal-helpers';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 const IKEY = 'erp_inventory_items';
 // [JWT] GET /api/entity/storage/:key
@@ -351,6 +352,8 @@ export function OpeningStockPanel() {
 
   return (
     <div data-keyboard-form className="max-w-full mx-auto space-y-4 p-6">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Opening Stock" baseVoucherType="Memo" voucherFamily="opening_stock" voucherNo="" voucherDate={goDate} status="draft" />
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">

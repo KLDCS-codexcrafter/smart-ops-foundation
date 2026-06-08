@@ -27,6 +27,7 @@ import {
   createJobCard, startJobCard, completeJobCard, holdJobCard, resumeJobCard, cancelJobCard,
 } from '@/lib/job-card-engine';
 import type { JobCard, JobCardWastageReason } from '@/types/job-card';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 const WASTAGE_REASONS: { value: string; label: string }[] = [
   { value: '__none__', label: 'None' },
@@ -198,6 +199,8 @@ export function JobCardEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Job Card" baseVoucherType="Memo" voucherFamily="job_card" voucherNo="" voucherDate={scheduledStart.slice(0,10)} status="draft" />
       <button
         type="button"
         onClick={() => navigate('/erp/command-center?module=fincore-production-config')}

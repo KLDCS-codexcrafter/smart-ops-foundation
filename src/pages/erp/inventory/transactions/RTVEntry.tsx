@@ -84,6 +84,7 @@ import {
 } from '@/lib/smart-defaults-engine';
 import { useDetailedStockAvailability as _useDetailedStockAvailability_27D1 } from '@/hooks/useStockAvailability';
 import { useDraftAutoSave as _useDraftAutoSave_27D1 } from '@/hooks/useDraftAutoSave';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 const _SPRINT_27D1_REFS = [
   _SRB_27D1, _extractCarryOverFields_27D1, _applyCarryOverToForm_27D1,
   _resolveSmartLedger_27D1, _resolveSmartWarehouse_27D1, _resolvePartyHistoricalRate_27D1,
@@ -299,6 +300,8 @@ export function RTVEntryPanel() {
 
   return (
     <div className="p-6 space-y-6">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Return To Vendor" baseVoucherType="Issue" voucherFamily="rtv" voucherNo="" voucherDate={new Date().toISOString().slice(0,10)} status="draft" />
       {/* Sprint T-Phase-2.7-d-1 · DraftRecoveryDialog + StockReservationSidePanel */}
       <DraftRecoveryDialog
         open={_sprint27d1.recoveryOpen}
