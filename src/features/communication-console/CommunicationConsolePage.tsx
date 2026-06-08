@@ -208,15 +208,21 @@ export default function CommunicationConsolePage() {
             <CardHeader><CardTitle className="text-sm">Outbox Monitor / Communication Log ({outbox.length})</CardTitle></CardHeader>
             <CardContent className="space-y-1">
               {outbox.length === 0 && <div className="text-xs text-muted-foreground">No messages yet.</div>}
-              {outbox.slice(0, 100).map((m) => (
-                <div key={m.id} className="flex items-center gap-2 text-xs border-b border-border py-1.5">
-                  <Badge variant={m.delivery_mode === 'sent_via_user_client' ? 'default' : m.delivery_mode === 'eml_exported' ? 'secondary' : 'outline'}>{m.delivery_mode}</Badge>
-                  <Badge variant="outline">{m.sender_class}</Badge>
-                  <span className="font-mono text-[10px] text-muted-foreground">{m.object_type}</span>
-                  <span className="truncate flex-1">{m.subject}</span>
-                  <span className="text-[10px] text-muted-foreground">{m.to_resolved.join(', ')}</span>
-                </div>
-              ))}
+              {outbox.slice(0, 100).map((m) => {
+                const isWa = m.channel === 'whatsapp';
+                return (
+                  <div key={m.id} className="flex items-center gap-2 text-xs border-b border-border py-1.5">
+                    {isWa
+                      ? <Badge variant="secondary" className="gap-1"><MessageCircle className="h-3 w-3" /> WA</Badge>
+                      : <Badge variant="default" className="gap-1"><Mail className="h-3 w-3" /> ✉</Badge>}
+                    <Badge variant={m.delivery_mode === 'sent_via_user_client' || m.delivery_mode === 'opened_in_whatsapp' ? 'default' : m.delivery_mode === 'eml_exported' ? 'secondary' : 'outline'}>{m.delivery_mode}</Badge>
+                    <Badge variant="outline">{m.sender_class}</Badge>
+                    <span className="font-mono text-[10px] text-muted-foreground">{m.object_type}</span>
+                    <span className="truncate flex-1">{isWa ? m.body_html.slice(0, 60) : m.subject}</span>
+                    <span className="text-[10px] text-muted-foreground">{m.to_resolved.join(', ')}</span>
+                  </div>
+                );
+              })}
             </CardContent>
           </Card>
         </TabsContent>
