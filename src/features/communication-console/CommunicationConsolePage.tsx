@@ -91,24 +91,75 @@ export default function CommunicationConsolePage() {
           <Card>
             <CardHeader><CardTitle className="text-sm">Template Master ({templates.length})</CardTitle></CardHeader>
             <CardContent className="space-y-3">
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" className="gap-1" onClick={() => { upsertTemplate(entityCode, { object_type: 'new-object', channel: 'email', subject_tpl: '', body_tpl: '', lang: 'en', sender_class_default: 'user', active: true }); refresh(); }}>
+                  <Mail className="h-3 w-3" /> Add Email Template
+                </Button>
+                <Button size="sm" variant="outline" className="gap-1" onClick={() => { upsertTemplate(entityCode, { object_type: 'new-object', channel: 'whatsapp', subject_tpl: '', body_tpl: '', lang: 'en', sender_class_default: 'user', wa_category: 'utility', active: true }); refresh(); }}>
+                  <MessageCircle className="h-3 w-3" /> Add WhatsApp Template
+                </Button>
+              </div>
               {templates.map((t) => {
-                const preview = renderTemplate(t.object_type, { doc_no: 'SAMPLE-001', recipient_name: 'Vendor', amount: '₹1,00,000' }, entityCode, t.sender_class_default, 'operator');
+                const isWa = t.channel === 'whatsapp';
+                const preview = isWa
+                  ? renderWhatsAppMessage(t.object_type, { doc_no: 'SAMPLE-001', recipient_name: 'Vendor', amount: '₹1,00,000' }, entityCode, 'operator')
+                  : renderTemplate(t.object_type, { doc_no: 'SAMPLE-001', recipient_name: 'Vendor', amount: '₹1,00,000' }, entityCode, t.sender_class_default, 'operator');
+                const previewText = isWa
+                  ? ((preview as { body: string }).body || '').slice(0, 80)
+                  : (preview as { subject: string }).subject;
+                const bodyLen = t.body_tpl.length;
                 return (
                   <div key={t.id} className="border border-border rounded p-2 space-y-2">
-                    <div className="flex items-center gap-2 text-xs">
+                    <div className="flex items-center gap-2 text-xs flex-wrap">
+                      {isWa
+                        ? <Badge variant="secondary" className="gap-1"><MessageCircle className="h-3 w-3" /> WhatsApp</Badge>
+                        : <Badge variant="default" className="gap-1"><Mail className="h-3 w-3" /> Email</Badge>}
                       <Badge variant="outline">{t.object_type}</Badge>
                       <Badge>{t.sender_class_default}</Badge>
+                      {/* Channel toggle */}
+                      <div className="flex items-center gap-1">
+                        <Switch checked={isWa} onCheckedChange={(v) => { const nextChannel: CommChannel = v ? 'whatsapp' : 'email'; upsertTemplate(entityCode, { ...t, channel: nextChannel, wa_category: nextChannel === 'whatsapp' ? (t.wa_category ?? 'utility') : undefined }); refresh(); }} />
+                        <span className="text-[10px] text-muted-foreground">channel</span>
+                      </div>
+                      {isWa && (
+                        <select className="text-[10px] bg-background border border-border rounded px-1 py-0.5" value={t.wa_category ?? 'utility'} onChange={(e) => { upsertTemplate(entityCode, { ...t, wa_category: e.target.value as WaCategory }); refresh(); }}>
+                          <option value="utility">utility</option>
+                          <option value="marketing">marketing</option>
+                          <option value="authentication">authentication</option>
+                        </select>
+                      )}
                       <Switch checked={t.active} onCheckedChange={(v) => { upsertTemplate(entityCode, { ...t, active: v }); refresh(); }} />
                     </div>
-                    <Input className="h-8 text-xs" value={t.subject_tpl} onChange={(e) => { upsertTemplate(entityCode, { ...t, subject_tpl: e.target.value }); refresh(); }} />
-                    <Textarea rows={3} className="text-xs font-mono" value={t.body_tpl} onChange={(e) => { upsertTemplate(entityCode, { ...t, body_tpl: e.target.value }); refresh(); }} />
-                    <div className="text-[10px] text-muted-foreground"><strong>Preview:</strong> {preview.subject}</div>
+                    {!isWa && (
+                      <Input className="h-8 text-xs" value={t.subject_tpl} onChange={(e) => { upsertTemplate(entityCode, { ...t, subject_tpl: e.target.value }); refresh(); }} placeholder="Subject template" />
+                    )}
+                    <Textarea
+                      rows={isWa ? 4 : 3}
+                      className="text-xs font-mono"
+                      value={t.body_tpl}
+                      onChange={(e) => {
+                        const next = isWa ? e.target.value.slice(0, WA_MAX_BODY_CHARS) : e.target.value;
+                        upsertTemplate(entityCode, { ...t, body_tpl: next });
+                        refresh();
+                      }}
+                      placeholder={isWa ? 'Plain-text · no HTML · max 1024 chars · {{merge}} supported' : 'HTML body'}
+                    />
+                    {isWa && (
+                      <div className="text-[10px] text-muted-foreground flex items-center justify-between">
+                        <span><strong>Preview:</strong> {previewText}{previewText.length === 80 ? '…' : ''}</span>
+                        <Badge variant={bodyLen > WA_MAX_BODY_CHARS ? 'destructive' : 'outline'} className="text-[10px]">{bodyLen} / {WA_MAX_BODY_CHARS}</Badge>
+                      </div>
+                    )}
+                    {!isWa && (
+                      <div className="text-[10px] text-muted-foreground"><strong>Preview:</strong> {previewText}</div>
+                    )}
                   </div>
                 );
               })}
             </CardContent>
           </Card>
         </TabsContent>
+
 
         <TabsContent value="settings">
           <Card>
