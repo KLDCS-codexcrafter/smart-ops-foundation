@@ -20,6 +20,8 @@ import {
 } from '@/lib/delivery-note-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
 import { loadPrintConfig } from '@/lib/print-config-storage';
+// Sprint B2 · DocSendBar wave-1 mount (additive · zero change to print logic)
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 export function DeliveryNotePrintPanel() {
   const [params] = useSearchParams();
@@ -43,6 +45,10 @@ export function DeliveryNotePrintPanel() {
     if (!payload) return <div className="text-sm text-muted-foreground">Loading voucher…</div>;
     const t = payload.resolved_toggles;
     return (
+<>
+      <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+        <DocSendBar objectType="delivery-memo" sourceCard="fincore" sourceRecord={(voucher as unknown) as Record<string, unknown>} />
+      </div>
       <>
         <div className="grid grid-cols-2 gap-4 text-[11px]">
           <div>
@@ -160,6 +166,7 @@ export function DeliveryNotePrintPanel() {
           </div>
         )}
       </>
+    </>
     );
   }, [payload]);
 
