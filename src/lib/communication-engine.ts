@@ -391,6 +391,15 @@ export function listOutbox(entityCode: string): OutboxMessage[] {
 // ─── First-customer hook (approval-rail · my-reminders) ─────────────────
 
 export function enqueueFromEvent(input: EnqueueEventInput): OutboxMessage | null {
+  // B.3 · channel='whatsapp' routes to the WhatsApp sibling (approval-rail + reminders engines stay 0-DIFF).
+  if (input.channel === 'whatsapp') {
+    try {
+      // Lazy require-style dynamic import via static path · keeps tree-shake friendly.
+      // eslint-disable-next-line @typescript-eslint/no-require-imports, @typescript-eslint/no-var-requires
+      const mod = require('@/lib/whatsapp-channel-engine') as typeof import('@/lib/whatsapp-channel-engine');
+      return mod.enqueueWhatsAppFromEvent(input);
+    } catch { return null; }
+  }
   try {
     const profile = listUserMailProfiles(input.entityCode).find((p) => p.user_name === input.recipientUserName);
     const to = profile?.email_id;
