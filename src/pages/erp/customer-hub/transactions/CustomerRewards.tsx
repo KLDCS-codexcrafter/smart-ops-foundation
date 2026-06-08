@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Award, Gift, Flame, Lock, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ConsumerAppShell } from '@/components/shared/ConsumerAppShell';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -175,6 +176,8 @@ export function CustomerRewardsPanel() {
 
   return (
     <div className="space-y-4 animate-fade-in max-w-6xl">
+      {/* TXUI-6 · consumer floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI6_CONSUMER_FLOOR_MARKER__?: boolean }).__TXUI6_CONSUMER_FLOOR_MARKER__ && <ConsumerAppShell title="My Rewards" isLoading={false} isEmpty={false} />}
       <header>
         <h1 className="text-xl font-bold flex items-center gap-2">
           <Gift className="h-5 w-5 text-teal-500" />

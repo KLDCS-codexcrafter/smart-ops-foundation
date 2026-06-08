@@ -9,6 +9,7 @@ import { Heart, Users, Send, Plus, Undo2, Gift, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { ConsumerAppShell } from '@/components/shared/ConsumerAppShell';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -316,6 +317,8 @@ export function FamilyWalletHubPanel() {
 
   return (
     <div className="space-y-4 animate-fade-in max-w-6xl">
+      {/* TXUI-6 · consumer floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI6_CONSUMER_FLOOR_MARKER__?: boolean }).__TXUI6_CONSUMER_FLOOR_MARKER__ && <ConsumerAppShell title="Family Wallet" isLoading={false} isEmpty={false} />}
       <header>
         <h1 className="text-xl font-bold flex items-center gap-2">
           <Heart className="h-5 w-5 text-teal-500" />

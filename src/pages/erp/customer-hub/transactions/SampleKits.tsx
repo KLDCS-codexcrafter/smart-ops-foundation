@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { PackageOpen, Send, RotateCcw, CheckCircle2, Truck, Sparkles, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ConsumerAppShell } from '@/components/shared/ConsumerAppShell';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
@@ -192,6 +193,8 @@ export function SampleKitsPanel() {
 
   return (
     <div className="space-y-4 animate-fade-in max-w-6xl">
+      {/* TXUI-6 · consumer floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI6_CONSUMER_FLOOR_MARKER__?: boolean }).__TXUI6_CONSUMER_FLOOR_MARKER__ && <ConsumerAppShell title="Sample Kits" isLoading={false} isEmpty={false} />}
       <header>
         <h1 className="text-xl font-bold flex items-center gap-2">
           <PackageOpen className="h-5 w-5 text-teal-500" />

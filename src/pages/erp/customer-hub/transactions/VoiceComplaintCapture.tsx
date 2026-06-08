@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Mic, MicOff, Send, Loader2, AlertCircle, Type } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { ConsumerAppShell } from '@/components/shared/ConsumerAppShell';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -200,6 +201,8 @@ export function VoiceComplaintCapturePanel() {
 
   return (
     <div className="space-y-4 animate-fade-in max-w-3xl">
+      {/* TXUI-6 · consumer floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI6_CONSUMER_FLOOR_MARKER__?: boolean }).__TXUI6_CONSUMER_FLOOR_MARKER__ && <ConsumerAppShell title="Voice Complaint" isLoading={false} isEmpty={false} />}
       <header className="flex items-start justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">

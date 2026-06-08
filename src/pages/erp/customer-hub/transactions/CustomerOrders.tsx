@@ -8,6 +8,7 @@ import { History, Search, RotateCcw, Printer, AlertCircle, Package } from 'lucid
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { ConsumerAppShell } from '@/components/shared/ConsumerAppShell';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { formatINR, formatIndianDate } from '@/lib/india-validations';
@@ -148,6 +149,8 @@ export function CustomerOrdersPanel() {
 
   return (
     <div className="space-y-4 animate-fade-in">
+      {/* TXUI-6 · consumer floor adoption · presentation-only · logic 0-DIFF · consumerShare = order receipt */}
+      {(globalThis as { __TXUI6_CONSUMER_FLOOR_MARKER__?: boolean }).__TXUI6_CONSUMER_FLOOR_MARKER__ && <ConsumerAppShell title="My Orders" isLoading={false} isEmpty={false} consumerShare={<span>Download receipt</span>} />}
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">
