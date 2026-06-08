@@ -23,6 +23,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Plus, Save, Trash2, ArrowLeft, Edit2, ChevronRight, FileText, Printer } from 'lucide-react';
+import { ATPCheckButton } from '@/components/salesx/ATPCheckButton';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -584,6 +585,17 @@ export function QuotationEntryPanel({ entityCode }: Props) {
               </Button>
             </div>
           )}
+          <ATPCheckButton
+            entityCode={entityCode}
+            lines={form.items.map(it => ({
+              item_id: it.item_name,
+              item_name: it.item_name,
+              qty: it.qty,
+              requested_date: form.valid_until_date ?? form.quotation_date,
+            }))}
+            source="quotation"
+            sourceDocNo={editingId}
+          />
           <Button onClick={handleSave} data-primary className="bg-orange-500 hover:bg-orange-600">
             <Save className="h-4 w-4 mr-2" />Save Quotation
           </Button>
