@@ -745,8 +745,8 @@ export function listProcureHubSarathiMobileStubs(): ProcureHubSarathiMobileStubE
 // NO modification to bridges #1–#12. Walls held.
 // ============================================================================
 
-import { buildOEMPortalPacket, buildServiceTrendsSnapshot, readOEMClaims } from './servicedesk-capstone-engine';
-import type { OEMPortalWarrantyClaimPacket, ServiceTrendsSnapshot } from './servicedesk-capstone-engine';
+import { buildOEMPortalPacket, readOEMClaims } from './servicedesk-capstone-engine';
+import type { OEMPortalWarrantyClaimPacket } from './servicedesk-capstone-engine';
 
 /* ───────────────────────────────────────────────────────────────────────── */
 /* BRIDGE 13 · ServiceDesk → External OEM Portal · LIVE                       */
@@ -872,44 +872,60 @@ export function listCustomerHealthScoreSeamEvents(): CustomerHealthScoreToInsigh
 }
 
 /* ───────────────────────────────────────────────────────────────────────── */
-/* BRIDGE 15 · ServiceDesk → InsightX service-trends snapshot · LIVE          */
-/*  Builds a tenant-level snapshot from capstone aggregator + emits.          */
+/* BRIDGE 15 · ServiceDesk → FinCore per-OEM P&L · SEAM-ONLY                  */
+/*  Spec bridge per A.3 v7 §11 OOB-26.                                        */
+/*  CONSUMES per-OEM P&L from multi-OEM surface (S15) when it lands.          */
+/*  S15 is ABSENT in tree today — bridge is registered as a SEAM stub so the  */
+/*  wiring lights up the day S15 ships its per-OEM P&L aggregator.            */
+/*  This sprint does NOT recompute P&L here (out of A.3 scope · iron-canon).  */
+/*  [JWT] Activates when S15 multi-OEM surface ships per-OEM P&L.             */
 /* ───────────────────────────────────────────────────────────────────────── */
 
-export interface ServiceTrendsToInsightXEvent {
-  type: 'servicedesk:service_trends.snapshot_emitted';
-  snapshot: ServiceTrendsSnapshot;
+export interface OEMPNLToFinCoreEvent {
+  type: 'servicedesk:oem_pnl.emitted';
+  oem_name: string;
+  entity_id: string;
+  seam_only: true;
+  reason: 'S15_absent';
+  emitted_at: string;
   originating_card_id: 'servicedesk';
 }
 
-const insightxTrendsKey = 'insightx_servicedesk_service_trends_stub_v1';
+const fineCoreOEMPNLSeamKey = 'fincore_servicedesk_oem_pnl_seam_v1';
 
-export function emitServiceTrendsToInsightX(payload: {
+export function emitOEMPNLToFinCore(payload: {
+  oem_name: string;
   entity_id: string;
-}): ServiceTrendsToInsightXEvent {
-  const snapshot = buildServiceTrendsSnapshot(payload.entity_id);
-  const event: ServiceTrendsToInsightXEvent = {
-    type: 'servicedesk:service_trends.snapshot_emitted',
-    snapshot,
+}): OEMPNLToFinCoreEvent {
+  // SEAM-ONLY: records the intent so the wiring lights up the day S15 lands.
+  // NEVER computes/derives per-OEM P&L here (that is S15's contract).
+  const event: OEMPNLToFinCoreEvent = {
+    type: 'servicedesk:oem_pnl.emitted',
+    oem_name: payload.oem_name,
+    entity_id: payload.entity_id,
+    seam_only: true,
+    reason: 'S15_absent',
+    emitted_at: new Date().toISOString(),
     originating_card_id: 'servicedesk',
   };
   try {
-    const raw = localStorage.getItem(insightxTrendsKey);
-    const list: ServiceTrendsToInsightXEvent[] = raw ? JSON.parse(raw) : [];
+    const raw = localStorage.getItem(fineCoreOEMPNLSeamKey);
+    const list: OEMPNLToFinCoreEvent[] = raw ? JSON.parse(raw) : [];
     list.push(event);
-    localStorage.setItem(insightxTrendsKey, JSON.stringify(list));
+    localStorage.setItem(fineCoreOEMPNLSeamKey, JSON.stringify(list));
   } catch {
     /* quota silent */
   }
   return event;
 }
 
-export function listInsightXServiceTrendsStubs(): ServiceTrendsToInsightXEvent[] {
+export function listOEMPNLToFinCoreSeamEvents(): OEMPNLToFinCoreEvent[] {
   try {
-    const raw = localStorage.getItem(insightxTrendsKey);
+    const raw = localStorage.getItem(fineCoreOEMPNLSeamKey);
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
   }
 }
+
 
