@@ -187,6 +187,7 @@ export function PaymentPrintPanel() {
       </>
     </>
 );
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [payload]);
 
   return (
