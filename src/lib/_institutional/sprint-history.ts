@@ -1056,8 +1056,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🎬 Sprint B6 T-B6-Master-Health · PILLAR-B CLOSE · B.1 approvals + B.2 email + B.3 WhatsApp + B.6 master-health · master governance was already substantially built (idea-3/idea-9/heatmap/lifecycle/replication) · B.6 is the unifying scorecard · Master SSOT Write-Through registered for Wave-2 · NEW SIBLING master-health-scorecard-engine (sole engine credit · aggregator only · detection delegated) · 5-dimension rubric: duplicates (DELEGATE idea-3.scanForDuplicates) · sleeping (DELEGATE idea-9.detectSleepingMasters) · incomplete (REAL fields: Party gstin/state_code/unresolved-quick-add · Inventory hsn_sac_code/stock_group_id · Ledger name · fields absent → source:'unavailable' NEVER fabricated 0%) · orphaned (if-present-then-valid: ledger parent group resolves · item group reference) · ssot_coverage (per ALL_MASTER_TYPES · explicit replication preference recorded? probe `erp_<entity>_master_repl_pref_<type>` honestly) · transparent score rubric documented in scoreMasterType (start 100 · critical -20 · warn -7 · unavailable -2 · floor 0 · monotonic) · ONE cockpit page MasterHealthScorecardPage inside CC governance-group · drills through to EXISTING panels only (MasterConflictResolutionPanel · MasterVisibilityHeatmapPage · MasterLifecycleWizardPage) · NO duplicate merge UI (AC7) · honesty banner verbatim · walls held: idea-3-conflict-resolution-engine 0-DIFF · idea-9-sleeping-master-detector-engine 0-DIFF · master-replication-engine 0-DIFF · party-master-engine 0-DIFF · fincore-engine 0-DIFF (ledgerDefsKey shape consumed read-only) · MasterVisibilityHeatmapPage 0-DIFF · MasterLifecycleWizardPage 0-DIFF · MasterConflictResolutionPanel 0-DIFF · applications.ts 0-DIFF · entitlements 0-DIFF · hash-chain 0-DIFF · retention engine 0-DIFF (read-model only · NO FY-stamped record store) · NO new deps · B.3 flipped to 46a58b4a (architect-verified) · 93→94 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'B6' as unknown as number, code: 'T-B6-Master-Health', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '46a58b4a', loc: 550,
+    headSha: '5b730d35', predecessorSha: '46a58b4a', loc: 550,
     newSiblings: ['master-health-scorecard-engine'],
+    bankDate: '2026-06-08', provenance: 'CONFIRMED',
+  },
+  // 🎨 Sprint TXUI-3 T-TXUI3-Voucher-Canonical · UI-floor arc · canonical voucher shell adoption across 16 Inventory/Production/RequestX forms · PRESENTATION-ONLY · business logic byte-identical · 15 ADOPT + 1 SEAM (IndentApprovalInbox · approval queue not entry form) · NO new engine (adoption sprint · honestly declared · sibling-register row carries empty newSiblings) · TallyVoucherHeader + onEnterNext consumed read-only · walls held: TallyVoucherHeader.tsx 0-DIFF · keyboard.ts 0-DIFF · every target form's save/validate/calc/submit/state/store-key 0-DIFF · all card engines 0-DIFF · applications.ts/routes/sidebars 0-DIFF · per-form diff table in TXUI3_close_summary.md confirms "logic touched? NO" for all 16 · B.6 flipped to 5b730d35 · 94→95 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'TXUI3' as unknown as number, code: 'T-TXUI3-Voucher-Canonical', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '5b730d35', loc: 900,
+    newSiblings: [],
     bankDate: '2026-06-08', provenance: 'PENDING_BACKFILL',
   },
 ];
