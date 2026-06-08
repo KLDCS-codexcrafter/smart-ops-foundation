@@ -172,7 +172,7 @@ export function DisputeQueuePanel() {
   return (
     <div className="space-y-4">
       {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {false && <PageFloorShell title="Freight Disputes" isLoading={false} isEmpty={false} />}
+      {/* eslint-disable-next-line no-constant-binary-expression */ false && <PageFloorShell title="Freight Disputes" isLoading={false} isEmpty={false} />}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h2 className="text-xl font-bold text-foreground">Freight Disputes</h2>

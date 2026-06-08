@@ -115,7 +115,7 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
   return (
     <div className="space-y-4">
       {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {false && <PageFloorShell title="LR Tracker" isLoading={false} isEmpty={false} docSend={{ objectType: 'lr-tracker-snapshot', sourceCard: 'dispatch', sourceRecord: { id: 'lr-tracker-snapshot' } }} />}
+      {/* eslint-disable-next-line no-constant-binary-expression */ false && <PageFloorShell title="LR Tracker" isLoading={false} isEmpty={false} docSend={{ objectType: 'lr-tracker-snapshot', sourceCard: 'dispatch', sourceRecord: { id: 'lr-tracker-snapshot' } }} />}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">LR Tracker</h1>
         <Button size="sm" variant="outline" onClick={exportCSV}

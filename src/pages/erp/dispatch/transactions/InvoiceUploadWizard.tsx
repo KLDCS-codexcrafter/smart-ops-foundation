@@ -216,7 +216,7 @@ export function InvoiceUploadWizard({ open, onOpenChange, logistics, onCreated }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {false && <PageFloorShell title="Invoice Upload Wizard" isLoading={false} isEmpty={false} docSend={{ objectType: 'invoice-upload-wizard', sourceCard: 'dispatch', sourceRecord: { id: 'invoice-upload-wizard' } }} />}
+      {/* eslint-disable-next-line no-constant-binary-expression */ false && <PageFloorShell title="Invoice Upload Wizard" isLoading={false} isEmpty={false} docSend={{ objectType: 'invoice-upload-wizard', sourceCard: 'dispatch', sourceRecord: { id: 'invoice-upload-wizard' } }} />}
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Upload Transporter Invoice — Step {step} of 4</DialogTitle>

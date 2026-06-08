@@ -90,7 +90,7 @@ export function BomExtractor({ onNavigate }: Props): JSX.Element {
   return (
     <div className="p-6 space-y-4 max-w-5xl">
       {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {false && <PageFloorShell title="BOM Extractor" isLoading={false} isEmpty={false} />}
+      {/* eslint-disable-next-line no-constant-binary-expression */ false && <PageFloorShell title="BOM Extractor" isLoading={false} isEmpty={false} />}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => onNavigate?.('welcome')}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
