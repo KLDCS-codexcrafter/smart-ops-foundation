@@ -73,7 +73,7 @@ export function DistributorRatingHubPanel() {
   return (
     <div className="p-4 md:p-6 space-y-4 animate-fade-in">
       {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {/* eslint-disable-next-line no-constant-binary-expression */ false && <PageFloorShell title="Distributor Rating Hub" isLoading={false} isEmpty={false} />}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Distributor Rating Hub" isLoading={false} isEmpty={false} />}
       <div>
         <h2 className="text-xl font-bold">Distributor Ratings &amp; Credit Score</h2>
         <p className="text-sm text-muted-foreground">

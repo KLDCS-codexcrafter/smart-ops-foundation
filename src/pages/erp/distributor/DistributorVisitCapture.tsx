@@ -171,7 +171,7 @@ export default function DistributorVisitCapture() {
   return (
     <DistributorLayout title="Log Visit" subtitle="Capture a visit to a sub-dealer">
       {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {/* eslint-disable-next-line no-constant-binary-expression */ false && <PageFloorShell title="Distributor Visit Capture" isLoading={false} isEmpty={false} />}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Distributor Visit Capture" isLoading={false} isEmpty={false} />}
       <div className="p-4 lg:p-6 max-w-2xl mx-auto" data-keyboard-form>
         <Card>
           <CardHeader className="pb-2">

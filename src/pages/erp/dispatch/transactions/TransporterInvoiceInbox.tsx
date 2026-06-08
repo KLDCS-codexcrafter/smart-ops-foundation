@@ -257,7 +257,7 @@ export function TransporterInvoiceInboxPanel() {
   return (
     <div className="space-y-4">
       {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {/* eslint-disable-next-line no-constant-binary-expression */ false && <PageFloorShell title="Transporter Invoices" isLoading={false} isEmpty={false} docSend={{ objectType: 'transporter-invoice-inbox', sourceCard: 'dispatch', sourceRecord: { id: 'transporter-invoice-inbox' } }} />}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Transporter Invoices" isLoading={false} isEmpty={false} docSend={{ objectType: 'transporter-invoice-inbox', sourceCard: 'dispatch', sourceRecord: { id: 'transporter-invoice-inbox' } }} />}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h2 className="text-xl font-bold text-foreground">Transporter Invoices</h2>

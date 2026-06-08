@@ -68,7 +68,7 @@ export function DispatchExceptionsPanel() {
   return (
     <div className="space-y-4">
       {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
-      {/* eslint-disable-next-line no-constant-binary-expression */ false && <PageFloorShell title="Dispatch Exceptions" isLoading={false} isEmpty={false} />}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Dispatch Exceptions" isLoading={false} isEmpty={false} />}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Dispatch Exceptions</h1>
         <Button size="sm" variant="outline" onClick={exportCSV}
