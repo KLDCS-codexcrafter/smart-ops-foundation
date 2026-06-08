@@ -20,6 +20,8 @@ import {
 } from '@/lib/receipt-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
 import { loadPrintConfig } from '@/lib/print-config-storage';
+// Sprint B2 · DocSendBar wave-1 mount
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 export function ReceiptPrintPanel() {
   const [params] = useSearchParams();
@@ -41,8 +43,13 @@ export function ReceiptPrintPanel() {
 
   const content = useMemo(() => {
     if (!payload) return (
+    <>
+      <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+        <DocSendBar objectType="invoice-memo" sourceCard="receivx" sourceRecord={(voucher as unknown) as Record<string, unknown>} />
+      </div>
       <div className="text-sm text-muted-foreground">Loading voucher…</div>
-    );
+    </>
+);
     const t = payload.resolved_toggles;
 
     return (
