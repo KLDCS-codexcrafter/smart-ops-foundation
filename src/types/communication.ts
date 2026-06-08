@@ -18,12 +18,19 @@
 
 export type SenderClass = 'user' | 'department' | 'system';
 
+/** Channel union — email (B.2) · whatsapp (B.3 · wa.me deep link for user-class). */
+export type CommChannel = 'email' | 'whatsapp';
+
 export type DeliveryMode =
-  | 'sent_via_user_client'   // user-class: their client = their identity, real send TODAY
+  | 'sent_via_user_client'   // user-class email: their client = their identity, real send TODAY
   | 'eml_exported'            // tier-L manual fallback with embedded attachment
-  | 'queued_for_wave2';       // department/system-class: waits for PULSE Relay
+  | 'queued_for_wave2'        // department/system-class: waits for PULSE Relay
+  | 'opened_in_whatsapp';     // B.3 · user-class wa.me deep link opened (real today)
 
 export type OutboxStatus = 'draft' | 'composed' | 'handed_off' | 'queued';
+
+/** WhatsApp BSP template category (informational only · BSP-shape parity · NO BSP tokens client-side). */
+export type WaCategory = 'utility' | 'marketing' | 'authentication';
 
 /** Department mailbox row — CC Communication "Department Email Registry" tab. */
 export interface DepartmentEmailRow {
