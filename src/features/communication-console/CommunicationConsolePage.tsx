@@ -33,11 +33,13 @@ export default function CommunicationConsolePage() {
   const [rev, setRev] = useState(0);
   const refresh = () => setRev((r) => r + 1);
 
+  /* eslint-disable react-hooks/exhaustive-deps */
   const depts = useMemo(() => listDepartmentEmails(entityCode), [entityCode, rev]);
   const templates = useMemo(() => listTemplates(entityCode), [entityCode, rev]);
   const settings = useMemo(() => getCompanyMailSettings(entityCode), [entityCode, rev]);
   const profiles = useMemo(() => listUserMailProfiles(entityCode), [entityCode, rev]);
   const outbox = useMemo(() => listOutbox(entityCode), [entityCode, rev]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
   if (!entityCode) {
     return <div className="p-6 text-muted-foreground">Select a company to continue.</div>;
