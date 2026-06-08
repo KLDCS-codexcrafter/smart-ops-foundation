@@ -397,12 +397,12 @@ export function ProjectEntryPanel() {
               <div className="space-y-1.5">
                 <Label>Project Name <span className="text-destructive">*</span></Label>
                 <Input placeholder="e.g. Acme Coal Conveyor" value={form.project_name}
-                  onChange={e => setForm(f => ({ ...f, project_name: e.target.value }))} />
+                  onChange={e => setForm(f => ({ ...f, project_name: e.target.value }))} onKeyDown={onEnterNext} />
               </div>
               <div className="space-y-1.5">
                 <Label>Short Code</Label>
                 <Input placeholder="e.g. ACME-CCS-01" value={form.project_code}
-                  onChange={e => setForm(f => ({ ...f, project_code: e.target.value }))} />
+                  onChange={e => setForm(f => ({ ...f, project_code: e.target.value }))} onKeyDown={onEnterNext} />
               </div>
             </div>
 

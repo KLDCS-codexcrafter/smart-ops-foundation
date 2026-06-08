@@ -2,6 +2,7 @@
  * ResourceAllocation.tsx — ProjX person allocation per project
  * Sprint T-Phase-1.1.2-b
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useMemo, useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +21,8 @@ import { useSAMPersons } from '@/hooks/useSAMPersons';
 import type { ProjectResource } from '@/types/projx/project-resource';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { logAudit } from '@/lib/audit-trail-engine';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 const fmtINR = (n: number) => `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -148,8 +151,10 @@ export function ResourceAllocationPanel() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-5 p-6">
+    <div className="max-w-7xl mx-auto space-y-5 p-6" data-keyboard-form>
+      <TallyVoucherHeader voucherTypeName="Resource Allocation" baseVoucherType="Memo" voucherFamily="resource_allocation" voucherNo="" voucherDate={form.allocated_from} status={form.is_active ? 'posted' : 'cancelled'} />
       <div className="flex items-center justify-between">
+
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Users className="h-6 w-6 text-indigo-500" /> Resource Allocation
@@ -258,30 +263,30 @@ export function ResourceAllocationPanel() {
             </div>
             <div className="space-y-1.5">
               <Label>Role on Project</Label>
-              <Input value={form.role_on_project} onChange={e => setForm(f => ({ ...f, role_on_project: e.target.value }))} placeholder="e.g. Lead Engineer" />
+              <Input value={form.role_on_project} onChange={e => setForm(f => ({ ...f, role_on_project: e.target.value }))} placeholder="e.g. Lead Engineer" onKeyDown={onEnterNext} />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label>Allocation %</Label>
                 <Input type="number" min={0} max={100} value={form.allocation_pct}
-                  onChange={e => setForm(f => ({ ...f, allocation_pct: Number(e.target.value) }))} />
+                  onChange={e => setForm(f => ({ ...f, allocation_pct: Number(e.target.value) }))} onKeyDown={onEnterNext} />
               </div>
               <div className="space-y-1.5">
                 <Label>Daily Cost Rate (₹)</Label>
                 <Input type="number" min={0} value={form.daily_cost_rate}
-                  onChange={e => setForm(f => ({ ...f, daily_cost_rate: Number(e.target.value) }))} />
+                  onChange={e => setForm(f => ({ ...f, daily_cost_rate: Number(e.target.value) }))} onKeyDown={onEnterNext} />
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <Label>Allocated From</Label>
                 <Input type="date" value={form.allocated_from}
-                  onChange={e => setForm(f => ({ ...f, allocated_from: e.target.value }))} />
+                  onChange={e => setForm(f => ({ ...f, allocated_from: e.target.value }))} onKeyDown={onEnterNext} />
               </div>
               <div className="space-y-1.5">
                 <Label>Allocated Until (optional)</Label>
                 <Input type="date" value={form.allocated_until ?? ''}
-                  onChange={e => setForm(f => ({ ...f, allocated_until: e.target.value || null }))} />
+                  onChange={e => setForm(f => ({ ...f, allocated_until: e.target.value || null }))} onKeyDown={onEnterNext} />
               </div>
             </div>
             <div className="flex items-center justify-between rounded-lg border p-3">
