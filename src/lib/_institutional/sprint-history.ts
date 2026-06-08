@@ -1077,11 +1077,19 @@ export const SPRINTS: SprintEntry[] = [
   // 🎨 Sprint TXUI-5.1 T-TXUI51-Universal-Floor · UI-floor arc · sub-sprint 1 of ~5 · PageFloorShell canon established · 12 non-voucher surfaces (6 Dispatch · 5 Distributor · 1 EngineeringX) adopt the universal floor · DocSendBar floor-canon comes home on document_report surfaces (LRTracker · PDFInvoiceUpload · TransporterInvoiceInbox · InvoiceUploadWizard) · pure trackers/dashboards/wizards get FLOOR ONLY (DispatchExceptions · DisputeQueue · DistributorExcelSync · DistributorRatingHub · SchemeSimulator · StockOutWarnings · DistributorVisitCapture · BomExtractor) · PRESENTATION-ONLY · business logic byte-identical · NO new lib engine (PageFloorShell is a shared COMPONENT · honestly declared · sibling-register row carries empty newSiblings) · walls held: DocSendBar.tsx 0-DIFF · every surface's fetch/filter-logic/save/mutation/store-key 0-DIFF · all card engines 0-DIFF · applications.ts/routes/sidebars 0-DIFF · per-surface table in TXUI51_close_summary.md confirms "logic touched? NO" for all 12 · TXUI-4 flipped to 12d67bf6 · 96→97 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'TXUI51' as unknown as number, code: 'T-TXUI51-Universal-Floor', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '12d67bf6', loc: 1000,
+    headSha: 'a9c9d0cc', predecessorSha: '12d67bf6', loc: 1000,
+    newSiblings: [],
+    bankDate: '2026-06-08', provenance: 'CONFIRMED',
+  },
+  // 🎨 Sprint TXUI-5.2 T-TXUI52-Universal-Floor · UI-floor arc · sub-sprint 2 of 3 · 12 pay-hub/HR + EngineeringX surfaces adopt PageFloorShell · DocSendBar via docSend on 3 document_report surfaces (DocumentManagement · DocumentsAndPolicies · ExitAndFnF F&F statement) · 9 HR-form/tracker surfaces get FLOOR ONLY · PRESENTATION-ONLY · business logic byte-identical · NO new component/engine (PageFloorShell consumed · empty newSiblings honestly declared) · walls held: PageFloorShell.tsx 0-DIFF · DocSendBar.tsx 0-DIFF · every surface's fetch/filter-logic/save/mutation/store-key 0-DIFF · all card engines 0-DIFF · applications.ts/routes/sidebars 0-DIFF · per-surface table in TXUI52_close_summary.md confirms "logic touched? NO" for all 12 · TXUI-5.1 flipped to a9c9d0cc · 97→98 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'TXUI52' as unknown as number, code: 'T-TXUI52-Universal-Floor', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'a9c9d0cc', loc: 850,
     newSiblings: [],
     bankDate: '2026-06-08', provenance: 'PENDING_BACKFILL',
   },
 ];
+
 
 
 
