@@ -25,6 +25,7 @@ import { LABOUR_CONTRACTORS_KEY, CONTRACT_WORKERS_KEY, WORK_ORDERS_KEY,
   computeContractStatutory, CONTRACT_PF_CEILING, CONTRACT_ESIC_CEILING } from '@/types/contract-manpower';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { roundTo, dMul } from '@/lib/decimal-helpers';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface ContractManpowerPanelProps { defaultTab?: ContractTab; }
 
@@ -355,6 +356,8 @@ export function ContractManpowerPanel({ defaultTab = 'agencies' }: ContractManpo
 
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Contract Manpower" isLoading={false} isEmpty={false} />}
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-lg bg-violet-500/15 flex items-center justify-center">

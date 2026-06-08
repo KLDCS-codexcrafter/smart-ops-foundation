@@ -30,6 +30,7 @@ import type { LeaveType, HolidayCalendar } from '@/types/payroll-masters';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { LEAVE_TYPES_KEY, HOLIDAY_CALENDARS_KEY } from '@/types/payroll-masters';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 export function LeaveRequestsPanel() {
   const { requests, delegations, compOff, stats,
@@ -294,6 +295,8 @@ export function LeaveRequestsPanel() {
 
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Leave Requests" isLoading={false} isEmpty={false} />}
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">

@@ -37,6 +37,7 @@ import { LOAN_TYPES_KEY } from '@/types/payroll-masters';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { useT } from '@/lib/i18n-engine';
 import { roundTo, resolveMoneyPrecision, dMul, dSub, dPct } from '@/lib/decimal-helpers';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 /* ── generateEMISchedule — pure function, no library ─────────────── */
 function generateEMISchedule(
@@ -527,6 +528,8 @@ export function EmployeeFinancePanel({ defaultTab = 'loans' }: EmployeeFinancePa
 
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Employee Finance" isLoading={false} isEmpty={false} />}
       {/* Header */}
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-lg bg-violet-500/15 flex items-center justify-center">

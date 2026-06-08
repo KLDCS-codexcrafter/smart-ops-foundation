@@ -31,6 +31,7 @@ import type { Employee } from '@/types/employee';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { cn } from '@/lib/utils';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 // ── File size + Base64 helpers ───────────────────────────────────
 const MAX_FILE_BYTES = 1_048_576; // 1 MB hard limit
@@ -339,6 +340,8 @@ export function DocumentManagementPanel({ defaultTab = 'vault' }: DocumentManage
 
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.2 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Document Management" isLoading={false} isEmpty={false} docSend={ objectType: "employee-document", sourceCard: "pay-hub", sourceRecord: { id: "employee-document-snapshot" } } />}
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <div className="h-10 w-10 rounded-lg bg-violet-500/15 flex items-center justify-center">
