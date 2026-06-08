@@ -164,6 +164,10 @@ import AuditIntegrityPage from '@/features/audit-integrity/AuditIntegrityPage';
 // 🎬 Sprint P8.6 · T-P86-Retention-Floor-Plant · Retention Console (policy table + evaluation report)
 import RetentionConsolePage from '@/features/retention-console/RetentionConsolePage';
 
+// 🎬 Sprint B2 · T-B2-Comm-Outbox · Communication Console (outbox + dual-sender + DocSendBar floor canon)
+import CommunicationConsolePage from '@/features/communication-console/CommunicationConsolePage';
+
+
 // 🚚 Sprint 124 · T-Phase-7.D.1.5 · A1 — FP&A pages MOVED to the FP&A self-owned
 // shell (/erp/fpa-planning). The 7 imports/cases/type-union members previously
 // here have been removed. Legacy hashes redirect via the effect below.
@@ -315,7 +319,9 @@ export type CommandCenterModule =
   // 🎬 Sprint P8.5 · B.5-L2 · Audit Integrity Verify UI
   | 'audit-integrity'
   // 🎬 Sprint P8.6 · B.5-L3 · Retention Console
-  | 'retention-console';
+  | 'retention-console'
+  // 🎬 Sprint B2 · B.2 · Communication Console
+  | 'communication-console';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -355,6 +361,7 @@ export default function CommandCenterPage() {
       'mdg-field-lock-rules', 'mdg-conflict-resolution', 'mdg-sync-throttle',
       'audit-integrity',
       'retention-console',
+      'communication-console',
     ].includes(hash)) {
       return hash as CommandCenterModule;
     }
@@ -421,6 +428,7 @@ export default function CommandCenterPage() {
       'fincore-workpaper-autopop', 'fincore-inter-dept-governance',
       'audit-integrity',
       'retention-console',
+      'communication-console',
     ]);
     // 🚚 S124 · A1 — legacy FP&A hashes redirect to /erp/fpa-planning#<new-id>.
     const LEGACY_FPA: Record<string, string> = {
@@ -597,6 +605,9 @@ export default function CommandCenterPage() {
 
       // 🎬 Sprint P8.6 · B.5-L3 · Retention Console
       case 'retention-console':       return <RetentionConsolePage />;
+
+      // 🎬 Sprint B2 · B.2 · Communication Console
+      case 'communication-console':   return <CommunicationConsolePage />;
 
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }

@@ -5,6 +5,8 @@ import { UniversalPrintFrame, type PrintCompany } from '@/components/print/Unive
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { TransporterInvoice } from '@/types/transporter-invoice';
+// Sprint B2 · DocSendBar wave-1 mount
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 const fmt = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`;
 
@@ -15,7 +17,11 @@ export function TransporterInvoicePrint({ invoice, onClose }: Props) {
   const company: PrintCompany = { name: entityCode || 'Operix', gstin: '—', pan: '—' };
 
   return (
-    <UniversalPrintFrame
+    <>
+      <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+        <DocSendBar objectType="transporter-invoice" sourceCard="dispatch" sourceRecord={(invoice as unknown) as Record<string, unknown>} />
+      </div>
+      <UniversalPrintFrame
       company={company}
       title="Transporter Invoice"
       docNo={invoice.invoice_no}
@@ -68,5 +74,6 @@ export function TransporterInvoicePrint({ invoice, onClose }: Props) {
         </TableBody>
       </Table>
     </UniversalPrintFrame>
-  );
+    </>
+);
 }

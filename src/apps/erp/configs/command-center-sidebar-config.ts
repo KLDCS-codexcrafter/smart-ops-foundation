@@ -353,6 +353,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // NO requiredCards — Retention Console is CC-internal infrastructure, not a card.
       { id: 'retention-console', type: 'item', label: 'Retention Console', icon: ShieldCheck,
         moduleId: 'retention-console' },
+      // 🎬 Sprint B2 · B.2 · Communication Console (outbox + dual-sender · DocSendBar floor canon)
+      { id: 'communication-console', type: 'item', label: 'Communication Console', icon: ShieldCheck,
+        moduleId: 'communication-console' },
     ],
   },
   {

@@ -322,6 +322,8 @@ export function syncApprovalTasks(entityCode: string): SyncResult {
         refType: 'approval',
         refId: meta.source_record_id,
       });
+      // Sprint B2 · B.2 first-customer hook · enqueue outbox message (≤2 lines additive)
+      try { void (import('@/lib/communication-engine').then(m => m.enqueueFromEvent({ entityCode, fiscalYearId: 'FY-UNRESOLVED', objectType: 'approval.pending', sourceCard: 'taskflow', sourceRecordId: meta.source_record_id, recipientUserName: '*', mergeData: { title, body: `Slab ${resolution.slab} · SLA ${resolution.sla_hours}h`, deep_link: '/erp/taskflow#approvals-inbox' } }))); } catch { /* swallow */ }
     }
   }
 

@@ -9,6 +9,8 @@ import {
 } from '@/components/ui/table';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { type DeliveryMemo } from '@/types/delivery-memo';
+// Sprint B2 · DocSendBar wave-1 mount
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(n)}`;
@@ -20,7 +22,11 @@ export function DeliveryMemoPrint({ dm, onClose }: Props) {
   const company: PrintCompany = { name: entityCode || 'Operix', gstin: '—', pan: '—' };
 
   return (
-    <UniversalPrintFrame
+    <>
+      <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+        <DocSendBar objectType="delivery-memo" sourceCard="dispatch" sourceRecord={(dm as unknown) as Record<string, unknown>} />
+      </div>
+      <UniversalPrintFrame
       company={company}
       title="Delivery Memo (Customer Copy)"
       docNo={dm.memo_no}
@@ -69,5 +75,6 @@ export function DeliveryMemoPrint({ dm, onClose }: Props) {
         </TableBody>
       </Table>
     </UniversalPrintFrame>
-  );
+    </>
+);
 }

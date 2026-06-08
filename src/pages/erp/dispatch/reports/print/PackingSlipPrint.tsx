@@ -8,6 +8,8 @@ import { UniversalPrintFrame, type PrintCompany } from '@/components/print/Unive
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { PackingSlip } from '@/types/packing-slip';
+// Sprint B2 · DocSendBar wave-1 mount
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 interface Props { slip: PackingSlip; onClose?: () => void }
 
@@ -16,7 +18,11 @@ export function PackingSlipPrint({ slip, onClose }: Props) {
   const company: PrintCompany = { name: entityCode || 'Operix', gstin: '—', pan: '—' };
 
   return (
-    <UniversalPrintFrame
+    <>
+      <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+        <DocSendBar objectType="packing-slip" sourceCard="dispatch" sourceRecord={(slip as unknown) as Record<string, unknown>} />
+      </div>
+      <UniversalPrintFrame
       company={company}
       title="Packing Slip"
       docNo={slip.dln_voucher_no}
@@ -67,5 +73,6 @@ export function PackingSlipPrint({ slip, onClose }: Props) {
         </TableBody>
       </Table>
     </UniversalPrintFrame>
-  );
+    </>
+);
 }

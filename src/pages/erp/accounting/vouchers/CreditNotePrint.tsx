@@ -20,6 +20,8 @@ import {
 } from '@/lib/credit-note-print-engine';
 import { loadVoucher, loadEntityGst } from '@/lib/voucher-print-shared';
 import { loadPrintConfig } from '@/lib/print-config-storage';
+// Sprint B2 · DocSendBar wave-1 mount
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 export function CreditNotePrintPanel() {
   const [params] = useSearchParams();
@@ -40,12 +42,14 @@ export function CreditNotePrintPanel() {
   }, [voucherId, entityCode, copyKey]);
 
   const content = useMemo(() => {
-    if (!payload) return (
-      <div className="text-sm text-muted-foreground">Loading voucher…</div>
-    );
+    if (!payload) return <div className="text-sm text-muted-foreground">Loading voucher…</div>;
     const t = payload.resolved_toggles;
 
     return (
+    <>
+      <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+        <DocSendBar objectType="invoice-memo" sourceCard="fincore" sourceRecord={{ id: voucherId } as Record<string, unknown>} />
+      </div>
       <>
         <div className="grid grid-cols-2 gap-4 text-[11px]">
           <div>
@@ -226,7 +230,9 @@ export function CreditNotePrintPanel() {
           </div>
         )}
       </>
-    );
+    </>
+);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [payload]);
 
   return (

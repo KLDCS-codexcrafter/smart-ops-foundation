@@ -5,6 +5,8 @@ import { UniversalPrintFrame, type PrintCompany } from '@/components/print/Unive
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { DispatchReceipt } from '@/types/dispatch-receipt';
+// Sprint B2 · DocSendBar wave-1 mount
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 interface Props { receipt: DispatchReceipt; onClose?: () => void }
 
@@ -13,7 +15,11 @@ export function DispatchReceiptPrint({ receipt, onClose }: Props) {
   const company: PrintCompany = { name: entityCode || 'Operix', gstin: '—', pan: '—' };
 
   return (
-    <UniversalPrintFrame
+    <>
+      <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+        <DocSendBar objectType="dispatch-receipt" sourceCard="dispatch" sourceRecord={(receipt as unknown) as Record<string, unknown>} />
+      </div>
+      <UniversalPrintFrame
       company={company}
       title="Dispatch Receipt"
       docNo={receipt.receipt_no}
@@ -61,5 +67,6 @@ export function DispatchReceiptPrint({ receipt, onClose }: Props) {
         <div className="mt-4 text-sm"><span className="font-semibold">Narration:</span> {receipt.narration}</div>
       )}
     </UniversalPrintFrame>
-  );
+    </>
+);
 }

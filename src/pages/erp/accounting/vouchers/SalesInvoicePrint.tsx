@@ -27,6 +27,8 @@ import { resolveCustomerAddress, formatDDMMMYYYY, formatDateTimeIST } from '@/li
 import { loadPrintConfig } from '@/lib/print-config-storage';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { loadEntityBranding } from '@/lib/entity-branding-engine';
+// Sprint B2 · DocSendBar wave-1 mount (additive · zero change to print logic)
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 function loadOne<T>(key: string, fallback: T): T {
   try {
@@ -102,6 +104,10 @@ export function SalesInvoicePrintPanel() {
 
   if (!payload) {
     return (
+<>
+      <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+        <DocSendBar objectType="invoice-memo" sourceCard="fincore" sourceRecord={{ id: voucherId } as Record<string, unknown>} />
+      </div>
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center text-sm text-muted-foreground">
           <FileText className="h-10 w-10 mx-auto mb-2 opacity-30" />
@@ -113,6 +119,7 @@ export function SalesInvoicePrintPanel() {
           </div>
         </div>
       </div>
+    </>
     );
   }
 

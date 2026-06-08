@@ -5,6 +5,8 @@ import { UniversalPrintFrame, type PrintCompany } from '@/components/print/Unive
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { InwardReceipt } from '@/types/inward-receipt';
+// Sprint B2 · DocSendBar wave-1 mount
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 export interface InwardReceiptPrintProps {
   receipt: InwardReceipt;
@@ -16,7 +18,11 @@ export function InwardReceiptPrint({ receipt, onClose }: InwardReceiptPrintProps
   const company: PrintCompany = { name: entityCode || 'Operix', gstin: '—', pan: '—' };
 
   return (
-    <UniversalPrintFrame
+    <>
+      <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+        <DocSendBar objectType="grn" sourceCard="dispatch" sourceRecord={(receipt as unknown) as Record<string, unknown>} />
+      </div>
+      <UniversalPrintFrame
       company={company}
       title="Inward Receipt"
       docNo={receipt.receipt_no}
@@ -73,7 +79,8 @@ export function InwardReceiptPrint({ receipt, onClose }: InwardReceiptPrintProps
         <div><span className="font-semibold">Rejected:</span> {receipt.rejected_lines}</div>
       </div>
     </UniversalPrintFrame>
-  );
+    </>
+);
 }
 
 export default InwardReceiptPrint;

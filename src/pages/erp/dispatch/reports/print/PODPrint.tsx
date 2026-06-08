@@ -4,6 +4,8 @@
 import { UniversalPrintFrame, type PrintCompany } from '@/components/print/UniversalPrintFrame';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { POD } from '@/types/pod';
+// Sprint B2 · DocSendBar wave-1 mount (additive · zero change to print logic)
+import { DocSendBar } from '@/components/shared/DocSendBar';
 
 interface Props { pod: POD; onClose?: () => void }
 
@@ -11,6 +13,10 @@ export function PODPrint({ pod, onClose }: Props) {
   const { entityCode } = useCardEntitlement();
   const company: PrintCompany = { name: entityCode || 'Operix', gstin: '—', pan: '—' };
   return (
+<>
+    <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
+      <DocSendBar objectType="pod" sourceCard="dispatch" sourceRecord={(pod as unknown) as Record<string, unknown>} />
+    </div>
     <UniversalPrintFrame
       company={company}
       title="Proof of Delivery"
@@ -52,5 +58,6 @@ export function PODPrint({ pod, onClose }: Props) {
         )}
       </div>
     </UniversalPrintFrame>
+  </>
   );
 }
