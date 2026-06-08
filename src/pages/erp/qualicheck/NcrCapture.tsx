@@ -39,12 +39,12 @@ import {
   useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
 } from '@/lib/form-carry-forward-kit';
 import {
-import { PageFloorShell } from '@/components/shared/PageFloorShell';
   NCR_SOURCE_LABELS,
   NCR_SEVERITY_LABELS,
   type NcrSource,
   type NcrSeverity,
 } from '@/types/ncr';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface Props {
   onSaved?: () => void;

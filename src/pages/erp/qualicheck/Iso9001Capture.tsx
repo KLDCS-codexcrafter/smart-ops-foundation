@@ -24,10 +24,10 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { createIso9001Doc, isSafeHttpUrl } from '@/lib/iso9001-engine';
 import { parseLinkedRecordsTextarea, VALID_LINK_TYPES } from '@/lib/iso9001-link-parser';
 import {
-import { PageFloorShell } from '@/components/shared/PageFloorShell';
   ISO9001_CLAUSE_LABELS,
   type Iso9001ClauseId,
 } from '@/types/iso9001';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface Props { onSaved?: () => void; onCancel?: () => void; }
 
