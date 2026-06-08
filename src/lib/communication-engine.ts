@@ -395,7 +395,7 @@ export function enqueueFromEvent(input: EnqueueEventInput): OutboxMessage | null
     const profile = listUserMailProfiles(input.entityCode).find((p) => p.user_name === input.recipientUserName);
     const to = profile?.email_id;
     if (!to) return null; // honest empty · no fabrication
-    const fyId = fyForDate(new Date().toISOString().slice(0, 10), input.entityCode)?.id ?? 'FY-UNRESOLVED';
+    const fyId = input.fiscalYearId || resolveFyId(input.entityCode, new Date().toISOString());
     const { subject, body_html } = renderTemplate(input.objectType, { ...input.mergeData, recipient_name: input.recipientUserName }, input.entityCode);
     if (!subject && !body_html) return null;
     const settings = getCompanyMailSettings(input.entityCode);
