@@ -7,7 +7,7 @@
  *           reuses communication-engine.renderTemplate · NO BSP tokens client-side
  *
  * Iron rules:
- *   - NO BSP token / apikey / secret field ANYWHERE (AC2 grep = 0).
+ *   - NO BSP credential field of ANY kind ANYWHERE (AC2 grep = 0).
  *   - user-class WhatsApp → `wa.me` deep link (real today · user's own number = identity).
  *   - department / system-class → `queued_for_wave2` (NEVER wa.me · a personal number
  *     can't represent the dept · BSP send needs the backend).
