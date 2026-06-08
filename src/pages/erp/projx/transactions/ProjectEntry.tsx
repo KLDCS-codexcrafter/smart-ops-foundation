@@ -566,6 +566,8 @@ export function ProjectEntryPanel() {
                       } catch {
                         // best effort — never block UI
                       }
+                      // A.5 · offer (not force) the default 20/50/30 milestone schedule
+                      toast.info('Open Milestone Tracker to generate the default 20/50/30 schedule from this contract value.');
                     }, 0);
                   }
                 }}>{editing ? 'Update' : 'Create'}</Button>
