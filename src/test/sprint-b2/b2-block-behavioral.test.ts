@@ -13,13 +13,13 @@ import path from 'node:path';
 
 import {
   upsertDepartmentEmail, upsertTemplate, listTemplates,
-  saveCompanyMailSettings, upsertUserMailProfile,
+  upsertUserMailProfile,
   renderTemplate, resolveSender, resolveRecipients,
   composeFromDocument, buildEml, buildMailto, dispatch,
   listOutbox, enqueueFromEvent,
 } from '@/lib/communication-engine';
 import { getDefaultPolicyForRecordType } from '@/lib/record-retention-policy-engine';
-import { SPRINT_HISTORY } from '@/lib/_institutional/sprint-history';
+import { SPRINTS } from '@/lib/_institutional/sprint-history';
 
 const E = 'TESTCO';
 
