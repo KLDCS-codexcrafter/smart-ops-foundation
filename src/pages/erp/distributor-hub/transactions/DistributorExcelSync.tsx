@@ -16,10 +16,10 @@ import { toast } from 'sonner';
 import { distributorsKey, type Distributor } from '@/types/distributor';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
-// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
-import { PageFloorShell } from '@/components/shared/PageFloorShell';
   distributorsToRows, mergeDistributorRows, type ExcelScope, type ExcelRow,
 } from '@/lib/distributor-excel-engine';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 

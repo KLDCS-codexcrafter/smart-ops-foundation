@@ -26,11 +26,11 @@ import {
   extractInvoiceFromPDF, type ExtractionResult, type ExtractedInvoiceLine,
 } from '@/lib/pdf-invoice-extractor';
 import {
-// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
-import { PageFloorShell } from '@/components/shared/PageFloorShell';
   type TransporterInvoice, type TransporterInvoiceLine,
   type WorkflowMode, transporterInvoicesKey,
 } from '@/types/transporter-invoice';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const MAX_BYTES = 5 * 1024 * 1024; // 5MB
 
