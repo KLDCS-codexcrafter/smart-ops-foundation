@@ -47,7 +47,7 @@ function resolveFyId(entityCode: string, isoDate: string): string {
   try {
     const years = readFiscalYears(entityCode);
     const d = isoDate.slice(0, 10);
-    const hit = years.find((y) => d >= y.start_date && d <= y.end_date);
+    const hit = years.find((y) => d >= y.startDate && d <= y.endDate);
     return hit?.id ?? 'FY-UNRESOLVED';
   } catch { return 'FY-UNRESOLVED'; }
 }
