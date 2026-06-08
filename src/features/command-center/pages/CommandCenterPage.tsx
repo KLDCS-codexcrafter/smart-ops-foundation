@@ -367,6 +367,7 @@ export default function CommandCenterPage() {
       'audit-integrity',
       'retention-console',
       'communication-console',
+      'master-health-scorecard',
     ].includes(hash)) {
       return hash as CommandCenterModule;
     }
@@ -434,6 +435,7 @@ export default function CommandCenterPage() {
       'audit-integrity',
       'retention-console',
       'communication-console',
+      'master-health-scorecard',
     ]);
     // 🚚 S124 · A1 — legacy FP&A hashes redirect to /erp/fpa-planning#<new-id>.
     const LEGACY_FPA: Record<string, string> = {
@@ -613,6 +615,9 @@ export default function CommandCenterPage() {
 
       // 🎬 Sprint B2 · B.2 · Communication Console
       case 'communication-console':   return <CommunicationConsolePage />;
+
+      // 🎬 Sprint B6 · B.6 · Master Health Scorecard (Pillar-B CLOSE)
+      case 'master-health-scorecard': return <MasterHealthScorecardPage />;
 
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
