@@ -45,7 +45,7 @@ export function DeliveryNotePrintPanel() {
     if (!payload) return <div className="text-sm text-muted-foreground">Loading voucher…</div>;
     const t = payload.resolved_toggles;
     return (
-<>
+    <>
       <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
         <DocSendBar objectType="delivery-memo" sourceCard="fincore" sourceRecord={{ id: voucherId } as Record<string, unknown>} />
       </div>
@@ -167,7 +167,8 @@ export function DeliveryNotePrintPanel() {
         )}
       </>
     </>
-    );
+    </>
+);
   }, [payload]);
 
   return (
