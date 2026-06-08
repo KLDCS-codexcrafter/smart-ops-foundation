@@ -6,11 +6,12 @@
  * mobile-first responsive layout, ≥44px touch targets.
  *
  * PRESENTATION-ONLY · zero data logic · zero fetch · zero mutation · zero
- * store access. Distinct from PageFloorShell (admin grid) and from
- * DocSendBar (admin back-office outbox). When a consumer surface produces
- * a shareable artefact (e.g. an order confirmation receipt), it passes a
+ * store access. Distinct from PageFloorShell (admin grid) and from the
+ * admin back-office outbox component (never imported here · admin/consumer
+ * separation enforced by construction). When a consumer surface produces a
+ * shareable artefact (e.g. an order confirmation receipt), it passes a
  * `consumerShare` slot which renders a lightweight share / download
- * action — NEVER the admin DocSendBar.
+ * action — NEVER the admin outbox.
  *
  * Iron Canon: shared COMPONENT, NOT a lib engine. No engine credit.
  */
