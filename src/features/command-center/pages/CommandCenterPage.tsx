@@ -164,6 +164,10 @@ import AuditIntegrityPage from '@/features/audit-integrity/AuditIntegrityPage';
 // 🎬 Sprint P8.6 · T-P86-Retention-Floor-Plant · Retention Console (policy table + evaluation report)
 import RetentionConsolePage from '@/features/retention-console/RetentionConsolePage';
 
+// 🎬 Sprint B2 · T-B2-Comm-Outbox · Communication Console (outbox + dual-sender + DocSendBar floor canon)
+import CommunicationConsolePage from '@/features/communication-console/CommunicationConsolePage';
+
+
 // 🚚 Sprint 124 · T-Phase-7.D.1.5 · A1 — FP&A pages MOVED to the FP&A self-owned
 // shell (/erp/fpa-planning). The 7 imports/cases/type-union members previously
 // here have been removed. Legacy hashes redirect via the effect below.
