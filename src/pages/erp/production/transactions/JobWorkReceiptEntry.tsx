@@ -38,6 +38,7 @@ import {
 import { listJobWorkOutOrders } from '@/lib/job-work-out-engine';
 import type { JobWorkOutOrder } from '@/types/job-work-out-order';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 export function JobWorkReceiptEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -226,11 +227,11 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Receipt Date</Label>
-            <Input type="date" className="font-mono" value={receiptDate} onChange={e => setReceiptDate(e.target.value)} />
+            <Input type="date" className="font-mono" value={receiptDate} onChange={e = onKeyDown={onEnterNext} > setReceiptDate(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label>Department</Label>
-            <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID" />
+            <Input value={departmentId} onChange={e = onKeyDown={onEnterNext} > setDepartmentId(e.target.value)} placeholder="Department ID" />
           </div>
           {/* Sprint T-Phase-3.PROD-FIX-A · ST5 · factory selector */}
           <div className="space-y-2">

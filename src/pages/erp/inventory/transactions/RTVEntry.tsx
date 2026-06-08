@@ -85,6 +85,7 @@ import {
 import { useDetailedStockAvailability as _useDetailedStockAvailability_27D1 } from '@/hooks/useStockAvailability';
 import { useDraftAutoSave as _useDraftAutoSave_27D1 } from '@/hooks/useDraftAutoSave';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 const _SPRINT_27D1_REFS = [
   _SRB_27D1, _extractCarryOverFields_27D1, _applyCarryOverToForm_27D1,
   _resolveSmartLedger_27D1, _resolveSmartWarehouse_27D1, _resolvePartyHistoricalRate_27D1,
@@ -482,7 +483,7 @@ export function RTVEntryPanel() {
                     <Input type="date"
                       value={active.effective_date ?? ''}
                       placeholder={active.rtv_date}
-                      onChange={e => {
+                      onChange={e = onKeyDown={onEnterNext} > {
                         const v = e.target.value;
                         if (v && entityCode && isPeriodLocked(v, entityCode)) {
                           toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');

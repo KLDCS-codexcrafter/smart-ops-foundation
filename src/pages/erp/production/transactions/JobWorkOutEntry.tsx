@@ -35,6 +35,7 @@ import { DEMO_VENDORS } from '@/data/demo-customers-vendors';
 import { createJobWorkOutOrder, sendJobWorkOutOrder, preCloseJobWorkOutOrder } from '@/lib/job-work-out-engine';
 import type { JobWorkOutOrder, JobWorkOutOrderLine } from '@/types/job-work-out-order';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 type LineDraft = Omit<JobWorkOutOrderLine, 'id' | 'line_no' | 'received_qty' | 'job_work_value'>;
 
@@ -251,11 +252,11 @@ export function JobWorkOutEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Department</Label>
-            <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID" />
+            <Input value={departmentId} onChange={e = onKeyDown={onEnterNext} > setDepartmentId(e.target.value)} placeholder="Department ID" />
           </div>
           <div className="space-y-2">
             <Label>JWO Date</Label>
-            <Input type="date" className="font-mono" value={jwoDate} onChange={e => setJwoDate(e.target.value)} />
+            <Input type="date" className="font-mono" value={jwoDate} onChange={e = onKeyDown={onEnterNext} > setJwoDate(e.target.value)} />
           </div>
           {/* Sprint T-Phase-3.PROD-FIX-A · ST5 · factory selector */}
           <div className="space-y-2">
@@ -271,7 +272,7 @@ export function JobWorkOutEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Expected Return Date</Label>
-            <Input type="date" className="font-mono" value={returnDate} onChange={e => setReturnDate(e.target.value)} />
+            <Input type="date" className="font-mono" value={returnDate} onChange={e = onKeyDown={onEnterNext} > setReturnDate(e.target.value)} />
           </div>
           <div className="md:col-span-2 space-y-2">
             <Label>Notes</Label>
