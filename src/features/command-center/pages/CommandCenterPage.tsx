@@ -319,7 +319,9 @@ export type CommandCenterModule =
   // 🎬 Sprint P8.5 · B.5-L2 · Audit Integrity Verify UI
   | 'audit-integrity'
   // 🎬 Sprint P8.6 · B.5-L3 · Retention Console
-  | 'retention-console';
+  | 'retention-console'
+  // 🎬 Sprint B2 · B.2 · Communication Console
+  | 'communication-console';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
