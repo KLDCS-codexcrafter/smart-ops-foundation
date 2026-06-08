@@ -628,7 +628,7 @@ export function MaterialIssueNotePanel() {
           <div>
             <Label className="text-xs">Issue Date</Label>
             <Input type="date" disabled={readonly} value={header.issue_date}
-              onChange={e = onKeyDown={onEnterNext} > {
+              onChange={e => {
                 const v = e.target.value;
                 if (v && isPeriodLocked(v, safeEntity)) {
                   toast.warning(periodLockMessage(v, safeEntity) ?? 'Period locked');
@@ -835,7 +835,7 @@ export function MaterialIssueNotePanel() {
               <div>
                 <Label className="text-xs">Qty</Label>
                 <Input type="number" min={0} step="0.001" value={draftLine.qty}
-                  onChange={e = onKeyDown={onEnterNext} > setDraftLine(d => ({ ...d, qty: parseFloat(e.target.value) || 0 }))} />
+                  onChange={e => setDraftLine(d => ({ ...d, qty: parseFloat(e.target.value) || 0 }))} />
               </div>
               <div>
                 <Label className="text-xs">Available</Label>
@@ -844,7 +844,7 @@ export function MaterialIssueNotePanel() {
               <div>
                 <Label className="text-xs">Rate (₹)</Label>
                 <Input type="number" min={0} step="0.01" value={draftLine.rate}
-                  onChange={e = onKeyDown={onEnterNext} > setDraftLine(d => ({ ...d, rate: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))} />
+                  onChange={e => setDraftLine(d => ({ ...d, rate: roundTo(parseFloat(e.target.value) || 0, resolveMoneyPrecision(null, null)) }))} />
               </div>
               <div>
                 <Label className="text-xs">UOM</Label>

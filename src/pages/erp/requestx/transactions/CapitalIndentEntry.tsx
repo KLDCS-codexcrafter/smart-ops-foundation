@@ -304,7 +304,7 @@ export function CapitalIndentEntry(): JSX.Element {
                 <TableRow key={l.id}>
                   <TableCell className="text-xs">{l.line_no}</TableCell>
                   <TableCell>
-                    <Input value={l.item_name} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} placeholder="Item" />
+                    <Input value={l.item_name} onChange={e => updateLine(l.id, { item_name: e.target.value, item_id: e.target.value })} placeholder="Item" />
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col gap-1">
@@ -327,8 +327,8 @@ export function CapitalIndentEntry(): JSX.Element {
                       <span className="text-xs text-muted-foreground">N/A · skip Store</span>
                     )}
                   </TableCell>
-                  <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { qty: Number(e.target.value) })} className="w-16" /></TableCell>
-                  <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24" /></TableCell>
+                  <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} className="w-16" /></TableCell>
+                  <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24" /></TableCell>
                   <TableCell className="text-xs font-mono">{l.estimated_value.toLocaleString('en-IN')}</TableCell>
                   <TableCell><Input value={l.cwip_account_id} onChange={e => updateLine(l.id, { cwip_account_id: e.target.value })} className="w-24" /></TableCell>
                   <TableCell><Input type="number" value={l.expected_useful_life_years} onChange={e => updateLine(l.id, { expected_useful_life_years: Number(e.target.value) })} className="w-14" /></TableCell>

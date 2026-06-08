@@ -309,11 +309,11 @@ export function ProductionPlanEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Period Start</Label>
-            <Input type="date" value={periodStart} onChange={e = onKeyDown={onEnterNext} > setPeriodStart(e.target.value)} />
+            <Input type="date" value={periodStart} onChange={e => setPeriodStart(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label>Period End</Label>
-            <Input type="date" value={periodEnd} onChange={e = onKeyDown={onEnterNext} > setPeriodEnd(e.target.value)} />
+            <Input type="date" value={periodEnd} onChange={e => setPeriodEnd(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label>Department</Label>
@@ -366,7 +366,7 @@ export function ProductionPlanEntryPanel(): JSX.Element {
             {planType === 'sales_plan' && (
               <div className="space-y-2">
                 <Label>Sales Plan ID</Label>
-                <Input value={salesPlanId} onChange={e = onKeyDown={onEnterNext} > setSalesPlanId(e.target.value)} />
+                <Input value={salesPlanId} onChange={e => setSalesPlanId(e.target.value)} />
               </div>
             )}
             {planType === 'sales_order' && (

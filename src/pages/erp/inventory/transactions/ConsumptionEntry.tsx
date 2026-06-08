@@ -651,7 +651,7 @@ export function ConsumptionEntryPanel() {
           <div>
             <Label className="text-xs">Date</Label>
             <Input type="date" disabled={readonly} value={header.consumption_date}
-              onChange={e = onKeyDown={onEnterNext} > {
+              onChange={e => {
                 const v = e.target.value;
                 if (v && isPeriodLocked(v, safeEntity)) {
                   toast.warning(periodLockMessage(v, safeEntity) ?? 'Period locked');
@@ -888,12 +888,12 @@ export function ConsumptionEntryPanel() {
               <div>
                 <Label className="text-xs">Standard Qty</Label>
                 <Input type="number" min={0} step="0.001" value={draftLine.standard_qty}
-                  onChange={e = onKeyDown={onEnterNext} > setDraftLine(d => ({ ...d, standard_qty: parseFloat(e.target.value) || 0 }))} />
+                  onChange={e => setDraftLine(d => ({ ...d, standard_qty: parseFloat(e.target.value) || 0 }))} />
               </div>
               <div>
                 <Label className="text-xs">Actual Qty</Label>
                 <Input type="number" min={0} step="0.001" value={draftLine.actual_qty}
-                  onChange={e = onKeyDown={onEnterNext} > setDraftLine(d => ({ ...d, actual_qty: parseFloat(e.target.value) || 0 }))} />
+                  onChange={e => setDraftLine(d => ({ ...d, actual_qty: parseFloat(e.target.value) || 0 }))} />
               </div>
               <div>
                 <Label className="text-xs">Available</Label>

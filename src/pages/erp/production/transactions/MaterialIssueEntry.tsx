@@ -217,11 +217,11 @@ export function MaterialIssueEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Issue Date</Label>
-            <Input type="date" className="font-mono" value={issueDate} onChange={e = onKeyDown={onEnterNext} > setIssueDate(e.target.value)} />
+            <Input type="date" className="font-mono" value={issueDate} onChange={e => setIssueDate(e.target.value)} />
           </div>
           <div className="space-y-2">
             <Label>Department</Label>
-            <Input value={departmentId} onChange={e = onKeyDown={onEnterNext} > setDepartmentId(e.target.value)} placeholder="Department ID" />
+            <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID" />
           </div>
           <div className="space-y-2">
             <Label>Destination (WIP) Godown</Label>

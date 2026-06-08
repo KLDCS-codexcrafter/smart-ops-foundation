@@ -483,7 +483,7 @@ export function RTVEntryPanel() {
                     <Input type="date"
                       value={active.effective_date ?? ''}
                       placeholder={active.rtv_date}
-                      onChange={e = onKeyDown={onEnterNext} > {
+                      onChange={e => {
                         const v = e.target.value;
                         if (v && entityCode && isPeriodLocked(v, entityCode)) {
                           toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');

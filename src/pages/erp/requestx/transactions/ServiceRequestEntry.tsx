@@ -309,10 +309,10 @@ export function ServiceRequestEntry(): JSX.Element {
                     <TableRow key={l.id}>
                       <TableCell className="text-xs">{l.line_no}</TableCell>
                       <TableCell>
-                        <Input value={l.service_name} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { service_name: e.target.value, service_id: e.target.value })} placeholder="Service" />
+                        <Input value={l.service_name} onChange={e => updateLine(l.id, { service_name: e.target.value, service_id: e.target.value })} placeholder="Service" />
                       </TableCell>
-                      <TableCell><Input value={l.description} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { description: e.target.value })} /></TableCell>
-                      <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { qty: Number(e.target.value) })} className="w-16" /></TableCell>
+                      <TableCell><Input value={l.description} onChange={e => updateLine(l.id, { description: e.target.value })} /></TableCell>
+                      <TableCell><Input type="number" inputMode="decimal" value={l.qty} onChange={e => updateLine(l.id, { qty: Number(e.target.value) })} className="w-16" /></TableCell>
                       <TableCell>
                         <Select value={l.uom} onValueChange={v => updateLine(l.id, { uom: v })}>
                           <SelectTrigger className="h-8"><SelectValue /></SelectTrigger>
@@ -324,7 +324,7 @@ export function ServiceRequestEntry(): JSX.Element {
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e = onKeyDown={onEnterNext} > updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24" /></TableCell>
+                      <TableCell><Input type="number" inputMode="decimal" value={l.estimated_rate} onChange={e => updateLine(l.id, { estimated_rate: Number(e.target.value) })} className="w-24" /></TableCell>
                       <TableCell className="text-xs font-mono">{l.estimated_value.toLocaleString('en-IN')}</TableCell>
                       <TableCell><Input type="date" value={l.required_date} onChange={e => updateLine(l.id, { required_date: e.target.value })} /></TableCell>
                       <TableCell><Input type="number" value={l.sla_days} onChange={e => updateLine(l.id, { sla_days: Number(e.target.value) })} className="w-16" /></TableCell>
