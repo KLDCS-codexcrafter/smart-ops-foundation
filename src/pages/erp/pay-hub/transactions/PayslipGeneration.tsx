@@ -27,6 +27,7 @@ import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/k
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { roundTo, resolveMoneyPrecision, dPct } from '@/lib/decimal-helpers';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 void PAYROLL_RUNS_KEY;
 
 // ── numberToWords helper (inline, no library) ──────────────────
@@ -975,6 +976,8 @@ export function PayslipGenerationPanel() {
 export default function PayslipGeneration() {
   return (
     <SidebarProvider defaultOpen={false}>
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Payslip Generation" isLoading={false} isEmpty={false} docSend={{ objectType: "payslip", sourceCard: "pay-hub", sourceRecord: { id: "payslip-snapshot" } }} />}
       <div className="min-h-screen bg-background flex flex-col">
         <ERPHeader breadcrumbs={[{ label: 'Operix Core', href: '/erp/dashboard' }, { label: 'Pay Hub' }, { label: 'Payslip Generation' }]} showDatePicker={false} showCompany={false} />
         <div className="flex-1 overflow-auto p-6">

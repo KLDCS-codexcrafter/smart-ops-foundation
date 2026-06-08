@@ -27,6 +27,7 @@ import {
   ISO9001_CLAUSE_LABELS,
   type Iso9001ClauseId,
 } from '@/types/iso9001';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface Props { onSaved?: () => void; onCancel?: () => void; }
 
@@ -103,6 +104,8 @@ export function Iso9001Capture({ onSaved, onCancel }: Props): JSX.Element {
 
   return (
     <div className="p-6 space-y-4 max-w-3xl">
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="ISO 9001 Capture" isLoading={false} isEmpty={false} docSend={{ objectType: "iso9001-certificate", sourceCard: "qualicheck", sourceRecord: { id: "iso9001-snapshot" } }} />}
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">ISO 9001 Audit Document</h1>
         <p className="text-sm text-muted-foreground mt-1">

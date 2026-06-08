@@ -45,6 +45,7 @@ import { EMPLOYEES_KEY } from '@/types/employee';
 import type { Employee } from '@/types/employee';
 import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n-engine';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface Props { entityCode: string }
 type View = 'list' | 'form';
@@ -436,6 +437,8 @@ export function EnquiryCapturePanel({ entityCode }: Props) {
   // ── FORM VIEW ─────────────────────────────────────────────────────
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Enquiry Capture" isLoading={false} isEmpty={false} />}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button size="sm" variant="ghost" onClick={() => setView('list')}>

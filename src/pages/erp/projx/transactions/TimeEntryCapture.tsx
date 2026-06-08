@@ -26,6 +26,7 @@ import type { TimeEntry } from '@/types/projx/time-entry';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const fmtINR = (n: number) => `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 const todayISO = () => new Date().toISOString().slice(0, 10);
@@ -190,6 +191,8 @@ export function TimeEntryCapturePanel() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-5 p-6">
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Time Entry Capture" isLoading={false} isEmpty={false} />}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
