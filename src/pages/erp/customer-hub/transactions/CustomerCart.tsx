@@ -9,6 +9,7 @@ import { Trash2, Send, Loader2, Sparkles, Gift, Plus, Minus, ShoppingCart } from
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
+import { ConsumerAppShell } from '@/components/shared/ConsumerAppShell';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
@@ -309,6 +310,8 @@ export function CustomerCartPanel() {
 
   return (
     <div className="space-y-4 animate-fade-in max-w-6xl">
+      {/* TXUI-6 · consumer floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI6_CONSUMER_FLOOR_MARKER__?: boolean }).__TXUI6_CONSUMER_FLOOR_MARKER__ && <ConsumerAppShell title="My Cart" isLoading={false} isEmpty={false} />}
       <header>
         <h1 className="text-xl font-bold flex items-center gap-2">
           <ShoppingCart className="h-5 w-5 text-teal-500" />

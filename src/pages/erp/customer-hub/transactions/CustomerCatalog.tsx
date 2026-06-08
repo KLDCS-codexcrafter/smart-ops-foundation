@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
+import { ConsumerAppShell } from '@/components/shared/ConsumerAppShell';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -197,6 +198,8 @@ export function CustomerCatalogPanel() {
 
   return (
     <div className="space-y-4 animate-fade-in">
+      {/* TXUI-6 · consumer floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI6_CONSUMER_FLOOR_MARKER__?: boolean }).__TXUI6_CONSUMER_FLOOR_MARKER__ && <ConsumerAppShell title="Catalog" isLoading={false} isEmpty={false} />}
       <header className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
