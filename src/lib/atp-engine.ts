@@ -218,22 +218,28 @@ export function checkAvailableToPromise(input: ATPInput): ATPResult {
 
   const promise_date = aggregatePromiseDate(perLine, loadDataAvailable);
 
-  // Surface advisory audit on every gating ATP check (no mutation of records).
-  try {
-    logAudit({
-      entity_type: 'sales_order' as never,
-      entity_id: input.source_doc_no || 'atp-probe',
-      action_type: 'view' as never,
-      summary: `ATP check · ${aggregateStatus} · ${input.lines.length} line(s)`,
-      details: {
-        atp_status: aggregateStatus,
-        promise_date,
-        load_data_available: loadDataAvailable,
-        source: input.source ?? 'quotation',
-      },
-    } as never);
-  } catch {
-    // Audit must never break the advisory path.
+  // Advisory audit · reuses existing 'order' entity type · NO new audit_type registered.
+  if (input.source_doc_no) {
+    try {
+      logAudit({
+        entityCode: input.entityCode,
+        action: 'update',
+        entityType: 'order',
+        recordId: input.source_doc_no,
+        recordLabel: `ATP check · ${aggregateStatus}`,
+        beforeState: null,
+        afterState: {
+          atp_status: aggregateStatus,
+          promise_date,
+          load_data_available: loadDataAvailable,
+          line_count: input.lines.length,
+        },
+        reason: `ATP advisory · source=${input.source ?? 'quotation'}`,
+        sourceModule: 'atp-engine',
+      });
+    } catch {
+      // Audit must never break the advisory path.
+    }
   }
 
   return {
