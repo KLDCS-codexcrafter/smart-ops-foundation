@@ -356,6 +356,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🎬 Sprint B2 · B.2 · Communication Console (outbox + dual-sender · DocSendBar floor canon)
       { id: 'communication-console', type: 'item', label: 'Communication Console', icon: ShieldCheck,
         moduleId: 'communication-console' },
+      // 🎬 Sprint B6 · B.6 · Master Health Scorecard (Pillar-B CLOSE)
+      { id: 'master-health-scorecard', type: 'item', label: 'Master Health Scorecard', icon: ShieldCheck,
+        moduleId: 'master-health-scorecard' },
     ],
   },
   {
