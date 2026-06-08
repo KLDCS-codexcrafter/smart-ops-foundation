@@ -13,6 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useDayBook } from '@/hooks/useDayBook';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fmtDate, today, exportCSV } from '@/pages/erp/fincore/reports/reportUtils';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface PayHubDayBookPanelProps {
   entityCode: string;
@@ -78,6 +79,8 @@ export function PayHubDayBookPanel({ entityCode, onNavigate }: PayHubDayBookPane
 
   return (
     <div data-keyboard-form className="p-6 max-w-6xl mx-auto space-y-4">
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Pay Hub Day Book" isLoading={false} isEmpty={false} docSend={{ objectType: "pay-hub-day-book", sourceCard: "pay-hub", sourceRecord: { id: "pay-hub-day-book-snapshot" } }} />}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BookOpen className="h-5 w-5 text-violet-500" />

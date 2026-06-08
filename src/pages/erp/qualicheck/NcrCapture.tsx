@@ -39,6 +39,7 @@ import {
   useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
 } from '@/lib/form-carry-forward-kit';
 import {
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
   NCR_SOURCE_LABELS,
   NCR_SEVERITY_LABELS,
   type NcrSource,
@@ -215,6 +216,8 @@ export function NcrCapture({ onSaved, onCancel }: Props): JSX.Element {
 
   return (
     <div className="p-6 space-y-4 max-w-4xl" data-keyboard-form>
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="NCR Capture" isLoading={false} isEmpty={false} docSend={{ objectType: "ncr-document", sourceCard: "qualicheck", sourceRecord: { id: "ncr-snapshot" } }} />}
       <DraftRecoveryDialog
         open={_sprint27d1.recoveryOpen}
         draftAge={_sprint27d1.draftAge}

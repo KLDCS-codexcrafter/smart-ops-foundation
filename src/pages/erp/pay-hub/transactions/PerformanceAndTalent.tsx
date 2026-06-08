@@ -25,6 +25,7 @@ import type { PayGrade } from '@/types/pay-hub';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { PAY_GRADES_KEY } from '@/types/pay-hub';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface PerformanceAndTalentPanelProps { defaultTab?: PerformanceTab; }
 
@@ -1019,6 +1020,8 @@ export function PerformanceAndTalentPanel({ defaultTab = 'reviews' }: Performanc
 export default function PerformanceAndTalent() {
   return (
     <SidebarProvider defaultOpen={false}>
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Performance & Talent" isLoading={false} isEmpty={false} />}
       <div className="min-h-screen bg-background flex flex-col">
         <ERPHeader breadcrumbs={[{label:'Operix Core',href:'/erp/dashboard'},{label:'Pay Hub'},{label:'Performance & Talent'}]} showDatePicker={false} showCompany={false}/>
         <div className="flex-1 overflow-auto p-6"><PerformanceAndTalentPanel /></div>

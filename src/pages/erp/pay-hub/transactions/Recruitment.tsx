@@ -24,6 +24,7 @@ import type { PayGrade } from '@/types/pay-hub';
 import { EMPLOYEES_KEY } from '@/types/employee';
 import { PAY_GRADES_KEY } from '@/types/pay-hub';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const ACTIVE_STAGES: ApplicationStage[] = ['applied', 'screening', 'interview', 'offer_sent', 'joined'];
 const NEXT_STAGE: Record<string, ApplicationStage> = {
@@ -246,6 +247,8 @@ export function RecruitmentPanel() {
 
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Recruitment" isLoading={false} isEmpty={false} />}
       {/* Header */}
       <div className="flex items-center gap-3 mb-2">
         <div className="h-10 w-10 rounded-lg bg-violet-500/15 flex items-center justify-center">

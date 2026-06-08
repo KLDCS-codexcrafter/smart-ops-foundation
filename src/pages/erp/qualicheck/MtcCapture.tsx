@@ -27,6 +27,7 @@ import {
   UseLastVoucherButton, Sprint27d2Mount, Sprint27eMount, DraftRecoveryDialog,
 } from '@/components/canonical/form-carry-forward-kit';
 import {
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
   useFormCarryForwardChecklist, useSprint27d1Mount, type FormCarryForwardConfig,
 } from '@/lib/form-carry-forward-kit';
 
@@ -212,6 +213,8 @@ export function MtcCapture({ onSaved, onCancel }: Props): JSX.Element {
 
   return (
     <div className="p-6 space-y-4 max-w-5xl" data-keyboard-form>
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="MTC Capture" isLoading={false} isEmpty={false} docSend={{ objectType: "mtc-certificate", sourceCard: "qualicheck", sourceRecord: { id: "mtc-snapshot" } }} />}
       <DraftRecoveryDialog
         open={_sprint27d1.recoveryOpen}
         draftAge={_sprint27d1.draftAge}

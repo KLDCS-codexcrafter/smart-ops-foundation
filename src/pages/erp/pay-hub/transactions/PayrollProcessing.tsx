@@ -30,6 +30,7 @@ import { SALARY_STRUCTURES_KEY, PAY_HEADS_KEY } from '@/types/pay-hub';
 import { ATTENDANCE_RECORDS_KEY } from '@/types/attendance-entry';
 import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 type WizardStep = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
@@ -792,6 +793,8 @@ export const PayrollProcessingPanel = React.memo(function PayrollProcessingPanel
 export default function PayrollProcessing() {
   return (
     <SidebarProvider defaultOpen={false}>
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Payroll Processing" isLoading={false} isEmpty={false} />}
       <div className="min-h-screen bg-background flex flex-col">
         <ERPHeader breadcrumbs={[{ label: 'Operix Core', href: '/erp/dashboard' }, { label: 'Pay Hub' }, { label: 'Payroll Processing' }]} showDatePicker={false} showCompany={false} />
         <div className="flex-1 overflow-auto p-6">

@@ -34,6 +34,7 @@ import { useERPCompany } from '@/components/layout/ERPCompanySelector';
 import { toIndianFormat, amountInputProps, onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 void PAYROLL_RUNS_KEY;
 
 // ── Helper: next Form 24Q due date ───────────────────────────────
@@ -390,6 +391,8 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
   // ═══════════════════════════════════════════════════════════════
   return (
     <div className="space-y-4" data-keyboard-form>
+      {/* TXUI-5.3 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Statutory Returns" isLoading={false} isEmpty={false} docSend={{ objectType: "statutory-return", sourceCard: "pay-hub", sourceRecord: { id: "statutory-return-snapshot" } }} />}
       {/* HEADER */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
