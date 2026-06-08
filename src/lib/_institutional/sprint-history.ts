@@ -1091,10 +1091,18 @@ export const SPRINTS: SprintEntry[] = [
   // 🎨 Sprint TXUI-5.3 T-TXUI53-Universal-Floor · UI-floor arc · sub-sprint 3 of 3 · TXUI-5 CLOSE · 37 non-voucher surfaces across 3 sub-sprints adopt PageFloorShell · DocSendBar floor-canon home on document surfaces · universal-floor arc complete · presentation-only throughout · 13 final surfaces (6 Pay-Hub · 5 QualiCheck · 1 ProjX · 1 SalesX) · DocSendBar via docSend on 8 document_report surfaces (PayHubDayBook · PayslipGeneration · StatutoryReturns · FaiCapture · MtcCapture · Iso9001Capture · NcrCapture · CapaCapture) · 5 capture/tracker forms get FLOOR ONLY (PayrollProcessing · PerformanceAndTalent · Recruitment · TimeEntryCapture · EnquiryCapture) · PRESENTATION-ONLY · business logic byte-identical · NO new component/engine (PageFloorShell consumed · empty newSiblings) · walls held · TXUI-5.2 flipped to f5b619f7 · 98→99 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'TXUI53' as unknown as number, code: 'T-TXUI53-Universal-Floor', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'f5b619f7', loc: 900,
+    headSha: '3a4a4506', predecessorSha: 'f5b619f7', loc: 900,
+    newSiblings: [],
+    bankDate: '2026-06-08', provenance: 'CONFIRMED',
+  },
+  // 🎨 Sprint TXUI-6 T-TXUI6-Consumer-Canonical · TXUI ARC CLOSE · consumer-floor canon established via NEW shared component ConsumerAppShell (touch-first storefront aesthetic · card layouts · big CTAs · mobile-first · ≥44px touch targets · NOT PageFloorShell admin grid · NOT DocSendBar admin outbox) · adopted across 7 customer-hub consumer surfaces (CustomerCart · CustomerCatalog · CustomerOrders · CustomerRewards · FamilyWalletHub · SampleKits · VoiceComplaintCapture) · CustomerOrders carries consumerShare slot (order confirmation receipt · lightweight consumer share/download · NEVER admin DocSendBar) · 6 pure-interaction surfaces get shell only (no share) · PRESENTATION-ONLY · cart/order/rewards/wallet logic byte-identical · NO new lib engine (ConsumerAppShell is a shared COMPONENT · honestly declared · sibling-register row carries empty newSiblings) · walls held: PageFloorShell.tsx 0-DIFF (NOT reused on consumer surfaces) · DocSendBar.tsx 0-DIFF (NOT mounted on consumer surfaces · grep=0) · every surface's fetch/state/mutation/store-key 0-DIFF · all card engines 0-DIFF · hash-chain/retention/applications.ts/entitlements/routes/sidebars 0-DIFF · per-surface table in TXUI6_close_summary.md confirms "logic touched? NO" for all 7 · TXUI-5.3 flipped to 3a4a4506 · TXUI ARC CLOSE · TXUI-1→6 complete · voucher canon (TVH · TXUI-3/4) + admin floor (PageFloorShell · TXUI-5) + consumer floor (ConsumerAppShell · TXUI-6) · the whole UI floor standardized · presentation-only throughout · 99→100 ⭐ milestone · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'TXUI6' as unknown as number, code: 'T-TXUI6-Consumer-Canonical', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '3a4a4506', loc: 900,
     newSiblings: [],
     bankDate: '2026-06-08', provenance: 'PENDING_BACKFILL',
   },
+
 ];
 
 
