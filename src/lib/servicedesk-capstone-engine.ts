@@ -308,7 +308,7 @@ export function computeEngineerReputation(entityCode: string): EngineerReputatio
 
 /* ────────────────────────────────────────────────────────────────────────── */
 /* (Service-trends aggregator removed in A.3 T1 remediation: not spec for      */
-/*  bridge #15. Spec #15 = emitOEMPNLToFineCore SEAM-ONLY, declared in         */
+/*  bridge #15. Spec #15 = emitOEMPNLToFinCore SEAM-ONLY, declared in         */
 /*  servicedesk-bridges.ts. No replacement aggregator is needed in A.3.)       */
 /* ────────────────────────────────────────────────────────────────────────── */
 

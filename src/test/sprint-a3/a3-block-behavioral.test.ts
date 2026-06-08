@@ -2,7 +2,7 @@
  * @file        src/test/sprint-a3/a3-block-behavioral.test.ts
  * @purpose     Sprint A.3 capstone + bridges behavioral tests (T1 remediation)
  * @sprint      T-Phase-1.A.3 · T-A3-ServiceDesk-Capstone · T1 REMEDIATION
- * @notes       Bridge #15 corrected to spec: emitOEMPNLToFineCore SEAM-ONLY (S15 absent).
+ * @notes       Bridge #15 corrected to spec: emitOEMPNLToFinCore SEAM-ONLY (S15 absent).
  *              Service-trends bridge REMOVED (not requested by spec).
  *              >=20 it() tests cover capstone engine, all 3 new bridges, Wave-2
  *              banner pages, and no-duplicity walls.
@@ -28,8 +28,8 @@ import {
   listOEMPortalWarrantyClaimStubs,
   emitCustomerHealthScoreToInsightX,
   listCustomerHealthScoreSeamEvents,
-  emitOEMPNLToFineCore,
-  listOEMPNLToFineCoreSeamEvents,
+  emitOEMPNLToFinCore,
+  listOEMPNLToFinCoreSeamEvents,
 } from '@/lib/servicedesk-bridges';
 import { oemClaimKey } from '@/types/oem-claim';
 
@@ -189,19 +189,19 @@ describe('A.3 · bridge #14 · emitCustomerHealthScoreToInsightX · SEAM-ONLY', 
 
 /* ───────── Bridge #15 · SEAM-ONLY · per-OEM P&L (S15 absent) · CORRECTED ─── */
 
-describe('A.3 · bridge #15 · emitOEMPNLToFineCore · SEAM-ONLY (corrected to spec)', () => {
+describe('A.3 · bridge #15 · emitOEMPNLToFinCore · SEAM-ONLY (corrected to spec)', () => {
   it('is registered and exported by the bridges module', () => {
-    expect(typeof emitOEMPNLToFineCore).toBe('function');
+    expect(typeof emitOEMPNLToFinCore).toBe('function');
   });
   it('records SEAM event with reason S15_absent (no P&L recomputed)', () => {
-    const r = emitOEMPNLToFineCore({ oem_name: 'Acme', entity_id: E });
+    const r = emitOEMPNLToFinCore({ oem_name: 'Acme', entity_id: E });
     expect(r.seam_only).toBe(true);
     expect(r.reason).toBe('S15_absent');
     expect(r.type).toBe('servicedesk:oem_pnl.emitted');
     expect(r.originating_card_id).toBe('servicedesk');
   });
   it('SEAM event carries NO derived P&L numeric fields', () => {
-    const r = emitOEMPNLToFineCore({ oem_name: 'Acme', entity_id: E });
+    const r = emitOEMPNLToFinCore({ oem_name: 'Acme', entity_id: E });
     const keys = Object.keys(r);
     expect(keys).not.toContain('revenue_paise');
     expect(keys).not.toContain('cost_paise');
@@ -209,9 +209,9 @@ describe('A.3 · bridge #15 · emitOEMPNLToFineCore · SEAM-ONLY (corrected to s
     expect(keys).not.toContain('pnl_paise');
   });
   it('persists to FinCore outbox key (separate from health-seam key)', () => {
-    emitOEMPNLToFineCore({ oem_name: 'Acme', entity_id: E });
-    emitOEMPNLToFineCore({ oem_name: 'Beta', entity_id: E });
-    expect(listOEMPNLToFineCoreSeamEvents().length).toBe(2);
+    emitOEMPNLToFinCore({ oem_name: 'Acme', entity_id: E });
+    emitOEMPNLToFinCore({ oem_name: 'Beta', entity_id: E });
+    expect(listOEMPNLToFinCoreSeamEvents().length).toBe(2);
     // health-seam key untouched
     expect(listCustomerHealthScoreSeamEvents().length).toBe(0);
   });
@@ -271,7 +271,7 @@ describe('A.3 · walls held · no-duplicity', () => {
   });
   it('the 3 new A.3 bridges are exported (#13 LIVE · #14 SEAM · #15 SEAM)', async () => {
     const mod = await import('@/lib/servicedesk-bridges');
-    ['emitOEMPortalWarrantyClaim', 'emitCustomerHealthScoreToInsightX', 'emitOEMPNLToFineCore']
+    ['emitOEMPortalWarrantyClaim', 'emitCustomerHealthScoreToInsightX', 'emitOEMPNLToFinCore']
       .forEach((name) => {
         expect(typeof (mod as Record<string, unknown>)[name]).toBe('function');
       });

@@ -881,7 +881,7 @@ export function listCustomerHealthScoreSeamEvents(): CustomerHealthScoreToInsigh
 /*  [JWT] Activates when S15 multi-OEM surface ships per-OEM P&L.             */
 /* ───────────────────────────────────────────────────────────────────────── */
 
-export interface OEMPNLToFineCoreEvent {
+export interface OEMPNLToFinCoreEvent {
   type: 'servicedesk:oem_pnl.emitted';
   oem_name: string;
   entity_id: string;
@@ -893,13 +893,13 @@ export interface OEMPNLToFineCoreEvent {
 
 const fineCoreOEMPNLSeamKey = 'fincore_servicedesk_oem_pnl_seam_v1';
 
-export function emitOEMPNLToFineCore(payload: {
+export function emitOEMPNLToFinCore(payload: {
   oem_name: string;
   entity_id: string;
-}): OEMPNLToFineCoreEvent {
+}): OEMPNLToFinCoreEvent {
   // SEAM-ONLY: records the intent so the wiring lights up the day S15 lands.
   // NEVER computes/derives per-OEM P&L here (that is S15's contract).
-  const event: OEMPNLToFineCoreEvent = {
+  const event: OEMPNLToFinCoreEvent = {
     type: 'servicedesk:oem_pnl.emitted',
     oem_name: payload.oem_name,
     entity_id: payload.entity_id,
@@ -910,7 +910,7 @@ export function emitOEMPNLToFineCore(payload: {
   };
   try {
     const raw = localStorage.getItem(fineCoreOEMPNLSeamKey);
-    const list: OEMPNLToFineCoreEvent[] = raw ? JSON.parse(raw) : [];
+    const list: OEMPNLToFinCoreEvent[] = raw ? JSON.parse(raw) : [];
     list.push(event);
     localStorage.setItem(fineCoreOEMPNLSeamKey, JSON.stringify(list));
   } catch {
@@ -919,7 +919,7 @@ export function emitOEMPNLToFineCore(payload: {
   return event;
 }
 
-export function listOEMPNLToFineCoreSeamEvents(): OEMPNLToFineCoreEvent[] {
+export function listOEMPNLToFinCoreSeamEvents(): OEMPNLToFinCoreEvent[] {
   try {
     const raw = localStorage.getItem(fineCoreOEMPNLSeamKey);
     return raw ? JSON.parse(raw) : [];
