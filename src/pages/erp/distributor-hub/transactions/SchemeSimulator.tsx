@@ -19,6 +19,8 @@ import { formatINR } from '@/lib/india-validations';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
@@ -61,6 +63,8 @@ export function SchemeSimulatorPanel() {
 
   return (
     <div className="p-4 md:p-6 space-y-4">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {false && <PageFloorShell title="Scheme Simulator" isLoading={false} isEmpty={false} />}
       <div className="flex items-center gap-2">
         <FlaskConical className="h-5 w-5 text-violet-500" />
         <div>

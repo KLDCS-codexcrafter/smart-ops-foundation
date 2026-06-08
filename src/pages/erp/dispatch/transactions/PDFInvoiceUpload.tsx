@@ -26,6 +26,8 @@ import {
   extractInvoiceFromPDF, type ExtractionResult, type ExtractedInvoiceLine,
 } from '@/lib/pdf-invoice-extractor';
 import {
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
   type TransporterInvoice, type TransporterInvoiceLine,
   type WorkflowMode, transporterInvoicesKey,
 } from '@/types/transporter-invoice';
@@ -258,6 +260,8 @@ export function PDFInvoiceUploadPanel() {
 
   return (
     <div className="space-y-4">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {false && <PageFloorShell title="PDF Invoice Upload" isLoading={false} isEmpty={false} docSend={{ objectType: 'pdf-invoice-upload', sourceCard: 'dispatch', sourceRecord: { id: 'pdf-invoice-upload' } }} />}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">

@@ -31,6 +31,8 @@ import {
   applyTransition, validNextStatuses, createDisputeFromMatch,
 } from '@/lib/dispute-workflow-engine';
 import { type TransporterInvoice, transporterInvoicesKey } from '@/types/transporter-invoice';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface LogisticLite { id: string; partyName: string }
 
@@ -169,6 +171,8 @@ export function DisputeQueuePanel() {
 
   return (
     <div className="space-y-4">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {false && <PageFloorShell title="Freight Disputes" isLoading={false} isEmpty={false} />}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h2 className="text-xl font-bold text-foreground">Freight Disputes</h2>

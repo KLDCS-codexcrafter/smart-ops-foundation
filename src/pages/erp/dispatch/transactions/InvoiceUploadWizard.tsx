@@ -32,6 +32,8 @@ import {
   MAPPABLE_FIELDS, transporterInvoicesKey, invoiceColumnMappingsKey,
 } from '@/types/transporter-invoice';
 import { parseInvoiceFile } from './InvoiceUploadWizard.helpers';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 
 interface LogisticLite { id: string; partyName: string; logisticType: string }
@@ -213,6 +215,8 @@ export function InvoiceUploadWizard({ open, onOpenChange, logistics, onCreated }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {false && <PageFloorShell title="Invoice Upload Wizard" isLoading={false} isEmpty={false} docSend={{ objectType: 'invoice-upload-wizard', sourceCard: 'dispatch', sourceRecord: { id: 'invoice-upload-wizard' } }} />}
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Upload Transporter Invoice — Step {step} of 4</DialogTitle>

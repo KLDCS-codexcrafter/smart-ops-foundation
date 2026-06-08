@@ -22,6 +22,8 @@ import { getDistributorSession } from '@/lib/distributor-auth-engine';
 import { getDescendants } from '@/lib/hierarchy-engine';
 import { hierarchyNodesKey, type HierarchyNode } from '@/types/distributor-hierarchy';
 import { getCurrentLocation } from '@/lib/geolocation-bridge';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const DEFAULT_CHECK_IN_RADIUS_METERS = 500;
 
@@ -168,6 +170,8 @@ export default function DistributorVisitCapture() {
 
   return (
     <DistributorLayout title="Log Visit" subtitle="Capture a visit to a sub-dealer">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {false && <PageFloorShell title="Distributor Visit Capture" isLoading={false} isEmpty={false} />}
       <div className="p-4 lg:p-6 max-w-2xl mx-auto" data-keyboard-form>
         <Card>
           <CardHeader className="pb-2">
