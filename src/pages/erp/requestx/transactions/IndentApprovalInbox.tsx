@@ -4,6 +4,12 @@
  * @purpose     OOB-13 Connected Approver UX · split-pane · requester history · budget impact
  * @decisions   D-218, D-220
  * @disciplines SD-15, SD-16
+ *
+ * TXUI-3 · SEAM-ONLY (canonical voucher shell NOT adopted).
+ *   Reason: this is an APPROVAL INBOX (queue/list of others' vouchers), not a voucher-entry
+ *   form. There is no single voucher header to bind (multiple requests in the pane) and no
+ *   draft state. Adopting TallyVoucherHeader here would require fabricating header state and
+ *   violate the iron canon (presentation-only, logic 0-DIFF). Logged in TXUI-3 close summary.
  */
 import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';

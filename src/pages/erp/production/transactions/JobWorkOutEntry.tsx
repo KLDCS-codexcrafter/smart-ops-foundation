@@ -34,6 +34,7 @@ import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverla
 import { DEMO_VENDORS } from '@/data/demo-customers-vendors';
 import { createJobWorkOutOrder, sendJobWorkOutOrder, preCloseJobWorkOutOrder } from '@/lib/job-work-out-engine';
 import type { JobWorkOutOrder, JobWorkOutOrderLine } from '@/types/job-work-out-order';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 type LineDraft = Omit<JobWorkOutOrderLine, 'id' | 'line_no' | 'received_qty' | 'job_work_value'>;
 
@@ -175,6 +176,8 @@ export function JobWorkOutEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Job Work Out" baseVoucherType="Issue" voucherFamily="job_work_out" voucherNo="" voucherDate={jwoDate} status="draft" />
       <DraftRecoveryDialog
         formKey="job-work-out-order-entry"
         entityCode={entityCode}

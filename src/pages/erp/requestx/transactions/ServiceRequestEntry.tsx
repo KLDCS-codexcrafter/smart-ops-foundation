@@ -36,6 +36,7 @@ import type {
   ServiceRequest, ServiceRequestLine, ServiceCategory, ServiceSubType, ServiceTrack,
 } from '@/types/service-request';
 import type { Priority } from '@/types/material-indent';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 // useSmartDefaults marker — re-exported via useSprint27d1Mount
 
@@ -190,6 +191,8 @@ export function ServiceRequestEntry(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Service Request" baseVoucherType="Order" voucherFamily="service_request" voucherNo="" voucherDate={date} status="draft" />
       <DraftRecoveryDialog
         formKey="service-request-entry"
         entityCode={entityCode}

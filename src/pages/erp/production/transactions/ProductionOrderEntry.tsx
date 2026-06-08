@@ -62,6 +62,7 @@ import { BOMShortageDialog } from '@/components/production/BOMShortageDialog';
 import type { Bom } from '@/types/bom';
 import type { ItemSubstitute } from '@/types/item-substitute';
 import type { QCScenario, SalesOrderLineMapping, ProductionOrderOutput, ProductionOrderOutputKind, CostAllocationBasis, SubstituteReason } from '@/types/production-order';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 const NATURE_OPTIONS = ['Binding', 'Cutting', 'Welding', 'Fabrication', 'Assembly', 'Mixing', 'Filling', 'Packaging'];
 const COUNTRY_OPTIONS = ['US', 'UK', 'EU', 'JP', 'CN', 'AU', 'AE', 'SG', 'OTHER'];
@@ -488,6 +489,8 @@ export function ProductionOrderEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Production Order" baseVoucherType="Order" voucherFamily="production_order" voucherNo="" voucherDate={startDate} status="draft" />
       {pendingRelease && (
         <BOMShortageDialog
           open={!!pendingRelease}

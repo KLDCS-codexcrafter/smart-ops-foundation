@@ -35,6 +35,7 @@ import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { createCapitalIndent, submitIndent, runAutoRules, recomputeTotal, cancelIndent } from '@/lib/request-engine';
 import type { CapitalIndent, CapitalIndentLine, CapitalSubType } from '@/types/capital-indent';
 import type { Priority } from '@/types/material-indent';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 // useSmartDefaults marker — via useSprint27d1Mount
 
@@ -201,6 +202,8 @@ export function CapitalIndentEntry(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Capital Indent" baseVoucherType="Order" voucherFamily="capital_indent" voucherNo="" voucherDate={date} status="draft" />
       <DraftRecoveryDialog
         formKey="capital-indent-entry"
         entityCode={entityCode}

@@ -40,6 +40,7 @@ import {
   type ProductionPlanType,
   type ProductionPlanSourceLinks,
 } from '@/types/production-plan';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 interface DraftLine {
   id: string;
@@ -251,6 +252,8 @@ export function ProductionPlanEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Production Plan" baseVoucherType="Memo" voucherFamily="production_plan" voucherNo="" voucherDate={periodStart} status="draft" />
       <DraftRecoveryDialog
         formKey="production-plan-entry"
         entityCode={entityCode}

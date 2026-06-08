@@ -29,6 +29,7 @@ import { DraftRecoveryDialog } from '@/components/uth/DraftRecoveryDialog';
 import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverlay';
 import { createMaterialIssue, issueMaterialIssue } from '@/lib/material-issue-engine';
 import type { ProductionOrder } from '@/types/production-order';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 export function MaterialIssueEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -149,6 +150,8 @@ export function MaterialIssueEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Material Issue (Production)" baseVoucherType="Issue" voucherFamily="production_material_issue" voucherNo="" voucherDate={issueDate} status="draft" />
       <DraftRecoveryDialog
         formKey="material-issue-note-entry"
         entityCode={entityCode}

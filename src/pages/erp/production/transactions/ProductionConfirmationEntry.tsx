@@ -37,6 +37,7 @@ import {
   confirmProductionConfirmation,
 } from '@/lib/production-confirmation-engine';
 import type { ProductionOrder } from '@/types/production-order';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 export function ProductionConfirmationEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -157,6 +158,8 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Production Confirmation" baseVoucherType="Receipt" voucherFamily="production_confirmation" voucherNo="" voucherDate={confirmDate} status="draft" />
       <DraftRecoveryDialog
         formKey="production-confirmation-entry"
         entityCode={entityCode}

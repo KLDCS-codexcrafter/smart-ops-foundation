@@ -37,6 +37,7 @@ import {
 } from '@/lib/job-work-receipt-engine';
 import { listJobWorkOutOrders } from '@/lib/job-work-out-engine';
 import type { JobWorkOutOrder } from '@/types/job-work-out-order';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 
 export function JobWorkReceiptEntryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -159,6 +160,8 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
+      {/* TXUI-3 · canonical shell adoption · presentation-only · logic 0-DIFF */}
+      <TallyVoucherHeader voucherTypeName="Job Work Receipt" baseVoucherType="Receipt" voucherFamily="job_work_receipt" voucherNo="" voucherDate={receiptDate} status="draft" />
       <DraftRecoveryDialog
         formKey="job-work-receipt-entry"
         entityCode={entityCode}
