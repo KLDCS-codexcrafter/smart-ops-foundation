@@ -218,13 +218,16 @@ describe('B6 · Master Health Scorecard · pillar-B CLOSE', () => {
   });
 
   it('cockpit drills through to EXISTING panels only (no duplicate merge UI)', () => {
-    const src = readFileSync(
+    const enginesrc = readFileSync(
+      resolve('src/lib/master-health-scorecard-engine.ts'), 'utf8',
+    );
+    const pagesrc = readFileSync(
       resolve('src/features/command-center/modules/MasterHealthScorecardPage.tsx'), 'utf8',
     );
-    expect(src).toContain('mdg-conflict-resolution');
-    expect(src).toContain('fincore-master-visibility-heatmap');
-    expect(src).toContain('fincore-master-lifecycle-wizard');
-    expect(/buildMergePlan|commitMerge/.test(src)).toBe(false);
+    expect(enginesrc).toContain('mdg-conflict-resolution');
+    expect(enginesrc).toContain('fincore-master-visibility-heatmap');
+    expect(enginesrc).toContain('fincore-master-lifecycle-wizard');
+    expect(/buildMergePlan|commitMerge/.test(pagesrc)).toBe(false);
   });
 
   it('honesty banner verbatim in cockpit', () => {
