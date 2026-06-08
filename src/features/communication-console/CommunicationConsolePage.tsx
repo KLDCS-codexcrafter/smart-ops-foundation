@@ -26,6 +26,9 @@ import {
   listUserMailProfiles, upsertUserMailProfile,
   listOutbox, renderTemplate,
 } from '@/lib/communication-engine';
+import { WA_MAX_BODY_CHARS, renderWhatsAppMessage } from '@/lib/whatsapp-channel-engine';
+import type { CommChannel, WaCategory } from '@/types/communication';
+import { MessageCircle, Mail } from 'lucide-react';
 
 export default function CommunicationConsolePage() {
   const { entityCode } = useEntityCode();
