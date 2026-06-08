@@ -56,6 +56,16 @@ describe('TXUI-3 · canonical voucher shell adoption', () => {
     expect(tvh).toContain('data-keyboard-form');
   });
 
+  describe('AC3 · T1 REMEDIATION · onEnterNext wired on every ADOPT form (15)', () => {
+    for (const f of ADOPT_FORMS) {
+      it(`wires onEnterNext: ${f.split('/').pop()}`, () => {
+        const src = read(f);
+        expect(src).toContain("import { onEnterNext } from '@/lib/keyboard'");
+        expect(src).toContain('onKeyDown={onEnterNext}');
+      });
+    }
+  });
+
   describe('AC2 · presentation-only proof · save/validate/store-key tokens preserved', () => {
     const PROBES: Record<string, string[]> = {
       'src/pages/erp/inventory/transactions/ConsumptionEntry.tsx': ['consumption_date'],
