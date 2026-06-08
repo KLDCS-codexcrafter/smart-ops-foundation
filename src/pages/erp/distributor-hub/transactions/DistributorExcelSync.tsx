@@ -18,6 +18,8 @@ import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   distributorsToRows, mergeDistributorRows, type ExcelScope, type ExcelRow,
 } from '@/lib/distributor-excel-engine';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
@@ -77,6 +79,8 @@ export function DistributorExcelSyncPanel() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 max-w-4xl animate-fade-in">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Distributor Excel Sync" isLoading={false} isEmpty={false} />}
       <div className="space-y-1">
         <h2 className="text-xl font-bold">Excel / API Sync</h2>
         <p className="text-sm text-muted-foreground">

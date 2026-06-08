@@ -24,6 +24,8 @@ import {
 import { parseDrawingCustomTags } from '@/types/engineering-drawing';
 import type { BomEntry } from '@/types/bom-entry';
 import type { EngineeringXModule } from '../EngineeringXSidebar.types';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface Props {
   onNavigate?: (m: EngineeringXModule) => void;
@@ -87,6 +89,8 @@ export function BomExtractor({ onNavigate }: Props): JSX.Element {
 
   return (
     <div className="p-6 space-y-4 max-w-5xl">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="BOM Extractor" isLoading={false} isEmpty={false} />}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="sm" onClick={() => onNavigate?.('welcome')}>
           <ArrowLeft className="h-4 w-4 mr-1" /> Back

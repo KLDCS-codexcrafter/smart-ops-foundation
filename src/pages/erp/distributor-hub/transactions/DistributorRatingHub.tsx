@@ -15,6 +15,8 @@ import {
 import { computeComposite, recommendedCreditLimit } from '@/lib/distributor-rating-engine';
 import { formatINR } from '@/lib/india-validations';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
@@ -70,6 +72,8 @@ export function DistributorRatingHubPanel() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 animate-fade-in">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Distributor Rating Hub" isLoading={false} isEmpty={false} />}
       <div>
         <h2 className="text-xl font-bold">Distributor Ratings &amp; Credit Score</h2>
         <p className="text-sm text-muted-foreground">

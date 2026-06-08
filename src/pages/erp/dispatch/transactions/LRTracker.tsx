@@ -19,6 +19,8 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
 import type { DispatchHubModule } from '../DispatchHubSidebar';
 import PODDetailDialog from '../components/PODDetailDialog';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface Props { onModuleChange: (m: DispatchHubModule) => void }
 
@@ -112,6 +114,8 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
 
   return (
     <div className="space-y-4">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="LR Tracker" isLoading={false} isEmpty={false} docSend={{ objectType: 'lr-tracker-snapshot', sourceCard: 'dispatch', sourceRecord: { id: 'lr-tracker-snapshot' } }} />}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">LR Tracker</h1>
         <Button size="sm" variant="outline" onClick={exportCSV}

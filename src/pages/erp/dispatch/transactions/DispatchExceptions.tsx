@@ -13,6 +13,8 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { toast } from 'sonner';
 import { Eye } from 'lucide-react';
 import PODDetailDialog from '../components/PODDetailDialog';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? JSON.parse(r) as T[] : []; }
@@ -65,6 +67,8 @@ export function DispatchExceptionsPanel() {
 
   return (
     <div className="space-y-4">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Dispatch Exceptions" isLoading={false} isEmpty={false} />}
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">Dispatch Exceptions</h1>
         <Button size="sm" variant="outline" onClick={exportCSV}

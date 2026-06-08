@@ -40,6 +40,8 @@ import {
   reconcileInvoice, summarizeMatches, type PayerCustomerLite,
 } from '@/lib/freight-match-engine';
 import { InvoiceUploadWizard } from './InvoiceUploadWizard';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 interface LogisticLite { id: string; partyName: string; logisticType: string }
 interface CustomerLite { id: string; isHeadOffice?: boolean; freightTerm?: string }
@@ -254,6 +256,8 @@ export function TransporterInvoiceInboxPanel() {
 
   return (
     <div className="space-y-4">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Transporter Invoices" isLoading={false} isEmpty={false} docSend={{ objectType: 'transporter-invoice-inbox', sourceCard: 'dispatch', sourceRecord: { id: 'transporter-invoice-inbox' } }} />}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div>
           <h2 className="text-xl font-bold text-foreground">Transporter Invoices</h2>

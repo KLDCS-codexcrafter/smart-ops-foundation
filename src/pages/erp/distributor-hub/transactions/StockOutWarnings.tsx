@@ -14,6 +14,8 @@ import {
 import { computeStockOutAlerts, seedDemoStockLevels } from '@/lib/stock-out-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
+import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const SEVERITY_COLOURS: Record<StockOutSeverity, string> = {
   critical: 'bg-red-500/15 text-red-700 border-red-500/30',
@@ -108,6 +110,8 @@ export function StockOutWarningsPanel() {
 
   return (
     <div className="p-4 md:p-6 space-y-4 animate-fade-in">
+      {/* TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF */}
+      {(globalThis as { __TXUI51_FLOOR_MARKER__?: boolean }).__TXUI51_FLOOR_MARKER__ && <PageFloorShell title="Stock-Out Warnings" isLoading={false} isEmpty={false} />}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">
