@@ -133,6 +133,8 @@ const RECORD_TYPE_POLICY_MAP: Record<string, RetentionPolicyId> = {
   manifest: 'gst_8yr',
   'shipment-operational': 'operational_log_only',
   'manifest-ack': 'operational_log_only',
+  // Sprint B2 · additive — outbox message is a communications log entry.
+  'outbox_message': 'operational_log_only',
 };
 
 // ─── localStorage helpers (typed + defensive) ─────────────────────────────
