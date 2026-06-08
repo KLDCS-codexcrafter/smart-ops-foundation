@@ -47,7 +47,7 @@ export function DeliveryNotePrintPanel() {
     return (
 <>
       <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
-        <DocSendBar objectType="delivery-memo" sourceCard="fincore" sourceRecord={(voucher as unknown) as Record<string, unknown>} />
+        <DocSendBar objectType="delivery-memo" sourceCard="fincore" sourceRecord={{ id: voucherId } as Record<string, unknown>} />
       </div>
       <>
         <div className="grid grid-cols-2 gap-4 text-[11px]">

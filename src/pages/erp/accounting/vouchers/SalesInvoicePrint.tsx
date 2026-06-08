@@ -106,7 +106,7 @@ export function SalesInvoicePrintPanel() {
     return (
 <>
       <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
-        <DocSendBar objectType="invoice-memo" sourceCard="fincore" sourceRecord={(invoice as unknown) as Record<string, unknown>} />
+        <DocSendBar objectType="invoice-memo" sourceCard="fincore" sourceRecord={{ id: voucherId } as Record<string, unknown>} />
       </div>
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center text-sm text-muted-foreground">

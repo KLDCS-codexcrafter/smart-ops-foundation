@@ -45,7 +45,7 @@ export function PaymentPrintPanel() {
     if (!payload) return (
     <>
       <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
-        <DocSendBar objectType="payment-advice" sourceCard="payout" sourceRecord={(voucher as unknown) as Record<string, unknown>} />
+        <DocSendBar objectType="payment-advice" sourceCard="payout" sourceRecord={{ id: voucherId } as Record<string, unknown>} />
       </div>
       <div className="text-sm text-muted-foreground">Loading voucher…</div>
     </>

@@ -45,7 +45,7 @@ export function ReceiptPrintPanel() {
     if (!payload) return (
     <>
       <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
-        <DocSendBar objectType="invoice-memo" sourceCard="receivx" sourceRecord={(voucher as unknown) as Record<string, unknown>} />
+        <DocSendBar objectType="invoice-memo" sourceCard="receivx" sourceRecord={{ id: voucherId } as Record<string, unknown>} />
       </div>
       <div className="text-sm text-muted-foreground">Loading voucher…</div>
     </>
