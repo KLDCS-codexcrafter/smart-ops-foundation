@@ -134,9 +134,6 @@ export function listTemplates(entityCode: string): TemplateRow[] {
   lw(templatesKey(entityCode), seed);
   return seed;
 }
-  lw(templatesKey(entityCode), seed);
-  return seed;
-}
 export function upsertTemplate(entityCode: string, row: Omit<TemplateRow, 'id'> & { id?: string }): TemplateRow {
   const list = listTemplates(entityCode);
   const id = row.id ?? newId('tpl');
