@@ -307,34 +307,12 @@ export function computeEngineerReputation(entityCode: string): EngineerReputatio
 }
 
 /* ────────────────────────────────────────────────────────────────────────── */
-/* Service-trends aggregator (powers bridge #15 emitServiceTrendsToInsightX)   */
+/* (Service-trends aggregator removed in A.3 T1 remediation: not spec for      */
+/*  bridge #15. Spec #15 = emitOEMPNLToFineCore SEAM-ONLY, declared in         */
+/*  servicedesk-bridges.ts. No replacement aggregator is needed in A.3.)       */
 /* ────────────────────────────────────────────────────────────────────────── */
 
-export interface ServiceTrendsSnapshot {
-  entity_code: string;
-  captured_at: string;
-  total_tickets: number;
-  open_tickets: number;
-  sev1_count: number;
-  oem_claim_count: number;
-  oem_claim_pending_value_paise: number;
-}
 
-export function buildServiceTrendsSnapshot(entityCode: string): ServiceTrendsSnapshot {
-  const tickets = readTickets(entityCode);
-  const claims = readOEMClaims(entityCode);
-  return {
-    entity_code: entityCode,
-    captured_at: new Date().toISOString(),
-    total_tickets: tickets.length,
-    open_tickets: tickets.filter((t) => t.status !== 'closed' && t.status !== 'resolved').length,
-    sev1_count: tickets.filter((t) => t.severity === 'sev1_critical').length,
-    oem_claim_count: claims.length,
-    oem_claim_pending_value_paise: claims
-      .filter((c) => c.status === 'pending' || c.status === 'submitted')
-      .reduce((s, c) => s + c.total_claim_value_paise, 0),
-  };
-}
 
 /* ────────────────────────────────────────────────────────────────────────── */
 /* OEM portal warranty claim packet builder (powers bridge #13)                */
