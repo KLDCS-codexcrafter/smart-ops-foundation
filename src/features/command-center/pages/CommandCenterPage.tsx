@@ -604,6 +604,9 @@ export default function CommandCenterPage() {
       // 🎬 Sprint P8.6 · B.5-L3 · Retention Console
       case 'retention-console':       return <RetentionConsolePage />;
 
+      // 🎬 Sprint B2 · B.2 · Communication Console
+      case 'communication-console':   return <CommunicationConsolePage />;
+
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
   };
