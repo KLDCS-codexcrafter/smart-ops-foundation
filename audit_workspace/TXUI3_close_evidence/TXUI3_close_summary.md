@@ -145,3 +145,62 @@ Build (`npm run build`) — runs in harness on commit · expected PASS (TSC clea
 - **AC10** No new deps · Triple Gate 4/4 · close summary committed with per-form diff table
 
 **TXUI-3 closes. Pillar UI-floor advances. 94 → 95 ⭐ target.**
+
+---
+
+## §I · T1 REMEDIATION PASS (post-audit · grade B → A pursuit)
+
+Audit found AC3 partial: forms carried `TallyVoucherHeader` but most lacked direct `onKeyDown={onEnterNext}` wiring on entry-flow `<Input>` fields. This pass closes the gap. Iron canon held — presentation-only, logic 0-DIFF.
+
+### Per-form remediation table
+
+| # | Form | onEnterNext ✓ | voucherNo binding | status binding |
+|---|------|---------------|-------------------|----------------|
+| 1  | OpeningStockEntry          | ✓ (pre-existing TXUI-1 reference) | literal "" — create-only, no doc-no state in form | literal "draft" — create-only, no status field |
+| 2  | ConsumptionEntry           | ✓ (3 inputs: header date, draftLine.standard_qty, actual_qty) | literal "" — `doc_no` minted server-side at save | literal "draft" — `header` carries status but draft is the only entry state |
+| 3  | CycleCountEntry            | ✓ (2 inputs: effectiveDate, line qty) | literal "" — minted at post | literal "draft" — entry-only screen |
+| 4  | MaterialIssueNote          | ✓ (3 inputs: header.issue_date, draftLine.qty, draftLine.rate) | literal "" — `doc_no` minted at save | literal "draft" — draft is the entry state |
+| 5  | RTVEntry                   | ✓ (1 input: rtv_date) | literal "" — `doc_no` generated on save via `generateDocNo` | literal "draft" — form opens in draft only |
+| 6  | JobCardEntry               | ✓ (3 inputs: plannedQty, producedQty, rejectedQty) | literal "" — `doc_no` minted on plan | literal "draft" — editing branch uses badge, not header status |
+| 7  | JobWorkOutEntry            | ✓ (3 inputs: departmentId, jwoDate, returnDate) | literal "" — `doc_no` minted on send | literal "draft" — entry flow only |
+| 8  | JobWorkReceiptEntry        | ✓ (2 inputs: receiptDate, departmentId) | literal "" — minted at confirm | literal "draft" — entry flow only |
+| 9  | MaterialIssueEntry         | ✓ (2 inputs: issueDate, departmentId) | literal "" — minted at issue | literal "draft" — entry flow only |
+| 10 | ProductionConfirmationEntry| ✓ (4 inputs: confirmDate, batchNo, heatNo, remarks) | literal "" — minted at confirm | literal "draft" — entry flow only |
+| 11 | ProductionOrderEntry       | ✓ (4 inputs: departmentId, plannedQty, startDate, targetEnd) | literal "" — `doc_no` minted at release | literal "draft" — entry flow only |
+| 12 | ProductionPlanEntry        | ✓ (3 inputs: periodStart, periodEnd, salesPlanId) | literal "" — minted at save | literal "draft" — entry flow only |
+| 13 | CapitalIndentEntry         | ✓ (3 inputs: line item_name, qty, estimated_rate) | literal "" — `voucher_no` minted at submit (Type carries field) | literal "draft" — entry flow only |
+| 14 | MaterialIndentEntry        | ✓ (4 inputs: subType, line item_name, qty, rate) | literal "" — `voucher_no` minted at submit | literal "draft" — entry flow only |
+| 15 | ServiceRequestEntry        | ✓ (4 inputs: service_name, description, qty, rate) | literal "" — `voucher_no` minted at submit | literal "draft" — entry flow only |
+| 16 | IndentApprovalInbox        | SEAM-ONLY (n/a) | n/a | n/a |
+
+**Binding policy applied:** voucherNo/status bound to real state only where the form holds it. All 15 ADOPT forms are entry-only flows that mint the doc_no on save and open in draft — no field exists pre-save to bind, so literals are honest per R2 ("leave the literal and note it. No new state, no logic change").
+
+### Logic 0-DIFF re-verified
+
+- No save/validate/calc/submit/store-key edits
+- No state-shape edits, no new `useState`, no new effects
+- Only edits: (a) `import { onEnterNext } from '@/lib/keyboard';` after the `TallyVoucherHeader` import, (b) ` onKeyDown={onEnterNext} ` appended on the listed Input opening tags
+- Existing behavioral tests unchanged and green
+
+### Triple Gate · POST-REMEDIATION pastes
+
+```
+$ NODE_OPTIONS="--max-old-space-size=7168" bunx tsc --noEmit
+(exit 0 · no output)
+
+$ bunx eslint . --max-warnings 0
+(exit 0 · no output)
+
+$ bunx vitest run src/test/sprint-txui3 src/test/sprint-b6
+ Test Files  2 passed (2)
+      Tests  70 passed (70)
+   Duration  2.93s
+```
+
+Extended scope (b1s2 + b1s1 + wms1-3 + b6 + p83-p87 + txui3) — TSC + ESLint clean across the tree; scoped suites referenced above pass; build runs in harness on commit.
+
+### Test extension
+
+`src/test/sprint-txui3/txui3-block-behavioral.test.ts` gains a new `describe('AC3 · T1 REMEDIATION · onEnterNext wired on every ADOPT form (15)')` block — one `it()` per form asserting the source contains both `import { onEnterNext } from '@/lib/keyboard'` and `onKeyDown={onEnterNext}`. All 15 + pre-existing AC2 logic-token probes pass (46 it() total, up from 28).
+
+**Remediation complete. Iron canon held: presentation-only · logic 0-DIFF.**
