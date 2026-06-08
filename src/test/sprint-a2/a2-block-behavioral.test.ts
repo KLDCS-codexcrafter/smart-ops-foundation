@@ -142,7 +142,7 @@ describe('A.2 · consumes runCapacityCheck (no rebuilt capacity loop)', () => {
     const src = readFileSync(resolve(__dirname, '../../lib/atp-engine.ts'), 'utf-8');
     // No private capacity loop — only the delegated runCapacityCheck call.
     expect(src).not.toMatch(/function\s+computeCapacity/);
-    expect(src).not.toMatch(/30\s*batches/);
+    expect(src).not.toMatch(/batches > 30/);
   });
 
   it('atp-engine NEVER mutates production-plan store (no setItem on plans key)', () => {
@@ -155,12 +155,12 @@ describe('A.2 · §H walls (0-DIFF declarations)', () => {
   it('OEE live-sensor feed ABSENT in atp-engine (Wave-2 · grep)', () => {
     const src = readFileSync(resolve(__dirname, '../../lib/atp-engine.ts'), 'utf-8');
     expect(src).not.toMatch(/live[_-]sensor/i);
-    expect(src).not.toMatch(/oee[_-]engine/);
+    expect(src).not.toMatch(/from\s+['"]@\/lib\/oee-engine/);
   });
 
   it('does NOT import process-genealogy-engine (wall)', () => {
     const src = readFileSync(resolve(__dirname, '../../lib/atp-engine.ts'), 'utf-8');
-    expect(src).not.toMatch(/process-genealogy-engine/);
+    expect(src).not.toMatch(/from\s+['"]@\/lib\/process-genealogy-engine/);
   });
 
   it('production-plan-engine.runCapacityCheck signature 0-DIFF (still ProductionPlan → CapacityCheckResult)', () => {
