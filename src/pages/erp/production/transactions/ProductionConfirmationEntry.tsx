@@ -225,7 +225,7 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Confirmation Date</Label>
-            <Input type="date" className="font-mono" value={confirmDate} onChange={e => setConfirmDate(e.target.value)} />
+            <Input type="date" className="font-mono" value={confirmDate} onChange={e => setConfirmDate(e.target.value)}  onKeyDown={onEnterNext} />
           </div>
         </CardContent>
       </Card>
@@ -276,15 +276,15 @@ export function ProductionConfirmationEntryPanel(): JSX.Element {
             </div>
             <div className="space-y-2">
               <Label>Batch No</Label>
-              <Input className="font-mono" value={batchNo} onChange={e => setBatchNo(e.target.value)} />
+              <Input className="font-mono" value={batchNo} onChange={e => setBatchNo(e.target.value)}  onKeyDown={onEnterNext} />
             </div>
             <div className="space-y-2">
               <Label>Heat No</Label>
-              <Input className="font-mono" value={heatNo} onChange={e => setHeatNo(e.target.value)} />
+              <Input className="font-mono" value={heatNo} onChange={e => setHeatNo(e.target.value)}  onKeyDown={onEnterNext} />
             </div>
             <div className="md:col-span-2 space-y-2">
               <Label>Remarks</Label>
-              <Input value={remarks} onChange={e => setRemarks(e.target.value)} />
+              <Input value={remarks} onChange={e => setRemarks(e.target.value)}  onKeyDown={onEnterNext} />
             </div>
             <div className="md:col-span-2 space-y-2">
               <Label>Notes</Label>

@@ -445,7 +445,7 @@ function CreateCountForm({ godowns, onCreate }: {
         <Label className="text-xs">{_t('common.effective_date', 'Effective Date')}</Label>
         <Input type="date" value={effectiveDate}
           placeholder={todayStr}
-          onChange={e => setEffectiveDate(e.target.value)} />
+          onChange={e => setEffectiveDate(e.target.value)}  onKeyDown={onEnterNext} />
         <p className="text-[10px] text-muted-foreground mt-1">
           accounting date · defaults to Count Date
         </p>
@@ -624,7 +624,7 @@ function CountDetail({
                   {isDraft ? (
                     <Input type="number" className="h-7 w-24 text-right font-mono text-xs"
                       value={l.physical_qty}
-                      onChange={(e) => setLineQty(l.id, parseFloat(e.target.value) || 0)} />
+                      onChange={(e) => setLineQty(l.id, parseFloat(e.target.value) || 0)}  onKeyDown={onEnterNext} />
                   ) : <span className="font-mono text-xs">{l.physical_qty}</span>}
                 </TableCell>
                 <TableCell className="text-right font-mono text-xs">{variance.toFixed(2)}</TableCell>

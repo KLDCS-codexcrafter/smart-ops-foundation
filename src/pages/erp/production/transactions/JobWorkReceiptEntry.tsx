@@ -227,11 +227,11 @@ export function JobWorkReceiptEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Receipt Date</Label>
-            <Input type="date" className="font-mono" value={receiptDate} onChange={e => setReceiptDate(e.target.value)} />
+            <Input type="date" className="font-mono" value={receiptDate} onChange={e => setReceiptDate(e.target.value)}  onKeyDown={onEnterNext} />
           </div>
           <div className="space-y-2">
             <Label>Department</Label>
-            <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID" />
+            <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID"  onKeyDown={onEnterNext} />
           </div>
           {/* Sprint T-Phase-3.PROD-FIX-A · ST5 · factory selector */}
           <div className="space-y-2">

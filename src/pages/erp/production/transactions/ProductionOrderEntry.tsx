@@ -580,11 +580,11 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Department</Label>
-            <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID" />
+            <Input value={departmentId} onChange={e => setDepartmentId(e.target.value)} placeholder="Department ID"  onKeyDown={onEnterNext} />
           </div>
           <div className="space-y-2">
             <Label>Planned Qty</Label>
-            <Input type="number" min={1} value={plannedQty} onChange={e => setPlannedQty(Number(e.target.value))} className="font-mono" />
+            <Input type="number" min={1} value={plannedQty} onChange={e => setPlannedQty(Number(e.target.value))} className="font-mono"  onKeyDown={onEnterNext} />
           </div>
           <div className="space-y-2">
             <Label>UOM</Label>
@@ -592,11 +592,11 @@ export function ProductionOrderEntryPanel(): JSX.Element {
           </div>
           <div className="space-y-2">
             <Label>Start Date</Label>
-            <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="font-mono" />
+            <Input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="font-mono"  onKeyDown={onEnterNext} />
           </div>
           <div className="space-y-2">
             <Label>Target End Date</Label>
-            <Input type="date" value={targetEnd} onChange={e => setTargetEnd(e.target.value)} className="font-mono" />
+            <Input type="date" value={targetEnd} onChange={e => setTargetEnd(e.target.value)} className="font-mono"  onKeyDown={onEnterNext} />
           </div>
           <div className="md:col-span-2 space-y-2">
             <Label>Notes</Label>

@@ -489,7 +489,7 @@ export function RTVEntryPanel() {
                           toast.warning(periodLockMessage(v, entityCode) ?? 'Period locked');
                         }
                         persist(rtvs.map(r => r.id === active.id ? { ...r, effective_date: v || null } : r));
-                      }} />
+                      }}  onKeyDown={onEnterNext} />
                     <p className="text-[10px] text-muted-foreground mt-1">
                       accounting date · defaults to RTV Date
                     </p>
