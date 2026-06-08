@@ -128,7 +128,10 @@ export interface ComposeDocumentInput {
   currentUserName: string;
 }
 
-/** Input for enqueueFromEvent (approval-rail / my-reminders first customers). */
+/** Input for enqueueFromEvent (approval-rail / my-reminders first customers).
+ *  B.3 additive: optional `channel` lets callers route to WhatsApp via the same hook
+ *  (approval-rail-engine + taskflow-reminders-engine stay 0-DIFF — they never set it).
+ */
 export interface EnqueueEventInput {
   entityCode: string;
   fiscalYearId: string;
@@ -137,6 +140,8 @@ export interface EnqueueEventInput {
   sourceRecordId?: string;
   recipientUserName: string;
   mergeData: Record<string, string | number | undefined | null>;
+  /** B.3 additive · defaults 'email'. */
+  channel?: CommChannel;
 }
 
 // ─── Storage keys (entity-scoped per multi-tenant key-scoping canon) ───────
