@@ -516,6 +516,8 @@ export function publishMyRemindersDigest(
     refType: 'digest',
     refId: `my-reminders:${today}`,
   });
+  // Sprint B2 · B.2 first-customer hook · enqueue outbox message (≤2 lines additive)
+  try { void (import('@/lib/communication-engine').then(m => m.enqueueFromEvent({ entityCode, fiscalYearId: 'FY-UNRESOLVED', objectType: 'digest.my_reminders', sourceCard: 'taskflow', recipientUserName: userName, mergeData: { count: total, body: breached.map((b) => `${b.label}: ${b.count}`).join(' · ') } }))); } catch { /* swallow */ }
   return { count: total };
 }
 
