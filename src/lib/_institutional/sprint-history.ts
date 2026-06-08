@@ -1084,7 +1084,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🎨 Sprint TXUI-5.2 T-TXUI52-Universal-Floor · UI-floor arc · sub-sprint 2 of 3 · 12 pay-hub/HR + EngineeringX surfaces adopt PageFloorShell · DocSendBar via docSend on 3 document_report surfaces (DocumentManagement · DocumentsAndPolicies · ExitAndFnF F&F statement) · 9 HR-form/tracker surfaces get FLOOR ONLY · PRESENTATION-ONLY · business logic byte-identical · NO new component/engine (PageFloorShell consumed · empty newSiblings honestly declared) · walls held: PageFloorShell.tsx 0-DIFF · DocSendBar.tsx 0-DIFF · every surface's fetch/filter-logic/save/mutation/store-key 0-DIFF · all card engines 0-DIFF · applications.ts/routes/sidebars 0-DIFF · per-surface table in TXUI52_close_summary.md confirms "logic touched? NO" for all 12 · TXUI-5.1 flipped to a9c9d0cc · 97→98 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'TXUI52' as unknown as number, code: 'T-TXUI52-Universal-Floor', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'a9c9d0cc', loc: 850,
+    headSha: 'f5b619f7', predecessorSha: 'a9c9d0cc', loc: 850,
+    newSiblings: [],
+    bankDate: '2026-06-08', provenance: 'CONFIRMED',
+  },
+  // 🎨 Sprint TXUI-5.3 T-TXUI53-Universal-Floor · UI-floor arc · sub-sprint 3 of 3 · TXUI-5 CLOSE · 37 non-voucher surfaces across 3 sub-sprints adopt PageFloorShell · DocSendBar floor-canon home on document surfaces · universal-floor arc complete · presentation-only throughout · 13 final surfaces (6 Pay-Hub · 5 QualiCheck · 1 ProjX · 1 SalesX) · DocSendBar via docSend on 8 document_report surfaces (PayHubDayBook · PayslipGeneration · StatutoryReturns · FaiCapture · MtcCapture · Iso9001Capture · NcrCapture · CapaCapture) · 5 capture/tracker forms get FLOOR ONLY (PayrollProcessing · PerformanceAndTalent · Recruitment · TimeEntryCapture · EnquiryCapture) · PRESENTATION-ONLY · business logic byte-identical · NO new component/engine (PageFloorShell consumed · empty newSiblings) · walls held · TXUI-5.2 flipped to f5b619f7 · 98→99 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'TXUI53' as unknown as number, code: 'T-TXUI53-Universal-Floor', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'f5b619f7', loc: 900,
     newSiblings: [],
     bankDate: '2026-06-08', provenance: 'PENDING_BACKFILL',
   },
