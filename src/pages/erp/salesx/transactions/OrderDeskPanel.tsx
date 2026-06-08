@@ -25,6 +25,7 @@ import { useOrders } from '@/hooks/useOrders';
 import type { Order } from '@/types/order';
 import { cn } from '@/lib/utils';
 import { dSum, round2 } from '@/lib/decimal-helpers';
+import { ATPCheckButton } from '@/components/salesx/ATPCheckButton';
 
 interface Props { entityCode: string }
 
@@ -247,7 +248,18 @@ export function OrderDeskPanelComponent({ entityCode }: Props) {
                               <strong>Terms:</strong> {o.terms_conditions}
                             </div>
                           )}
-                          <div className="mt-3 flex justify-end gap-2">
+                          <div className="mt-3 flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                            <ATPCheckButton
+                              entityCode={entityCode}
+                              lines={o.lines.map(l => ({
+                                item_id: l.item_id,
+                                item_name: l.item_name,
+                                qty: l.qty,
+                                requested_date: l.delivery_date ?? o.date,
+                              }))}
+                              source="sales_order"
+                              sourceDocNo={o.order_no}
+                            />
                             <Button size="sm" variant="outline" className="gap-1.5"
                               onClick={(e) => {
                                 e.stopPropagation();
