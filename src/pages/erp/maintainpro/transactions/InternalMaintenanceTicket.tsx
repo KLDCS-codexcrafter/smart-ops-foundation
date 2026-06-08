@@ -3,6 +3,7 @@
  * @purpose     Internal Maintenance Ticket UI · FULL SLA (28-cell matrix) · 5-state + Reopen · 3-level escalation
  * @sprint      T-Phase-1.A.16b · Block F · Q-LOCK-2
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,8 @@ import {
 } from '@/lib/maintainpro-engine';
 import type { InternalMaintenanceTicket as Tkt, TicketCategory, TicketSeverity, TicketStatus } from '@/types/maintainpro';
 import { SLA_MATRIX } from '@/types/maintainpro';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface Props { onNavigate: (m: string) => void }
 const E = 'DEMO';
@@ -81,8 +84,9 @@ export function InternalMaintenanceTicket(_props: Props): JSX.Element {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4" data-keyboard-form>
       <h1 className="text-2xl font-bold">Internal Maintenance Ticket</h1>
+      <TallyVoucherHeader voucherTypeName="Internal Maintenance Ticket" baseVoucherType="Memo" voucherFamily="ticket" voucherNo="" voucherDate={new Date().toISOString().slice(0, 10)} status="draft" />
       <p className="text-sm text-muted-foreground">FULL SLA · 28-cell matrix · 3-level escalation · 5-state + Reopen</p>
 
       <Card><CardContent className="p-4 space-y-3">

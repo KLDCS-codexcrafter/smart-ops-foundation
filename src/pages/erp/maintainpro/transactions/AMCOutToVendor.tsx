@@ -2,6 +2,7 @@
  * @file        src/pages/erp/maintainpro/transactions/AMCOutToVendor.tsx
  * @sprint      T-Phase-1.A.16b · Block E.4 · OOB-M2 reminder cycle
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,8 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { createAMCOutToVendor, listAMCOutToVendor, getAMCRemindersDue, listEquipment } from '@/lib/maintainpro-engine';
 import type { AMCOutToVendor as AMC } from '@/types/maintainpro';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface Props { onNavigate: (m: string) => void }
 const E = 'DEMO';
@@ -50,8 +53,9 @@ export function AMCOutToVendor(_props: Props): JSX.Element {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4" data-keyboard-form>
       <h1 className="text-2xl font-bold">AMC Out-to-Vendor</h1>
+      <TallyVoucherHeader voucherTypeName="AMC Out-to-Vendor" baseVoucherType="Issue" voucherFamily="amc_rma" voucherNo="" voucherDate={expReturn} status="draft" />
       <div className="flex gap-2">
         <Badge variant="outline">50% reminders: {reminders.fifty_pct.length}</Badge>
         <Badge variant="outline">75% reminders: {reminders.seventy_five_pct.length}</Badge>
@@ -63,8 +67,8 @@ export function AMCOutToVendor(_props: Props): JSX.Element {
             {equipment.map((eq) => <option key={eq.id} value={eq.id}>{eq.equipment_code}</option>)}
           </select>
         </div>
-        <div className="space-y-1"><Label>Vendor ID (service_provider)</Label><Input value={vendorId} onChange={(e) => setVendorId(e.target.value)} /></div>
-        <div className="space-y-1"><Label>Expected Return</Label><Input type="date" value={expReturn} onChange={(e) => setExpReturn(e.target.value)} /></div>
+        <div className="space-y-1"><Label>Vendor ID (service_provider)</Label><Input value={vendorId} onChange={(e) => setVendorId(e.target.value)} onKeyDown={onEnterNext} /></div>
+        <div className="space-y-1"><Label>Expected Return</Label><Input type="date" value={expReturn} onChange={(e) => setExpReturn(e.target.value)} onKeyDown={onEnterNext} /></div>
         <Button onClick={submit}>Send to Vendor</Button>
         <div className="text-xs font-mono">{list.length} RMAs</div>
       </CardContent></Card>

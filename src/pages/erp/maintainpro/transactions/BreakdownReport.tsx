@@ -4,6 +4,7 @@
  * @sprint      T-Phase-1.A.16b · Block D.1
  * @[JWT]       via createBreakdownReport (localStorage Phase 1)
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
 import { AlertTriangle, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -18,6 +19,8 @@ import {
   listEquipment,
 } from '@/lib/maintainpro-engine';
 import type { BreakdownReport as BD } from '@/types/maintainpro';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface Props { onNavigate: (m: string) => void }
 
@@ -57,8 +60,9 @@ export function BreakdownReport(_props: Props): JSX.Element {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4" data-keyboard-form>
       <h1 className="text-2xl font-bold">Breakdown Report</h1>
+      <TallyVoucherHeader voucherTypeName="Breakdown Report" baseVoucherType="Memo" voucherFamily="breakdown" voucherNo="" voucherDate={new Date().toISOString().slice(0, 10)} status="draft" />
       <p className="text-sm text-muted-foreground">Raise a breakdown · OOB-M1 pattern detection · OOB-M8 warranty check</p>
 
       {last?.is_equipment_in_warranty && (

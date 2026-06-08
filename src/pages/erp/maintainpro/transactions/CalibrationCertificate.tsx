@@ -2,6 +2,7 @@
  * @file        src/pages/erp/maintainpro/transactions/CalibrationCertificate.tsx
  * @sprint      T-Phase-1.A.16b · Block E.3
  */
+// TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { createCalibrationCertificate, listCalibrationCertificates } from '@/lib/maintainpro-engine';
 import type { CalibrationCertificate as CC } from '@/types/maintainpro';
+import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
+import { onEnterNext } from '@/lib/keyboard';
 
 interface Props { onNavigate: (m: string) => void }
 const E = 'DEMO';
@@ -40,11 +43,12 @@ export function CalibrationCertificate(_props: Props): JSX.Element {
   };
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4" data-keyboard-form>
       <h1 className="text-2xl font-bold">Calibration Certificate</h1>
+      <TallyVoucherHeader voucherTypeName="Calibration Certificate" baseVoucherType="Memo" voucherFamily="calibration" voucherNo="" voucherDate={new Date().toISOString().slice(0, 10)} status="draft" />
       <Card><CardContent className="p-4 space-y-3">
-        <div className="space-y-1"><Label>Instrument ID</Label><Input value={instrumentId} onChange={(e) => setInstrumentId(e.target.value)} /></div>
-        <div className="space-y-1"><Label>Cost (₹)</Label><Input type="number" value={cost} onChange={(e) => setCost(Number(e.target.value))} /></div>
+        <div className="space-y-1"><Label>Instrument ID</Label><Input value={instrumentId} onChange={(e) => setInstrumentId(e.target.value)} onKeyDown={onEnterNext} /></div>
+        <div className="space-y-1"><Label>Cost (₹)</Label><Input type="number" value={cost} onChange={(e) => setCost(Number(e.target.value))} onKeyDown={onEnterNext} /></div>
         <Button onClick={submit}>Issue Certificate</Button>
         <div className="text-xs font-mono">{list.length} certificates issued</div>
       </CardContent></Card>
