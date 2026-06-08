@@ -737,3 +737,179 @@ export function listProcureHubSarathiMobileStubs(): ProcureHubSarathiMobileStubE
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
+
+// ============================================================================
+// Sprint A.3 · T-A3-ServiceDesk-Capstone · Pass 2 of 3
+// 3 NEW OUTBOUND bridges (#13 live · #14 SEAM-ONLY · #15 live)
+// CONSUMES existing claim shapes via servicedesk-capstone-engine builders.
+// NO modification to bridges #1–#12. Walls held.
+// ============================================================================
+
+import { buildOEMPortalPacket, buildServiceTrendsSnapshot, readOEMClaims } from './servicedesk-capstone-engine';
+import type { OEMPortalWarrantyClaimPacket, ServiceTrendsSnapshot } from './servicedesk-capstone-engine';
+
+/* ───────────────────────────────────────────────────────────────────────── */
+/* BRIDGE 13 · ServiceDesk → External OEM Portal · LIVE                       */
+/*  Emits the OEM warranty claim packet to the (NEW) OEM portal outbox.       */
+/*  Stub pattern matches emitOEMClaimPacketToProcure360 (D-NEW-DJ FR-75).     */
+/*  [JWT] Wave-2: real OEM portal API replaces localStorage outbox.           */
+/* ───────────────────────────────────────────────────────────────────────── */
+
+export interface OEMPortalWarrantyClaimEvent {
+  type: 'servicedesk:oem_portal.warranty_claim_emitted';
+  packet: OEMPortalWarrantyClaimPacket;
+  entity_id: string;
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+  /** P8.7 · dept context · [JWT] auth-derived at Wave-2 */
+  dept_id?: string;
+}
+
+const oemPortalOutboxKey = 'oem_portal_warranty_claim_stub_v1';
+
+interface OEMPortalOutboxEntry {
+  oem_claim_packet_id: string;
+  oem_claim_no: string;
+  oem_name: string;
+  total_claim_value_paise: number;
+  received_at: string;
+}
+
+export function emitOEMPortalWarrantyClaim(payload: {
+  oem_claim_packet_id: string;
+  entity_id: string;
+  dept_id?: string;
+}): OEMPortalWarrantyClaimEvent | { ack: false; reason: 'claim_not_found' } {
+  const claims = readOEMClaims(payload.entity_id);
+  const claim = claims.find((c) => c.id === payload.oem_claim_packet_id);
+  if (!claim) return { ack: false, reason: 'claim_not_found' };
+  const packet = buildOEMPortalPacket(claim);
+  const event: OEMPortalWarrantyClaimEvent = {
+    type: 'servicedesk:oem_portal.warranty_claim_emitted',
+    packet,
+    entity_id: payload.entity_id,
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+    dept_id: payload.dept_id,
+  };
+  try {
+    const raw = localStorage.getItem(oemPortalOutboxKey);
+    const list: OEMPortalOutboxEntry[] = raw ? JSON.parse(raw) : [];
+    list.push({
+      oem_claim_packet_id: packet.oem_claim_packet_id,
+      oem_claim_no: packet.oem_claim_no,
+      oem_name: packet.oem_name,
+      total_claim_value_paise: packet.total_claim_value_paise,
+      received_at: event.emitted_at,
+    });
+    localStorage.setItem(oemPortalOutboxKey, JSON.stringify(list));
+  } catch {
+    /* quota silent */
+  }
+  return event;
+}
+
+export function listOEMPortalWarrantyClaimStubs(): OEMPortalOutboxEntry[] {
+  try {
+    const raw = localStorage.getItem(oemPortalOutboxKey);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────── */
+/* BRIDGE 14 · ServiceDesk → InsightX customer health score · SEAM-ONLY       */
+/*  Registered as a stub. CONSUMES S22 customer health score WHEN it lands.   */
+/*  This sprint does NOT compute a health score (S22 scope, not A.3).         */
+/*  [JWT] Activates when S22 ships the customer-health engine.                */
+/* ───────────────────────────────────────────────────────────────────────── */
+
+export interface CustomerHealthScoreToInsightXEvent {
+  type: 'servicedesk:customer_health_score.emitted';
+  customer_id: string;
+  entity_id: string;
+  seam_only: true;
+  reason: 'S22_absent';
+  emitted_at: string;
+  originating_card_id: 'servicedesk';
+}
+
+const insightxHealthScoreSeamKey = 'insightx_servicedesk_customer_health_seam_v1';
+
+export function emitCustomerHealthScoreToInsightX(payload: {
+  customer_id: string;
+  entity_id: string;
+}): CustomerHealthScoreToInsightXEvent {
+  // SEAM-ONLY: records the intent so the wiring lights up the day S22 lands.
+  const event: CustomerHealthScoreToInsightXEvent = {
+    type: 'servicedesk:customer_health_score.emitted',
+    customer_id: payload.customer_id,
+    entity_id: payload.entity_id,
+    seam_only: true,
+    reason: 'S22_absent',
+    emitted_at: new Date().toISOString(),
+    originating_card_id: 'servicedesk',
+  };
+  try {
+    const raw = localStorage.getItem(insightxHealthScoreSeamKey);
+    const list: CustomerHealthScoreToInsightXEvent[] = raw ? JSON.parse(raw) : [];
+    list.push(event);
+    localStorage.setItem(insightxHealthScoreSeamKey, JSON.stringify(list));
+  } catch {
+    /* quota silent */
+  }
+  return event;
+}
+
+export function listCustomerHealthScoreSeamEvents(): CustomerHealthScoreToInsightXEvent[] {
+  try {
+    const raw = localStorage.getItem(insightxHealthScoreSeamKey);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+/* ───────────────────────────────────────────────────────────────────────── */
+/* BRIDGE 15 · ServiceDesk → InsightX service-trends snapshot · LIVE          */
+/*  Builds a tenant-level snapshot from capstone aggregator + emits.          */
+/* ───────────────────────────────────────────────────────────────────────── */
+
+export interface ServiceTrendsToInsightXEvent {
+  type: 'servicedesk:service_trends.snapshot_emitted';
+  snapshot: ServiceTrendsSnapshot;
+  originating_card_id: 'servicedesk';
+}
+
+const insightxTrendsKey = 'insightx_servicedesk_service_trends_stub_v1';
+
+export function emitServiceTrendsToInsightX(payload: {
+  entity_id: string;
+}): ServiceTrendsToInsightXEvent {
+  const snapshot = buildServiceTrendsSnapshot(payload.entity_id);
+  const event: ServiceTrendsToInsightXEvent = {
+    type: 'servicedesk:service_trends.snapshot_emitted',
+    snapshot,
+    originating_card_id: 'servicedesk',
+  };
+  try {
+    const raw = localStorage.getItem(insightxTrendsKey);
+    const list: ServiceTrendsToInsightXEvent[] = raw ? JSON.parse(raw) : [];
+    list.push(event);
+    localStorage.setItem(insightxTrendsKey, JSON.stringify(list));
+  } catch {
+    /* quota silent */
+  }
+  return event;
+}
+
+export function listInsightXServiceTrendsStubs(): ServiceTrendsToInsightXEvent[] {
+  try {
+    const raw = localStorage.getItem(insightxTrendsKey);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
