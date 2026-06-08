@@ -42,17 +42,14 @@ export function CreditNotePrintPanel() {
   }, [voucherId, entityCode, copyKey]);
 
   const content = useMemo(() => {
-    if (!payload) return (
+    if (!payload) return <div className="text-sm text-muted-foreground">Loading voucher…</div>;
+    const t = payload.resolved_toggles;
+
+    return (
     <>
       <div className="no-print px-4 py-2 border-b border-border bg-muted/20">
         <DocSendBar objectType="invoice-memo" sourceCard="fincore" sourceRecord={{ id: voucherId } as Record<string, unknown>} />
       </div>
-      <div className="text-sm text-muted-foreground">Loading voucher…</div>
-    </>
-);
-    const t = payload.resolved_toggles;
-
-    return (
       <>
         <div className="grid grid-cols-2 gap-4 text-[11px]">
           <div>
@@ -233,7 +230,8 @@ export function CreditNotePrintPanel() {
           </div>
         )}
       </>
-    );
+    </>
+);
   }, [payload]);
 
   return (
