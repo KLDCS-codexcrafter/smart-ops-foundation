@@ -17,7 +17,40 @@
  */
 
 import { logAudit } from '@/lib/audit-trail-engine';
-import { fyForDate } from '@/lib/fiscal-year-engine';
+import { readFiscalYears } from '@/lib/fiscal-year-engine';
+
+/** D-AUDIT-SAFE wrapper · taskflow_event REUSED (zero new audit types). */
+function safeAudit(opts: {
+  entityCode: string;
+  action: 'create' | 'update' | 'cancel';
+  recordId: string;
+  recordLabel: string;
+  beforeState: Record<string, unknown> | null;
+  afterState: Record<string, unknown> | null;
+}): void {
+  try {
+    logAudit({
+      entityCode: opts.entityCode,
+      action: opts.action,
+      entityType: 'taskflow_event' as never,
+      recordId: opts.recordId,
+      recordLabel: opts.recordLabel,
+      beforeState: opts.beforeState,
+      afterState: opts.afterState,
+      sourceModule: 'communication-engine',
+    });
+  } catch { /* D-AUDIT-SAFE */ }
+}
+
+/** Resolve a Fiscal Year id for the given date (best-effort · empty fallback). */
+function resolveFyId(entityCode: string, isoDate: string): string {
+  try {
+    const years = readFiscalYears(entityCode);
+    const d = isoDate.slice(0, 10);
+    const hit = years.find((y) => d >= y.start_date && d <= y.end_date);
+    return hit?.id ?? 'FY-UNRESOLVED';
+  } catch { return 'FY-UNRESOLVED'; }
+}
 import type {
   SenderClass,
   DepartmentEmailRow,
