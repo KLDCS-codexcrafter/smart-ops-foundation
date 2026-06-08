@@ -167,6 +167,9 @@ import RetentionConsolePage from '@/features/retention-console/RetentionConsoleP
 // 🎬 Sprint B2 · T-B2-Comm-Outbox · Communication Console (outbox + dual-sender + DocSendBar floor canon)
 import CommunicationConsolePage from '@/features/communication-console/CommunicationConsolePage';
 
+// 🎬 Sprint B6 · T-B6-Master-Health · Pillar-B CLOSE · Master Health Scorecard cockpit
+import MasterHealthScorecardPage from '@/features/command-center/modules/MasterHealthScorecardPage';
+
 
 // 🚚 Sprint 124 · T-Phase-7.D.1.5 · A1 — FP&A pages MOVED to the FP&A self-owned
 // shell (/erp/fpa-planning). The 7 imports/cases/type-union members previously
@@ -321,7 +324,9 @@ export type CommandCenterModule =
   // 🎬 Sprint P8.6 · B.5-L3 · Retention Console
   | 'retention-console'
   // 🎬 Sprint B2 · B.2 · Communication Console
-  | 'communication-console';
+  | 'communication-console'
+  // 🎬 Sprint B6 · B.6 · Master Health Scorecard
+  | 'master-health-scorecard';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
