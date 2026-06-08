@@ -13,7 +13,8 @@ import { useNavigate } from 'react-router-dom';
 import {
   Home, Truck, ChevronRight, ArrowLeft, BarChart3, Database,
   Package, ListChecks, TrendingUp, Users, AlertTriangle, Printer,
-  PackageCheck, ArrowUpRight, GitMerge, Route,
+  PackageCheck, ArrowUpRight, GitMerge, Route, Receipt, RotateCcw,
+  Scale, ShoppingCart, BarChartHorizontal, ScanBarcode,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -32,6 +33,7 @@ export type DispatchOpsModule =
   | 'dops-t-demo-outward-issue'
   | 'dops-t-packing-slip'
   | 'dops-t-exceptions'
+  | 'dops-t-residual-actions'
   | 'dops-m-packing-material'
   | 'dops-m-packing-bom'
   | 'dops-r-outward-movement'
@@ -39,6 +41,11 @@ export type DispatchOpsModule =
   | 'dops-r-packer-performance'
   | 'dops-r-dispatch-summary'
   | 'dops-r-delivery-memo-register'
+  | 'dops-r-demo-serial-register'
+  | 'dops-r-courier-rate-compare'
+  | 'dops-r-dispatch-analytics'
+  | 'dops-r-packing-replenishment'
+  | 'dops-r-reusable-packing-return'
   | 'dops-link-som-register'
   | 'dops-link-dom-register';
 
@@ -62,6 +69,7 @@ const TRANSACTIONS_ITEMS: MenuItem[] = [
   { label: 'Demo Outward Issue',    module: 'dops-t-demo-outward-issue',   icon: ArrowUpRight,  keyboard: 'o e' },
   { label: 'Packing Slip Print',    module: 'dops-t-packing-slip',         icon: Printer,       keyboard: 'o p' },
   { label: 'Dispatch Exceptions',   module: 'dops-t-exceptions',           icon: AlertTriangle, keyboard: 'o x' },
+  { label: 'Residual Actions',      module: 'dops-t-residual-actions',     icon: Receipt,       keyboard: 'o a' },
 ];
 
 const MASTERS_ITEMS: MenuItem[] = [
@@ -70,13 +78,18 @@ const MASTERS_ITEMS: MenuItem[] = [
 ];
 
 const REPORTS_ITEMS: MenuItem[] = [
-  { label: 'Delivery Memo Register',  module: 'dops-r-delivery-memo-register', icon: Truck,        keyboard: 'o r d' },
-  { label: 'Outward Movement Report', module: 'dops-r-outward-movement',       icon: GitMerge,     keyboard: 'o r o' },
-  { label: 'Packing Consumption',     module: 'dops-r-packing-consumption',    icon: TrendingUp,   keyboard: 'o r c' },
-  { label: 'Packer Performance',      module: 'dops-r-packer-performance',     icon: Users,        keyboard: 'o r p' },
-  { label: 'Dispatch Summary',        module: 'dops-r-dispatch-summary',       icon: BarChart3,    keyboard: 'o r s' },
-  { label: 'SOM Register (SalesX) ↗', module: 'dops-link-som-register',        icon: ArrowUpRight, keyboard: 'o r m' },
-  { label: 'DOM Register (SalesX) ↗', module: 'dops-link-dom-register',        icon: ArrowUpRight, keyboard: 'o r n' },
+  { label: 'Delivery Memo Register',  module: 'dops-r-delivery-memo-register', icon: Truck,             keyboard: 'o r d' },
+  { label: 'Outward Movement Report', module: 'dops-r-outward-movement',       icon: GitMerge,          keyboard: 'o r o' },
+  { label: 'Packing Consumption',     module: 'dops-r-packing-consumption',    icon: TrendingUp,        keyboard: 'o r c' },
+  { label: 'Packer Performance',      module: 'dops-r-packer-performance',     icon: Users,             keyboard: 'o r p' },
+  { label: 'Dispatch Summary',        module: 'dops-r-dispatch-summary',       icon: BarChart3,         keyboard: 'o r s' },
+  { label: 'Dispatch Analytics',      module: 'dops-r-dispatch-analytics',     icon: BarChartHorizontal,keyboard: 'o r a' },
+  { label: 'Demo Serial Register',    module: 'dops-r-demo-serial-register',   icon: ScanBarcode,       keyboard: 'o r e' },
+  { label: 'Courier Rate Compare',    module: 'dops-r-courier-rate-compare',   icon: Scale,             keyboard: 'o r r' },
+  { label: 'Packing Replenishment',   module: 'dops-r-packing-replenishment',  icon: ShoppingCart,      keyboard: 'o r l' },
+  { label: 'Reusable Packing Return', module: 'dops-r-reusable-packing-return',icon: RotateCcw,         keyboard: 'o r u' },
+  { label: 'SOM Register (SalesX) ↗', module: 'dops-link-som-register',        icon: ArrowUpRight,      keyboard: 'o r m' },
+  { label: 'DOM Register (SalesX) ↗', module: 'dops-link-dom-register',        icon: ArrowUpRight,      keyboard: 'o r n' },
 ];
 
 export function DispatchOpsSidebar(props: DispatchOpsSidebarProps) {

@@ -27,6 +27,13 @@ import { OutwardMovementReportPanel } from './reports/OutwardMovementReport';
 import { DeliveryMemoRegisterPanel } from './reports/DeliveryMemoRegister';
 // Sprint 46 Pass 2 · B.1
 import { DispatchSummaryPanel } from './reports/DispatchSummary';
+// Sprint A.4-Residual · Bucket-3 surfaces
+import { DemoSerialRegisterPanel } from './reports/DemoSerialRegister';
+import { CourierRateComparePanel } from './reports/CourierRateCompare';
+import { DispatchAnalyticsPanel } from './reports/DispatchAnalytics';
+import { PackingReplenishmentSuggestionsPanel } from './reports/PackingReplenishmentSuggestions';
+import { ReusablePackingReturnPanel } from './reports/ReusablePackingReturn';
+import { SampleDemoResidualActionsPanel } from './transactions/SampleDemoResidualActions';
 
 function ComingSoonPanel({ module }: { module: DispatchOpsModule }) {
   return (
@@ -82,6 +89,12 @@ function renderModule(mod: DispatchOpsModule, entityCode: string): React.ReactEl
     case 'dops-r-packer-performance':    return <PackerPerformanceReportPanel />;
     case 'dops-r-delivery-memo-register':return <DeliveryMemoRegisterPanel />;
     case 'dops-r-dispatch-summary':      return <DispatchSummaryPanel />;
+    case 'dops-r-demo-serial-register':  return <DemoSerialRegisterPanel />;
+    case 'dops-r-courier-rate-compare':  return <CourierRateComparePanel />;
+    case 'dops-r-dispatch-analytics':    return <DispatchAnalyticsPanel />;
+    case 'dops-r-packing-replenishment': return <PackingReplenishmentSuggestionsPanel />;
+    case 'dops-r-reusable-packing-return':return <ReusablePackingReturnPanel />;
+    case 'dops-t-residual-actions':      return <SampleDemoResidualActionsPanel />;
     default:                             return <ComingSoonPanel module={mod} />;
   }
 }
