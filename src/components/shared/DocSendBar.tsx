@@ -117,7 +117,7 @@ export function DocSendBar(props: DocSendBarProps) {
     );
     setWaPhone(phone);
     setWaBody(rendered.body || '');
-  }, [waOpen, entityCode, user?.name, props.objectType, props.sourceCard, props.sourceRecord]);
+  }, [waOpen, entityCode, user?.name, props.objectType, props.sourceRecord]);
 
   const handleSend = () => {
     if (!composed) return;
