@@ -216,11 +216,11 @@ describe('B2 · DocSendBar surface', () => {
 
 describe('B2 · §H walls + sprint history', () => {
   it('sprint-history has B2 row with predecessorSha ab3e3090 and B1S2 flipped to ab3e3090', () => {
-    const b2 = SPRINTS.find((s: { sprintNumber: unknown; predecessorSha?: string; headSha?: string; newSiblings?: string[] }) => String(s.sprintNumber) === 'B2');
+    const b2 = SPRINTS.find((s) => String(s.sprintNumber) === 'B2');
     expect(b2).toBeDefined();
     expect(b2?.predecessorSha).toBe('ab3e3090');
     expect(b2?.newSiblings).toContain('communication-engine');
-    const b1s2 = SPRINTS.find((s: { sprintNumber: unknown; predecessorSha?: string; headSha?: string; newSiblings?: string[] }) => String(s.sprintNumber) === 'B1S2');
+    const b1s2 = SPRINTS.find((s) => String(s.sprintNumber) === 'B1S2');
     expect(b1s2?.headSha).toBe('ab3e3090');
   });
 
