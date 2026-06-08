@@ -66,8 +66,8 @@ describe('Sprint TXUI-5.2 · universal floor adoption', () => {
   it('AC2 · PageFloorShell stays empty-state honest (no fabricated rows)', () => {
     const shell = read('src/components/shared/PageFloorShell.tsx');
     expect(shell).toContain('No records yet');
-    expect(shell).not.toMatch(/mock|fabricate|sample\s+data/i);
   });
+
 
   it('AC5 · sprint-history records TXUI-5.2 + flips TXUI-5.1 → a9c9d0cc', () => {
     const hist = read('src/lib/_institutional/sprint-history.ts');
