@@ -32,22 +32,23 @@ beforeEach(() => { clearLs(); });
 describe('B2 · template rendering', () => {
   it('renderTemplate substitutes merge fields including {{signature}} for user class', () => {
     upsertUserMailProfile(E, { user_name: 'alice', email_id: 'a@x.in', signature_html: '— Alice' });
-    upsertTemplate(E, { object_type: 'invoice-memo', channel: 'email', subject_tpl: 'Invoice {{doc_no}}', body_tpl: 'Hi {{recipient_name}} {{signature}}', lang: 'en', sender_class_default: 'user', active: true });
-    const r = renderTemplate('invoice-memo', { doc_no: 'INV-1', recipient_name: 'Bob' }, E, 'user', 'alice');
+    // Use a unique object_type to avoid seed clash
+    upsertTemplate(E, { object_type: 'test-user', channel: 'email', subject_tpl: 'Invoice {{doc_no}}', body_tpl: 'Hi {{recipient_name}} {{signature}}', lang: 'en', sender_class_default: 'user', active: true });
+    const r = renderTemplate('test-user', { doc_no: 'INV-1', recipient_name: 'Bob' }, E, 'user', 'alice');
     expect(r.subject).toBe('Invoice INV-1');
     expect(r.body_html).toBe('Hi Bob — Alice');
   });
 
   it('renderTemplate uses department signature for department class', () => {
     upsertDepartmentEmail(E, { card_id: 'payout', department_label: 'Payout', email_id: 'pay@x.in', display_name: 'Payout', reply_to_mode: 'department', signature_html: '— Payout Team', active: true });
-    upsertTemplate(E, { object_type: 'payment-advice', channel: 'email', subject_tpl: 'PA {{doc_no}}', body_tpl: 'Body {{signature}}', lang: 'en', sender_class_default: 'department', department_card_id: 'payout', active: true });
-    const r = renderTemplate('payment-advice', { doc_no: 'PA-1' }, E);
+    upsertTemplate(E, { object_type: 'test-dept', channel: 'email', subject_tpl: 'PA {{doc_no}}', body_tpl: 'Body {{signature}}', lang: 'en', sender_class_default: 'department', department_card_id: 'payout', active: true });
+    const r = renderTemplate('test-dept', { doc_no: 'PA-1' }, E);
     expect(r.body_html).toBe('Body — Payout Team');
   });
 
   it('renderTemplate signature is empty for system class', () => {
-    upsertTemplate(E, { object_type: 'approval.pending', channel: 'email', subject_tpl: 's', body_tpl: 'b{{signature}}', lang: 'en', sender_class_default: 'system', active: true });
-    const r = renderTemplate('approval.pending', {}, E);
+    upsertTemplate(E, { object_type: 'test-sys', channel: 'email', subject_tpl: 's', body_tpl: 'b{{signature}}', lang: 'en', sender_class_default: 'system', active: true });
+    const r = renderTemplate('test-sys', {}, E);
     expect(r.body_html).toBe('b');
   });
 
