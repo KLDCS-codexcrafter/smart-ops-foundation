@@ -1,8 +1,10 @@
 /**
  * @file     ProductionConfigAutomation.tsx
  * @sprint   T-Phase-1.3-3a-pre-1-fix-1 · Block 3 · FR-54
- * @purpose  CC-Replica panel for ProductionConfig (52 flags · 5 priority sections wired ·
- *           remaining flags TODO 3a-pre-2 expand to all 52 flags).
+ *           T-CLN1-Wave1-Cleanups · Item 3 · all remaining real ProductionConfig
+ *           keys now wired (cost allocation · BOM · multi-BU · approval · mobile · printing).
+ * @purpose  CC-Replica panel for ProductionConfig (full flag coverage of the
+ *           ProductionConfig type defined in ComplianceSettingsAutomation.constants.ts).
  */
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
