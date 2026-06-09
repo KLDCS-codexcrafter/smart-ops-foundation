@@ -100,9 +100,17 @@ describe('PRUDENT360 · Sprint Roadmap · sprint-history consumer', () => {
     expect(pp1?.provenance).toBe('CONFIRMED');
   });
 
-  it('roadmap rendered newest-first (SP.1 is current in-flight after CAT1 flip)', () => {
+  it('roadmap rendered newest-first by bankDate (canon: no forward-looking last-entry assertion)', () => {
     const rows = buildSprintRoadmap();
-    expect(rows[0].code).toBe('T-SP1-Variant-Builder');
+    // Stable floor: roadmap must contain at least the known banked sprints up to P360.
+    expect(rows.length).toBeGreaterThanOrEqual(5);
+    // Existence pattern: P360 row is present (non-brittle vs. future sprints).
+    expect(rows.some((r) => r.code === 'T-P360-DevTeam-Hub')).toBe(true);
+    // Order: rows with bankDate must be sorted newest-first (descending).
+    const dated = rows.filter((r) => !!r.bankDate);
+    for (let i = 0; i < dated.length - 1; i++) {
+      expect(dated[i].bankDate! >= dated[i + 1].bankDate!).toBe(true);
+    }
   });
 });
 
