@@ -251,159 +251,23 @@ function WorkspaceTab({ navigate }: { navigate: (path: string) => void }) {
   );
 }
 
-// ── Tab 2: Support Operations ─────────────────────────────────
-function SupportOpsTab() {
-  const [search, setSearch] = useState("");
-  const [priorityFilter, setPriorityFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-
-  const filtered = MOCK_TICKETS.filter(t => {
-    const matchSearch = !search ||
-      t.title.toLowerCase().includes(search.toLowerCase()) ||
-      t.tenant.toLowerCase().includes(search.toLowerCase()) ||
-      t.id.toLowerCase().includes(search.toLowerCase());
-    const matchPriority = priorityFilter === "all" || t.priority === priorityFilter;
-    const matchStatus = statusFilter === "all" || t.status === statusFilter;
-    return matchSearch && matchPriority && matchStatus;
-  });
-
-  const stats = {
-    open: MOCK_TICKETS.filter(t => t.status !== "Resolved").length,
-    critical: MOCK_TICKETS.filter(t => t.priority === "Critical").length,
-    breaching: MOCK_TICKETS.filter(t => t.sla === "breach").length,
-    resolved: MOCK_TICKETS.filter(t => t.status === "Resolved").length,
-  };
-
-  const priorityColors: Record<TicketPriority, string> = {
-    Critical: "bg-red-500/15 text-red-400 border-red-500/20",
-    High: "bg-amber-500/15 text-amber-400 border-amber-500/20",
-    Medium: "bg-cyan-500/15 text-cyan-400 border-cyan-500/20",
-    Low: "bg-muted text-muted-foreground border-border",
-  };
-
-  const statusColors: Record<TicketStatus, string> = {
-    Open: "bg-blue-500/15 text-blue-400 border-blue-500/20",
-    "In Progress": "bg-amber-500/15 text-amber-400 border-amber-500/20",
-    Escalated: "bg-red-500/15 text-red-400 border-red-500/20",
-    Resolved: "bg-emerald-500/15 text-emerald-400 border-emerald-500/20",
-  };
-
-  const slaConfig = {
-    ok: { icon: CheckCircle, color: "text-emerald-400" },
-    warning: { icon: AlertCircle, color: "text-amber-400" },
-    breach: { icon: XCircle, color: "text-red-400" },
-  };
-
+// ── Tab 2: Support Operations · CLN1 stub ─────────────────────
+// ServiceDesk v7 owns tickets at /erp/servicedesk. This tab now redirects there
+// instead of showing the previous local MOCK_TICKETS widget.
+function SupportOpsTab({ navigate }: { navigate: (path: string) => void }) {
   return (
-    <div data-keyboard-form className="space-y-6">
-      {stats.breaching > 0 && (
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
-          <AlertTriangle className="h-5 w-5 text-red-400 shrink-0" />
-          <p className="text-sm text-red-400">
-            {stats.breaching} ticket{stats.breaching > 1 ? "s are" : " is"} breaching SLA — immediate attention required
-          </p>
-        </div>
-      )}
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[
-          { label: "Total Open", value: stats.open, icon: Clock, color: "text-cyan-400" },
-          { label: "Critical", value: stats.critical, icon: AlertTriangle, color: "text-red-400" },
-          { label: "SLA Breaching", value: stats.breaching, icon: XCircle, color: "text-amber-400" },
-          { label: "Resolved Today", value: stats.resolved, icon: CheckCircle, color: "text-emerald-400" },
-        ].map(s => {
-          const Icon = s.icon;
-          return (
-            <div data-keyboard-form key={s.label} className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-4 text-center">
-              <Icon className={cn("h-5 w-5 mx-auto mb-1", s.color)} />
-              <p className="text-2xl font-bold text-foreground font-mono">{s.value}</p>
-              <p className="text-xs text-muted-foreground">{s.label}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input placeholder="Search tickets..." className="pl-10" value={search} onChange={(e) => setSearch(e.target.value)} />
-        </div>
-        <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-          <SelectTrigger className="w-[150px]"><SelectValue placeholder="Priority" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Priorities</SelectItem>
-            <SelectItem value="Critical">Critical</SelectItem>
-            <SelectItem value="High">High</SelectItem>
-            <SelectItem value="Medium">Medium</SelectItem>
-            <SelectItem value="Low">Low</SelectItem>
-          </SelectContent>
-        </Select>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[150px]"><SelectValue placeholder="Status" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="Open">Open</SelectItem>
-            <SelectItem value="In Progress">In Progress</SelectItem>
-            <SelectItem value="Escalated">Escalated</SelectItem>
-            <SelectItem value="Resolved">Resolved</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button size="sm" onClick={() => toast.info("Create Ticket — backend pending")}>
-          <Plus className="h-4 w-4 mr-1" /> Create Ticket
+    <div className="space-y-4">
+      <div className="rounded-xl bg-card/60 backdrop-blur-xl border border-border p-6 text-center space-y-3">
+        <HeadphonesIcon className="h-8 w-8 text-primary mx-auto" />
+        <h3 className="text-lg font-semibold text-foreground">Support tickets live in ServiceDesk</h3>
+        <p className="text-sm text-muted-foreground max-w-xl mx-auto">
+          Per ServiceDesk v7 scope, all support tickets, SLAs, AMC and escalations are owned
+          by the ServiceDesk card. The mock widget that previously lived here has been retired.
+        </p>
+        <Button onClick={() => navigate('/erp/servicedesk')}>
+          Open ServiceDesk
+          <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
-      </div>
-
-      <div className="rounded-xl bg-card/60 backdrop-blur-xl border border-border overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border text-left text-xs text-muted-foreground uppercase tracking-wider">
-                <th className="px-4 py-3">Ticket</th>
-                <th className="px-4 py-3">Customer</th>
-                <th className="px-4 py-3">Priority</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">SLA</th>
-                <th className="px-4 py-3">Agent</th>
-                <th className="px-4 py-3">Created</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground">
-                    No tickets match your filters.
-                  </td>
-                </tr>
-              ) : (
-                filtered.map((ticket) => {
-                  const SlaIcon = slaConfig[ticket.sla].icon;
-                  return (
-                    <tr key={ticket.id} className={cn("border-b border-border/50 hover:bg-muted/30 transition-colors", ticket.sla === "breach" && "bg-red-500/5")}>
-                      <td className="px-4 py-3">
-                        <p className="font-mono font-semibold text-foreground">{ticket.id}</p>
-                        <p className="text-xs text-muted-foreground truncate max-w-[250px]">{ticket.title}</p>
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">{ticket.tenant}</td>
-                      <td className="px-4 py-3">
-                        <Badge variant="outline" className={priorityColors[ticket.priority]}>{ticket.priority}</Badge>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge variant="outline" className={statusColors[ticket.status]}>{ticket.status}</Badge>
-                      </td>
-                      <td className="px-4 py-3">
-                        <SlaIcon className={cn("h-4 w-4", slaConfig[ticket.sla].color)} />
-                      </td>
-                      <td className={cn("px-4 py-3", ticket.agent === "Unassigned" ? "italic text-destructive" : "text-muted-foreground")}>
-                        {ticket.agent}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{ticket.created}</td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
       </div>
     </div>
   );
