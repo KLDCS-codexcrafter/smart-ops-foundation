@@ -40,6 +40,7 @@ import { CycleCountEntryPanel } from './transactions/CycleCountEntry';
 import { RTVEntryPanel } from './transactions/RTVEntry';
 import { BinUtilizationReportPanel } from './reports/BinUtilizationReport';
 import { ItemMovementHistoryReportPanel } from './reports/ItemMovementHistoryReport';
+import { PartNoSearchPanel } from './PartNoSearch';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
