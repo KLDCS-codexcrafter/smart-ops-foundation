@@ -5,9 +5,10 @@
  *              intent-match so Dishani answers card-scoped questions without
  *              ever editing the 33 ERP card pages. NO LLM call here — the
  *              Wave-2 /nl-query seam is preserved as a [JWT] comment only.
- * @canon       Tier-L · NO fetch · NO LLM/ML · NO ANTHROPIC. The resolver is
- *              a pure function over the static ROUTE_CARD_REGISTRY plus the
- *              caller's pathname; answerCardScoped is an intent-match.
+ * @canon       Tier-L · NO fetch · NO LLM/ML · NO third-party AI vendor SDK.
+ *              The resolver is a pure function over the static
+ *              ROUTE_CARD_REGISTRY plus the caller's pathname;
+ *              answerCardScoped is an intent-match.
  * @[JWT]       Wave-2: POST /api/ai/nl-query { context, question } — the
  *              resolver will pass the descriptor; the LLM call lives there.
  */
