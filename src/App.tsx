@@ -326,6 +326,14 @@ const ClientBlueprintsPage = lazy(() => import('./pages/welcome/scenarios/Client
 const EngineeringConsolePage = lazy(() => import('./pages/welcome/dev-tools/EngineeringConsolePage'));
 const SeedLabPage = lazy(() => import('./pages/welcome/dev-tools/SeedLabPage'));
 const PartnerDashboard = lazy(() => import('./pages/partner/PartnerDashboard'));
+// Sprint PARTNER-1 · T-PP1-Partner-Portal · 6 sub-pages + shell layout
+const PartnerLayout = lazy(() => import('./pages/partner/PartnerLayout'));
+const PartnerCustomers = lazy(() => import('./pages/partner/PartnerCustomers'));
+const PartnerDeals = lazy(() => import('./pages/partner/PartnerDeals'));
+const PartnerCommission = lazy(() => import('./pages/partner/PartnerCommission'));
+const PartnerTargets = lazy(() => import('./pages/partner/PartnerTargets'));
+const PartnerRenewals = lazy(() => import('./pages/partner/PartnerRenewals'));
+const PartnerKit = lazy(() => import('./pages/partner/PartnerKit'));
 const DistributorLogin = lazy(() => import('./pages/erp/distributor/DistributorLogin'));
 const DistributorDashboard = lazy(() => import('./pages/erp/distributor/DistributorDashboard'));
 const DistributorCatalog = lazy(() => import('./pages/erp/distributor/DistributorCatalog'));
@@ -769,8 +777,17 @@ const App = () => (
               {/* [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · 2 NEW routes · F-13 + F-DEAD-2 absorption] */}
               <Route path="/mobile/fa-scan" element={<P><MobileFAScanPage /></P>} />
               <Route path="/erp/fincore/statutory-fa-pack/epcg-status" element={<P><EPCGStatusReport /></P>} />
-              <Route path="/partner" element={<PartnerDashboard />} />
-              <Route path="/partner/dashboard" element={<PartnerDashboard />} />
+              {/* Sprint PARTNER-1 · KLDCS channel-partner portal · 6 sub-pages under PartnerLayout */}
+              <Route path="/partner" element={<PartnerLayout />}>
+                <Route index element={<PartnerDashboard />} />
+                <Route path="dashboard" element={<PartnerDashboard />} />
+                <Route path="customers" element={<PartnerCustomers />} />
+                <Route path="deals" element={<PartnerDeals />} />
+                <Route path="commission" element={<PartnerCommission />} />
+                <Route path="targets" element={<PartnerTargets />} />
+                <Route path="renewals" element={<PartnerRenewals />} />
+                <Route path="kit" element={<PartnerKit />} />
+              </Route>
               <Route path="/erp/distributor/login" element={<DistributorLogin />} />
               <Route path="/erp/distributor-hub" element={<P><DistributorHubPage /></P>} />
               <Route path="/erp/customer-hub" element={<P><CustomerHubPage /></P>} />
