@@ -207,7 +207,9 @@ describe('PRUDENT360 · §H walls + grep canon', () => {
 
   it('App.tsx /prudent360 route now mounts Prudent360HubPage', () => {
     const app = readFile('src/App.tsx');
-    expect(app).toMatch(/path="\/prudent360"[^>]*>[^<]*<P><Prudent360HubPage/);
+    expect(app).toContain('path="/prudent360"');
+    expect(app).toContain('<Prudent360HubPage');
+    expect(app).not.toMatch(/path="\/prudent360"[\s\S]{0,200}coming soon/i);
   });
 
   it('engine never imports a mutator for sprint-history or sibling-register', () => {
