@@ -51,7 +51,7 @@ describe('AM.3 · Universal Mobile Approval (CONSUMES B.1 rail · NO reimplement
     expect(adapters.length).toBeGreaterThanOrEqual(12);
     const types = new Set(adapters.map((a) => a.object_type));
     // Spot-check the canonical types AM.3 explicitly says it covers.
-    ['procure_po', 'bill_passing', 'requestx_indent', 'payout_requisition'].forEach((t) => {
+    ['procure_po', 'billpassing_deviation', 'requestx_indent', 'payout_requisition'].forEach((t) => {
       expect(types.has(t as never)).toBe(true);
     });
   });
