@@ -28,6 +28,7 @@ const LIVE_MODULES: MainStoreHubModule[] = [
   'r-storage-slip', 'r-bin-slip', 'r-aged-git', 'r-slow-moving-dead',
   'r-bin-utilization', 'r-item-movement',
   'r-min-register', 'r-consumption-register', 'r-cycle-count-register', 'r-rtv-register',
+  'r-part-no-search',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
   'm-reorder-matrix',
