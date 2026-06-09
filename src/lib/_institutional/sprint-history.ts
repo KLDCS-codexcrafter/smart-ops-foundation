@@ -1140,10 +1140,19 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint CLEANUP-1 T-CLN1-Wave1-Cleanups · Wave-1 tail cleanups · B25 part-no search · /welcome mock-ticket removed (v7 scope) · ProductionConfig flags expanded · eslint-disables DROPPED (intentional LS-read suppressions, not debt) · Tier-L · 105→106 ⭐
   {
     sprintNumber: 'CLN1' as unknown as number, code: 'T-CLN1-Wave1-Cleanups', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'cca094bd', loc: 450,
+    headSha: '54ba9516', predecessorSha: 'cca094bd', loc: 450,
+    newSiblings: [],
+    bankDate: '2026-06-09', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint CLEANUP-2 T-CLN2-Bridge-DeadButtons · Wave-1 tail · 7 dead "coming soon" buttons in /bridge/* made honest (wired on EXISTING local state where Tier-L-doable · honest-deferred only where it genuinely needs the Wave-2 sync backend) · ConsoleDashboard:138 filter-by-stage wired to selectedStage local state with visual highlight + clearable banner · FieldMapper:253 + :502 deletes wired to local templates state (confirm + remove · sheet auto-closes) · CompanyRegistry:359 Company-config opens the existing detail Sheet (which IS the configuration view) · CompanyRegistry:603 Remove-feature wired to local companies state (confirm + remove + close sheet) · ExceptionWorkbench:343 Edit-mode wired to prompt-driven module override on local exceptions state with status flip to resolved · BridgeSettings:452 Download HONEST-DEFER (disabled button + "arrives with Wave-2 sync backend" note · no fake action) · NO new SIBLING (empty newSiblings · cleanup) · WALLS 0-DIFF: bridge mock→real-fetch Wave-2 seams (12/13 untouched · correct deferrals) · bridge engines (reconciliation/sync · grep-confirmed not imported in these 5 files) · all bridge pages beyond the 7 button handlers · hash-chain · retention · applications.ts · entitlements · sidebars · types · CLN1 flipped to 54ba9516 · 106→107 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'CLN2' as unknown as number, code: 'T-CLN2-Bridge-DeadButtons', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '54ba9516', loc: 200,
     newSiblings: [],
     bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
   },
+
+
 
 
 ];
