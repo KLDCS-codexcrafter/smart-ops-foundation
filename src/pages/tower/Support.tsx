@@ -581,7 +581,7 @@ const Support = () => {
                 <Button className="w-full" style={{ background: "var(--gradient-primary)" }} onClick={() => toast("Ticket assigned to Platform Admin")}>
                   Assign to Me
                 </Button>
-                <Button variant="outline" className="w-full" onClick={() => toast("Status update coming soon")}>
+                <Button variant="outline" className="w-full" disabled title="Change status — arrives with Wave-2 multi-tenant backend">
                   Change Status
                 </Button>
                 {selectedTicket.priority !== "critical" && (
@@ -589,7 +589,7 @@ const Support = () => {
                     Escalate to Critical
                   </Button>
                 )}
-                <Button variant="outline" className="w-full" onClick={() => toast("Comment feature coming soon")}>
+                <Button variant="outline" className="w-full" disabled title="Add note / comment — arrives with Wave-2 multi-tenant backend">
                   Add Note / Comment
                 </Button>
               </div>

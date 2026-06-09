@@ -102,7 +102,7 @@ export default function Permissions() {
               </button>
             ))}
           </div>
-          <Button className="bg-cyan-500 hover:bg-cyan-600 text-white" onClick={() => toast("Create Role dialog coming soon")}>
+          <Button className="bg-cyan-500 hover:bg-cyan-600 text-white" disabled title="Create custom role — arrives with Wave-2 multi-tenant backend">
             <Plus className="h-4 w-4 mr-1" /> Create Role
           </Button>
         </div>
