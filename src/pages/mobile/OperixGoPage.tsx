@@ -171,10 +171,10 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     id: 'fincore',
     title: 'FinCore Mobile',
     icon: Landmark,
-    description: 'Accounts approvals on the move — payment voucher sign-off, outstanding alerts, and cash position.',
-    details: 'Planned: Finance manager app for FinCore. Approve payment vouchers, view party outstanding, check bank balances, and get alerts on overdue receivables — without opening the full ERP.',
-    route: '/operix-go/fincore',
-    phase: 'planned',
+    description: 'Finance-manager mobile: approve FinCore vouchers via Universal Approval · view outstanding/balances/overdue via Universal Reporting.',
+    details: 'Live (AM.3): served by the Universal Mobile layers — no dedicated app needed. Approvals open the Universal Approval Inbox (consumes approval-rail-engine · all B.1 adapters incl. payment vouchers). Reports open the Universal Mobile Reporting viewer (mobile-report-registry · FinCore card → existing desktop report routes). Read-only mobile surface · interactive drill-downs deferred to Wave-2.',
+    route: '/operix-go/approval-inbox',
+    phase: 'live',
   },
   // AM.2 · Mobile-gap capture personas · CONSUME card engines + B.1 rail · Tier-L
   {

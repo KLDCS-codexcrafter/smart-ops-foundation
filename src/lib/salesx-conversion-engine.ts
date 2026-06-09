@@ -129,6 +129,18 @@ export type ConversionType =
   | 'quotation_to_project'             // Sprint T-Phase-1.1.2-a · ProjX foundation
   | 'sales_order_to_project';          // Sprint T-Phase-1.1.2-b · ProjX OrderDesk conversion
 
+// Sprint CLEANUP-3 · T-CLN3 · runtime value mirror of the ConversionType union.
+// Consumed by marketing-automation-engine.getFunnelContext (replaces the prior
+// `as unknown as { ConversionType }` cast which read a TS type at runtime and
+// always resolved to `[]`, triggering a persistent rollup warning).
+export const CONVERSION_TYPES: readonly ConversionType[] = [
+  'enquiry_to_quotation',
+  'quotation_to_proforma',
+  'quotation_to_sales_order',
+  'quotation_to_project',
+  'sales_order_to_project',
+] as const;
+
 export interface ConversionActivityEntry {
   id: string;
   entity_code: string;
