@@ -12,10 +12,7 @@ import type {
   CardEntitlement,
   PlanTier,
 } from '@/types/card-entitlement';
-import {
-  seedDemoEntitlements,
-  cardEntitlementsKey as _cardEntitlementsKey,
-} from '@/lib/card-entitlement-engine';
+import { seedDemoEntitlements } from '@/lib/card-entitlement-engine';
 import { cardEntitlementsKey } from '@/types/card-entitlement';
 import {
   productVariantsKey,
@@ -27,10 +24,6 @@ import {
   type TowerTenantPlan,
 } from '@/types/product-variant';
 import { logAudit } from '@/lib/audit-trail-engine';
-
-// Touch private import to keep tree-shake honest — engine consumes the
-// canonical seed function (greppable delegation · AC3).
-void _cardEntitlementsKey;
 
 /* ─────────────────────────────────────────────────────────────────────── */
 /* §1 · DP-2 Plan reconciliation                                          */
