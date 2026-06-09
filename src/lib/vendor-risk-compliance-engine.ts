@@ -186,22 +186,40 @@ export function computeZone(entityCode: string, partyId: string): VendorZone {
   const ovrGreen = getThreshold(entityCode, 'overall_risk_max_green') ?? 35;
   const ovrAmber = getThreshold(entityCode, 'overall_risk_max_amber') ?? 65;
 
-  // Worst-of: if any signal lands in Red, zone=Red. Else if any Amber, zone=Amber. Else Green.
-  let band: VendorZoneColor = 'green';
+  // Worst-of: collect per-signal verdicts, then escalate.
+  const perSignal: VendorZoneColor[] = [];
   const reasons: string[] = [];
 
   if (src.reliability_composite !== undefined) {
-    if (src.reliability_composite < relAmber) { band = 'red'; reasons.push(`reliability=${src.reliability_composite} < amber=${relAmber}`); }
-    else if (src.reliability_composite < relGreen && band !== 'red') { band = 'amber'; reasons.push(`reliability=${src.reliability_composite} < green=${relGreen}`); }
+    if (src.reliability_composite < relAmber) {
+      perSignal.push('red'); reasons.push(`reliability=${src.reliability_composite} < amber=${relAmber}`);
+    } else if (src.reliability_composite < relGreen) {
+      perSignal.push('amber'); reasons.push(`reliability=${src.reliability_composite} < green=${relGreen}`);
+    } else {
+      perSignal.push('green');
+    }
   }
   if (src.financial_risk_score !== undefined) {
-    if (src.financial_risk_score > finAmber) { band = 'red'; reasons.push(`financial_risk=${src.financial_risk_score} > amber=${finAmber}`); }
-    else if (src.financial_risk_score > finGreen && band !== 'red') { band = 'amber'; reasons.push(`financial_risk=${src.financial_risk_score} > green=${finGreen}`); }
+    if (src.financial_risk_score > finAmber) {
+      perSignal.push('red'); reasons.push(`financial_risk=${src.financial_risk_score} > amber=${finAmber}`);
+    } else if (src.financial_risk_score > finGreen) {
+      perSignal.push('amber'); reasons.push(`financial_risk=${src.financial_risk_score} > green=${finGreen}`);
+    } else {
+      perSignal.push('green');
+    }
   }
   if (src.overall_risk_score !== undefined) {
-    if (src.overall_risk_score > ovrAmber) { band = 'red'; reasons.push(`overall_risk=${src.overall_risk_score} > amber=${ovrAmber}`); }
-    else if (src.overall_risk_score > ovrGreen && band !== 'red') { band = 'amber'; reasons.push(`overall_risk=${src.overall_risk_score} > green=${ovrGreen}`); }
+    if (src.overall_risk_score > ovrAmber) {
+      perSignal.push('red'); reasons.push(`overall_risk=${src.overall_risk_score} > amber=${ovrAmber}`);
+    } else if (src.overall_risk_score > ovrGreen) {
+      perSignal.push('amber'); reasons.push(`overall_risk=${src.overall_risk_score} > green=${ovrGreen}`);
+    } else {
+      perSignal.push('green');
+    }
   }
+  const band: VendorZoneColor = perSignal.includes('red')
+    ? 'red'
+    : perSignal.includes('amber') ? 'amber' : 'green';
   return {
     id: uuid(), party_id: partyId, entity_code: entityCode,
     zone: band, reason: reasons.length ? reasons.join(' · ') : 'all signals within green thresholds',
