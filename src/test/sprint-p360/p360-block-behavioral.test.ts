@@ -85,12 +85,13 @@ describe('PRUDENT360 · Sprint Roadmap · sprint-history consumer', () => {
     expect(rows.every((r) => !r.inFlight || !r.headSha || r.headSha === 'TBD_AT_BANK' || r.headSha.length > 0)).toBe(true);
   });
 
-  it('P360 row exists, predecessor=aae36912, in-flight', () => {
+  it('P360 row exists, predecessor=aae36912, banked at 630bdd2a (flipped by CAT1)', () => {
     const rows = buildSprintRoadmap();
     const p360 = rows.find((r) => r.code === 'T-P360-DevTeam-Hub');
     expect(p360).toBeDefined();
     expect(p360!.predecessorSha).toBe('aae36912');
-    expect(p360!.inFlight).toBe(true);
+    expect(p360!.headSha).toBe('630bdd2a');
+    expect(p360!.inFlight).toBe(false);
   });
 
   it('PARTNER-1 row is flipped to aae36912 (no longer TBD)', () => {
@@ -99,9 +100,9 @@ describe('PRUDENT360 · Sprint Roadmap · sprint-history consumer', () => {
     expect(pp1?.provenance).toBe('CONFIRMED');
   });
 
-  it('roadmap rendered newest-first', () => {
+  it('roadmap rendered newest-first (CAT1 is current in-flight after P360 flip)', () => {
     const rows = buildSprintRoadmap();
-    expect(rows[0].code).toBe('T-P360-DevTeam-Hub');
+    expect(rows[0].code).toBe('T-CAT1-Modules-AddOns');
   });
 });
 
