@@ -1,77 +1,101 @@
 /**
- * @file        src/pages/erp/vendor-portal/panels/VendorZonesPanel.tsx
- * @purpose     Vendor Zones master · list + create surface · ccc-aligned
+ * @file        VendorZonesPanel.tsx
  * @sprint      T-VPG-VendorPortal-Gaps
+ * @decisions   D-NEW-DN · honest-study: 'unrated' band shown when no source signal
+ * @reuses      vendor-risk-compliance-engine (consume only)
  */
-import { useMemo, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useMemo, useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, Plus } from 'lucide-react';
-import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { ShieldAlert, RefreshCw } from 'lucide-react';
+import { listZones, recomputeAllZones } from '@/lib/vendor-risk-compliance-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import {
-  listVendorZones,
-  createVendorZone,
-} from '@/lib/vendor-risk-compliance-engine';
-import type { VendorZone } from '@/types/vendor-zone';
+import type { VendorZone, VendorZoneColor } from '@/types/vendor-zone';
+
+const ZONE_STYLES: Record<VendorZoneColor, string> = {
+  green: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30',
+  amber: 'bg-amber-500/15 text-amber-700 border-amber-500/30',
+  red: 'bg-red-500/15 text-red-700 border-red-500/30',
+  unrated: 'bg-muted text-muted-foreground border-border',
+};
 
 export function VendorZonesPanel(): JSX.Element {
-  const entityCode = useMemo(() => {
-    try { return localStorage.getItem('active_entity_code') ?? DEFAULT_ENTITY_SHORTCODE; }
-    catch { return DEFAULT_ENTITY_SHORTCODE; }
-  }, []);
-  const [rows, setRows] = useState<VendorZone[]>(() => listVendorZones(entityCode));
-  const [form, setForm] = useState({ zone_code: '', zone_name: '', region: '' });
+  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const [zones, setZones] = useState<VendorZone[]>([]);
 
-  const submit = (): void => {
-    if (!form.zone_code || !form.zone_name) { toast.error('Zone code and name required'); return; }
-    createVendorZone(entityCode, { ...form, active: true });
-    setRows(listVendorZones(entityCode));
-    setForm({ zone_code: '', zone_name: '', region: '' });
-    toast.success('Zone created');
+  useEffect(() => { setZones(listZones(entityCode)); }, [entityCode]);
+
+  const counts = useMemo(() => {
+    const c: Record<VendorZoneColor, number> = { green: 0, amber: 0, red: 0, unrated: 0 };
+    zones.forEach((z) => { c[z.zone] += 1; });
+    return c;
+  }, [zones]);
+
+  const handleRecompute = (): void => {
+    const partyIds = Array.from(new Set(zones.map((z) => z.party_id)));
+    setZones(recomputeAllZones(entityCode, partyIds));
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <div className="h-10 w-10 rounded-lg bg-slate-500/15 flex items-center justify-center">
-          <MapPin className="h-6 w-6 text-slate-600" />
-        </div>
+    <div className="space-y-4 animate-fade-in">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Vendor Zones</h1>
-          <p className="text-sm text-muted-foreground">Geographic / operational zones for vendor segmentation</p>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <ShieldAlert className="w-6 h-6" /> Vendor Zones
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Green/Amber/Red bands derived from reliability + financial + risk signals. Honest study: vendors with no signal are shown as Unrated.
+          </p>
         </div>
+        <Button variant="outline" size="sm" onClick={handleRecompute}>
+          <RefreshCw className="w-4 h-4 mr-2" /> Recompute
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {(['green', 'amber', 'red', 'unrated'] as VendorZoneColor[]).map((band) => (
+          <Card key={band}>
+            <CardHeader className="pb-2">
+              <CardDescription className="capitalize">{band}</CardDescription>
+              <CardTitle className="font-mono text-3xl">{counts[band]}</CardTitle>
+            </CardHeader>
+          </Card>
+        ))}
       </div>
 
       <Card>
-        <CardHeader><CardTitle>New Zone</CardTitle></CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-4 gap-3">
-          <Input placeholder="Zone code (NORTH-01)" value={form.zone_code} onChange={e => setForm({ ...form, zone_code: e.target.value })} />
-          <Input placeholder="Zone name" value={form.zone_name} onChange={e => setForm({ ...form, zone_name: e.target.value })} />
-          <Input placeholder="Region (North/East/…)" value={form.region} onChange={e => setForm({ ...form, region: e.target.value })} />
-          <Button onClick={submit}><Plus className="h-4 w-4 mr-1" /> Add</Button>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader><CardTitle>Zones ({rows.length})</CardTitle></CardHeader>
+        <CardHeader>
+          <CardTitle>Zone Roster</CardTitle>
+        </CardHeader>
         <CardContent>
-          {rows.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No zones defined yet.</p>
-          ) : (
-            <div className="space-y-2">
-              {rows.map(z => (
-                <div key={z.id} className="flex items-center justify-between rounded-md border p-3 text-sm">
-                  <div>
-                    <div className="font-medium">{z.zone_name} <span className="font-mono text-xs text-muted-foreground">· {z.zone_code}</span></div>
-                    <div className="text-xs text-muted-foreground">{z.region || '—'}</div>
-                  </div>
-                  <Badge variant={z.active ? 'default' : 'secondary'}>{z.active ? 'Active' : 'Inactive'}</Badge>
-                </div>
-              ))}
+          {zones.length === 0 ? (
+            <div className="text-sm text-muted-foreground py-8 text-center">
+              No zones computed yet. Run "Recompute" once vendor risk signals are present.
             </div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left border-b text-muted-foreground">
+                  <th className="py-2 pr-2">Vendor</th>
+                  <th className="py-2 pr-2">Zone</th>
+                  <th className="py-2 pr-2">Reason</th>
+                  <th className="py-2 pr-2">Computed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {zones.map((z) => (
+                  <tr key={z.id} className="border-b last:border-0">
+                    <td className="py-2 pr-2 font-mono text-xs">{z.party_id}</td>
+                    <td className="py-2 pr-2">
+                      <Badge variant="outline" className={ZONE_STYLES[z.zone]}>{z.zone.toUpperCase()}</Badge>
+                    </td>
+                    <td className="py-2 pr-2 text-xs text-muted-foreground">{z.reason}</td>
+                    <td className="py-2 pr-2 font-mono text-xs">{z.computed_at.slice(0, 10)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           )}
         </CardContent>
       </Card>

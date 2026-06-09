@@ -1,6 +1,6 @@
 /**
  * @file        VendorPortalSidebar.types.ts
- * @sprint      T-VPG-VendorPortal-Gaps (6 new modules · additive)
+ * @sprint      T-Phase-1.A.1-VendorPortal-Foundation
  */
 
 export type VendorPortalModule =
@@ -9,6 +9,6 @@ export type VendorPortalModule =
   | 'vendor-categories'
   | 'vendor-scoring' | 'vendor-activity-monitor' | 'msme-compliance'
   | 'vendor-communication-log' | 'vendor-broadcast' | 'saathi-admin'
-  // VP-GAPS · 6 new admin surfaces (panels-pattern · 7 types backing)
+  // 🆕 VP-GAPS additive surfaces
   | 'vendor-zones' | 'vendor-risk-monitor' | 'vendor-compliance-checklists'
   | 'vendor-dcn' | 'vendor-document-requests' | 'vendor-payment-batches';

@@ -1,28 +1,34 @@
 /**
  * @file        src/types/vendor-document-request.ts
- * @purpose     Vendor document request tracker · requested → submitted → verified · overdue auto-flag
- * @sprint      T-VPG-VendorPortal-Gaps · Wave-1 tail
- * @decisions   ccc reference (vendor_document_requests) · references VendorComplianceRecord (doc_type)
+ * @purpose     Admin-to-vendor document request · "please upload your renewed GST cert" workflow
+ * @sprint      T-VPG-VendorPortal-Gaps
+ * @decisions   D-NEW-DN · CCC reference shape
  */
 
-export type DocumentRequestStatus =
-  | 'requested'
-  | 'submitted'
-  | 'verified'
-  | 'overdue';
+export type DocumentRequestStatus = 'pending' | 'sent' | 'submitted' | 'verified' | 'rejected' | 'cancelled';
 
 export interface VendorDocumentRequest {
   id: string;
-  vendor_id: string;
-  doc_type: string;
-  requested_at: string;
-  due_date?: string;
+  party_id: string;
+  entity_code: string;
+  document_type: string;                  // 'gst' | 'pan' | 'msme' | 'iso' | 'bank' | 'address' | custom
+  document_label: string;
+  reason?: string;
+  due_date?: string;                      // ISO date
   status: DocumentRequestStatus;
-  submitted_ref?: string;
+  requested_by?: string;
+  requested_at: string;
+  sent_at?: string;
   submitted_at?: string;
+  submitted_compliance_record_id?: string; // links to VendorComplianceRecord once vendor uploads
+  verified_by?: string;
   verified_at?: string;
-  notes?: string;
+  rejection_reason?: string;
+  reminder_count: number;
+  last_reminder_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
-export const vendorDocRequestsKey = (entityCode: string): string =>
+export const vendorDocumentRequestKey = (entityCode: string): string =>
   `erp_vendor_document_requests_${entityCode}`;

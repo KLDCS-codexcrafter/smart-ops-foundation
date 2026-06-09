@@ -9,7 +9,7 @@ import {
   Home, Building2, FileSignature, UserPlus, ListChecks,
   BarChart3, Activity, Award,
   MessageSquare, Megaphone, Bot,
-  AlertTriangle, MapPin, FileText, Wallet,
+  AlertTriangle, ShieldAlert, FileMinus2, FileQuestion, Banknote,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -34,7 +34,6 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
       { id: 'vendor-agreements', type: 'item', label: 'Vendor Agreements', icon: FileSignature, moduleId: 'vendor-agreements', requiredCards: ['vendor-portal'], keyboard: 'v a' },
       { id: 'vendor-onboarding-inbox', type: 'item', label: 'Onboarding Inbox', icon: UserPlus, moduleId: 'vendor-onboarding-inbox', requiredCards: ['vendor-portal'], keyboard: 'v o' },
       { id: 'vendor-categories', type: 'item', label: 'Vendor Categories', icon: ListChecks, moduleId: 'vendor-categories', requiredCards: ['vendor-portal'], keyboard: 'v g' },
-      { id: 'vendor-zones', type: 'item', label: 'Vendor Zones', icon: MapPin, moduleId: 'vendor-zones', requiredCards: ['vendor-portal'], keyboard: 'v z' },
     ],
   },
   {
@@ -47,11 +46,6 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
       { id: 'vendor-scoring', type: 'item', label: 'Scoring Dashboard', icon: Award, moduleId: 'vendor-scoring', requiredCards: ['vendor-portal'], keyboard: 'v s' },
       { id: 'vendor-activity-monitor', type: 'item', label: 'Activity Monitor', icon: Activity, moduleId: 'vendor-activity-monitor', requiredCards: ['vendor-portal'], keyboard: 'v t' },
       { id: 'msme-compliance', type: 'item', label: 'MSME-43BH Compliance', icon: AlertTriangle, moduleId: 'msme-compliance', requiredCards: ['vendor-portal'], keyboard: 'v p' },
-      { id: 'vendor-risk-monitor', type: 'item', label: 'Risk Monitor', icon: AlertTriangle, moduleId: 'vendor-risk-monitor', requiredCards: ['vendor-portal'], keyboard: 'v r' },
-      { id: 'vendor-compliance-checklists', type: 'item', label: 'Compliance Checklists', icon: ListChecks, moduleId: 'vendor-compliance-checklists', requiredCards: ['vendor-portal'], keyboard: 'v c' },
-      { id: 'vendor-dcn', type: 'item', label: 'Debit / Credit Notes', icon: FileText, moduleId: 'vendor-dcn', requiredCards: ['vendor-portal'], keyboard: 'v d' },
-      { id: 'vendor-document-requests', type: 'item', label: 'Document Requests', icon: FileSignature, moduleId: 'vendor-document-requests', requiredCards: ['vendor-portal'], keyboard: 'v q' },
-      { id: 'vendor-payment-batches', type: 'item', label: 'Payment Batches', icon: Wallet, moduleId: 'vendor-payment-batches', requiredCards: ['vendor-portal'], keyboard: 'v y' },
     ],
   },
   {
@@ -64,6 +58,22 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
       { id: 'vendor-communication-log', type: 'item', label: 'Communication Log', icon: MessageSquare, moduleId: 'vendor-communication-log', requiredCards: ['vendor-portal'], keyboard: 'v l' },
       { id: 'vendor-broadcast', type: 'item', label: 'Broadcast Console', icon: Megaphone, moduleId: 'vendor-broadcast', requiredCards: ['vendor-portal'], keyboard: 'v b' },
       { id: 'saathi-admin', type: 'item', label: 'Saathi · Vendor AI', icon: Bot, moduleId: 'saathi-admin', requiredCards: ['vendor-portal'], keyboard: 'v i' },
+    ],
+  },
+  // 🆕 VP-GAPS additive group · risk + compliance + DCN + doc-requests + payment batches
+  {
+    id: 'vendor-risk-compliance-group',
+    type: 'group',
+    label: 'Risk & Compliance',
+    icon: ShieldAlert,
+    collapsibleByDefault: true,
+    children: [
+      { id: 'vendor-zones', type: 'item', label: 'Vendor Zones', icon: ShieldAlert, moduleId: 'vendor-zones', requiredCards: ['vendor-portal'], keyboard: 'v z' },
+      { id: 'vendor-risk-monitor', type: 'item', label: 'Risk Monitor', icon: AlertTriangle, moduleId: 'vendor-risk-monitor', requiredCards: ['vendor-portal'], keyboard: 'v r' },
+      { id: 'vendor-compliance-checklists', type: 'item', label: 'Compliance Checklists', icon: ListChecks, moduleId: 'vendor-compliance-checklists', requiredCards: ['vendor-portal'], keyboard: 'v k' },
+      { id: 'vendor-dcn', type: 'item', label: 'Debit / Credit Notes', icon: FileMinus2, moduleId: 'vendor-dcn', requiredCards: ['vendor-portal'], keyboard: 'v n' },
+      { id: 'vendor-document-requests', type: 'item', label: 'Document Requests', icon: FileQuestion, moduleId: 'vendor-document-requests', requiredCards: ['vendor-portal'], keyboard: 'v q' },
+      { id: 'vendor-payment-batches', type: 'item', label: 'Payment Batches', icon: Banknote, moduleId: 'vendor-payment-batches', requiredCards: ['vendor-portal'], keyboard: 'v y' },
     ],
   },
 ];

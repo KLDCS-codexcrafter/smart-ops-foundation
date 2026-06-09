@@ -1130,13 +1130,15 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['atp-engine'],
     bankDate: '2026-06-08', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint VP-GAPS T-VPG-VendorPortal-Gaps · Wave-1 tail · 7 vendor data-model gaps (ccc-reference-aligned) · zones · risk-alerts/thresholds · compliance-checklists · DCN · doc-requests · payment-batches · CONSUMES base scores (vendor-reliability-score · vendor-compliance-record · vendor-financial-health 0-DIFF) · payment-batch CONSUMES payment-requisition (no duplicate accounting) · ONE new SIBLING vendor-risk-compliance-engine · ccc NOT imported (Wave-2 = ccc-backend persistence) · NO credentials/secrets · Tier-L · 6 admin panels mounted via existing vendor-portal panels pattern (applications.ts 0-DIFF) · retention floor honored at birth for DCN + payment-batch · A.2 flipped to 4e5e13e6 · 104→105 ⭐
+  // 🆕 Sprint VP-GAPS T-VPG-VendorPortal-Gaps · Wave-1 tail · ~1,050 LOC · 7 NEW types (vendor-zone, vendor-risk-alert, vendor-risk-threshold, vendor-compliance-checklist, vendor-dcn, vendor-document-request, vendor-payment-batch · all ccc shape-aligned · FY-stamped + retention_policy at birth where applicable) · SOLE NEW SIBLING vendor-risk-compliance-engine (22 exports · zones · alerts · CC-editable thresholds with internal append-only edit log · checklists rollup · DCN intent registry · doc requests · payment batches grouping) · Honest-study canon (NEVER fabricates scores; explicit no_source_data path; alerts only when source signals present) · 6 NEW admin panels mounted under Risk & Compliance group (VendorZones · RiskMonitor · ComplianceChecklists · DCN · DocRequests · PaymentBatches) · CONSUMED walls 0-DIFF: vendor-reliability-score · vendor-financial-health · vendor-risk-score · vendor-compliance-record · vendor-scoring-engine · vendor-reliability-engine · FinCore voucher engines · PayOut disbursement · audit-trail-engine (threshold edits use internal log · audit chain untouched) · DCN + payment-batch added to RECORD_TYPE_POLICY_MAP at gst_8yr · 104→105 ⭐
   {
     sprintNumber: 'VPG' as unknown as number, code: 'T-VPG-VendorPortal-Gaps', composite: false, grade: 'A',
     headSha: 'TBD_AT_BANK', predecessorSha: '4e5e13e6', loc: 1050,
     newSiblings: ['vendor-risk-compliance-engine'],
     bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
   },
+
+
 ];
 
 
