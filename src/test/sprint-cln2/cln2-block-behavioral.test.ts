@@ -70,10 +70,12 @@ describe('CLN2 · FieldMapper deletes wired to local templates state', () => {
   });
 
   it('both Delete buttons (row + sheet) invoke deleteTemplate, not a toast', () => {
-    const matches = FIELDMAP.match(/deleteTemplate\(/g) ?? [];
-    // 1 declaration + 2 call sites + 1 conditional sheet call = at least 3 usages
-    expect(matches.length).toBeGreaterThanOrEqual(3);
+    // Row-level Delete in the table
+    expect(FIELDMAP).toMatch(/onClick=\{\(\) => deleteTemplate\(t\)\}/);
+    // Sheet-level Delete uses the detailTemplate guard
+    expect(FIELDMAP).toContain('if (detailTemplate) deleteTemplate(detailTemplate)');
   });
+
 });
 
 describe('CLN2 · CompanyRegistry config + remove wired on local companies state', () => {
