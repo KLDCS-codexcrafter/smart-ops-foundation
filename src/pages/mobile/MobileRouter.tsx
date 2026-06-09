@@ -90,6 +90,8 @@ import MobilePayoutApprovePage from './captures/MobilePayoutApprovePage';
 import MobileRequestXIndentPage from './captures/MobileRequestXIndentPage';
 import MobileFrontDeskCheckInPage from './captures/MobileFrontDeskCheckInPage';
 import MobileDocVaultCapturePage from './captures/MobileDocVaultCapturePage';
+// AM.3 · Universal Mobile Reporting (read-only · CONSUMES mobile-report-registry)
+import MobileUniversalReportPage from './MobileUniversalReportPage';
 
 function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/salesman' || pathname === '/mobile/salesman/') return <MobileSalesmanHome />;
