@@ -147,10 +147,6 @@ const MODULES: StandaloneModule[] = [
     description: 'Tickets, SLAs, escalations, multi-channel intake, CSAT.',
     details: 'ServiceDesk standalone for internal IT or customer support.',
     route: '/erp/servicedesk', phase: 'phase2', capability: 'ServiceDesk (banked)' },
-  { id: 'gateflow', title: 'GateFlow — Gate Management', icon: DoorOpen, section: 'Operations',
-    description: 'Gate-in/out register, vehicle tracking, visitor log, weighbridge.',
-    details: 'GateFlow standalone for factories and warehouses.',
-    route: '/erp/gateflow', phase: 'phase2', capability: 'GateFlow (banked)' },
 
   // ── Flagship ─────────────────────────────────────────────────────────────
   { id: 'webstorex', title: 'WebStoreX Storefront', icon: Store, section: 'Flagship',
