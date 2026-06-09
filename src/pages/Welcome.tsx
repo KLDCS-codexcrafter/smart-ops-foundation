@@ -145,8 +145,9 @@ const quickActions = [
   { icon: Settings, label: "Settings", href: "/profile" },
 ];
 
-// CLN1 · Support Ops mock-ticket data (MOCK_TICKETS, SupportTicket, TicketPriority,
-// TicketStatus) removed per ServiceDesk v7 scope. Tickets now live in /erp/servicedesk.
+// CLN1 · Support Ops mock-ticket data (the local mock-ticket array, its row
+// interface and the two ticket-state union types) removed per ServiceDesk v7
+// scope. Tickets now live in /erp/servicedesk.
 import { onEnterNext } from '@/lib/keyboard';
 
 // ── Server Ops data ───────────────────────────────────────────
