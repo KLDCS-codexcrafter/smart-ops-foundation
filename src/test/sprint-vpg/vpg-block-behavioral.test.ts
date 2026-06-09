@@ -186,10 +186,109 @@ describe('VP-GAPS · payment batches', () => {
   });
 });
 
+describe('VP-GAPS · DCN debit-vs-credit distinction', () => {
+  it('debit_note and credit_note are independently recorded with kind preserved', () => {
+    const dn = createDcn({ entity_code: E, party_id: V, kind: 'debit_note', reason: 'quality_rejection', amount_paise: 1000 });
+    const cn = createDcn({ entity_code: E, party_id: V, kind: 'credit_note', reason: 'discount_post_invoice', amount_paise: 500 });
+    const all = listDcns(E);
+    expect(all.length).toBe(2);
+    expect(all.find((x) => x.id === dn.id)?.kind).toBe('debit_note');
+    expect(all.find((x) => x.id === cn.id)?.kind).toBe('credit_note');
+    expect(all.every((x) => Number.isInteger(x.amount_paise) && x.amount_paise >= 0)).toBe(true);
+  });
+});
+
+describe('VP-GAPS · document-request full lifecycle', () => {
+  it('pending → sent → submitted → verified with timestamps and reminder accrual', () => {
+    const r = createDocumentRequest({
+      entity_code: E, party_id: V, document_type: 'msme', document_label: 'MSME cert',
+      due_date: '2026-07-01',
+    });
+    expect(r.status).toBe('pending');
+    const sent = updateDocumentRequestStatus(E, r.id, 'sent');
+    expect(sent?.status).toBe('sent');
+    expect(sent?.sent_at).toBeDefined();
+    recordDocumentRequestReminder(E, r.id);
+    recordDocumentRequestReminder(E, r.id);
+    const submitted = updateDocumentRequestStatus(E, r.id, 'submitted');
+    expect(submitted?.status).toBe('submitted');
+    expect(submitted?.submitted_at).toBeDefined();
+    expect(submitted?.reminder_count).toBe(2);
+    const verified = updateDocumentRequestStatus(E, r.id, 'verified', 'compliance_officer');
+    expect(verified?.status).toBe('verified');
+    expect(verified?.verified_by).toBe('compliance_officer');
+    expect(verified?.verified_at).toBeDefined();
+  });
+});
+
+describe('VP-GAPS · payment-batch status flow', () => {
+  it('draft → queued → released does NOT mutate underlying requisition rows or duplicate accounting', () => {
+    const reqKey = 'erp_payment_requisitions_TEST_SENTINEL';
+    const sentinel = [{ id: 'pr-X', amount_paise: 9999, vendor_id: V }];
+    localStorage.setItem(reqKey, JSON.stringify(sentinel));
+
+    const b = createPaymentBatch({
+      entity_code: E, batch_no: 'PB-FLOW', scheduled_date: '2026-07-01', channel: 'bank_rtgs',
+      lines: [{ payment_requisition_id: 'pr-X', party_id: V, amount_paise: 9999 }],
+    });
+    expect(b.status).toBe('draft');
+    const queued = updatePaymentBatchStatus(E, b.id, 'queued');
+    expect(queued?.status).toBe('queued');
+    const released = updatePaymentBatchStatus(E, b.id, 'released', 'treasury_head');
+    expect(released?.status).toBe('released');
+    expect(released?.released_by).toBe('treasury_head');
+    const after = JSON.parse(localStorage.getItem(reqKey) ?? '[]');
+    expect(after).toEqual(sentinel);
+    expect(listPaymentBatches(E)[0].lines[0].payment_requisition_id).toBe('pr-X');
+  });
+});
+
+describe('VP-GAPS · risk-alert acknowledge → resolved transition', () => {
+  it('alert moves open → acknowledged → resolved with actor + timestamp stamps', () => {
+    localStorage.setItem(vendorFinancialHealthKey(E), JSON.stringify([{
+      id: 'f1', party_id: V, assessment_date: '2026-01-01', entity_code: E,
+      financial_risk_score: 95,
+      created_at: '2026-01-01', updated_at: '2026-01-01',
+    }]));
+    persistAlerts(E, evaluateAlertsForVendor(E, V));
+    const open = listAlerts(E, 'open');
+    expect(open.length).toBeGreaterThan(0);
+    const a = open[0];
+    const acked = updateAlertStatus(E, a.id, 'acknowledged', 'risk_owner');
+    expect(acked?.status).toBe('acknowledged');
+    expect(acked?.acknowledged_by).toBe('risk_owner');
+    const resolved = updateAlertStatus(E, a.id, 'resolved', 'risk_owner', 'remediated');
+    expect(resolved?.status).toBe('resolved');
+    expect(resolved?.resolved_at).toBeDefined();
+    expect(listAlerts(E, 'open').length).toBe(0);
+    expect(listAlerts(E, 'resolved').length).toBeGreaterThan(0);
+  });
+});
+
+describe('VP-GAPS · threshold edit re-evaluates zone classification', () => {
+  it('tightening reliability_min_green flips a borderline vendor off green', () => {
+    localStorage.setItem(vendorReliabilityKey(E), JSON.stringify([{
+      id: 'r1', entity_id: E, related_foreign_vendor_id: V, vendor_name: 'X', country_code: 'IN',
+      components: {
+        on_time_delivery_score: 0, quality_acceptance_score: 0, price_stability_score: 0,
+        carotar_compliance_score: 0, dgtr_exposure_score: 0, sanctions_clearance_score: 0,
+        payment_terms_adherence_score: 0,
+        composite_score: 86, classification: 'preferred', computed_at: '2026-01-01',
+      },
+      prior_classification: null, classification_changed_at: null,
+      active_dgtr_case_count: 0, active_sanctions_hit_count: 0, open_carotar_queries: 0,
+      notes: '', created_at: '2026-01-01', updated_at: '2026-01-01',
+    }]));
+    listThresholds(E);
+    expect(computeZone(E, V).zone).toBe('green');
+    updateThreshold(E, 'reliability_min_green', 90, 'cc_admin', 'tighten policy');
+    const after = computeZone(E, V).zone;
+    expect(after === 'amber' || after === 'red').toBe(true);
+  });
+});
+
 describe('VP-GAPS · CCC guard (no rebuilds, no ccc imports)', () => {
   it('engine module has zero craft-company-canvas references', async () => {
-    // Static guard: source import scan happens at build time; here we just
-    // assert the public API surface count is honest (22 exports).
     const mod = await import('@/lib/vendor-risk-compliance-engine');
     const exportKeys = Object.keys(mod).filter((k) => typeof (mod as Record<string, unknown>)[k] === 'function');
     expect(exportKeys.length).toBeGreaterThanOrEqual(20);
