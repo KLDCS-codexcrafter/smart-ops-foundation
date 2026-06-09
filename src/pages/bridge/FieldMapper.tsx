@@ -290,7 +290,7 @@ const FieldMapper = () => {
               variant="outline"
               size="sm"
               className="ml-auto shrink-0"
-              onClick={() => setSelectedTemplate(TEMPLATES[0])}
+              onClick={() => setSelectedTemplate(templates[0] ?? null)}
             >
               Load MAP-001
             </Button>
