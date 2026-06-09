@@ -1147,14 +1147,17 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint CLEANUP-2 T-CLN2-Bridge-DeadButtons · Wave-1 tail · 7 dead "coming soon" buttons in /bridge/* made honest (wired on EXISTING local state where Tier-L-doable · honest-deferred only where it genuinely needs the Wave-2 sync backend) · ConsoleDashboard:138 filter-by-stage wired to selectedStage local state with visual highlight + clearable banner · FieldMapper:253 + :502 deletes wired to local templates state (confirm + remove · sheet auto-closes) · CompanyRegistry:359 Company-config opens the existing detail Sheet (which IS the configuration view) · CompanyRegistry:603 Remove-feature wired to local companies state (confirm + remove + close sheet) · ExceptionWorkbench:343 Edit-mode wired to prompt-driven module override on local exceptions state with status flip to resolved · BridgeSettings:452 Download HONEST-DEFER (disabled button + "arrives with Wave-2 sync backend" note · no fake action) · NO new SIBLING (empty newSiblings · cleanup) · WALLS 0-DIFF: bridge mock→real-fetch Wave-2 seams (12/13 untouched · correct deferrals) · bridge engines (reconciliation/sync · grep-confirmed not imported in these 5 files) · all bridge pages beyond the 7 button handlers · hash-chain · retention · applications.ts · entitlements · sidebars · types · CLN1 flipped to 54ba9516 · 106→107 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'CLN2' as unknown as number, code: 'T-CLN2-Bridge-DeadButtons', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '54ba9516', loc: 200,
+    headSha: '2fb4fd8c', predecessorSha: '54ba9516', loc: 200,
     newSiblings: [],
+    bankDate: '2026-06-09', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint PARTNER-1 T-PP1-Partner-Portal · KLDCS Channel-Partner Portal (Tally-modeled · Referral/Associate/Channel 10/20/30 · Channel owns support) · 6 sub-pages live under PartnerLayout · NEW SIBLING partner-portal-engine · REUSES commission-engine (greppable delegation · AC2 no reimplemented commission math) · mirrors salesman Targets/Customers UI patterns · dashboard counts COMPUTED (zero hardcoded literals · AC3) · 6 tile routes wired (no dead links · AC4) · Tier-L seed: 1 Associate-tier demo partner (Bharat Operations Partners LLP) · 12 customers · 5 deals · 3 quarterly targets · 5 marketing assets (downloads Wave-2-deferred) · channel-conflict warn on duplicate prospect · 90-day deal protection · renewals 30/60/90d (Tally TSS style) · partner LOGIN + live MRR INTENTIONALLY ABSENT (Wave-2 honest banner · AC6) · WALLS 0-DIFF: commission-engine · commissioning-templates · salesman pages/masters · distributor-hub · hash-chain · retention · applications.ts · entitlements · CLEANUP-2 flipped to 2fb4fd8c · 107→108 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'PP1' as unknown as number, code: 'T-PP1-Partner-Portal', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '2fb4fd8c', loc: 1200,
+    newSiblings: ['partner-portal-engine'],
     bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
   },
-
-
-
-
 ];
 
 
