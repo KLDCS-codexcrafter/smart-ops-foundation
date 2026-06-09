@@ -44,7 +44,7 @@ interface MappingTemplate {
 // JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
 // ─────────────────────────────────────────────────────────────────────────
 
-const TEMPLATES: MappingTemplate[] = [
+const INITIAL_TEMPLATES: MappingTemplate[] = [
   {
     id: "MAP-001",
     name: "Tally → 4DSO Sales",
@@ -128,7 +128,8 @@ const PREBUILT_CATEGORIES = [
 const FieldMapper = () => {
   const [tab, setTab] = useState("templates");
   const [search, setSearch] = useState("");
-  const [selectedTemplate, setSelectedTemplate] = useState<MappingTemplate | null>(TEMPLATES[0]);
+  const [templates, setTemplates] = useState<MappingTemplate[]>(INITIAL_TEMPLATES);
+  const [selectedTemplate, setSelectedTemplate] = useState<MappingTemplate | null>(INITIAL_TEMPLATES[0]);
   const [showDetail, setShowDetail] = useState(false);
   const [detailTemplate, setDetailTemplate] = useState<MappingTemplate | null>(null);
 
@@ -137,11 +138,23 @@ const FieldMapper = () => {
     setShowDetail(true);
   };
 
-  const filtered = TEMPLATES.filter(
+  const deleteTemplate = (t: MappingTemplate) => {
+    if (!window.confirm(`Delete template "${t.name}"? This cannot be undone.`)) return;
+    setTemplates((cur) => cur.filter((x) => x.id !== t.id));
+    if (selectedTemplate?.id === t.id) setSelectedTemplate(null);
+    if (detailTemplate?.id === t.id) {
+      setDetailTemplate(null);
+      setShowDetail(false);
+    }
+    toast.success(`${t.name} deleted`);
+  };
+
+  const filtered = templates.filter(
     (t) =>
       t.name.toLowerCase().includes(search.toLowerCase()) ||
       t.source.toLowerCase().includes(search.toLowerCase())
   );
+
 
   const renderTransformBadge = (transform?: string) => {
     if (!transform) return <span className="text-muted-foreground">—</span>;
@@ -250,10 +263,11 @@ const FieldMapper = () => {
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 text-destructive"
-                            onClick={() => toast("Delete coming soon")}
+                            onClick={() => deleteTemplate(t)}
                           >
                             <Trash2 className="h-3.5 w-3.5" />
                           </Button>
+
                         </div>
                       </TableCell>
                     </TableRow>
@@ -499,10 +513,11 @@ const FieldMapper = () => {
                 <Button
                   variant="outline"
                   className="w-full text-destructive border-destructive/20"
-                  onClick={() => toast("Delete coming soon")}
+                  onClick={() => { if (detailTemplate) deleteTemplate(detailTemplate); }}
                 >
                   Delete Template
                 </Button>
+
               </div>
             </div>
           )}
