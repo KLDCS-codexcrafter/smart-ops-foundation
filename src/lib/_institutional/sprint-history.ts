@@ -1235,10 +1235,17 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-09', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint GUIDE-1 T-GUIDE1-OperixGo-Personas · operix-go dev-guide completeness · 6 persona apps added as first-class entries (salesman 11pg/telecaller 12pg/manager 9pg/supervisor 9pg/distributor 6pg/servicedesk 1pg) · each entry references the REAL persona dir + MobileRouter role-route + engine consumed (location-tracker-engine · mobile-audit · approval-rail-engine · distributor-cart-store · servicedesk-engine) · operix-go now the COMPLETE mobile index · entries-only · NO new pages · NO page edits · NO new engine · NO new SIBLING (empty newSiblings) · walls held: all persona pages · MobileRouter core · all engines · applications.ts 0-DIFF · AM.4 flipped to e441113e · 119→120 ⭐ milestone · headSha TBD_AT_BANK
+  // 🆕 Sprint GUIDE-1 T-GUIDE1-OperixGo-Personas · operix-go dev-guide completeness · 6 persona apps added as first-class entries (salesman 11pg/telecaller 12pg/manager 9pg/supervisor 9pg/distributor 6pg/servicedesk 1pg) · each entry references the REAL persona dir + MobileRouter role-route + engine consumed (location-tracker-engine · mobile-audit · approval-rail-engine · distributor-cart-store · servicedesk-engine) · operix-go now the COMPLETE mobile index · entries-only · NO new pages · NO page edits · NO new engine · NO new SIBLING (empty newSiblings) · walls held: all persona pages · MobileRouter core · all engines · applications.ts 0-DIFF · AM.4 flipped to e441113e · 119→120 ⭐ milestone · headSha f0ee5e3f
   {
     sprintNumber: 'GUIDE1' as unknown as number, code: 'T-GUIDE1-OperixGo-Personas', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'e441113e', loc: 350,
+    headSha: 'f0ee5e3f', predecessorSha: 'e441113e', loc: 350,
+    newSiblings: [],
+    bankDate: '2026-06-09', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint CLEANUP-3 T-CLN3-Residue-Bundle · 4 honest cleanups · (1) FinCore Mobile operix-go entry flipped planned→live · re-pointed to /operix-go/approval-inbox (Universal Approval) · details cite Universal Reporting (mobile-report-registry · AM.3) — no dead /operix-go/fincore route · (2) ConversionType fix: added real VALUE export CONVERSION_TYPES (readonly ConversionType[]) in salesx-conversion-engine.ts · marketing-automation-engine.getFunnelContext now reads CONVERSION_TYPES instead of the prior `as unknown as { ConversionType }` cast which read a TS type at runtime and always resolved to [] · clears the persistent rollup warning AND fixes the silently-empty funnel-context list (type ConversionType kept 0-DIFF) · (3) Tower 11 dead "coming soon" toasts made honest: Users edit/suspend/reactivate (×5 sites · row+detail) · Permissions Create Role · Notifications per-row actions · Billing Report download · Settings Schedule New Window · Support Change Status + Add Note → all converted to disabled buttons with explicit title="… arrives with Wave-2 multi-tenant backend" · grep "coming soon" in src/pages/tower = 0 · (4) CustomerSupport "Ticket detail coming soon" → wired LOCAL Dialog reading from in-memory TICKETS list (status/priority/created/updated/assignedTo + Wave-2 deferral note for conversation thread) · grep "coming soon" in CustomerSupport = 0 · NO new SIBLING (empty newSiblings · all consuming · CONVERSION_TYPES is a value mirror of an existing type · no new engine) · walls held: approval-rail/universal-mobile layers · salesx-conversion-engine type ConversionType (unchanged) · tower engines · customer ticket data · applications.ts all 0-DIFF · GUIDE-1 flipped to f0ee5e3f · 120→121 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'CLN3' as unknown as number, code: 'T-CLN3-Residue-Bundle', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'f0ee5e3f', loc: 280,
     newSiblings: [],
     bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
   },
