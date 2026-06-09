@@ -134,6 +134,14 @@ const panelCards = [
     description: "Tools, documentation & intelligence hub.",
     badge: "wip",
   },
+  // Sprint SP.4 · T-SP4-Build-Your-Plan · public self-serve configurator
+  {
+    title: "Build Your Plan / Pricing",
+    icon: Puzzle,
+    route: "/build-your-plan",
+    description: "Self-serve configurator — compose Prudent360 ERP cards, modules, add-ons & conditions, see a live quote, drop a request into the provisioning queue (checkout & instant provisioning arrive with Wave-2).",
+    badge: null,
+  },
 ];
 
 const quickActions = [
