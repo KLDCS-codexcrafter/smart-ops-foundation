@@ -43,6 +43,7 @@ export default function MobileShopProductPage() {
 
   const customerId = session?.user_id ?? 'anon';
   const wishlist = useMemo(() => session ? loadWishlist(session.entity_code, customerId) : [],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [session, customerId, wishlistBumper]);
   const inWishlist = product ? wishlist.includes(product.id) : false;
 
