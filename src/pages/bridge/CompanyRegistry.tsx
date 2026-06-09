@@ -80,7 +80,7 @@ const DOMAIN_DOT: Record<DomainStatus, string> = {
 // JWT payload shape: { userId, role, tier: 1|2|3, partnerId?: string, tenantId?: string }
 // ─────────────────────────────────────────────────────────────────────────
 
-const COMPANIES: TallyCompany[] = [
+const INITIAL_COMPANIES: TallyCompany[] = [
   {
     id: "COMP-001", name: "Reliance Digital Solutions Pvt Ltd", tallyCompanyName: "Reliance Digital Solutions Pvt. Ltd.",
     tenantId: "TNT-001", tenantName: "Reliance Digital Solutions", agentId: "AGENT-01", status: "syncing", connMode: "json_http",
@@ -150,6 +150,7 @@ const TENANTS = [
 ];
 
 export default function CompanyRegistry() {
+  const [companies, setCompanies] = useState<TallyCompany[]>(INITIAL_COMPANIES);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [modeFilter, setModeFilter] = useState("all");
@@ -171,7 +172,17 @@ export default function CompanyRegistry() {
 
   const openDetail = (c: TallyCompany) => { setSelectedCompany(c); setShowDetail(true); };
 
-  const filtered = COMPANIES.filter((c) => {
+  const handleRemoveCompany = () => {
+    if (!selectedCompany) return;
+    if (!window.confirm(`Remove ${selectedCompany.name} from the registry? Local agent config is unaffected.`)) return;
+    const removedName = selectedCompany.name;
+    setCompanies((cur) => cur.filter((x) => x.id !== selectedCompany.id));
+    setShowDetail(false);
+    setSelectedCompany(null);
+    toast.success(`${removedName} removed from registry`);
+  };
+
+  const filtered = companies.filter((c) => {
     const q = search.toLowerCase();
     const matchSearch =
       c.name.toLowerCase().includes(q) ||
@@ -183,9 +194,9 @@ export default function CompanyRegistry() {
     return matchSearch && matchStatus && matchMode;
   });
 
-  const connectedCount = COMPANIES.filter(c => c.status === "connected" || c.status === "syncing").length;
-  const avgHealth = Math.round(COMPANIES.reduce((s, c) => s + c.healthScore, 0) / COMPANIES.length);
-  const totalSyncs = COMPANIES.reduce((s, c) => s + c.syncCount, 0);
+  const connectedCount = companies.filter(c => c.status === "connected" || c.status === "syncing").length;
+  const avgHealth = companies.length === 0 ? 0 : Math.round(companies.reduce((s, c) => s + c.healthScore, 0) / companies.length);
+  const totalSyncs = companies.reduce((s, c) => s + c.syncCount, 0);
 
   const handleAddCompany = () => {
     setAddLoading(true);
@@ -201,12 +212,13 @@ export default function CompanyRegistry() {
     setTimeout(() => toast.success("Testing connection... OK"), 1500);
   };
 
+
   return (
     <BridgeLayout title="Company Registry" subtitle="All connected Tally Prime companies — connection status and configuration">
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
-          { label: "Total Companies", count: COMPANIES.length, icon: Building2, color: "text-primary" },
+          { label: "Total Companies", count: companies.length, icon: Building2, color: "text-primary" },
           { label: "Connected", count: connectedCount, icon: Plug, color: "text-success" },
           { label: "Avg Health Score", count: `${avgHealth}/100`, icon: Activity, color: "text-primary" },
           { label: "Total Syncs", count: totalSyncs, icon: RefreshCw, color: "text-accent-foreground" },
@@ -252,7 +264,7 @@ export default function CompanyRegistry() {
       </div>
 
       {/* Results count */}
-      <p className="text-xs text-muted-foreground mb-3">Showing {filtered.length} of {COMPANIES.length} companies</p>
+      <p className="text-xs text-muted-foreground mb-3">Showing {filtered.length} of {companies.length} companies</p>
 
       {/* Table */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
@@ -356,7 +368,7 @@ export default function CompanyRegistry() {
                     <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openDetail(c)}>
                       <Eye className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => toast("Company config coming soon")}>
+                    <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => openDetail(c)} title="Open configuration">
                       <Settings className="h-3.5 w-3.5" />
                     </Button>
                     {(c.status === "error" || c.status === "disconnected") && (
@@ -600,9 +612,10 @@ export default function CompanyRegistry() {
                       <RotateCcw className="h-4 w-4 mr-1" /> Reconnect
                     </Button>
                   )}
-                  <Button variant="outline" className="w-full text-destructive border-destructive/20 hover:bg-destructive/5" onClick={() => toast("Remove feature coming soon")}>
+                  <Button variant="outline" className="w-full text-destructive border-destructive/20 hover:bg-destructive/5" onClick={handleRemoveCompany}>
                     Remove Company
                   </Button>
+
                 </div>
               </div>
             </>
