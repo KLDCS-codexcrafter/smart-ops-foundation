@@ -110,6 +110,7 @@ export default function MainStoreHubPage() {
       case 't-rtv':                  return <RTVEntryPanel />;
       case 'r-bin-utilization':      return <BinUtilizationReportPanel onNavigate={navigateToModule} />;
       case 'r-item-movement':        return <ItemMovementHistoryReportPanel onNavigate={navigateToModule} />;
+      case 'r-part-no-search':       return <PartNoSearchPanel />;
       default:                       return <MainStoreHubWelcomePanel onNavigate={setActiveModule} />;
     }
   };
