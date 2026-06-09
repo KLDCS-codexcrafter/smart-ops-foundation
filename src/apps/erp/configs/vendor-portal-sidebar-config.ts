@@ -9,7 +9,7 @@ import {
   Home, Building2, FileSignature, UserPlus, ListChecks,
   BarChart3, Activity, Award,
   MessageSquare, Megaphone, Bot,
-  AlertTriangle,
+  AlertTriangle, MapPin, FileText, Wallet,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
