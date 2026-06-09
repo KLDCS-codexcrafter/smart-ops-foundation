@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package, Wrench, Factory } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { RoleHomeFeed } from '@/components/role-home/RoleHomeFeed';
 
 type AppPhase = 'live' | 'phase2' | 'planned';
 
@@ -220,6 +221,9 @@ export function OperixGoPagePanel() {
           <span><span className="font-semibold text-foreground">{MOBILE_PRODUCTS.filter(a => a.phase === "phase2").length}</span> Phase 2</span>
           <span><span className="font-semibold text-foreground">{MOBILE_PRODUCTS.filter(a => a.phase === "planned").length}</span> Planned</span>
         </div>
+        {/* AM.1 · Pass 3 · surface the rule-ranked role-home feed. */}
+        <RoleHomeFeed role="operations" topN={5} />
+
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {MOBILE_PRODUCTS.map(product => {
             const phaseConf = PHASE_CONFIG[product.phase];
