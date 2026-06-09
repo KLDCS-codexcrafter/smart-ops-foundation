@@ -42,4 +42,6 @@ export type MainStoreHubModule =
   | 'r-min-register'
   | 'r-consumption-register'
   | 'r-cycle-count-register'
-  | 'r-rtv-register';
+  | 'r-rtv-register'
+  // Sprint T-CLN1-Wave1-Cleanups · Item 1 · B25 part-no search
+  | 'r-part-no-search';
