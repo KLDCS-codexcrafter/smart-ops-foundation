@@ -100,9 +100,9 @@ describe('PRUDENT360 · Sprint Roadmap · sprint-history consumer', () => {
     expect(pp1?.provenance).toBe('CONFIRMED');
   });
 
-  it('roadmap rendered newest-first (CAT1 is current in-flight after P360 flip)', () => {
+  it('roadmap rendered newest-first (SP.1 is current in-flight after CAT1 flip)', () => {
     const rows = buildSprintRoadmap();
-    expect(rows[0].code).toBe('T-CAT1-Modules-AddOns');
+    expect(rows[0].code).toBe('T-SP1-Variant-Builder');
   });
 });
 
