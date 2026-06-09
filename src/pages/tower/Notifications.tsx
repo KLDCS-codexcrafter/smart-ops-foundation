@@ -297,8 +297,10 @@ const Notifications = () => {
                   )}
 
                   <button
-                    className="ml-auto p-1 rounded hover:bg-muted/50"
-                    onClick={(e) => { e.stopPropagation(); toast("Actions coming soon"); }}
+                    className="ml-auto p-1 rounded text-muted-foreground/40 cursor-not-allowed"
+                    disabled
+                    title="Per-row actions — arrives with Wave-2 multi-tenant backend"
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <MoreHorizontal className="h-4 w-4" />
                   </button>

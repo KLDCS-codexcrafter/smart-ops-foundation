@@ -449,8 +449,11 @@ export function getFunnelContext(): {
   conversionEngineLoaded: boolean;
 } {
   return {
-    conversionTypes: (salesxConversion as unknown as { ConversionType?: readonly string[] })
-      .ConversionType ?? [],
+    // Sprint CLEANUP-3 · T-CLN3 · read the real VALUE export (CONVERSION_TYPES)
+    // instead of the TS type. Prior cast (`as unknown as { ConversionType }`)
+    // read a type at runtime, always resolved to [], and produced the
+    // persistent rollup "ConversionType is not exported" warning. Fixed.
+    conversionTypes: salesxConversion.CONVERSION_TYPES,
     conversionEngineLoaded: typeof salesxConversion.mapEnquiryToQuotationDraft === 'function',
   };
 }

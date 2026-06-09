@@ -201,7 +201,7 @@ const Billing = () => {
             <SelectItem value="Jun 2026">Jun 2026</SelectItem>
           </SelectContent>
         </Select>
-        <Button variant="outline" className="ml-auto border-slate-600 text-slate-300 hover:bg-slate-800" onClick={() => toast("Report download coming soon")}>
+        <Button variant="outline" className="ml-auto border-slate-600 text-slate-300 hover:bg-slate-800" disabled title="Report download — arrives with Wave-2 multi-tenant backend">
           <Download className="h-4 w-4 mr-2" />
           Download Report
         </Button>

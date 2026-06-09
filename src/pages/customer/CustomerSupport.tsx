@@ -8,6 +8,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { onEnterNext } from '@/lib/keyboard';
 
@@ -18,6 +21,8 @@ const TICKETS = [
   { id: "TKT-C-031", title: "Duplicate invoice received for ORD-0821", status: "resolved", priority: "high", created: "18 Mar 2026, 09:00 IST", updated: "20 Mar 2026, 11:00 IST", assignedTo: "Accounts Team" },
   { id: "TKT-C-024", title: "Price discrepancy on Widget A — Premium", status: "closed", priority: "medium", created: "05 Mar 2026, 11:00 IST", updated: "07 Mar 2026, 14:00 IST", assignedTo: "Sales Team" },
 ];
+
+type Ticket = typeof TICKETS[number];
 
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
   open:        { label: "Open",        color: "bg-primary/10 text-primary border-primary/20" },
@@ -34,6 +39,8 @@ const PRIORITY_CONFIG: Record<string, { label: string; color: string }> = {
 
 export default function CustomerSupport() {
   const [submitting, setSubmitting] = useState(false);
+  // Sprint CLEANUP-3 · T-CLN3 · local ticket detail view (replaces dead toast).
+  const [detailTicket, setDetailTicket] = useState<Ticket | null>(null);
 
   const activeCount = TICKETS.filter((t) => t.status === "open" || t.status === "in_progress").length;
   const openCount = TICKETS.filter((t) => t.status === "open").length;
@@ -89,7 +96,7 @@ export default function CustomerSupport() {
                 <p className="text-xs text-muted-foreground mt-1">
                   Assigned: {ticket.assignedTo} • Updated: {ticket.updated}
                 </p>
-                <Button variant="ghost" size="sm" className="text-xs mt-1 px-0" onClick={() => toast("Ticket detail view coming soon")}>
+                <Button variant="ghost" size="sm" className="text-xs mt-1 px-0" onClick={() => setDetailTicket(ticket)}>
                   View Details
                 </Button>
               </div>
@@ -153,6 +160,47 @@ export default function CustomerSupport() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Local ticket detail dialog · reads ticket from in-memory list · no fetch */}
+      <Dialog open={detailTicket !== null} onOpenChange={(o) => !o && setDetailTicket(null)}>
+        <DialogContent className="max-w-lg">
+          {detailTicket && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="font-mono text-primary">{detailTicket.id}</DialogTitle>
+                <DialogDescription>{detailTicket.title}</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 mt-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className={cn("text-[10px] px-1.5 py-0.5 rounded", PRIORITY_CONFIG[detailTicket.priority].color)}>
+                    {PRIORITY_CONFIG[detailTicket.priority].label}
+                  </span>
+                  <span className={cn("text-xs border rounded-lg px-2 py-0.5", STATUS_CONFIG[detailTicket.status].color)}>
+                    {STATUS_CONFIG[detailTicket.status].label}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p className="text-muted-foreground">Created</p>
+                    <p className="font-mono text-foreground">{detailTicket.created}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Last Updated</p>
+                    <p className="font-mono text-foreground">{detailTicket.updated}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-muted-foreground">Assigned To</p>
+                    <p className="font-medium text-foreground">{detailTicket.assignedTo}</p>
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground border-t pt-3">
+                  Conversation thread and attachments arrive with the Wave-2 ticketing backend.
+                </p>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div></CustomerLayout>
   );
 }

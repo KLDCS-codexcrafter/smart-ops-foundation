@@ -458,7 +458,7 @@ const TowerSettings = () => {
           </div>
           <span className="bg-primary/10 text-primary border border-primary/20 text-xs px-2 py-0.5 rounded-full">Scheduled</span>
         </div>
-        <Button variant="outline" className="mt-3" onClick={() => toast("Scheduling coming soon")}>Schedule New Window</Button>
+        <Button variant="outline" className="mt-3" disabled title="Maintenance scheduling — arrives with Wave-2 multi-tenant backend">Schedule New Window</Button>
       </div>
     </div>
   );

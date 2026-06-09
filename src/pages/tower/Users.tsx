@@ -311,15 +311,15 @@ const Users = () => {
                       <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openDetail(u)}>
                         <Eye className="h-4 w-4" />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast("Edit user coming soon")}>
+                      <Button variant="ghost" size="icon" className="h-8 w-8" disabled title="Edit user — arrives with Wave-2 multi-tenant backend">
                         <Edit className="h-4 w-4" />
                       </Button>
                       {u.status === "suspended" ? (
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast("Reactivate feature coming soon")}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled title="Reactivate user — arrives with Wave-2 multi-tenant backend">
                           <CheckCircle className="h-4 w-4 text-success" />
                         </Button>
                       ) : (
-                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => toast("Suspend feature coming soon")}>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled title="Suspend user — arrives with Wave-2 multi-tenant backend">
                           <Ban className="h-4 w-4 text-warning" />
                         </Button>
                       )}
@@ -523,11 +523,11 @@ const Users = () => {
                     Force Logout
                   </Button>
                   {selectedUser.status === "suspended" ? (
-                    <Button className="w-full justify-start bg-success hover:bg-success/90 text-success-foreground" onClick={() => toast("Reactivate feature coming soon")}>
+                    <Button className="w-full justify-start bg-success hover:bg-success/90 text-success-foreground" disabled title="Reactivate user — arrives with Wave-2 multi-tenant backend">
                       Reactivate User
                     </Button>
                   ) : (
-                    <Button variant="outline" className="w-full justify-start bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/20" onClick={() => toast("Suspend feature coming soon")}>
+                    <Button variant="outline" className="w-full justify-start bg-destructive/10 text-destructive hover:bg-destructive/20 border-destructive/20" disabled title="Suspend user — arrives with Wave-2 multi-tenant backend">
                       Suspend User
                     </Button>
                   )}
