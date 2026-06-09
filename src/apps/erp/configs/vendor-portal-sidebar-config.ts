@@ -9,7 +9,7 @@ import {
   Home, Building2, FileSignature, UserPlus, ListChecks,
   BarChart3, Activity, Award,
   MessageSquare, Megaphone, Bot,
-  AlertTriangle,
+  AlertTriangle, ShieldAlert, FileMinus2, FileQuestion, Banknote,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -58,6 +58,22 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
       { id: 'vendor-communication-log', type: 'item', label: 'Communication Log', icon: MessageSquare, moduleId: 'vendor-communication-log', requiredCards: ['vendor-portal'], keyboard: 'v l' },
       { id: 'vendor-broadcast', type: 'item', label: 'Broadcast Console', icon: Megaphone, moduleId: 'vendor-broadcast', requiredCards: ['vendor-portal'], keyboard: 'v b' },
       { id: 'saathi-admin', type: 'item', label: 'Saathi · Vendor AI', icon: Bot, moduleId: 'saathi-admin', requiredCards: ['vendor-portal'], keyboard: 'v i' },
+    ],
+  },
+  // 🆕 VP-GAPS additive group · risk + compliance + DCN + doc-requests + payment batches
+  {
+    id: 'vendor-risk-compliance-group',
+    type: 'group',
+    label: 'Risk & Compliance',
+    icon: ShieldAlert,
+    collapsibleByDefault: true,
+    children: [
+      { id: 'vendor-zones', type: 'item', label: 'Vendor Zones', icon: ShieldAlert, moduleId: 'vendor-zones', requiredCards: ['vendor-portal'], keyboard: 'v z' },
+      { id: 'vendor-risk-monitor', type: 'item', label: 'Risk Monitor', icon: AlertTriangle, moduleId: 'vendor-risk-monitor', requiredCards: ['vendor-portal'], keyboard: 'v r' },
+      { id: 'vendor-compliance-checklists', type: 'item', label: 'Compliance Checklists', icon: ListChecks, moduleId: 'vendor-compliance-checklists', requiredCards: ['vendor-portal'], keyboard: 'v k' },
+      { id: 'vendor-dcn', type: 'item', label: 'Debit / Credit Notes', icon: FileMinus2, moduleId: 'vendor-dcn', requiredCards: ['vendor-portal'], keyboard: 'v n' },
+      { id: 'vendor-document-requests', type: 'item', label: 'Document Requests', icon: FileQuestion, moduleId: 'vendor-document-requests', requiredCards: ['vendor-portal'], keyboard: 'v q' },
+      { id: 'vendor-payment-batches', type: 'item', label: 'Payment Batches', icon: Banknote, moduleId: 'vendor-payment-batches', requiredCards: ['vendor-portal'], keyboard: 'v y' },
     ],
   },
 ];
