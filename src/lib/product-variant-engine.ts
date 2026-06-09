@@ -194,7 +194,7 @@ export function publishVariant(
   writeVariants(entity, list);
   // Audit on publish (institutional canon).
   void logAudit({
-    entityType: 'config',
+    entityType: 'master_lifecycle_event',
     entityId: id,
     action: 'create',
     actorId: next.created_by ?? 'super-admin',
