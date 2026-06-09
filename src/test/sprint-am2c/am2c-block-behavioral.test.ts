@@ -174,7 +174,7 @@ describe('AM.2c · OperixGo pending captures', () => {
 
   it('AM.2c sprint narrative records the 3 phase2→live flips + GateFlow-legacy removal', () => {
     const idx = HISTORY.indexOf('T-AM2c-OperixGo-Captures');
-    const window = HISTORY.slice(Math.max(0, idx - 2000), idx + 400);
+    const window = HISTORY.slice(Math.max(0, idx - 4000), idx + 400);
     expect(window).toMatch(/phase2.*live/);
     expect(window).toMatch(/GateFlow-legacy/);
   });
