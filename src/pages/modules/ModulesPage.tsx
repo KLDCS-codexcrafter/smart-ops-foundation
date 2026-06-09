@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  ArrowLeft, ArrowRight, DoorOpen, FileText, Users, Headphones, Wrench, Package,
+  ArrowLeft, ArrowRight, FileText, Users, Headphones, Wrench, Package,
   Calculator, BookOpen, Building2, TrendingUp, HandCoins, ShoppingCart, Warehouse,
   ShieldCheck, Layers, ListChecks, FolderArchive, PiggyBank, Factory,
   Banknote, Store, Globe2, Boxes, Briefcase, Truck,
