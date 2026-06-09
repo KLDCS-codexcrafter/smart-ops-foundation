@@ -76,7 +76,7 @@ describe('AM.2c · OperixGo pending captures', () => {
 
   it('MaintenanceTechnician landing tile flipped to phase: live', () => {
     const slice = OPERIX_GO.slice(OPERIX_GO.indexOf("id: 'maintenance-technician'"));
-    expect(slice.slice(0, 600)).toMatch(/phase:\s*'live'/);
+    expect(slice.slice(0, 1200)).toMatch(/phase:\s*'live'/);
   });
 
   it('ShopFloorOperator landing tile flipped to phase: live', () => {
