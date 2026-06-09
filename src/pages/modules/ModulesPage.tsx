@@ -267,4 +267,5 @@ export function ModulesPagePanel() {
 export default function ModulesPage() { return <ModulesPagePanel />; }
 
 // Test surface — exported only for the CATALOG-1 behavioral test
+// eslint-disable-next-line react-refresh/only-export-components
 export { MODULES as __CAT1_MODULES__ };

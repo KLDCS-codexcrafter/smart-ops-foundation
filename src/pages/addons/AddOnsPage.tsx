@@ -198,4 +198,5 @@ export function AddOnsPagePanel() {
 export default function AddOnsPage() { return <AddOnsPagePanel />; }
 
 // Test surface — exported only for the CATALOG-1 behavioral test
+// eslint-disable-next-line react-refresh/only-export-components
 export { ADDONS as __CAT1_ADDONS__ };
