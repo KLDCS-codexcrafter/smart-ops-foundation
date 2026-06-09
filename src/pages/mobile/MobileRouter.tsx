@@ -84,6 +84,12 @@ import MobileCustomerSampleKitsPage from './customer/MobileCustomerSampleKitsPag
 // Shared cross-role pages
 import MobileAttendancePage from './shared/MobileAttendancePage';
 import MobileExpenseClaimPage from './shared/MobileExpenseClaimPage';
+// AM.2 · mobile-gap capture personas (consume card engines + B.1 rail)
+import MobileProcureApprovePage from './captures/MobileProcureApprovePage';
+import MobilePayoutApprovePage from './captures/MobilePayoutApprovePage';
+import MobileRequestXIndentPage from './captures/MobileRequestXIndentPage';
+import MobileFrontDeskCheckInPage from './captures/MobileFrontDeskCheckInPage';
+import MobileDocVaultCapturePage from './captures/MobileDocVaultCapturePage';
 
 function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/salesman' || pathname === '/mobile/salesman/') return <MobileSalesmanHome />;
@@ -147,8 +153,15 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/customer/voice-complaint') return <MobileCustomerVoiceComplaintPage />;
   if (pathname === '/mobile/customer/sample-kits') return <MobileCustomerSampleKitsPage />;
   // Shared routes (any field role can access)
+  // Shared routes (any field role can access)
   if (pathname === '/mobile/shared/attendance') return <MobileAttendancePage />;
   if (pathname === '/mobile/shared/expenses') return <MobileExpenseClaimPage />;
+  // AM.2 capture personas (role-gated by entry surface · MobileRouter renders any signed-in session)
+  if (pathname === '/mobile/captures/procure-approve') return <MobileProcureApprovePage />;
+  if (pathname === '/mobile/captures/payout-approve') return <MobilePayoutApprovePage />;
+  if (pathname === '/mobile/captures/requestx-indent') return <MobileRequestXIndentPage />;
+  if (pathname === '/mobile/captures/frontdesk-checkin') return <MobileFrontDeskCheckInPage />;
+  if (pathname === '/mobile/captures/docvault-capture') return <MobileDocVaultCapturePage />;
   return <MobileHome />;
 }
 

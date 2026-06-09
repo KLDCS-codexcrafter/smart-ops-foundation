@@ -184,6 +184,52 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     route: '/operix-go/fincore',
     phase: 'planned',
   },
+  // AM.2 · Mobile-gap capture personas · CONSUME card engines + B.1 rail · Tier-L
+  {
+    id: 'am2-procure-approve',
+    title: 'Procure · Mobile Approve',
+    icon: ClipboardCheck,
+    description: 'Approve PO / indents on the go · consumes approval-rail-engine (B.1 SoD) · on-site vendor photo via CameraCapture.',
+    details: 'AM.2 capture persona. Lists pending mirrors from approval-rail-engine and decides via decideApproval. CameraCapture is a SHELL — no OCR (Wave-2).',
+    route: '/mobile/captures/procure-approve',
+    phase: 'live',
+  },
+  {
+    id: 'am2-payout-approve',
+    title: 'Payout · Mobile Approve',
+    icon: IndianRupee,
+    description: 'Two-level payment requisition approvals on the move · consumes payment-requisition-engine · SoD honored.',
+    details: 'AM.2 capture persona. Department-head → Accounts routing via hardcoded ROUTING_RULES.',
+    route: '/mobile/captures/payout-approve',
+    phase: 'live',
+  },
+  {
+    id: 'am2-requestx-indent',
+    title: 'RequestX · Mobile Indent',
+    icon: ClipboardList,
+    description: 'Raise material indent from the field · consumes request-engine.createMaterialIndent + submitIndent.',
+    details: 'AM.2 capture persona. VoiceNote shell attaches a clip — voice-to-text arrives with Wave-2.',
+    route: '/mobile/captures/requestx-indent',
+    phase: 'live',
+  },
+  {
+    id: 'am2-frontdesk-checkin',
+    title: 'FrontDesk · Mobile Check-In',
+    icon: DoorOpen,
+    description: 'Visitor check-in on the move · consumes frontdesk-engine.createPlannedVisitor + checkInVisitor · visitor photo via CameraCapture.',
+    details: 'AM.2 capture persona. Watchlist + SoD validation handled inside the engine.',
+    route: '/mobile/captures/frontdesk-checkin',
+    phase: 'live',
+  },
+  {
+    id: 'am2-docvault-capture',
+    title: 'DocVault · Mobile Capture',
+    icon: Package,
+    description: 'Snap a document, attach manual metadata · consumes docvault-engine.createDocument · NO OCR (Wave-2).',
+    details: 'AM.2 capture persona. CameraCapture is a SHELL — manual fields remain primary.',
+    route: '/mobile/captures/docvault-capture',
+    phase: 'live',
+  },
 ];
 
 const PHASE_CONFIG: Record<AppPhase, { label: string; color: string }> = {
