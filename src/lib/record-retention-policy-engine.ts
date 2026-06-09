@@ -135,6 +135,9 @@ const RECORD_TYPE_POLICY_MAP: Record<string, RetentionPolicyId> = {
   'manifest-ack': 'operational_log_only',
   // Sprint B2 · additive — outbox message is a communications log entry.
   'outbox_message': 'operational_log_only',
+  // Sprint VP-GAPS · additive — vendor DCN + payment-batch (FY-stamped · companies_act_8yr per Companies Act s.128(5))
+  'vendor-dcn': 'companies_act_8yr',
+  'vendor-payment-batch': 'companies_act_8yr',
 };
 
 // ─── localStorage helpers (typed + defensive) ─────────────────────────────
