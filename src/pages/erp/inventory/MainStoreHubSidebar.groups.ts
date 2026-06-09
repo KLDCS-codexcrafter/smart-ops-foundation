@@ -30,6 +30,7 @@ export const INVENTORY_MODULE_GROUP: Record<
   'r-consumption-register': 'reports',
   'r-cycle-count-register': 'reports',
   'r-rtv-register': 'reports',
+  'r-part-no-search': 'reports',
   'm-item-master': 'masters',
   'm-godown-master': 'masters',
   'm-stock-groups': 'masters',
