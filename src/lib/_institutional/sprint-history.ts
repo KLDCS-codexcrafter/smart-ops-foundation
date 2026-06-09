@@ -1133,8 +1133,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint VP-GAPS T-VPG-VendorPortal-Gaps · Wave-1 tail · ~1,050 LOC · 7 NEW types (vendor-zone, vendor-risk-alert, vendor-risk-threshold, vendor-compliance-checklist, vendor-dcn, vendor-document-request, vendor-payment-batch · all ccc shape-aligned · FY-stamped + retention_policy at birth where applicable) · SOLE NEW SIBLING vendor-risk-compliance-engine (22 exports · zones · alerts · CC-editable thresholds with internal append-only edit log · checklists rollup · DCN intent registry · doc requests · payment batches grouping) · Honest-study canon (NEVER fabricates scores; explicit no_source_data path; alerts only when source signals present) · 6 NEW admin panels mounted under Risk & Compliance group (VendorZones · RiskMonitor · ComplianceChecklists · DCN · DocRequests · PaymentBatches) · CONSUMED walls 0-DIFF: vendor-reliability-score · vendor-financial-health · vendor-risk-score · vendor-compliance-record · vendor-scoring-engine · vendor-reliability-engine · FinCore voucher engines · PayOut disbursement · audit-trail-engine (threshold edits use internal log · audit chain untouched) · DCN + payment-batch added to RECORD_TYPE_POLICY_MAP at gst_8yr · 104→105 ⭐
   {
     sprintNumber: 'VPG' as unknown as number, code: 'T-VPG-VendorPortal-Gaps', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '4e5e13e6', loc: 1050,
+    headSha: 'cca094bd', predecessorSha: '4e5e13e6', loc: 1050,
     newSiblings: ['vendor-risk-compliance-engine'],
+    bankDate: '2026-06-09', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint CLEANUP-1 T-CLN1-Wave1-Cleanups · Wave-1 tail cleanups · B25 part-no search · /welcome mock-ticket removed (v7 scope) · ProductionConfig flags expanded · eslint-disables DROPPED (intentional LS-read suppressions, not debt) · Tier-L · 105→106 ⭐
+  {
+    sprintNumber: 'CLN1' as unknown as number, code: 'T-CLN1-Wave1-Cleanups', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'cca094bd', loc: 450,
+    newSiblings: [],
     bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
   },
 
