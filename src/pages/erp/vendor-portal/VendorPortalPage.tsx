@@ -18,6 +18,12 @@ import { VendorActivityMonitorPanel } from './panels/VendorActivityMonitorPanel'
 import { VendorCategoriesPanel } from './panels/VendorCategoriesPanel';
 import { VendorCommunicationLogAdminPanel } from './panels/VendorCommunicationLogAdminPanel';
 import { VendorBroadcastConsolePanel } from './panels/VendorBroadcastConsolePanel';
+import { VendorZonesPanel } from './panels/VendorZonesPanel';
+import { VendorRiskMonitorPanel } from './panels/VendorRiskMonitorPanel';
+import { VendorComplianceChecklistsPanel } from './panels/VendorComplianceChecklistsPanel';
+import { VendorDcnPanel } from './panels/VendorDcnPanel';
+import { VendorDocumentRequestsPanel } from './panels/VendorDocumentRequestsPanel';
+import { VendorPaymentBatchesPanel } from './panels/VendorPaymentBatchesPanel';
 import type { VendorPortalModule } from './VendorPortalSidebar.types';
 
 function renderModule(active: VendorPortalModule, setActive: (m: VendorPortalModule) => void): JSX.Element {
@@ -33,6 +39,12 @@ function renderModule(active: VendorPortalModule, setActive: (m: VendorPortalMod
     case 'vendor-categories':          return <VendorCategoriesPanel />;
     case 'vendor-communication-log':   return <VendorCommunicationLogAdminPanel />;
     case 'vendor-broadcast':           return <VendorBroadcastConsolePanel />;
+    case 'vendor-zones':                   return <VendorZonesPanel />;
+    case 'vendor-risk-monitor':            return <VendorRiskMonitorPanel />;
+    case 'vendor-compliance-checklists':   return <VendorComplianceChecklistsPanel />;
+    case 'vendor-dcn':                     return <VendorDcnPanel />;
+    case 'vendor-document-requests':       return <VendorDocumentRequestsPanel />;
+    case 'vendor-payment-batches':         return <VendorPaymentBatchesPanel />;
     default:
       return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
   }

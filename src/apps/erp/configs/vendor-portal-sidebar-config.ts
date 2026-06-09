@@ -34,6 +34,7 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
       { id: 'vendor-agreements', type: 'item', label: 'Vendor Agreements', icon: FileSignature, moduleId: 'vendor-agreements', requiredCards: ['vendor-portal'], keyboard: 'v a' },
       { id: 'vendor-onboarding-inbox', type: 'item', label: 'Onboarding Inbox', icon: UserPlus, moduleId: 'vendor-onboarding-inbox', requiredCards: ['vendor-portal'], keyboard: 'v o' },
       { id: 'vendor-categories', type: 'item', label: 'Vendor Categories', icon: ListChecks, moduleId: 'vendor-categories', requiredCards: ['vendor-portal'], keyboard: 'v g' },
+      { id: 'vendor-zones', type: 'item', label: 'Vendor Zones', icon: MapPin, moduleId: 'vendor-zones', requiredCards: ['vendor-portal'], keyboard: 'v z' },
     ],
   },
   {
@@ -46,6 +47,11 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
       { id: 'vendor-scoring', type: 'item', label: 'Scoring Dashboard', icon: Award, moduleId: 'vendor-scoring', requiredCards: ['vendor-portal'], keyboard: 'v s' },
       { id: 'vendor-activity-monitor', type: 'item', label: 'Activity Monitor', icon: Activity, moduleId: 'vendor-activity-monitor', requiredCards: ['vendor-portal'], keyboard: 'v t' },
       { id: 'msme-compliance', type: 'item', label: 'MSME-43BH Compliance', icon: AlertTriangle, moduleId: 'msme-compliance', requiredCards: ['vendor-portal'], keyboard: 'v p' },
+      { id: 'vendor-risk-monitor', type: 'item', label: 'Risk Monitor', icon: AlertTriangle, moduleId: 'vendor-risk-monitor', requiredCards: ['vendor-portal'], keyboard: 'v r' },
+      { id: 'vendor-compliance-checklists', type: 'item', label: 'Compliance Checklists', icon: ListChecks, moduleId: 'vendor-compliance-checklists', requiredCards: ['vendor-portal'], keyboard: 'v c' },
+      { id: 'vendor-dcn', type: 'item', label: 'Debit / Credit Notes', icon: FileText, moduleId: 'vendor-dcn', requiredCards: ['vendor-portal'], keyboard: 'v d' },
+      { id: 'vendor-document-requests', type: 'item', label: 'Document Requests', icon: FileSignature, moduleId: 'vendor-document-requests', requiredCards: ['vendor-portal'], keyboard: 'v q' },
+      { id: 'vendor-payment-batches', type: 'item', label: 'Payment Batches', icon: Wallet, moduleId: 'vendor-payment-batches', requiredCards: ['vendor-portal'], keyboard: 'v y' },
     ],
   },
   {
