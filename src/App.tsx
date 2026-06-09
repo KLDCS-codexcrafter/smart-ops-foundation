@@ -468,11 +468,7 @@ const App = () => (
               <Route path="/operix-go/pm-tickoff-capture" element={<P><MobilePMTickoffCapture /></P>} />
               <Route path="/operix-go/spares-issue-capture" element={<P><MobileSparesIssueCapture /></P>} />
               <Route path="/operix-go/asset-photo-capture" element={<P><MobileAssetPhotoCapture /></P>} />
-              <Route path="/prudent360" element={
-                <P><div className="min-h-screen bg-background flex items-center justify-center">
-                  <p className="text-muted-foreground text-sm">Prudent 360 — coming soon</p>
-                </div></P>
-              } />
+              <Route path="/prudent360" element={<P><Prudent360HubPage /></P>} />
               <Route path="/profile" element={<P><Profile /></P>} />
               <Route path="/settings" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
