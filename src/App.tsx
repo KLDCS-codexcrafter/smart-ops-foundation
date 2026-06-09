@@ -323,6 +323,7 @@ const SalesXGoMobile = lazy(() => import('./pages/mobile/SalesXGoMobile'));
 const ReceivXGoMobile = lazy(() => import('./pages/mobile/ReceivXGoMobile'));
 const ClientCustomizedPage = lazy(() => import('./pages/client-customized/ClientCustomizedPage'));
 const ClientBlueprintsPage = lazy(() => import('./pages/welcome/scenarios/ClientBlueprintsPage'));
+const Prudent360HubPage = lazy(() => import('./pages/prudent360/Prudent360HubPage'));
 const EngineeringConsolePage = lazy(() => import('./pages/welcome/dev-tools/EngineeringConsolePage'));
 const SeedLabPage = lazy(() => import('./pages/welcome/dev-tools/SeedLabPage'));
 const PartnerDashboard = lazy(() => import('./pages/partner/PartnerDashboard'));
