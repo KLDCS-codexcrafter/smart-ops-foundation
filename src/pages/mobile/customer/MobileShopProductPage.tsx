@@ -42,9 +42,8 @@ export default function MobileShopProductPage() {
   }, [productId]);
 
   const customerId = session?.user_id ?? 'anon';
-  const wishlist = useMemo(() => session ? loadWishlist(session.entity_code, customerId) : [],
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [session, customerId, wishlistBumper]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const wishlist = useMemo(() => session ? loadWishlist(session.entity_code, customerId) : [], [session, customerId, wishlistBumper]);
   const inWishlist = product ? wishlist.includes(product.id) : false;
 
   const toggleWishlist = useCallback(() => {
