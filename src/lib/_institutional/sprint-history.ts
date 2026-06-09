@@ -1126,12 +1126,17 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint A.2 T-A2-Production-ATP · Pillar-A CLOSE · honest study Production ~90% built · closes the ONE real gap (capacity-aware QUOTING / ATP) · NEW SIBLING atp-engine (sole engine credit · CONSUMES production-plan-engine.runCapacityCheck per line via transient probe · NEVER re-implements capacity logic) · checkAvailableToPromise returns ATPResult{ status: 'available'|'over_capacity'|'partial'; promise_date: string|null; warnings[]; per_line[]; load_data_available } · honest null promise_date when load data absent (NEVER fabricates a date) · computePromiseDate heuristic pushback (warn +7d · fail +14d · pass requested_date) · ATP advisory surface added to QuotationEntry (Save row) + OrderDeskPanel (expanded-row footer) via new shared component src/components/salesx/ATPCheckButton · non-blocking · salesperson decides · SalesX quote/order save logic 0-DIFF · OEE live-sensor feed EXCLUDED (Wave-2 · grep=0) · WALLS 0-DIFF: production-plan-engine (runCapacityCheck consumed read-only) · oee-engine · process-genealogy-engine · all Production reports/dashboards · SalesX order/quote core logic · hash-chain · retention · applications.ts · entitlements · sidebars · types · PILLAR-A CLOSE (A.2 ATP · A.3 ServiceDesk capstone · A.4 dispatch 3-bucket · A.5 ProjX gap-close) · A.4-Residual flipped to 3610c534 · 103→104 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'A2' as unknown as number, code: 'T-A2-Production-ATP', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '3610c534', loc: 500,
+    headSha: '4e5e13e6', predecessorSha: '3610c534', loc: 500,
     newSiblings: ['atp-engine'],
-    bankDate: '2026-06-08', provenance: 'PENDING_BACKFILL',
+    bankDate: '2026-06-08', provenance: 'CONFIRMED',
   },
-
-
+  // 🆕 Sprint VP-GAPS T-VPG-VendorPortal-Gaps · Wave-1 tail · 7 vendor data-model gaps (ccc-reference-aligned) · zones · risk-alerts/thresholds · compliance-checklists · DCN · doc-requests · payment-batches · CONSUMES base scores (vendor-reliability-score · vendor-compliance-record · vendor-financial-health 0-DIFF) · payment-batch CONSUMES payment-requisition (no duplicate accounting) · ONE new SIBLING vendor-risk-compliance-engine · ccc NOT imported (Wave-2 = ccc-backend persistence) · NO credentials/secrets · Tier-L · 6 admin panels mounted via existing vendor-portal panels pattern (applications.ts 0-DIFF) · retention floor honored at birth for DCN + payment-batch · A.2 flipped to 4e5e13e6 · 104→105 ⭐
+  {
+    sprintNumber: 'VPG' as unknown as number, code: 'T-VPG-VendorPortal-Gaps', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '4e5e13e6', loc: 1050,
+    newSiblings: ['vendor-risk-compliance-engine'],
+    bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
+  },
 ];
 
 
