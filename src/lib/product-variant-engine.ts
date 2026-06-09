@@ -192,20 +192,24 @@ export function publishVariant(
   };
   list[idx] = next;
   writeVariants(entity, list);
-  // Audit on publish (institutional canon).
+  // Audit on publish (institutional canon · uses existing AuditEntityType).
   void logAudit({
     entityType: 'master_lifecycle_event',
-    entityId: id,
+    entityCode: id,
+    recordId: id,
+    recordLabel: `ProductVariant:${next.name}`,
     action: 'create',
-    actorId: next.created_by ?? 'super-admin',
-    actorRole: 'super_admin',
-    summary: `Published product variant "${next.name}" (${next.base_plan_tier})`,
-    payload: {
+    sourceModule: 'tower/product-variant-builder',
+    beforeState: null,
+    afterState: {
       variant_id: id,
+      name: next.name,
       base_plan_tier: next.base_plan_tier,
       enabled_modules_count: next.enabled_modules.length,
       enabled_addons_count: next.enabled_addons.length,
+      status: next.status,
     },
+    reason: 'product_variant_published',
   });
   return next;
 }
