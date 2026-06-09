@@ -1154,11 +1154,20 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint PARTNER-1 T-PP1-Partner-Portal · KLDCS Channel-Partner Portal (Tally-modeled · Referral/Associate/Channel 10/20/30 · Channel owns support) · 6 sub-pages live under PartnerLayout · NEW SIBLING partner-portal-engine · REUSES commission-engine (greppable delegation · AC2 no reimplemented commission math) · mirrors salesman Targets/Customers UI patterns · dashboard counts COMPUTED (zero hardcoded literals · AC3) · 6 tile routes wired (no dead links · AC4) · Tier-L seed: 1 Associate-tier demo partner (Bharat Operations Partners LLP) · 12 customers · 5 deals · 3 quarterly targets · 5 marketing assets (downloads Wave-2-deferred) · channel-conflict warn on duplicate prospect · 90-day deal protection · renewals 30/60/90d (Tally TSS style) · partner LOGIN + live MRR INTENTIONALLY ABSENT (Wave-2 honest banner · AC6) · WALLS 0-DIFF: commission-engine · commissioning-templates · salesman pages/masters · distributor-hub · hash-chain · retention · applications.ts · entitlements · CLEANUP-2 flipped to 2fb4fd8c · 107→108 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'PP1' as unknown as number, code: 'T-PP1-Partner-Portal', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '2fb4fd8c', loc: 1200,
+    headSha: 'aae36912', predecessorSha: '2fb4fd8c', loc: 1200,
     newSiblings: ['partner-portal-engine'],
+    bankDate: '2026-06-09', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint PRUDENT360 T-P360-DevTeam-Hub · INTERNAL dev-team command hub (ccc-Prudent360-modeled · Tools/Docs/Intelligence) · NEW SIBLING prudent360-engine · Screen Directory AUTO-DERIVED from 21 *-sidebar-config.ts files + top-level route groups (stays current for free · NOT hardcoded) · Sprint Roadmap reads sprint-history.ts read-only (TBD_AT_BANK rows surfaced honestly as in-flight) · System Preview honest (33 cards + 4 portals + A-streak + confirmed-siblings count · live runtime metrics Wave-2-deferred · grep no fake health values) · favorites + recently-visited on localStorage (p360FavoritesKey / p360RecentKey) · quick-access tiles link to existing dev surfaces (/welcome/dev-tools · /welcome/dev-tools/seed-lab · /bridge · /welcome/scenarios · /erp/insightx) 0-DIFF · Docs panel surfaces "What's New" derived from sprint-history + honest Wave-2 deferral for full Developer Hub · replaced /prudent360 coming-soon placeholder div (grep "coming soon" in /pages/prudent360 = 0) · INTERNAL only (behind app shell · no external auth · no GTM surface) · walls held: sprint-history.ts read-only (only own row + PP1 flip) · all 21 sidebar configs read-only · dev-tools/Bridge/scenarios/InsightX surfaces 0-DIFF · hash-chain · retention · applications.ts · entitlements · routes outside the allowlist 0-DIFF · 108→109 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'P360' as unknown as number, code: 'T-P360-DevTeam-Hub', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'aae36912', loc: 1100,
+    newSiblings: ['prudent360-engine'],
     bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
   },
 ];
+
+
 
 
 
