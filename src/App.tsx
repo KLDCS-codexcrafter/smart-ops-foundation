@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes, Navigate, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { DishaniProvider } from "@/components/ask-dishani";
+import { useDishaniRouteContext } from "@/components/ask-dishani/useDishaniRouteContext";
 // Block 2C-i-prev-2 · Q-LOCK-1 · DishaniFloatingButton + DishaniPanel lazy-loaded
 // to trim main bundle. Provider stays eager so context wraps the whole tree.
 const DishaniFloatingButton = React.lazy(() =>
@@ -25,6 +26,8 @@ const DevNavPanel = import.meta.env.DEV
 
 const ConditionalDishani = () => {
   const location = useLocation();
+  // AM.1 · Pass 1 · route → card context. NO per-card-page edits.
+  useDishaniRouteContext();
   const hideOn = ['/auth/login'];
   if (hideOn.some(path => location.pathname.startsWith(path))) return null;
   return (
