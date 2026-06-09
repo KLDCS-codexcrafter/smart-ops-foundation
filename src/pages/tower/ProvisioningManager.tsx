@@ -133,6 +133,7 @@ export default function ProvisioningManager() {
     });
   }, [requests, filterType, filterStatus]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const tree = useMemo(() => buildHierarchyTree(ENTITY), [nodes]);
 
   function handleCreate() {
