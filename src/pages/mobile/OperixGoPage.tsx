@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package, Wrench, Factory, FileBarChart, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package, Wrench, Factory, FileBarChart, ShoppingCart, Phone, Briefcase, Users2, Store, Headphones } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RoleHomeFeed } from '@/components/role-home/RoleHomeFeed';
 
@@ -250,6 +250,61 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: 'Installable consumer commerce app · shop home · search · categories · rich product · cart · checkout-shell · order tracking · reorder · wishlist.',
     details: 'AM.4 best-of-both mobile CLOSE. CONSUMES existing webstorex/customer/ecomx catalog (erp_inventory_items) + customer order path (customerOrdersKey). Payment & instant checkout = Wave-2 (honest banner). NO fabricated products/prices · NO payment gateway.',
     route: '/mobile/customer/shop',
+    phase: 'live',
+  },
+  // GUIDE-1 · Persona Apps · role-routed via MobileRouter · entries-only (pages already exist)
+  {
+    id: 'persona-salesman',
+    title: 'Salesman — Field Force (सेल्समैन)',
+    icon: Navigation,
+    description: '11-page field-force PWA · today\u2019s beat · geo check-in · visit log · secondary sales · pipeline · customers · targets · commission · time entries · quick enquiry.',
+    details: 'Live: role-routed (login as salesman → /mobile/salesman). 11 pages under src/pages/mobile/salesman/ (Home + Beat + VisitCheckIn + QuickEnquiry + Pipeline + Customers + VisitLog + SecondarySales + Targets + Commission + TimeEntries). Consumes location-tracker-engine + mobile-audit + useTimeEntries + salesx surfaces. PWA — no install.',
+    route: '/mobile/salesman',
+    phase: 'live',
+  },
+  {
+    id: 'persona-telecaller',
+    title: 'Telecaller — Inside Sales',
+    icon: Phone,
+    description: '12-page inside-sales PWA · call queue · active call · lead inbox · pipeline · quote send · WA templates · reminders · customers · stats · call log · quick enquiry.',
+    details: 'Live: role-routed (login as telecaller → /mobile/telecaller). 12 pages under src/pages/mobile/telecaller/ (Home + CallQueue + ActiveCall + LeadInbox + Pipeline + QuoteQuickSend + WaTemplates + Reminders + Customers + Stats + CallLog + QuickEnquiry). Consumes mobile-audit + useCallSessions + useWaTemplates. PWA — no install.',
+    route: '/mobile/telecaller',
+    phase: 'live',
+  },
+  {
+    id: 'persona-manager',
+    title: 'Manager — Sales/Ops',
+    icon: Briefcase,
+    description: '9-page manager PWA · team stats · targets · pipeline health · project health · revenue trend · campaign performance · cross-dept handoff · SmartInsights.',
+    details: 'Live: role-routed (login as sales_manager → /mobile/manager). 9 pages under src/pages/mobile/manager/ (Home + TeamStats + Targets + PipelineHealth + ProjectHealth + RevenueTrend + CampaignPerformance + CrossDeptHandoff + SmartInsights). Consumes mobile-audit + role-home-engine + insights-inbox + Dishani context. PWA — no install.',
+    route: '/mobile/manager',
+    phase: 'live',
+  },
+  {
+    id: 'persona-supervisor',
+    title: 'Supervisor — Field Oversight',
+    icon: Users2,
+    description: '9-page supervisor PWA · team live view · approvals · coverage map · quality reviews · lead distribution · visit-log review · compliance alerts · team stats.',
+    details: 'Live: role-routed (login as supervisor → /mobile/supervisor). 9 pages under src/pages/mobile/supervisor/ (Home + TeamLiveView + Approvals + CoverageMap + QualityReviews + LeadDistribution + VisitLogReview + ComplianceAlerts + SupervisorTeamStats). Consumes mobile-audit + approval-rail-engine + location-tracker-engine. PWA — no install.',
+    route: '/mobile/supervisor',
+    phase: 'live',
+  },
+  {
+    id: 'persona-distributor',
+    title: 'Distributor — Channel Partner',
+    icon: Store,
+    description: '6-page distributor PWA · catalog · cart · invoices · payments · credit request · visit capture. Pairs with DistributorGo desktop portal.',
+    details: 'Live: role-routed via /mobile/distributor/* (entry: /mobile/distributor/catalog). 6 pages under src/pages/mobile/distributor/ (Catalog + Cart + Invoices + Payments + CreditRequest + VisitCapture). Consumes distributor-cart-store + distributor-order-engine + distributor-auth-engine. PWA — no install.',
+    route: '/mobile/distributor/catalog',
+    phase: 'live',
+  },
+  {
+    id: 'persona-servicedesk-engineer',
+    title: 'ServiceDesk — Service Engineer',
+    icon: Headphones,
+    description: 'Field service engineer PWA · raise ticket · complete service · location update · attendance · daily expenses. Sarathi REUSE landing.',
+    details: 'Live: role-routed (login as service_engineer → /operix-go/service-engineer). 1 landing page under src/pages/mobile/servicedesk/MobileServiceEngineerPage.tsx wired to MobileServiceTicketRaise + MobileServiceCompletion. Consumes servicedesk-engine + servicedesk-bridges. PWA — no install.',
+    route: '/operix-go/service-engineer',
     phase: 'live',
   },
 ];

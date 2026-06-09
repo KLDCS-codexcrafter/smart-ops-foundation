@@ -1231,7 +1231,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint AM.4 T-AM4-Commerce-PWA · best-of-both MOBILE arc CLOSE · consumer commerce PWA (Flipkart-Lite-style installable app) · upgrades the customer-hub mobile persona from basic catalog/cart/orders → full shopping: Shop Home (featured + categories) · Search · Category browse · Rich Product page · Cart (existing · extended with checkout-shell button only) · Checkout SHELL (address + phone + summary · creates order via EXISTING customer order path customerOrdersKey + fyForDate stamping · NO payment gateway · NO charge · honest Wave-2 banner) · Order Tracking timeline (placed→confirmed→packed→shipped→delivered) · Reorder one-tap (re-adds order lines to cart) · Wishlist (per entity × customer localStorage) · CONSUMES existing webstorex/customer/ecomx catalog (erp_inventory_items 0-DIFF) + existing CustomerOrder schema (0-DIFF) + installable PWA manifest/sw (0-DIFF) · NO new SIBLING (empty newSiblings · all consuming UI · helpers inlined) · walls held: webstorex/customer-hub/ecomx engines · customer order create path · PWA manifest/sw · MobileRouter core handlers · applications.ts · hash-chain · retention · entitlements all 0-DIFF · MOBILE Tier-L COMPLETE: AM.1 Dishani+role-home · AM.2 back-office captures · AM.2c operix-go captures · AM.3 universal approval+reporting · AM.4 commerce · AM.3 flipped to bf33d8e2 · 118→119 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'AM4' as unknown as number, code: 'T-AM4-Commerce-PWA', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'bf33d8e2', loc: 950,
+    headSha: 'e441113e', predecessorSha: 'bf33d8e2', loc: 950,
+    newSiblings: [],
+    bankDate: '2026-06-09', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint GUIDE-1 T-GUIDE1-OperixGo-Personas · operix-go dev-guide completeness · 6 persona apps added as first-class entries (salesman 11pg/telecaller 12pg/manager 9pg/supervisor 9pg/distributor 6pg/servicedesk 1pg) · each entry references the REAL persona dir + MobileRouter role-route + engine consumed (location-tracker-engine · mobile-audit · approval-rail-engine · distributor-cart-store · servicedesk-engine) · operix-go now the COMPLETE mobile index · entries-only · NO new pages · NO page edits · NO new engine · NO new SIBLING (empty newSiblings) · walls held: all persona pages · MobileRouter core · all engines · applications.ts 0-DIFF · AM.4 flipped to e441113e · 119→120 ⭐ milestone · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'GUIDE1' as unknown as number, code: 'T-GUIDE1-OperixGo-Personas', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'e441113e', loc: 350,
     newSiblings: [],
     bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
   },
