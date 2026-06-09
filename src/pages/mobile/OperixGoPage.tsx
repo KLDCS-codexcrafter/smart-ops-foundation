@@ -166,15 +166,7 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     route: '/operix-go/approval-inbox',
     phase: 'live',
   },
-  {
-    id: 'gateflow',
-    title: 'GateFlow Mobile (legacy planned)',
-    icon: DoorOpen,
-    description: 'Earlier planned guard app — superseded by GateFlow Gate Guard above.',
-    details: 'Planned: kept as placeholder for future shift-handover, e-pass print, and ruggedised-device specifics.',
-    route: '/operix-go/gateflow',
-    phase: 'planned',
-  },
+  // AM.2c: GateFlow-legacy (planned) entry removed — superseded by live GateFlow Gate Guard above.
   {
     id: 'fincore',
     title: 'FinCore Mobile',
