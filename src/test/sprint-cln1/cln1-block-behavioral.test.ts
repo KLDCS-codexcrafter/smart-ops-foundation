@@ -184,7 +184,7 @@ describe('CLN1 · Item 3 · ProductionConfig flag expansion', () => {
 
 describe('CLN1 · §H walls + history', () => {
   it('ApprovalsInboxPage.tsx is NOT touched by CLN1 (dropped scope item)', () => {
-    const src = readSrc('src/pages/erp/approvals/ApprovalsInboxPage.tsx');
+    const src = readSrc('src/pages/erp/taskflow/ApprovalsInboxPage.tsx');
     // Confirms the eslint-disables remain intact — they are working code per founder ruling.
     expect(src).toMatch(/eslint-disable/);
   });
