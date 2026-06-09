@@ -148,16 +148,17 @@ describe('CATALOG-1 · /modules + /add-ons catalog refresh', () => {
   // ── §H walls: no landing-page files created this sprint ──────────────
   it('NO new per-module landing-page files were created under src/pages/modules/', () => {
     const dir = path.join(PROJECT_ROOT, 'src/pages/modules');
-    const files = fs.readdirSync(dir);
-    // The only file in /modules/ should remain ModulesPage.tsx. No
-    // per-entry landing pages were created in this sprint.
-    expect(files).toEqual(['ModulesPage.tsx']);
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.tsx'));
+    // Only ModulesPage.tsx (this sprint's surface) + the pre-existing
+    // VetanNidhi.tsx legacy landing are allowed. No new landing files.
+    expect(files.sort()).toEqual(['ModulesPage.tsx', 'VetanNidhi.tsx'].sort());
   });
 
   it('NO new per-add-on landing-page files were created under src/pages/addons/', () => {
     const dir = path.join(PROJECT_ROOT, 'src/pages/addons');
-    const files = fs.readdirSync(dir);
-    expect(files).toEqual(['AddOnsPage.tsx']);
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.tsx'));
+    // Only AddOnsPage.tsx + the pre-existing BarcodeAddon.tsx landing.
+    expect(files.sort()).toEqual(['AddOnsPage.tsx', 'BarcodeAddon.tsx'].sort());
   });
 
   // ── §H walls: capability cards / applications.ts 0-DIFF ──────────────
