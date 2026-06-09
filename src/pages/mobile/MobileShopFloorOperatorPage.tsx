@@ -73,7 +73,11 @@ export default function MobileShopFloorOperatorPage(): JSX.Element {
         <QuickActionCard icon={QrCode} label="Asset QR Scan" sub="Verify · Reassign" onClick={() => navigate('/mobile/fa-scan')} />
       </div>
 
-      <p className="text-[10px] text-muted-foreground text-center pt-2">
+      {/* AM.2c · OEE-live honesty banner — IoT machine health is Wave-2 */}
+      <p className="text-[11px] text-muted-foreground italic text-center pt-1">
+        {SHOPFLOOR_OEE_HONESTY}
+      </p>
+      <p className="text-[10px] text-muted-foreground text-center pt-1">
         Voice · Barcode · Offline-first · PWA — no install needed
       </p>
     </div>
