@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import {
   ArrowLeft, ArrowRight, DoorOpen, FileText, Users, Headphones, Wrench, Package,
   Calculator, BookOpen, Building2, TrendingUp, HandCoins, ShoppingCart, Warehouse,
-  ShieldCheck, Layers, ListChecks, Workflow, FolderArchive, PiggyBank, Factory,
+  ShieldCheck, Layers, ListChecks, FolderArchive, PiggyBank, Factory,
   Banknote, Store, Globe2, Boxes, Briefcase, Truck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
