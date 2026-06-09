@@ -173,7 +173,9 @@ function ScreenDirectoryPanel(props: {
   recents: ReturnType<typeof getRecent>;
 }): JSX.Element {
   const { entries, total, query, onQueryChange, onGo, onFav, favTick, recents } = props;
-  const favs = useMemo(() => getFavorites(), [favTick]);
+  // favTick intentionally drives re-render so we re-read favorites; getFavorites is cheap.
+  void favTick;
+  const favs = getFavorites();
   const grouped = useMemo(() => {
     const g: Record<string, ScreenDirEntry[]> = {};
     for (const e of entries) {
