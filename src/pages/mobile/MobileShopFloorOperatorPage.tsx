@@ -13,6 +13,10 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { listMachinesByHealth } from '@/lib/iot-machine-bridge';
 import { useMemo } from 'react';
 
+// AM.2c · honest banner — IoT-driven live OEE / machine-health arrives with Wave-2
+export const SHOPFLOOR_OEE_HONESTY =
+  'Live OEE & IoT machine-health arrive with Wave-2 — the tiles above show summary counts only.';
+
 export default function MobileShopFloorOperatorPage(): JSX.Element {
   const navigate = useNavigate();
   const { entityCode } = useEntityCode();
