@@ -166,7 +166,7 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     route: '/operix-go/approval-inbox',
     phase: 'live',
   },
-  // AM.2c: GateFlow-legacy (planned) entry removed — superseded by live GateFlow Gate Guard above.
+  // (Superseded entry removed — see GateFlow Gate Guard above.)
   {
     id: 'fincore',
     title: 'FinCore Mobile',
