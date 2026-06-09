@@ -10,6 +10,7 @@ import {
   ListOrdered, AlertTriangle, FileText, BarChart3, Printer,
   Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin, Repeat, Truck,
   TrendingUp, Replace, Recycle, Clock, ClipboardCheck, RotateCcw, Activity,
+  Search,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -28,6 +29,7 @@ const LIVE_MODULES: MainStoreHubModule[] = [
   'r-storage-slip', 'r-bin-slip', 'r-aged-git', 'r-slow-moving-dead',
   'r-bin-utilization', 'r-item-movement',
   'r-min-register', 'r-consumption-register', 'r-cycle-count-register', 'r-rtv-register',
+  'r-part-no-search',
   'm-item-master', 'm-godown-master', 'm-stock-groups',
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
   'm-reorder-matrix',
@@ -65,6 +67,7 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-consumption-register', label: 'Consumption Register', icon: BarChart3 },
   { id: 'r-cycle-count-register', label: 'Cycle Count Register', icon: ClipboardCheck },
   { id: 'r-rtv-register', label: 'RTV Register', icon: RotateCcw },
+  { id: 'r-part-no-search', label: 'Part-No Search', icon: Search },
 ];
 
 const MAS_ITEMS: SidebarItem[] = [
