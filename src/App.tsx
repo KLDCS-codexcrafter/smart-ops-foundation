@@ -295,6 +295,8 @@ const ItemRatesMRP = lazy(() => import('./pages/erp/inventory/ItemRatesMRP'));
 const PriceListManager = lazy(() => import('./pages/erp/inventory/PriceListManager'));
 const ReorderAlerts = lazy(() => import('./pages/erp/inventory/ReorderAlerts'));
 const AddOnsPage = lazy(() => import('./pages/addons/AddOnsPage'));
+// Sprint SP.4 · T-SP4-Build-Your-Plan · public self-serve configurator (Tier-L · no <P>)
+const BuildYourPlanPage = lazy(() => import('./pages/build-your-plan/BuildYourPlanPage'));
 const AddonsBarcode = lazy(() => import('./pages/addons/BarcodeAddon'));
 const VerticalsPage = lazy(() => import('./pages/verticals/VerticalsPage'));
 const ModulesPage = lazy(() => import('./pages/modules/ModulesPage'));
@@ -429,6 +431,8 @@ const App = () => (
               <Route path="/vendor-portal/rfq/:rfqId" element={<RFQPublicForm />} />
               {/* Sprint T-Phase-1.C.1d · ServiceDesk HappyCode Channel 2 (7-day JWT · public · no auth) */}
               <Route path="/feedback/happy-code" element={<HappyCodeChannel2Form />} />
+              {/* Sprint SP.4 · public self-serve configurator · no auth (Tier-L) */}
+              <Route path="/build-your-plan" element={<BuildYourPlanPage />} />
               <Route path="/welcome" element={<P><Welcome /></P>} />
               <Route path="/verticals-modules" element={
                 <P><div className="min-h-screen bg-background flex items-center justify-center">
