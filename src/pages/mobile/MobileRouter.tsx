@@ -164,6 +164,8 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/captures/requestx-indent') return <MobileRequestXIndentPage />;
   if (pathname === '/mobile/captures/frontdesk-checkin') return <MobileFrontDeskCheckInPage />;
   if (pathname === '/mobile/captures/docvault-capture') return <MobileDocVaultCapturePage />;
+  // AM.3 · Universal Mobile Reporting viewer
+  if (pathname === '/mobile/reports') return <MobileUniversalReportPage />;
   return <MobileHome />;
 }
 
