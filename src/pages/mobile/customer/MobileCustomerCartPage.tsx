@@ -160,6 +160,10 @@ export default function MobileCustomerCartPage() {
               {busy ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
               Place Order
             </Button>
+            {/* AM.4 · checkout-shell entry (additive · existing place-order preserved) */}
+            <Button variant="outline" className="w-full" onClick={() => navigate('/mobile/customer/checkout')}>
+              Checkout with delivery address →
+            </Button>
           </Card>
         </>
       )}

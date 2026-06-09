@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package, Wrench, Factory, FileBarChart } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Smartphone, DoorOpen, Landmark, Navigation, IndianRupee, FlaskConical, PackageOpen, Truck, ClipboardList, ClipboardCheck, MapPin, AlertTriangle, ShieldAlert, Package, Wrench, Factory, FileBarChart, ShoppingCart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { RoleHomeFeed } from '@/components/role-home/RoleHomeFeed';
 
@@ -240,6 +240,16 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     description: 'Mobile KPI/report viewer · back-office cards (EximX · Bill-Passing · FP&A · Accounting · Vendor-Portal · EngineeringX) + FinCore.',
     details: 'AM.3 Pass 2. Consumes the NEW mobile-report-registry sibling (lists each card\u2019s existing reports). READ-ONLY mobile view · live/full data + drilldowns ship at Wave-2. NO fabricated numbers.',
     route: '/mobile/reports',
+    phase: 'live',
+  },
+  // AM.4 · Consumer commerce PWA (Flipkart-Lite style · best-of-both mobile CLOSE)
+  {
+    id: 'am4-commerce-pwa',
+    title: 'Customer Shop · Commerce PWA',
+    icon: ShoppingCart,
+    description: 'Installable consumer commerce app · shop home · search · categories · rich product · cart · checkout-shell · order tracking · reorder · wishlist.',
+    details: 'AM.4 best-of-both mobile CLOSE. CONSUMES existing webstorex/customer/ecomx catalog (erp_inventory_items) + customer order path (customerOrdersKey). Payment & instant checkout = Wave-2 (honest banner). NO fabricated products/prices · NO payment gateway.',
+    route: '/mobile/customer/shop',
     phase: 'live',
   },
 ];
