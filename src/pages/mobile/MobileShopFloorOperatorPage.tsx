@@ -13,6 +13,10 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { listMachinesByHealth } from '@/lib/iot-machine-bridge';
 import { useMemo } from 'react';
 
+// AM.2c · honest banner — IoT-driven live OEE / machine-health arrives with Wave-2
+export const SHOPFLOOR_OEE_HONESTY =
+  'Live OEE & IoT machine-health arrive with Wave-2 — the tiles above show summary counts only.';
+
 export default function MobileShopFloorOperatorPage(): JSX.Element {
   const navigate = useNavigate();
   const { entityCode } = useEntityCode();
@@ -73,7 +77,11 @@ export default function MobileShopFloorOperatorPage(): JSX.Element {
         <QuickActionCard icon={QrCode} label="Asset QR Scan" sub="Verify · Reassign" onClick={() => navigate('/mobile/fa-scan')} />
       </div>
 
-      <p className="text-[10px] text-muted-foreground text-center pt-2">
+      {/* AM.2c · OEE-live honesty banner — IoT machine health is Wave-2 */}
+      <p className="text-[11px] text-muted-foreground italic text-center pt-1">
+        {SHOPFLOOR_OEE_HONESTY}
+      </p>
+      <p className="text-[10px] text-muted-foreground text-center pt-1">
         Voice · Barcode · Offline-first · PWA — no install needed
       </p>
     </div>

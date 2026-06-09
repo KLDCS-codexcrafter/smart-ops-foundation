@@ -1210,7 +1210,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint AM.2 T-AM2-Mobile-Captures · best-of-both Tier-L CLOSE · 5 mobile-gap capture personas (MobileProcureApprovePage · MobilePayoutApprovePage · MobileRequestXIndentPage · MobileFrontDeskCheckInPage · MobileDocVaultCapturePage) each CONSUMES its existing card engine (approval-rail-engine listPendingMirrors+decideApproval · payment-requisition-engine listRequisitions+approveDeptLevel+approveAccountsLevel+rejectRequisition · request-engine createMaterialIndent+submitIndent · frontdesk-engine createPlannedVisitor+checkInVisitor · docvault-engine createDocument) — no engine logic re-implemented · approve actions honor B.1 SoD rail (decideApproval reason guard on reject preserved · payment-requisition routing rules unchanged) · NEW CameraCapture shell (file/camera input → preview → attach · CAMERA_CAPTURE_HONESTY banner · [JWT] Wave-2 POST /api/ai/ocr-extract seam · NO OCR · NO fabricated extracted text) · NEW VoiceNote shell (MediaRecorder → audio attach · VOICE_NOTE_HONESTY banner · [JWT] Wave-2 POST /api/ai/transcribe seam · NO transcription · NO fabricated transcript) · MobileRouter wired with 5 additive routes under /mobile/captures/* (core 0-DIFF except routes array) · OperixGoPage surfaces 5 new live tiles (additive MOBILE_PRODUCTS rows) · NO new SIBLING (empty newSiblings · all delegation to existing engines) · walls held: procure/payout/requestx/frontdesk/docvault card engines + B.1 approval-rail-engine + MobileRouter core handlers + applications.ts + hash-chain + retention all 0-DIFF · honest banners + Wave-2 seams everywhere · AM.1 flipped to 3fd7e61f · 115→116 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'AM2' as unknown as number, code: 'T-AM2-Mobile-Captures', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '3fd7e61f', loc: 900,
+    headSha: '0f8e8069', predecessorSha: '3fd7e61f', loc: 900,
+    newSiblings: [],
+    bankDate: '2026-06-09', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint AM.2c T-AM2c-OperixGo-Captures · operix-go pending captures closed · SiteX SiteEngineer 5-step + MaintainPro Technician 4 captures + ShopFloor Operator voice/barcode all CONSUME their card engines (sitex-engine · maintainpro-engine · production-confirmation-engine) + existing bridges (camera/geolocation/offline-queue/biometric · VoiceNote shell) · GateFlow-legacy (planned) entry REMOVED from OperixGoPage MOBILE_PRODUCTS · 3 landings flipped phase2→live (site-engineer · maintenance-technician · shop-floor-operator) · honest SHOPFLOOR_OEE_HONESTY banner mounted (OCR/transcribe/OEE-live = Wave-2 · no fabricated capture) · NO new SIBLING (empty newSiblings · pure consume) · walls held: sitex/maintainpro/production engines + camera/geolocation/biometric/offline bridges + MobileRouter core + applications.ts all 0-DIFF · AM.2 flipped to 0f8e8069 · 116→117 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'AM2c' as unknown as number, code: 'T-AM2c-OperixGo-Captures', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '0f8e8069', loc: 900,
     newSiblings: [],
     bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
   },
