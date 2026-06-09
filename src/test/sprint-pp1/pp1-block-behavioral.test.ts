@@ -27,7 +27,6 @@ import {
 import {
   PARTNER_TIER_COMMISSION_PCT,
   partnerCustomersKey,
-  partnerDealsKey,
   partnerProfileKey,
   partnerTargetsKey,
 } from '@/types/partner-portal';
