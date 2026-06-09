@@ -31,25 +31,24 @@ export default function MobileDocVaultCapturePage(): JSX.Element {
       return;
     }
     try {
+      const docInput = {
+        entity_id: E,
+        document_type: docType,
+        title,
+        tags: {},
+        originating_department_id: 'mobile',
+      };
+      const versionInput = {
+        version_no: '1',
+        file_url: photoUrl,
+        file_size_bytes: photoUrl.length,
+        uploaded_at: new Date().toISOString(),
+        uploaded_by: USER,
+      };
       const doc = createDocument(
         E,
-        {
-          title,
-          doc_type: docType,
-          tags: ['mobile-capture'],
-          foreign_keys: [],
-          status: 'draft',
-          owner_user_id: USER,
-        } as Parameters<typeof createDocument>[1],
-        {
-          version_no: 1,
-          file_url: photoUrl,
-          file_name: `${title}.jpg`,
-          file_size_bytes: photoUrl.length,
-          mime_type: 'image/jpeg',
-          uploaded_at: new Date().toISOString(),
-          uploaded_by: USER,
-        } as Parameters<typeof createDocument>[2],
+        docInput as unknown as Parameters<typeof createDocument>[1],
+        versionInput as unknown as Parameters<typeof createDocument>[2],
         USER,
       );
       toast.success(`Document ${doc.id} captured`);

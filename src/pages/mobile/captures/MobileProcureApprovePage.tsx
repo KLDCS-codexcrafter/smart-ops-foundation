@@ -25,8 +25,8 @@ export default function MobileProcureApprovePage(): JSX.Element {
   const mirrors = useMemo(
     () =>
       listPendingMirrors(E).filter((m) => {
-        const src = String(m.meta.source_module ?? '').toLowerCase();
-        return src.includes('procure') || src.includes('po') || src.includes('purchase');
+        const src = String(m.meta.source_card ?? '').toLowerCase();
+        return src.includes('procure') || src.includes('purchase') || src.includes('bill');
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tick],
@@ -71,7 +71,7 @@ export default function MobileProcureApprovePage(): JSX.Element {
           <Card key={m.task.id} className="p-3 space-y-2">
             <div className="flex items-center justify-between">
               <span className="font-mono text-xs">{m.task.title}</span>
-              <Badge variant="outline">{String(m.meta.source_module ?? 'procure')}</Badge>
+              <Badge variant="outline">{String(m.meta.source_card ?? 'procure')}</Badge>
             </div>
             <div className="flex gap-2">
               <Button size="sm" className="flex-1" onClick={() => handleDecision(m.task.id, 'approved')}>

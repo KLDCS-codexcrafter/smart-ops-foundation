@@ -28,7 +28,6 @@ export default function MobileFrontDeskCheckInPage(): JSX.Element {
   const [tick, setTick] = useState(0);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [purpose, setPurpose] = useState('meeting');
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   const planned = useMemo(
@@ -40,14 +39,15 @@ export default function MobileFrontDeskCheckInPage(): JSX.Element {
   function handleCheckIn(): void {
     if (!name.trim()) return;
     try {
-      const v = createPlannedVisitor(E, {
+      const visitorInput = {
         name,
         company: null,
         partyId: null,
-        phone,
-        purpose,
+        phone: phone || null,
+        purpose: 'meeting',
         hostEmployeeId: HOST,
         hostName: 'Mobile host',
+        plannedAt: new Date().toISOString(),
         expectedDurationMinutes: 60,
         photoDataUrl: photoUrl,
         idProofType: null,
@@ -56,8 +56,9 @@ export default function MobileFrontDeskCheckInPage(): JSX.Element {
         vehicleNo: null,
         parkingNote: null,
         itemsCarried: [],
-      } as Parameters<typeof createPlannedVisitor>[1]);
-      checkInVisitor(E, { visitorId: v.id, byUserId: HOST } as Parameters<typeof checkInVisitor>[1]);
+      };
+      const v = createPlannedVisitor(E, HOST, visitorInput as unknown as Parameters<typeof createPlannedVisitor>[2]);
+      checkInVisitor(E, HOST, { ...visitorInput, plannedVisitorId: v.id } as unknown as Parameters<typeof checkInVisitor>[2]);
       toast.success(`Checked in · ${v.name}`);
       setTick((t) => t + 1);
       setName('');
@@ -90,10 +91,6 @@ export default function MobileFrontDeskCheckInPage(): JSX.Element {
         <div>
           <Label>Phone</Label>
           <Input value={phone} onChange={(e) => setPhone(e.target.value)} />
-        </div>
-        <div>
-          <Label>Purpose</Label>
-          <Input value={purpose} onChange={(e) => setPurpose(e.target.value)} />
         </div>
       </Card>
 
