@@ -250,8 +250,9 @@ describe('PP1 · history + sibling-register banking', () => {
   });
 
   it('CLEANUP-2 row flipped to 2fb4fd8c (no longer TBD_AT_BANK)', () => {
-    const cln2Block = HISTORY_SRC.split('T-CLN2-Bridge-DeadButtons')[1] ?? '';
-    expect(cln2Block).toContain("headSha: '2fb4fd8c'");
+    const parts = HISTORY_SRC.split('T-CLN2-Bridge-DeadButtons');
+    const cln2RecordTail = parts[parts.length - 1];
+    expect(cln2RecordTail).toContain("headSha: '2fb4fd8c'");
   });
 
   it('sibling-register lists partner-portal-engine', () => {
