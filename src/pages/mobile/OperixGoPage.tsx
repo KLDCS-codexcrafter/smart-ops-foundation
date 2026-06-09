@@ -222,6 +222,26 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     route: '/mobile/captures/docvault-capture',
     phase: 'live',
   },
+  // AM.3 · Universal Mobile Approval (extended inbox · full B.1 rail · all cards)
+  {
+    id: 'am3-universal-approval',
+    title: 'Universal Approval Inbox',
+    icon: ClipboardCheck,
+    description: 'One inbox for the full B.1 approval rail · ALL adapter types · SoD honored · filter by type.',
+    details: 'AM.3 Pass 1. Consumes approval-rail-engine listPendingMirrors + decideApproval (NO rail re-implementation). All registered approval-adapters surface here automatically.',
+    route: '/operix-go/approval-inbox',
+    phase: 'live',
+  },
+  // AM.3 · Universal Mobile Reporting (read-only viewer · CONSUMES mobile-report-registry)
+  {
+    id: 'am3-universal-reporting',
+    title: 'Universal Reporting · Read-only',
+    icon: FileBarChart,
+    description: 'Mobile KPI/report viewer · back-office cards (EximX · Bill-Passing · FP&A · Accounting · Vendor-Portal · EngineeringX) + FinCore.',
+    details: 'AM.3 Pass 2. Consumes the NEW mobile-report-registry sibling (lists each card\u2019s existing reports). READ-ONLY mobile view · live/full data + drilldowns ship at Wave-2. NO fabricated numbers.',
+    route: '/mobile/reports',
+    phase: 'live',
+  },
 ];
 
 const PHASE_CONFIG: Record<AppPhase, { label: string; color: string }> = {
