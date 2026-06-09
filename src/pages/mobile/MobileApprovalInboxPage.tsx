@@ -1,6 +1,9 @@
 /**
  * @file        MobileApprovalInboxPage.tsx
- * @sprint      T-Phase-1.2.6f-d-2-card8-8-pre-1 · Block D · D-406
+ * @sprint      Sprint AM.3 · T-AM3-Universal-Mobile · Pass 1
+ * @purpose     Mobile landing page for the Universal Approval Inbox.
+ * @canon       CONSUMES `approval-rail-engine.listPendingMirrors` for the count
+ *              (full B.1 rail · ALL adapter types · NO per-card localStorage probe).
  */
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -9,40 +12,32 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Inbox, ClipboardCheck } from 'lucide-react';
 import MobileApprovalInboxCapture from '@/components/mobile/MobileApprovalInboxCapture';
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
-import { materialIndentsKey } from '@/types/material-indent';
-import { serviceRequestsKey } from '@/types/service-request';
-import { capitalIndentsKey } from '@/types/capital-indent';
+import { listPendingMirrors, type PendingMirror } from '@/lib/approval-rail-engine';
+import '@/lib/approval-adapters';
 
 function getActiveEntityCode(): string {
   try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
-}
-
-function countPending(key: string): number {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return 0;
-    const list = JSON.parse(raw) as Array<{ status: string }>;
-    return list.filter(i => i.status === 'pending_hod' || i.status === 'pending_purchase' || i.status === 'pending_finance' || i.status === 'submitted').length;
-  } catch { return 0; }
 }
 
 export default function MobileApprovalInboxPage(): JSX.Element {
   const navigate = useNavigate();
   const ENTITY = getActiveEntityCode();
   const [showCapture, setShowCapture] = useState(false);
-  const [pendingMaterial, setPendingMaterial] = useState(0);
-  const [pendingService, setPendingService] = useState(0);
-  const [pendingCapital, setPendingCapital] = useState(0);
+  const [pending, setPending] = useState<PendingMirror[]>([]);
 
   const refresh = useCallback((): void => {
-    setPendingMaterial(countPending(materialIndentsKey(ENTITY)));
-    setPendingService(countPending(serviceRequestsKey(ENTITY)));
-    setPendingCapital(countPending(capitalIndentsKey(ENTITY)));
+    setPending(listPendingMirrors(ENTITY));
   }, [ENTITY]);
 
   useEffect(() => { refresh(); }, [showCapture, refresh]);
 
-  const totalPending = pendingMaterial + pendingService + pendingCapital;
+  const total = pending.length;
+  const overdue = pending.filter(p => p.overdue).length;
+  const byType: Record<string, number> = {};
+  pending.forEach(p => {
+    const k = p.meta.object_type;
+    byType[k] = (byType[k] ?? 0) + 1;
+  });
 
   if (showCapture) return <MobileApprovalInboxCapture onClose={() => setShowCapture(false)} />;
 
@@ -50,22 +45,37 @@ export default function MobileApprovalInboxPage(): JSX.Element {
     <div className="min-h-screen bg-background p-4 space-y-4">
       <OfflineIndicator />
       <div className="flex items-center justify-between">
-        <Button variant="ghost" size="sm" onClick={() => navigate('/operix-go')}><ArrowLeft className="h-4 w-4 mr-1" />Back</Button>
-        <h1 className="text-lg font-bold flex items-center gap-2"><ClipboardCheck className="h-5 w-5 text-primary" />Approval Inbox</h1>
+        <Button variant="ghost" size="sm" onClick={() => navigate('/operix-go')}>
+          <ArrowLeft className="h-4 w-4 mr-1" />Back
+        </Button>
+        <h1 className="text-lg font-bold flex items-center gap-2">
+          <ClipboardCheck className="h-5 w-5 text-primary" />Universal Approval Inbox
+        </h1>
         <div className="w-16" />
       </div>
 
       <Card className="p-4 text-center">
         <Inbox className="h-8 w-8 mx-auto text-destructive mb-2" />
-        <div className="text-3xl font-bold font-mono">{totalPending}</div>
-        <div className="text-sm text-muted-foreground">Pending approvals</div>
-        <div className="text-xs text-muted-foreground mt-2 font-mono">Material: {pendingMaterial} · Service: {pendingService} · Capital: {pendingCapital}</div>
+        <div className="text-3xl font-bold font-mono">{total}</div>
+        <div className="text-sm text-muted-foreground">Pending approvals · B.1 rail</div>
+        {overdue > 0 && (
+          <div className="text-xs text-destructive mt-1 font-mono">{overdue} overdue</div>
+        )}
+        {Object.keys(byType).length > 0 && (
+          <div className="text-xs text-muted-foreground mt-2 font-mono">
+            {Object.entries(byType).map(([k, n]) => `${k.replace(/_/g, ' ')}: ${n}`).join(' · ')}
+          </div>
+        )}
       </Card>
 
-      <Button className="w-full h-14 text-lg" disabled={totalPending === 0} onClick={() => setShowCapture(true)}>
-        Review {totalPending} pending
+      <Button className="w-full h-14 text-lg" disabled={total === 0} onClick={() => setShowCapture(true)}>
+        Review {total} pending
       </Button>
-      {totalPending === 0 && <p className="text-xs text-center text-muted-foreground">No pending indents to approve.</p>}
+      {total === 0 && (
+        <p className="text-xs text-center text-muted-foreground">
+          No pending items across the rail. Honest empty — nothing fabricated.
+        </p>
+      )}
     </div>
   );
 }
