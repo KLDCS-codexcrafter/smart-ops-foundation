@@ -357,9 +357,10 @@ export function ExceptionWorkbenchPanel() {
                     <Button variant="outline" className="w-full text-muted-foreground" onClick={() => toast(`${selectedExc.id} skipped — marked as acknowledged`)}>
                       <SkipForward className="h-4 w-4 mr-1" /> Skip Record
                     </Button>
-                    <Button className="w-full bg-gradient-to-r from-primary to-primary/80" onClick={() => toast("Edit mode coming soon")}>
+                    <Button className="w-full bg-gradient-to-r from-primary to-primary/80" onClick={handleEditAndRetry}>
                       Edit & Retry
                     </Button>
+
                   </div>
                 </div>
               </>
