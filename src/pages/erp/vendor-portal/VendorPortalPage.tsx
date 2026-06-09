@@ -57,6 +57,8 @@ export default function VendorPortalPage(): JSX.Element {
       'welcome', 'vendor-master', 'vendor-agreements', 'vendor-onboarding-inbox',
       'vendor-categories', 'vendor-scoring', 'vendor-activity-monitor', 'msme-compliance',
       'vendor-communication-log', 'vendor-broadcast', 'saathi-admin',
+      'vendor-zones', 'vendor-risk-monitor', 'vendor-compliance-checklists',
+      'vendor-dcn', 'vendor-document-requests', 'vendor-payment-batches',
     ];
     if ((validModules as string[]).includes(hash)) return hash as VendorPortalModule;
     return 'welcome';
