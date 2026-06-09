@@ -92,3 +92,23 @@ Grep proofs (asserted by tests):
 ---
 
 *SP.1 close · 09 Jun 2026 · 110 → 111 ⭐ · author: Lovable on behalf of the Operix Founder.*
+
+---
+
+## T1 Remediation · p360 roadmap test de-brittled (post-bank)
+
+The SP.1-era assertion `rows[0].code === 'T-SP1-Variant-Builder'` in
+`src/test/sprint-p360/p360-block-behavioral.test.ts` violated the canon
+"no forward-looking / last-entry assertions" — every future sprint would
+break it on append. Replaced with three non-forward-looking checks that
+stay green for all future sprints:
+
+1. **Stable floor**: `rows.length >= 5` (existence of the banked baseline).
+2. **Existence pattern**: `rows.some(r => r.code === 'T-P360-DevTeam-Hub')`
+   (P360 is the anchor row, immune to future appends).
+3. **Order invariant**: rows with `bankDate` are sorted newest-first
+   (`dated[i].bankDate >= dated[i+1].bankDate` for all i).
+
+Grep confirms zero remaining `rows[0]` / last-entry assertions in
+`src/test/sprint-p360/`. Re-run: sp1 26/26 + p360 29/29 = 55/55 ✅.
+
