@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, Building2, Users, Shield, Receipt, Lock,
   Bell, Plug, FileText, Settings, HeadphonesIcon, BrainCircuit,
-  Palette, ChevronLeft, ChevronRight, Zap, ArrowLeft,
+  Palette, ChevronLeft, ChevronRight, Zap, ArrowLeft, Boxes,
 } from "lucide-react";
 import { UserProfileDropdown } from "@/components/auth/UserProfileDropdown";
 import { ThemeToggle } from "@/components/theme";
@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 const navItems = [
   { title: "Dashboard",        url: "/tower/dashboard",        icon: LayoutDashboard },
   { title: "Customers",        url: "/tower/customers",        icon: Building2 },
+  { title: "Product Variants", url: "/tower/variants",         icon: Boxes },
   { title: "Users",            url: "/tower/users",            icon: Users },
   { title: "Permissions",      url: "/tower/permissions",      icon: Shield },
   { title: "Proforma Invoice", url: "/tower/proforma-invoice", icon: Receipt },

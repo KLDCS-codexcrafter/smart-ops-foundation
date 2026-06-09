@@ -386,6 +386,7 @@ const Support = lazy(() => import('./pages/tower/Support'));
 const Integrations = lazy(() => import('./pages/tower/Integrations'));
 const AIInsights = lazy(() => import('./pages/tower/AIInsights'));
 const Themes = lazy(() => import('./pages/tower/Themes'));
+const VariantBuilder = lazy(() => import('./pages/tower/VariantBuilder'));
 const BusinessUnitMaster = lazy(() => import('./pages/erp/masters/BusinessUnitMaster'));
 
 
@@ -479,6 +480,7 @@ const App = () => (
               <Route path="/tower" element={<P><TowerDashboard /></P>} />
               <Route path="/tower/dashboard" element={<P><TowerDashboard /></P>} />
               <Route path="/tower/customers" element={<P><Tenants /></P>} />
+              <Route path="/tower/variants" element={<P><VariantBuilder /></P>} />
               <Route path="/tower/users" element={<P><Users /></P>} />
               <Route path="/tower/permissions" element={<P><Permissions /></P>} />
               <Route path="/tower/proforma-invoice" element={<P><Billing /></P>} />
