@@ -1217,8 +1217,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint AM.2c T-AM2c-OperixGo-Captures · operix-go pending captures closed · SiteX SiteEngineer 5-step + MaintainPro Technician 4 captures + ShopFloor Operator voice/barcode all CONSUME their card engines (sitex-engine · maintainpro-engine · production-confirmation-engine) + existing bridges (camera/geolocation/offline-queue/biometric · VoiceNote shell) · GateFlow-legacy (planned) entry REMOVED from OperixGoPage MOBILE_PRODUCTS · 3 landings flipped phase2→live (site-engineer · maintenance-technician · shop-floor-operator) · honest SHOPFLOOR_OEE_HONESTY banner mounted (OCR/transcribe/OEE-live = Wave-2 · no fabricated capture) · NO new SIBLING (empty newSiblings · pure consume) · walls held: sitex/maintainpro/production engines + camera/geolocation/biometric/offline bridges + MobileRouter core + applications.ts all 0-DIFF · AM.2 flipped to 0f8e8069 · 116→117 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'AM2c' as unknown as number, code: 'T-AM2c-OperixGo-Captures', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '0f8e8069', loc: 900,
+    headSha: '4c68f639', predecessorSha: '0f8e8069', loc: 900,
     newSiblings: [],
+    bankDate: '2026-06-09', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint AM.3 T-AM3-Universal-Mobile · Universal Mobile Approval (full B.1 rail · all cards · one inbox · CONSUMES approval-rail-engine listPendingMirrors+decideApproval + all registered approval-adapters · NO rail re-implementation · SoD-1/SoD-2 honored inside decideApproval · reject reason mandatory inside rail · filter by object_type) + Universal Mobile Reporting (NEW SIBLING mobile-report-registry · maps each back-office card → its existing desktop report routes · listMobileReports/listMobileReportCards/getMobileReport · honest MOBILE_REPORT_HONESTY banner · READ-ONLY mobile viewer · navigates to existing /erp/* desktop routes · NO recompute · NO fabricated metrics · live/full data + interactive drilldowns deferred to Wave-2) · MobileApprovalInboxPage + MobileApprovalInboxCapture rewritten to consume the rail (no more per-card localStorage probe of material/service/capital indents) · NEW MobileUniversalReportPage at /mobile/reports · MobileRouter additive route + OperixGoPage additive tiles (am3-universal-approval + am3-universal-reporting) · walls held: approval-rail-engine 0-DIFF · approval-adapters 0-DIFF · all per-card report surfaces 0-DIFF · MobileRouter core handlers 0-DIFF (only routes table appended) · applications.ts 0-DIFF · hash-chain · retention · entitlements 0-DIFF · AM.2c flipped to 4c68f639 · 117→118 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'AM3' as unknown as number, code: 'T-AM3-Universal-Mobile', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '4c68f639', loc: 950,
+    newSiblings: ['mobile-report-registry'],
     bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
   },
 ];
