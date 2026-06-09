@@ -34,14 +34,14 @@ import {
 import {
   createVariant,
   publishVariant,
-  listVariants,
 } from '@/lib/product-variant-engine';
 import {
   productVariantsKey,
   variantAssignmentKey,
   EMPTY_LIMIT_SET,
 } from '@/types/product-variant';
-import { cardEntitlementsKey, partnerCustomersKey, partnerProfileKey } from '@/types/card-entitlement';
+import { cardEntitlementsKey } from '@/types/card-entitlement';
+import { partnerCustomersKey, partnerProfileKey } from '@/types/partner-portal';
 import { getPartnerCustomers } from '@/lib/partner-portal-engine';
 import { SPRINTS } from '@/lib/_institutional/sprint-history';
 
