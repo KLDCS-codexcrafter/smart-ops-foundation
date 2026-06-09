@@ -447,8 +447,178 @@ export function ProductionConfigAutomationPanel(): JSX.Element {
         </CardContent>
       </Card>
 
-      <div className="rounded-lg border bg-muted/40 p-3 text-xs text-muted-foreground">
-        ⓘ Resources · Mobile · Printing · Approval · Multi-BU · Visibility flags TODO 3a-pre-2 expand to all 52 flags.
+      {/* ─────────────────────────────────────────────────────────
+          Sprint T-CLN1-Wave1-Cleanups · Item 3 · ProductionConfig flag expansion
+          Wires REAL flags from the existing ProductionConfig interface
+          (ComplianceSettingsAutomation.constants.ts) that the previous panel
+          left as TODO. NO fabricated flags — every key below exists on the
+          ProductionConfig type and persists to the existing CC-Replica store
+          via the same comply360ProductionKey(entityCode) localStorage path.
+          ───────────────────────────────────────────────────────── */}
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Cost Allocation Depth
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          {sw('enableMachineCostAllocation', 'Machine Cost Allocation')}
+          {sw('enableShiftLinkage', 'Shift Linkage')}
+          {sw('enableOperatorAssignment', 'Operator Assignment')}
+          {sw('enableContractWorkerAssignment', 'Contract Worker Assignment')}
+          {sw('enableMachineAssignment', 'Machine Assignment')}
+          {sw('enableMRA', 'Material Reservation & Allocation (MRA)')}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            BOM & Planning
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Default BOM Version</Label>
+            <Input
+              type="number" min={1} className="font-mono"
+              value={config.defaultBOMVersion}
+              onChange={(e) => update('defaultBOMVersion', Number(e.target.value))}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Default Planning Horizon (days)</Label>
+            <Input
+              type="number" min={1} className="font-mono"
+              value={config.defaultPlanningHorizonDays}
+              onChange={(e) => update('defaultPlanningHorizonDays', Number(e.target.value))}
+            />
+          </div>
+          {sw('includePendingPurchaseOrders', 'Include Pending Purchase Orders in plan')}
+          {sw('includeSalesPlan', 'Include Sales Plan in plan')}
+          {sw('includeProductionPlan', 'Include Production Plan in plan')}
+          {sw('considerSafetyStock', 'Consider Safety Stock')}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Multi-BU · Project · Customer Enforcement
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2 md:col-span-2">
+            <Label>Default Project Centre ID (optional)</Label>
+            <Input
+              className="font-mono"
+              placeholder="leave blank for none"
+              value={config.defaultProjectCentreId ?? ''}
+              onChange={(e) => update('defaultProjectCentreId', e.target.value || null)}
+            />
+          </div>
+          {sw('enforceProjectIdForETO', 'Enforce Project ID for ETO')}
+          {sw('enforceCustomerIdForContractMfg', 'Enforce Customer ID for Contract Mfg')}
+          {sw('enforceBusinessUnitForMultiBU', 'Enforce Business Unit for Multi-BU')}
+          {sw('enableExportProductionTracking', 'Enable Export Production Tracking')}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Approval · Visibility · Operator Privacy
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label>Production Department Visibility</Label>
+            <Select
+              value={config.productionDepartmentVisibility}
+              onValueChange={(v) => update(
+                'productionDepartmentVisibility',
+                v as ProductionConfig['productionDepartmentVisibility'],
+              )}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="department_scoped">Department Scoped</SelectItem>
+                <SelectItem value="cross_department">Cross Department</SelectItem>
+                <SelectItem value="plant_wide">Plant Wide</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+            {sw('hideCostsFromOperators', 'Hide Costs from Operators')}
+            {sw('requireApprovalForRelease', 'Require Approval for Release')}
+          </div>
+          <div className="space-y-2">
+            <Label>Approval Threshold (₹)</Label>
+            <Input
+              type="number" min={0} className="font-mono"
+              value={config.approvalThreshold}
+              onChange={(e) => update('approvalThreshold', Number(e.target.value))}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Mobile Capture
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
+          {sw('enableMobileCapture', 'Mobile Capture')}
+          {sw('enableShiftBasedCapture', 'Shift-Based Capture')}
+          {sw('enablePhotoCapture', 'Photo Capture')}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Printing
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Default Print Format</Label>
+            <Select
+              value={config.defaultPrintFormat}
+              onValueChange={(v) => update('defaultPrintFormat', v as ProductionConfig['defaultPrintFormat'])}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="standard">Standard</SelectItem>
+                <SelectItem value="detailed">Detailed</SelectItem>
+                <SelectItem value="compact">Compact</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Print Footer Text</Label>
+            <Input
+              value={config.printFooterText}
+              onChange={(e) => update('printFooterText', e.target.value)}
+              placeholder="e.g. Subject to plant terms"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="rounded-lg border bg-success/5 p-3 text-xs text-muted-foreground">
+        ⓘ CLN1 cleanup: all ProductionConfig keys defined on the type are now wired to
+        editable controls (cost allocation · BOM · multi-BU · approval · mobile · printing).
+        Any future flags added to <span className="font-mono">ProductionConfig</span> need a row here too.
       </div>
     </div>
   );
