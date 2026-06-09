@@ -81,6 +81,14 @@ import MobileCustomerOrdersPage from './customer/MobileCustomerOrdersPage';
 import MobileCustomerRewardsPage from './customer/MobileCustomerRewardsPage';
 import MobileCustomerVoiceComplaintPage from './customer/MobileCustomerVoiceComplaintPage';
 import MobileCustomerSampleKitsPage from './customer/MobileCustomerSampleKitsPage';
+// AM.4 · Consumer commerce PWA (best-of-both mobile CLOSE)
+import MobileShopHomePage from './customer/MobileShopHomePage';
+import MobileShopSearchPage from './customer/MobileShopSearchPage';
+import MobileShopCategoryPage from './customer/MobileShopCategoryPage';
+import MobileShopProductPage from './customer/MobileShopProductPage';
+import MobileCheckoutShellPage from './customer/MobileCheckoutShellPage';
+import MobileOrderTrackPage from './customer/MobileOrderTrackPage';
+import MobileWishlistPage from './customer/MobileWishlistPage';
 // Shared cross-role pages
 import MobileAttendancePage from './shared/MobileAttendancePage';
 import MobileExpenseClaimPage from './shared/MobileExpenseClaimPage';
@@ -154,6 +162,14 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/customer/rewards') return <MobileCustomerRewardsPage />;
   if (pathname === '/mobile/customer/voice-complaint') return <MobileCustomerVoiceComplaintPage />;
   if (pathname === '/mobile/customer/sample-kits') return <MobileCustomerSampleKitsPage />;
+  // AM.4 · Consumer commerce PWA additive routes (core handlers 0-DIFF)
+  if (pathname === '/mobile/customer/shop' || pathname === '/mobile/customer/shop/') return <MobileShopHomePage />;
+  if (pathname === '/mobile/customer/search') return <MobileShopSearchPage />;
+  if (pathname.startsWith('/mobile/customer/category/')) return <MobileShopCategoryPage />;
+  if (pathname.startsWith('/mobile/customer/product/')) return <MobileShopProductPage />;
+  if (pathname === '/mobile/customer/checkout') return <MobileCheckoutShellPage />;
+  if (pathname.startsWith('/mobile/customer/track/')) return <MobileOrderTrackPage />;
+  if (pathname === '/mobile/customer/wishlist') return <MobileWishlistPage />;
   // Shared routes (any field role can access)
   // Shared routes (any field role can access)
   if (pathname === '/mobile/shared/attendance') return <MobileAttendancePage />;
