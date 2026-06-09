@@ -21,6 +21,7 @@ export interface PartNoSearchPanelProps {
 }
 
 /** Pure filter — exported for tests. Matches code / short_name / hsn_sac_code / name (case-insensitive). */
+// eslint-disable-next-line react-refresh/only-export-components
 export function filterByPartNo(items: InventoryItem[], q: string): InventoryItem[] {
   const term = q.trim().toLowerCase();
   if (!term) return [];
