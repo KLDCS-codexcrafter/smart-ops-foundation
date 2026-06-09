@@ -449,10 +449,14 @@ export default function BridgeSettings() {
                 </div>
               </div>
 
-              <Button variant="outline" className="w-full" onClick={() => toast("Download coming soon — contact support@4dsmartops.in")}>
+              <Button variant="outline" className="w-full" disabled aria-disabled="true">
                 <Download className="h-4 w-4 mr-2" />
                 Download Bridge Agent .exe
               </Button>
+              <p className="text-[11px] text-muted-foreground text-center -mt-1">
+                Bulk agent download arrives with the Wave-2 sync backend. For early access, email <span className="font-mono">support@4dsmartops.in</span>.
+              </p>
+
             </div>
           )}
         </div>

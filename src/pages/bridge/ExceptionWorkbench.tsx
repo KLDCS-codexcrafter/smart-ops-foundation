@@ -72,7 +72,7 @@ interface Exception {
 // ─────────────────────────────────────────────────────────────────────────
 
 // Step 3 — EXCEPTIONS mock array
-const EXCEPTIONS: Exception[] = [
+const INITIAL_EXCEPTIONS: Exception[] = [
   {id:"EXC-001",code:"EX-ODBC-003",company:"Wipro Enterprises",       module:"Stock Items",       agentId:"AGENT-04",batchId:"BATCH-20260403-000045",occurredAt:"03 Apr 2026, 09:14 IST",status:"open"},
   {id:"EXC-002",code:"EX-UPL-002", company:"Wipro Enterprises",       module:"Purchase Vouchers", agentId:"AGENT-04",batchId:"BATCH-20260403-000039",occurredAt:"03 Apr 2026, 08:55 IST",status:"open"},
   {id:"EXC-003",code:"EX-REC-001", company:"Havells India",           module:"Ledger Masters",    agentId:"AGENT-01",batchId:"BATCH-20260402-000184",occurredAt:"02 Apr 2026, 16:15 IST",status:"open"},
@@ -91,6 +91,7 @@ const TREND_DATA = [
 ];
 
 export function ExceptionWorkbenchPanel() {
+  const [exceptions, setExceptions] = useState<Exception[]>(INITIAL_EXCEPTIONS);
   const [search, setSearch] = useState("");
   const [severityFilter, setSeverityFilter] = useState("all");
   const [codeFilter, setCodeFilter] = useState("all");
@@ -102,7 +103,21 @@ export function ExceptionWorkbenchPanel() {
     setShowDetail(true);
   };
 
-  const filtered = EXCEPTIONS.filter((e) => {
+  const handleEditAndRetry = () => {
+    if (!selectedExc) return;
+    const nextModule = window.prompt(
+      `Edit module for ${selectedExc.id} then retry. Leave unchanged to retry as-is.`,
+      selectedExc.module,
+    );
+    if (nextModule === null) return; // cancelled
+    const trimmed = nextModule.trim() || selectedExc.module;
+    const updated: Exception = { ...selectedExc, module: trimmed, status: "resolved" };
+    setExceptions((cur) => cur.map((e) => (e.id === selectedExc.id ? updated : e)));
+    setSelectedExc(updated);
+    toast.success(`${selectedExc.id} edited (module: ${trimmed}) and marked resolved`);
+  };
+
+  const filtered = exceptions.filter((e) => {
     const q = search.toLowerCase();
     const cat = EXCEPTION_CATALOG[e.code];
     const matchSearch =
@@ -115,9 +130,10 @@ export function ExceptionWorkbenchPanel() {
     return matchSearch && matchSeverity && matchCode;
   });
 
-  const openCount = EXCEPTIONS.filter((e) => e.status === "open").length;
-  const fatalCount = EXCEPTIONS.filter((e) => EXCEPTION_CATALOG[e.code].severity === "Fatal").length;
-  const blockingCount = EXCEPTIONS.filter((e) => EXCEPTION_CATALOG[e.code].severity === "Blocking").length;
+  const openCount = exceptions.filter((e) => e.status === "open").length;
+  const fatalCount = exceptions.filter((e) => EXCEPTION_CATALOG[e.code].severity === "Fatal").length;
+  const blockingCount = exceptions.filter((e) => EXCEPTION_CATALOG[e.code].severity === "Blocking").length;
+
 
   return (
     <BridgeLayout title="Exception Workbench" subtitle="Triage failed records — resolve, retry or skip">
@@ -202,8 +218,9 @@ export function ExceptionWorkbenchPanel() {
 
       {/* 3. RESULTS COUNT */}
       <p className="text-xs text-muted-foreground mb-3">
-        Showing {filtered.length} of {EXCEPTIONS.length} exceptions
+        Showing {filtered.length} of {exceptions.length} exceptions
       </p>
+
 
       {/* 4. TABLE — Step 4 rendering */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
@@ -340,9 +357,10 @@ export function ExceptionWorkbenchPanel() {
                     <Button variant="outline" className="w-full text-muted-foreground" onClick={() => toast(`${selectedExc.id} skipped — marked as acknowledged`)}>
                       <SkipForward className="h-4 w-4 mr-1" /> Skip Record
                     </Button>
-                    <Button className="w-full bg-gradient-to-r from-primary to-primary/80" onClick={() => toast("Edit mode coming soon")}>
+                    <Button className="w-full bg-gradient-to-r from-primary to-primary/80" onClick={handleEditAndRetry}>
                       Edit & Retry
                     </Button>
+
                   </div>
                 </div>
               </>

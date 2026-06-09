@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 import {
   ShieldAlert, Clock, AlertTriangle, XCircle,
-  CheckCircle2, Info, ChevronRight, Layers,
+  CheckCircle2, Info, ChevronRight, Layers, X,
 } from "lucide-react";
 import { BridgeLayout } from "@/components/layout/BridgeLayout";
 import {
@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+
 
 // ── Mock Data ──────────────────────────────────────────────────────────────
 
@@ -119,26 +120,54 @@ function agentLabel(status: string) {
 export function ConsoleDashboardPanel() { return <ConsoleDashboard />; }
 export default function ConsoleDashboard() {
   const navigate = useNavigate();
+  const [selectedStage, setSelectedStage] = useState<string | null>(null);
   const pipelineTotal = PIPELINE.reduce((s, p) => s + p.count, 0);
+  const selectedStageInfo = selectedStage
+    ? PIPELINE.find((p) => p.state === selectedStage) ?? null
+    : null;
 
   return (
     <BridgeLayout title="Bridge Console" subtitle="Tally Prime sync operations — live overview">
       {/* 1. PIPELINE STRIP */}
       <div className="bg-card border border-border rounded-xl p-4 mb-6">
-        <div className="mb-3">
-          <p className="text-sm font-semibold text-foreground">Sync Pipeline</p>
-          <p className="text-xs text-muted-foreground">
-            8-stage workflow — <span className="font-mono">{pipelineTotal}</span> active requests
-          </p>
+        <div className="mb-3 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-semibold text-foreground">Sync Pipeline</p>
+            <p className="text-xs text-muted-foreground">
+              8-stage workflow — <span className="font-mono">{pipelineTotal}</span> active requests
+            </p>
+          </div>
+          {selectedStageInfo && (
+            <button
+              type="button"
+              onClick={() => setSelectedStage(null)}
+              className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 transition-colors"
+            >
+              <span>Filtered: <span className="font-semibold">{selectedStageInfo.label}</span> · <span className="font-mono">{selectedStageInfo.count}</span></span>
+              <X className="h-3 w-3" />
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-0">
-          {PIPELINE.map((stage, i) => (
+          {PIPELINE.map((stage, i) => {
+            const isActive = selectedStage === stage.state;
+            const isDimmed = selectedStage !== null && !isActive;
+            return (
             <div key={stage.state} className="flex items-center flex-1 min-w-0">
               <button
-                onClick={() => toast(`Filtering by ${stage.label} coming soon`)}
-                className="flex flex-col items-center w-full group cursor-pointer"
+                type="button"
+                onClick={() => setSelectedStage((cur) => (cur === stage.state ? null : stage.state))}
+                aria-pressed={isActive}
+                className={cn(
+                  "flex flex-col items-center w-full group cursor-pointer transition-opacity",
+                  isDimmed && "opacity-40",
+                )}
               >
-                <span className={cn("text-lg font-bold font-mono rounded-xl px-3 py-1 text-center transition-transform group-hover:scale-105", stage.color)}>
+                <span className={cn(
+                  "text-lg font-bold font-mono rounded-xl px-3 py-1 text-center transition-transform group-hover:scale-105",
+                  stage.color,
+                  isActive && "ring-2 ring-primary ring-offset-1 ring-offset-card",
+                )}>
                   {stage.count}
                 </span>
                 <span className="text-[10px] text-muted-foreground mt-1">{stage.label}</span>
@@ -147,9 +176,10 @@ export default function ConsoleDashboard() {
                 <ChevronRight className="h-3 w-3 text-muted-foreground/30 shrink-0" />
               )}
             </div>
-          ))}
+          );})}
         </div>
       </div>
+
 
       {/* 2. RISK CARDS */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
