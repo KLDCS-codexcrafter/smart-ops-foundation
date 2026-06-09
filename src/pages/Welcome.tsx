@@ -145,38 +145,8 @@ const quickActions = [
   { icon: Settings, label: "Settings", href: "/profile" },
 ];
 
-// ── Support Ops data ──────────────────────────────────────────
-type TicketPriority = "Critical" | "High" | "Medium" | "Low";
-type TicketStatus = "Open" | "In Progress" | "Escalated" | "Resolved";
-
-interface SupportTicket {
-  id: string;
-  title: string;
-  tenant: string;
-  priority: TicketPriority;
-  status: TicketStatus;
-  sla: "ok" | "warning" | "breach";
-  agent: string;
-  created: string;
-}
-
-const MOCK_TICKETS: SupportTicket[] = [
-  { id: "TKT-1041", title: "Bridge Agent disconnected — no sync since 6 hours", tenant: "Sharma Traders Pvt Ltd", priority: "Critical", status: "Escalated", sla: "breach", agent: "Rahul S.", created: "2h ago" },
-  { id: "TKT-1040", title: "GST report not generating for October 2025", tenant: "Reliance Digital Solutions", priority: "High", status: "In Progress", sla: "warning", agent: "Priya M.", created: "3h ago" },
-  { id: "TKT-1039", title: "Unable to login — password reset not working", tenant: "Mehta Industries", priority: "High", status: "Open", sla: "ok", agent: "Unassigned", created: "4h ago" },
-  { id: "TKT-1038", title: "Payroll processing stuck at 78%", tenant: "Gupta & Sons Mfg.", priority: "Critical", status: "In Progress", sla: "breach", agent: "Suresh K.", created: "5h ago" },
-  { id: "TKT-1037", title: "Vendor portal — supplier cannot submit invoice", tenant: "Sharma Traders Pvt Ltd", priority: "Medium", status: "Open", sla: "ok", agent: "Anita R.", created: "6h ago" },
-  { id: "TKT-1036", title: "Inventory count mismatch in cycle count report", tenant: "Patel Chemicals Ltd", priority: "Medium", status: "In Progress", sla: "ok", agent: "Vikram D.", created: "8h ago" },
-  { id: "TKT-1035", title: "Production MRP run taking too long", tenant: "Mehta Industries", priority: "Low", status: "Open", sla: "ok", agent: "Unassigned", created: "10h ago" },
-  { id: "TKT-1034", title: "Bank reconciliation entries missing after import", tenant: "Reliance Digital Solutions", priority: "High", status: "Escalated", sla: "warning", agent: "Priya M.", created: "12h ago" },
-  { id: "TKT-1033", title: "SalesX geo-tracking not updating on mobile", tenant: "Gupta & Sons Mfg.", priority: "Medium", status: "In Progress", sla: "ok", agent: "Rahul S.", created: "1d ago" },
-  { id: "TKT-1032", title: "TDS section 194C not showing in dropdown", tenant: "Patel Chemicals Ltd", priority: "Low", status: "Resolved", sla: "ok", agent: "Suresh K.", created: "1d ago" },
-  { id: "TKT-1031", title: "Email notifications not being sent for approvals", tenant: "Sharma Traders Pvt Ltd", priority: "Medium", status: "Resolved", sla: "ok", agent: "Anita R.", created: "2d ago" },
-  { id: "TKT-1030", title: "User account locked — too many failed attempts", tenant: "Mehta Industries", priority: "Low", status: "Resolved", sla: "ok", agent: "Vikram D.", created: "2d ago" },
-  { id: "TKT-1029", title: "GRN entry crashing on large item count", tenant: "Reliance Digital Solutions", priority: "High", status: "Resolved", sla: "ok", agent: "Rahul S.", created: "3d ago" },
-  { id: "TKT-1028", title: "Chart of accounts import failing for more than 500 rows", tenant: "Gupta & Sons Mfg.", priority: "Medium", status: "Resolved", sla: "ok", agent: "Priya M.", created: "3d ago" },
-  { id: "TKT-1027", title: "Service desk SLA calendar not syncing correctly", tenant: "Patel Chemicals Ltd", priority: "Low", status: "Resolved", sla: "ok", agent: "Suresh K.", created: "4d ago" },
-];
+// CLN1 · Support Ops mock-ticket data (MOCK_TICKETS, SupportTicket, TicketPriority,
+// TicketStatus) removed per ServiceDesk v7 scope. Tickets now live in /erp/servicedesk.
 import { onEnterNext } from '@/lib/keyboard';
 
 // ── Server Ops data ───────────────────────────────────────────
