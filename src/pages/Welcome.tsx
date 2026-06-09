@@ -254,7 +254,7 @@ function WorkspaceTab({ navigate }: { navigate: (path: string) => void }) {
 
 // ── Tab 2: Support Operations · CLN1 stub ─────────────────────
 // ServiceDesk v7 owns tickets at /erp/servicedesk. This tab now redirects there
-// instead of showing the previous local MOCK_TICKETS widget.
+// instead of showing the previous local mock-ticket widget.
 function SupportOpsTab({ navigate }: { navigate: (path: string) => void }) {
   return (
     <div className="space-y-4">
