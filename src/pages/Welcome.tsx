@@ -544,7 +544,7 @@ export default function Welcome() {
 
         {/* Tab Content */}
         {activeTab === "workspace" && <WorkspaceTab navigate={(p) => navigate(p)} />}
-        {activeTab === "support" && <SupportOpsTab />}
+        {activeTab === "support" && <SupportOpsTab navigate={(p) => navigate(p)} />}
         {activeTab === "server" && <ServerOpsTab />}
 
         {/* Footer */}
