@@ -264,6 +264,88 @@ registerKpi({
   }),
 });
 
+// ─── RPT-2b-i · 7 EximX trade-doc register KPI seeds (idempotent) ──────────
+registerKpi({
+  id: 'ex-export-po',
+  label: 'Export PO value',
+  dataSource: 'eximx.export-po.value',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'buyer',
+    series: [{ key: 'value', label: 'PO value' }],
+    title: 'Export PO value',
+  }),
+});
+
+registerKpi({
+  id: 'ex-import-po',
+  label: 'Import PO value',
+  dataSource: 'eximx.import-po.value',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'vendor',
+    series: [{ key: 'value', label: 'PO value' }],
+    title: 'Import PO value',
+  }),
+});
+
+registerKpi({
+  id: 'ex-shipping-bill',
+  label: 'Shipping bill FOB by status',
+  dataSource: 'eximx.shipping-bill.fob-by-status',
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'status',
+    series: [{ key: 'fob_value', label: 'FOB value' }],
+    title: 'Shipping bill FOB by status',
+  }),
+});
+
+registerKpi({
+  id: 'ex-dispatch',
+  label: 'Export dispatch trend',
+  dataSource: 'eximx.dispatch.trend',
+  defaultChart: defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'value', label: 'Dispatch value' }],
+    title: 'Export dispatch trend',
+  }),
+});
+
+registerKpi({
+  id: 'ex-lc-status',
+  label: 'LC status mix',
+  dataSource: 'eximx.lc.status-mix',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'LCs' }],
+    title: 'LC status mix',
+  }),
+});
+
+registerKpi({
+  id: 'ex-ci-value',
+  label: 'Commercial invoice value',
+  dataSource: 'eximx.ci.value-by-month',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'month',
+    series: [{ key: 'invoice_value', label: 'Invoice value' }],
+    title: 'Commercial invoice value',
+  }),
+});
+
+registerKpi({
+  id: 'ex-boe-duty',
+  label: 'Bill of entry duty/value',
+  dataSource: 'eximx.boe.duty-by-status',
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'status',
+    series: [
+      { key: 'duty', label: 'Duty' },
+      { key: 'assessable_value', label: 'Assessable value' },
+    ],
+    title: 'Bill of entry duty/value',
+  }),
+});
+
+
 
 
 
