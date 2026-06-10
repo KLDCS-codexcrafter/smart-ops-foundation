@@ -4,16 +4,21 @@
  * @sprint      T-Phase-1.EX-7b-ShippingBill-EGM-LEO-DispatchMirror
  *              + WMS3 rider · canon 5 export half · leg-1 truth now lives in Dispatch · mirror becomes a read
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Truck } from 'lucide-react';
+import { Truck, ShieldCheck } from 'lucide-react';
 import { loadDispatchMirrors } from '@/lib/export-dispatch-bridge';
 import type { ExportDispatchMirror } from '@/types/export-dispatch-mirror';
 // W3 rider · canon 5 export half · leg-1 truth now lives in Dispatch · mirror becomes a read
 import { getManifestForExportPO } from '@/lib/wms-manifest-engine';
 import type { Manifest } from '@/types/wms-manifest';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 export function ExportDispatchList(): JSX.Element {
   const entityCode = 'sinha-trading';
