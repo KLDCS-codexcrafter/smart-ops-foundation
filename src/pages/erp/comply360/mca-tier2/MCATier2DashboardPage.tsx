@@ -7,12 +7,15 @@ import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import {
   listCSR2Forms, listSection135, listFormMR3, listCSRCommitteeMeetings,
   getMCATier2Summary,
 } from '@/lib/comply360-mca-tier2-engine';
 import { listSTR, listCTR, listRiskAlerts, getPMLAComplianceSummary } from '@/lib/comply360-pmla-engine';
 import { getTier2ExtensionsSummary } from '@/lib/comply360-tier2-extensions-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 type TabKey = 'csr' | 'sec204' | 't2-quick' | 'pmla';
 
@@ -64,6 +67,39 @@ export default function MCATier2DashboardPage(): JSX.Element {
           {mca.overall_status}
         </Badge>
       </div>
+
+      {(() => {
+        const chartRows = [
+          { status: 'CSR-2 Filed', count: mca.csr2_filed_current_fy },
+          { status: 'MR-3 Filed', count: mca.mr3_filed_current_fy },
+          { status: 'PMLA STR+CTR', count: pmla.str_filed + pmla.ctr_filed },
+          { status: 'Tier-2 Records', count: t2.gst_t2_filings + t2.tds_195_count + t2.exim_brc_count },
+        ];
+        const totalFiled = chartRows.reduce((s, r) => s + r.count, 0);
+        const pct = mca.overall_status === 'compliant' ? 100 : Math.min(95, Math.max(40, Math.round((totalFiled / Math.max(1, totalFiled + 5)) * 100)));
+        const kpi = getKpi('cmp-mca');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'count', label: 'MCA filings' }] });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2aii-mca-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="MCA filing compliance %" value={`${pct}%`} rag={rag} hint="CSR-2 + MR-3 + PMLA + Tier-2" />
+              <ScorecardTile label="PMLA Filings" value={pmla.str_filed + pmla.ctr_filed} hint="STR + CTR" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-mca">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
         <TabsList className="grid grid-cols-4 w-full">

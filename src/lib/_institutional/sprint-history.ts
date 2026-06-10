@@ -1284,10 +1284,17 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-2a-i T-RPT2ai-Dashboard-Primitive-Comply360-Cohort · Reporting Arc · build deferred ScorecardTile+RAG primitive (core/rag.ts + ui/ScorecardTile.tsx) — JOINS existing report-framework lib (ZERO new SIBLING) · apply DASHBOARD recipe (additive · NOT toggle-wrap) to 6 Comply360 reference dashboards (FireSafety · CostAudit · Environmental · IndustrialSafety · WasteManagement · DPDP) — each gains ReportChart + ScorecardTile (RAG) + integrity badge; existing Card layout/tiles/tables PRESERVED · 6 KPI seeds (with thresholds) in kpi-registry (idempotent · seed-data only) · frozen-framework files 0-DIFF (chart-config · period-engine · integrity-sign · ChartLibrary · TableChartToggle · CHART_TYPE_COVERAGE) · other 11 Comply360 dashboards + all EximX dashboards + all banked RPT-1a/1b/2c/2b-i/2b-ii pages 0-DIFF · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-2a-i T-RPT2ai-Dashboard-Primitive-Comply360-Cohort · Reporting Arc · build deferred ScorecardTile+RAG primitive (core/rag.ts + ui/ScorecardTile.tsx) — JOINS existing report-framework lib (ZERO new SIBLING) · apply DASHBOARD recipe (additive · NOT toggle-wrap) to 6 Comply360 reference dashboards (FireSafety · CostAudit · Environmental · IndustrialSafety · WasteManagement · DPDP) — each gains ReportChart + ScorecardTile (RAG) + integrity badge; existing Card layout/tiles/tables PRESERVED · 6 KPI seeds (with thresholds) in kpi-registry (idempotent · seed-data only) · frozen-framework files 0-DIFF (chart-config · period-engine · integrity-sign · ChartLibrary · TableChartToggle · CHART_TYPE_COVERAGE) · other 11 Comply360 dashboards + all EximX dashboards + all banked RPT-1a/1b/2c/2b-i/2b-ii pages 0-DIFF · headSha BACKFILLED 16aea6d at RPT-2a-ii Block 2
   {
     sprintNumber: 'RPT2ai' as unknown as number, code: 'T-RPT2ai-Dashboard-Primitive-Comply360-Cohort', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '3cc5945', loc: 810,
+    headSha: '16aea6d', predecessorSha: '3cc5945', loc: 810,
+    newSiblings: [],
+    bankDate: '2026-06-10', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-2a-ii T-RPT2aii-Comply360-Dashboard-Cohort2 · Reporting Arc · roll the banked RPT-2a-i dashboard recipe (ReportChart + ScorecardTile/RAG + integrity badge) across 5 Comply360 cohort-2 dashboards (QualityStandards · CyberSecurity · CSR · LabourTier2 · MCATier2) — each gains ReportChart over already-computed summary + ScorecardTile (RAG) + integrity badge; existing Card layout/tiles/tables PRESERVED · 5 KPI seeds (with thresholds) in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · frozen-framework files 0-DIFF (rag.ts · ScorecardTile.tsx · chart-config · period-engine · integrity-sign · ChartLibrary · TableChartToggle · CHART_TYPE_COVERAGE · barrels · src/test/setup.ts) · 6 RPT-2a-i dashboards + EWS + other 2a-iii dashboards + all EximX dashboards + all banked pages 0-DIFF · T2 lesson honored (getByRole heading + queryAllByText length for tiles) · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT2aii' as unknown as number, code: 'T-RPT2aii-Comply360-Dashboard-Cohort2', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '16aea6d', loc: 540,
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'PENDING_BACKFILL',
   },

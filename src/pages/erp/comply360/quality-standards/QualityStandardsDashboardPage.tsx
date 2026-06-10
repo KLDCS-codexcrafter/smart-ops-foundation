@@ -7,10 +7,13 @@ import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import {
   listScheduleHRecords, listFSSAILicenses, listBISCerts, listISOCerts,
   listNABLScopes, listRecalls, getQualityComplianceSummary,
 } from '@/lib/comply360-quality-standards-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 type TabKey = 'schedule-h' | 'fssai' | 'bis-iso' | 'nabl-lm' | 'recalls';
 
@@ -62,6 +65,41 @@ export default function QualityStandardsDashboardPage(): JSX.Element {
           {summary.overall_status}
         </Badge>
       </div>
+
+      {(() => {
+        const chartRows = [
+          { status: 'FSSAI Active', count: summary.fssai_active },
+          { status: 'FSSAI Expired', count: summary.fssai_expired },
+          { status: 'BIS Certs', count: summary.bis_certs },
+          { status: 'ISO Certs', count: summary.iso_certs },
+          { status: 'Open Recalls', count: summary.open_recalls },
+        ];
+        const good = summary.fssai_active + summary.bis_certs + summary.iso_certs;
+        const bad = summary.fssai_expired + summary.open_recalls;
+        const pct = Math.round((good * 100) / ((good + bad) || 1));
+        const kpi = getKpi('cmp-quality');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'count', label: 'Quality controls' }] });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 85, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2aii-quality-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Quality standards compliance %" value={`${pct}%`} rag={rag} hint="Active certs vs lapses/recalls" />
+              <ScorecardTile label="Open Recalls" value={summary.open_recalls} hint="Recall queue" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-quality">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
         <TabsList className="grid grid-cols-5 w-full">
