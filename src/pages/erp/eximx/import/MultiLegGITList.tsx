@@ -1,20 +1,24 @@
 /**
  * @file        src/pages/erp/eximx/import/MultiLegGITList.tsx
  * @purpose     Multi-Leg GIT list · 5-leg badge · 3-bucket totals
- * @sprint      T-Phase-1.EX-4-MultiLeg-GIT-3Bucket-4Method
+ * @sprint      T-Phase-1.EX-4-MultiLeg-GIT-3Bucket-4Method · RPT-2b-ii additive chart wrap
  */
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Ship, AlertCircle } from 'lucide-react';
+import { Search, Ship, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadMultiLegGITs, countActiveLegs } from '@/lib/multi-leg-git-engine';
 import { SINHA_MULTI_LEG_GITS } from '@/data/sinha-multi-leg-git-seed-data';
 import type { MultiLegGITState } from '@/types/multi-leg-git';
 import { MultiLegJourneyVisual } from './MultiLegJourneyVisual';
+// RPT-2b-ii · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 const STATE_CLASS: Record<MultiLegGITState, string> = {
   originating: 'bg-muted text-muted-foreground',
@@ -38,16 +42,52 @@ export function MultiLegGITList(): JSX.Element {
     m.related_import_po_no.toLowerCase().includes(search.toLowerCase()),
   );
 
+  // RPT-2b-ii · additive chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const byState: Record<string, number> = {};
+    for (const m of mlgits) {
+      byState[m.overall_state] = (byState[m.overall_state] ?? 0) + m.booked_total_inr;
+    }
+    return Object.entries(byState).map(([state, git_value]) => ({ state, git_value }));
+  }, [mlgits]);
+  const chartConfig = getKpi('ex-git')?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'state',
+    series: [{ key: 'git_value', label: 'GIT value' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
+        <h1 className="text-2xl font-bold flex items-center gap-2 flex-wrap">
           <Ship className="w-6 h-6" /> Shipments + Multi-Leg GIT
+          <Badge variant="outline" className="text-[10px]" data-testid="ex-git-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="ex-git-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </h1>
         <p className="text-sm text-muted-foreground">
           5-leg journey · 3-bucket reconciliation · 4-method allocation · {mlgits.length} active
         </p>
       </div>
+
+      <Card className="p-3" data-testid="ex-git-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'state', label: 'State' },
+            { key: 'git_value', label: 'GIT value (₹)', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No GIT records"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
 
       <Card className="border-l-4 border-l-primary">
         <CardContent className="p-3 text-xs flex items-start gap-2">

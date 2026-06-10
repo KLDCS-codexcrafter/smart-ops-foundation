@@ -345,6 +345,77 @@ registerKpi({
   }),
 });
 
+// ─── RPT-2b-ii · 6 EximX finance/realisation register KPI seeds (idempotent) ─
+registerKpi({
+  id: 'ex-realisation',
+  label: 'Export realisation',
+  dataSource: 'eximx.realisation.by-period',
+  defaultChart: defaultChartConfig({
+    chartType: 'combo', xKey: 'period',
+    series: [
+      { key: 'realised', label: 'Realised', renderAs: 'bar' },
+      { key: 'realisation_pct', label: 'Realisation %', renderAs: 'line' },
+    ],
+    title: 'Export realisation',
+  }),
+});
+
+registerKpi({
+  id: 'ex-fema-270',
+  label: 'FEMA 270-day aging',
+  dataSource: 'eximx.fema.270-day-aging',
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'bucket',
+    series: [{ key: 'value', label: 'Outstanding' }],
+    title: 'FEMA 270-day aging',
+  }),
+});
+
+registerKpi({
+  id: 'ex-packing-credit',
+  label: 'Packing credit outstanding',
+  dataSource: 'eximx.packing-credit.outstanding-by-status',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'outstanding', label: 'Outstanding' }],
+    title: 'Packing credit outstanding',
+  }),
+});
+
+registerKpi({
+  id: 'ex-hedge',
+  label: 'Hedge notional by currency',
+  dataSource: 'eximx.hedge.notional-by-currency',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'currency',
+    series: [{ key: 'notional', label: 'Notional' }],
+    title: 'Hedge notional by currency',
+  }),
+});
+
+registerKpi({
+  id: 'ex-git',
+  label: 'GIT value by leg',
+  dataSource: 'eximx.git.value-by-leg',
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'state',
+    series: [{ key: 'git_value', label: 'GIT value' }],
+    title: 'GIT value by leg',
+  }),
+});
+
+registerKpi({
+  id: 'ex-rootar',
+  label: 'RoO preference by FTA',
+  dataSource: 'eximx.roo.preference-by-fta',
+  defaultChart: defaultChartConfig({
+    chartType: 'bar', xKey: 'fta',
+    series: [{ key: 'count', label: 'Declarations' }],
+    title: 'RoO preference by FTA',
+  }),
+});
+
+
 
 
 

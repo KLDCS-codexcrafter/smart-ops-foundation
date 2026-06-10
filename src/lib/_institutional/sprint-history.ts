@@ -1270,14 +1270,22 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-2b-i T-RPT2bi-EximX-TradeDoc-Registers-Chart-Wrap · Reporting Arc · roll the frozen RPT-2c wrap recipe across 7 EximX trade-doc registers (LCList · CIList · BoEList · ImportPOList · ExportPOList · ShippingBillList · ExportDispatchList) · TableChartToggle + period/as-of chip + drill consume + integrity badge · 7 KPI seeds in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · framework files 0-DIFF except kpi-registry · all EximX dashboards/masters/calculators + 6 RPT-2b-ii registers + CustomDayBook 0-DIFF · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-2b-i T-RPT2bi-EximX-TradeDoc-Registers-Chart-Wrap · Reporting Arc · roll the frozen RPT-2c wrap recipe across 7 EximX trade-doc registers (LCList · CIList · BoEList · ImportPOList · ExportPOList · ShippingBillList · ExportDispatchList) · TableChartToggle + period/as-of chip + drill consume + integrity badge · 7 KPI seeds in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · framework files 0-DIFF except kpi-registry · all EximX dashboards/masters/calculators + 6 RPT-2b-ii registers + CustomDayBook 0-DIFF · headSha BACKFILLED 92bec00 at RPT-2b-ii Block 3
   {
     sprintNumber: 'RPT2bi' as unknown as number, code: 'T-RPT2bi-EximX-TradeDoc-Registers-Chart-Wrap', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '069959a', loc: 720,
+    headSha: '92bec00', predecessorSha: '069959a', loc: 720,
+    newSiblings: [],
+    bankDate: '2026-06-10', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-2b-ii T-RPT2bii-EximX-Finance-Registers-Chart-Wrap · Reporting Arc · roll the banked RPT-2b-i wrap recipe across 6 EximX finance/realisation registers (ExportRealisationList · FEMA270DayTracker · PackingCreditList · HedgeContractList · MultiLegGITList · CAROTARRoOMatrix) · TableChartToggle + period/as-of chip + drill consume + integrity badge · 6 KPI seeds in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · framework files 0-DIFF except kpi-registry · all 7 RPT-2b-i registers + EximX dashboards/masters + CustomDayBook 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT2bii' as unknown as number, code: 'T-RPT2bii-EximX-Finance-Registers-Chart-Wrap', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '92bec00', loc: 640,
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'PENDING_BACKFILL',
   },
 ];
+
 
 
 
