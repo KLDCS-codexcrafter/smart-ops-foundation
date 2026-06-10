@@ -7,12 +7,14 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { TrendingUp, AlertCircle, Banknote } from 'lucide-react';
+import { TrendingUp, AlertCircle, Banknote, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadMultiLegGITs, averageDwellTime } from '@/lib/multi-leg-git-engine';
 import { summarizeMLGITReconciliation } from '@/lib/reconciliation-engine';
 import { computeVarianceForAll, type LandedCostVarianceReport } from '@/lib/landed-cost-variance-engine';
 import { SINHA_MULTI_LEG_GITS } from '@/data/sinha-multi-leg-git-seed-data';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 
 export function LandedCostReconciliationDashboard(): JSX.Element {
