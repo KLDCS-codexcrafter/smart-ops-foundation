@@ -228,7 +228,7 @@ Aggregate count of `✅` / `◐` / `✖` against each benchmark column when meas
 
 ## 4. Honest claims (and counter-claims) the audit supports
 
-- ✅ **"Operix ships 236 reports across 33 cards on HEAD."** Verifiable: `find src/pages/erp/*/reports -name "*.tsx" -not -name "*.utils.ts" | wc -l`.
+- ✅ **"Operix ships 225 top-level reports across 33 cards on HEAD (316 including detail/print/action variants)."** Verifiable: `for d in src/pages/erp/*/reports; do ls $d/*.tsx 2>/dev/null; done | wc -l` → 225; `find src/pages/erp/*/reports -name "*.tsx" | wc -l` → 316.
 - ✅ **"Tally has no QMS, no EAM, no project module, no PLM, no service-mgmt, no DMS reports."** True; backed by `help.tallysolutions.com/release-notes-tallyprime-7-0/` module list.
 - ✅ **"Fin Core matches TallyPrime on the seeded financial-reports list."** True for the 22 files enumerated.
 - ✖ **Cannot claim:** "Operix has more reports than NetSuite" — NetSuite's seed list + saved searches commonly exceeds 300 per implementation; the right framing is "Operix ships India-specific reports (ITC-04, BRSR, Schedule M, 26Q/24Q/27Q, 3CD) that NetSuite requires customisation for".
