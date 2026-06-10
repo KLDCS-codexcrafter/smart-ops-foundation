@@ -35,12 +35,50 @@ export function ExportDispatchList(): JSX.Element {
     setManifestByPo(map);
   }, []);
 
+  // RPT-2b-i · additive chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const agg: Record<string, number> = {};
+    for (const m of mirrors) {
+      const k = m.overall_state || 'unknown';
+      agg[k] = (agg[k] ?? 0) + 1;
+    }
+    return Object.entries(agg).map(([date, value]) => ({ date, value }));
+  }, [mirrors]);
+  const chartConfig = getKpi('ex-dispatch')?.defaultChart ?? defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'value', label: 'Dispatch value' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="space-y-6 p-6">
-      <div>
+      <div className="flex items-center gap-2">
         <h1 className="text-2xl font-bold">Export Dispatches</h1>
-        <p className="text-sm text-muted-foreground">5-leg outbound mirror · CustomerWarehouse → OriginPort → Vessel → DestinationPort → ForeignBuyerWarehouse · multi-leg-git.ts 0-diff (D-284 spirit)</p>
+        <Badge variant="outline" className="text-[10px]" data-testid="ex-disp-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="ex-disp-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
       </div>
+      <p className="text-sm text-muted-foreground">5-leg outbound mirror · CustomerWarehouse → OriginPort → Vessel → DestinationPort → ForeignBuyerWarehouse · multi-leg-git.ts 0-diff (D-284 spirit)</p>
+
+      <Card className="p-3" data-testid="ex-disp-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'date', label: 'State' },
+            { key: 'value', label: 'Count', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No dispatches"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <Card>
         <CardHeader><CardTitle><Truck className="w-4 h-4 inline mr-2" />Dispatch Register</CardTitle></CardHeader>
