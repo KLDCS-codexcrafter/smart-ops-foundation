@@ -7,13 +7,15 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Globe, AlertTriangle } from 'lucide-react';
+import { Globe, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useEntityList } from '@/hooks/useEntityList';
 import {
   aggregateRealisationsAcrossEntities,
   type CrossEntityRealisationReport,
 } from '@/lib/realisation-aggregation-engine';
 import type { FEMAState } from '@/types/export-realisation';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 const FEMA_VARIANT: Record<FEMAState, 'default' | 'secondary' | 'destructive'> = {
   safe: 'secondary',
