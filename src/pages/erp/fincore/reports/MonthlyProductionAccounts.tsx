@@ -3,14 +3,21 @@
  * Sprint T-Phase-1.2.5h-b1
  */
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useContext } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Factory, AlertCircle } from 'lucide-react';
+import { Factory, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { GlobalDateRangeContext } from '@/hooks/GlobalDateRangeContext';
 import { consumptionEntriesKey, type ConsumptionEntry } from '@/types/consumption';
 import { useT } from '@/lib/i18n-engine';
+// RPT-1b · chart-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 
 interface CompanyLite {
   entityCode?: string;
@@ -59,6 +66,20 @@ export default function MonthlyProductionAccounts() {
     }
     return Array.from(map.values());
   }, [consumptions]);
+  // RPT-1b additive — hooks declared BEFORE early returns (Rules of Hooks)
+  const drill = useDrillDown();
+  const gdr = useContext(GlobalDateRangeContext);
+  const periodLabel = gdr ? `${gdr.range.from} → ${gdr.range.to}` : month;
+  const chartRows = useMemo(() => {
+    return rawMaterials.slice(0, 12).map(r => ({ month: r.item_code, value: r.qty }));
+  }, [rawMaterials]);
+  const kpi = getKpi('fc-monthly-prod');
+  const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'line', xKey: 'month',
+    series: [{ key: 'value', label: 'Consumed qty' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   if (!entityCode) {
     return <div className="p-6 text-sm text-muted-foreground">Select a company first.</div>;
@@ -93,9 +114,34 @@ export default function MonthlyProductionAccounts() {
             {t('comp.monthly_production.title', 'Monthly Production Accounts · CGST Rule 56(12)')}
           </h1>
           <p className="text-sm text-muted-foreground mt-1">{company?.legalEntityName} · {month}</p>
+          <div className="flex gap-2 mt-1">
+            <Badge variant="outline" className="text-[10px]" data-testid="mpa-period-chip">{periodLabel}</Badge>
+            <Badge variant="outline" className="text-[10px] font-mono" data-testid="mpa-integrity-badge" title={integrityHash}>
+              <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+            </Badge>
+          </div>
         </div>
         <Input type="month" value={month} onChange={e => setMonth(e.target.value)} className="w-44" />
       </div>
+
+      {/* RPT-1b · TableChartToggle wrap · defaults to Table */}
+      <Card><CardContent className="p-3" data-testid="mpa-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          chartRows={chartRows}
+          columns={[
+            { key: 'month', label: 'Item code' },
+            { key: 'value', label: 'Qty', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No consumption"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </CardContent></Card>
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">Raw Materials Consumed</CardTitle></CardHeader>

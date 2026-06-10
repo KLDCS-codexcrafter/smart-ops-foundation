@@ -1249,13 +1249,22 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-09', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-1a T-RPT1a-Reporting-Framework-Foundation · Reporting Arc Step-2 · build-once shared lib core/ (chart-config · period-engine · integrity-sign · kpi-registry) + ui/ (15-type ChartLibrary on existing ChartContainer · CHART_TYPE_COVERAGE · TableChartToggle) + ONE reference wire on OutstandingAging (additive only · existing Table/tabs preserved · period chip · drill consume · integrity badge · 2 KPI seeds) · core/ is React-free + write-free (read-only-lock test enforces zero react/hook imports · zero localStorage.setItem · zero postVoucher/saveVoucher/writeVoucher) · period-engine PURE (does NOT import GlobalDateRangeContext · context adopts engine in RPT-1b/4) · integrity-sign DELEGATES to voucher-hash (no new hash algo) · kpi-registry idempotent append-only (re-register = no-op) · 15 chart types: 9 native recharts + 1 composed + 5 approximated (recharts-only · NO new dependency) · TableChartToggle defaults to Table (zero visual regression on wrap) · 1 new SIBLING (report-framework core) · 28 new framework tests + 6 page tests · walls held: GlobalDateRangeContext · useDayBook · ui/chart.tsx · voucher-hash · applications.ts all 0-DIFF · CLN3 flipped to 3376c22 · 121→122 ⭐ · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-1a T-RPT1a-Reporting-Framework-Foundation · Reporting Arc Step-2 · build-once shared lib core/ (chart-config · period-engine · integrity-sign · kpi-registry) + ui/ (15-type ChartLibrary on existing ChartContainer · CHART_TYPE_COVERAGE · TableChartToggle) + ONE reference wire on OutstandingAging (additive only · existing Table/tabs preserved · period chip · drill consume · integrity badge · 2 KPI seeds) · core/ is React-free + write-free · 1 new SIBLING (report-framework core) · 28 new framework tests + 6 page tests · CLN3 flipped to 3376c22 · 121→122 ⭐ · headSha BACKFILLED 8d355d1e3 at RPT-1b Block 3
   {
     sprintNumber: 'RPT1a' as unknown as number, code: 'T-RPT1a-Reporting-Framework-Foundation', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '3376c22', loc: 1150,
+    headSha: '8d355d1e3', predecessorSha: '3376c22', loc: 1150,
     newSiblings: ['report-framework'],
+    bankDate: '2026-06-10', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-1b T-RPT1b-FinCore-Chart-Wrap · Reporting Arc · roll the frozen RPT-1a wrap recipe across 8 FinCore analytical pages (LedgerReport · ChequeManagement · BalanceSheet · TrialBalance · StockSummary · ProfitLoss · MonthlyProductionAccounts · BankReconciliation) · TableChartToggle + period/as-of chip + drill consume + integrity badge · 8 KPI seeds in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · framework files 0-DIFF except kpi-registry · OutstandingAging/DayBook/statutory pages 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT1b' as unknown as number, code: 'T-RPT1b-FinCore-Chart-Wrap', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '8d355d1e3', loc: 760,
+    newSiblings: [],
     bankDate: '2026-06-10', provenance: 'PENDING_BACKFILL',
   },
+
+
 
 ];
 

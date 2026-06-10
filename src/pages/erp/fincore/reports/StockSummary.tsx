@@ -3,11 +3,12 @@
  * Current stock position of all items with godown breakup
  * [JWT] All data via hooks
  */
-import { useState, useMemo } from 'react';
-import { Package, Download } from 'lucide-react';
+import { useState, useMemo, useContext } from 'react';
+import { Package, Download, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -16,8 +17,14 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useStockLedger } from '@/hooks/useStockLedger';
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { GlobalDateRangeContext } from '@/hooks/GlobalDateRangeContext';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, today, exportCSV } from './reportUtils';
+// RPT-1b · chart-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 
 interface StockSummaryPanelProps { entityCode: string; }
 
@@ -59,17 +66,61 @@ export function StockSummaryPanel({ entityCode }: StockSummaryPanelProps) {
     );
   };
 
+  // RPT-1b additive — chart wrap
+  const drill = useDrillDown();
+  const gdr = useContext(GlobalDateRangeContext);
+  const periodLabel = gdr ? `${gdr.range.from} → ${gdr.range.to}` : `As-on ${asOfDate}`;
+  const chartRows = useMemo(() => {
+    const grouped = new Map<string, number>();
+    for (const r of stockData) {
+      grouped.set(r.itemName, (grouped.get(r.itemName) ?? 0) + r.balance * r.rate);
+    }
+    return Array.from(grouped.entries())
+      .sort((a, b) => b[1] - a[1]).slice(0, 10)
+      .map(([group, value]) => ({ group, value }));
+  }, [stockData]);
+  const kpi = getKpi('fc-stock-value');
+  const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'group',
+    series: [{ key: 'value', label: 'Stock value' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 max-w-6xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Package className="h-5 w-5 text-teal-500" />
           <h2 className="text-lg font-bold">Stock Summary</h2>
+          <Badge variant="outline" className="text-[10px]" data-testid="ss-period-chip">{periodLabel}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="ss-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary variant="outline" size="sm" onClick={handleExport}>
           <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
         </Button>
       </div>
+
+      {/* RPT-1b · TableChartToggle wrap · defaults to Table */}
+      <Card><CardContent className="p-3" data-testid="ss-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          chartRows={chartRows}
+          columns={[
+            { key: 'group', label: 'Item' },
+            { key: 'value', label: 'Value', align: 'right', render: (r) => inr(Number(r.value) || 0) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No stock"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </CardContent></Card>
+
 
       <Card><CardContent className="p-3 flex flex-wrap gap-4 items-end">
         <div className="space-y-1">

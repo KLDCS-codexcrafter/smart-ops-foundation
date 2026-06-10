@@ -3,11 +3,12 @@
  * Assets = Liabilities + Capital + Net Profit
  * [JWT] All data via hooks
  */
-import { useState, useMemo } from 'react';
-import { BarChart3, Download, CheckCircle, AlertTriangle } from 'lucide-react';
+import { useState, useMemo, useContext } from 'react';
+import { BarChart3, Download, CheckCircle, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { SidebarProvider } from '@/components/ui/sidebar';
@@ -15,9 +16,15 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useJournal } from '@/hooks/useJournal';
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { GlobalDateRangeContext } from '@/hooks/GlobalDateRangeContext';
 import { L2_PARENT_GROUPS } from '@/data/finframe-seed-data';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, today, groupByL2, getL1Code, exportCSV } from './reportUtils';
+// RPT-1b · chart-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 
 interface BalanceSheetPanelProps { entityCode: string; }
 
@@ -94,17 +101,60 @@ export function BalanceSheetPanel({ entityCode }: BalanceSheetPanelProps) {
     ]);
   };
 
+  // RPT-1b additive — chart wrap (existing UI preserved)
+  const drill = useDrillDown();
+  const gdr = useContext(GlobalDateRangeContext);
+  const periodLabel = gdr ? `${gdr.range.from} → ${gdr.range.to}` : `As-on ${asOfDate}`;
+  const chartRows = useMemo(() => ([
+    { group: 'Non-Current', assets: nca.total, liabilities: ncl.total },
+    { group: 'Current', assets: ca.total, liabilities: cl.total },
+    { group: 'Capital/Equity', assets: 0, liabilities: totalCapital },
+  ]), [nca.total, ncl.total, ca.total, cl.total, totalCapital]);
+  const kpi = getKpi('fc-bs-composition');
+  const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'group',
+    series: [
+      { key: 'assets', label: 'Assets' },
+      { key: 'liabilities', label: 'Liabilities + Capital' },
+    ],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-6 max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-5 w-5 text-teal-500" />
           <h2 className="text-lg font-bold">Balance Sheet</h2>
+          <Badge variant="outline" className="text-[10px]" data-testid="bs-period-chip">{periodLabel}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="bs-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary variant="outline" size="sm" onClick={handleExport}>
           <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
         </Button>
       </div>
+
+      {/* RPT-1b · TableChartToggle wrap · defaults to Table */}
+      <Card><CardContent className="p-3" data-testid="bs-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          chartRows={chartRows}
+          columns={[
+            { key: 'group', label: 'Group' },
+            { key: 'assets', label: 'Assets', align: 'right', render: (r) => inr(Number(r.assets) || 0) },
+            { key: 'liabilities', label: 'Liab + Capital', align: 'right', render: (r) => inr(Number(r.liabilities) || 0) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No balances"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </CardContent></Card>
 
       <Card><CardContent className="p-3 flex gap-3 items-end">
         <div className="space-y-1">
@@ -112,6 +162,9 @@ export function BalanceSheetPanel({ entityCode }: BalanceSheetPanelProps) {
           <Input type="date" value={asOfDate} onChange={e => setAsOfDate(e.target.value)} className="h-8 text-xs w-40" onKeyDown={onEnterNext} />
         </div>
       </CardContent></Card>
+
+
+
 
       {balanced ? (
         <Alert className="border-emerald-500/30 bg-emerald-500/5">

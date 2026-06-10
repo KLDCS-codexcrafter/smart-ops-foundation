@@ -4,8 +4,8 @@
  * Storage: erp_cheque_status_{entityCode}
  * [JWT] All data via hooks + new storage key
  */
-import { useState, useMemo, useCallback } from 'react';
-import { Receipt, Download } from 'lucide-react';
+import { useState, useMemo, useCallback, useContext } from 'react';
+import { Receipt, Download, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,9 +18,15 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useVouchers } from '@/hooks/useVouchers';
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { GlobalDateRangeContext } from '@/hooks/GlobalDateRangeContext';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fmtDate, exportCSV } from './reportUtils';
+// RPT-1b · chart-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 
 interface ChequeManagementPanelProps { entityCode: string; }
 
@@ -151,17 +157,59 @@ export function ChequeManagementPanel({ entityCode }: ChequeManagementPanelProps
     );
   };
 
+  // RPT-1b additive — chart wrap (existing tabs/tables/columns preserved)
+  const drill = useDrillDown();
+  const gdr = useContext(GlobalDateRangeContext);
+  const periodLabel = gdr ? `${gdr.range.from} → ${gdr.range.to}` : 'All time';
+  const chartRows = useMemo(() => {
+    const all = [...issuedCheques, ...receivedCheques];
+    const counts: Record<ChequeStatus, number> = { issued: 0, presented: 0, cleared: 0, bounced: 0 };
+    for (const v of all) counts[statuses[v.id] ?? 'issued']++;
+    return (Object.keys(counts) as ChequeStatus[]).map(s => ({ status: s, count: counts[s] }));
+  }, [issuedCheques, receivedCheques, statuses]);
+
+  const kpi = getKpi('fc-cheque-status');
+  const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Cheques' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 max-w-6xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Receipt className="h-5 w-5 text-teal-500" />
           <h2 className="text-lg font-bold">Cheque Management</h2>
+          <Badge variant="outline" className="text-[10px]" data-testid="cm-period-chip">{periodLabel}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="cm-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary variant="outline" size="sm" onClick={() => exportCSV('cheques.csv', ['Type', 'Date', 'Voucher', 'Party', 'Amount', 'Status'], [])}>
           <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
         </Button>
       </div>
+
+      {/* RPT-1b · TableChartToggle wrap · defaults to Table */}
+      <Card><CardContent className="p-3" data-testid="cm-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          chartRows={chartRows}
+          columns={[
+            { key: 'status', label: 'Status' },
+            { key: 'count', label: 'Count', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No cheques"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </CardContent></Card>
+
 
       <Card><CardContent className="p-3 flex flex-wrap gap-3 items-end">
         <div className="space-y-1">

@@ -4,9 +4,9 @@
  * Storage: erp_bank_recon_{entityCode}
  * [JWT] All data via hooks + new storage key
  */
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useContext } from 'react';
 import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
-import { Landmark, Download, Zap, CheckCircle, Save } from 'lucide-react';
+import { Landmark, Download, Zap, CheckCircle, Save, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,10 +18,16 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useJournal } from '@/hooks/useJournal';
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { GlobalDateRangeContext } from '@/hooks/GlobalDateRangeContext';
 import { L3_FINANCIAL_GROUPS } from '@/data/finframe-seed-data';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fmtDate, today } from './reportUtils';
+// RPT-1b · chart-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 
 interface BankReconciliationPanelProps { entityCode: string; }
 
@@ -125,12 +131,35 @@ export function BankReconciliationPanel({ entityCode }: BankReconciliationPanelP
   const unmatchedBooks = bookEntries.filter(e => !matchedBookIds.has(e.id));
   const unmatchedStmts = statementLines.filter(s => !matchedStmtIds.has(s.id));
 
+  // RPT-1b additive — chart wrap
+  const drill = useDrillDown();
+  const gdr = useContext(GlobalDateRangeContext);
+  const periodLabel = gdr ? `${gdr.range.from} → ${gdr.range.to}` : periodMonth;
+  const totalBookCount = bookEntries.length + statementLines.length;
+  const reconciledPct = totalBookCount > 0
+    ? Math.round((matches.length * 2 / totalBookCount) * 1000) / 10
+    : 0;
+  const chartRows = useMemo(() => ([
+    { label: 'Reconciled', reconciled_pct: reconciledPct },
+  ]), [reconciledPct]);
+  const kpi = getKpi('fc-bank-reco');
+  const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'gauge', xKey: 'label',
+    series: [{ key: 'reconciled_pct', label: 'Reconciled %' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 max-w-6xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Landmark className="h-5 w-5 text-teal-500" />
           <h2 className="text-lg font-bold">Bank Reconciliation</h2>
+          <Badge variant="outline" className="text-[10px]" data-testid="br-period-chip">{periodLabel}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="br-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={autoMatch} disabled={!selectedBank || statementLines.length === 0}>
@@ -141,6 +170,25 @@ export function BankReconciliationPanel({ entityCode }: BankReconciliationPanelP
           </Button>
         </div>
       </div>
+
+      {/* RPT-1b · TableChartToggle wrap · defaults to Table */}
+      <Card><CardContent className="p-3" data-testid="br-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          chartRows={chartRows}
+          columns={[
+            { key: 'label', label: 'Metric' },
+            { key: 'reconciled_pct', label: 'Reconciled %', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No reconciliation"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </CardContent></Card>
+
 
       <Card><CardContent className="p-3 flex flex-wrap gap-3 items-end">
         <div className="space-y-1">
