@@ -64,6 +64,50 @@ export function MonthEndRevalDashboard(): JSX.Element {
           </CardContent>
         </Card>
       )}
+
+      {(() => {
+        const byCurrency = new Map<string, { revalued: number; pending: number }>();
+        for (const r of rs) {
+          const cur = r.currency_code;
+          const slot = byCurrency.get(cur) ?? { revalued: 0, pending: 0 };
+          if (r.status === 'fully_realised') slot.revalued += 1; else slot.pending += 1;
+          byCurrency.set(cur, slot);
+        }
+        const chartRows = Array.from(byCurrency.entries()).map(([currency, v]) => ({
+          currency, revalued: v.revalued, pending: v.pending,
+        }));
+        const revaluedTotal = rs.length - pendingReval.length;
+        const pct = rs.length > 0 ? Math.round((revaluedTotal * 100) / rs.length) : 100;
+        const kpi = getKpi('ex-monthend-reval');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'currency',
+          series: [
+            { key: 'revalued', label: 'Revalued' },
+            { key: 'pending', label: 'Pending' },
+          ],
+          title: 'FX reval coverage by currency',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 95, red: 80, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biii-monthend-reval-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Month-end reval coverage %" value={`${pct}%`} rag={rag} hint="Revalued vs total" />
+              <ScorecardTile label="Pending reval" value={pendingReval.length} hint="Awaiting next run" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-monthend-reval">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
