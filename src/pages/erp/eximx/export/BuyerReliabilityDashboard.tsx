@@ -6,7 +6,9 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Award } from 'lucide-react';
+import { Award, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import { FOREIGN_CUSTOMER_LOCALSTORAGE_KEY } from '@/types/foreign-customer';
 import type { ForeignCustomer } from '@/types/foreign-customer';
 import { aggregateReliabilityForDashboard } from '@/lib/buyer-reliability-engine';
