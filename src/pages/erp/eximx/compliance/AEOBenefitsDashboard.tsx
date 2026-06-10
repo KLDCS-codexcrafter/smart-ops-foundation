@@ -6,10 +6,12 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Award, TrendingUp, Clock, AlertTriangle } from 'lucide-react';
+import { Award, TrendingUp, Clock, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { loadEntityAEOCerts } from '@/lib/aeo-tier-engine';
 import { computeAEOBenefit, getAEOUpgradePathway, AEO_BCD_REDUCTION_PCT, AEO_CLEARANCE_HOURS_SAVED } from '@/lib/aeo-tier-benefit-engine';
 import type { EntityAEOCertification } from '@/types/aeo-tier-mapping';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 export function AEOBenefitsDashboard(): JSX.Element {
   const entityCode = 'sinha-steel';
