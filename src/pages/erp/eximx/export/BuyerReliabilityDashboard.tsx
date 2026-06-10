@@ -64,6 +64,39 @@ export function BuyerReliabilityDashboard(): JSX.Element {
           </div>
         </CardContent>
       </Card>
+
+      {(() => {
+        const classes = ['excellent', 'good', 'attention', 'risk'] as const;
+        const chartRows = classes.map((c) => ({ class: c, count: agg.by_class[c] }));
+        const pct = agg.avg_score;
+        const kpi = getKpi('ex-buyer-reliability');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'class',
+          series: [{ key: 'count', label: 'Customers' }],
+          title: 'Buyer reliability distribution',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 80, red: 60, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biv-buyer-reliability-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Buyer reliability index" value={`${pct}`} rag={rag} hint="Avg score across customers" />
+              <ScorecardTile label="High-risk customers" value={agg.high_risk_count} hint="Score < 50" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-buyer-reliability">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
+
