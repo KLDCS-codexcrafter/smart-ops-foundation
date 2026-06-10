@@ -25,6 +25,23 @@ export function ExportPOList(): JSX.Element {
   useEffect(() => { setPos(loadExportPOs(entityCode)); }, []);
   const summary = summarizeExportPOs(pos);
 
+  // RPT-2b-i · additive chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const agg: Record<string, number> = {};
+    for (const p of pos) {
+      const k = p.country_code || 'unknown';
+      agg[k] = (agg[k] ?? 0) + p.total_fob_value_inr;
+    }
+    return Object.entries(agg).map(([buyer, value]) => ({ buyer, value }));
+  }, [pos]);
+  const chartConfig = getKpi('ex-export-po')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'buyer',
+    series: [{ key: 'value', label: 'PO value' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   const lutBadge = (state: ExportPurchaseOrder['lut_status_at_validation']) => {
     if (state === 'active') return <Badge className="bg-success text-success-foreground">LUT Active</Badge>;
     if (state === 'expiring') return <Badge className="bg-warning text-warning-foreground">LUT Expiring</Badge>;
@@ -42,15 +59,36 @@ export function ExportPOList(): JSX.Element {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">Export Purchase Orders</h1>
-          <p className="text-sm text-muted-foreground">First export-side sprint · LUT readiness gate · Buyer Reliability Index · 4-doc Pre-shipment Pack</p>
+          <Badge variant="outline" className="text-[10px]" data-testid="ex-expo-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="ex-expo-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <div className="flex gap-2">
           <Button onClick={() => navigate('/erp/eximx/export/orders/new')}><Plus className="w-4 h-4 mr-2" />New Export PO</Button>
           <Button variant="outline" onClick={() => navigate('/erp/eximx/saathi/tdl-gaps-atlas')}><Sparkles className="w-4 h-4 mr-2" />Saathi</Button>
         </div>
       </div>
+
+      <Card className="p-3" data-testid="ex-expo-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'buyer', label: 'Country' },
+            { key: 'value', label: 'FOB value', align: 'right',
+              render: (r) => `₹${Number(r.value).toLocaleString('en-IN')}` },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No POs"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-6"><div className="text-2xl font-bold font-mono">{summary.total}</div><div className="text-xs text-muted-foreground">Total Export POs</div></CardContent></Card>
