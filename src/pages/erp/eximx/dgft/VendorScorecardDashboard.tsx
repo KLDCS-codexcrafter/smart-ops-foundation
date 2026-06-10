@@ -7,7 +7,9 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Building2, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Building2, TrendingUp, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import { loadVendorScores, summarizeVendorScores } from '@/lib/vendor-reliability-engine';
 import type { VendorReliabilityScore, VendorReliabilityClass } from '@/types/vendor-reliability-score';
 
