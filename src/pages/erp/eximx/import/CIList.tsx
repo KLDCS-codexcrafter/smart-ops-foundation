@@ -8,12 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, FileText, AlertCircle } from 'lucide-react';
+import { Search, FileText, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadCIs, countCIsWithRevaluation } from '@/lib/commercial-invoice-engine';
 import { SINHA_COMMERCIAL_INVOICES } from '@/data/sinha-commercial-invoice-seed-data';
 import type { CIStatus } from '@/types/commercial-invoice';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 const STATE_CLASS: Record<CIStatus, string> = {
   draft: 'bg-muted text-muted-foreground',
@@ -41,16 +46,57 @@ export function CIList(): JSX.Element {
     c.vendor_invoice_no.toLowerCase().includes(search.toLowerCase()),
   );
 
+  // RPT-2b-i · additive chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const byMonth: Record<string, number> = {};
+    for (const c of cis) {
+      const month = (c.ci_date ?? '').slice(0, 7) || 'unknown';
+      byMonth[month] = (byMonth[month] ?? 0) + c.total_cif_value_inr;
+    }
+    return Object.entries(byMonth)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([month, invoice_value]) => ({ month, invoice_value }));
+  }, [cis]);
+  const chartConfig = getKpi('ex-ci-value')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'month',
+    series: [{ key: 'invoice_value', label: 'Invoice value' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <FileText className="w-6 h-6" /> Commercial Invoices
+          <Badge variant="outline" className="text-[10px] ml-2" data-testid="ex-ci-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="ex-ci-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </h1>
         <p className="text-sm text-muted-foreground">
           6-Part Allocation · 6-basis CIF pro-rata · 10-row duty waterfall · {cis.length} invoices · {revalCount} with CICustomeVal revaluation
         </p>
       </div>
+
+      <Card className="p-3" data-testid="ex-ci-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'month', label: 'Month' },
+            { key: 'invoice_value', label: 'CIF value', align: 'right',
+              render: (r) => `₹${Number(r.invoice_value).toLocaleString('en-IN', { maximumFractionDigits: 0 })}` },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No invoices"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <Card className="border-l-4 border-l-primary">
         <CardContent className="p-3 text-xs flex items-start gap-2">

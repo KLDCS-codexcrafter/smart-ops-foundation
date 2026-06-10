@@ -3,16 +3,21 @@
  * @purpose     List of all Shipping Bills · dashboard cards
  * @sprint      T-Phase-1.EX-7b-ShippingBill-EGM-LEO-DispatchMirror
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Sparkles, Shield, AlertTriangle } from 'lucide-react';
+import { Plus, Sparkles, Shield, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { loadShippingBills, summarizeShippingBills } from '@/lib/shipping-bill-engine';
 import { SB_TYPE_DESCRIPTIONS } from '@/types/shipping-bill';
 import type { ShippingBill } from '@/types/shipping-bill';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 export function ShippingBillList(): JSX.Element {
   const navigate = useNavigate();
@@ -21,18 +26,55 @@ export function ShippingBillList(): JSX.Element {
   useEffect(() => { setSbs(loadShippingBills(entityCode)); }, []);
   const s = summarizeShippingBills(sbs);
 
+  // RPT-2b-i · additive chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const agg: Record<string, number> = {};
+    for (const sb of sbs) {
+      agg[sb.status] = (agg[sb.status] ?? 0) + sb.total_fob_value_inr;
+    }
+    return Object.entries(agg).map(([status, fob_value]) => ({ status, fob_value }));
+  }, [sbs]);
+  const chartConfig = getKpi('ex-shipping-bill')?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'status',
+    series: [{ key: 'fob_value', label: 'FOB value' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">Shipping Bills</h1>
-          <p className="text-sm text-muted-foreground">Export chain GL commit · EGM/LEO workflow · CoO legalization · self-sealing</p>
+          <Badge variant="outline" className="text-[10px]" data-testid="ex-sb-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="ex-sb-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => navigate('/erp/eximx/saathi/tdl-gaps-atlas')}><Sparkles className="w-4 h-4 mr-2" />Saathi</Button>
           <Button onClick={() => navigate('/erp/eximx/export/shipping-bills/new')}><Plus className="w-4 h-4 mr-2" />New SB</Button>
         </div>
       </div>
+
+      <Card className="p-3" data-testid="ex-sb-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status', label: 'Status' },
+            { key: 'fob_value', label: 'FOB value', align: 'right',
+              render: (r) => `₹${Number(r.fob_value).toLocaleString('en-IN')}` },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No shipping bills"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card><CardContent className="pt-6"><div className="text-2xl font-bold">{s.total}</div><div className="text-xs text-muted-foreground">Total SBs</div></CardContent></Card>

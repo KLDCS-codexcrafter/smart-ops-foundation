@@ -10,12 +10,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Search, FileText, AlertCircle } from 'lucide-react';
+import { Plus, Search, FileText, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadImportPOs } from '@/lib/import-po-engine';
 import { SINHA_IMPORT_POS } from '@/data/sinha-import-po-seed-data';
 import type { ImportPOStatus } from '@/types/import-purchase-order';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 const STATUS_COLOR: Record<ImportPOStatus, string> = {
   draft: 'bg-muted text-muted-foreground',
@@ -41,17 +46,57 @@ export function ImportPOList(): JSX.Element {
     p.currency_code.toLowerCase().includes(search.toLowerCase()),
   );
 
+  // RPT-2b-i · additive chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const agg: Record<string, number> = {};
+    for (const p of pos) {
+      const k = p.foreign_vendor_id || 'unknown';
+      agg[k] = (agg[k] ?? 0) + p.estimated_landed_inr;
+    }
+    return Object.entries(agg).map(([vendor, value]) => ({ vendor, value }));
+  }, [pos]);
+  const chartConfig = getKpi('ex-import-po')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'vendor',
+    series: [{ key: 'value', label: 'PO value' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2"><FileText className="w-6 h-6" /> Import Orders</h1>
+          <h1 className="text-2xl font-bold flex items-center gap-2"><FileText className="w-6 h-6" /> Import Orders
+            <Badge variant="outline" className="text-[10px] ml-2" data-testid="ex-impo-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
+            <Badge variant="outline" className="text-[10px] font-mono" data-testid="ex-impo-integrity-badge" title={integrityHash}>
+              <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+            </Badge>
+          </h1>
           <p className="text-sm text-muted-foreground">Cross-border Purchase Orders · 11 Incoterms · Dual Rate Discipline (Moat #16) · {pos.length} active</p>
         </div>
         <Button onClick={() => navigate('/erp/eximx/import/orders/new')}>
           <Plus className="w-4 h-4 mr-2" /> New Import PO
         </Button>
       </div>
+
+      <Card className="p-3" data-testid="ex-impo-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'vendor', label: 'Vendor' },
+            { key: 'value', label: 'Landed value', align: 'right',
+              render: (r) => `₹${Number(r.value).toLocaleString('en-IN', { maximumFractionDigits: 0 })}` },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No POs"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <Card className="border-l-4 border-l-primary">
         <CardContent className="p-3 text-xs flex items-start gap-2">
