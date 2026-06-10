@@ -118,6 +118,43 @@ export function LandedCostReconciliationDashboard(): JSX.Element {
           <span>Export CSV/PDF deferred to EX-11 (TDL Gaps Atlas + Board Pack Export). Currently IN-UI display only.</span>
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = summaries.map(({ mlgit, summary }) => ({
+          mlgit: mlgit.mlgit_no,
+          variance_pct: Number(Math.abs(summary.variance_custom_to_actual_pct).toFixed(2)),
+        }));
+        const reconciled = varianceReports.filter((r) => r.aggregate_severity === 'none').length;
+        const pct = varianceReports.length > 0
+          ? Math.round((reconciled * 100) / varianceReports.length)
+          : 100;
+        const kpi = getKpi('ex-landed-cost');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'mlgit',
+          series: [{ key: 'variance_pct', label: 'Variance %' }],
+          title: 'Landed-cost variance by MLGIT',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 95, red: 85, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biii-landed-cost-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Landed-cost reconciliation %" value={`${pct}%`} rag={rag} hint="MLGITs without critical/material variance" />
+              <ScorecardTile label="MLGITs" value={summaries.length} hint="In-scope shipments" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-landed-cost">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
