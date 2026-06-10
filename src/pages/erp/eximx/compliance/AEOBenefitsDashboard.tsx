@@ -68,6 +68,41 @@ export function AEOBenefitsDashboard(): JSX.Element {
           </ul>
         </CardContent>
       </Card>
+
+      {(() => {
+        const tiers = ['not_aeo', 'tier_1', 'tier_2', 'tier_3'] as const;
+        const chartRows = tiers.map((t) => ({
+          tier: t,
+          bcd_pct: AEO_BCD_REDUCTION_PCT[t],
+        }));
+        const pct = benefit.bcd_reduction_pct;
+        const kpi = getKpi('ex-aeo');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'tier',
+          series: [{ key: 'bcd_pct', label: 'BCD reduction %' }],
+          title: 'AEO benefit utilisation',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 80, red: 50, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biii-aeo-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="AEO benefit utilisation %" value={`${pct}%`} rag={rag} hint="Current tier BCD reduction" />
+              <ScorecardTile label="Clearance hours saved" value={`${benefit.clearance_hours_saved}h`} hint="Per tier benefit" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-aeo">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
