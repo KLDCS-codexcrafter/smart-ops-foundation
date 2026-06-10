@@ -11,13 +11,17 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { History, FileText, RefreshCw } from 'lucide-react';
+import { History, FileText, RefreshCw, ShieldCheck } from 'lucide-react';
 import {
   PAYMENT_TYPE_LABELS, REQUISITION_STATUS_COLORS,
   type PaymentRequisition, type RequisitionStatus, type PaymentRequestType,
 } from '@/types/payment-requisition';
 import { listRequisitions } from '@/lib/payment-requisition-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// RPT-2c · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 const STATUS_OPTIONS: Array<RequisitionStatus | 'all'> = [
   'all', 'draft', 'pending_dept_head', 'pending_accounts', 'approved', 'paid', 'rejected', 'on_hold',
@@ -54,12 +58,35 @@ export default function RequisitionHistory() {
       .sort((a, b) => b.created_at.localeCompare(a.created_at));
   }, [all, search, statusFilter, typeFilter]);
 
+  // RPT-2c additive · chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const byDate = new Map<string, number>();
+    for (const r of filtered) {
+      const d = r.created_at.slice(0, 10);
+      byDate.set(d, (byDate.get(d) ?? 0) + r.amount);
+    }
+    return Array.from(byDate.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([date, value]) => ({ date, value }));
+  }, [filtered]);
+  const chartConfig = getKpi('po-requisition-trend')?.defaultChart ?? defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'value', label: 'Requisition value' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-4 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-bold flex items-center gap-2">
             <History className="h-5 w-5 text-violet-500" /> Requisition History
+            <Badge variant="outline" className="text-[10px] font-mono" data-testid="po-rh-integrity-badge" title={integrityHash}>
+              <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+            </Badge>
+            <Badge variant="outline" className="text-[10px]" data-testid="po-rh-period-chip">All time</Badge>
           </h1>
           <p className="text-xs text-muted-foreground">
             {filtered.length} of {all.length} requisitions · full audit trail per record
@@ -69,6 +96,25 @@ export default function RequisitionHistory() {
           <RefreshCw className="h-3.5 w-3.5 mr-1" /> Refresh
         </Button>
       </div>
+
+      <Card className="rounded-2xl" data-testid="po-rh-toggle-host">
+        <CardContent className="p-3">
+          <TableChartToggle
+            rows={chartRows}
+            columns={[
+              { key: 'date', label: 'Date' },
+              { key: 'value', label: 'Value', align: 'right', render: (r) => `₹${Number(r.value).toLocaleString('en-IN')}` },
+            ]}
+            chartConfig={chartConfig}
+            defaultView="table"
+            emptyLabel="No requisitions"
+          />
+          {drill.trail.length > 0 && (
+            <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+          )}
+        </CardContent>
+      </Card>
+
 
       <Card className="rounded-2xl">
         <CardContent className="p-3 space-y-3">

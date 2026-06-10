@@ -10,7 +10,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { Download, TrendingUp, TrendingDown } from 'lucide-react';
+import { Download, TrendingUp, TrendingDown, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
@@ -20,6 +20,11 @@ import {
 import type { Voucher } from '@/types/voucher';
 import { computeDSO, computePTPKeptRatio } from '@/lib/receivx-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { Badge } from '@/components/ui/badge';
+// RPT-2c · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface Props { entityCode: string; onNavigate?: (m: string) => void }
 
@@ -103,17 +108,56 @@ export function CollectionEfficiencyPanel({ entityCode, onNavigate: _onNavigate 
 
   useCtrlS(() => { handleExport(); });
 
+  // RPT-2c additive · chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const total = rows.reduce((s, r) => s + r.collected, 0);
+    const targetTotal = rows.reduce((s, r) => s + r.invoiced, 0);
+    const efficiency = targetTotal > 0 ? Math.round((total / targetTotal) * 100) : 0;
+    return [{ period: `${fromDate}→${toDate}`, collected: total, efficiency }];
+  }, [rows, fromDate, toDate]);
+  const chartConfig = getKpi('rx-collection-eff')?.defaultChart ?? defaultChartConfig({
+    chartType: 'combo', xKey: 'period',
+    series: [
+      { key: 'collected', label: 'Collected', renderAs: 'bar' },
+      { key: 'efficiency', label: 'Efficiency %', renderAs: 'line' },
+    ],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold">Collection Efficiency</h1>
-          <p className="text-xs text-muted-foreground">Per-salesman MTD collection KPIs</p>
+          <Badge variant="outline" className="text-[10px]" data-testid="rx-ce-period-chip">{fromDate} → {toDate}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="rx-ce-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary onClick={handleExport} className="bg-amber-500 hover:bg-amber-600 text-white">
           <Download className="h-4 w-4 mr-1.5" /> Export CSV
         </Button>
       </div>
+
+      <Card className="p-3" data-testid="rx-ce-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'period', label: 'Period' },
+            { key: 'collected', label: 'Collected', align: 'right', render: (r) => fmt(Number(r.collected) || 0) },
+            { key: 'efficiency', label: 'Efficiency %', align: 'right', render: (r) => `${r.efficiency}%` },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No data"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <div className="flex flex-wrap gap-2 items-center">
         <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} onKeyDown={onEnterNext} className="w-36 h-8 text-xs" />

@@ -1256,17 +1256,22 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['report-framework'],
     bankDate: '2026-06-10', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-1b T-RPT1b-FinCore-Chart-Wrap · Reporting Arc · roll the frozen RPT-1a wrap recipe across 8 FinCore analytical pages (LedgerReport · ChequeManagement · BalanceSheet · TrialBalance · StockSummary · ProfitLoss · MonthlyProductionAccounts · BankReconciliation) · TableChartToggle + period/as-of chip + drill consume + integrity badge · 8 KPI seeds in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · framework files 0-DIFF except kpi-registry · OutstandingAging/DayBook/statutory pages 0-DIFF · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-1b T-RPT1b-FinCore-Chart-Wrap · Reporting Arc · roll the frozen RPT-1a wrap recipe across 8 FinCore analytical pages (LedgerReport · ChequeManagement · BalanceSheet · TrialBalance · StockSummary · ProfitLoss · MonthlyProductionAccounts · BankReconciliation) · TableChartToggle + period/as-of chip + drill consume + integrity badge · 8 KPI seeds in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · framework files 0-DIFF except kpi-registry · OutstandingAging/DayBook/statutory pages 0-DIFF · headSha BACKFILLED 2f3f99409 at RPT-2c Block 3
   {
     sprintNumber: 'RPT1b' as unknown as number, code: 'T-RPT1b-FinCore-Chart-Wrap', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '8d355d1e3', loc: 760,
+    headSha: '2f3f99409', predecessorSha: '8d355d1e3', loc: 760,
+    newSiblings: [],
+    bankDate: '2026-06-10', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-2c T-RPT2c-ReceivX-PayOut-BillPassing-Chart-Wrap · Reporting Arc · roll the frozen RPT-1a/1b wrap recipe across 7 analytical pages (AgingByPerson · CreditRiskReport · CollectionEfficiency · PTPTracker · CommunicationLogReport · RequisitionHistory · RateContractListPanel) · TableChartToggle + period/as-of chip + drill consume + integrity badge · 7 KPI seeds in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · framework files 0-DIFF except kpi-registry · all excluded operational pages + PayOut CashFlowDashboard/VendorAnalytics 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT2c' as unknown as number, code: 'T-RPT2c-ReceivX-PayOut-BillPassing-Chart-Wrap', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '2f3f99409', loc: 700,
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'PENDING_BACKFILL',
   },
-
-
-
 ];
+
 
 
 

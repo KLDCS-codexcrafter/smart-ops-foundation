@@ -17,13 +17,17 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { RefreshCw, CheckCircle2, XCircle, Ban, Edit3 } from 'lucide-react';
+import { RefreshCw, CheckCircle2, XCircle, Ban, Edit3, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { type PTP, type PTPStatus, receivxPTPsKey } from '@/types/receivx';
 import type { Voucher } from '@/types/voucher';
 import { evaluatePTPs, computePTPKeptRatio } from '@/lib/receivx-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// RPT-2c · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface Props { entityCode: string; onNavigate?: (m: string) => void }
 
@@ -122,17 +126,51 @@ export function PTPTrackerPanel({ entityCode, onNavigate: _onNavigate }: Props) 
     setEditFor(null);
   }, [editFor, editNotes, ptps, persist]);
 
+  // RPT-2c additive · chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const counts: Record<string, number> = { kept: 0, broken: 0, partial: 0, active: 0, cancelled: 0 };
+    for (const p of filtered) counts[p.status] = (counts[p.status] ?? 0) + 1;
+    return Object.entries(counts).map(([status, count]) => ({ status, count }));
+  }, [filtered]);
+  const chartConfig = getKpi('rx-ptp-rate')?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'PTPs' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold">Promise-to-Pay Tracker</h1>
-          <p className="text-xs text-muted-foreground">CFO collections KPI register</p>
+          <Badge variant="outline" className="text-[10px]" data-testid="rx-ptp-period-chip">As of {today()}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="rx-ptp-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary onClick={handleEvaluateAll} className="bg-amber-500 hover:bg-amber-600 text-white">
           <RefreshCw className="h-4 w-4 mr-1.5" /> Evaluate All
         </Button>
       </div>
+
+      <Card className="p-3" data-testid="rx-ptp-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status', label: 'Status' },
+            { key: 'count', label: 'PTPs', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No PTPs"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="p-3">
