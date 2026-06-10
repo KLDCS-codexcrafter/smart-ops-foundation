@@ -6,10 +6,12 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Calendar, Play, TrendingUp, TrendingDown } from 'lucide-react';
+import { Calendar, Play, TrendingUp, TrendingDown, ShieldCheck } from 'lucide-react';
 import { loadRealisations } from '@/lib/export-realisation-engine';
 import { runMonthEndReval, getLastRevalRun, type MonthEndRevalRun } from '@/lib/month-end-reval-engine';
 import type { ExportRealisation } from '@/types/export-realisation';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 export function MonthEndRevalDashboard(): JSX.Element {
   const entityCode = 'sinha-trading';
