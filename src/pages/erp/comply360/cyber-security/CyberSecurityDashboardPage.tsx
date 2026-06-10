@@ -7,11 +7,14 @@ import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import {
   listCyberIncidents, isIncidentLate,
   listVulnerabilities, listAccessGrants,
   getCyberComplianceSummary,
 } from '@/lib/comply360-cyber-security-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 type TabKey = 'incidents' | 'vulnerabilities' | 'access';
 
@@ -56,6 +59,40 @@ export default function CyberSecurityDashboardPage(): JSX.Element {
           {summary.overall_status}
         </Badge>
       </div>
+
+      {(() => {
+        const chartRows = [
+          { status: 'Open Incidents', count: summary.open_incidents },
+          { status: 'Late Reports', count: summary.late_incident_reports },
+          { status: 'Critical Vulns', count: summary.critical_vulnerabilities_open },
+          { status: 'Active Grants', count: summary.active_access_grants },
+        ];
+        const ok = summary.active_access_grants;
+        const bad = summary.open_incidents + summary.late_incident_reports + summary.critical_vulnerabilities_open;
+        const pct = Math.round((ok * 100) / ((ok + bad) || 1));
+        const kpi = getKpi('cmp-cyber');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({ chartType: 'doughnut', xKey: 'status', series: [{ key: 'count', label: 'Cyber controls' }] });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 85, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2aii-cyber-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="CERT-In readiness %" value={`${pct}%`} rag={rag} hint="Grants vs incidents/vulns" />
+              <ScorecardTile label="Late Reports (>6h)" value={summary.late_incident_reports} hint="6-hour CERT-In window" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-cyber">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
         <TabsList className="grid grid-cols-3 w-full">

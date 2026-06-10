@@ -7,11 +7,14 @@ import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import {
   listBonusComputations, listMaternityClaims, listEqualRemAudits,
   listApprentices, listCLRAEngagements, listShops, listForm21, listOSHCheckups,
   getLabourTier2ComplianceSummary,
 } from '@/lib/comply360-labour-tier2-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 type TabKey = 'bonus-mat' | 'equal-rem' | 'apprentices-clra' | 'shops-factories' | 'osh';
 
@@ -61,6 +64,40 @@ export default function LabourTier2DashboardPage(): JSX.Element {
           {summary.overall_status}
         </Badge>
       </div>
+
+      {(() => {
+        const chartRows = [
+          { status: 'Bonus Computed', count: summary.bonus_computed },
+          { status: 'Active Apprentices', count: summary.active_apprentices },
+          { status: 'CLRA Engagements', count: summary.clra_engagements },
+          { status: 'OSH Unfit', count: summary.osh_unfit },
+        ];
+        const ok = summary.bonus_computed + summary.active_apprentices + summary.clra_engagements;
+        const bad = summary.osh_unfit;
+        const pct = Math.round((ok * 100) / ((ok + bad) || 1));
+        const kpi = getKpi('cmp-labour');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'count', label: 'Labour controls' }] });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 75, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2aii-labour-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Labour compliance %" value={`${pct}%`} rag={rag} hint="Active vs unfit" />
+              <ScorecardTile label="OSH Unfit" value={summary.osh_unfit} hint="Health-check fails" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-labour">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
         <TabsList className="grid grid-cols-5 w-full">

@@ -491,6 +491,72 @@ registerKpi({
   thresholds: { amber: 90, red: 70, direction: 'higher-good' },
 });
 
+// ─── RPT-2a-ii · 5 Comply360 cohort-2 dashboard KPI seeds (idempotent) ─────
+registerKpi({
+  id: 'cmp-quality',
+  label: 'Quality standards compliance %',
+  dataSource: 'comply360.quality-standards.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'Quality controls' }],
+    title: 'Quality / standards / cert status',
+  }),
+  thresholds: { amber: 85, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-cyber',
+  label: 'CERT-In readiness %',
+  dataSource: 'comply360.cyber-security.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Cyber controls' }],
+    title: 'Cyber control / incident status',
+  }),
+  thresholds: { amber: 85, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-csr',
+  label: 'CSR spend vs obligation %',
+  dataSource: 'comply360.csr.csr2-spend',
+  defaultChart: defaultChartConfig({
+    chartType: 'combo', xKey: 'period',
+    series: [
+      { key: 'required', label: 'Required (₹L)', renderAs: 'bar' },
+      { key: 'actual', label: 'Actual (₹L)', renderAs: 'bar' },
+      { key: 'compliance_pct', label: 'Compliance %', renderAs: 'line' },
+    ],
+    title: 'CSR spend vs 2% obligation',
+  }),
+  thresholds: { amber: 95, red: 80, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-labour',
+  label: 'Labour compliance %',
+  dataSource: 'comply360.labour-tier2.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'Labour controls' }],
+    title: 'Labour Tier-2 compliance status',
+  }),
+  thresholds: { amber: 90, red: 75, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-mca',
+  label: 'MCA filing compliance %',
+  dataSource: 'comply360.mca-tier2.summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'MCA filings' }],
+    title: 'MCA Tier-2 filing status',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+
 
 
 

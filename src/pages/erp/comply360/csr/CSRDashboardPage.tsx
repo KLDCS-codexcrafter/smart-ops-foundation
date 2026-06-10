@@ -11,7 +11,7 @@ import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { HeartHandshake, Users2, Building2, Coins } from 'lucide-react';
+import { HeartHandshake, Users2, Building2, Coins, ShieldCheck } from 'lucide-react';
 import {
   listCSRCommittees,
   listImplementingAgencies,
@@ -20,6 +20,8 @@ import {
   getCSRThematicAreas,
   checkSection135Applicability,
 } from '@/lib/comply360-csr-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 const FY = '2025-26';
 
@@ -83,6 +85,52 @@ export default function CSRDashboardPage(): JSX.Element {
           </div>
         </Card>
       </div>
+
+      {(() => {
+        const chartRows = csr2.length > 0
+          ? csr2.map((f) => ({
+              period: f.fy,
+              required: Math.round(f.required_spend_inr / 1_00_000),
+              actual: Math.round(f.actual_spend_inr / 1_00_000),
+              compliance_pct: f.required_spend_inr > 0
+                ? Math.round((f.actual_spend_inr * 100) / f.required_spend_inr)
+                : 100,
+            }))
+          : [{ period: FY, required: 0, actual: 0, compliance_pct: 100 }];
+        const totalReq = csr2.reduce((s, f) => s + f.required_spend_inr, 0);
+        const totalAct = csr2.reduce((s, f) => s + f.actual_spend_inr, 0);
+        const pct = totalReq > 0 ? Math.round((totalAct * 100) / totalReq) : 100;
+        const kpi = getKpi('cmp-csr');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'combo', xKey: 'period',
+          series: [
+            { key: 'required', label: 'Required (₹L)', renderAs: 'bar' },
+            { key: 'actual', label: 'Actual (₹L)', renderAs: 'bar' },
+            { key: 'compliance_pct', label: 'Compliance %', renderAs: 'line' },
+          ],
+          title: 'CSR spend vs obligation',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 95, red: 80, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2aii-csr-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="CSR spend vs obligation %" value={`${pct}%`} rag={rag} hint="Actual / required spend" />
+              <ScorecardTile label="CSR-2 Filings · FY" value={csr2.length} hint={`FY ${FY}`} />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-csr">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
         <TabsList>
