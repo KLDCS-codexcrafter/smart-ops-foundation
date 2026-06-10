@@ -12,7 +12,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Scale, FileCheck2, Gavel, Sparkles, Layers, Plus } from 'lucide-react';
+import { Scale, FileCheck2, Gavel, Sparkles, Layers, Plus, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import {
   listCostAuditorAppointments,
   listCRAFormFilings,
@@ -162,6 +164,48 @@ export default function CostAuditDashboardPage(): JSX.Element {
           </div>
         </Card>
       </div>
+
+      {(() => {
+        const chartRows = (['CRA_1', 'CRA_2', 'CRA_3', 'CRA_4'] as const).map((t) => ({
+          form_type: t,
+          filed: filingsByType[t].filed,
+          pending: Math.max(0, filingsByType[t].total - filingsByType[t].filed),
+        }));
+        const totalFilings = chartRows.reduce((s, r) => s + r.filed + r.pending, 0);
+        const filed = chartRows.reduce((s, r) => s + r.filed, 0);
+        const baselinePct = totalFilings === 0 ? 100 : Math.round((filed * 100) / totalFilings);
+        const pct = adverseCount > 0 ? Math.min(baselinePct, 60) : baselinePct;
+        const kpi = getKpi('cmp-costaudit-filings');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'stacked-column', xKey: 'form_type',
+          series: [
+            { key: 'filed', label: 'Filed' },
+            { key: 'pending', label: 'Pending' },
+          ],
+        });
+        const rag = adverseCount > 0
+          ? ('red' as const)
+          : resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2ai-costaudit-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="CRA filings on time %" value={`${pct}%`} rag={rag} hint={adverseCount > 0 ? 'Adverse findings present' : 'CRA-1/2/3/4'} />
+              <ScorecardTile label="Adverse findings" value={adverseCount} hint="Reports flagged" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-costaudit">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
         <TabsList>

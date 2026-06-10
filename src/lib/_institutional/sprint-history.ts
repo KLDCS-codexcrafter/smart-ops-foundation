@@ -1277,10 +1277,17 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-2b-ii T-RPT2bii-EximX-Finance-Registers-Chart-Wrap · Reporting Arc · roll the banked RPT-2b-i wrap recipe across 6 EximX finance/realisation registers (ExportRealisationList · FEMA270DayTracker · PackingCreditList · HedgeContractList · MultiLegGITList · CAROTARRoOMatrix) · TableChartToggle + period/as-of chip + drill consume + integrity badge · 6 KPI seeds in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · framework files 0-DIFF except kpi-registry · all 7 RPT-2b-i registers + EximX dashboards/masters + CustomDayBook 0-DIFF · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-2b-ii T-RPT2bii-EximX-Finance-Registers-Chart-Wrap · Reporting Arc · roll the banked RPT-2b-i wrap recipe across 6 EximX finance/realisation registers (ExportRealisationList · FEMA270DayTracker · PackingCreditList · HedgeContractList · MultiLegGITList · CAROTARRoOMatrix) · TableChartToggle + period/as-of chip + drill consume + integrity badge · 6 KPI seeds in kpi-registry (idempotent · seed-data only · no API change) · ZERO new SIBLING · framework files 0-DIFF except kpi-registry · all 7 RPT-2b-i registers + EximX dashboards/masters + CustomDayBook 0-DIFF · headSha BACKFILLED 3cc5945 at RPT-2a-i Block 3
   {
     sprintNumber: 'RPT2bii' as unknown as number, code: 'T-RPT2bii-EximX-Finance-Registers-Chart-Wrap', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '92bec00', loc: 640,
+    headSha: '3cc5945', predecessorSha: '92bec00', loc: 640,
+    newSiblings: [],
+    bankDate: '2026-06-10', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-2a-i T-RPT2ai-Dashboard-Primitive-Comply360-Cohort · Reporting Arc · build deferred ScorecardTile+RAG primitive (core/rag.ts + ui/ScorecardTile.tsx) — JOINS existing report-framework lib (ZERO new SIBLING) · apply DASHBOARD recipe (additive · NOT toggle-wrap) to 6 Comply360 reference dashboards (FireSafety · CostAudit · Environmental · IndustrialSafety · WasteManagement · DPDP) — each gains ReportChart + ScorecardTile (RAG) + integrity badge; existing Card layout/tiles/tables PRESERVED · 6 KPI seeds (with thresholds) in kpi-registry (idempotent · seed-data only) · frozen-framework files 0-DIFF (chart-config · period-engine · integrity-sign · ChartLibrary · TableChartToggle · CHART_TYPE_COVERAGE) · other 11 Comply360 dashboards + all EximX dashboards + all banked RPT-1a/1b/2c/2b-i/2b-ii pages 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT2ai' as unknown as number, code: 'T-RPT2ai-Dashboard-Primitive-Comply360-Cohort', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '3cc5945', loc: 810,
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'PENDING_BACKFILL',
   },
