@@ -55,7 +55,7 @@
 | 32 | DocVault | 3 | `src/pages/erp/docvault/reports/` |
 | 33 | InsightX | 0 | (analytics layer renders aggregates, not stored under `reports/`) |
 
-**Total report files on HEAD: 236.**
+**Total top-level report files on HEAD: 225** (sum of the per-card column above; verified by `for d in src/pages/erp/*/reports; do ls $d/*.tsx 2>/dev/null; done | wc -l` → 225). An additional 91 `.tsx` files live in `reports/<subfolder>/` (e.g. `detail/`, `print/`, `actions/`, `rinsp/`, `gst/`) for a recursive total of **316**; those are excluded from the per-card report count because they are detail/print/action variants of the parent reports, not standalone reports.
 **Cards with 0 report files: 14 of 33** (42%) — Command Center, GateFlow, EngineeringX, Vendor Portal, Logistics, WebStoreX, EcomX, Comply360, PayOut, Bill Passing, FP&A, EximX, PeoplePay, FrontDesk, TaskFlow, InsightX. *(Note: 16 cards listed; some are intentionally report-light because their outputs live in dashboards/shells rather than `reports/` folders — flagged per card in §2.)*
 
 ---
