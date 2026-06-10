@@ -7,7 +7,7 @@ import { useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileCheck, Calendar } from 'lucide-react';
+import { FileCheck, Calendar, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   buildForm3CEBSnapshot,
@@ -15,6 +15,8 @@ import {
   loadForm3CEBSnapshots,
   summarizeForm3CEB,
 } from '@/lib/form-3ceb-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 export default function Form3CEBDashboard(): JSX.Element {
   const { entityCode } = useEntityCode();
