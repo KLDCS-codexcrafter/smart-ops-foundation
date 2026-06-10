@@ -65,6 +65,41 @@ export function RMSDeclarationDashboard(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = [
+          { status: 'pending', count: pending },
+          { status: 'resolved', count: resolved },
+        ];
+        const pct = total === 0 ? 100 : Math.round((resolved * 100) / total);
+        const kpi = getKpi('ex-rms');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'status',
+          series: [{ key: 'count', label: 'Declarations' }],
+          title: 'RMS declaration status',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biv-rms-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="RMS declaration %" value={`${pct}%`} rag={rag} hint="Resolved vs total" />
+              <ScorecardTile label="Pending ICEGATE" value={pending} hint="Awaiting actual lane" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-rms">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
+
