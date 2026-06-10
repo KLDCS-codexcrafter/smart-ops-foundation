@@ -593,10 +593,82 @@ registerKpi({
   thresholds: { amber: 85, red: 60, direction: 'higher-good' },
 });
 
+// ─── RPT-2b-iii · 6 EximX dashboard cohort-1 KPI seeds (idempotent) ────────
+registerKpi({
+  id: 'ex-cross-realisation',
+  label: 'Cross-entity realisation %',
+  dataSource: 'eximx.cross-entity-realisation.summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'entity',
+    series: [
+      { key: 'realised', label: 'Realised' },
+      { key: 'pending', label: 'Pending' },
+    ],
+    title: 'Realisation by entity',
+  }),
+  thresholds: { amber: 90, red: 75, direction: 'higher-good' },
+});
 
+registerKpi({
+  id: 'ex-form3ceb',
+  label: 'Form 3CEB filing %',
+  dataSource: 'eximx.form-3ceb.summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: '3CEB filings' }],
+    title: '3CEB filing status',
+  }),
+  thresholds: { amber: 90, red: 75, direction: 'higher-good' },
+});
 
+registerKpi({
+  id: 'ex-landed-cost',
+  label: 'Landed-cost reconciliation %',
+  dataSource: 'eximx.landed-cost.reconciliation',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'mlgit',
+    series: [{ key: 'variance_pct', label: 'Variance %' }],
+    title: 'Landed-cost variance by MLGIT',
+  }),
+  thresholds: { amber: 95, red: 85, direction: 'higher-good' },
+});
 
+registerKpi({
+  id: 'ex-aeo',
+  label: 'AEO benefit utilisation %',
+  dataSource: 'eximx.aeo.benefit-utilisation',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'tier',
+    series: [{ key: 'bcd_pct', label: 'BCD reduction %' }],
+    title: 'AEO benefit utilisation',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
 
+registerKpi({
+  id: 'ex-ebrc',
+  label: 'e-BRC/EDPMS recon %',
+  dataSource: 'eximx.ebrc-edpms.reconciliation',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'EDPMS records' }],
+    title: 'e-BRC / EDPMS recon status',
+  }),
+  thresholds: { amber: 90, red: 75, direction: 'higher-good' },
+});
 
-
+registerKpi({
+  id: 'ex-monthend-reval',
+  label: 'Month-end reval coverage %',
+  dataSource: 'eximx.month-end-reval.coverage',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'currency',
+    series: [
+      { key: 'revalued', label: 'Revalued' },
+      { key: 'pending', label: 'Pending' },
+    ],
+    title: 'FX reval coverage by currency',
+  }),
+  thresholds: { amber: 95, red: 80, direction: 'higher-good' },
+});
 

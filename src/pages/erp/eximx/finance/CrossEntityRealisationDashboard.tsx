@@ -7,13 +7,15 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Globe, AlertTriangle } from 'lucide-react';
+import { Globe, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useEntityList } from '@/hooks/useEntityList';
 import {
   aggregateRealisationsAcrossEntities,
   type CrossEntityRealisationReport,
 } from '@/lib/realisation-aggregation-engine';
 import type { FEMAState } from '@/types/export-realisation';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 const FEMA_VARIANT: Record<FEMAState, 'default' | 'secondary' | 'destructive'> = {
   safe: 'secondary',
@@ -100,6 +102,47 @@ export default function CrossEntityRealisationDashboard(): JSX.Element {
           </Table>
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = report.per_entity.map((s) => ({
+          entity: s.entity_short_code,
+          realised: s.fully_realised_count,
+          pending: s.pending_count,
+        }));
+        const totalRealised = report.per_entity.reduce((a, s) => a + s.fully_realised_count, 0);
+        const pct = report.total_realisations_across_entities > 0
+          ? Math.round((totalRealised * 100) / report.total_realisations_across_entities)
+          : 100;
+        const kpi = getKpi('ex-cross-realisation');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'entity',
+          series: [
+            { key: 'realised', label: 'Realised' },
+            { key: 'pending', label: 'Pending' },
+          ],
+          title: 'Realisation by entity',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 75, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biii-cross-realisation-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Cross-entity realisation %" value={`${pct}%`} rag={rag} hint="Realised vs total" />
+              <ScorecardTile label="Entities aggregated" value={report.entities_aggregated} hint="In-scope entities" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-cross-realisation">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
