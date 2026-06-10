@@ -3,16 +3,21 @@
  * @purpose     List of all Shipping Bills · dashboard cards
  * @sprint      T-Phase-1.EX-7b-ShippingBill-EGM-LEO-DispatchMirror
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Sparkles, Shield, AlertTriangle } from 'lucide-react';
+import { Plus, Sparkles, Shield, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { loadShippingBills, summarizeShippingBills } from '@/lib/shipping-bill-engine';
 import { SB_TYPE_DESCRIPTIONS } from '@/types/shipping-bill';
 import type { ShippingBill } from '@/types/shipping-bill';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 export function ShippingBillList(): JSX.Element {
   const navigate = useNavigate();
