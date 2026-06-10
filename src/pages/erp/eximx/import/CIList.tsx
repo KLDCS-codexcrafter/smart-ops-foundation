@@ -8,12 +8,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, FileText, AlertCircle } from 'lucide-react';
+import { Search, FileText, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadCIs, countCIsWithRevaluation } from '@/lib/commercial-invoice-engine';
 import { SINHA_COMMERCIAL_INVOICES } from '@/data/sinha-commercial-invoice-seed-data';
 import type { CIStatus } from '@/types/commercial-invoice';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 const STATE_CLASS: Record<CIStatus, string> = {
   draft: 'bg-muted text-muted-foreground',
