@@ -18,8 +18,9 @@ import { RateContractListPanel } from '../RateContractListPanel';
 describe('RPT-2c · RateContractListPanel', () => {
   it('renders header', () => {
     render(<RateContractListPanel />);
-    expect(screen.getByText(/Rate Contracts/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Rate Contracts/i })).toBeInTheDocument();
   });
+
   it('preserves New Contract button', () => {
     render(<RateContractListPanel />);
     expect(screen.getByText(/New Contract/i)).toBeInTheDocument();
