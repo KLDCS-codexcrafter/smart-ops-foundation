@@ -4,20 +4,27 @@
  * Uses L1/L2/L3 hierarchy from finframe-seed-data
  * [JWT] All data via hooks
  */
-import { useState, useMemo } from 'react';
-import { PieChart, Download } from 'lucide-react';
+import { useState, useMemo, useContext } from 'react';
+import { PieChart, Download, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useJournal } from '@/hooks/useJournal';
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { GlobalDateRangeContext } from '@/hooks/GlobalDateRangeContext';
 import { L2_PARENT_GROUPS } from '@/data/finframe-seed-data';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fyStart, today, groupByL2, exportCSV } from './reportUtils';
+// RPT-1b · chart-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 
 interface ProfitLossPanelProps { entityCode: string; }
 
@@ -84,17 +91,63 @@ export function ProfitLossPanel({ entityCode }: ProfitLossPanelProps) {
     exportCSV('profit-loss.csv', ['Particulars', 'Amount'], rows);
   };
 
+  // RPT-1b additive — chart wrap
+  const drill = useDrillDown();
+  const gdr = useContext(GlobalDateRangeContext);
+  const periodLabel = gdr ? `${gdr.range.from} → ${gdr.range.to}` : `${dateFrom} → ${dateTo}`;
+  const totalRevenue = revenue.total + otherIncome.total;
+  const totalExpense = cogs.total + opex.total + finance.total + depreciation.total;
+  const chartRows = useMemo(() => ([
+    { period: 'Period', revenue: totalRevenue, expense: totalExpense, margin: netProfit },
+  ]), [totalRevenue, totalExpense, netProfit]);
+  const kpi = getKpi('fc-pnl-margin');
+  const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'combo', xKey: 'period',
+    series: [
+      { key: 'revenue', label: 'Revenue', renderAs: 'bar' },
+      { key: 'expense', label: 'Expense', renderAs: 'bar' },
+      { key: 'margin',  label: 'Margin',  renderAs: 'line' },
+    ],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-6 max-w-4xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <PieChart className="h-5 w-5 text-teal-500" />
           <h2 className="text-lg font-bold">Profit & Loss Statement</h2>
+          <Badge variant="outline" className="text-[10px]" data-testid="pl-period-chip">{periodLabel}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="pl-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary variant="outline" size="sm" onClick={handleExport}>
           <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
         </Button>
       </div>
+
+      {/* RPT-1b · TableChartToggle wrap · defaults to Table */}
+      <Card><CardContent className="p-3" data-testid="pl-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          chartRows={chartRows}
+          columns={[
+            { key: 'period', label: 'Period' },
+            { key: 'revenue', label: 'Revenue', align: 'right', render: (r) => inr(Number(r.revenue) || 0) },
+            { key: 'expense', label: 'Expense', align: 'right', render: (r) => inr(Number(r.expense) || 0) },
+            { key: 'margin', label: 'Margin', align: 'right', render: (r) => inr(Number(r.margin) || 0) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No data"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </CardContent></Card>
+
 
       <Card><CardContent className="p-3 flex gap-3 items-end">
         <div className="space-y-1">

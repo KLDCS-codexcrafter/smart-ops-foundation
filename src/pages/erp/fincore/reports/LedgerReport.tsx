@@ -3,8 +3,8 @@
  * All debit/credit movements for a selected ledger with running balance.
  * [JWT] All data via hooks
  */
-import { useState, useMemo } from 'react';
-import { BarChart3, Download, Printer } from 'lucide-react';
+import { useState, useMemo, useContext } from 'react';
+import { BarChart3, Download, Printer, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,8 +15,14 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useJournal } from '@/hooks/useJournal';
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { GlobalDateRangeContext } from '@/hooks/GlobalDateRangeContext';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fmtDate, fyStart, today, exportCSV } from './reportUtils';
+// RPT-1b · chart-wrap (consume RPT-1a framework · additive)
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 
 interface LedgerReportPanelProps { entityCode: string; }
 
@@ -73,6 +79,24 @@ export function LedgerReportPanel({ entityCode }: LedgerReportPanelProps) {
   const totalDr = periodEntries.reduce((s, e) => s + e.dr_amount, 0);
   const totalCr = periodEntries.reduce((s, e) => s + e.cr_amount, 0);
 
+  const balLabel = (b: number) => b >= 0 ? `${inr(b)} Dr` : `${inr(Math.abs(b))} Cr`;
+
+  // RPT-1b additive — chart wrap (existing UI below preserved)
+  const drill = useDrillDown();
+  const gdr = useContext(GlobalDateRangeContext);
+  const periodLabel = gdr ? `${gdr.range.from} → ${gdr.range.to}` : `${dateFrom} → ${dateTo}`;
+  const chartRows = useMemo(() => rows.map(r => ({
+    date: r.date,
+    balance: r.runningBalance,
+  })), [rows]);
+  const kpi = getKpi('fc-ledger-balance');
+  const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'balance', label: 'Running balance' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   const handleExport = () => {
     exportCSV('ledger-report.csv',
       ['Date', 'Voucher No', 'Type', 'Narration', 'Dr', 'Cr', 'Balance'],
@@ -80,14 +104,16 @@ export function LedgerReportPanel({ entityCode }: LedgerReportPanelProps) {
     );
   };
 
-  const balLabel = (b: number) => b >= 0 ? `${inr(b)} Dr` : `${inr(Math.abs(b))} Cr`;
-
   return (
     <div data-keyboard-form className="p-6 max-w-6xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BarChart3 className="h-5 w-5 text-teal-500" />
           <h2 className="text-lg font-bold">Ledger Report</h2>
+          <Badge variant="outline" className="text-[10px]" data-testid="lr-period-chip">{periodLabel}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="lr-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => window.print()}>
@@ -98,6 +124,27 @@ export function LedgerReportPanel({ entityCode }: LedgerReportPanelProps) {
           </Button>
         </div>
       </div>
+
+      {/* RPT-1b · TableChartToggle wrap · defaults to Table (zero visual regression) */}
+      {selectedLedger && (
+        <Card><CardContent className="p-3" data-testid="lr-toggle-host">
+          <TableChartToggle
+            rows={chartRows}
+            chartRows={chartRows}
+            columns={[
+              { key: 'date', label: 'Date' },
+              { key: 'balance', label: 'Running balance', align: 'right', render: (r) => balLabel(Number(r.balance) || 0) },
+            ]}
+            chartConfig={chartConfig}
+            defaultView="table"
+            emptyLabel="No movement"
+          />
+          {drill.trail.length > 0 && (
+            <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+          )}
+        </CardContent></Card>
+      )}
+
 
       {/* Ledger selector + date range */}
       <Card><CardContent className="p-3 flex flex-wrap gap-3 items-end">

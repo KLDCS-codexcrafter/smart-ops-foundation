@@ -77,3 +77,104 @@ registerKpi({
   }),
   thresholds: { amber: 1_000_000, red: 5_000_000, direction: 'lower-good' },
 });
+
+// ─── RPT-1b · 8 FinCore page KPI seeds (idempotent · seed data only) ───────
+registerKpi({
+  id: 'fc-ledger-balance',
+  label: 'Ledger running balance',
+  dataSource: 'fincore.ledger.history',
+  defaultChart: defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'balance', label: 'Running balance' }],
+    title: 'Ledger running balance',
+  }),
+});
+
+registerKpi({
+  id: 'fc-cheque-status',
+  label: 'Cheque status mix',
+  dataSource: 'fincore.cheque.status',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Cheques' }],
+    title: 'Cheque status mix',
+  }),
+});
+
+registerKpi({
+  id: 'fc-bs-composition',
+  label: 'BS composition',
+  dataSource: 'fincore.balance-sheet.composition',
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'group',
+    series: [
+      { key: 'assets', label: 'Assets' },
+      { key: 'liabilities', label: 'Liabilities + Capital' },
+    ],
+    title: 'BS composition',
+  }),
+});
+
+registerKpi({
+  id: 'fc-tb-drcr',
+  label: 'Trial balance Dr/Cr',
+  dataSource: 'fincore.trial-balance.drcr',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'group',
+    series: [
+      { key: 'debit', label: 'Debit' },
+      { key: 'credit', label: 'Credit' },
+    ],
+    title: 'Trial balance Dr/Cr',
+  }),
+});
+
+registerKpi({
+  id: 'fc-stock-value',
+  label: 'Stock value by group',
+  dataSource: 'fincore.stock.value-by-group',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'group',
+    series: [{ key: 'value', label: 'Stock value' }],
+    title: 'Stock value by group',
+  }),
+});
+
+registerKpi({
+  id: 'fc-pnl-margin',
+  label: 'P&L revenue/expense/margin',
+  dataSource: 'fincore.pnl.margin',
+  defaultChart: defaultChartConfig({
+    chartType: 'combo', xKey: 'period',
+    series: [
+      { key: 'revenue', label: 'Revenue', renderAs: 'bar' },
+      { key: 'expense', label: 'Expense', renderAs: 'bar' },
+      { key: 'margin',  label: 'Margin',  renderAs: 'line' },
+    ],
+    title: 'P&L revenue/expense/margin',
+  }),
+});
+
+registerKpi({
+  id: 'fc-monthly-prod',
+  label: 'Monthly production trend',
+  dataSource: 'fincore.production.monthly',
+  defaultChart: defaultChartConfig({
+    chartType: 'line', xKey: 'month',
+    series: [{ key: 'value', label: 'Consumed qty' }],
+    title: 'Monthly production trend',
+  }),
+});
+
+registerKpi({
+  id: 'fc-bank-reco',
+  label: 'Bank reconciliation %',
+  dataSource: 'fincore.bank.reco-percent',
+  defaultChart: defaultChartConfig({
+    chartType: 'gauge', xKey: 'label',
+    series: [{ key: 'reconciled_pct', label: 'Reconciled %' }],
+    title: 'Bank reconciliation %',
+  }),
+  thresholds: { amber: 80, red: 60, direction: 'higher-good' },
+});
+

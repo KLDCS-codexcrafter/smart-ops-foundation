@@ -3,11 +3,12 @@
  * All ledgers with net Dr/Cr. Total Dr must = Total Cr.
  * [JWT] All data via hooks
  */
-import { useState, useMemo } from 'react';
-import { Scale, Download, AlertTriangle, CheckCircle } from 'lucide-react';
+import { useState, useMemo, useContext } from 'react';
+import { Scale, Download, AlertTriangle, CheckCircle, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -16,9 +17,15 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useJournal } from '@/hooks/useJournal';
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { GlobalDateRangeContext } from '@/hooks/GlobalDateRangeContext';
 import { L3_FINANCIAL_GROUPS } from '@/data/finframe-seed-data';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, today, exportCSV } from './reportUtils';
+// RPT-1b · chart-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 
 interface TrialBalancePanelProps { entityCode: string; }
 
@@ -67,17 +74,62 @@ export function TrialBalancePanel({ entityCode }: TrialBalancePanelProps) {
     );
   };
 
+  // RPT-1b additive — chart wrap
+  const drill = useDrillDown();
+  const gdr = useContext(GlobalDateRangeContext);
+  const periodLabel = gdr ? `${gdr.range.from} → ${gdr.range.to}` : `As-on ${asOfDate}`;
+  const chartRows = useMemo(() => {
+    if (!condensed || !condensedRows) {
+      return rows.slice(0, 20).map(r => ({ group: r.groupName, debit: r.drBal, credit: r.crBal }));
+    }
+    return condensedRows.map(([, g]) => ({ group: g.groupName, debit: g.dr, credit: g.cr }));
+  }, [condensed, condensedRows, rows]);
+  const kpi = getKpi('fc-tb-drcr');
+  const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'group',
+    series: [
+      { key: 'debit', label: 'Debit' },
+      { key: 'credit', label: 'Credit' },
+    ],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-6 max-w-5xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Scale className="h-5 w-5 text-teal-500" />
           <h2 className="text-lg font-bold">Trial Balance</h2>
+          <Badge variant="outline" className="text-[10px]" data-testid="tb-period-chip">{periodLabel}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="tb-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary variant="outline" size="sm" onClick={handleExport}>
           <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
         </Button>
       </div>
+
+      {/* RPT-1b · TableChartToggle wrap · defaults to Table */}
+      <Card><CardContent className="p-3" data-testid="tb-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          chartRows={chartRows}
+          columns={[
+            { key: 'group', label: 'Group' },
+            { key: 'debit', label: 'Debit', align: 'right', render: (r) => inr(Number(r.debit) || 0) },
+            { key: 'credit', label: 'Credit', align: 'right', render: (r) => inr(Number(r.credit) || 0) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No balances"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </CardContent></Card>
+
 
       <Card><CardContent className="p-3 flex flex-wrap gap-4 items-end">
         <div className="space-y-1">
