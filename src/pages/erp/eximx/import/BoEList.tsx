@@ -26,6 +26,28 @@ export function BoEList(): JSX.Element {
   useEffect(() => { setBoes(loadBoEs(entityCode)); }, []);
   const summary = summarizeBoEs(boes);
 
+  // RPT-2b-i · additive chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const agg: Record<string, { status: string; duty: number; assessable_value: number }> = {};
+    for (const b of boes) {
+      const k = b.status;
+      if (!agg[k]) agg[k] = { status: k, duty: 0, assessable_value: 0 };
+      agg[k].duty += b.total_duty_inr;
+      agg[k].assessable_value += b.total_landed_inr;
+    }
+    return Object.values(agg);
+  }, [boes]);
+  const chartConfig = getKpi('ex-boe-duty')?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'status',
+    series: [
+      { key: 'duty', label: 'Duty' },
+      { key: 'assessable_value', label: 'Assessable value' },
+    ],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   const laneBadge = (lane: BillOfEntry['icegate_simulated_lane']) => {
     if (lane === 'green') return <Badge variant="default" className="bg-green-600">Green</Badge>;
     if (lane === 'yellow') return <Badge variant="secondary" className="bg-yellow-500">Yellow</Badge>;
@@ -36,8 +58,32 @@ export function BoEList(): JSX.Element {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
           <h1 className="text-2xl font-bold">Bills of Entry</h1>
+          <Badge variant="outline" className="text-[10px]" data-testid="ex-boe-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="ex-boe-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+      </div>
+
+      <Card className="p-3" data-testid="ex-boe-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status', label: 'Status' },
+            { key: 'duty', label: 'Duty', align: 'right', render: (r) => `₹${Number(r.duty).toLocaleString('en-IN')}` },
+            { key: 'assessable_value', label: 'Landed', align: 'right', render: (r) => `₹${Number(r.assessable_value).toLocaleString('en-IN')}` },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No BoEs"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
           <p className="text-sm text-muted-foreground">GL commit point · 5 auto-posted vouchers per BoE · RMS lane + AEO tier impact</p>
         </div>
       </div>
