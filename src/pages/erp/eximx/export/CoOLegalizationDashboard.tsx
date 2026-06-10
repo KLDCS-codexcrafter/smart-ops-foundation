@@ -48,6 +48,41 @@ export function CoOLegalizationDashboard(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const states = ['not_required', 'chamber_attested', 'embassy_submitted', 'legalized_returned'] as const;
+        const chartRows = states.map((st) => ({ state: st, count: sbs.filter((sb) => sb.coo_legalization_state === st).length }));
+        const required = legalization_required.length;
+        const returned = sbs.filter((sb) => sb.coo_legalization_state === 'legalized_returned').length;
+        const pct = required === 0 ? 100 : Math.round((returned * 100) / required);
+        const kpi = getKpi('ex-coo-legal');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'state',
+          series: [{ key: 'count', label: 'SB / state' }],
+          title: 'CoO legalization status',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 80, red: 60, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biv-coo-legal-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="CoO legalization %" value={`${pct}%`} rag={rag} hint="Returned vs required" />
+              <ScorecardTile label="In flight" value={required} hint="Legalization required" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-coo-legal">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
+
