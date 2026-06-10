@@ -6,7 +6,9 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Shield, Clock } from 'lucide-react';
+import { AlertTriangle, Shield, Clock, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import { loadRealisations } from '@/lib/export-realisation-engine';
 import { loadPCAAudits } from '@/lib/pca-audit-engine';
 import { loadSoftexForms } from '@/lib/stpi-softex-engine';
