@@ -7,7 +7,9 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Shield } from 'lucide-react';
+import { Shield, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import { loadRMSDeclarations, computeLaneVariance } from '@/lib/rms-lane-engine';
 import type { RMSDeclaration } from '@/types/rms-declaration';
 
