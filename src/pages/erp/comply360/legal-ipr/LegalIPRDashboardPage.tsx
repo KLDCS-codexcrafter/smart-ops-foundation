@@ -73,6 +73,45 @@ export default function LegalIPRDashboardPage(): JSX.Element {
         </Card>
       </div>
 
+      {(() => {
+        const chartRows = [
+          { category: 'Trademarks', count: tm.length },
+          { category: 'Patents', count: pt.length },
+          { category: 'Copyrights', count: cr.length },
+          { category: 'Designs', count: ds.length },
+        ];
+        const totalActive = lc.vendor_executed + lc.customer_executed + lc.nda_count;
+        const pct = totalActive > 0
+          ? Math.round(((totalActive - lc.expiring_90_days) * 100) / totalActive)
+          : 100;
+        const kpi = getKpi('cmp-legal');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'category',
+          series: [{ key: 'count', label: 'IPR records' }],
+          title: 'Legal · IPR record mix',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 75, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2aiii-legal-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Legal/IPR compliance %" value={`${pct}%`} rag={rag} hint="Active minus 90d-expiring" />
+              <ScorecardTile label="IPR records" value={tm.length + pt.length + cr.length + ds.length} hint="TM · PT · CR · DS" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-legal">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
+
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
         <TabsList className="grid grid-cols-4 w-full">
           <TabsTrigger value="contracts">Legal Contracts</TabsTrigger>
