@@ -1,16 +1,20 @@
 /**
  * @file        src/pages/erp/eximx/export/FEMA270DayTracker.tsx
  * @purpose     Moat #19 FEMA 270-day auto-alert dashboard · PRIMARY surface
- * @sprint      T-Phase-1.EX-7c-ExportRealisation-eBRC-FEMA
+ * @sprint      T-Phase-1.EX-7c-ExportRealisation-eBRC-FEMA · RPT-2b-ii additive chart wrap
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, Calendar } from 'lucide-react';
+import { AlertTriangle, Calendar, ShieldCheck } from 'lucide-react';
 import { loadRealisations, summarizeRealisations } from '@/lib/export-realisation-engine';
 import { FEMA_DAY_BANDS } from '@/types/export-realisation';
 import type { ExportRealisation, FEMAState } from '@/types/export-realisation';
+// RPT-2b-ii · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 export function FEMA270DayTracker(): JSX.Element {
   const entityCode = 'sinha-trading';
@@ -20,12 +24,50 @@ export function FEMA270DayTracker(): JSX.Element {
 
   const stateColors: Record<FEMAState, string> = { safe: 'bg-green-600', attention: 'bg-yellow-500', warning: 'bg-orange-500', critical: 'bg-red-500', overdue: 'bg-red-700' };
 
+  // RPT-2b-ii · additive chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const buckets: Record<string, number> = { '0-90': 0, '90-180': 0, '180-270': 0, 'overdue': 0 };
+    for (const r of rs) {
+      const d = r.days_since_dispatch;
+      const k = d > 270 ? 'overdue' : d > 180 ? '180-270' : d > 90 ? '90-180' : '0-90';
+      buckets[k] += r.outstanding_inr;
+    }
+    return Object.entries(buckets).map(([bucket, value]) => ({ bucket, value }));
+  }, [rs]);
+  const chartConfig = getKpi('ex-fema-270')?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'bucket',
+    series: [{ key: 'value', label: 'Outstanding' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="space-y-6 p-6">
-      <div>
+      <div className="flex items-center gap-2 flex-wrap">
         <h1 className="text-2xl font-bold">FEMA 270-Day Tracker</h1>
-        <p className="text-sm text-muted-foreground">Moat #19 PRIMARY ANCHORED · 5-state auto-classifier · RBI mandate compliance</p>
+        <Badge variant="outline" className="text-[10px]" data-testid="ex-fema-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="ex-fema-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
+        <p className="text-sm text-muted-foreground w-full">Moat #19 PRIMARY ANCHORED · 5-state auto-classifier · RBI mandate compliance</p>
       </div>
+
+      <Card className="p-3" data-testid="ex-fema-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'bucket', label: 'Bucket' },
+            { key: 'value', label: 'Outstanding (₹)', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No realisations"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
 
       <div className="grid grid-cols-5 gap-4">
         {(['safe', 'attention', 'warning', 'critical', 'overdue'] as const).map((state) => (
