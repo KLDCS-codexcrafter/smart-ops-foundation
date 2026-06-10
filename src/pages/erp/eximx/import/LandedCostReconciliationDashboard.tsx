@@ -124,7 +124,7 @@ export function LandedCostReconciliationDashboard(): JSX.Element {
           mlgit: mlgit.mlgit_no,
           variance_pct: Number(Math.abs(summary.variance_custom_to_actual_pct).toFixed(2)),
         }));
-        const reconciled = varianceReports.filter((r) => r.aggregate_severity === 'none').length;
+        const reconciled = varianceReports.filter((r) => r.aggregate_severity === 'within_tolerance').length;
         const pct = varianceReports.length > 0
           ? Math.round((reconciled * 100) / varianceReports.length)
           : 100;
