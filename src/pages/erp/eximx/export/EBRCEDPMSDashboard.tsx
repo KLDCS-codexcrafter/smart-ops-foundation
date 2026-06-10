@@ -7,9 +7,11 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Banknote } from 'lucide-react';
+import { Banknote, ShieldCheck } from 'lucide-react';
 import { loadEBRCs, loadEDPMS } from '@/lib/ebrc-edpms-engine';
 import type { EBRC, EDPMSDeclaration } from '@/types/ebrc-edpms';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 export function EBRCEDPMSDashboard(): JSX.Element {
   const entityCode = 'sinha-trading';
