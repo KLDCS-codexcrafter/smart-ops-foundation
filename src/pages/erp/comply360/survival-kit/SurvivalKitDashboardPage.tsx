@@ -10,7 +10,9 @@ import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { LifeBuoy, ListChecks, HelpCircle } from 'lucide-react';
+import { LifeBuoy, ListChecks, HelpCircle, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import {
   listSurvivalKits,
   listChecklistItems,
@@ -80,6 +82,41 @@ export default function SurvivalKitDashboardPage(): JSX.Element {
           <div className="text-2xl font-bold font-mono">{questions.length}</div>
         </Card>
       </div>
+
+      {(() => {
+        const readyCount = items.filter((i) => i.status === 'ready').length;
+        const pendingCount = items.length - readyCount;
+        const chartRows = [
+          { status: 'Ready', count: readyCount },
+          { status: 'Pending', count: pendingCount },
+        ];
+        const kpi = getKpi('cmp-survivalkit');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'status',
+          series: [{ key: 'count', label: 'Checklist items' }],
+          title: 'Survival-kit checklist readiness',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 85, red: 60, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2aiii-survivalkit-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Readiness %" value={`${pct}%`} rag={rag} hint="Ready / total checklist" />
+              <ScorecardTile label="Pending items" value={pendingCount} hint="Awaiting evidence" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-survivalkit">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
         <TabsList>

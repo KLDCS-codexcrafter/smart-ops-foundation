@@ -10,7 +10,9 @@ import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Users2, Vote, CalendarCheck2 } from 'lucide-react';
+import { Users2, Vote, CalendarCheck2, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import {
   listMeetings,
   recordMeeting,
@@ -92,6 +94,37 @@ export default function MeetingsDashboardPage(): JSX.Element {
           <div className="text-sm font-mono mt-1">{mgt7.mgt7_filing_id ?? '—'}</div>
         </Card>
       </div>
+
+      {(() => {
+        const chartRows = TYPES.map((t) => ({ type: t.replace(/_/g, ' '), count: byType[t] }));
+        const pct = meetings.length > 0 ? Math.round((quorumMet * 100) / meetings.length) : 100;
+        const kpi = getKpi('cmp-meetings');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'type',
+          series: [{ key: 'count', label: 'Meetings' }],
+          title: 'Meetings · by type',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2aiii-meetings-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Quorum-met %" value={`${pct}%`} rag={rag} hint="Quorum met / total meetings" />
+              <ScorecardTile label="Meetings · FY" value={meetings.length} hint={`FY ${FY}`} />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-meetings">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
         <TabsList>

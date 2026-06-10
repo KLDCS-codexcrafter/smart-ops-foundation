@@ -556,6 +556,43 @@ registerKpi({
   thresholds: { amber: 90, red: 70, direction: 'higher-good' },
 });
 
+// ─── RPT-2a-iii · 3 Comply360 cohort-3 dashboard KPI seeds (idempotent) ────
+registerKpi({
+  id: 'cmp-legal',
+  label: 'Legal/IPR compliance %',
+  dataSource: 'comply360.legal-ipr.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'category',
+    series: [{ key: 'count', label: 'IPR records' }],
+    title: 'Legal · IPR record mix',
+  }),
+  thresholds: { amber: 90, red: 75, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-meetings',
+  label: 'Meetings compliance %',
+  dataSource: 'comply360.meetings.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'type',
+    series: [{ key: 'count', label: 'Meetings' }],
+    title: 'Meetings · by type',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-survivalkit',
+  label: 'Survival-kit readiness %',
+  dataSource: 'comply360.survival-kit.readiness',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'Checklist items' }],
+    title: 'Survival-kit checklist readiness',
+  }),
+  thresholds: { amber: 85, red: 60, direction: 'higher-good' },
+});
+
 
 
 
