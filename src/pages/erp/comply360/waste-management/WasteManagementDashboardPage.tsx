@@ -7,6 +7,7 @@ import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import {
   listHazardousForm1, listHazardousForm4, listHazardousForm10,
   listEWasteForm1, listEWasteForm6EPR, listEWasteForm1A,
@@ -16,6 +17,8 @@ import {
   listEPRConsolidated,
   getWasteManagementComplianceSummary,
 } from '@/lib/comply360-waste-management-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 type TabKey = 'hazardous' | 'e-waste' | 'plastic' | 'battery' | 'bio-medical' | 'epr';
 
@@ -75,6 +78,42 @@ export default function WasteManagementDashboardPage(): JSX.Element {
           {summary.overall_status}
         </Badge>
       </div>
+      {(() => {
+        const totalAuths = summary.hazardous_active_auth_count + summary.ewaste_active_auth_count +
+          summary.plastic_active_reg_count + summary.battery_active_reg_count + summary.biomedical_active_auth_count;
+        const chartRows = [
+          { category: 'Hazardous', count: summary.hazardous_active_auth_count },
+          { category: 'E-Waste', count: summary.ewaste_active_auth_count },
+          { category: 'Plastic', count: summary.plastic_active_reg_count },
+          { category: 'Battery', count: summary.battery_active_reg_count },
+          { category: 'Bio-Medical', count: summary.biomedical_active_auth_count },
+          { category: 'EPR Shortfall', count: summary.epr_shortfall_count },
+        ];
+        const denom = totalAuths + summary.epr_shortfall_count || 1;
+        const pct = Math.round((totalAuths * 100) / denom);
+        const kpi = getKpi('cmp-waste');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'category', series: [{ key: 'count', label: 'Streams' }] });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 85, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2ai-waste-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Waste disposal compliance %" value={`${pct}%`} rag={rag} hint="Authorisations vs EPR shortfalls" />
+              <ScorecardTile label="EPR shortfalls" value={summary.epr_shortfall_count} hint="All regimes" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-waste">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)}>
         <TabsList className="grid grid-cols-6 w-full">

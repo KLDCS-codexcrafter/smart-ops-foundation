@@ -415,6 +415,83 @@ registerKpi({
   }),
 });
 
+// ─── RPT-2a-i · 6 Comply360 reference dashboard KPI seeds (idempotent) ─────
+registerKpi({
+  id: 'cmp-fire-compliance',
+  label: 'Fire compliance %',
+  dataSource: 'comply360.fire-safety.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Fire controls' }],
+    title: 'Fire / NOC / Audit / AMC / Drill status',
+  }),
+  thresholds: { amber: 90, red: 75, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-costaudit-filings',
+  label: 'Cost-audit filings on time %',
+  dataSource: 'comply360.cost-audit.cra-filings',
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'form_type',
+    series: [
+      { key: 'filed', label: 'Filed' },
+      { key: 'pending', label: 'Pending' },
+    ],
+    title: 'CRA filings by form / status',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-env-compliance',
+  label: 'Environmental compliance %',
+  dataSource: 'comply360.environmental.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'category',
+    series: [{ key: 'count', label: 'Controls' }],
+    title: 'Consent / compliance status',
+  }),
+  thresholds: { amber: 85, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-indsafety',
+  label: 'Industrial safety compliance %',
+  dataSource: 'comply360.industrial-safety.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'category',
+    series: [{ key: 'count', label: 'Items' }],
+    title: 'Incident / safety-item status',
+  }),
+  thresholds: { amber: 90, red: 75, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-waste',
+  label: 'Waste disposal compliance %',
+  dataSource: 'comply360.waste-management.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'category',
+    series: [{ key: 'count', label: 'Streams' }],
+    title: 'Waste category / disposal',
+  }),
+  thresholds: { amber: 85, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'cmp-dpdp',
+  label: 'DPDP readiness %',
+  dataSource: 'comply360.dpdp.compliance-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'control',
+    series: [{ key: 'count', label: 'DPDP controls' }],
+    title: 'DPDP control status',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+
 
 
 

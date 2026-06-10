@@ -7,6 +7,7 @@ import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import {
   listFireNOCs,
   listFireSafetyAudits,
@@ -14,6 +15,8 @@ import {
   listEvacuationDrills,
   getFireSafetyComplianceSummary,
 } from '@/lib/comply360-fire-safety-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 type TabKey = 'noc' | 'audit' | 'equipment' | 'drills';
 
@@ -56,6 +59,40 @@ export default function FireSafetyDashboardPage(): JSX.Element {
       <div className="text-sm">
         Overall status: <Badge variant={summary.overall_status === 'compliant' ? 'default' : 'destructive'}>{summary.overall_status}</Badge>
       </div>
+
+      {(() => {
+        const chartRows = [
+          { status: 'Active NOCs', count: summary.active_nocs },
+          { status: 'Expiring 90d', count: summary.expiring_nocs_next_90_days },
+          { status: 'Audits passed', count: summary.audits_passed_last_12_months },
+          { status: 'Drills', count: summary.evacuation_drills_last_12_months },
+        ];
+        const totalControls = chartRows.reduce((s, r) => s + r.count, 0) || 1;
+        const okControls = summary.active_nocs + summary.audits_passed_last_12_months + summary.evacuation_drills_last_12_months;
+        const pct = Math.round((okControls * 100) / totalControls);
+        const kpi = getKpi('cmp-fire-compliance');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({ chartType: 'doughnut', xKey: 'status', series: [{ key: 'count', label: 'Fire controls' }] });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 75, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2ai-fire-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Fire compliance %" value={`${pct}%`} rag={rag} hint="Active NOCs + audits + drills" />
+              <ScorecardTile label="Expiring NOCs (90d)" value={summary.expiring_nocs_next_90_days} hint="Renewal queue" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-fire">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)}>
         <TabsList className="grid grid-cols-4 w-full">

@@ -7,11 +7,14 @@ import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import {
   listCTEPermits, listCTOPermits, listForm5Statements, listFormVCesses,
   getEnvironmentalComplianceSummary,
 } from '@/lib/comply360-environmental-engine';
 import { listEIAProcesses, listCRZCompliances } from '@/lib/comply360-eia-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 type TabKey = 'cte-cto' | 'form5' | 'form-v' | 'eia-crz';
 
@@ -59,6 +62,39 @@ export default function EnvironmentalDashboardPage(): JSX.Element {
           {summary.overall_status}
         </Badge>
       </div>
+      {(() => {
+        const chartRows = [
+          { category: 'Active CTE', count: summary.active_cte_count },
+          { category: 'Active CTO', count: summary.active_cto_count },
+          { category: 'Expiring 90d', count: summary.expiring_permits_next_90_days },
+          { category: 'Form 5 filed', count: summary.form5_statements_filed_current_fy },
+        ];
+        const active = summary.active_cte_count + summary.active_cto_count + summary.form5_statements_filed_current_fy;
+        const total = active + summary.expiring_permits_next_90_days || 1;
+        const pct = Math.round((active * 100) / total);
+        const kpi = getKpi('cmp-env-compliance');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'category', series: [{ key: 'count', label: 'Controls' }] });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 85, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2ai-env-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Environmental compliance %" value={`${pct}%`} rag={rag} hint="Active CTE/CTO + filings" />
+              <ScorecardTile label="Expiring permits (90d)" value={summary.expiring_permits_next_90_days} hint="Renewal queue" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-env">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabKey)}>
         <TabsList className="grid grid-cols-4 w-full">

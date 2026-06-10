@@ -7,10 +7,13 @@ import { useState, useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import {
   listDPOs, listDPRequests, listConsents, listBreaches, isBreachLate,
   getDPDPComplianceSummary,
 } from '@/lib/comply360-dpdp-engine';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 type TabKey = 'dpo' | 'requests' | 'consent' | 'breach';
 
@@ -60,6 +63,40 @@ export default function DPDPDashboardPage(): JSX.Element {
           {summary.privacy_policy_published ? 'published' : 'missing'}
         </Badge>
       </div>
+      {(() => {
+        const chartRows = [
+          { control: 'Active DPOs', count: summary.active_dpos },
+          { control: 'Active consents', count: summary.active_consents },
+          { control: 'Overdue requests', count: summary.overdue_dp_requests },
+          { control: 'Late breach reports', count: summary.late_breach_notifications },
+        ];
+        const okControls = summary.active_dpos + summary.active_consents;
+        const badControls = summary.overdue_dp_requests + summary.late_breach_notifications;
+        const total = okControls + badControls || 1;
+        const pct = Math.round((okControls * 100) / total);
+        const kpi = getKpi('cmp-dpdp');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({ chartType: 'doughnut', xKey: 'control', series: [{ key: 'count', label: 'DPDP controls' }] });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2ai-dpdp-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="DPDP readiness %" value={`${pct}%`} rag={rag} hint="Active controls vs breaches" />
+              <ScorecardTile label="Late breach reports" value={summary.late_breach_notifications} hint="72-hour rule" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-dpdp">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
         <TabsList className="grid grid-cols-4 w-full">
