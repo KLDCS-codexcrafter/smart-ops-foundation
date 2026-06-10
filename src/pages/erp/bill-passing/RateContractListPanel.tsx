@@ -14,13 +14,17 @@ import {
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
-import { FileSignature, Plus } from 'lucide-react';
+import { FileSignature, Plus, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listRateContracts, createRateContract, type CreateRateContractInput,
 } from '@/lib/rate-contract-engine';
 import type { RateContract, RateContractStatus } from '@/types/rate-contract';
+// RPT-2c · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 function inr(n: number): string {
   return `₹${n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -123,14 +127,49 @@ export function RateContractListPanel(): JSX.Element {
     );
   }, [all, q]);
 
+  // RPT-2c additive · chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const byVendor = new Map<string, number>();
+    for (const r of filtered) byVendor.set(r.vendor_name, (byVendor.get(r.vendor_name) ?? 0) + r.total_value);
+    return Array.from(byVendor.entries()).map(([vendor, value]) => ({ vendor, value }));
+  }, [filtered]);
+  const chartConfig = getKpi('bp-rate-contract')?.defaultChart ?? defaultChartConfig({
+    chartType: 'bar', xKey: 'vendor',
+    series: [{ key: 'value', label: 'Contract value' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-4">
-      <div>
+      <div className="flex items-center gap-2">
         <h1 className="text-2xl font-bold">Rate Contracts</h1>
-        <p className="text-sm text-muted-foreground">
-          Vendor-locked rate agreements · feed PO auto-fill (D-293).
-        </p>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="bp-rc-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
+        <Badge variant="outline" className="text-[10px]" data-testid="bp-rc-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
       </div>
+      <p className="text-sm text-muted-foreground">
+        Vendor-locked rate agreements · feed PO auto-fill (D-293).
+      </p>
+
+      <Card className="p-3" data-testid="bp-rc-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'vendor', label: 'Vendor' },
+            { key: 'value', label: 'Contract value', align: 'right', render: (r) => inr(Number(r.value) || 0) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No rate contracts"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <div className="flex items-center gap-2">
         <Input

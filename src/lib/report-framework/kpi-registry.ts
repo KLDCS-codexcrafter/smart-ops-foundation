@@ -178,5 +178,92 @@ registerKpi({
   thresholds: { amber: 80, red: 60, direction: 'higher-good' },
 });
 
+// ─── RPT-2c · 7 ReceivX + PayOut + Bill-passing KPI seeds (idempotent) ─────
+registerKpi({
+  id: 'rx-aging-person',
+  label: 'AR aging by collector',
+  dataSource: 'receivx.aging.by-person',
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'collector',
+    series: [
+      { key: 'b_0_30',   label: '0–30 d' },
+      { key: 'b_31_60',  label: '31–60 d' },
+      { key: 'b_61_90',  label: '61–90 d' },
+      { key: 'b_90_plus',label: '90+ d' },
+    ],
+    title: 'AR aging by collector',
+  }),
+});
+
+registerKpi({
+  id: 'rx-credit-risk',
+  label: 'Credit risk distribution',
+  dataSource: 'receivx.credit-risk.distribution',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'risk',
+    series: [{ key: 'exposure', label: 'Exposure' }],
+    title: 'Credit risk distribution',
+  }),
+});
+
+registerKpi({
+  id: 'rx-collection-eff',
+  label: 'Collection efficiency',
+  dataSource: 'receivx.collection.efficiency',
+  defaultChart: defaultChartConfig({
+    chartType: 'combo', xKey: 'period',
+    series: [
+      { key: 'collected', label: 'Collected', renderAs: 'bar' },
+      { key: 'efficiency', label: 'Efficiency %', renderAs: 'line' },
+    ],
+    title: 'Collection efficiency',
+  }),
+});
+
+registerKpi({
+  id: 'rx-ptp-rate',
+  label: 'PTP kept vs broken',
+  dataSource: 'receivx.ptp.kept-vs-broken',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'PTPs' }],
+    title: 'PTP kept vs broken',
+  }),
+});
+
+registerKpi({
+  id: 'rx-comm-volume',
+  label: 'Communication volume by channel',
+  dataSource: 'receivx.communication.volume',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'channel',
+    series: [{ key: 'count', label: 'Messages' }],
+    title: 'Communication volume by channel',
+  }),
+});
+
+registerKpi({
+  id: 'po-requisition-trend',
+  label: 'Requisition value trend',
+  dataSource: 'payout.requisition.trend',
+  defaultChart: defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'value', label: 'Requisition value' }],
+    title: 'Requisition value trend',
+  }),
+});
+
+registerKpi({
+  id: 'bp-rate-contract',
+  label: 'Rate contract value by vendor',
+  dataSource: 'bill-passing.rate-contract.value-by-vendor',
+  defaultChart: defaultChartConfig({
+    chartType: 'bar', xKey: 'vendor',
+    series: [{ key: 'value', label: 'Contract value' }],
+    title: 'Rate contract value by vendor',
+  }),
+});
+
+
 
 

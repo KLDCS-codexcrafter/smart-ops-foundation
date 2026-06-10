@@ -11,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { Download, Lock } from 'lucide-react';
+import { Download, Lock, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
@@ -20,6 +20,10 @@ import {
 } from '@/types/receivx';
 import type { OutstandingEntry } from '@/types/voucher';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// RPT-2c · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface Props { entityCode: string; onNavigate?: (m: string) => void }
 
@@ -124,17 +128,51 @@ export function CreditRiskReportPanel({ entityCode, onNavigate: _onNavigate }: P
     void id;
   };
 
+  // RPT-2c additive · chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const byRisk = new Map<string, number>();
+    for (const r of rows) byRisk.set(r.risk, (byRisk.get(r.risk) ?? 0) + r.outstanding);
+    return Array.from(byRisk.entries()).map(([risk, exposure]) => ({ risk, exposure }));
+  }, [rows]);
+  const chartConfig = getKpi('rx-credit-risk')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'risk',
+    series: [{ key: 'exposure', label: 'Exposure' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold">Credit Risk Report</h1>
-          <p className="text-xs text-muted-foreground">Per-customer risk classification</p>
+          <Badge variant="outline" className="text-[10px]" data-testid="rx-crr-period-chip">As of {today()}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="rx-crr-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary onClick={handleExport} className="bg-amber-500 hover:bg-amber-600 text-white">
           <Download className="h-4 w-4 mr-1.5" /> Export CSV
         </Button>
       </div>
+
+      <Card className="p-3" data-testid="rx-crr-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'risk', label: 'Risk grade' },
+            { key: 'exposure', label: 'Exposure', align: 'right', render: (r) => fmt(Number(r.exposure) || 0) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No customers"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <div className="flex items-center gap-2">
         <Input placeholder="Customer..." value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={onEnterNext} className="w-60 h-8 text-xs" />

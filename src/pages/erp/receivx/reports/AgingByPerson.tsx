@@ -11,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { Download, ChevronRight, ChevronDown, MessageCircle, Mail, CheckCircle2 } from 'lucide-react';
+import { Download, ChevronRight, ChevronDown, MessageCircle, Mail, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
@@ -20,6 +20,11 @@ import {
 } from '@/types/receivx';
 import { computeDSO, computePTPKeptRatio } from '@/lib/receivx-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// RPT-2c · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 
 
@@ -125,17 +130,64 @@ export function AgingByPersonPanel({ entityCode, personType, onNavigate: _onNavi
     toast.success('CSV exported');
   }, [rows, personType]);
 
+  // RPT-2c additive · chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(
+    () => rows.map(r => ({
+      collector: r.name,
+      b_0_30: r.buckets['0-30'],
+      b_31_60: r.buckets['31-60'],
+      b_61_90: r.buckets['61-90'],
+      b_90_plus: r.buckets['91-180'] + r.buckets['180+'],
+    })),
+    [rows],
+  );
+  const chartConfig = getKpi('rx-aging-person')?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'collector',
+    series: [
+      { key: 'b_0_30',   label: '0–30 d' },
+      { key: 'b_31_60',  label: '31–60 d' },
+      { key: 'b_61_90',  label: '61–90 d' },
+      { key: 'b_90_plus',label: '90+ d' },
+    ],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold capitalize">Aging by {personType}</h1>
-          <p className="text-xs text-muted-foreground">Receivables grouped by {personType}</p>
+          <Badge variant="outline" className="text-[10px]" data-testid="rx-agp-period-chip">As of {today()}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="rx-agp-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary onClick={handleExport} className="bg-amber-500 hover:bg-amber-600 text-white">
           <Download className="h-4 w-4 mr-1.5" /> Export CSV
         </Button>
       </div>
+
+      <Card className="p-3" data-testid="rx-agp-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'collector', label: personType },
+            { key: 'b_0_30', label: '0–30', align: 'right', render: (r) => fmt(Number(r.b_0_30) || 0) },
+            { key: 'b_31_60', label: '31–60', align: 'right', render: (r) => fmt(Number(r.b_31_60) || 0) },
+            { key: 'b_61_90', label: '61–90', align: 'right', render: (r) => fmt(Number(r.b_61_90) || 0) },
+            { key: 'b_90_plus', label: '90+', align: 'right', render: (r) => fmt(Number(r.b_90_plus) || 0) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No aging data"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <Card className="p-3"><p className="text-[10px] uppercase text-muted-foreground">Outstanding</p><p className="text-lg font-bold font-mono">{fmt(summary.totalOutstanding)}</p></Card>

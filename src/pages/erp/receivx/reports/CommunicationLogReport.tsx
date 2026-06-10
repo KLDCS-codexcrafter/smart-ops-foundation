@@ -17,7 +17,7 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle,
 } from '@/components/ui/sheet';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { Download, MessageCircle, Mail, Phone } from 'lucide-react';
+import { Download, MessageCircle, Mail, Phone, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
@@ -25,6 +25,10 @@ import {
   type CommunicationLog, type CommStatus,
   receivxCommLogKey,
 } from '@/types/receivx';
+// RPT-2c · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface Props { entityCode: string; onNavigate?: (m: string) => void }
 
@@ -80,17 +84,51 @@ export function CommunicationLogReportPanel({ entityCode, onNavigate: _onNavigat
 
   const channelIcon = (c: string) => c === 'whatsapp' ? <MessageCircle className="h-3 w-3" /> : c === 'email' ? <Mail className="h-3 w-3" /> : <Phone className="h-3 w-3" />;
 
+  // RPT-2c additive · chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const l of filtered) counts[l.channel] = (counts[l.channel] ?? 0) + 1;
+    return Object.entries(counts).map(([channel, count]) => ({ channel, count }));
+  }, [filtered]);
+  const chartConfig = getKpi('rx-comm-volume')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'channel',
+    series: [{ key: 'count', label: 'Messages' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="space-y-4">
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
           <h1 className="text-xl font-bold">Communication Log</h1>
-          <p className="text-xs text-muted-foreground">Outbound message audit trail</p>
+          <Badge variant="outline" className="text-[10px]" data-testid="rx-clr-period-chip">{fromDate || 'All time'} → {toDate || today()}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="rx-clr-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary onClick={handleExport} className="bg-amber-500 hover:bg-amber-600 text-white">
           <Download className="h-4 w-4 mr-1.5" /> Export CSV
         </Button>
       </div>
+
+      <Card className="p-3" data-testid="rx-clr-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'channel', label: 'Channel' },
+            { key: 'count', label: 'Messages', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No messages"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
+
 
       <div className="flex flex-wrap gap-2 items-center">
         <Input type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} onKeyDown={onEnterNext} className="w-36 h-8 text-xs" />
