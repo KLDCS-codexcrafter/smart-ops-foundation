@@ -88,6 +88,43 @@ export default function Form3CEBDashboard(): JSX.Element {
           </p>
         </CardContent>
       </Card>
+
+      {(() => {
+        const filed = existingSnapshots.length;
+        const required = summary?.filing_required ? 1 : 0;
+        const chartRows = [
+          { status: 'Filed', count: filed },
+          { status: 'Pending', count: required > 0 && filed === 0 ? 1 : 0 },
+          { status: 'Not required', count: required === 0 ? 1 : 0 },
+        ];
+        const pct = required === 0 ? 100 : (filed > 0 ? 100 : 0);
+        const kpi = getKpi('ex-form3ceb');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'status',
+          series: [{ key: 'count', label: '3CEB filings' }],
+          title: '3CEB filing status',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 75, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biii-form3ceb-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Form 3CEB filing %" value={`${pct}%`} rag={rag} hint="Required vs filed" />
+              <ScorecardTile label="Persisted snapshots" value={existingSnapshots.length} hint="Section 92E drafts" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-form3ceb">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
