@@ -1245,10 +1245,18 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint CLEANUP-3 T-CLN3-Residue-Bundle · 4 honest cleanups · (1) FinCore Mobile operix-go entry flipped planned→live · re-pointed to /operix-go/approval-inbox (Universal Approval) · details cite Universal Reporting (mobile-report-registry · AM.3) — no dead /operix-go/fincore route · (2) ConversionType fix: added real VALUE export CONVERSION_TYPES (readonly ConversionType[]) in salesx-conversion-engine.ts · marketing-automation-engine.getFunnelContext now reads CONVERSION_TYPES instead of the prior `as unknown as { ConversionType }` cast which read a TS type at runtime and always resolved to [] · clears the persistent rollup warning AND fixes the silently-empty funnel-context list (type ConversionType kept 0-DIFF) · (3) Tower 11 dead "coming soon" toasts made honest: Users edit/suspend/reactivate (×5 sites · row+detail) · Permissions Create Role · Notifications per-row actions · Billing Report download · Settings Schedule New Window · Support Change Status + Add Note → all converted to disabled buttons with explicit title="… arrives with Wave-2 multi-tenant backend" · grep "coming soon" in src/pages/tower = 0 · (4) CustomerSupport "Ticket detail coming soon" → wired LOCAL Dialog reading from in-memory TICKETS list (status/priority/created/updated/assignedTo + Wave-2 deferral note for conversation thread) · grep "coming soon" in CustomerSupport = 0 · NO new SIBLING (empty newSiblings · all consuming · CONVERSION_TYPES is a value mirror of an existing type · no new engine) · walls held: approval-rail/universal-mobile layers · salesx-conversion-engine type ConversionType (unchanged) · tower engines · customer ticket data · applications.ts all 0-DIFF · GUIDE-1 flipped to f0ee5e3f · 120→121 ⭐ · headSha TBD_AT_BANK
   {
     sprintNumber: 'CLN3' as unknown as number, code: 'T-CLN3-Residue-Bundle', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'f0ee5e3f', loc: 280,
+    headSha: '3376c22', predecessorSha: 'f0ee5e3f', loc: 280,
     newSiblings: [],
-    bankDate: '2026-06-09', provenance: 'PENDING_BACKFILL',
+    bankDate: '2026-06-09', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint RPT-1a T-RPT1a-Reporting-Framework-Foundation · Reporting Arc Step-2 · build-once shared lib core/ (chart-config · period-engine · integrity-sign · kpi-registry) + ui/ (15-type ChartLibrary on existing ChartContainer · CHART_TYPE_COVERAGE · TableChartToggle) + ONE reference wire on OutstandingAging (additive only · existing Table/tabs preserved · period chip · drill consume · integrity badge · 2 KPI seeds) · core/ is React-free + write-free (read-only-lock test enforces zero react/hook imports · zero localStorage.setItem · zero postVoucher/saveVoucher/writeVoucher) · period-engine PURE (does NOT import GlobalDateRangeContext · context adopts engine in RPT-1b/4) · integrity-sign DELEGATES to voucher-hash (no new hash algo) · kpi-registry idempotent append-only (re-register = no-op) · 15 chart types: 9 native recharts + 1 composed + 5 approximated (recharts-only · NO new dependency) · TableChartToggle defaults to Table (zero visual regression on wrap) · 1 new SIBLING (report-framework core) · 28 new framework tests + 6 page tests · walls held: GlobalDateRangeContext · useDayBook · ui/chart.tsx · voucher-hash · applications.ts all 0-DIFF · CLN3 flipped to 3376c22 · 121→122 ⭐ · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT1a' as unknown as number, code: 'T-RPT1a-Reporting-Framework-Foundation', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '3376c22', loc: 1150,
+    newSiblings: ['report-framework'],
+    bankDate: '2026-06-10', provenance: 'PENDING_BACKFILL',
+  },
+
 ];
 
 
