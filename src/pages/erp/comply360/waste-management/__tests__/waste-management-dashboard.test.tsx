@@ -1,6 +1,6 @@
 /**
  * @file        waste-management-dashboard.test.tsx
- * @sprint      RPT-2a-i
+ * @sprint      RPT-2a-i (T2: robust pattern aligned)
  */
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -9,8 +9,8 @@ import WasteManagementDashboardPage from '../WasteManagementDashboardPage';
 describe('RPT-2a-i · WasteManagementDashboardPage', () => {
   it('preserves existing header + tiles', () => {
     render(<WasteManagementDashboardPage />);
-    expect(screen.getByText(/Waste Management Compliance/i)).toBeInTheDocument();
-    expect(screen.getByText(/Active Authorisations/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Waste Management Compliance/i })).toBeInTheDocument();
+    expect(screen.queryAllByText(/Active Authorisations/i).length).toBeGreaterThan(0);
   });
   it('adds ScorecardTile + integrity badge', () => {
     render(<WasteManagementDashboardPage />);
