@@ -70,6 +70,44 @@ export function EBRCEDPMSDashboard(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const closed = edpms.filter((e) => e.state === 'closed').length;
+        const caution = edpms.filter((e) => e.state === 'caution').length;
+        const open = edpms.length - closed - caution;
+        const chartRows = [
+          { status: 'Closed', count: closed },
+          { status: 'Caution', count: caution },
+          { status: 'Open', count: open },
+        ];
+        const pct = edpms.length > 0 ? Math.round((closed * 100) / edpms.length) : 100;
+        const kpi = getKpi('ex-ebrc');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'status',
+          series: [{ key: 'count', label: 'EDPMS records' }],
+          title: 'e-BRC / EDPMS recon status',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 75, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biii-ebrc-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="e-BRC/EDPMS recon %" value={`${pct}%`} rag={rag} hint="Closed vs total EDPMS" />
+              <ScorecardTile label="EBRCs issued" value={ebrcs.length} hint="Auto-issued on full realisation" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-ebrc">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
