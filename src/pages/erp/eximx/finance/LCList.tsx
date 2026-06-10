@@ -41,12 +41,46 @@ export default function LCList(): JSX.Element {
   );
   const summary = summarizeLCs(lcs);
 
+  // RPT-2b-i · additive chart wrap
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const lc of lcs) counts[lc.status] = (counts[lc.status] ?? 0) + 1;
+    return Object.entries(counts).map(([status, count]) => ({ status, count }));
+  }, [lcs]);
+  const chartConfig = getKpi('ex-lc-status')?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'LCs' }],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="space-y-4 p-6">
       <div className="flex items-center gap-2">
         <FileText className="w-5 h-5 text-primary" />
         <h1 className="text-2xl font-semibold">Letters of Credit · D-NEW-FJ · 10th SIBLING</h1>
+        <Badge variant="outline" className="text-[10px]" data-testid="ex-lc-period-chip">As of {new Date().toISOString().slice(0, 10)}</Badge>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="ex-lc-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
       </div>
+
+      <Card className="p-3" data-testid="ex-lc-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status', label: 'Status' },
+            { key: 'count', label: 'Count', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No LCs"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Total LCs</CardTitle></CardHeader><CardContent className="pt-0"><p className="text-2xl font-semibold font-mono">{summary.total}</p></CardContent></Card>
@@ -55,6 +89,7 @@ export default function LCList(): JSX.Element {
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Negotiated</CardTitle></CardHeader><CardContent className="pt-0"><p className="text-2xl font-semibold font-mono">{summary.negotiated}</p></CardContent></Card>
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm">Outstanding</CardTitle></CardHeader><CardContent className="pt-0"><p className="text-2xl font-semibold font-mono">₹{summary.total_outstanding_inr.toLocaleString('en-IN')}</p></CardContent></Card>
       </div>
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">LC contracts</CardTitle></CardHeader>
