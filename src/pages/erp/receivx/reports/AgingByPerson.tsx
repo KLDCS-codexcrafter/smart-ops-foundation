@@ -1,7 +1,6 @@
 /**
  * AgingByPerson.tsx — Aging grouped by salesman/agent/broker/telecaller
  * [JWT] GET /api/receivx/aging-by-person
- * RPT-2c additive: TableChartToggle wrap + period chip + integrity badge + drill + KPI consume.
  */
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
@@ -12,7 +11,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { Download, ChevronRight, ChevronDown, MessageCircle, Mail, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Download, ChevronRight, ChevronDown, MessageCircle, Mail, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import {
@@ -21,9 +20,7 @@ import {
 } from '@/types/receivx';
 import { computeDSO, computePTPKeptRatio } from '@/lib/receivx-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-import { TableChartToggle } from '@/components/operix-core/report-framework';
-import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
-import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 
 interface Props {
