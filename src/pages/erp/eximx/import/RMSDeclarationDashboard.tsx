@@ -7,7 +7,9 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Shield } from 'lucide-react';
+import { Shield, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import { loadRMSDeclarations, computeLaneVariance } from '@/lib/rms-lane-engine';
 import type { RMSDeclaration } from '@/types/rms-declaration';
 
@@ -63,6 +65,41 @@ export function RMSDeclarationDashboard(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = [
+          { status: 'pending', count: pending },
+          { status: 'resolved', count: resolved },
+        ];
+        const pct = total === 0 ? 100 : Math.round((resolved * 100) / total);
+        const kpi = getKpi('ex-rms');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'status',
+          series: [{ key: 'count', label: 'Declarations' }],
+          title: 'RMS declaration status',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biv-rms-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="RMS declaration %" value={`${pct}%`} rag={rag} hint="Resolved vs total" />
+              <ScorecardTile label="Pending ICEGATE" value={pending} hint="Awaiting actual lane" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-rms">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
+

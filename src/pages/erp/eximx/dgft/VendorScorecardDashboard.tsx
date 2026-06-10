@@ -7,7 +7,9 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Building2, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Building2, TrendingUp, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import { loadVendorScores, summarizeVendorScores } from '@/lib/vendor-reliability-engine';
 import type { VendorReliabilityScore, VendorReliabilityClass } from '@/types/vendor-reliability-score';
 
@@ -62,6 +64,39 @@ export function VendorScorecardDashboard(): JSX.Element {
           </Table>
         </CardContent>
       </Card>
+
+      {(() => {
+        const classes = ['preferred', 'strategic', 'standard', 'probationary', 'blocked'] as const;
+        const chartRows = classes.map((c) => ({ class: c, count: summary.by_class[c] }));
+        const pct = summary.avg_composite_score;
+        const kpi = getKpi('ex-vendor-score');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'class',
+          series: [{ key: 'count', label: 'Vendors' }],
+          title: 'Vendor scorecard distribution',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 80, red: 60, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biv-vendor-score-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Vendor scorecard %" value={`${pct}`} rag={rag} hint="Avg composite score" />
+              <ScorecardTile label="Vendors" value={scores.length} hint="Scored vendors" />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-vendor-score">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
+

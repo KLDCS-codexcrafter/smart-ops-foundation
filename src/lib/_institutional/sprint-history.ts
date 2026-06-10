@@ -1305,14 +1305,22 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-2b-iii T-RPT2biii-EximX-Dashboard-Cohort1 · Reporting Arc · roll the banked RPT-2a-iii dashboard recipe (ReportChart + ScorecardTile/RAG + integrity badge) across 6 EximX cohort-1 dashboards (CrossEntityRealisation · Form3CEB · LandedCostReconciliation · AEOBenefits · EBRCEDPMS · MonthEndReval) — each gains ReportChart over computed summary + ScorecardTile (RAG) + integrity badge; existing Card layout/tiles/tables PRESERVED · 6 KPI seeds (ex-cross-realisation · ex-form3ceb · ex-landed-cost · ex-aeo · ex-ebrc · ex-monthend-reval · with thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF (rag.ts · ScorecardTile.tsx · chart-config · period-engine · integrity-sign · ChartLibrary · TableChartToggle · CHART_TYPE_COVERAGE · barrels · src/test/setup.ts) · 5 RPT-2b-iv EximX dashboards + all Comply360 dashboards + all banked pages 0-DIFF · h1-variability test nuance baked in (3 dashboards have h1 · 3 do not — header asserted via queryAllByText) · close summary COMMITTED · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-2b-iii T-RPT2biii-EximX-Dashboard-Cohort1 · Reporting Arc · roll the banked RPT-2a-iii dashboard recipe (ReportChart + ScorecardTile/RAG + integrity badge) across 6 EximX cohort-1 dashboards (CrossEntityRealisation · Form3CEB · LandedCostReconciliation · AEOBenefits · EBRCEDPMS · MonthEndReval) — each gains ReportChart over computed summary + ScorecardTile (RAG) + integrity badge; existing Card layout/tiles/tables PRESERVED · 6 KPI seeds (ex-cross-realisation · ex-form3ceb · ex-landed-cost · ex-aeo · ex-ebrc · ex-monthend-reval · with thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF (rag.ts · ScorecardTile.tsx · chart-config · period-engine · integrity-sign · ChartLibrary · TableChartToggle · CHART_TYPE_COVERAGE · barrels · src/test/setup.ts) · 5 RPT-2b-iv EximX dashboards + all Comply360 dashboards + all banked pages 0-DIFF · h1-variability test nuance baked in (3 dashboards have h1 · 3 do not — header asserted via queryAllByText) · close summary COMMITTED · headSha BACKFILLED 616b95e at RPT-2b-iv Block 2
   {
     sprintNumber: 'RPT2biii' as unknown as number, code: 'T-RPT2biii-EximX-Dashboard-Cohort1', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '574258e', loc: 620,
+    headSha: '616b95e', predecessorSha: '574258e', loc: 620,
+    newSiblings: [],
+    bankDate: '2026-06-10', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-2b-iv T-RPT2biv-EximX-Dashboards-Close · Reporting Arc · CLOSES the EximX dashboard layer · roll the banked RPT-2b-iii dashboard recipe (ReportChart + ScorecardTile/RAG + integrity badge) across the last 5 EximX dashboards (EWS · BuyerReliability · VendorScorecard · CoOLegalization · RMSDeclaration) — each gains ReportChart over computed summary + ScorecardTile (RAG) + integrity badge; existing Card layout/tiles/tables PRESERVED · 5 KPI seeds (ex-ews · ex-buyer-reliability · ex-vendor-score · ex-coo-legal · ex-rms · with thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF (rag.ts · ScorecardTile.tsx · chart-config · period-engine · integrity-sign · ChartLibrary · TableChartToggle · CHART_TYPE_COVERAGE · barrels · src/test/setup.ts) · 6 RPT-2b-iii EximX dashboards + all Comply360 dashboards + all banked pages 0-DIFF · h1-variability test nuance baked in (3 dashboards have h1 · 2 do not — EWS + VendorScorecard via queryAllByText) · close summary COMMITTED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT2biv' as unknown as number, code: 'T-RPT2biv-EximX-Dashboards-Close', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '616b95e', loc: 530,
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'PENDING_BACKFILL',
   },
 ];
+
 
 
 

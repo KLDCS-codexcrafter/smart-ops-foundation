@@ -672,3 +672,65 @@ registerKpi({
   thresholds: { amber: 95, red: 80, direction: 'higher-good' },
 });
 
+// ─── RPT-2b-iv · 5 EximX dashboard cohort-2 (close) KPI seeds (idempotent) ──
+registerKpi({
+  id: 'ex-ews',
+  label: 'Early-warning coverage %',
+  dataSource: 'eximx.ews.coverage',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'severity',
+    series: [{ key: 'count', label: 'Signals' }],
+    title: 'Early-warning signals by severity',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'ex-buyer-reliability',
+  label: 'Buyer reliability index',
+  dataSource: 'eximx.buyer-reliability.distribution',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'class',
+    series: [{ key: 'count', label: 'Customers' }],
+    title: 'Buyer reliability distribution',
+  }),
+  thresholds: { amber: 80, red: 60, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'ex-vendor-score',
+  label: 'Vendor scorecard %',
+  dataSource: 'eximx.vendor-score.distribution',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'class',
+    series: [{ key: 'count', label: 'Vendors' }],
+    title: 'Vendor scorecard distribution',
+  }),
+  thresholds: { amber: 80, red: 60, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'ex-coo-legal',
+  label: 'CoO legalization %',
+  dataSource: 'eximx.coo-legal.status',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'state',
+    series: [{ key: 'count', label: 'SB / state' }],
+    title: 'CoO legalization status',
+  }),
+  thresholds: { amber: 80, red: 60, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'ex-rms',
+  label: 'RMS declaration %',
+  dataSource: 'eximx.rms.status',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Declarations' }],
+    title: 'RMS declaration status',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+

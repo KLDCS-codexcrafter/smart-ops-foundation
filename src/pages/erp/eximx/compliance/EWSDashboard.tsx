@@ -6,7 +6,9 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, Shield, Clock } from 'lucide-react';
+import { AlertTriangle, Shield, Clock, ShieldCheck } from 'lucide-react';
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import { loadRealisations } from '@/lib/export-realisation-engine';
 import { loadPCAAudits } from '@/lib/pca-audit-engine';
 import { loadSoftexForms } from '@/lib/stpi-softex-engine';
@@ -95,6 +97,40 @@ export function EWSDashboard(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const sevs = ['critical', 'high', 'medium', 'low'] as const;
+        const chartRows = sevs.map((sev) => ({ severity: sev, count: signals.filter((s) => s.severity === sev).length }));
+        const criticalCount = signals.filter((s) => s.severity === 'critical').length;
+        const pct = signals.length === 0 ? 100 : Math.round(((signals.length - criticalCount) * 100) / signals.length);
+        const kpi = getKpi('ex-ews');
+        const chartConfig = kpi?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'severity',
+          series: [{ key: 'count', label: 'Signals' }],
+          title: 'Early-warning signals by severity',
+        });
+        const rag = resolveRag(pct, kpi?.thresholds ?? { amber: 90, red: 70, direction: 'higher-good' });
+        const sig = signReport(chartRows);
+        return (
+          <section className="space-y-3" data-testid="rpt2biv-ews-section">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <ScorecardTile label="Early-warning coverage %" value={`${pct}%`} rag={rag} hint="Non-critical share of signals" />
+              <ScorecardTile label="Active signals" value={signals.length} hint={`Critical: ${criticalCount}`} />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-ews">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            <Card className="p-4">
+              <div className="h-72">
+                <ReportChart data={chartRows} config={chartConfig} />
+              </div>
+            </Card>
+          </section>
+        );
+      })()}
     </div>
   );
 }
+
