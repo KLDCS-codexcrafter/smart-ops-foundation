@@ -1,6 +1,6 @@
 /**
  * @file        cost-audit-dashboard.test.tsx
- * @sprint      RPT-2a-i
+ * @sprint      RPT-2a-i (T2: robust)
  */
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
@@ -9,8 +9,8 @@ import CostAuditDashboardPage from '../CostAuditDashboardPage';
 describe('RPT-2a-i · CostAuditDashboardPage', () => {
   it('preserves existing header + tiles', () => {
     render(<CostAuditDashboardPage />);
-    expect(screen.getByText(/Cost Audit/i)).toBeInTheDocument();
-    expect(screen.getByText(/Adverse findings/i)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /Cost Audit/i })).toBeInTheDocument();
+    expect(screen.queryAllByText(/Adverse findings/i).length).toBeGreaterThan(0);
   });
   it('adds ScorecardTile + integrity badge', () => {
     render(<CostAuditDashboardPage />);
