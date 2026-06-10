@@ -12,7 +12,7 @@ const renderPage = () => render(<MemoryRouter><HedgeContractList /></MemoryRoute
 describe('RPT-2b-ii · HedgeContractList', () => {
   it('renders existing "Hedge Contracts" card', () => {
     renderPage();
-    expect(screen.getByText(/Hedge Contracts/i)).toBeInTheDocument();
+    expect(screen.getByText(/^Hedge Contracts$/i)).toBeInTheDocument();
   });
   it('mounts TableChartToggle defaulting to Table', () => {
     renderPage();

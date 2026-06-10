@@ -12,7 +12,7 @@ const renderPage = () => render(<MemoryRouter><PackingCreditList /></MemoryRoute
 describe('RPT-2b-ii · PackingCreditList', () => {
   it('renders heading', () => {
     renderPage();
-    expect(screen.getByText(/Packing Credit/i)).toBeInTheDocument();
+    expect(screen.getByText(/Packing Credit · D-NEW-FK/i)).toBeInTheDocument();
   });
   it('preserves existing "PC contracts" table card', () => {
     renderPage();
