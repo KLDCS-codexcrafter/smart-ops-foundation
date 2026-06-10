@@ -2,9 +2,12 @@
  * OutstandingAging.tsx — Outstanding Aging report (fc-out-receivables / fc-out-payables / fc-rpt-outstanding)
  * Open bills grouped by party with age buckets
  * [JWT] All data via hooks
+ *
+ * RPT-1a additive: TableChartToggle reference wire + period chip + integrity badge + KPI consume.
+ * Existing <Table> + Receivables/Payables/Both tabs PRESERVED (AC#13).
  */
-import { useState, useMemo } from 'react';
-import { TrendingUp, Download, ChevronDown, ChevronRight } from 'lucide-react';
+import { useState, useMemo, useContext } from 'react';
+import { TrendingUp, Download, ChevronDown, ChevronRight, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -16,8 +19,13 @@ import { ERPHeader } from '@/components/layout/ERPHeader';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useOutstanding } from '@/hooks/useOutstanding';
+import { useDrillDown } from '@/hooks/useDrillDown';
+import { GlobalDateRangeContext } from '@/hooks/GlobalDateRangeContext';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fmtDate, today, exportCSV } from './reportUtils';
+// RPT-1a — report-framework consume (no rebuild)
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface OutstandingAgingPanelProps { entityCode: string; type?: 'debtor' | 'creditor'; }
 
@@ -29,6 +37,10 @@ export function OutstandingAgingPanel({ entityCode, type: initialType }: Outstan
   const [asOfDate, setAsOfDate] = useState(today());
   const [viewType, setViewType] = useState<'debtor' | 'creditor' | 'both'>(initialType ?? 'both');
   const [expandedParty, setExpandedParty] = useState<string | null>(null);
+  // RPT-1a additive: consume — drill state seeded, global date range surfaced if available (no provider edit).
+  const drill = useDrillDown();
+  const gdr = useContext(GlobalDateRangeContext);
+  const periodLabel = gdr ? `${gdr.range.from} → ${gdr.range.to}` : `As-on ${asOfDate}`;
 
   const aging = useMemo(() => getAging(asOfDate), [asOfDate, getAging]);
 
@@ -71,17 +83,64 @@ export function OutstandingAgingPanel({ entityCode, type: initialType }: Outstan
     exportCSV('outstanding-aging.csv', ['Party', 'Bill No', 'Bill Date', 'Due Date', 'Amount', 'Pending', 'Age', 'Bucket'], rows);
   };
 
+  // RPT-1a additive — reference wire (additive only · existing UI below preserved)
+  const chartRows = useMemo(() => partyGroups.map(([, g]) => ({
+    party: g.partyName,
+    b_0_30: g.buckets[0],
+    b_31_60: g.buckets[1],
+    b_61_90: g.buckets[2],
+    b_90_plus: (g.buckets[3] ?? 0) + (g.buckets[4] ?? 0),
+  })), [partyGroups]);
+  const arKpi = getKpi('ar-overdue-90');
+  const chartConfig = arKpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'party',
+    series: [
+      { key: 'b_0_30', label: '0–30 d' },
+      { key: 'b_31_60', label: '31–60 d' },
+      { key: 'b_61_90', label: '61–90 d' },
+      { key: 'b_90_plus', label: '90+ d' },
+    ],
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-6 max-w-6xl mx-auto space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-teal-500" />
           <h2 className="text-lg font-bold">Outstanding Aging</h2>
+          <Badge variant="outline" className="text-[10px]" data-testid="oa-period-chip">{periodLabel}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="oa-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
         </div>
         <Button data-primary variant="outline" size="sm" onClick={handleExport}>
           <Download className="h-3.5 w-3.5 mr-1" /> Export CSV
         </Button>
       </div>
+
+      {/* RPT-1a · TableChartToggle reference wire · defaults to Table (zero visual regression) */}
+      <Card><CardContent className="p-3" data-testid="oa-toggle-host">
+        <TableChartToggle
+          rows={chartRows}
+          chartRows={chartRows}
+          columns={[
+            { key: 'party', label: 'Party' },
+            { key: 'b_0_30', label: '0–30 d', align: 'right', render: (r) => inr(Number(r.b_0_30) || 0) },
+            { key: 'b_31_60', label: '31–60 d', align: 'right', render: (r) => inr(Number(r.b_31_60) || 0) },
+            { key: 'b_61_90', label: '61–90 d', align: 'right', render: (r) => inr(Number(r.b_61_90) || 0) },
+            { key: 'b_90_plus', label: '90+ d', align: 'right', render: (r) => inr(Number(r.b_90_plus) || 0) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No outstanding bills"
+        />
+        {drill.trail.length > 0 && (
+          <p className="text-[10px] text-muted-foreground mt-1">drill depth: {drill.trail.length}</p>
+        )}
+      </CardContent></Card>
+
 
       <Card><CardContent className="p-3 flex flex-wrap gap-4 items-end">
         {!initialType && (
