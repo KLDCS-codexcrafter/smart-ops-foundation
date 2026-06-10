@@ -8,10 +8,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Link } from 'react-router-dom';
-import { FileText } from 'lucide-react';
+import { FileText, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadLCs, summarizeLCs } from '@/lib/lc-engine';
 import type { LCStatus } from '@/types/letter-of-credit';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 const STATUS_VARIANT: Record<LCStatus, 'default' | 'secondary' | 'destructive'> = {
   draft: 'secondary',
