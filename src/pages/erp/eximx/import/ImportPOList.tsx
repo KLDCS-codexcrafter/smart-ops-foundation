@@ -10,12 +10,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Search, FileText, AlertCircle } from 'lucide-react';
+import { Plus, Search, FileText, AlertCircle, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadImportPOs } from '@/lib/import-po-engine';
 import { SINHA_IMPORT_POS } from '@/data/sinha-import-po-seed-data';
 import type { ImportPOStatus } from '@/types/import-purchase-order';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 const STATUS_COLOR: Record<ImportPOStatus, string> = {
   draft: 'bg-muted text-muted-foreground',
