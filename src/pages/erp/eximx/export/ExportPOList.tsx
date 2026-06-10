@@ -3,15 +3,20 @@
  * @purpose     Export PO list · LUT readiness chip · buyer reliability badge · status filter
  * @sprint      T-Phase-1.EX-7a-ExportPO-ForeignCustomer-DocPack
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, Award, Sparkles, Plus } from 'lucide-react';
+import { AlertTriangle, Award, Sparkles, Plus, ShieldCheck } from 'lucide-react';
 import { loadExportPOs, summarizeExportPOs } from '@/lib/export-po-engine';
 import type { ExportPurchaseOrder } from '@/types/export-purchase-order';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 export function ExportPOList(): JSX.Element {
   const navigate = useNavigate();
