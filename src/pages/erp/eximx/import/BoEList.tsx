@@ -3,16 +3,21 @@
  * @purpose     List of all BoEs · filter by status/type/RMS lane · Saathi tile entry
  * @sprint      T-Phase-1.EX-6-BillOfEntry-CustomsDuty-Demurrage-AutoPostedVouchers
  */
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { AlertTriangle, Shield, Sparkles } from 'lucide-react';
+import { AlertTriangle, Shield, Sparkles, ShieldCheck } from 'lucide-react';
 import { loadBoEs, summarizeBoEs } from '@/lib/bill-of-entry-engine';
 import { BOE_TYPE_DESCRIPTIONS } from '@/types/bill-of-entry';
 import type { BillOfEntry } from '@/types/bill-of-entry';
+// RPT-2b-i · additive chart wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 export function BoEList(): JSX.Element {
   const navigate = useNavigate();
