@@ -84,9 +84,9 @@ export function BoEList(): JSX.Element {
         )}
       </Card>
 
-          <p className="text-sm text-muted-foreground">GL commit point · 5 auto-posted vouchers per BoE · RMS lane + AEO tier impact</p>
-        </div>
-      </div>
+      <p className="text-sm text-muted-foreground">GL commit point · 5 auto-posted vouchers per BoE · RMS lane + AEO tier impact</p>
+
+
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card><CardContent className="pt-6"><div className="text-2xl font-bold">{summary.total}</div><div className="text-xs text-muted-foreground">Total BoEs</div></CardContent></Card>
