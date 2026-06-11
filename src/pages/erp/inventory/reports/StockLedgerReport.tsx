@@ -11,12 +11,14 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ListOrdered, IndianRupee, Search } from 'lucide-react';
+import { ListOrdered, IndianRupee, Search, ShieldCheck } from 'lucide-react';
 import { useGodowns } from '@/hooks/useGodowns';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
 import { dSum, round2 } from '@/lib/decimal-helpers';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
