@@ -10,7 +10,7 @@ vi.mock('@/hooks/useCardEntitlement', () => ({
   useCardEntitlement: vi.fn(),
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
+
 const { useCardEntitlement } = await import('@/hooks/useCardEntitlement') as {
   useCardEntitlement: ReturnType<typeof vi.fn>;
 };
