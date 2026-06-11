@@ -17,13 +17,15 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { FileText, Plus } from 'lucide-react';
+import { FileText, Plus, ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
   listAllNcrEvidence,
   listAvailableNcrs,
 } from '@/lib/qualicheck-ncr-evidence-engine';
 import type { QualiCheckModule } from '../QualiCheckSidebar.types';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface QualiCheckNcrEvidenceRegisterProps {
   onNavigate: (m: QualiCheckModule) => void;
@@ -47,6 +49,23 @@ export function QualiCheckNcrEvidenceRegisterPanel({
     const ncr = ncrs.find((n) => n.id === id);
     return ncr ? `${ncr.id} · ${ncr.severity}` : id;
   };
+
+  // RPT-5d · toggle recipe (additive) — aggregate filtered docs by current version status
+  const chartRows = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const d of filteredDocs) {
+      const status = d.versions.find((v) => v.version_no === d.current_version)?.version_status ?? 'draft';
+      map.set(status, (map.get(status) ?? 0) + 1);
+    }
+    return Array.from(map.entries()).map(([status, count]) => ({ status, count }));
+  }, [filteredDocs]);
+  const chartConfig = getKpi('qc-ncr')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'Evidence docs' }],
+    title: 'NCR evidence by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <ScrollArea className="h-full">
@@ -127,6 +146,24 @@ export function QualiCheckNcrEvidenceRegisterPanel({
               </TableBody>
             </Table>
           </CardContent>
+        </Card>
+
+        <Card className="p-3 space-y-2" data-testid="qc-ncr-toggle-host">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="outline" className="text-[10px] font-mono" data-testid="qc-ncr-integrity-badge" title={integrityHash}>
+              <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+            </Badge>
+          </div>
+          <TableChartToggle
+            rows={chartRows}
+            columns={[
+              { key: 'status', label: 'Status' },
+              { key: 'count', label: 'Evidence docs', align: 'right' },
+            ]}
+            chartConfig={chartConfig}
+            defaultView="table"
+            emptyLabel="No NCR evidence in scope"
+          />
         </Card>
       </div>
     </ScrollArea>

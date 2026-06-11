@@ -13,10 +13,14 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { listQaInspections } from '@/lib/qa-inspection-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface SummaryRow {
   location: string;
@@ -52,6 +56,19 @@ export function QCGodownSummary(): JSX.Element {
     }
     return Array.from(map.values()).sort((a, b) => b.total - a.total);
   }, [entityCode, version]);
+
+  // RPT-5d · toggle recipe (additive) — qty per godown (total inspections)
+  const chartRows = useMemo(
+    () => rows.map((r) => ({ godown: r.location, qty: r.total })),
+    [rows],
+  );
+  const chartConfig = getKpi('qc-godown')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'godown',
+    series: [{ key: 'qty', label: 'Inspections' }],
+    title: 'Inspections by godown',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4">
@@ -89,6 +106,24 @@ export function QCGodownSummary(): JSX.Element {
           </Table>
         )}
       </CardContent></Card>
+
+      <Card className="p-3 space-y-2" data-testid="qc-godown-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="qc-godown-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'godown', label: 'Godown' },
+            { key: 'qty', label: 'Inspections', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No data"
+        />
+      </Card>
     </div>
   );
 }

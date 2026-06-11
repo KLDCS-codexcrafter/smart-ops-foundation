@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Download, Search } from 'lucide-react';
+import { Download, Search, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { filterMtcs } from '@/lib/mtc-engine';
@@ -23,6 +23,8 @@ import {
   MTC_STATUS_LABELS, MTC_OVERALL_LABELS,
   type MaterialTestCertificate, type MtcStatus, type MtcOverall,
 } from '@/types/mtc';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const STATUS_OPTIONS: MtcStatus[] = ['draft', 'submitted', 'approved', 'rejected', 'archived'];
 const OVERALL_OPTIONS: MtcOverall[] = ['pass', 'fail', 'conditional'];
@@ -114,6 +116,20 @@ export function MtcRegister(): JSX.Element {
     if (next.has(val)) next.delete(val); else next.add(val);
     setter(next);
   };
+
+  // RPT-5d · toggle recipe (additive) — aggregate by status
+  const chartRows = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const m of rows) map.set(m.status, (map.get(m.status) ?? 0) + 1);
+    return Array.from(map.entries()).map(([status, count]) => ({ status, count }));
+  }, [rows]);
+  const chartConfig = getKpi('qc-mtc')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'MTCs' }],
+    title: 'MTCs by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4">
@@ -231,6 +247,24 @@ export function MtcRegister(): JSX.Element {
             </Table>
           )}
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="qc-mtc-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="qc-mtc-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status', label: 'Status' },
+            { key: 'count', label: 'MTCs', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No MTCs match current filters"
+        />
       </Card>
     </div>
   );

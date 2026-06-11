@@ -13,8 +13,9 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, ShieldCheck } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
@@ -22,6 +23,8 @@ import { listNcrs } from '@/lib/ncr-engine';
 import { listCapas } from '@/lib/capa-engine';
 import { listMtcs } from '@/lib/mtc-engine';
 import { listFais } from '@/lib/fai-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface AnalysisRow {
   vendor: string;
@@ -92,6 +95,19 @@ export function QcRejectionAnalysis(): JSX.Element {
     return all.filter((r) => r.vendor.toLowerCase().includes(q) || r.item.toLowerCase().includes(q));
   }, [entityCode, search, version]);
 
+  // RPT-5d · toggle recipe (additive) — top 12 by total
+  const chartRows = useMemo(
+    () => rows.slice(0, 12).map((r) => ({ bucket: `${r.vendor} · ${r.item}`, rejection_qty: r.total })),
+    [rows],
+  );
+  const chartConfig = getKpi('qc-rejection')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'bucket',
+    series: [{ key: 'rejection_qty', label: 'Rejections' }],
+    title: 'Rejections by vendor × item',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-4">
       <div>
@@ -138,6 +154,24 @@ export function QcRejectionAnalysis(): JSX.Element {
           </Table>
         )}
       </CardContent></Card>
+
+      <Card className="p-3 space-y-2" data-testid="qc-rejection-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="qc-rejection-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'bucket', label: 'Vendor · Item' },
+            { key: 'rejection_qty', label: 'Rejections', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No rejection events recorded"
+        />
+      </Card>
     </div>
   );
 }

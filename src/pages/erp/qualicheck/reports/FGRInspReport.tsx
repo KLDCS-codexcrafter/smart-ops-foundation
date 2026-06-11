@@ -13,10 +13,14 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { listQaInspections } from '@/lib/qa-inspection-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface PcLite { id: string; doc_no: string }
 
@@ -48,6 +52,28 @@ export function FGRInspReport(): JSX.Element {
     } catch { /* silent */ }
     return map;
   }, [entityCode, version]);
+
+  // RPT-5d · toggle recipe (additive) — bucket inspection statuses into pass/fail/hold
+  const chartRows = useMemo(() => {
+    let pass = 0, fail = 0, hold = 0;
+    for (const r of rows) {
+      if (r.status === 'passed' || r.status === 'partial_pass') pass += 1;
+      else if (r.status === 'failed') fail += 1;
+      else hold += 1; // pending/in_progress/etc.
+    }
+    return [
+      { result: 'pass', count: pass },
+      { result: 'fail', count: fail },
+      { result: 'hold', count: hold },
+    ].filter((r) => r.count > 0);
+  }, [rows]);
+  const chartConfig = getKpi('qc-fgr-insp')?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'result',
+    series: [{ key: 'count', label: 'Inspections' }],
+    title: 'FG inspections pass/fail/hold',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4">
@@ -87,6 +113,24 @@ export function FGRInspReport(): JSX.Element {
           </Table>
         )}
       </CardContent></Card>
+
+      <Card className="p-3 space-y-2" data-testid="qc-fgr-insp-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="qc-fgr-insp-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'result', label: 'Result' },
+            { key: 'count', label: 'Inspections', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No FG inspections"
+        />
+      </Card>
     </div>
   );
 }

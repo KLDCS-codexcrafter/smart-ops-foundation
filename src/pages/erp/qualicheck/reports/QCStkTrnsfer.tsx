@@ -14,10 +14,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { listQaInspections } from '@/lib/qa-inspection-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 export function QCStkTrnsfer(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -33,6 +36,20 @@ export function QCStkTrnsfer(): JSX.Element {
     void version;
     return listQaInspections(entityCode).filter((r) => r.status === 'passed' || r.status === 'partial_pass');
   }, [entityCode, version]);
+
+  // RPT-5d · toggle recipe (additive) — qty (line count) per status
+  const chartRows = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const r of rows) map.set(r.status, (map.get(r.status) ?? 0) + r.lines.length);
+    return Array.from(map.entries()).map(([status, qty]) => ({ status, qty }));
+  }, [rows]);
+  const chartConfig = getKpi('qc-stk-transfer')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'qty', label: 'Lines' }],
+    title: 'QC stock-transfer lines by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4">
@@ -70,6 +87,24 @@ export function QCStkTrnsfer(): JSX.Element {
           </Table>
         )}
       </CardContent></Card>
+
+      <Card className="p-3 space-y-2" data-testid="qc-stk-transfer-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="qc-stk-transfer-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status', label: 'Status' },
+            { key: 'qty', label: 'Lines', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No QC-passed transfers"
+        />
+      </Card>
     </div>
   );
 }
