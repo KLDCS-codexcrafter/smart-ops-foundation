@@ -21,6 +21,9 @@ import {
 import type { BreakdownReport as BD } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 void onEnterNext;
 
 interface Props { onNavigate: (m: string) => void }
