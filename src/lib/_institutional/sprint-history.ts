@@ -1340,11 +1340,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-3a T-RPT3a-DayBook-Generalize · Reporting Arc · Phase B sprint 1 · DayBook generalize + source registry · NEW SIBLING daybook-source-registry (React-free additive registry · DayBookSource{cardId·domain·label·read} · registerDayBookSource idempotent · getDayBookEntries merges+date-sorts) · DayBookDomain widened from 2-value DayBookFamily (back-compat alias preserved) · useDayBook generalized · 7 card sources registered via side-effect daybook-sources.ts on app init (fc-fincore-daybook · ph-payhub-daybook · sd-service-daybook · p360-goods-inward · mp-maintenance-entry · mp-spares-issue · ex-custom) · 6 bespoke DayBook PAGES 0-DIFF (DayBook · PayHubDayBook · ServiceDayBook · GoodsInwardDayBookPanel · MaintenanceEntryDayBook · SparesIssueDayBook · CustomDayBook) · walls held: all report-framework chart/KPI/scorecard files 0-DIFF · src/test/setup.ts 0-DIFF · all hubs 0-DIFF · close summary COMMITTED · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-3a T-RPT3a-DayBook-Generalize · Reporting Arc · Phase B sprint 1 · DayBook generalize + source registry · NEW SIBLING daybook-source-registry · headSha BACKFILLED 4115540 at RPT-3b Block 3 · forward-extended in RPT-3b
   {
     sprintNumber: 'RPT3a' as unknown as number, code: 'T-RPT3a-DayBook-Generalize', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '071db3e', loc: 380,
+    headSha: '4115540', predecessorSha: '071db3e', loc: 380,
     newSiblings: ['daybook-source-registry'],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-3b T-RPT3b-CrossCard-Aggregator-DSC · Reporting Arc · Phase B sprint 2 · cross-card DayBook aggregator (mechanism for RPT-5 surface) + DSC plant (spine for RPT-9 builder + RPT-11 InsightX) · NEW SIBLING data-source-catalog · React-free + read-only by construction · 11 DSC sources registered on app init (7 DayBook re-projections + 4 reference register sources: outstanding · ledger · gst · eximx-tt) · walls held: useDayBook + daybook-source-registry + daybook-sources + 6 bespoke DayBook pages + all RPT-1a/RPT-1b/RPT-2*/RPT-2e* report/dashboard pages + chart/KPI/scorecard framework + src/test/setup.ts + all hubs 0-DIFF · close summary COMMITTED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT3b' as unknown as number, code: 'T-RPT3b-CrossCard-Aggregator-DSC', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '4115540', loc: 320,
+    newSiblings: ['data-source-catalog'],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
 ];
