@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, AlertTriangle, Layers } from 'lucide-react';
+import { Download, AlertTriangle, Layers, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { inr, exportCSV } from './reportUtils';
 import type { TDSDeductionEntry } from '@/types/compliance';
@@ -18,6 +18,11 @@ import type { PaymentRequisition } from '@/types/payment-requisition';
 import { paymentRequisitionsKey } from '@/types/payment-requisition';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+import { Badge } from '@/components/ui/badge';
+// RPT-2e-iii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 function ls<T>(key: string): T[] { try {
   // [JWT] GET /api/compliance/storage/:key
