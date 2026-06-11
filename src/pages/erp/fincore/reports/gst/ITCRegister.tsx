@@ -142,8 +142,54 @@ export function ITCRegisterPanel({ entityCode }: ITCRegisterPanelProps) {
     );
   };
 
+  // RPT-2e-ii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    let eligibleSum = 0, ineligibleSum = 0, reversedSum = 0;
+    for (const e of itcEntries) {
+      const claimed = e.itc_eligible ? e.cgst_amount + e.sgst_amount + e.igst_amount : 0;
+      const reversed = e.itc_reversal ?? 0;
+      if (!e.itc_eligible) ineligibleSum += e.cgst_amount + e.sgst_amount + e.igst_amount;
+      else eligibleSum += claimed - reversed;
+      reversedSum += reversed;
+    }
+    return [{ status: 'FY', eligible: eligibleSum, ineligible: ineligibleSum, reversed: reversedSum }];
+  }, [itcEntries]);
+  const chartConfig = getKpi('fc-itc')?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'status',
+    series: [
+      { key: 'eligible',   label: 'Eligible' },
+      { key: 'ineligible', label: 'Ineligible' },
+      { key: 'reversed',   label: 'Reversed' },
+    ],
+    title: 'ITC by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-6 space-y-4">
+      <Card className="p-3 space-y-2" data-testid="fc-itc-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-itc-period-chip">FY {fy}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-itc-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status',     label: 'Status' },
+            { key: 'eligible',   label: 'Eligible',   align: 'right', render: r => inr(Number(r.eligible)) },
+            { key: 'ineligible', label: 'Ineligible', align: 'right', render: r => inr(Number(r.ineligible)) },
+            { key: 'reversed',   label: 'Reversed',   align: 'right', render: r => inr(Number(r.reversed)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No ITC entries"
+        />
+      </Card>
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-bold flex items-center gap-2"><Calculator className="h-5 w-5 text-teal-500" /> ITC Register</h2>
