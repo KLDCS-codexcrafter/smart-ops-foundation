@@ -14,6 +14,10 @@ import { listSites } from '@/lib/sitex-engine';
 import { emitSnagRaisedSevere } from '@/lib/sitex-bridges';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { snagsKey, type Snag } from '@/types/sitex';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 interface Props { onNavigate: (m: string) => void }
 
