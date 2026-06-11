@@ -21,6 +21,11 @@ import { qaInspectionKey } from '@/types/qa-inspection';
 import { ncrKey } from '@/types/ncr';
 import { productionOrdersKey } from '@/types/production-order';
 import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
+import { materialIndentsKey } from '@/types/material-indent';
+import { serviceRequestsKey } from '@/types/service-request';
+import { capitalIndentsKey } from '@/types/capital-indent';
+import { stockIssuesKey } from '@/types/stock-issue';
+import { stockReceiptAcksKey } from '@/types/stock-receipt-ack';
 
 function safeRead<T>(key: string): T[] {
   try {
