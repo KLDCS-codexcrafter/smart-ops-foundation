@@ -1375,10 +1375,17 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-5c T-RPT5c-Procure360-Reports · Reporting Arc · Phase C sprint 3 (Ops Hub-1, cohort c) · 9 Procure360 analytical pages chart-enabled with mixed recipes (toggle: Procure360VendorAgreementsRegister · BudgetUtilizationDashboard; dashboard: VendorReliabilityPanel · ThreeWayMatchStatusPanel · PurchaseCostVarianceItemPanel · PurchaseCostVarianceCategoryPanel · TdsDeductionReportPanel · EnquiryDetailsReportPanel · PeqFollowupRegisterPanel) · 9 layer-tagged KPI seeds (pr-vendor-agreements · pr-budget-utilization · pr-vendor-reliability · pr-three-way-match · pr-cost-variance-item · pr-cost-variance-cat · pr-tds-deduction · pr-enquiry · pr-peq-followup) · 2 Procure DSC sources (procure.purchase-orders · procure.budget-utilization) read-only wrappers of the SAME storage the wrapped pages already load · hooks at top level · NO recharts import added (RateVarianceGraphPanel EXCLUDED at 0-DIFF as the already-charted page) · existing layouts PRESERVED (additive) · honest empty-state · ZERO new SIBLINGs · walls held: data-source-catalog/daybook-source-registry/daybook-aggregator/RoleDashboard 0-DIFF · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-5c T-RPT5c-Procure360-Reports · Reporting Arc · Phase C sprint 3 (Ops Hub-1, cohort c) · 9 Procure360 analytical pages chart-enabled with mixed recipes · 9 layer-tagged KPI seeds · 2 Procure DSC sources · ZERO new SIBLINGs · headSha BACKFILLED 8d683e5 at RPT-5d Block 3 · forward-extended in RPT-5d
   {
     sprintNumber: 'RPT5c' as unknown as number, code: 'T-RPT5c-Procure360-Reports', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '0363af9', loc: 760,
+    headSha: '8d683e5', predecessorSha: '0363af9', loc: 760,
+    newSiblings: [],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-5d T-RPT5d-QualiCheck-Reports · Reporting Arc · Phase C sprint 4 (Ops Hub-1, cohort d · CLOSES Ops Hub-1) · 8 QualiCheck pages chart-enabled via toggle recipe (MtcRegister · QualiCheckNcrEvidenceRegister · QcRejectionAnalysis · CFRPart11AuditTrailViewer · QCGodownSummary · QCStkTrnsfer · FGRInspReport · StkIqcStRemarks) · QualiCheckDashboard EXCLUDED 0-DIFF (legacy-charted · imports QCTrendChart/QCParetoChart) · 9 layer-tagged KPI seeds (qc-mtc · qc-ncr · qc-rejection · qc-cfr-audit · qc-godown · qc-stk-transfer · qc-fgr-insp · qc-iqc-remarks · qc-dashboard) · 2 QualiCheck DSC sources (qualicheck.inspections · qualicheck.ncr) read-only wrappers of qaInspectionKey + ncrKey · ScorecardTile OMITTED across all 8 pages — no page exposes a real summary-% (status mixes/counts only) · hooks at top level · NO recharts import added · layouts PRESERVED (additive Card after existing table) · honest empty-state · ZERO new SIBLINGs · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT5d' as unknown as number, code: 'T-RPT5d-QualiCheck-Reports', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '8d683e5', loc: 680,
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },

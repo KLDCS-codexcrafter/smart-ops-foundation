@@ -13,12 +13,15 @@
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, ShieldCheck } from 'lucide-react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useEntityChangeEffect } from '@/hooks/useEntityChangeEffect';
 import { listQaInspections } from '@/lib/qa-inspection-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 export function StkIqcStRemarks(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -40,6 +43,20 @@ export function StkIqcStRemarks(): JSX.Element {
       [r.qa_no, r.notes, r.inspector_user_id].some((f) => (f ?? '').toLowerCase().includes(q)),
     );
   }, [entityCode, search, version]);
+
+  // RPT-5d · toggle recipe (additive) — group remarks by inspection status (remark-category proxy)
+  const chartRows = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const r of rows) map.set(r.status, (map.get(r.status) ?? 0) + 1);
+    return Array.from(map.entries()).map(([category, count]) => ({ category, count }));
+  }, [rows]);
+  const chartConfig = getKpi('qc-iqc-remarks')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'category',
+    series: [{ key: 'count', label: 'Remarks' }],
+    title: 'IQC remarks by category',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4">
@@ -85,6 +102,24 @@ export function StkIqcStRemarks(): JSX.Element {
             </Table>
           )}
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="qc-iqc-remarks-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="qc-iqc-remarks-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'category', label: 'Remark Category' },
+            { key: 'count', label: 'Remarks', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No inspection-level remarks"
+        />
       </Card>
     </div>
   );

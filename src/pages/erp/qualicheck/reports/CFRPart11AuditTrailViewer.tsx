@@ -22,6 +22,8 @@ import type {
   CFRPart11ActionType,
   CFRPart11SeverityLevel,
 } from '@/types/cfr-part-11';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const ACTION_TYPES: CFRPart11ActionType[] = [
   'batch_release', 'batch_quarantine', 'recipe_create', 'recipe_modify',
@@ -48,6 +50,21 @@ export default function CFRPart11AuditTrailViewer(): JSX.Element {
       .slice()
       .sort((a, b) => b.recorded_at.localeCompare(a.recorded_at));
   }, [entries, actionFilter, sevFilter]);
+
+  // RPT-5d · toggle recipe (additive) — aggregate by action_type
+  const chartRows = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const e of filtered) map.set(e.action_type, (map.get(e.action_type) ?? 0) + 1);
+    return Array.from(map.entries()).map(([event_type, count]) => ({ event_type, count }));
+  }, [filtered]);
+  const chartConfig = getKpi('qc-cfr-audit')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'event_type',
+    series: [{ key: 'count', label: 'Events' }],
+    title: 'CFR Part 11 events by type',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
 
   async function handleVerify(): Promise<void> {
     const result = await verifyAuditTrailIntegrityAsync(entityCode);
@@ -185,6 +202,24 @@ export default function CFRPart11AuditTrailViewer(): JSX.Element {
           </CardContent>
         </Card>
       )}
+
+      <Card className="p-3 space-y-2" data-testid="qc-cfr-audit-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="qc-cfr-audit-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'event_type', label: 'Event Type' },
+            { key: 'count', label: 'Events', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No audit entries"
+        />
+      </Card>
     </div>
   );
 }

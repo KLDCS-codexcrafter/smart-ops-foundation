@@ -17,6 +17,8 @@ import { stockBalanceKey } from '@/types/grn';
 import { consumptionEntriesKey } from '@/types/consumption';
 import { purchaseOrdersKey } from '@/types/po';
 import { budgetAllocationsKey } from '@/types/budget-allocation';
+import { qaInspectionKey } from '@/types/qa-inspection';
+import { ncrKey } from '@/types/ncr';
 
 function safeRead<T>(key: string): T[] {
   try {
@@ -247,6 +249,42 @@ export function registerAllDataSources(): void {
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(budgetAllocationsKey(entityCode || 'SMRT'))
         .filter((b) => (b as { is_active?: boolean }).is_active !== false),
+  });
+  // ─── RPT-5d · QualiCheck DSC sources ─────────────────────────────────
+  // Wraps the SAME storage the wrapped QualiCheck pages already read.
+  registerSource({
+    id: 'qualicheck.inspections',
+    label: 'QualiCheck · QA Inspections',
+    card: 'qualicheck',
+    kind: 'register',
+    fields: [
+      { key: 'qa_no', label: 'QA No', kind: 'dimension' },
+      { key: 'inspection_type', label: 'Type', kind: 'dimension' },
+      { key: 'inspection_location', label: 'Location', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'inspector_user_id', label: 'Inspector', kind: 'dimension' },
+      { key: 'inspection_date', label: 'Date', kind: 'dimension' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(qaInspectionKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'qualicheck.ncr',
+    label: 'QualiCheck · NCR',
+    card: 'qualicheck',
+    kind: 'register',
+    fields: [
+      { key: 'id', label: 'NCR Id', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'severity', label: 'Severity', kind: 'dimension' },
+      { key: 'source', label: 'Source', kind: 'dimension' },
+      { key: 'related_party_name', label: 'Party', kind: 'dimension' },
+      { key: 'item_name', label: 'Item', kind: 'dimension' },
+      { key: 'qty_affected', label: 'Qty Affected', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(ncrKey(entityCode || 'SMRT')),
   });
 }
 
