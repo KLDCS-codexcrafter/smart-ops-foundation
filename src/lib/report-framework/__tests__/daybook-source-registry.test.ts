@@ -78,4 +78,29 @@ describe('daybook-source-registry · §N RPT-3a', () => {
     expect(merged.length).toBe(1);
     expect(merged[0].id).toBe('b1');
   });
+
+  it('returns an empty array when no sources are registered', () => {
+    expect(getDayBookEntries('E')).toEqual([]);
+  });
+
+  it('listDayBookSources returns a copy (mutation does not leak)', () => {
+    registerDayBookSource({ cardId: 'a', domain: 'd', label: 'A', read: () => [] });
+    const snap = listDayBookSources();
+    snap.length = 0;
+    expect(listDayBookSources().length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('getDayBookSource returns undefined for unknown keys', () => {
+    expect(getDayBookSource('nope', 'nope')).toBeUndefined();
+  });
+
+  it('passes entityCode through to source read()', () => {
+    let seen = '';
+    registerDayBookSource({
+      cardId: 'a', domain: 'd', label: 'A',
+      read: (e) => { seen = e; return [mkEntry({ id: e })]; },
+    });
+    getDayBookEntries('ENTITY-42');
+    expect(seen).toBe('ENTITY-42');
+  });
 });
