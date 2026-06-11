@@ -14,7 +14,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Edit2, Trash2, AlertTriangle, Layers } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertTriangle, Layers, ShieldCheck } from 'lucide-react';
+// RPT-2e-iii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, today } from './reportUtils';
