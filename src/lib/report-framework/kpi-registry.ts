@@ -1125,6 +1125,111 @@ registerKpi({
 
 // ─── RPT-4 · Explicit layer-tagging is inline above (per T2 fix). ───────
 
+// ─── RPT-5b · 9 Inventory KPI seeds (idempotent · layer-tagged · seed only) ───
+registerKpi({
+  id: 'inv-consumption',
+  layers: ['operator', 'manager', 'management'],
+  label: 'Consumption value (daily)',
+  dataSource: 'inventory.consumption',
+  defaultChart: defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'consumption_value', label: 'Consumption ₹' }],
+    title: 'Consumption value by date',
+  }),
+});
+registerKpi({
+  id: 'inv-consumption-summary',
+  layers: ['manager', 'management'],
+  label: 'Consumption by department',
+  dataSource: 'inventory.consumption',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'dept',
+    series: [{ key: 'value', label: 'Consumption ₹' }],
+    title: 'Department consumption value',
+  }),
+});
+registerKpi({
+  id: 'inv-item-movement',
+  layers: ['operator', 'manager', 'management'],
+  label: 'Item movement (in/out)',
+  dataSource: 'inventory.stock-ledger',
+  defaultChart: defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [
+      { key: 'in_qty', label: 'In Qty' },
+      { key: 'out_qty', label: 'Out Qty' },
+    ],
+    title: 'Item movement (in/out)',
+  }),
+});
+registerKpi({
+  id: 'inv-slow-moving',
+  layers: ['manager', 'management'],
+  label: 'Slow / dead stock value',
+  dataSource: 'inventory.stock-ledger',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'bucket',
+    series: [{ key: 'stock_value', label: 'Stock Value ₹' }],
+    title: 'Slow / dead stock value by age',
+  }),
+});
+registerKpi({
+  id: 'inv-grn',
+  layers: ['operator', 'manager', 'management'],
+  label: 'GRN value by vendor',
+  dataSource: 'inventory.stock-ledger',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'vendor',
+    series: [{ key: 'grn_value', label: 'GRN Value ₹' }],
+    title: 'GRN value by vendor',
+  }),
+});
+registerKpi({
+  id: 'inv-rtv',
+  layers: ['operator', 'manager', 'management'],
+  label: 'RTV value by vendor',
+  dataSource: 'inventory.stock-ledger',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'vendor',
+    series: [{ key: 'rtv_value', label: 'RTV Value ₹' }],
+    title: 'RTV value by vendor',
+  }),
+});
+registerKpi({
+  id: 'inv-min',
+  layers: ['operator', 'manager', 'management'],
+  label: 'MIN value by department',
+  dataSource: 'inventory.consumption',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'department',
+    series: [{ key: 'issue_value', label: 'Issue Value ₹' }],
+    title: 'MIN value by department',
+  }),
+});
+registerKpi({
+  id: 'inv-stock-ledger',
+  layers: ['manager', 'management'],
+  label: 'Top item balances',
+  dataSource: 'inventory.stock-ledger',
+  defaultChart: defaultChartConfig({
+    chartType: 'line', xKey: 'item',
+    series: [{ key: 'balance_qty', label: 'Balance Qty' }],
+    title: 'Top item balances',
+  }),
+});
+registerKpi({
+  id: 'inv-abc',
+  layers: ['manager', 'management'],
+  label: 'ABC value distribution',
+  dataSource: 'inventory.stock-ledger',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'class',
+    series: [{ key: 'value', label: 'Value' }],
+    title: 'ABC value distribution',
+  }),
+});
+
+
 
 
 
