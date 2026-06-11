@@ -105,10 +105,6 @@ export function Clause44ReportPanel({ entityCode }: Clause44ReportPanelProps) {
     a.click(); URL.revokeObjectURL(url);
   };
 
-  return (
-    <div className="p-6 space-y-4" data-keyboard-form>
-      <div className="flex items-center justify-between">
-        <div>
   // RPT-2e-ii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
   const drill = useDrillDown();
   const chartRows = useMemo(() => ([
