@@ -89,6 +89,44 @@ export function IndentPendingPanel(): JSX.Element {
           </Table></SkeletonRows>
         </CardContent>
       </Card>
+      <IndentPendingChartCard rows={rows} />
     </div>
+  );
+}
+
+function IndentPendingChartCard({ rows }: { rows: Array<{ originating_department_name: string }> }): JSX.Element {
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of rows) {
+      const dept = r.originating_department_name || '—';
+      m.set(dept, (m.get(dept) ?? 0) + 1);
+    }
+    return Array.from(m.entries()).map(([department, count]) => ({ department, count }));
+  }, [rows]);
+  const chartConfig = getKpi('rq-pending')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'department',
+    series: [{ key: 'count', label: 'Pending' }],
+    title: 'Pending indents by department',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+  return (
+    <Card className="p-3 space-y-2" data-testid="rq-pending-toggle-host">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="rq-pending-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
+      </div>
+      <TableChartToggle
+        rows={chartRows}
+        columns={[
+          { key: 'department', label: 'Department' },
+          { key: 'count', label: 'Pending', align: 'right' },
+        ]}
+        chartConfig={chartConfig}
+        defaultView="table"
+        emptyLabel="No pending indents"
+      />
+    </Card>
   );
 }
