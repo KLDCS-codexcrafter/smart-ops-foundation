@@ -20,9 +20,12 @@ import {
 } from '@/types/consumption';
 import { dSum } from '@/lib/decimal-helpers';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
 import { CEDetailPanel } from './detail/CEDetailPanel';
 import { ConsumptionEntryPrint } from './print/ConsumptionEntryPrint';
 import type { InventoryDrillFilter } from '@/types/drill-context';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
