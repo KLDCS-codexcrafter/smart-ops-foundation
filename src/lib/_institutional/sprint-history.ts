@@ -1364,11 +1364,19 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint RPT-5a T-RPT5a-CrossCard-DayBook-Surface · Reporting Arc · Phase C sprint 1 (Ops Hub-1, cohort a) · 🌟 cross-card Day Book surface at /erp/command-center/daybook — pure consumption of RPT-3a/3b · table-first feed · domain/card/date filter chips · drill via useDrillDown · integrity badge via signReport · honest empty-state · NO recharts · ALSO seeds the missing comply360.aggregate.compliance-pct DSC source reusing existing loadObligations() (no new engine) which resolves xc-compliance-pct on the Role Dashboard · RPT-4 headSha backfilled to 135776a · ZERO new SIBLINGs (surface-only consumption) · walls held: daybook-aggregator.ts/data-source-catalog.ts/daybook-source-registry.ts (consume, don't edit) · RoleDashboard.tsx + kpi-registry.ts + all banked pages 0-DIFF · headSha TBD_AT_BANK
   {
     sprintNumber: 'RPT5a' as unknown as number, code: 'T-RPT5a-CrossCard-DayBook-Surface', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '135776a', loc: 320,
+    headSha: '84945a8', predecessorSha: '135776a', loc: 320,
+    newSiblings: [],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-5b T-RPT5b-Inventory-Reports · Reporting Arc · Phase C sprint 2 (Ops Hub-1, cohort b) · 9 Inventory analytical report toggle-wraps (ConsumptionRegister · ConsumptionSummaryReport · ItemMovementHistoryReport · SlowMovingDeadStockReport · GRNRegister · RTVRegister · MINRegister · StockLedgerReport · AbcClassificationMaster) · 9 layer-tagged KPI seeds (inv-consumption · inv-consumption-summary · inv-item-movement · inv-slow-moving · inv-grn · inv-rtv · inv-min · inv-stock-ledger · inv-abc) · 2 Inventory DSC sources (inventory.stock-ledger · inventory.consumption) read-only wrappers of the SAME storage the wrapped pages already load · hooks at top level · NO recharts import in pages · existing Table/columns/filters/CSV PRESERVED (additive) · honest empty-state · ZERO new SIBLINGs · walls held: data-source-catalog/daybook-source-registry/daybook-aggregator/RoleDashboard 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT5b' as unknown as number, code: 'T-RPT5b-Inventory-Reports', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '84945a8', loc: 720,
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
 ];
+
 
 
 

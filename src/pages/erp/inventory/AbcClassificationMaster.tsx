@@ -21,7 +21,7 @@ import { Label } from '@/components/ui/label';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
-import { Pin, PinOff, TrendingUp, Play } from 'lucide-react';
+import { Pin, PinOff, TrendingUp, Play, ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { MaterialIssueNote, ConsumptionEntry } from '@/types/consumption';
@@ -30,6 +30,8 @@ import {
   classifyItemsABC, applyAbcClassification,
   type AbcClassificationResult,
 } from '@/lib/abc-classification-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const IKEY = 'erp_inventory_items';
 
@@ -123,8 +125,40 @@ export function AbcClassificationMasterPanel() {
     toast.success('Unpinned');
   };
 
+  // RPT-5b · toggle-wrap (hooks at top level)
+  const chartRows = useMemo(() => [
+    { class: 'A', value: Math.round(kpi.A.v), count: kpi.A.n },
+    { class: 'B', value: Math.round(kpi.B.v), count: kpi.B.n },
+    { class: 'C', value: Math.round(kpi.C.v), count: kpi.C.n },
+  ].filter(r => r.count > 0 || r.value > 0), [kpi]);
+  const chartConfig = getKpi('inv-abc')?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'class',
+    series: [{ key: 'value', label: 'Value' }],
+    title: 'ABC value distribution',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-4">
+      <Card className="p-3 space-y-2" data-testid="inv-abc-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-abc-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'class', label: 'Class' },
+            { key: 'count', label: 'Items', align: 'right' },
+            { key: 'value', label: 'Value', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No classified items"
+        />
+      </Card>
       <div className="flex items-center gap-2">
         <TrendingUp className="h-5 w-5 text-cyan-500" />
         <h2 className="text-xl font-bold">{t('inv.abc_master.title', 'ABC Classification')}</h2>

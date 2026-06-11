@@ -5,7 +5,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
@@ -21,6 +23,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { MINDetailPanel } from './detail/MINDetailPanel';
 import { MINPrint } from './print/MINPrint';
 import type { InventoryDrillFilter } from '@/types/drill-context';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -127,8 +131,45 @@ export function MINRegisterPanel({ initialFilter }: MINRegisterPanelProps = {}) 
 
   const currentMIN = drill.current?.payload as MaterialIssueNote | undefined;
 
+  // RPT-5b · toggle-wrap (hooks at top level)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const x of allMins) {
+      if (x.status !== 'issued') continue;
+      const dept = x.to_department_code ?? 'unassigned';
+      m.set(dept, (m.get(dept) ?? 0) + x.total_value);
+    }
+    return Array.from(m.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([department, issue_value]) => ({ department, issue_value }));
+  }, [allMins]);
+  const chartConfig = getKpi('inv-min')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'department',
+    series: [{ key: 'issue_value', label: 'Issue Value ₹' }],
+    title: 'MIN value by department',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <Card className="p-3 space-y-2" data-testid="inv-min-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-min-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'department', label: 'Department' },
+            { key: 'issue_value', label: 'Issue Value ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No issued MINs"
+        />
+      </Card>
       <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="MIN Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentMIN ? (

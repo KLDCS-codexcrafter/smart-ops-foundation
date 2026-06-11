@@ -13,13 +13,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { FileText, Search, AlertTriangle } from 'lucide-react';
+import { FileText, Search, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
   grnsKey, GRN_STATUS_LABELS, GRN_STATUS_COLORS,
   type GRN, type GRNStatus,
 } from '@/types/grn';
 import { dSum } from '@/lib/decimal-helpers';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -52,8 +54,45 @@ export function GRNRegisterPanel() {
     dSum(filtered.filter(g => g.status === 'posted'), g => g.total_value),
   [filtered]);
 
+  // RPT-5b · toggle-wrap (hooks at top level)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const g of filtered) {
+      if (g.status !== 'posted') continue;
+      m.set(g.vendor_name, (m.get(g.vendor_name) ?? 0) + g.total_value);
+    }
+    return Array.from(m.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([vendor, grn_value]) => ({ vendor, grn_value }));
+  }, [filtered]);
+  const chartConfig = getKpi('inv-grn')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'vendor',
+    series: [{ key: 'grn_value', label: 'GRN Value' }],
+    title: 'GRN value by vendor',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="max-w-6xl mx-auto space-y-5 p-6">
+      <Card className="p-3 space-y-2" data-testid="inv-grn-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-grn-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'vendor', label: 'Vendor' },
+            { key: 'grn_value', label: 'GRN Value ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No posted GRNs"
+        />
+      </Card>
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <FileText className="h-6 w-6 text-cyan-500" />
@@ -72,6 +111,7 @@ export function GRNRegisterPanel() {
             {filtered.filter(g => g.has_discrepancy).length}
           </CardTitle></CardHeader></Card>
       </div>
+
 
       <div className="flex items-center gap-3">
         <div className="relative flex-1 max-w-sm">

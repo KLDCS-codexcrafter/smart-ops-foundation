@@ -11,11 +11,13 @@ import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Clock, Archive } from 'lucide-react';
+import { Clock, Archive, ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { InventoryItem } from '@/types/inventory-item';
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const IKEY = 'erp_inventory_items';
 
@@ -152,8 +154,40 @@ export function SlowMovingDeadStockReportPanel({ onNavigate }: SlowMovingDeadSto
     </Card>
   );
 
+  // RPT-5b · toggle-wrap (hooks at top level)
+  const chartRows = useMemo(() => [
+    { bucket: '90-180d', stock_value: round2(sumValue(slow90)) },
+    { bucket: '180-365d', stock_value: round2(sumValue(slow180)) },
+    { bucket: '365-730d', stock_value: round2(sumValue(slow365)) },
+    { bucket: '≥ 730d (dead)', stock_value: round2(sumValue(dead)) },
+  ], [slow90, slow180, slow365, dead]);
+  const chartConfig = getKpi('inv-slow-moving')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'bucket',
+    series: [{ key: 'stock_value', label: 'Stock Value ₹' }],
+    title: 'Slow / dead stock value by age',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-4">
+      <Card className="p-3 space-y-2" data-testid="inv-slow-moving-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-slow-moving-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'bucket', label: 'Age Bucket' },
+            { key: 'stock_value', label: 'Stock Value ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No slow/dead stock"
+        />
+      </Card>
       <div className="flex items-center gap-2">
         <Clock className="h-5 w-5 text-cyan-500" />
         <h2 className="text-xl font-bold">Slow-Moving / Dead Stock</h2>

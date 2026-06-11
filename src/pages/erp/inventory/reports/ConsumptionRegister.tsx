@@ -6,6 +6,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
@@ -20,9 +21,12 @@ import {
 } from '@/types/consumption';
 import { dSum } from '@/lib/decimal-helpers';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
 import { CEDetailPanel } from './detail/CEDetailPanel';
 import { ConsumptionEntryPrint } from './print/ConsumptionEntryPrint';
 import type { InventoryDrillFilter } from '@/types/drill-context';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -149,8 +153,45 @@ export function ConsumptionRegisterPanel({ initialFilter }: ConsumptionRegisterP
 
   const currentCE = drill.current?.payload as ConsumptionEntry | undefined;
 
+  // RPT-5b · toggle-wrap (hooks at top level)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const e of allEntries) {
+      if (e.status !== 'posted') continue;
+      const d = (e.effective_date ?? e.consumption_date).slice(0, 10);
+      m.set(d, (m.get(d) ?? 0) + e.total_value);
+    }
+    return Array.from(m.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, consumption_value]) => ({ date, consumption_value }));
+  }, [allEntries]);
+  const chartConfig = getKpi('inv-consumption')?.defaultChart ?? defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'consumption_value', label: 'Consumption ₹' }],
+    title: 'Consumption value by date',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <Card className="p-3 space-y-2" data-testid="inv-consumption-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-consumption-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'date', label: 'Date' },
+            { key: 'consumption_value', label: 'Consumption ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No posted consumption yet"
+        />
+      </Card>
       <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="Consumption Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentCE ? (

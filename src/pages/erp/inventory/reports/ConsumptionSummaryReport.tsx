@@ -19,8 +19,10 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  BarChart3, AlertTriangle, TrendingUp, TrendingDown, Sparkles, Building2,
+  BarChart3, AlertTriangle, TrendingUp, TrendingDown, Sparkles, Building2, ShieldCheck,
 } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useMaterialIssueNotes } from '@/hooks/useMaterialIssueNotes';
 import { useConsumptionEntries } from '@/hooks/useConsumptionEntries';
@@ -130,8 +132,37 @@ export function ConsumptionSummaryReportPanel({ onNavigate }: ConsumptionSummary
     return m;
   }, [godowns]);
 
+  // RPT-5b · toggle-wrap (hooks at top level)
+  const chartRows = useMemo(() =>
+    deptGrid.map(d => ({ dept: d.dept, value: d.total })),
+  [deptGrid]);
+  const chartConfig = getKpi('inv-consumption-summary')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'dept',
+    series: [{ key: 'value', label: 'Consumption ₹' }],
+    title: 'Department consumption value',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="max-w-6xl mx-auto space-y-6 p-6">
+      <Card className="p-3 space-y-2" data-testid="inv-consumption-summary-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-consumption-summary-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'dept', label: 'Department' },
+            { key: 'value', label: 'Value ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No consumption posted this month"
+        />
+      </Card>
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <BarChart3 className="h-6 w-6 text-cyan-500" />

@@ -11,12 +11,14 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ListOrdered, IndianRupee, Search } from 'lucide-react';
+import { ListOrdered, IndianRupee, Search, ShieldCheck } from 'lucide-react';
 import { useGodowns } from '@/hooks/useGodowns';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import { DEPARTMENT_LABELS, DEPARTMENT_BADGE_COLORS } from '@/types/godown';
 import { dSum, round2 } from '@/lib/decimal-helpers';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -96,6 +98,19 @@ export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelPro
       }))
       .sort((a, b) => b.value - a.value);
   }, [godowns, balances]);
+
+  // RPT-5b · toggle-wrap (hooks at top level — BEFORE any early return)
+  const chartRows = useMemo(
+    () => summary.slice(0, 20).map(r => ({ item: r.item_name, balance_qty: r.qty, value: r.value })),
+    [summary],
+  );
+  const chartConfig = getKpi('inv-stock-ledger')?.defaultChart ?? defaultChartConfig({
+    chartType: 'line', xKey: 'item',
+    series: [{ key: 'balance_qty', label: 'Balance Qty' }],
+    title: 'Top item balances',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   // ---------- Level 1: ItemDetailView ----------
   const current = drill.current;
@@ -236,6 +251,24 @@ export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelPro
   // ---------- Level 0: Base ----------
   return (
     <div className="max-w-6xl mx-auto space-y-5 p-6">
+      <Card className="p-3 space-y-2" data-testid="inv-stock-ledger-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-stock-ledger-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'item', label: 'Item' },
+            { key: 'balance_qty', label: 'Balance Qty', align: 'right' },
+            { key: 'value', label: 'Value ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No stock balance"
+        />
+      </Card>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
