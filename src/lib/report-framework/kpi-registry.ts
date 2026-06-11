@@ -9,6 +9,7 @@
  */
 
 import { defaultChartConfig, type ReportChartConfig } from './chart-config';
+import type { RoleLayer } from './role-layer';
 
 export interface KpiThresholds {
   amber: number;
@@ -23,6 +24,12 @@ export interface KpiDefinition {
   dataSource: string;
   defaultChart: ReportChartConfig;
   thresholds?: KpiThresholds;
+  /**
+   * RPT-4 · Role-layer visibility. When omitted, KPI is visible at all layers
+   * (back-compat). Tagging for the 74 existing seeds is applied at the bottom
+   * of this file via a heuristic block.
+   */
+  layers?: RoleLayer[];
 }
 
 const REGISTRY = new Map<string, KpiDefinition>();
@@ -31,6 +38,12 @@ const REGISTRY = new Map<string, KpiDefinition>();
 export function registerKpi(def: KpiDefinition): void {
   if (REGISTRY.has(def.id)) return;
   REGISTRY.set(def.id, def);
+}
+
+/** RPT-4 · Set/replace the layers field on an existing KPI (no-op if missing). */
+export function setKpiLayers(id: string, layers: RoleLayer[]): void {
+  const k = REGISTRY.get(id);
+  if (k) k.layers = layers;
 }
 
 export function getKpi(id: string): KpiDefinition | undefined {
