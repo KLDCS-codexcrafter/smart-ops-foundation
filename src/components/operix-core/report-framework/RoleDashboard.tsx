@@ -30,6 +30,7 @@ const LAYER_RANK: Record<RoleLayer, number> = {
 
 export function RoleDashboard(): JSX.Element {
   const { profile, allowedCards } = useCardEntitlement();
+  const { entityCode } = useEntityCode();
   const role = profile.role;
   const ceiling = useMemo(() => layerCeilingFor(role), [role]);
   const [layer, setLayer] = useState<RoleLayer>(ceiling);
@@ -38,6 +39,23 @@ export function RoleDashboard(): JSX.Element {
     () => deriveRoleDashboard(role, layer, allowedCards as unknown as string[]),
     [role, layer, allowedCards],
   );
+
+  // RPT-4 · T3 fix: real DSC rows per xc KPI. Empty/unresolved → empty-state.
+  const xcRows = useMemo(() => {
+    const map: Record<string, Record<string, unknown>[]> = {};
+    const xc = config.sections.find((s) => s.cardId === 'cross-card');
+    if (!xc) return map;
+    for (const kpi of xc.kpis) {
+      const src = getSource(kpi.dataSource);
+      try {
+        map[kpi.id] = src?.read(entityCode) ?? [];
+      } catch {
+        map[kpi.id] = [];
+      }
+    }
+    return map;
+  }, [config.sections, entityCode]);
+
 
   return (
     <div className="p-6 space-y-6">
