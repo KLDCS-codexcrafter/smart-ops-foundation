@@ -13,12 +13,15 @@
  *              @/lib/form-carry-forward-kit · @/components/canonical/form-carry-forward-kit (PRESERVED verbatim per PB-Q3=(A))
  * @[JWT]       reads via listStockIssues · posts via postStockIssue (single inline action)
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Send, Plus, ArrowDown } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Send, Plus, ArrowDown, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listStockIssues, postStockIssue } from '@/lib/stock-issue-engine';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
