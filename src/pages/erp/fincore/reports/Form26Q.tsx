@@ -88,6 +88,20 @@ export function Form26QPanel({ entityCode }: Props) {
     }
   }, [entityCode]);
 
+  // RPT-2e-iii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(
+    () => sectionSummary.map(s => ({ section: s.section, tds: s.tds })),
+    [sectionSummary],
+  );
+  const chartConfig = getKpi('fc-form26q')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'tds', label: 'TDS' }],
+    title: 'Form 26Q TDS by section',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 space-y-4">
       <div className="flex items-center justify-between">
@@ -98,6 +112,27 @@ export function Form26QPanel({ entityCode }: Props) {
           <Button variant="outline" size="sm" onClick={handleGenerateFromPayOut}><Layers className="h-4 w-4 mr-1" />Generate from PayOut</Button>
         </div>
       </div>
+
+      <Card className="p-3 space-y-2" data-testid="fc-form26q-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-form26q-period-chip">{quarter} · AY {ay}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-form26q-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'section', label: 'Section' },
+            { key: 'tds', label: 'TDS', align: 'right', render: r => inr(Number(r.tds)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No TDS by section"
+        />
+      </Card>
+
 
       {tanMissing && (
         <Alert className="border-red-500/30 bg-red-500/5">
