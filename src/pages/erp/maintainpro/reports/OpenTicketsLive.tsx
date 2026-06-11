@@ -7,6 +7,10 @@ import { useMemo } from 'react';
 import { listInternalTickets } from '@/lib/maintainpro-engine';
 import type { TicketCategory, TicketSeverity } from '@/types/maintainpro';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 const E = 'DEMO';
 const CATS: TicketCategory[] = ['electrical', 'mechanical', 'pneumatic', 'hydraulic', 'safety', 'calibration', 'housekeeping'];
