@@ -17,6 +17,9 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const HORIZON_OPTIONS: Array<ForecastHorizon | 'all'> = ['all', '1m', '3m', '6m', '12m'];
 const ALGO_OPTIONS: Array<ForecastAlgorithm | 'all'> = [
