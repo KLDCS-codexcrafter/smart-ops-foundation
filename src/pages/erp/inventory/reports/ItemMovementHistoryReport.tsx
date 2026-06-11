@@ -81,8 +81,52 @@ export function ItemMovementHistoryReportPanel({ onNavigate }: ItemMovementHisto
     a.click();
   }
 
+  // RPT-5b · toggle-wrap (hooks at top level)
+  const chartRows = useMemo(() => {
+    if (!history) return [] as { date: string; in_qty: number; out_qty: number }[];
+    const m = new Map<string, { in_qty: number; out_qty: number }>();
+    for (const ev of history.events) {
+      const d = ev.event_date.slice(0, 10);
+      const cur = m.get(d) ?? { in_qty: 0, out_qty: 0 };
+      if (ev.qty_change >= 0) cur.in_qty += ev.qty_change;
+      else cur.out_qty += -ev.qty_change;
+      m.set(d, cur);
+    }
+    return Array.from(m.entries())
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([date, v]) => ({ date, ...v }));
+  }, [history]);
+  const chartConfig = getKpi('inv-item-movement')?.defaultChart ?? defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [
+      { key: 'in_qty', label: 'In Qty' },
+      { key: 'out_qty', label: 'Out Qty' },
+    ],
+    title: 'Item movement (in/out)',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-6">
+      <Card className="p-3 space-y-2" data-testid="inv-item-movement-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-item-movement-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'date', label: 'Date' },
+            { key: 'in_qty', label: 'In Qty', align: 'right' },
+            { key: 'out_qty', label: 'Out Qty', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No movements in window"
+        />
+      </Card>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold flex items-center gap-2">
