@@ -19,8 +19,13 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  BarChart3, AlertTriangle, TrendingUp, TrendingDown, Sparkles, Building2,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from '@/components/ui/table';
+import {
+  BarChart3, AlertTriangle, TrendingUp, TrendingDown, Sparkles, Building2, ShieldCheck,
 } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useMaterialIssueNotes } from '@/hooks/useMaterialIssueNotes';
 import { useConsumptionEntries } from '@/hooks/useConsumptionEntries';
