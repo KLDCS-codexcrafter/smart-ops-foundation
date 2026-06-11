@@ -99,6 +99,28 @@ export function AuditDashboardPanel({ entityCode }: AuditDashboardPanelProps) {
   const band = getScoreBand(scorePct);
   const dueDates = useMemo(() => getComplianceDueDates(), []);
 
+  // RPT-2e-iii · top-level dashboard-recipe hooks
+  const auditKpi = getKpi('fc-audit-dash');
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    audit.checkpoints.forEach(cp => m.set(cp.status, (m.get(cp.status) ?? 0) + 1));
+    return Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+  }, [audit.checkpoints]);
+  const chartConfig = auditKpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Checkpoints' }],
+    title: 'Audit checkpoint mix',
+  });
+  const greenPct = audit.checkpoints.length > 0
+    ? Math.round((audit.checkpoints.filter(c => c.status === 'green').length / audit.checkpoints.length) * 100)
+    : 0;
+  const rag = auditKpi?.thresholds
+    ? resolveRag(greenPct, auditKpi.thresholds)
+    : (greenPct >= 90 ? 'green' : greenPct >= 70 ? 'amber' : 'red') as 'green' | 'amber' | 'red';
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
+
   const handleRunValidations = () => {
     setRunning(true);
     setTimeout(() => {
