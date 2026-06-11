@@ -128,6 +128,23 @@ export function ProductionHandoff({ onNavigate }: Props): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const rows = Object.entries(filtered.reduce((a: Record<string, number>, r) => { const k = String(r.type ?? '—'); a[k] = (a[k] ?? 0) + 1; return a; }, {})).map(([status, count]) => ({ status, count }));
+        const cfg = getKpi('eng-handoff')?.defaultChart ?? defaultChartConfig({ chartType: 'doughnut', xKey: 'status', series: [{ key: 'count', label: 'Drawings' }], title: 'Production handoff by type' });
+        const hash = signReport(rows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="eng-handoff-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="eng-handoff-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            <TableChartToggle rows={rows} columns={[{ key: 'status', label: 'Type' }, { key: 'count', label: 'Count', align: 'right' }]} chartConfig={cfg} defaultView="table" emptyLabel="No handoffs" />
+          </div>
+        );
+      })()}
     </div>
   );
 }
