@@ -35,6 +35,11 @@ import { useFactories } from '@/hooks/useFactories';
 import { listProductionConfirmations } from '@/lib/production-confirmation-engine';
 import { dAdd, round2 } from '@/lib/decimal-helpers';
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 export function ProductionTraceRegisterPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const [searchQuery, setSearchQuery] = useState('');
@@ -114,6 +119,15 @@ export function ProductionTraceRegisterPanel(): JSX.Element {
     return { plan, salesOrder, quotation, project, poJobCards, poConfirmations, poIssues, productionIndents, generatedPOs, totalIssued, totalProduced, yieldPct, gaps };
   }, [selectedPO, plans, salesOrPurchaseOrders, quotations, projects, jobCards, productionConfirmations, materialIssueNotes, materialIndents]);
 
+  // RPT-6a · dashboard recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const po of productionOrders) m.set(po.status ?? 'unknown', (m.get(po.status ?? 'unknown') ?? 0) + 1);
+    return Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+  }, [productionOrders]);
+  const chartConfig = getKpi('prod-trace')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'count', label: 'POs' }], title: 'PO status mix' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="p-6 space-y-4">
       <div>
@@ -270,6 +284,21 @@ export function ProductionTraceRegisterPanel(): JSX.Element {
           </Card>
         </>
       )}
+
+      <Card className="p-3 space-y-2" data-testid="prod-trace-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-trace-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No production orders yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="prod-trace-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

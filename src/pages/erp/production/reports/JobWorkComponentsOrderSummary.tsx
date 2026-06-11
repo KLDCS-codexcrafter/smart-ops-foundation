@@ -11,6 +11,12 @@ import { useJobWorkOutOrders } from '@/hooks/useJobWorkOutOrders';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { round2 } from '@/lib/decimal-helpers';
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { Badge } from '@/components/ui/badge';
+
 export function JobWorkComponentsOrderSummaryPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const { jwos } = useJobWorkOutOrders(entityCode);
@@ -39,6 +45,11 @@ export function JobWorkComponentsOrderSummaryPanel(): JSX.Element {
     return Array.from(map.values());
   }, [jwos]);
 
+  // RPT-6a · toggle recipe (additive)
+  const chartRows = useMemo(() => rows.map((r) => ({ component: r.component, qty: r.required })), [rows]);
+  const chartConfig = getKpi('prod-jw-components')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'component', series: [{ key: 'qty', label: 'Required Qty' }], title: 'JW components by item' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center gap-2"><Layers className="h-5 w-5 text-primary" /><h1 className="text-2xl font-bold">Components Order Summary</h1></div>
@@ -75,6 +86,21 @@ export function JobWorkComponentsOrderSummaryPanel(): JSX.Element {
             </TableBody>
           </Table>
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="prod-jw-components-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-jw-components-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[{ key: 'component', label: 'Component' }, { key: 'qty', label: 'Required Qty', align: 'right' }]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No components tracked"
+        />
       </Card>
     </div>
   );

@@ -22,6 +22,11 @@ import {
   buildITC04Rows, exportITC04CSV, listAvailableQuarters,
 } from '@/lib/itc04-export-engine';
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 export function ITC04ExportPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const jwos = useMemo(() => listJobWorkOutOrders(entityCode), [entityCode]);
@@ -44,6 +49,15 @@ export function ITC04ExportPanel(): JSX.Element {
     toast.success(`ITC-04 ${selectedQuarter} downloaded · ${rows.length} rows`);
   };
 
+  // RPT-6a · toggle recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of rows) m.set(selectedQuarter || 'current', (m.get(selectedQuarter || 'current') ?? 0) + (r.jw_value ?? 0));
+    return Array.from(m.entries()).map(([quarter, value]) => ({ quarter, value }));
+  }, [rows, selectedQuarter]);
+  const chartConfig = getKpi('prod-itc04')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'quarter', series: [{ key: 'value', label: 'JW Value ₹' }], title: 'ITC-04 value by quarter' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="p-6 space-y-4">
       <div>
@@ -109,6 +123,21 @@ export function ITC04ExportPanel(): JSX.Element {
             </TableBody>
           </Table>
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="prod-itc04-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-itc04-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[{ key: 'quarter', label: 'Quarter' }, { key: 'value', label: 'JW Value ₹', align: 'right' }]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No rows for selected quarter"
+        />
       </Card>
     </div>
   );

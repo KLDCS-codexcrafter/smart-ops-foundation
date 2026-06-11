@@ -20,6 +20,12 @@ import {
 } from '@/lib/production-variance-engine';
 import type { ProcessBatch } from '@/types/process-batch';
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useMemo as _useMemoRPT6a } from 'react';
+
 export function ProcessBatchRegisterPanel(): JSX.Element {
   const navigate = useNavigate();
   const { entityCode } = useEntityCode();
@@ -61,6 +67,15 @@ export function ProcessBatchRegisterPanel(): JSX.Element {
     b.status === 'draft' || b.status === 'running' || b.status === 'paused' || b.status === 'sampling',
   ).length;
 
+  // RPT-6a · dashboard recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const b of batches) m.set(b.status ?? 'unknown', (m.get(b.status ?? 'unknown') ?? 0) + 1);
+    return Array.from(m.entries()).map(([process, batch_count]) => ({ process, batch_count }));
+  }, [batches]);
+  const chartConfig = getKpi('prod-batch')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'process', series: [{ key: 'batch_count', label: 'Batches' }], title: 'Process batches by status' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
@@ -138,6 +153,21 @@ export function ProcessBatchRegisterPanel(): JSX.Element {
       </Card>
 
       <Button variant="outline" onClick={() => navigate(-1)}>Back</Button>
+
+      <Card className="p-3 space-y-2" data-testid="prod-batch-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-batch-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No batches yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="prod-batch-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
