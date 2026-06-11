@@ -50,12 +50,44 @@ export function Form24QPanel({ entityCode }: Props) {
     toast.success('Exported');
   };
 
+  // RPT-2e-iii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => [{ quarter, tds: totalTDS }], [quarter, totalTDS]);
+  const chartConfig = getKpi('fc-form24q')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'quarter',
+    series: [{ key: 'tds', label: 'TDS' }],
+    title: 'Form 24Q TDS by quarter',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 space-y-4">
       <div className="flex items-center justify-between">
         <div><h2 className="text-xl font-bold">Form 24Q (Salary)</h2><p className="text-xs text-muted-foreground">Quarterly TDS Return — Section 192</p></div>
         <Button data-primary variant="outline" size="sm" onClick={handleExport}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
       </div>
+
+      <Card className="p-3 space-y-2" data-testid="fc-form24q-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-form24q-period-chip">{quarter} · AY {ay}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-form24q-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'quarter', label: 'Quarter' },
+            { key: 'tds', label: 'TDS', align: 'right', render: r => inr(Number(r.tds)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No TDS"
+        />
+      </Card>
+
 
       <Alert className="border-blue-500/30 bg-blue-500/5">
         <Info className="h-4 w-4 text-blue-500" />
