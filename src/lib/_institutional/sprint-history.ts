@@ -1347,11 +1347,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['daybook-source-registry'],
     bankDate: '2026-06-11', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-3b T-RPT3b-CrossCard-Aggregator-DSC · Reporting Arc · Phase B sprint 2 · cross-card DayBook aggregator (mechanism for RPT-5 surface) + DSC plant (spine for RPT-9 builder + RPT-11 InsightX) · NEW SIBLING data-source-catalog · React-free + read-only by construction · 11 DSC sources registered on app init (7 DayBook re-projections + 4 reference register sources: outstanding · ledger · gst · eximx-tt) · walls held: useDayBook + daybook-source-registry + daybook-sources + 6 bespoke DayBook pages + all RPT-1a/RPT-1b/RPT-2*/RPT-2e* report/dashboard pages + chart/KPI/scorecard framework + src/test/setup.ts + all hubs 0-DIFF · close summary COMMITTED · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-3b T-RPT3b-CrossCard-Aggregator-DSC · Reporting Arc · Phase B sprint 2 · cross-card DayBook aggregator + DSC plant · NEW SIBLING data-source-catalog · React-free + read-only by construction · 11 DSC sources registered on app init (7 DayBook re-projections + 4 reference register sources) · headSha BACKFILLED 097ff18 at RPT-4 Block 3 · forward-extended in RPT-4
   {
     sprintNumber: 'RPT3b' as unknown as number, code: 'T-RPT3b-CrossCard-Aggregator-DSC', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '4115540', loc: 320,
+    headSha: '097ff18', predecessorSha: '4115540', loc: 320,
     newSiblings: ['data-source-catalog'],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-4 T-RPT4-RoleLayer-Derivation · Reporting Arc · Phase B sprint 3 (last structural piece) · role-layer derivation engine + 74 KPI layer tags + 6 xc-* Management KPIs + ONE generic RoleDashboard mounted at /erp/command-center/my-dashboard · NEW SIBLING role-layer-derivation-engine · React-free core · composes with existing UserRole + ROLE_DEFAULT_CARDS (no parallel role system) · QL-6 auto-derivation (no per-role files) · walls held: card-entitlement.ts + useCardEntitlement + all banked pages + chart/period/integrity/DSC/aggregator framework files + src/test/setup.ts + all hubs 0-DIFF · close summary COMMITTED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT4' as unknown as number, code: 'T-RPT4-RoleLayer-Derivation', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '097ff18', loc: 540,
+    newSiblings: ['role-layer-derivation-engine'],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
 ];
