@@ -209,3 +209,5 @@ function StockIssueChartCard({ items }: { items: StockIssue[] }): JSX.Element {
     </Card>
   );
 }
+
+export default StockIssueRegisterPanel;
