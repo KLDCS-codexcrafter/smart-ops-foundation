@@ -19,9 +19,6 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
-} from '@/components/ui/table';
-import {
   BarChart3, AlertTriangle, TrendingUp, TrendingDown, Sparkles, Building2, ShieldCheck,
 } from 'lucide-react';
 import { TableChartToggle } from '@/components/operix-core/report-framework';
