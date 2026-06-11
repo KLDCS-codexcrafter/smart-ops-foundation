@@ -5,7 +5,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
@@ -21,6 +23,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { RTVDetailPanel } from './detail/RTVDetailPanel';
 import { RTVPrint } from './print/RTVPrint';
 import type { InventoryDrillFilter } from '@/types/drill-context';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtINR = (n: number): string =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
