@@ -15,13 +15,16 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { FileText, Plus } from 'lucide-react';
+import { FileText, Plus, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listAllVendorAgreements,
   loadVendors,
 } from '@/lib/procure360-vendor-agreements-engine';
 import type { Procure360Module } from '../Procure360Sidebar.types';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 
 interface Procure360VendorAgreementsRegisterProps {
   onNavigate: (m: Procure360Module) => void;
@@ -42,6 +45,27 @@ export function Procure360VendorAgreementsRegisterPanel({
       : allDocs.filter((d) => d.vendor_id === filterVendorId),
     [allDocs, filterVendorId],
   );
+
+  // RPT-5c · toggle recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const d of allDocs) {
+      const v = vendors.find((vendor) => vendor.id === d.vendor_id);
+      const name = v?.name ?? d.vendor_id ?? '—';
+      m.set(name, (m.get(name) ?? 0) + 1);
+    }
+    return Array.from(m.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([vendor, agreement_count]) => ({ vendor, agreement_count }));
+  }, [allDocs, vendors]);
+  const chartConfig = getKpi('pr-vendor-agreements')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'vendor',
+    series: [{ key: 'agreement_count', label: 'Agreements' }],
+    title: 'Agreements by vendor',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   const vendorName = (id: string | null | undefined): string => {
     if (!id) return '—';
@@ -67,6 +91,24 @@ export function Procure360VendorAgreementsRegisterPanel({
             New Agreement
           </Button>
         </div>
+
+        <Card className="p-3 space-y-2" data-testid="pr-vendor-agreements-toggle-host">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="outline" className="text-[10px] font-mono" data-testid="pr-vendor-agreements-integrity-badge" title={integrityHash}>
+              <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+            </Badge>
+          </div>
+          <TableChartToggle
+            rows={chartRows}
+            columns={[
+              { key: 'vendor', label: 'Vendor' },
+              { key: 'agreement_count', label: 'Agreements', align: 'right' },
+            ]}
+            chartConfig={chartConfig}
+            defaultView="table"
+            emptyLabel="No vendor agreements yet"
+          />
+        </Card>
 
         <Card>
           <CardHeader className="pb-3">

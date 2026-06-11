@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { BarChart3, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { BarChart3, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listBudgets,
@@ -19,6 +19,8 @@ import {
   summarizeUtilization,
 } from '@/lib/budget-allocation-engine';
 import type { BudgetAllocation } from '@/types/budget-allocation';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const inr = (n: number): string => '₹' + new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n);
 
@@ -31,6 +33,32 @@ export function BudgetUtilizationDashboard(): JSX.Element {
   // rows is intentionally included to recompute summary after CRUD refreshes
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const summary = useMemo(() => summarizeUtilization(entityCode), [entityCode, rows]);
+
+  // RPT-5c · toggle recipe (additive)
+  const chartRows = useMemo(() => {
+    return rows
+      .slice()
+      .sort((a, b) => b.allocated_amount - a.allocated_amount)
+      .slice(0, 12)
+      .map((b) => {
+        const used = b.consumed_amount + b.committed_amount;
+        return {
+          head: b.scope_ref_label,
+          used,
+          remaining: Math.max(0, b.allocated_amount - used),
+        };
+      });
+  }, [rows]);
+  const chartConfig = getKpi('pr-budget-utilization')?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'head',
+    series: [
+      { key: 'used', label: 'Used ₹' },
+      { key: 'remaining', label: 'Remaining ₹' },
+    ],
+    title: 'Budget head utilization',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-6">
@@ -64,6 +92,25 @@ export function BudgetUtilizationDashboard(): JSX.Element {
           {summary.budget_count} active
         </Badge>
       </div>
+
+      <Card className="p-3 space-y-2" data-testid="pr-budget-utilization-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="pr-budget-utilization-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'head', label: 'Budget Head' },
+            { key: 'used', label: 'Used ₹', align: 'right' },
+            { key: 'remaining', label: 'Remaining ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No active budget allocations"
+        />
+      </Card>
 
       <Card className="glass-card">
         <CardHeader><CardTitle className="text-base">Per-Budget Breakdown</CardTitle></CardHeader>

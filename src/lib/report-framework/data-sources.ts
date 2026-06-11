@@ -15,6 +15,8 @@ import { loadTTPayments } from '@/lib/tt-payment-engine';
 import { loadObligations } from '@/lib/comply360-statutory-memory';
 import { stockBalanceKey } from '@/types/grn';
 import { consumptionEntriesKey } from '@/types/consumption';
+import { purchaseOrdersKey } from '@/types/po';
+import { budgetAllocationsKey } from '@/types/budget-allocation';
 
 function safeRead<T>(key: string): T[] {
   try {
@@ -207,6 +209,44 @@ export function registerAllDataSources(): void {
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(consumptionEntriesKey(entityCode || 'SMRT'))
         .filter((c) => !(c as { is_cancelled?: boolean }).is_cancelled),
+  });
+
+  // ─── RPT-5c · Procure360 DSC sources ─────────────────────────────────
+  // Wraps the SAME storage the wrapped Procure360 pages already read.
+  registerSource({
+    id: 'procure.purchase-orders',
+    label: 'Procure · Purchase Orders',
+    card: 'procure360',
+    kind: 'register',
+    fields: [
+      { key: 'po_no', label: 'PO No', kind: 'dimension' },
+      { key: 'po_date', label: 'PO Date', kind: 'dimension' },
+      { key: 'vendor_id', label: 'Vendor Id', kind: 'dimension' },
+      { key: 'vendor_name', label: 'Vendor', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'total_value', label: 'Total Value', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(purchaseOrdersKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'procure.budget-utilization',
+    label: 'Procure · Budget Allocations',
+    card: 'procure360',
+    kind: 'register',
+    fields: [
+      { key: 'fiscal_year', label: 'FY', kind: 'dimension' },
+      { key: 'scope', label: 'Scope', kind: 'dimension' },
+      { key: 'scope_ref_label', label: 'Reference', kind: 'dimension' },
+      { key: 'is_active', label: 'Active', kind: 'dimension' },
+      { key: 'allocated_amount', label: 'Allocated', kind: 'measure' },
+      { key: 'committed_amount', label: 'Committed', kind: 'measure' },
+      { key: 'consumed_amount', label: 'Consumed', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(budgetAllocationsKey(entityCode || 'SMRT'))
+        .filter((b) => (b as { is_active?: boolean }).is_active !== false),
   });
 }
 

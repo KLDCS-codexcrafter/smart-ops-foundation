@@ -1368,14 +1368,22 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-5b T-RPT5b-Inventory-Reports · Reporting Arc · Phase C sprint 2 (Ops Hub-1, cohort b) · 9 Inventory analytical report toggle-wraps (ConsumptionRegister · ConsumptionSummaryReport · ItemMovementHistoryReport · SlowMovingDeadStockReport · GRNRegister · RTVRegister · MINRegister · StockLedgerReport · AbcClassificationMaster) · 9 layer-tagged KPI seeds (inv-consumption · inv-consumption-summary · inv-item-movement · inv-slow-moving · inv-grn · inv-rtv · inv-min · inv-stock-ledger · inv-abc) · 2 Inventory DSC sources (inventory.stock-ledger · inventory.consumption) read-only wrappers of the SAME storage the wrapped pages already load · hooks at top level · NO recharts import in pages · existing Table/columns/filters/CSV PRESERVED (additive) · honest empty-state · ZERO new SIBLINGs · walls held: data-source-catalog/daybook-source-registry/daybook-aggregator/RoleDashboard 0-DIFF · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-5b T-RPT5b-Inventory-Reports · Reporting Arc · Phase C sprint 2 (Ops Hub-1, cohort b) · 9 Inventory analytical report toggle-wraps · 9 layer-tagged KPI seeds (inv-*) · 2 Inventory DSC sources · ZERO new SIBLINGs · headSha BACKFILLED 0363af9 at RPT-5c Block 3 · forward-extended in RPT-5c
   {
     sprintNumber: 'RPT5b' as unknown as number, code: 'T-RPT5b-Inventory-Reports', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '84945a8', loc: 720,
+    headSha: '0363af9', predecessorSha: '84945a8', loc: 720,
+    newSiblings: [],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-5c T-RPT5c-Procure360-Reports · Reporting Arc · Phase C sprint 3 (Ops Hub-1, cohort c) · 9 Procure360 analytical pages chart-enabled with mixed recipes (toggle: Procure360VendorAgreementsRegister · BudgetUtilizationDashboard; dashboard: VendorReliabilityPanel · ThreeWayMatchStatusPanel · PurchaseCostVarianceItemPanel · PurchaseCostVarianceCategoryPanel · TdsDeductionReportPanel · EnquiryDetailsReportPanel · PeqFollowupRegisterPanel) · 9 layer-tagged KPI seeds (pr-vendor-agreements · pr-budget-utilization · pr-vendor-reliability · pr-three-way-match · pr-cost-variance-item · pr-cost-variance-cat · pr-tds-deduction · pr-enquiry · pr-peq-followup) · 2 Procure DSC sources (procure.purchase-orders · procure.budget-utilization) read-only wrappers of the SAME storage the wrapped pages already load · hooks at top level · NO recharts import added (RateVarianceGraphPanel EXCLUDED at 0-DIFF as the already-charted page) · existing layouts PRESERVED (additive) · honest empty-state · ZERO new SIBLINGs · walls held: data-source-catalog/daybook-source-registry/daybook-aggregator/RoleDashboard 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT5c' as unknown as number, code: 'T-RPT5c-Procure360-Reports', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '0363af9', loc: 760,
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
 ];
+
 
 
 

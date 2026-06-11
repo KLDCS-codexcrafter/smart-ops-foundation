@@ -14,6 +14,10 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { listBillPassing } from '@/lib/bill-passing-engine';
 import { dSum, round2 } from '@/lib/decimal-helpers';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtMoney = (n: number): string => `₹${n.toLocaleString('en-IN')}`;
 
@@ -41,6 +45,25 @@ export function TdsDeductionReportPanel(): JSX.Element {
     (b) => b.tds_breakdown?.amount ?? 0,
   ));
 
+  // RPT-5c · dashboard recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const b of rows) {
+      const sec = b.tds_breakdown?.section ?? '—';
+      m.set(sec, (m.get(sec) ?? 0) + (b.tds_breakdown?.amount ?? 0));
+    }
+    return Array.from(m.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([section, tds]) => ({ section, tds }));
+  }, [rows]);
+  const chartConfig = getKpi('pr-tds-deduction')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'tds', label: 'TDS ₹' }],
+    title: 'TDS by section',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-4">
       <div>
@@ -62,6 +85,21 @@ export function TdsDeductionReportPanel(): JSX.Element {
           <div className="text-2xl font-mono font-bold mt-1">{fmtMoney(qtdTds)}</div>
         </CardContent></Card>
       </div>
+
+      <Card className="p-3 space-y-2" data-testid="pr-tds-deduction-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="pr-tds-deduction-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No TDS-applicable bills</div>
+        ) : (
+          <div className="w-full h-72" data-testid="pr-tds-deduction-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
 
       <Card>
         <CardContent className="p-0">

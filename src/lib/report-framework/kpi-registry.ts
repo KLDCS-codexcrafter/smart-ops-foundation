@@ -1235,3 +1235,14 @@ registerKpi({
 
 
 
+
+// ─── RPT-5c · 9 Procure360 KPI seeds ───
+registerKpi({ id: 'pr-vendor-agreements', layers: ['operator','manager','management'], label: 'Agreements by vendor', dataSource: 'procure.purchase-orders', defaultChart: defaultChartConfig({ chartType: 'column', xKey: 'vendor', series: [{ key: 'agreement_count', label: 'Agreements' }], title: 'Agreements by vendor' }) });
+registerKpi({ id: 'pr-budget-utilization', layers: ['manager','management'], label: 'Budget head utilization', dataSource: 'procure.budget-utilization', defaultChart: defaultChartConfig({ chartType: 'stacked-column', xKey: 'head', series: [{ key: 'used', label: 'Used ₹' },{ key: 'remaining', label: 'Remaining ₹' }], title: 'Budget head utilization' }) });
+registerKpi({ id: 'pr-vendor-reliability', layers: ['manager','management'], label: 'Vendor reliability score', dataSource: 'procure.purchase-orders', defaultChart: defaultChartConfig({ chartType: 'column', xKey: 'vendor', series: [{ key: 'score', label: 'Reliability Score' }], title: 'Top vendors by reliability score' }) });
+registerKpi({ id: 'pr-three-way-match', layers: ['operator','manager','management'], label: '3-way match status mix', dataSource: 'procure.purchase-orders', defaultChart: defaultChartConfig({ chartType: 'doughnut', xKey: 'status', series: [{ key: 'count', label: 'Bills' }], title: '3-way match status mix' }) });
+registerKpi({ id: 'pr-cost-variance-item', layers: ['manager','management'], label: 'Item cost variance', dataSource: 'procure.purchase-orders', defaultChart: defaultChartConfig({ chartType: 'column', xKey: 'item', series: [{ key: 'variance', label: 'Variance ₹' }], title: 'Item cost variance' }) });
+registerKpi({ id: 'pr-cost-variance-cat', layers: ['manager','management'], label: 'Category cost variance', dataSource: 'procure.purchase-orders', defaultChart: defaultChartConfig({ chartType: 'column', xKey: 'category', series: [{ key: 'variance', label: 'Variance ₹' }], title: 'Category cost variance' }) });
+registerKpi({ id: 'pr-tds-deduction', layers: ['manager','management'], label: 'TDS by section', dataSource: 'procure.purchase-orders', defaultChart: defaultChartConfig({ chartType: 'column', xKey: 'section', series: [{ key: 'tds', label: 'TDS ₹' }], title: 'TDS by section' }) });
+registerKpi({ id: 'pr-enquiry', layers: ['operator','manager','management'], label: 'Enquiry status mix', dataSource: 'procure.purchase-orders', defaultChart: defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'count', label: 'Enquiries' }], title: 'Enquiry status mix' }) });
+registerKpi({ id: 'pr-peq-followup', layers: ['operator','manager','management'], label: 'Open PEQ status mix', dataSource: 'procure.purchase-orders', defaultChart: defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'count', label: 'Open Enquiries' }], title: 'Open PEQ status mix' }) });

@@ -14,7 +14,11 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { listBillPassing, runMatch } from '@/lib/bill-passing-engine';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const STATUS_LABEL: Record<string, string> = {
   matched_clean: 'Clean',
@@ -49,6 +53,23 @@ export function ThreeWayMatchStatusPanel(): JSX.Element {
   const kpiVariance = bills.filter((b) => b.status === 'matched_with_variance').length;
   const kpiAwaitingQa = bills.filter((b) => b.status === 'awaiting_qa').length;
   const kpiQaFailed = bills.filter((b) => b.status === 'qa_failed').length;
+
+  // RPT-5c · dashboard recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const b of bills) m.set(b.status, (m.get(b.status) ?? 0) + 1);
+    return Array.from(m.entries()).map(([status, count]) => ({
+      status: STATUS_LABEL[status] ?? status,
+      count,
+    }));
+  }, [bills]);
+  const chartConfig = getKpi('pr-three-way-match')?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Bills' }],
+    title: '3-way match status mix',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   async function handleRunMatch(billId: string): Promise<void> {
     try {
@@ -85,6 +106,21 @@ export function ThreeWayMatchStatusPanel(): JSX.Element {
           <div className="text-2xl font-mono font-bold mt-1 text-destructive">{kpiQaFailed}</div>
         </CardContent></Card>
       </div>
+
+      <Card className="p-3 space-y-2" data-testid="pr-three-way-match-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="pr-three-way-match-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No bills yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="pr-three-way-match-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
 
       <Card>
         <CardContent className="p-0">
