@@ -57,6 +57,7 @@ export function listKpis(): KpiDefinition[] {
 // ─── Reference seeds for OutstandingAging (RPT-1a) ─────────────────────────
 registerKpi({
   id: 'ar-overdue-90',
+  layers: ['manager', 'management'],
   label: 'A/R Overdue > 90d',
   dataSource: 'fincore.outstanding.aging.receivables',
   defaultChart: defaultChartConfig({
@@ -75,6 +76,7 @@ registerKpi({
 
 registerKpi({
   id: 'ap-overdue-90',
+  layers: ['manager', 'management'],
   label: 'A/P Overdue > 90d',
   dataSource: 'fincore.outstanding.aging.payables',
   defaultChart: defaultChartConfig({
@@ -94,6 +96,7 @@ registerKpi({
 // ─── RPT-1b · 8 FinCore page KPI seeds (idempotent · seed data only) ───────
 registerKpi({
   id: 'fc-ledger-balance',
+  layers: ['manager', 'management'],
   label: 'Ledger running balance',
   dataSource: 'fincore.ledger.history',
   defaultChart: defaultChartConfig({
@@ -105,6 +108,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-cheque-status',
+  layers: ['operator', 'manager', 'management'],
   label: 'Cheque status mix',
   dataSource: 'fincore.cheque.status',
   defaultChart: defaultChartConfig({
@@ -116,6 +120,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-bs-composition',
+  layers: ['management'],
   label: 'BS composition',
   dataSource: 'fincore.balance-sheet.composition',
   defaultChart: defaultChartConfig({
@@ -130,6 +135,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-tb-drcr',
+  layers: ['management'],
   label: 'Trial balance Dr/Cr',
   dataSource: 'fincore.trial-balance.drcr',
   defaultChart: defaultChartConfig({
@@ -144,6 +150,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-stock-value',
+  layers: ['operator', 'manager', 'management'],
   label: 'Stock value by group',
   dataSource: 'fincore.stock.value-by-group',
   defaultChart: defaultChartConfig({
@@ -155,6 +162,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-pnl-margin',
+  layers: ['management'],
   label: 'P&L revenue/expense/margin',
   dataSource: 'fincore.pnl.margin',
   defaultChart: defaultChartConfig({
@@ -170,6 +178,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-monthly-prod',
+  layers: ['manager', 'management'],
   label: 'Monthly production trend',
   dataSource: 'fincore.production.monthly',
   defaultChart: defaultChartConfig({
@@ -181,6 +190,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-bank-reco',
+  layers: ['manager', 'management'],
   label: 'Bank reconciliation %',
   dataSource: 'fincore.bank.reco-percent',
   defaultChart: defaultChartConfig({
@@ -194,6 +204,7 @@ registerKpi({
 // ─── RPT-2c · 7 ReceivX + PayOut + Bill-passing KPI seeds (idempotent) ─────
 registerKpi({
   id: 'rx-aging-person',
+  layers: ['manager', 'management'],
   label: 'AR aging by collector',
   dataSource: 'receivx.aging.by-person',
   defaultChart: defaultChartConfig({
@@ -210,6 +221,7 @@ registerKpi({
 
 registerKpi({
   id: 'rx-credit-risk',
+  layers: ['manager', 'management'],
   label: 'Credit risk distribution',
   dataSource: 'receivx.credit-risk.distribution',
   defaultChart: defaultChartConfig({
@@ -221,6 +233,7 @@ registerKpi({
 
 registerKpi({
   id: 'rx-collection-eff',
+  layers: ['manager', 'management'],
   label: 'Collection efficiency',
   dataSource: 'receivx.collection.efficiency',
   defaultChart: defaultChartConfig({
@@ -235,6 +248,7 @@ registerKpi({
 
 registerKpi({
   id: 'rx-ptp-rate',
+  layers: ['operator', 'manager', 'management'],
   label: 'PTP kept vs broken',
   dataSource: 'receivx.ptp.kept-vs-broken',
   defaultChart: defaultChartConfig({
@@ -246,6 +260,7 @@ registerKpi({
 
 registerKpi({
   id: 'rx-comm-volume',
+  layers: ['operator', 'manager', 'management'],
   label: 'Communication volume by channel',
   dataSource: 'receivx.communication.volume',
   defaultChart: defaultChartConfig({
@@ -257,6 +272,7 @@ registerKpi({
 
 registerKpi({
   id: 'po-requisition-trend',
+  layers: ['manager', 'management'],
   label: 'Requisition value trend',
   dataSource: 'payout.requisition.trend',
   defaultChart: defaultChartConfig({
@@ -268,6 +284,7 @@ registerKpi({
 
 registerKpi({
   id: 'bp-rate-contract',
+  layers: ['operator', 'manager', 'management'],
   label: 'Rate contract value by vendor',
   dataSource: 'bill-passing.rate-contract.value-by-vendor',
   defaultChart: defaultChartConfig({
@@ -280,6 +297,7 @@ registerKpi({
 // ─── RPT-2b-i · 7 EximX trade-doc register KPI seeds (idempotent) ──────────
 registerKpi({
   id: 'ex-export-po',
+  layers: ['operator', 'manager', 'management'],
   label: 'Export PO value',
   dataSource: 'eximx.export-po.value',
   defaultChart: defaultChartConfig({
@@ -291,6 +309,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-import-po',
+  layers: ['operator', 'manager', 'management'],
   label: 'Import PO value',
   dataSource: 'eximx.import-po.value',
   defaultChart: defaultChartConfig({
@@ -302,6 +321,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-shipping-bill',
+  layers: ['operator', 'manager', 'management'],
   label: 'Shipping bill FOB by status',
   dataSource: 'eximx.shipping-bill.fob-by-status',
   defaultChart: defaultChartConfig({
@@ -313,6 +333,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-dispatch',
+  layers: ['manager', 'management'],
   label: 'Export dispatch trend',
   dataSource: 'eximx.dispatch.trend',
   defaultChart: defaultChartConfig({
@@ -324,6 +345,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-lc-status',
+  layers: ['operator', 'manager', 'management'],
   label: 'LC status mix',
   dataSource: 'eximx.lc.status-mix',
   defaultChart: defaultChartConfig({
@@ -335,6 +357,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-ci-value',
+  layers: ['operator', 'manager', 'management'],
   label: 'Commercial invoice value',
   dataSource: 'eximx.ci.value-by-month',
   defaultChart: defaultChartConfig({
@@ -346,6 +369,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-boe-duty',
+  layers: ['operator', 'manager', 'management'],
   label: 'Bill of entry duty/value',
   dataSource: 'eximx.boe.duty-by-status',
   defaultChart: defaultChartConfig({
@@ -361,6 +385,7 @@ registerKpi({
 // ─── RPT-2b-ii · 6 EximX finance/realisation register KPI seeds (idempotent) ─
 registerKpi({
   id: 'ex-realisation',
+  layers: ['management'],
   label: 'Export realisation',
   dataSource: 'eximx.realisation.by-period',
   defaultChart: defaultChartConfig({
@@ -375,6 +400,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-fema-270',
+  layers: ['manager', 'management'],
   label: 'FEMA 270-day aging',
   dataSource: 'eximx.fema.270-day-aging',
   defaultChart: defaultChartConfig({
@@ -386,6 +412,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-packing-credit',
+  layers: ['operator', 'manager', 'management'],
   label: 'Packing credit outstanding',
   dataSource: 'eximx.packing-credit.outstanding-by-status',
   defaultChart: defaultChartConfig({
@@ -397,6 +424,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-hedge',
+  layers: ['management'],
   label: 'Hedge notional by currency',
   dataSource: 'eximx.hedge.notional-by-currency',
   defaultChart: defaultChartConfig({
@@ -408,6 +436,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-git',
+  layers: ['operator', 'manager', 'management'],
   label: 'GIT value by leg',
   dataSource: 'eximx.git.value-by-leg',
   defaultChart: defaultChartConfig({
@@ -419,6 +448,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-rootar',
+  layers: ['manager', 'management'],
   label: 'RoO preference by FTA',
   dataSource: 'eximx.roo.preference-by-fta',
   defaultChart: defaultChartConfig({
@@ -431,6 +461,7 @@ registerKpi({
 // ─── RPT-2a-i · 6 Comply360 reference dashboard KPI seeds (idempotent) ─────
 registerKpi({
   id: 'cmp-fire-compliance',
+  layers: ['manager', 'management'],
   label: 'Fire compliance %',
   dataSource: 'comply360.fire-safety.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -443,6 +474,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-costaudit-filings',
+  layers: ['manager', 'management'],
   label: 'Cost-audit filings on time %',
   dataSource: 'comply360.cost-audit.cra-filings',
   defaultChart: defaultChartConfig({
@@ -458,6 +490,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-env-compliance',
+  layers: ['manager', 'management'],
   label: 'Environmental compliance %',
   dataSource: 'comply360.environmental.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -470,6 +503,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-indsafety',
+  layers: ['manager', 'management'],
   label: 'Industrial safety compliance %',
   dataSource: 'comply360.industrial-safety.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -482,6 +516,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-waste',
+  layers: ['manager', 'management'],
   label: 'Waste disposal compliance %',
   dataSource: 'comply360.waste-management.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -494,6 +529,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-dpdp',
+  layers: ['manager', 'management'],
   label: 'DPDP readiness %',
   dataSource: 'comply360.dpdp.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -507,6 +543,7 @@ registerKpi({
 // ─── RPT-2a-ii · 5 Comply360 cohort-2 dashboard KPI seeds (idempotent) ─────
 registerKpi({
   id: 'cmp-quality',
+  layers: ['manager', 'management'],
   label: 'Quality standards compliance %',
   dataSource: 'comply360.quality-standards.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -519,6 +556,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-cyber',
+  layers: ['manager', 'management'],
   label: 'CERT-In readiness %',
   dataSource: 'comply360.cyber-security.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -531,6 +569,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-csr',
+  layers: ['management'],
   label: 'CSR spend vs obligation %',
   dataSource: 'comply360.csr.csr2-spend',
   defaultChart: defaultChartConfig({
@@ -547,6 +586,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-labour',
+  layers: ['manager', 'management'],
   label: 'Labour compliance %',
   dataSource: 'comply360.labour-tier2.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -559,6 +599,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-mca',
+  layers: ['manager', 'management'],
   label: 'MCA filing compliance %',
   dataSource: 'comply360.mca-tier2.summary',
   defaultChart: defaultChartConfig({
@@ -572,6 +613,7 @@ registerKpi({
 // ─── RPT-2a-iii · 3 Comply360 cohort-3 dashboard KPI seeds (idempotent) ────
 registerKpi({
   id: 'cmp-legal',
+  layers: ['manager', 'management'],
   label: 'Legal/IPR compliance %',
   dataSource: 'comply360.legal-ipr.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -584,6 +626,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-meetings',
+  layers: ['operator', 'manager', 'management'],
   label: 'Meetings compliance %',
   dataSource: 'comply360.meetings.compliance-summary',
   defaultChart: defaultChartConfig({
@@ -596,6 +639,7 @@ registerKpi({
 
 registerKpi({
   id: 'cmp-survivalkit',
+  layers: ['manager', 'management'],
   label: 'Survival-kit readiness %',
   dataSource: 'comply360.survival-kit.readiness',
   defaultChart: defaultChartConfig({
@@ -609,6 +653,7 @@ registerKpi({
 // ─── RPT-2b-iii · 6 EximX dashboard cohort-1 KPI seeds (idempotent) ────────
 registerKpi({
   id: 'ex-cross-realisation',
+  layers: ['management'],
   label: 'Cross-entity realisation %',
   dataSource: 'eximx.cross-entity-realisation.summary',
   defaultChart: defaultChartConfig({
@@ -624,6 +669,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-form3ceb',
+  layers: ['manager', 'management'],
   label: 'Form 3CEB filing %',
   dataSource: 'eximx.form-3ceb.summary',
   defaultChart: defaultChartConfig({
@@ -636,6 +682,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-landed-cost',
+  layers: ['management'],
   label: 'Landed-cost reconciliation %',
   dataSource: 'eximx.landed-cost.reconciliation',
   defaultChart: defaultChartConfig({
@@ -648,6 +695,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-aeo',
+  layers: ['management'],
   label: 'AEO benefit utilisation %',
   dataSource: 'eximx.aeo.benefit-utilisation',
   defaultChart: defaultChartConfig({
@@ -660,6 +708,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-ebrc',
+  layers: ['management'],
   label: 'e-BRC/EDPMS recon %',
   dataSource: 'eximx.ebrc-edpms.reconciliation',
   defaultChart: defaultChartConfig({
@@ -672,6 +721,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-monthend-reval',
+  layers: ['management'],
   label: 'Month-end reval coverage %',
   dataSource: 'eximx.month-end-reval.coverage',
   defaultChart: defaultChartConfig({
@@ -688,6 +738,7 @@ registerKpi({
 // ─── RPT-2b-iv · 5 EximX dashboard cohort-2 (close) KPI seeds (idempotent) ──
 registerKpi({
   id: 'ex-ews',
+  layers: ['manager', 'management'],
   label: 'Early-warning coverage %',
   dataSource: 'eximx.ews.coverage',
   defaultChart: defaultChartConfig({
@@ -700,6 +751,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-buyer-reliability',
+  layers: ['manager', 'management'],
   label: 'Buyer reliability index',
   dataSource: 'eximx.buyer-reliability.distribution',
   defaultChart: defaultChartConfig({
@@ -712,6 +764,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-vendor-score',
+  layers: ['manager', 'management'],
   label: 'Vendor scorecard %',
   dataSource: 'eximx.vendor-score.distribution',
   defaultChart: defaultChartConfig({
@@ -724,6 +777,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-coo-legal',
+  layers: ['manager', 'management'],
   label: 'CoO legalization %',
   dataSource: 'eximx.coo-legal.status',
   defaultChart: defaultChartConfig({
@@ -736,6 +790,7 @@ registerKpi({
 
 registerKpi({
   id: 'ex-rms',
+  layers: ['manager', 'management'],
   label: 'RMS declaration %',
   dataSource: 'eximx.rms.status',
   defaultChart: defaultChartConfig({
@@ -749,6 +804,7 @@ registerKpi({
 // ─── RPT-2e-i · 6 FinCore GST statutory register KPI seeds (idempotent) ────
 registerKpi({
   id: 'fc-gstr1',
+  layers: ['operator', 'manager', 'management'],
   label: 'GSTR-1 section coverage',
   dataSource: 'fincore.gst.gstr1.section-counts',
   defaultChart: defaultChartConfig({
@@ -761,6 +817,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-gstr3b',
+  layers: ['operator', 'manager', 'management'],
   label: 'GSTR-3B outward summary',
   dataSource: 'fincore.gst.gstr3b.outward-summary',
   defaultChart: defaultChartConfig({
@@ -773,6 +830,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-gstr9',
+  layers: ['manager', 'management'],
   label: 'GSTR-9 annual summary',
   dataSource: 'fincore.gst.gstr9.annual-summary',
   defaultChart: defaultChartConfig({
@@ -785,6 +843,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-gstr2',
+  layers: ['operator', 'manager', 'management'],
   label: 'GSTR-2 ITC posture',
   dataSource: 'fincore.gst.gstr2.itc-posture',
   defaultChart: defaultChartConfig({
@@ -797,6 +856,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-reco',
+  layers: ['manager', 'management'],
   label: '2A/2B reconciliation match %',
   dataSource: 'fincore.gst.reco.match-posture',
   defaultChart: defaultChartConfig({
@@ -809,6 +869,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-rcm-compliance',
+  layers: ['manager', 'management'],
   label: 'RCM compliance coverage',
   dataSource: 'fincore.gst.rcm-compliance.severity',
   defaultChart: defaultChartConfig({
@@ -822,6 +883,7 @@ registerKpi({
 // ─── RPT-2e-ii · 6 FinCore RCM/ITC/TDS/Audit register KPI seeds (idempotent) ─
 registerKpi({
   id: 'fc-rcm-register',
+  layers: ['operator', 'manager', 'management'],
   label: 'RCM by section',
   dataSource: 'fincore.rcm.by-section',
   defaultChart: defaultChartConfig({
@@ -834,6 +896,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-itc',
+  layers: ['operator', 'manager', 'management'],
   label: 'ITC by status',
   dataSource: 'fincore.itc.by-status',
   defaultChart: defaultChartConfig({
@@ -850,6 +913,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-clause44',
+  layers: ['operator', 'manager', 'management'],
   label: 'Clause-44 expense breakup',
   dataSource: 'fincore.clause44.expense-breakup',
   defaultChart: defaultChartConfig({
@@ -862,6 +926,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-tds-advance',
+  layers: ['operator', 'manager', 'management'],
   label: 'TDS advance by section',
   dataSource: 'fincore.tds-advance.by-section',
   defaultChart: defaultChartConfig({
@@ -874,6 +939,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-tds-analytics',
+  layers: ['operator', 'manager', 'management'],
   label: 'TDS by section',
   dataSource: 'fincore.tds-analytics.by-section',
   defaultChart: defaultChartConfig({
@@ -886,6 +952,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-audit-trail',
+  layers: ['operator', 'manager', 'management'],
   label: 'Audit events by type',
   dataSource: 'fincore.audit-trail.by-action',
   defaultChart: defaultChartConfig({
@@ -899,6 +966,7 @@ registerKpi({
 // ─── RPT-2e-iii · 6 Statutory-Close KPI seeds (idempotent · seed-data only) ─
 registerKpi({
   id: 'fc-eway',
+  layers: ['operator', 'manager', 'management'],
   label: 'E-Way Bills by status',
   dataSource: 'fincore.eway.by-status',
   defaultChart: defaultChartConfig({
@@ -911,6 +979,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-challan',
+  layers: ['operator', 'manager', 'management'],
   label: 'TDS challan amount by type',
   dataSource: 'fincore.challan.by-type',
   defaultChart: defaultChartConfig({
@@ -923,6 +992,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-form24q',
+  layers: ['operator', 'manager', 'management'],
   label: 'Form 24Q TDS by quarter',
   dataSource: 'fincore.form24q.by-quarter',
   defaultChart: defaultChartConfig({
@@ -935,6 +1005,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-form26q',
+  layers: ['operator', 'manager', 'management'],
   label: 'Form 26Q TDS by section',
   dataSource: 'fincore.form26q.by-section',
   defaultChart: defaultChartConfig({
@@ -947,6 +1018,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-form27q',
+  layers: ['operator', 'manager', 'management'],
   label: 'Form 27Q NRI TDS by section',
   dataSource: 'fincore.form27q.by-section',
   defaultChart: defaultChartConfig({
@@ -1040,6 +1112,7 @@ registerKpi({
 
 registerKpi({
   id: 'fc-audit-dash',
+  layers: ['operator', 'manager', 'management'],
   label: 'Audit checkpoint mix',
   dataSource: 'fincore.audit-dashboard.checkpoint-mix',
   defaultChart: defaultChartConfig({
@@ -1050,27 +1123,7 @@ registerKpi({
   thresholds: { amber: 90, red: 70, direction: 'higher-good' },
 });
 
-// ─── RPT-4 · Heuristic layer-tagging of the existing seeds (idempotent) ────
-// Skip any KPI that arrived with an explicit `layers` (e.g. the xc-* seeds).
-// Rule of thumb (D-RPT-4-layer):
-//   tier 3 (management): %/ratio/composition/cash/margin/reconciliation/realisation
-//   tier 2 (manager + management): trend/aging/efficiency/coverage/drift
-//   tier 1 (all 3): status/count/mix (default fallback)
-(function tagSeedsByHeuristic(): void {
-  const MANAGEMENT_ONLY = /(margin|composition|realisation|monthend-reval|drcr|landed-cost|cross-realisation|hedge|fema|ebrc|aeo|csr|cash|ratio|reconciliation)/i;
-  const MANAGER_PLUS = /(trend|aging|efficiency|coverage|drift|eff|reco|pct|compliance|score|reliability|ews|rms)/i;
-  for (const k of REGISTRY.values()) {
-    if (k.layers && k.layers.length > 0) continue;
-    const id = k.id;
-    if (MANAGEMENT_ONLY.test(id)) {
-      k.layers = ['management'];
-    } else if (MANAGER_PLUS.test(id)) {
-      k.layers = ['manager', 'management'];
-    } else {
-      k.layers = ['operator', 'manager', 'management'];
-    }
-  }
-})();
+// ─── RPT-4 · Explicit layer-tagging is inline above (per T2 fix). ───────
 
 
 
