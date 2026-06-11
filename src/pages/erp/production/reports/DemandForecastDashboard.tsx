@@ -68,6 +68,20 @@ export default function DemandForecastDashboard(): JSX.Element {
     }).sort((a, b) => b.generated_at.localeCompare(a.generated_at));
   }, [records, searchTerm, horizonFilter, algoFilter]);
 
+  // RPT-6a · toggle recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of filtered) m.set(r.horizon, (m.get(r.horizon) ?? 0) + 1);
+    return Array.from(m.entries()).map(([horizon, count]) => ({ horizon, count }));
+  }, [filtered]);
+  const chartConfig = getKpi('prod-demand-forecast')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'horizon',
+    series: [{ key: 'count', label: 'Forecasts' }],
+    title: 'Forecasts by horizon',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-4">
       <Card>
