@@ -7,10 +7,13 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Calendar, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Calendar, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { computeAuditScore, runCrossValidations, type CrossValidationResult } from '@/lib/audit-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+// RPT-2e-iii · additive dashboard recipe
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 const HEALTH_QUICK_ACTIONS: Record<string, { label: string; module: string }> = {
   'Trial Balance Balanced': { label: 'Open Day Book', module: 'fc-rpt-daybook' },
