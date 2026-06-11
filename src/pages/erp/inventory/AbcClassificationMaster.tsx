@@ -127,9 +127,9 @@ export function AbcClassificationMasterPanel() {
 
   // RPT-5b · toggle-wrap (hooks at top level)
   const chartRows = useMemo(() => [
-    { class: 'A', value: round2Pct(kpi.A.v), count: kpi.A.n },
-    { class: 'B', value: round2Pct(kpi.B.v), count: kpi.B.n },
-    { class: 'C', value: round2Pct(kpi.C.v), count: kpi.C.n },
+    { class: 'A', value: Math.round(kpi.A.v), count: kpi.A.n },
+    { class: 'B', value: Math.round(kpi.B.v), count: kpi.B.n },
+    { class: 'C', value: Math.round(kpi.C.v), count: kpi.C.n },
   ].filter(r => r.count > 0 || r.value > 0), [kpi]);
   const chartConfig = getKpi('inv-abc')?.defaultChart ?? defaultChartConfig({
     chartType: 'doughnut', xKey: 'class',
