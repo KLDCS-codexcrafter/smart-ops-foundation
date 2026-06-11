@@ -13,11 +13,16 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { parse2AFile } from '@/lib/gst-portal-service';
 import { inr, fmtDate } from '../reportUtils';
 import type { GSTEntry } from '@/types/voucher';
+// RPT-2e-i · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface RecoPanelGSTProps { entityCode: string; }
 
@@ -205,6 +210,42 @@ export function RecoPanelGST({ entityCode }: RecoPanelGSTProps) {
         <Card><CardContent className="pt-3"><p className="text-xs text-muted-foreground">Unmatched (Not In Tally)</p><p className="text-lg font-bold font-mono">{inr(unmatchedITC)}</p></CardContent></Card>
         <Card><CardContent className="pt-3"><p className="text-xs text-muted-foreground">Book Entries</p><p className="text-lg font-bold">{bookPurchases.length}</p></CardContent></Card>
       </div>
+
+      {/* RPT-2e-i · additive toggle-wrap */}
+      {(() => {
+        const drill = useDrillDown();
+        const chartRows = (['matched', 'not_in_tally', 'not_in_portal', 'partial'] as MatchStatus[]).map(s => ({
+          status: s, count: recoRows.filter(r => r.status === s).length,
+        }));
+        const chartConfig = getKpi('fc-reco')?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'status',
+          series: [{ key: 'count', label: 'Reco rows' }],
+          title: '2A/2B match posture',
+        });
+        const integrityHash = signReport(chartRows);
+        const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="fc-reco-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px]" data-testid="fc-reco-period-chip">Period {period}</Badge>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-reco-integrity-badge" title={integrityHash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+              </Badge>
+              {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'status', label: 'Match status' },
+                { key: 'count', label: 'Count', align: 'right' },
+              ]}
+              chartConfig={chartConfig}
+              defaultView="table"
+              emptyLabel="Upload portal JSON"
+            />
+          </Card>
+        );
+      })()}
 
       {/* Filter chips */}
       <div className="flex gap-2">

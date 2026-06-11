@@ -10,10 +10,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { inr } from '../reportUtils';
 import { buildGSTR3BPayload, submitGSTR3B } from '@/lib/gst-portal-service';
+// RPT-2e-i · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface GSTR3BPanelProps { entityCode: string; }
 
@@ -115,6 +120,45 @@ export function GSTR3BPanel({ entityCode }: GSTR3BPanelProps) {
           <Button size="sm" data-primary onClick={handleDownload}><Download className="h-3.5 w-3.5 mr-1" />Download JSON</Button>
         </div>
       </div>
+
+      {/* RPT-2e-i · additive toggle-wrap */}
+      {(() => {
+        const drill = useDrillDown();
+        const chartRows = [
+          { section: '3.1(a)', taxable: s31a.txval },
+          { section: '3.1(b)', taxable: s31b.txval },
+          { section: '3.1(c)', taxable: s31c.txval },
+          { section: '3.1(d)', taxable: s31d.txval },
+        ];
+        const chartConfig = getKpi('fc-gstr3b')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'section',
+          series: [{ key: 'taxable', label: 'Taxable value' }],
+          title: 'GSTR-3B outward summary',
+        });
+        const integrityHash = signReport(chartRows);
+        const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="fc-gstr3b-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px]" data-testid="fc-gstr3b-period-chip">Period {period}</Badge>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-gstr3b-integrity-badge" title={integrityHash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+              </Badge>
+              {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'section', label: 'Section' },
+                { key: 'taxable', label: 'Taxable', align: 'right', render: (r) => inr(Number(r.taxable)) },
+              ]}
+              chartConfig={chartConfig}
+              defaultView="table"
+              emptyLabel="No outward data"
+            />
+          </Card>
+        );
+      })()}
 
       {/* Outward + ITC tables */}
       <div className="grid grid-cols-1 gap-4">

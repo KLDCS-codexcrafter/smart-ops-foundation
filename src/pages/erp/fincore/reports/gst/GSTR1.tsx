@@ -12,10 +12,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { inr, fmtDate } from '../reportUtils';
 import { buildGSTR1Payload, submitGSTR1 } from '@/lib/gst-portal-service';
+// RPT-2e-i · additive toggle-wrap (period chip + integrity badge + TableChartToggle)
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface GSTR1PanelProps { entityCode: string; }
 
@@ -146,6 +151,48 @@ export function GSTR1Panel({ entityCode }: GSTR1PanelProps) {
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">Total Tax</p><p className="text-2xl font-bold font-mono">{inr(totalTax)}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">GSTIN</p><p className="text-sm font-mono">{gstin || 'Not set'}</p></CardContent></Card>
       </div>
+
+      {/* RPT-2e-i · additive toggle-wrap */}
+      {(() => {
+        const drill = useDrillDown();
+        const chartRows = [
+          { section: 'B2B', count: b2b.length },
+          { section: 'B2CL', count: b2cl.length },
+          { section: 'B2CS', count: b2cs.length },
+          { section: 'EXP', count: exp.length },
+          { section: 'SEZ', count: sez.length },
+          { section: 'CDNR', count: cdnr.length },
+          { section: 'CDNUR', count: cdnur.length },
+        ];
+        const chartConfig = getKpi('fc-gstr1')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'section',
+          series: [{ key: 'count', label: 'Invoices' }],
+          title: 'GSTR-1 sections',
+        });
+        const integrityHash = signReport(chartRows);
+        const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="fc-gstr1-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px]" data-testid="fc-gstr1-period-chip">Period {period}</Badge>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-gstr1-integrity-badge" title={integrityHash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+              </Badge>
+              {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'section', label: 'Section' },
+                { key: 'count', label: 'Invoices', align: 'right' },
+              ]}
+              chartConfig={chartConfig}
+              defaultView="table"
+              emptyLabel="No invoices"
+            />
+          </Card>
+        );
+      })()}
 
       <Tabs defaultValue="b2b" className="space-y-3">
         <TabsList className="flex-wrap h-auto gap-1">

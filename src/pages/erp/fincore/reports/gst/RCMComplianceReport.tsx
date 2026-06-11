@@ -9,11 +9,15 @@
  * [JWT] GET /api/fincore/rcm-compliance-log/:entityCode
  */
 import { useMemo, useState } from 'react';
-import { Shield } from 'lucide-react';
+import { Shield, ShieldCheck } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+// RPT-2e-i · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 import {
   rcmComplianceLogKey,
   RCM_SEVERITY_LABELS,
@@ -64,8 +68,40 @@ export function RCMComplianceReportPanel({ entityCode }: RCMComplianceReportPane
     return c;
   }, [entries]);
 
+  // RPT-2e-i · additive toggle-wrap
+  const drill = useDrillDown();
+  const chartRows = (['HIGH', 'MED', 'LOW', 'INFO'] as RCMSeverity[]).map(s => ({ severity: s, count: counts[s] ?? 0 }));
+  const chartConfig = getKpi('fc-rcm-compliance')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'severity',
+    series: [{ key: 'count', label: 'Findings' }],
+    title: 'RCM compliance by severity',
+  });
+  const integrityHash = signReport(chartRows);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+  const periodLabel = new Date().toISOString().slice(0, 10);
+
   return (
     <div className="space-y-4">
+      <Card className="p-3 space-y-2" data-testid="fc-rcm-compliance-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-rcm-compliance-period-chip">As of {periodLabel}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-rcm-compliance-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'severity', label: 'Severity' },
+            { key: 'count', label: 'Count', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No findings"
+        />
+      </Card>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {(['HIGH', 'MED', 'LOW', 'INFO'] as RCMSeverity[]).map(s => (
           <Card key={s} className="glass-card">

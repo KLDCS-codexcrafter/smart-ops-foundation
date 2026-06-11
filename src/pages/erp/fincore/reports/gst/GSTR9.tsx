@@ -10,12 +10,18 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { inr } from '../reportUtils';
 import { buildGSTR9Payload } from '@/lib/gst-portal-service';
 import { onEnterNext } from '@/lib/keyboard';
 import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
+// RPT-2e-i · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface GSTR9PanelProps { entityCode: string; }
 
@@ -112,6 +118,45 @@ export function GSTR9Panel({ entityCode }: GSTR9PanelProps) {
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">ITC Claimed</p><p className="text-2xl font-bold font-mono">{inr(tbl6.igst + tbl6.cgst + tbl6.sgst)}</p></CardContent></Card>
         <Card><CardContent className="pt-4"><p className="text-xs text-muted-foreground">ITC Reversed</p><p className="text-2xl font-bold font-mono">{inr(tbl7.igst)}</p></CardContent></Card>
       </div>
+
+      {/* RPT-2e-i · additive toggle-wrap */}
+      {(() => {
+        const drill = useDrillDown();
+        const chartRows = [
+          { table: '4A', taxable: tbl4.txval },
+          { table: '5A', taxable: tbl5.txval },
+          { table: '6A', taxable: tbl6.txval },
+          { table: '7A', taxable: tbl7.igst },
+        ];
+        const chartConfig = getKpi('fc-gstr9')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'table',
+          series: [{ key: 'taxable', label: 'Taxable / reversed' }],
+          title: 'GSTR-9 annual summary',
+        });
+        const integrityHash = signReport(chartRows);
+        const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="fc-gstr9-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px]" data-testid="fc-gstr9-period-chip">FY {fy}</Badge>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-gstr9-integrity-badge" title={integrityHash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+              </Badge>
+              {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'table', label: 'Table' },
+                { key: 'taxable', label: 'Amount', align: 'right', render: (r) => inr(Number(r.taxable)) },
+              ]}
+              chartConfig={chartConfig}
+              defaultView="table"
+              emptyLabel="No annual data"
+            />
+          </Card>
+        );
+      })()}
 
       <Table>
         <TableHeader>
