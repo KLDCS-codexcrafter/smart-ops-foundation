@@ -13,6 +13,8 @@ import { registerSource, type DataSource } from './data-source-catalog';
 import { outstandingKey, gstRegisterKey, vouchersKey } from '@/lib/fincore-engine';
 import { loadTTPayments } from '@/lib/tt-payment-engine';
 import { loadObligations } from '@/lib/comply360-statutory-memory';
+import { stockBalanceKey } from '@/types/grn';
+import { consumptionEntriesKey } from '@/types/consumption';
 
 function safeRead<T>(key: string): T[] {
   try {
@@ -165,6 +167,46 @@ export function registerAllDataSources(): void {
         return [];
       }
     },
+  });
+
+  // ─── RPT-5b · Inventory DSC sources ──────────────────────────────────
+  // Wraps the SAME storage the wrapped Inventory pages already read.
+  registerSource({
+    id: 'inventory.stock-ledger',
+    label: 'Inventory · Stock Ledger',
+    card: 'inventory',
+    kind: 'register',
+    fields: [
+      { key: 'item_id', label: 'Item Id', kind: 'dimension' },
+      { key: 'item_name', label: 'Item', kind: 'dimension' },
+      { key: 'godown_id', label: 'Godown Id', kind: 'dimension' },
+      { key: 'godown_name', label: 'Godown', kind: 'dimension' },
+      { key: 'qty', label: 'Qty', kind: 'measure' },
+      { key: 'value', label: 'Value', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(stockBalanceKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'inventory.consumption',
+    label: 'Inventory · Consumption Entries',
+    card: 'inventory',
+    kind: 'register',
+    fields: [
+      { key: 'ce_no', label: 'CE No', kind: 'dimension' },
+      { key: 'consumption_date', label: 'Date', kind: 'dimension' },
+      { key: 'effective_date', label: 'Effective Date', kind: 'dimension' },
+      { key: 'mode', label: 'Mode', kind: 'dimension' },
+      { key: 'department_code', label: 'Department', kind: 'dimension' },
+      { key: 'godown_id', label: 'Godown', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'total_value', label: 'Total Value', kind: 'measure' },
+      { key: 'total_variance_value', label: 'Variance Value', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(consumptionEntriesKey(entityCode || 'SMRT'))
+        .filter((c) => !(c as { is_cancelled?: boolean }).is_cancelled),
   });
 }
 
