@@ -1038,29 +1038,6 @@ registerKpi({
   thresholds: { amber: 90, red: 75, direction: 'higher-good' },
 });
 
-// ─── RPT-4 · Heuristic layer-tagging of the 74 existing seeds (idempotent) ──
-// Skip already-tagged xc-* and any KPI that arrived with an explicit `layers`.
-// Rule of thumb (D-RPT-4-layer):
-//   tier 3 (management): %/ratio/composition/cash/margin/reconciliation/realisation
-//   tier 2 (manager + management): trend/aging/efficiency/coverage/drift
-//   tier 1 (all 3): status/count/mix (default fallback)
-(function tagSeedsByHeuristic(): void {
-  const MANAGEMENT_ONLY = /(margin|composition|realisation|monthend-reval|drcr|landed-cost|cross-realisation|hedge|fema|ebrc|aeo|csr|cash|ratio|reconciliation)/i;
-  const MANAGER_PLUS = /(trend|aging|efficiency|coverage|drift|eff|reco|pct|compliance|score|reliability|ews|rms)/i;
-  for (const k of REGISTRY.values()) {
-    if (k.layers && k.layers.length > 0) continue; // respect explicit
-    const id = k.id;
-    if (MANAGEMENT_ONLY.test(id)) {
-      k.layers = ['management'];
-    } else if (MANAGER_PLUS.test(id)) {
-      k.layers = ['manager', 'management'];
-    } else {
-      k.layers = ['operator', 'manager', 'management'];
-    }
-  }
-})();
-
-
 registerKpi({
   id: 'fc-audit-dash',
   label: 'Audit checkpoint mix',
@@ -1072,6 +1049,29 @@ registerKpi({
   }),
   thresholds: { amber: 90, red: 70, direction: 'higher-good' },
 });
+
+// ─── RPT-4 · Heuristic layer-tagging of the existing seeds (idempotent) ────
+// Skip any KPI that arrived with an explicit `layers` (e.g. the xc-* seeds).
+// Rule of thumb (D-RPT-4-layer):
+//   tier 3 (management): %/ratio/composition/cash/margin/reconciliation/realisation
+//   tier 2 (manager + management): trend/aging/efficiency/coverage/drift
+//   tier 1 (all 3): status/count/mix (default fallback)
+(function tagSeedsByHeuristic(): void {
+  const MANAGEMENT_ONLY = /(margin|composition|realisation|monthend-reval|drcr|landed-cost|cross-realisation|hedge|fema|ebrc|aeo|csr|cash|ratio|reconciliation)/i;
+  const MANAGER_PLUS = /(trend|aging|efficiency|coverage|drift|eff|reco|pct|compliance|score|reliability|ews|rms)/i;
+  for (const k of REGISTRY.values()) {
+    if (k.layers && k.layers.length > 0) continue;
+    const id = k.id;
+    if (MANAGEMENT_ONLY.test(id)) {
+      k.layers = ['management'];
+    } else if (MANAGER_PLUS.test(id)) {
+      k.layers = ['manager', 'management'];
+    } else {
+      k.layers = ['operator', 'manager', 'management'];
+    }
+  }
+})();
+
 
 
 
