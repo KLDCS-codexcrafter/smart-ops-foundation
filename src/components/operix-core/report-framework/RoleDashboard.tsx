@@ -12,12 +12,25 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ScorecardTile } from './ScorecardTile';
+import { ReportChart } from './ChartLibrary';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
   deriveRoleDashboard,
   layerCeilingFor,
   type RoleLayer,
 } from '@/lib/report-framework/role-layer';
+import type { KpiDefinition } from '@/lib/report-framework/kpi-registry';
+
+/** Tiny placeholder dataset shaped per xc KPI defaultChart so the chart renders. */
+function placeholderDataFor(kpi: KpiDefinition): Array<Record<string, unknown>> {
+  const { xKey, series } = kpi.defaultChart;
+  const buckets = ['Q1', 'Q2', 'Q3', 'Q4'];
+  return buckets.map((b, i) => {
+    const row: Record<string, unknown> = { [xKey]: b };
+    for (const s of series) row[s.key] = (i + 1) * 25;
+    return row;
+  });
+}
 
 const LAYER_ORDER: RoleLayer[] = ['operator', 'manager', 'management'];
 const LAYER_RANK: Record<RoleLayer, number> = {
