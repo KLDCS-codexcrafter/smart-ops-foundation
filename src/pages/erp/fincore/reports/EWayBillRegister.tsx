@@ -20,7 +20,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Truck, RefreshCw, Clock, X, Search, Plus, ListOrdered,
+  Truck, RefreshCw, Clock, X, Search, Plus, ListOrdered, ShieldCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -32,6 +32,11 @@ import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
 import {
   cancelEWB, extendEWB, computeEWBValidity, type EWBCredentials,
 } from '@/lib/ewb-engine';
+// RPT-2e-iii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 interface Props { entityCode: string }
 
