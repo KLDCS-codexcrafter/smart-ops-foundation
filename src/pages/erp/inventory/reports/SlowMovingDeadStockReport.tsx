@@ -11,11 +11,13 @@ import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Clock, Archive } from 'lucide-react';
+import { Clock, Archive, ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { InventoryItem } from '@/types/inventory-item';
 import { stockBalanceKey, type StockBalanceEntry } from '@/types/grn';
 import { dAdd, dMul, round2 } from '@/lib/decimal-helpers';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const IKEY = 'erp_inventory_items';
 
