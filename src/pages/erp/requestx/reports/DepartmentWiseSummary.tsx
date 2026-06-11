@@ -5,7 +5,11 @@
 import { useMemo } from 'react';
 import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
 import { useServiceRequests } from '@/hooks/useServiceRequests';
 import { useCapitalIndents } from '@/hooks/useCapitalIndents';
