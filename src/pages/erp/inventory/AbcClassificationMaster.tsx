@@ -21,7 +21,7 @@ import { Label } from '@/components/ui/label';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
-import { Pin, PinOff, TrendingUp, Play } from 'lucide-react';
+import { Pin, PinOff, TrendingUp, Play, ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { MaterialIssueNote, ConsumptionEntry } from '@/types/consumption';
@@ -30,6 +30,8 @@ import {
   classifyItemsABC, applyAbcClassification,
   type AbcClassificationResult,
 } from '@/lib/abc-classification-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const IKEY = 'erp_inventory_items';
 
