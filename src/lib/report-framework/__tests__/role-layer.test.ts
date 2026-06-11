@@ -121,3 +121,25 @@ describe('RPT-4 · KPI layer-tag integrity', () => {
     }
   });
 });
+
+describe('RPT-4 T2 · real layer spread across the 73 seeds', () => {
+  it('operator-visible < manager-visible < total (strict, no exact counts)', () => {
+    const all = listKpis();
+    const op = all.filter((k) => k.layers?.includes('operator')).length;
+    const mg = all.filter((k) => k.layers?.includes('manager')).length;
+    const tot = all.length;
+    expect(op).toBeGreaterThan(0);
+    expect(mg).toBeGreaterThan(op);
+    expect(tot).toBeGreaterThan(mg);
+  });
+
+  it('finance/operator derives FEWER fincore KPIs than finance/management for fincore', () => {
+    const op = deriveRoleDashboard('finance', 'operator', ['fincore']);
+    // finance ceiling is manager → request management clamps to manager
+    const mg = deriveRoleDashboard('finance', 'management', ['fincore']);
+    const opFc = op.sections.find((s) => s.cardId === 'fincore')?.kpis.length ?? 0;
+    const mgFc = mg.sections.find((s) => s.cardId === 'fincore')?.kpis.length ?? 0;
+    expect(opFc).toBeGreaterThan(0);
+    expect(mgFc).toBeGreaterThan(opFc);
+  });
+});
