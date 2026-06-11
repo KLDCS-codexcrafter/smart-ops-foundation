@@ -8,3 +8,4 @@ export * from './period-engine';
 export * from './integrity-sign';
 export * from './kpi-registry';
 export * from './rag';
+export * from './daybook-source-registry';
