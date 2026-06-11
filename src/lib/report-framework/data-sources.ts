@@ -418,14 +418,9 @@ export function registerAllDataSources(): void {
       { key: 'current_version', label: 'Version', kind: 'dimension' },
       { key: 'created_at', label: 'Created', kind: 'dimension' },
     ],
-    read: (entityCode) => {
-      try {
-        // Lazy-load to avoid pulling react-only modules at registry-time
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const eng = require('@/lib/engineeringx-engine') as { listDrawings: (e: string) => unknown[] };
-        return eng.listDrawings(entityCode || 'SMRT') as Record<string, unknown>[];
-      } catch { return []; }
-    },
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(`erp_documents_${entityCode || 'SMRT'}`)
+        .filter((d) => (d as { kind?: string }).kind === 'drawing'),
   });
 
   registerSource({
