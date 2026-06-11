@@ -109,7 +109,7 @@ export function AgeingPendingIndentsPanel(): JSX.Element {
   );
 }
 
-function RqAgeingChartCard({ buckets }: { buckets: Record<string, number> }): JSX.Element {
+function RqAgeingChartCard({ buckets }: { buckets: Record<'0-7' | '8-15' | '16-30' | '30+', number> }): JSX.Element {
   const chartRows = useMemo(
     () => (['0-7', '8-15', '16-30', '30+'] as const).map(b => ({ bucket: b, count: buckets[b] ?? 0 })),
     [buckets],
