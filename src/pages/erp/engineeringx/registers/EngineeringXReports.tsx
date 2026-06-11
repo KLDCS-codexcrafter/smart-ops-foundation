@@ -188,6 +188,28 @@ export function EngineeringXReports({ onNavigate }: Props): JSX.Element {
           </CardContent>
         </Card>
       </div>
+
+      {(() => {
+        const rows = [
+          { metric: 'Total', count: stats.total },
+          { metric: 'With BOM', count: stats.withBom },
+          { metric: 'Approved', count: stats.approved },
+          { metric: 'Ready', count: stats.ready },
+        ];
+        const cfg = getKpi('eng-reports')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'metric', series: [{ key: 'count', label: 'Drawings' }], title: 'EngineeringX closeout' });
+        const hash = signReport(rows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="eng-reports-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="eng-reports-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            <div className="w-full h-64" data-testid="eng-reports-chart-host"><ReportChart data={rows} config={cfg} /></div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
