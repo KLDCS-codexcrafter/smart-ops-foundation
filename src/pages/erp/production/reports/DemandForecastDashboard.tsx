@@ -169,6 +169,24 @@ export default function DemandForecastDashboard(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      <Card className="p-3 space-y-2" data-testid="prod-demand-forecast-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-demand-forecast-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'horizon', label: 'Horizon' },
+            { key: 'count', label: 'Forecasts', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No forecasts yet"
+        />
+      </Card>
     </div>
   );
 }
