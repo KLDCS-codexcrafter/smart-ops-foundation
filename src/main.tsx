@@ -3,6 +3,8 @@ import App from "./App.tsx";
 import "./index.css";
 // Sprint 97 T1 · Block 1 — auto-wire hierarchical ledger + DNA hooks on app boot.
 import "@/lib/hierarchical-ledger-wiring";
+// RPT-3a · Register all card DayBook sources (idempotent · side-effect).
+import "@/lib/report-framework/daybook-sources";
 
 // Sprint 151 · DP-WS-22 · PWA rider · guarded SW registration.
 // Skip in dev / Lovable preview / iframe — see PWA skill.
