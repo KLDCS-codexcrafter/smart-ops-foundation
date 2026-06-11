@@ -13,7 +13,11 @@ import { Label } from '@/components/ui/label';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { AlertTriangle, ChevronDown, ChevronRight, Download, FileText } from 'lucide-react';
+import { AlertTriangle, ChevronDown, ChevronRight, Download, FileText, ShieldCheck } from 'lucide-react';
+// RPT-2e-ii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 import { onEnterNext } from '@/lib/keyboard';
 import { computeClause44, type Clause44Row } from '@/lib/audit-engine';
 
@@ -103,6 +107,47 @@ export function Clause44ReportPanel({ entityCode }: Clause44ReportPanelProps) {
 
   return (
     <div className="p-6 space-y-4" data-keyboard-form>
+      <div className="flex items-center justify-between">
+        <div>
+  // RPT-2e-ii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => ([
+    { category: 'Exempt',         value: grandExempt },
+    { category: 'Composition',    value: grandCompo },
+    { category: 'Regular Taxable', value: grandTaxable },
+    { category: 'Unregistered',   value: grandUnreg },
+    { category: 'Excluded',       value: grandExcl },
+    { category: 'Uncategorised',  value: grandUncat },
+  ]), [grandExempt, grandCompo, grandTaxable, grandUnreg, grandExcl, grandUncat]);
+  const chartConfig = getKpi('fc-clause44')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'category',
+    series: [{ key: 'value', label: 'Value' }],
+    title: 'Clause-44 expense breakup',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
+  return (
+    <div className="p-6 space-y-4" data-keyboard-form>
+      <Card className="p-3 space-y-2" data-testid="fc-clause44-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-clause44-period-chip">{periodFrom} → {periodTo}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-clause44-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'category', label: 'Category' },
+            { key: 'value',    label: 'Value', align: 'right', render: r => fmt(Number(r.value)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No expense data"
+        />
+      </Card>
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-bold">Clause 44 — Expenditure by GST Vendor Category</h2>
