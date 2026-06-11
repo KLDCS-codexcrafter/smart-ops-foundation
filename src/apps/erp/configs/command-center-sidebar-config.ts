@@ -27,6 +27,11 @@ export const commandCenterSidebarItems: SidebarItem[] = [
     id: 'my-dashboard', type: 'item', label: 'My Dashboard', icon: LayoutDashboard,
     route: '/erp/command-center/my-dashboard', requiredCards: ['command-center'],
   },
+  // 🆕 RPT-5a · Cross-card Day Book (pure consumption of RPT-3a/3b aggregator)
+  {
+    id: 'cross-card-daybook', type: 'item', label: 'Day Book · All Cards', icon: BookOpen,
+    route: '/erp/command-center/daybook', requiredCards: ['command-center'],
+  },
   {
     id: 'foundation-group', type: 'group', label: 'Foundation & Core', icon: Building2,
     children: [

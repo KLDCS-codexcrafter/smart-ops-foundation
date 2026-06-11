@@ -1354,11 +1354,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['data-source-catalog'],
     bankDate: '2026-06-11', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-4 T-RPT4-RoleLayer-Derivation · Reporting Arc · Phase B sprint 3 (last structural piece) · role-layer derivation engine + 74 KPI layer tags + 6 xc-* Management KPIs + ONE generic RoleDashboard mounted at /erp/command-center/my-dashboard · NEW SIBLING role-layer-derivation-engine · React-free core · composes with existing UserRole + ROLE_DEFAULT_CARDS (no parallel role system) · QL-6 auto-derivation (no per-role files) · walls held: card-entitlement.ts + useCardEntitlement + all banked pages + chart/period/integrity/DSC/aggregator framework files + src/test/setup.ts + all hubs 0-DIFF · close summary COMMITTED · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-4 T-RPT4-RoleLayer-Derivation · Reporting Arc · Phase B sprint 3 (last structural piece) · role-layer derivation engine + 74 KPI layer tags + 6 xc-* Management KPIs + ONE generic RoleDashboard mounted at /erp/command-center/my-dashboard · NEW SIBLING role-layer-derivation-engine · React-free core · composes with existing UserRole + ROLE_DEFAULT_CARDS (no parallel role system) · QL-6 auto-derivation (no per-role files) · headSha BACKFILLED 135776a at RPT-5a Block 2 · forward-extended in RPT-5a
   {
     sprintNumber: 'RPT4' as unknown as number, code: 'T-RPT4-RoleLayer-Derivation', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '097ff18', loc: 540,
+    headSha: '135776a', predecessorSha: '097ff18', loc: 540,
     newSiblings: ['role-layer-derivation-engine'],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-5a T-RPT5a-CrossCard-DayBook-Surface · Reporting Arc · Phase C sprint 1 (Ops Hub-1, cohort a) · 🌟 cross-card Day Book surface at /erp/command-center/daybook — pure consumption of RPT-3a/3b · table-first feed · domain/card/date filter chips · drill via useDrillDown · integrity badge via signReport · honest empty-state · NO recharts · ALSO seeds the missing comply360.aggregate.compliance-pct DSC source reusing existing loadObligations() (no new engine) which resolves xc-compliance-pct on the Role Dashboard · RPT-4 headSha backfilled to 135776a · ZERO new SIBLINGs (surface-only consumption) · walls held: daybook-aggregator.ts/data-source-catalog.ts/daybook-source-registry.ts (consume, don't edit) · RoleDashboard.tsx + kpi-registry.ts + all banked pages 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT5a' as unknown as number, code: 'T-RPT5a-CrossCard-DayBook-Surface', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '135776a', loc: 320,
+    newSiblings: [],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
 ];
