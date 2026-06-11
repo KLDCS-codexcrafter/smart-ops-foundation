@@ -21,6 +21,10 @@ import { loadBomEntries } from '@/lib/engineeringx-bom-engine';
 import { listReadyForProduction } from '@/lib/engineeringx-analysis-engine';
 import { parseDrawingCustomTags } from '@/types/engineering-drawing';
 import type { EngineeringXModule } from '../EngineeringXSidebar.types';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 interface Props {
   onNavigate?: (m: EngineeringXModule) => void;
