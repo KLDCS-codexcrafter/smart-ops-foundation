@@ -12,6 +12,7 @@ import { listDayBookSources } from './daybook-source-registry';
 import { registerSource, type DataSource } from './data-source-catalog';
 import { outstandingKey, gstRegisterKey, vouchersKey } from '@/lib/fincore-engine';
 import { loadTTPayments } from '@/lib/tt-payment-engine';
+import { loadObligations } from '@/lib/comply360-statutory-memory';
 
 function safeRead<T>(key: string): T[] {
   try {
@@ -118,6 +119,53 @@ export function registerAllDataSources(): void {
   ];
 
   for (const src of registerSources) registerSource(src);
+
+  // ── RPT-5a · compliance % aggregate (resolves xc-compliance-pct on Role Dashboard)
+  // Reuses the SAME loadObligations() the Comply360 cmp-* dashboards already read.
+  registerSource({
+    id: 'comply360.aggregate.compliance-pct',
+    label: 'Compliance % · per module',
+    card: 'comply360',
+    kind: 'kpi',
+    fields: [
+      { key: 'module', label: 'Module', kind: 'dimension' },
+      { key: 'total', label: 'Total', kind: 'measure' },
+      { key: 'filed', label: 'Filed', kind: 'measure' },
+      { key: 'pending', label: 'Pending', kind: 'measure' },
+      { key: 'overdue', label: 'Overdue', kind: 'measure' },
+      { key: 'compliance_pct', label: 'Compliance %', kind: 'measure' },
+    ],
+    read: (_entityCode) => {
+      try {
+        const obligations = loadObligations();
+        const byModule = new Map<string, { total: number; filed: number; pending: number; overdue: number }>();
+        for (const o of obligations) {
+          const m = byModule.get(o.module) ?? { total: 0, filed: 0, pending: 0, overdue: 0 };
+          m.total += 1;
+          if (o.status === 'filed') m.filed += 1;
+          else if (o.status === 'overdue' || o.status === 'breach') m.overdue += 1;
+          else m.pending += 1;
+          byModule.set(o.module, m);
+        }
+        const rows: Record<string, unknown>[] = [];
+        for (const [module, m] of byModule.entries()) {
+          rows.push({
+            module,
+            total: m.total,
+            filed: m.filed,
+            pending: m.pending,
+            overdue: m.overdue,
+            compliance_pct: m.total > 0 ? Math.round((m.filed / m.total) * 100) : 0,
+          });
+        }
+        return rows.sort((a, b) =>
+          String(a.module).localeCompare(String(b.module)),
+        );
+      } catch {
+        return [];
+      }
+    },
+  });
 }
 
 // Auto-register on import. Idempotent — re-import is a no-op.
