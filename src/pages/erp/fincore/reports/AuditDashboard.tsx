@@ -145,6 +145,29 @@ export function AuditDashboardPanel({ entityCode }: AuditDashboardPanelProps) {
         </div>
       </div>
 
+      {/* RPT-2e-iii · additive dashboard-recipe (alongside existing tiles) */}
+      <Card className="p-3 space-y-2" data-testid="fc-audit-dash-recipe-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-audit-dash-period-chip">FY {from.substring(0, 4)}-{to.substring(2, 4)}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-audit-dash-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="md:col-span-1">
+            <ScorecardTile
+              label="Green checkpoints"
+              value={`${greenPct}%`}
+              rag={rag}
+              hint={`${audit.checkpoints.filter(c => c.status === 'green').length}/${audit.checkpoints.length} healthy`}
+            />
+          </div>
+          <div className="md:col-span-2 h-56" data-testid="fc-audit-dash-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        </div>
+      </Card>
+
       {/* 7.1 — Audit Readiness Score */}
       <Card className={`border ${band.bg}`}>
         <CardContent className="p-6 flex items-center gap-6">
@@ -159,6 +182,7 @@ export function AuditDashboardPanel({ entityCode }: AuditDashboardPanelProps) {
           </div>
         </CardContent>
       </Card>
+
 
       {/* 7.2 — 12 Health Indicator Cards */}
       <div>
