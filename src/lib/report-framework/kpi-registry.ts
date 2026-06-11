@@ -9,6 +9,7 @@
  */
 
 import { defaultChartConfig, type ReportChartConfig } from './chart-config';
+import type { RoleLayer } from './role-layer';
 
 export interface KpiThresholds {
   amber: number;
@@ -23,6 +24,12 @@ export interface KpiDefinition {
   dataSource: string;
   defaultChart: ReportChartConfig;
   thresholds?: KpiThresholds;
+  /**
+   * RPT-4 · Role-layer visibility. When omitted, KPI is visible at all layers
+   * (back-compat). Tagging for the 74 existing seeds is applied at the bottom
+   * of this file via a heuristic block.
+   */
+  layers?: RoleLayer[];
 }
 
 const REGISTRY = new Map<string, KpiDefinition>();
@@ -31,6 +38,12 @@ const REGISTRY = new Map<string, KpiDefinition>();
 export function registerKpi(def: KpiDefinition): void {
   if (REGISTRY.has(def.id)) return;
   REGISTRY.set(def.id, def);
+}
+
+/** RPT-4 · Set/replace the layers field on an existing KPI (no-op if missing). */
+export function setKpiLayers(id: string, layers: RoleLayer[]): void {
+  const k = REGISTRY.get(id);
+  if (k) k.layers = layers;
 }
 
 export function getKpi(id: string): KpiDefinition | undefined {
@@ -944,6 +957,87 @@ registerKpi({
   thresholds: { amber: 80, red: 50, direction: 'higher-good' },
 });
 
+
+// ─── RPT-4 · 6 cross-card Management KPIs (idempotent · seed-data only) ────
+registerKpi({
+  id: 'xc-cash-position',
+  label: 'Cash position (cross-card)',
+  dataSource: 'reg:fc-ledger',
+  layers: ['management'],
+  defaultChart: defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'balance', label: 'Cash balance' }],
+    title: 'Cash position',
+  }),
+});
+
+registerKpi({
+  id: 'xc-ar-aging',
+  label: 'A/R aging (cross-card)',
+  dataSource: 'reg:fc-outstanding-aging',
+  layers: ['management'],
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'bucket',
+    series: [{ key: 'value', label: 'Receivables' }],
+    title: 'A/R aging',
+  }),
+  thresholds: { amber: 1_000_000, red: 5_000_000, direction: 'lower-good' },
+});
+
+registerKpi({
+  id: 'xc-ap-aging',
+  label: 'A/P aging (cross-card)',
+  dataSource: 'reg:fc-outstanding-aging',
+  layers: ['management'],
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'bucket',
+    series: [{ key: 'value', label: 'Payables' }],
+    title: 'A/P aging',
+  }),
+  thresholds: { amber: 1_000_000, red: 5_000_000, direction: 'lower-good' },
+});
+
+registerKpi({
+  id: 'xc-compliance-pct',
+  label: 'Group compliance %',
+  dataSource: 'comply360.aggregate.compliance-pct',
+  layers: ['management'],
+  defaultChart: defaultChartConfig({
+    chartType: 'gauge', xKey: 'label',
+    series: [{ key: 'pct', label: 'Compliance %' }],
+    title: 'Group compliance %',
+  }),
+  thresholds: { amber: 90, red: 75, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'xc-stock-value',
+  label: 'Group stock value',
+  dataSource: 'reg:fc-ledger',
+  layers: ['management'],
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'entity',
+    series: [{ key: 'value', label: 'Stock value' }],
+    title: 'Group stock value',
+  }),
+});
+
+registerKpi({
+  id: 'xc-realisation-pct',
+  label: 'Group realisation %',
+  dataSource: 'reg:ex-tt-payments',
+  layers: ['management'],
+  defaultChart: defaultChartConfig({
+    chartType: 'combo', xKey: 'period',
+    series: [
+      { key: 'realised', label: 'Realised', renderAs: 'bar' },
+      { key: 'realisation_pct', label: 'Realisation %', renderAs: 'line' },
+    ],
+    title: 'Group realisation %',
+  }),
+  thresholds: { amber: 90, red: 75, direction: 'higher-good' },
+});
+
 registerKpi({
   id: 'fc-audit-dash',
   label: 'Audit checkpoint mix',
@@ -955,6 +1049,29 @@ registerKpi({
   }),
   thresholds: { amber: 90, red: 70, direction: 'higher-good' },
 });
+
+// ─── RPT-4 · Heuristic layer-tagging of the existing seeds (idempotent) ────
+// Skip any KPI that arrived with an explicit `layers` (e.g. the xc-* seeds).
+// Rule of thumb (D-RPT-4-layer):
+//   tier 3 (management): %/ratio/composition/cash/margin/reconciliation/realisation
+//   tier 2 (manager + management): trend/aging/efficiency/coverage/drift
+//   tier 1 (all 3): status/count/mix (default fallback)
+(function tagSeedsByHeuristic(): void {
+  const MANAGEMENT_ONLY = /(margin|composition|realisation|monthend-reval|drcr|landed-cost|cross-realisation|hedge|fema|ebrc|aeo|csr|cash|ratio|reconciliation)/i;
+  const MANAGER_PLUS = /(trend|aging|efficiency|coverage|drift|eff|reco|pct|compliance|score|reliability|ews|rms)/i;
+  for (const k of REGISTRY.values()) {
+    if (k.layers && k.layers.length > 0) continue;
+    const id = k.id;
+    if (MANAGEMENT_ONLY.test(id)) {
+      k.layers = ['management'];
+    } else if (MANAGER_PLUS.test(id)) {
+      k.layers = ['manager', 'management'];
+    } else {
+      k.layers = ['operator', 'manager', 'management'];
+    }
+  }
+})();
+
 
 
 

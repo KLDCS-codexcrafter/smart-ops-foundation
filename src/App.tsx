@@ -96,6 +96,8 @@ const ReceivXPage = lazy(() => import('./features/receivx/ReceivXPage'));
 const SmokeTestRunner = lazy(() => import('./test/dev-only/SmokeTestRunner'));
 // Sprint T-Phase-1.2.5h-b2 · Recent Errors panel
 const RecentErrorsPage = lazy(() => import('./features/command-center/pages/RecentErrorsPage'));
+// 🆕 RPT-4 · Role-aware auto-derived dashboard (single mount)
+const RoleDashboardPage = lazy(() => import('./components/operix-core/report-framework/RoleDashboard').then(m => ({ default: m.RoleDashboard })));
 const ProformaInvoicePrint = lazy(() => import('./pages/erp/salesx/transactions/ProformaInvoicePrint'));
 const ParentCompany = lazy(() => import('./pages/erp/foundation/ParentCompany'));
 const CompanyCreate = lazy(() => import('./pages/erp/foundation/CompanyCreate'));
@@ -775,6 +777,8 @@ const App = () => (
                 <Route path="/erp/smoke-test" element={<P><SmokeTestRunner /></P>} />
               )}
               <Route path="/erp/command-center/errors" element={<P><RecentErrorsPage /></P>} />
+              {/* 🆕 RPT-4 · Role-aware auto-derived dashboard */}
+              <Route path="/erp/command-center/my-dashboard" element={<P><RoleDashboardPage /></P>} />
               <Route path="/erp" element={<P><ErpDashboard /></P>} />
               <Route path="/erp/dashboard" element={<P><ErpDashboard /></P>} />
               {/* 🆕 Sprint 68 FAR-4 · Block 14 · FAR-2 deferred Block 9 route supplement · Q-LOCK-12 A */}

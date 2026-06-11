@@ -11,3 +11,4 @@ export * from './rag';
 export * from './daybook-source-registry';
 export * from './daybook-aggregator';
 export * from './data-source-catalog';
+export * from './role-layer';

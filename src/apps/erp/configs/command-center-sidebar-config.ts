@@ -22,6 +22,11 @@ export const commandCenterSidebarItems: SidebarItem[] = [
     id: 'overview', type: 'item', label: 'Overview', icon: LayoutDashboard,
     moduleId: 'overview', requiredCards: ['command-center'], keyboard: 'g o',
   },
+  // 🆕 RPT-4 · Role-aware auto-derived dashboard (single mount · QL-6 · no per-role files)
+  {
+    id: 'my-dashboard', type: 'item', label: 'My Dashboard', icon: LayoutDashboard,
+    route: '/erp/command-center/my-dashboard', requiredCards: ['command-center'],
+  },
   {
     id: 'foundation-group', type: 'group', label: 'Foundation & Core', icon: Building2,
     children: [
