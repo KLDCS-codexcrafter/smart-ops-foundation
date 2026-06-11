@@ -22,6 +22,12 @@ const STATUS_LABELS: Record<ProductionConfirmationStatus, string> = {
   draft: 'Draft', confirmed: 'Confirmed', cancelled: 'Cancelled',
 };
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { Card } from '@/components/ui/card';
+
 function seedIfEmpty(entity: string): ProductionConfirmation[] {
   try {
     const raw = localStorage.getItem(productionConfirmationsKey(entity));
@@ -124,6 +130,15 @@ export function ProductionConfirmationRegisterPanel() {
     ];
   };
 
+  // RPT-6a · dashboard recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of rows) m.set(r.status ?? 'unknown', (m.get(r.status ?? 'unknown') ?? 0) + (r.total_actual_qty ?? 0));
+    return Array.from(m.entries()).map(([status, confirmed_qty]) => ({ status, confirmed_qty }));
+  }, [rows]);
+  const chartConfig = getKpi('prod-confirmation')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'confirmed_qty', label: 'Confirmed Qty' }], title: 'Confirmed qty by status' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
       <UniversalRegisterGrid<ProductionConfirmation>
@@ -146,6 +161,21 @@ export function ProductionConfirmationRegisterPanel() {
           {printing && <ProductionConfirmationPrint confirmation={printing} onClose={() => setPrinting(null)} />}
         </DialogContent>
       </Dialog>
+
+      <Card className="p-3 space-y-2" data-testid="prod-confirmation-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-confirmation-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No confirmations yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="prod-confirmation-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

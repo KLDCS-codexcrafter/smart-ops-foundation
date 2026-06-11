@@ -15,6 +15,11 @@ import { CalendarRange, ExternalLink } from 'lucide-react';
 import { useDailyWorkRegister } from '@/hooks/useDailyWorkRegister';
 import { useFactories } from '@/hooks/useFactories';
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 export function DailyWorkRegisterReportPanel(): JSX.Element {
   const navigate = useNavigate();
   const { factories } = useFactories();
@@ -37,6 +42,15 @@ export function DailyWorkRegisterReportPanel(): JSX.Element {
     return { count: entries.length, totProduced, totCost, avgYield };
   }, [entries]);
 
+  // RPT-6a · toggle recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const e of entries) m.set(e.date, (m.get(e.date) ?? 0) + (e.total_produced_qty ?? 0));
+    return Array.from(m.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([date, output_qty]) => ({ date, output_qty }));
+  }, [entries]);
+  const chartConfig = getKpi('prod-daily-work')?.defaultChart ?? defaultChartConfig({ chartType: 'line', xKey: 'date', series: [{ key: 'output_qty', label: 'Output Qty' }], title: 'Daily work output' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="p-6 space-y-4">
       <button
@@ -128,6 +142,21 @@ export function DailyWorkRegisterReportPanel(): JSX.Element {
             </TableBody>
           </Table>
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="prod-daily-work-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-daily-work-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[{ key: 'date', label: 'Date' }, { key: 'output_qty', label: 'Output Qty', align: 'right' }]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No entries for selected filters"
+        />
       </Card>
     </div>
   );

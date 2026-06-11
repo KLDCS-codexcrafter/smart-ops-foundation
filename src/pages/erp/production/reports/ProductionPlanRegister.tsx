@@ -14,6 +14,11 @@ import { ExternalLink, ClipboardList } from 'lucide-react';
 import { useProductionPlans } from '@/hooks/useProductionPlans';
 import type { ProductionPlanStatus, ProductionPlanType } from '@/types/production-plan';
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 export function ProductionPlanRegisterPanel(): JSX.Element {
   const navigate = useNavigate();
   const { plans } = useProductionPlans();
@@ -40,6 +45,15 @@ export function ProductionPlanRegisterPanel(): JSX.Element {
     return <Badge className="bg-destructive/15 text-destructive border-destructive/30">{pct.toFixed(0)}%</Badge>;
   };
 
+  // RPT-6a · toggle recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of filtered) m.set(p.status, (m.get(p.status) ?? 0) + p.lines.reduce((s, l) => s + (l.planned_qty ?? 0), 0));
+    return Array.from(m.entries()).map(([status, planned_qty]) => ({ status, planned_qty }));
+  }, [filtered]);
+  const chartConfig = getKpi('prod-plan')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'planned_qty', label: 'Planned Qty' }], title: 'Plan quantity by status' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="p-6 space-y-4">
       <button
@@ -134,6 +148,21 @@ export function ProductionPlanRegisterPanel(): JSX.Element {
             </TableBody>
           </Table>
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="prod-plan-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-plan-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[{ key: 'status', label: 'Status' }, { key: 'planned_qty', label: 'Planned Qty', align: 'right' }]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No plans match filters"
+        />
       </Card>
     </div>
   );

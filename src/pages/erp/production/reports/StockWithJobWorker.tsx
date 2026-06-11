@@ -33,6 +33,11 @@ interface StockRow {
   ageing_bucket: '0-30' | '31-60' | '61-90' | '90+';
 }
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+
 export function StockWithJobWorkerPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const { jwos } = useJobWorkOutOrders(entityCode);
@@ -84,6 +89,15 @@ export function StockWithJobWorkerPanel(): JSX.Element {
     return <Badge variant={variant}>{b}d</Badge>;
   };
 
+  // RPT-6a · toggle recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of filtered) m.set(r.vendor_name, (m.get(r.vendor_name) ?? 0) + (r.pending_value ?? 0));
+    return Array.from(m.entries()).map(([jobworker, stock_value]) => ({ jobworker, stock_value }));
+  }, [filtered]);
+  const chartConfig = getKpi('prod-jw-stock')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'jobworker', series: [{ key: 'stock_value', label: 'Stock Value ₹' }], title: 'Stock with job worker by vendor' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center gap-2">
@@ -142,6 +156,21 @@ export function StockWithJobWorkerPanel(): JSX.Element {
             </TableBody>
           </Table>
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="prod-jw-stock-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-jw-stock-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[{ key: 'jobworker', label: 'Job Worker' }, { key: 'stock_value', label: 'Stock Value ₹', align: 'right' }]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No pending stock"
+        />
       </Card>
     </div>
   );

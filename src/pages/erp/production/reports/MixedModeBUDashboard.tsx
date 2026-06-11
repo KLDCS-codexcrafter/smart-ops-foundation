@@ -17,6 +17,12 @@ interface BUAllocation {
   utilization_pct: number;
 }
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useMemo } from 'react';
+
 // Demo allocation seed · in production reads from entity-setup-service
 const DEMO_BUS: BUAllocation[] = [
   { bu_id: 'BU-01', bu_name: 'Assembly Discrete BU', mode: 'discrete', capacity_pct: 40, utilization_pct: 72 },
@@ -29,9 +35,15 @@ export default function MixedModeBUDashboard(): JSX.Element {
   const preset = useEntityManufacturingMode(entityCode);
   const mode = preset.mode;
 
+  // RPT-6a · toggle recipe (additive) — hooks at top level before any early return
+  const chartRows = useMemo(() => DEMO_BUS.map((b) => ({ bu: b.bu_name, output: b.utilization_pct })), []);
+  const chartConfig = getKpi('prod-mixed-bu')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'bu', series: [{ key: 'output', label: 'Utilisation %' }], title: 'BU output mix' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   if (mode !== 'mixed_mode') {
     return (
-      <div className="p-6">
+      <div className="p-6 space-y-4">
         <Card>
           <CardHeader><CardTitle>Mixed-Mode BU Dashboard</CardTitle></CardHeader>
           <CardContent>
@@ -41,12 +53,25 @@ export default function MixedModeBUDashboard(): JSX.Element {
             </p>
           </CardContent>
         </Card>
+        <Card className="p-3 space-y-2" data-testid="prod-mixed-bu-toggle-host">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-mixed-bu-integrity-badge" title={integrityHash}>
+              <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+            </Badge>
+          </div>
+          <TableChartToggle
+            rows={chartRows}
+            columns={[{ key: 'bu', label: 'BU' }, { key: 'output', label: 'Utilisation %', align: 'right' }]}
+            chartConfig={chartConfig}
+            defaultView="table"
+            emptyLabel="No BUs configured"
+          />
+        </Card>
       </div>
     );
   }
 
   const total = DEMO_BUS.reduce((s, b) => s + b.capacity_pct, 0);
-
   return (
     <div className="p-6 space-y-6">
       <div>
@@ -99,6 +124,21 @@ export default function MixedModeBUDashboard(): JSX.Element {
             </TableBody>
           </Table>
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="prod-mixed-bu-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-mixed-bu-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[{ key: 'bu', label: 'BU' }, { key: 'output', label: 'Utilisation %', align: 'right' }]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No BUs configured"
+        />
       </Card>
     </div>
   );

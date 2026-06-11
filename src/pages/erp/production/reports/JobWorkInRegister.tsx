@@ -20,6 +20,12 @@ const STATUS_LABELS: Record<JobWorkReceiptStatus, string> = {
   draft: 'Draft', received: 'Received', cancelled: 'Cancelled',
 };
 
+// RPT-6a chart-enable additions
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { Card } from '@/components/ui/card';
+
 export function JobWorkInRegisterPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
   const { receipts } = useJobWorkReceipts(entityCode);
@@ -83,6 +89,15 @@ export function JobWorkInRegisterPanel(): JSX.Element {
     </div>
   );
 
+  // RPT-6a · dashboard recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of receipts) m.set(r.vendor_name ?? 'unknown', (m.get(r.vendor_name ?? 'unknown') ?? 0) + 1);
+    return Array.from(m.entries()).map(([vendor, jw_value]) => ({ vendor, jw_value }));
+  }, [receipts]);
+  const chartConfig = getKpi('prod-jw-in')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'vendor', series: [{ key: 'jw_value', label: 'Receipts' }], title: 'JW receipts by vendor' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
       <UniversalRegisterGrid<JobWorkReceipt>
@@ -95,6 +110,21 @@ export function JobWorkInRegisterPanel(): JSX.Element {
         summaryBuilder={summaryBuilder}
         customFilters={vendorFilterUI}
       />
+
+      <Card className="p-3 space-y-2" data-testid="prod-jw-in-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-jw-in-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No JW receipts yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="prod-jw-in-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

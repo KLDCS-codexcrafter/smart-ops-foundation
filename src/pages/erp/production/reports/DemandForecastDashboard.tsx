@@ -17,6 +17,9 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const HORIZON_OPTIONS: Array<ForecastHorizon | 'all'> = ['all', '1m', '3m', '6m', '12m'];
 const ALGO_OPTIONS: Array<ForecastAlgorithm | 'all'> = [
@@ -64,6 +67,20 @@ export default function DemandForecastDashboard(): JSX.Element {
       return true;
     }).sort((a, b) => b.generated_at.localeCompare(a.generated_at));
   }, [records, searchTerm, horizonFilter, algoFilter]);
+
+  // RPT-6a · toggle recipe (additive)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of filtered) m.set(r.horizon, (m.get(r.horizon) ?? 0) + 1);
+    return Array.from(m.entries()).map(([horizon, count]) => ({ horizon, count }));
+  }, [filtered]);
+  const chartConfig = getKpi('prod-demand-forecast')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'horizon',
+    series: [{ key: 'count', label: 'Forecasts' }],
+    title: 'Forecasts by horizon',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4">
@@ -151,6 +168,24 @@ export default function DemandForecastDashboard(): JSX.Element {
             </Table>
           )}
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="prod-demand-forecast-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-demand-forecast-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'horizon', label: 'Horizon' },
+            { key: 'count', label: 'Forecasts', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No forecasts yet"
+        />
       </Card>
     </div>
   );
