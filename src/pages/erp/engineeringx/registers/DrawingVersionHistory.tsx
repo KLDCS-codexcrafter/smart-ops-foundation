@@ -26,6 +26,10 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 import { listDrawings, listDrawingVersions } from '@/lib/engineeringx-engine';
 import { DRAWING_STATUS_COLORS, parseDrawingCustomTags } from '@/types/engineering-drawing';
 import type { EngineeringXModule } from '../EngineeringXSidebar.types';
+// RPT-6c imports
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 interface Props {
   onNavigate?: (m: EngineeringXModule) => void;
