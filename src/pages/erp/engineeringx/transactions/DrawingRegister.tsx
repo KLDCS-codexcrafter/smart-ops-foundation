@@ -31,6 +31,10 @@ import {
 import type { DrawingType } from '@/types/engineering-drawing';
 import type { EngineeringXModule } from '../EngineeringXSidebar.types';
 import type { Document } from '@/types/docvault';
+// RPT-6c imports
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 interface Props {
   onNavigate?: (m: EngineeringXModule) => void;
@@ -145,6 +149,23 @@ export function DrawingRegister({ onNavigate }: Props): JSX.Element {
           </Table>
         </CardContent>
       </Card>
+
+      {(() => {
+        const rows = Object.entries(drawings.reduce((a: Record<string, number>, d) => { const s = getDrawingStatus(d); a[s] = (a[s] ?? 0) + 1; return a; }, {})).map(([status, count]) => ({ status, count }));
+        const cfg = getKpi('eng-drawings')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'count', label: 'Drawings' }], title: 'Drawings by status' });
+        const hash = signReport(rows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="eng-drawings-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="eng-drawings-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            <TableChartToggle rows={rows} columns={[{ key: 'status', label: 'Status' }, { key: 'count', label: 'Count', align: 'right' }]} chartConfig={cfg} defaultView="table" emptyLabel="No drawings" />
+          </div>
+        );
+      })()}
     </div>
   );
 }

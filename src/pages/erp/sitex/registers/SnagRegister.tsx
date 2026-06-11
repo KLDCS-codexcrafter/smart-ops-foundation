@@ -14,6 +14,10 @@ import { listSites } from '@/lib/sitex-engine';
 import { emitSnagRaisedSevere } from '@/lib/sitex-bridges';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { snagsKey, type Snag } from '@/types/sitex';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 interface Props { onNavigate: (m: string) => void }
 
@@ -129,6 +133,27 @@ export function SnagRegister({ onNavigate: _onNavigate }: Props): JSX.Element {
         ))}
         <p className="text-xs text-muted-foreground mt-2">Refresh tick: {refresh}</p>
       </Card>
+
+      {(() => {
+        const rows = Object.entries(siteSnags.reduce((a: Record<string, number>, s) => { a[s.status] = (a[s.status] ?? 0) + 1; return a; }, {})).map(([status, count]) => ({ status, count }));
+        const cfg = getKpi('site-snags')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'count', label: 'Snags' }], title: 'Snags by status' });
+        const hash = signReport(rows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="site-snags-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="site-snags-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            {rows.length === 0 ? (
+              <div className="text-sm text-muted-foreground py-6 text-center">No snags</div>
+            ) : (
+              <div className="w-full h-64" data-testid="site-snags-chart-host"><ReportChart data={rows} config={cfg} /></div>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

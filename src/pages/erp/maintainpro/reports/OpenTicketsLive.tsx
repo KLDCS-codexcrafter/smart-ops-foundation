@@ -7,6 +7,10 @@ import { useMemo } from 'react';
 import { listInternalTickets } from '@/lib/maintainpro-engine';
 import type { TicketCategory, TicketSeverity } from '@/types/maintainpro';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 const E = 'DEMO';
 const CATS: TicketCategory[] = ['electrical', 'mechanical', 'pneumatic', 'hydraulic', 'safety', 'calibration', 'housekeeping'];
@@ -50,6 +54,22 @@ export function OpenTicketsLive(): JSX.Element {
         </tbody>
       </table>
       <div className="mt-2 text-xs text-muted-foreground">Open: {grid.open.length} tickets</div>
+      {(() => {
+        const chartRows = SEVS.map(s => ({ priority: s, count: CATS.reduce((acc, c) => acc + (grid.counts[`${c}|${s}`] ?? 0), 0) }));
+        const cfg = getKpi('mnt-open-tickets')?.defaultChart ?? defaultChartConfig({ chartType: 'doughnut', xKey: 'priority', series: [{ key: 'count', label: 'Tickets' }], title: 'Open tickets by priority' });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2 mt-3" data-testid="mnt-open-tickets-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="mnt-open-tickets-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            <div className="w-full h-64" data-testid="mnt-open-tickets-chart-host"><ReportChart data={chartRows} config={cfg} /></div>
+          </div>
+        );
+      })()}
     </MaintainProReportShell>
   );
 }

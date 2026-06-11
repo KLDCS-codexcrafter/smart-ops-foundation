@@ -6,6 +6,10 @@
 import { useMemo } from 'react';
 import { listInternalTickets } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 const E = 'DEMO';
 
@@ -35,6 +39,26 @@ export function TopReportersByDepartment(): JSX.Element {
           ))}
         </tbody>
       </table>
+      {(() => {
+        const chartRows = rows.map(([department, tickets]) => ({ department, tickets }));
+        const cfg = getKpi('mnt-top-reporters')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'department', series: [{ key: 'tickets', label: 'Tickets' }], title: 'Top reporters by department' });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2 mt-3" data-testid="mnt-top-reporters-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="mnt-top-reporters-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            {chartRows.length === 0 ? (
+              <div className="text-sm text-muted-foreground py-6 text-center">No tickets</div>
+            ) : (
+              <div className="w-full h-64" data-testid="mnt-top-reporters-chart-host"><ReportChart data={chartRows} config={cfg} /></div>
+            )}
+          </div>
+        );
+      })()}
     </MaintainProReportShell>
   );
 }

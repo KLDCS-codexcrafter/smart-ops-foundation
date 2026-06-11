@@ -10,6 +10,10 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar } from 'lucide-react';
 import { listSites } from '@/lib/sitex-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 interface Props { onNavigate: (m: string) => void }
 
@@ -61,6 +65,23 @@ export function LookAheadPlan({ onNavigate: _onNavigate }: Props): JSX.Element {
         </div>
         <p className="text-xs text-muted-foreground mt-4">Weather forecast stub · Phase 2 wires real weather API</p>
       </Card>
+
+      {(() => {
+        const rows = days.map(d => ({ week: d.date, planned_qty: d.risk === 'high' ? 3 : d.risk === 'medium' ? 2 : 1 }));
+        const cfg = getKpi('site-lookahead')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'week', series: [{ key: 'planned_qty', label: 'Risk score' }], title: '14-day look-ahead risk' });
+        const hash = signReport(rows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="site-lookahead-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="site-lookahead-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            <div className="w-full h-64" data-testid="site-lookahead-chart-host"><ReportChart data={rows} config={cfg} /></div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

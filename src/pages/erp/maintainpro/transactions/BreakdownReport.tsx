@@ -21,6 +21,9 @@ import {
 import type { BreakdownReport as BD } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 void onEnterNext;
 
 interface Props { onNavigate: (m: string) => void }
@@ -132,6 +135,27 @@ export function BreakdownReport(_props: Props): JSX.Element {
           </div>
         </CardContent>
       </Card>
+
+      {(() => {
+        const rows = Object.entries(list.reduce((a: Record<string, number>, b) => { a[b.severity] = (a[b.severity] ?? 0) + 1; return a; }, {})).map(([machine, count]) => ({ machine, count }));
+        const cfg = getKpi('mnt-breakdown')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'machine', series: [{ key: 'count', label: 'Breakdowns' }], title: 'Breakdowns by severity' });
+        const hash = signReport(rows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="mnt-breakdown-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="mnt-breakdown-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            {rows.length === 0 ? (
+              <div className="text-sm text-muted-foreground py-6 text-center">No breakdowns</div>
+            ) : (
+              <div className="w-full h-64" data-testid="mnt-breakdown-chart-host"><ReportChart data={rows} config={cfg} /></div>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

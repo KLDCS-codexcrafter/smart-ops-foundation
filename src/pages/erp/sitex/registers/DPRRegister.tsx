@@ -13,6 +13,10 @@ import { FileText, AlertTriangle } from 'lucide-react';
 import { listSites } from '@/lib/sitex-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { dprsKey, type DPR } from '@/types/sitex';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 interface Props { onNavigate: (m: string) => void }
 
@@ -129,6 +133,27 @@ export function DPRRegister({ onNavigate: _onNavigate }: Props): JSX.Element {
         ))}
         <p className="text-xs text-muted-foreground mt-2">Refresh tick: {refresh}</p>
       </Card>
+
+      {(() => {
+        const rows = Object.entries(siteDprs.reduce((a: Record<string, number>, d) => { a[d.report_date] = (a[d.report_date] ?? 0) + 1; return a; }, {})).sort(([a], [b]) => a.localeCompare(b)).map(([date, progress]) => ({ date, progress }));
+        const cfg = getKpi('site-dpr')?.defaultChart ?? defaultChartConfig({ chartType: 'line', xKey: 'date', series: [{ key: 'progress', label: 'DPRs' }], title: 'DPR progress by date' });
+        const hash = signReport(rows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="site-dpr-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="site-dpr-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            {rows.length === 0 ? (
+              <div className="text-sm text-muted-foreground py-6 text-center">No DPRs</div>
+            ) : (
+              <div className="w-full h-64" data-testid="site-dpr-chart-host"><ReportChart data={rows} config={cfg} /></div>
+            )}
+          </div>
+        );
+      })()}
     </div>
   );
 }

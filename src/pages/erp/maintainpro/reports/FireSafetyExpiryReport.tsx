@@ -6,6 +6,10 @@
 import { useMemo } from 'react';
 import { listFireSafetyEquipment } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 const E = 'DEMO';
 
@@ -56,6 +60,26 @@ export function FireSafetyExpiryReport(): JSX.Element {
           </table>
         </div>
       ))}
+      {(() => {
+        const bucketRows = Object.entries(rows.reduce((a: Record<string, number>, r) => { a[r.bucket] = (a[r.bucket] ?? 0) + 1; return a; }, {})).map(([bucket, count]) => ({ bucket, count }));
+        const cfg = getKpi('mnt-fire-expiry')?.defaultChart ?? defaultChartConfig({ chartType: 'stacked-column', xKey: 'bucket', series: [{ key: 'count', label: 'Items' }], title: 'Fire safety expiry buckets' });
+        const hash = signReport(bucketRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="mnt-fire-expiry-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="mnt-fire-expiry-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            {bucketRows.length === 0 ? (
+              <div className="text-sm text-muted-foreground py-6 text-center">No fire safety equipment</div>
+            ) : (
+              <div className="w-full h-64" data-testid="mnt-fire-expiry-chart-host"><ReportChart data={bucketRows} config={cfg} /></div>
+            )}
+          </div>
+        );
+      })()}
     </MaintainProReportShell>
   );
 }

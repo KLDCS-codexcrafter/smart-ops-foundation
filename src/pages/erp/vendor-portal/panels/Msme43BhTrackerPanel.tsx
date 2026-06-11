@@ -27,6 +27,10 @@ import {
   type MSMEBreach,
 } from '@/lib/msme-43bh-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// RPT-6c imports
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 type StatusKind = 'safe' | 'caution' | 'warning' | 'overdue';
 
@@ -285,6 +289,23 @@ export function Msme43BhTrackerPanel(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = Object.entries(breaches.reduce((a: Record<string, number>, b) => { const k = classifyBreach(b); a[k] = (a[k] ?? 0) + b.unpaid_amount; return a; }, {})).map(([bucket, value]) => ({ bucket, value }));
+        const cfg = getKpi('vp-msme-43bh')?.defaultChart ?? defaultChartConfig({ chartType: 'stacked-column', xKey: 'bucket', series: [{ key: 'value', label: 'Unpaid ₹' }], title: 'MSME 43BH unpaid by age bucket' });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="vp-msme-43bh-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="vp-msme-43bh-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            <TableChartToggle rows={chartRows} columns={[{ key: 'bucket', label: 'Bucket' }, { key: 'value', label: 'Unpaid ₹', align: 'right' }]} chartConfig={cfg} defaultView="table" emptyLabel="No open MSME bills" />
+          </div>
+        );
+      })()}
     </div>
   );
 }

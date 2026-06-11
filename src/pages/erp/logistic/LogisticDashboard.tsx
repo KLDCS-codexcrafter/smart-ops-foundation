@@ -19,6 +19,10 @@ import {
 } from '@/types/transporter-invoice';
 import { disputesKey, type Dispute } from '@/types/freight-reconciliation';
 import { transporterRateCardsKey, type TransporterRateCard } from '@/types/transporter-rate';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 const fmt = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 
@@ -213,6 +217,27 @@ export default function LogisticDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {(() => {
+          const chartRows = Object.entries(data.recentLRs.reduce((a: Record<string, number>, l) => { a[l.status] = (a[l.status] ?? 0) + 1; return a; }, {})).map(([status, shipments]) => ({ status, shipments }));
+          const cfg = getKpi('log-shipments')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'status', series: [{ key: 'shipments', label: 'Shipments' }], title: 'Recent LR shipments by status' });
+          const hash = signReport(chartRows);
+          const short = hash.replace('fnv1a:', '').slice(0, 10);
+          return (
+            <div className="border rounded-lg p-3 space-y-2" data-testid="log-shipments-dashboard-host">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="log-shipments-integrity-badge" title={hash}>
+                  <RPT6cShield className="h-3 w-3 mr-1" />{short}
+                </span>
+              </div>
+              {chartRows.length === 0 ? (
+                <div className="text-sm text-muted-foreground py-6 text-center">No recent LRs</div>
+              ) : (
+                <div className="w-full h-64" data-testid="log-shipments-chart-host"><ReportChart data={chartRows} config={cfg} /></div>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </LogisticLayout>
   );

@@ -144,7 +144,7 @@ export function ServiceRequestRegisterPanel() {
     for (const r of rows) m.set(r.service_track ?? 'unknown', (m.get(r.service_track ?? 'unknown') ?? 0) + 1);
     return Array.from(m.entries()).map(([track, count]) => ({ track, count }));
   }, [rows]);
-  const chartConfig = getKpi('rq-extra')?.defaultChart ?? defaultChartConfig({
+  const chartConfig = getKpi('rq-service-request')?.defaultChart ?? defaultChartConfig({
     chartType: 'column', xKey: 'track',
     series: [{ key: 'count', label: 'Requests' }],
     title: 'Service requests by track',
@@ -175,16 +175,16 @@ export function ServiceRequestRegisterPanel() {
         </DialogContent>
       </Dialog>
 
-      <Card className="p-3 space-y-2" data-testid="rq-extra-dashboard-host">
+      <Card className="p-3 space-y-2" data-testid="rq-service-request-dashboard-host">
         <div className="flex items-center gap-2 flex-wrap">
-          <Badge variant="outline" className="text-[10px] font-mono" data-testid="rq-extra-integrity-badge" title={integrityHash}>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="rq-service-request-integrity-badge" title={integrityHash}>
             <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
           </Badge>
         </div>
         {chartRows.length === 0 ? (
           <div className="text-sm text-muted-foreground py-6 text-center">No service requests yet</div>
         ) : (
-          <div className="w-full h-72" data-testid="rq-extra-chart-host">
+          <div className="w-full h-72" data-testid="rq-service-request-chart-host">
             <ReportChart data={chartRows} config={chartConfig} />
           </div>
         )}
