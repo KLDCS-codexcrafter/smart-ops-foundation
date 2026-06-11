@@ -405,6 +405,102 @@ export function registerAllDataSources(): void {
       return all;
     },
   });
+
+  // ─── RPT-6c · 5 small-cards sources (read-only wrappers) ───
+  registerSource({
+    id: 'engineeringx.drawings',
+    label: 'EngineeringX · Drawings',
+    card: 'engineeringx',
+    kind: 'register',
+    fields: [
+      { key: 'id', label: 'Drawing ID', kind: 'dimension' },
+      { key: 'title', label: 'Title', kind: 'dimension' },
+      { key: 'current_version', label: 'Version', kind: 'dimension' },
+      { key: 'created_at', label: 'Created', kind: 'dimension' },
+    ],
+    read: (entityCode) => {
+      try {
+        // Lazy-load to avoid pulling react-only modules at registry-time
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const eng = require('@/lib/engineeringx-engine') as { listDrawings: (e: string) => unknown[] };
+        return eng.listDrawings(entityCode || 'SMRT') as Record<string, unknown>[];
+      } catch { return []; }
+    },
+  });
+
+  registerSource({
+    id: 'sitex.dpr',
+    label: 'SiteX · DPRs + Snags',
+    card: 'sitex',
+    kind: 'register',
+    fields: [
+      { key: 'site_id', label: 'Site', kind: 'dimension' },
+      { key: 'report_date', label: 'Date', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+    ],
+    read: (entityCode) => {
+      const ec = entityCode || 'SMRT';
+      const all: Array<Record<string, unknown>> = [];
+      all.push(...safeRead<Record<string, unknown>>(`erp_dprs_${ec}`));
+      all.push(...safeRead<Record<string, unknown>>(`erp_snags_${ec}`));
+      return all;
+    },
+  });
+
+  registerSource({
+    id: 'maintainpro.tickets',
+    label: 'MaintainPro · Internal Tickets + Breakdowns',
+    card: 'maintainpro',
+    kind: 'register',
+    fields: [
+      { key: 'category', label: 'Category', kind: 'dimension' },
+      { key: 'severity', label: 'Severity', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'originating_department_id', label: 'Department', kind: 'dimension' },
+    ],
+    read: (entityCode) => {
+      const ec = entityCode || 'DEMO';
+      const all: Array<Record<string, unknown>> = [];
+      all.push(...safeRead<Record<string, unknown>>(`erp_internal_tickets_${ec}`));
+      all.push(...safeRead<Record<string, unknown>>(`erp_breakdown_reports_${ec}`));
+      all.push(...safeRead<Record<string, unknown>>(`erp_fire_safety_equipment_${ec}`));
+      return all;
+    },
+  });
+
+  registerSource({
+    id: 'vendorportal.msme',
+    label: 'VendorPortal · MSME 43BH breaches',
+    card: 'vendor-portal',
+    kind: 'register',
+    fields: [
+      { key: 'vendor_name', label: 'Vendor', kind: 'dimension' },
+      { key: 'invoice_no', label: 'Invoice', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'unpaid_amount', label: 'Unpaid ₹', kind: 'measure' },
+      { key: 'days_overdue', label: 'Days Overdue', kind: 'measure' },
+    ],
+    read: (entityCode) => {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-require-imports
+        const eng = require('@/lib/msme-43bh-engine') as { getMSMEBreaches: (e: string) => unknown[] };
+        return eng.getMSMEBreaches(entityCode || 'SMRT') as Record<string, unknown>[];
+      } catch { return []; }
+    },
+  });
+
+  registerSource({
+    id: 'logistic.shipments',
+    label: 'Logistic · LR Acceptances',
+    card: 'logistic',
+    kind: 'register',
+    fields: [
+      { key: 'dln_voucher_no', label: 'LR No', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(`erp_lr_acceptances_${entityCode || 'SMRT'}`),
+  });
 }
 
 // Auto-register on import. Idempotent — re-import is a no-op.
