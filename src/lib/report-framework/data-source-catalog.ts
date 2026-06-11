@@ -5,9 +5,9 @@
  *              aggregator. A React-free, read-only catalog of every data
  *              source any report/dashboard can consume.
  *
- * Read-only-lock: this file has ZERO react imports, ZERO localStorage.setItem,
- * ZERO post / save / write helpers. The builder's non-mutation guarantee
- * starts here — a test grep-asserts it.
+ * Read-only-lock: this file has ZERO react imports, ZERO writes to browser
+ * storage, ZERO post / save / write helpers. The builder's non-mutation
+ * guarantee starts here — a test grep-asserts it.
  */
 
 export interface DataSourceField {
