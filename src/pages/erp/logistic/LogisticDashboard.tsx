@@ -19,6 +19,10 @@ import {
 } from '@/types/transporter-invoice';
 import { disputesKey, type Dispute } from '@/types/freight-reconciliation';
 import { transporterRateCardsKey, type TransporterRateCard } from '@/types/transporter-rate';
+// RPT-6c imports
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 const fmt = (n: number) => `₹${n.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`;
 
