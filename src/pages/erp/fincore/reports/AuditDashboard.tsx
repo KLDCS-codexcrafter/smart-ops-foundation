@@ -7,10 +7,13 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Calendar, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle2, AlertTriangle, XCircle, RefreshCw, Calendar, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
 import { computeAuditScore, runCrossValidations, type CrossValidationResult } from '@/lib/audit-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { SelectCompanyGate } from '@/components/layout/SelectCompanyGate';
+// RPT-2e-iii · additive dashboard recipe
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 
 const HEALTH_QUICK_ACTIONS: Record<string, { label: string; module: string }> = {
   'Trial Balance Balanced': { label: 'Open Day Book', module: 'fc-rpt-daybook' },
@@ -96,6 +99,28 @@ export function AuditDashboardPanel({ entityCode }: AuditDashboardPanelProps) {
   const band = getScoreBand(scorePct);
   const dueDates = useMemo(() => getComplianceDueDates(), []);
 
+  // RPT-2e-iii · top-level dashboard-recipe hooks
+  const auditKpi = getKpi('fc-audit-dash');
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    audit.checkpoints.forEach(cp => m.set(cp.status, (m.get(cp.status) ?? 0) + 1));
+    return Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+  }, [audit.checkpoints]);
+  const chartConfig = auditKpi?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Checkpoints' }],
+    title: 'Audit checkpoint mix',
+  });
+  const greenPct = audit.checkpoints.length > 0
+    ? Math.round((audit.checkpoints.filter(c => c.status === 'green').length / audit.checkpoints.length) * 100)
+    : 0;
+  const rag = auditKpi?.thresholds
+    ? resolveRag(greenPct, auditKpi.thresholds)
+    : (greenPct >= 90 ? 'green' : greenPct >= 70 ? 'amber' : 'red') as 'green' | 'amber' | 'red';
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
+
   const handleRunValidations = () => {
     setRunning(true);
     setTimeout(() => {
@@ -120,6 +145,29 @@ export function AuditDashboardPanel({ entityCode }: AuditDashboardPanelProps) {
         </div>
       </div>
 
+      {/* RPT-2e-iii · additive dashboard-recipe (alongside existing tiles) */}
+      <Card className="p-3 space-y-2" data-testid="fc-audit-dash-recipe-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-audit-dash-period-chip">FY {from.substring(0, 4)}-{to.substring(2, 4)}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-audit-dash-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="md:col-span-1">
+            <ScorecardTile
+              label="Green checkpoints"
+              value={`${greenPct}%`}
+              rag={rag}
+              hint={`${audit.checkpoints.filter(c => c.status === 'green').length}/${audit.checkpoints.length} healthy`}
+            />
+          </div>
+          <div className="md:col-span-2 h-56" data-testid="fc-audit-dash-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        </div>
+      </Card>
+
       {/* 7.1 — Audit Readiness Score */}
       <Card className={`border ${band.bg}`}>
         <CardContent className="p-6 flex items-center gap-6">
@@ -134,6 +182,7 @@ export function AuditDashboardPanel({ entityCode }: AuditDashboardPanelProps) {
           </div>
         </CardContent>
       </Card>
+
 
       {/* 7.2 — 12 Health Indicator Cards */}
       <div>

@@ -883,6 +883,80 @@ registerKpi({
   thresholds: { amber: 80, red: 50, direction: 'higher-good' },
 });
 
+// ─── RPT-2e-iii · 6 Statutory-Close KPI seeds (idempotent · seed-data only) ─
+registerKpi({
+  id: 'fc-eway',
+  label: 'E-Way Bills by status',
+  dataSource: 'fincore.eway.by-status',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'EWBs' }],
+    title: 'E-Way Bills by status',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-challan',
+  label: 'TDS challan amount by type',
+  dataSource: 'fincore.challan.by-type',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'type',
+    series: [{ key: 'amount', label: 'Amount' }],
+    title: 'TDS challan amount by type',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-form24q',
+  label: 'Form 24Q TDS by quarter',
+  dataSource: 'fincore.form24q.by-quarter',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'quarter',
+    series: [{ key: 'tds', label: 'TDS' }],
+    title: 'Form 24Q TDS by quarter',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-form26q',
+  label: 'Form 26Q TDS by section',
+  dataSource: 'fincore.form26q.by-section',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'tds', label: 'TDS' }],
+    title: 'Form 26Q TDS by section',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-form27q',
+  label: 'Form 27Q NRI TDS by section',
+  dataSource: 'fincore.form27q.by-section',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'tds', label: 'TDS' }],
+    title: 'Form 27Q NRI TDS by section',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-audit-dash',
+  label: 'Audit checkpoint mix',
+  dataSource: 'fincore.audit-dashboard.checkpoint-mix',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Checkpoints' }],
+    title: 'Audit checkpoint mix',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+
 
 
 

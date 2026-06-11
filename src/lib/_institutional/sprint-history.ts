@@ -1326,14 +1326,22 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-2e-ii T-RPT2eii-RCM-TDS-Audit-Statutory-Registers · Reporting Arc · roll the banked toggle-wrap recipe across 6 FinCore RCM/ITC/TDS/Audit statutory registers (RCMRegister · ITCRegister · Clause44Report · TDSAdvance · TDSAnalyticsReport · AuditTrailReport) — each gains TableChartToggle (default Table) + period chip + integrity badge + drill consume; HOOKS AT COMPONENT TOP LEVEL (RPT-2e-i T1 lesson baked in) · existing Tables/columns/filters/CSV PRESERVED · 6 KPI seeds (fc-rcm-register · fc-itc · fc-clause44 · fc-tds-advance · fc-tds-analytics · fc-audit-trail · with higher-good thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF · 6 RPT-2e-i GST registers + Form3CD + Form26AS + IRN panels + AuditDashboard + EWayBill/Challan/Form24Q/26Q/27Q (RPT-2e-iii) 0-DIFF · Comply360 redirects-only (no edits) · close summary COMMITTED · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-2e-ii T-RPT2eii-RCM-TDS-Audit-Statutory-Registers · Reporting Arc · 6 RCM/ITC/TDS/Audit register wraps · headSha BACKFILLED bde4307 at RPT-2e-iii Block 3
   {
     sprintNumber: 'RPT2eii' as unknown as number, code: 'T-RPT2eii-RCM-TDS-Audit-Statutory-Registers', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '31e423e', loc: 640,
+    headSha: 'bde4307', predecessorSha: '31e423e', loc: 640,
+    newSiblings: [],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-2e-iii T-RPT2eiii-Statutory-Close · Reporting Arc · CLOSES PHASE A · 5 toggle-wraps (EWayBillRegister · ChallanRegister · Form24Q · Form26Q · Form27Q) + AuditDashboard dashboard-recipe (ReportChart + ScorecardTile RAG + integrity badge) · HOOKS AT COMPONENT TOP LEVEL · existing Table/Card layouts PRESERVED · 6 KPI seeds (fc-eway · fc-challan · fc-form24q · fc-form26q · fc-form27q · fc-audit-dash · with higher-good thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF · Form3CD · Form26AS · IRN panels 0-DIFF · Comply360 redirects-only · close summary COMMITTED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT2eiii' as unknown as number, code: 'T-RPT2eiii-Statutory-Close', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'bde4307', loc: 560,
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
 ];
+
 
 
 

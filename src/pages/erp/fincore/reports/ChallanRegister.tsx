@@ -14,7 +14,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Plus, Edit2, Trash2, AlertTriangle, Layers } from 'lucide-react';
+import { Plus, Edit2, Trash2, AlertTriangle, Layers, ShieldCheck } from 'lucide-react';
+// RPT-2e-iii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, today } from './reportUtils';
@@ -139,6 +143,24 @@ export function ChallanRegisterPanel({ entityCode }: Props) {
     }
   }, [entityCode]);
 
+  // RPT-2e-iii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    challans.forEach(c => {
+      const key = c.tds_section || 'unspecified';
+      m.set(key, (m.get(key) ?? 0) + c.amount);
+    });
+    return Array.from(m.entries()).map(([type, amount]) => ({ type, amount }));
+  }, [challans]);
+  const chartConfig = getKpi('fc-challan')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'type',
+    series: [{ key: 'amount', label: 'Amount' }],
+    title: 'TDS challan amount by type',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 space-y-4">
       <div className="flex items-center justify-between">
@@ -149,6 +171,27 @@ export function ChallanRegisterPanel({ entityCode }: Props) {
           <Button variant="outline" onClick={handleGenerateFromPayOut}><Layers className="h-4 w-4 mr-1" />Generate from PayOut</Button>
         </div>
       </div>
+
+      <Card className="p-3 space-y-2" data-testid="fc-challan-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-challan-period-chip">AY 2026-27</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-challan-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'type', label: 'Type / Section' },
+            { key: 'amount', label: 'Amount', align: 'right', render: r => inr(Number(r.amount)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No challans"
+        />
+      </Card>
+
 
       {dueAlerts.map(a => (
         <Alert key={a.section} className="border-amber-500/30 bg-amber-500/5">

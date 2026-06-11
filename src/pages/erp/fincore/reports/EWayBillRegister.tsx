@@ -20,7 +20,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import {
-  Truck, RefreshCw, Clock, X, Search, Plus, ListOrdered,
+  Truck, RefreshCw, Clock, X, Search, Plus, ListOrdered, ShieldCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -32,6 +32,11 @@ import { entityGstKey, DEFAULT_ENTITY_GST_CONFIG } from '@/types/entity-gst';
 import {
   cancelEWB, extendEWB, computeEWBValidity, type EWBCredentials,
 } from '@/lib/ewb-engine';
+// RPT-2e-iii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
+
 
 interface Props { entityCode: string }
 
@@ -175,6 +180,21 @@ export function EWayBillRegisterPanel({ entityCode }: Props) {
     }
   };
 
+  // RPT-2e-iii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    records.forEach(r => m.set(r.status, (m.get(r.status) ?? 0) + 1));
+    return Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+  }, [records]);
+  const chartConfig = getKpi('fc-eway')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'EWBs' }],
+    title: 'E-Way Bills by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-4">
       <div className="flex items-center justify-between">
@@ -188,6 +208,26 @@ export function EWayBillRegisterPanel({ entityCode }: Props) {
         </div>
       </div>
 
+      <Card className="p-3 space-y-2" data-testid="fc-eway-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-eway-period-chip">AY 2026-27</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-eway-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status', label: 'Status' },
+            { key: 'count', label: 'EWBs', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No E-Way Bills"
+        />
+      </Card>
+
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <SummaryTile label="Total" value={totals.total} />
         <SummaryTile label="Active" value={totals.active} tone="success" />
@@ -195,6 +235,7 @@ export function EWayBillRegisterPanel({ entityCode }: Props) {
         <SummaryTile label="Expired" value={totals.expired} tone="destructive" />
         <SummaryTile label="Cancelled" value={totals.cancelled} />
       </div>
+
 
       <Card>
         <CardHeader className="pb-3">
