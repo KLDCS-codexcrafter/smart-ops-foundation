@@ -251,6 +251,24 @@ export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelPro
   // ---------- Level 0: Base ----------
   return (
     <div className="max-w-6xl mx-auto space-y-5 p-6">
+      <Card className="p-3 space-y-2" data-testid="inv-stock-ledger-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-stock-ledger-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'item', label: 'Item' },
+            { key: 'balance_qty', label: 'Balance Qty', align: 'right' },
+            { key: 'value', label: 'Value ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No stock balance"
+        />
+      </Card>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
