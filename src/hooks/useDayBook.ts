@@ -1,12 +1,20 @@
 /** useDayBook.ts — Unified department activity log hook
- * [JWT] Replace with GET /api/activity/daybook?entity={e}&family={f}
+ * [JWT] Replace with GET /api/activity/daybook?entity={e}&domain={d}
+ *
+ * RPT-3a · DayBookFamily widened to open DayBookDomain (back-compat alias kept).
+ * When a source is registered in daybook-source-registry, the hook delegates to it.
+ * Existing 'finance' / 'people' callers keep working unchanged.
  */
 import { useMemo } from 'react';
 import { useVouchers } from './useVouchers';
 import { payrollRunsKey } from '@/types/payroll-run';
 import type { PayrollRun } from '@/types/payroll-run';
+import { getDayBookSource } from '@/lib/report-framework/daybook-source-registry';
 
-export type DayBookFamily = 'finance' | 'people';
+/** Open-ended domain — was a 2-value union. Back-compat alias kept. */
+export type DayBookDomain = string;
+/** @deprecated since RPT-3a · use DayBookDomain. Alias preserved for back-compat. */
+export type DayBookFamily = DayBookDomain;
 
 export interface DayBookEntry {
   id: string;
@@ -44,10 +52,19 @@ const TYPE_TO_MODULE: Record<string, string> = {
   'Stock Journal': 'fc-inv-stock-journal',
 };
 
-export function useDayBook(entityCode: string, family: DayBookFamily): DayBookEntry[] {
+export function useDayBook(entityCode: string, domain: DayBookDomain): DayBookEntry[] {
   const { vouchers } = useVouchers(entityCode);
   return useMemo<DayBookEntry[]>(() => {
-    if (family === 'finance') {
+    // RPT-3a · Registry path · if a card registered a source for this domain,
+    // delegate. Back-compat preserved: finance/people fall through to legacy below
+    // unless explicitly overridden.
+    if (domain !== 'finance' && domain !== 'people') {
+      // For new domains, prefer any registered source matching the domain.
+      const registered = getDayBookSource(domain, domain) ?? getDayBookSource('', domain);
+      if (registered) return registered.read(entityCode);
+    }
+
+    if (domain === 'finance') {
       return [...vouchers]
         .filter(v => !v.is_cancelled)
         .sort((a, b) => (b.updated_at > a.updated_at ? 1 : -1))
@@ -63,7 +80,7 @@ export function useDayBook(entityCode: string, family: DayBookFamily): DayBookEn
           module: TYPE_TO_MODULE[v.base_voucher_type] ?? 'fc-hub',
         }));
     }
-    if (family === 'people') {
+    if (domain === 'people') {
       // [JWT] GET /api/pay-hub/payroll/runs?entityCode={entityCode}
       const runs = safeRead<PayrollRun>(payrollRunsKey(entityCode));
       return [...runs]
@@ -81,5 +98,5 @@ export function useDayBook(entityCode: string, family: DayBookFamily): DayBookEn
         }));
     }
     return [];
-  }, [vouchers, family, entityCode]);
+  }, [vouchers, domain, entityCode]);
 }

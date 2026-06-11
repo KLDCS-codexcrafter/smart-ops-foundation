@@ -1333,11 +1333,18 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-2e-iii T-RPT2eiii-Statutory-Close · Reporting Arc · CLOSES PHASE A · 5 toggle-wraps (EWayBillRegister · ChallanRegister · Form24Q · Form26Q · Form27Q) + AuditDashboard dashboard-recipe (ReportChart + ScorecardTile RAG + integrity badge) · HOOKS AT COMPONENT TOP LEVEL · existing Table/Card layouts PRESERVED · 6 KPI seeds (fc-eway · fc-challan · fc-form24q · fc-form26q · fc-form27q · fc-audit-dash · with higher-good thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF · Form3CD · Form26AS · IRN panels 0-DIFF · Comply360 redirects-only · close summary COMMITTED · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-2e-iii T-RPT2eiii-Statutory-Close · Reporting Arc · CLOSES PHASE A · 5 toggle-wraps + AuditDashboard dashboard-recipe · headSha BACKFILLED 071db3e at RPT-3a Block 3
   {
     sprintNumber: 'RPT2eiii' as unknown as number, code: 'T-RPT2eiii-Statutory-Close', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'bde4307', loc: 560,
+    headSha: '071db3e', predecessorSha: 'bde4307', loc: 560,
     newSiblings: [],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-3a T-RPT3a-DayBook-Generalize · Reporting Arc · Phase B sprint 1 · DayBook generalize + source registry · NEW SIBLING daybook-source-registry (React-free additive registry · DayBookSource{cardId·domain·label·read} · registerDayBookSource idempotent · getDayBookEntries merges+date-sorts) · DayBookDomain widened from 2-value DayBookFamily (back-compat alias preserved) · useDayBook generalized · 7 card sources registered via side-effect daybook-sources.ts on app init (fc-fincore-daybook · ph-payhub-daybook · sd-service-daybook · p360-goods-inward · mp-maintenance-entry · mp-spares-issue · ex-custom) · 6 bespoke DayBook PAGES 0-DIFF (DayBook · PayHubDayBook · ServiceDayBook · GoodsInwardDayBookPanel · MaintenanceEntryDayBook · SparesIssueDayBook · CustomDayBook) · walls held: all report-framework chart/KPI/scorecard files 0-DIFF · src/test/setup.ts 0-DIFF · all hubs 0-DIFF · close summary COMMITTED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT3a' as unknown as number, code: 'T-RPT3a-DayBook-Generalize', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '071db3e', loc: 380,
+    newSiblings: ['daybook-source-registry'],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
 ];
