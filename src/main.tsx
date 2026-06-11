@@ -5,6 +5,8 @@ import "./index.css";
 import "@/lib/hierarchical-ledger-wiring";
 // RPT-3a · Register all card DayBook sources (idempotent · side-effect).
 import "@/lib/report-framework/daybook-sources";
+// RPT-3b · Plant the Data Source Catalog (DSC) — depends on RPT-3a registry above.
+import "@/lib/report-framework/data-sources";
 
 // Sprint 151 · DP-WS-22 · PWA rider · guarded SW registration.
 // Skip in dev / Lovable preview / iframe — see PWA skill.
