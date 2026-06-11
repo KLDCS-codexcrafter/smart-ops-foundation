@@ -14,23 +14,14 @@ import { Button } from '@/components/ui/button';
 import { ScorecardTile } from './ScorecardTile';
 import { ReportChart } from './ChartLibrary';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   deriveRoleDashboard,
   layerCeilingFor,
   type RoleLayer,
 } from '@/lib/report-framework/role-layer';
-import type { KpiDefinition } from '@/lib/report-framework/kpi-registry';
+import { getSource } from '@/lib/report-framework/data-source-catalog';
 
-/** Tiny placeholder dataset shaped per xc KPI defaultChart so the chart renders. */
-function placeholderDataFor(kpi: KpiDefinition): Array<Record<string, unknown>> {
-  const { xKey, series } = kpi.defaultChart;
-  const buckets = ['Q1', 'Q2', 'Q3', 'Q4'];
-  return buckets.map((b, i) => {
-    const row: Record<string, unknown> = { [xKey]: b };
-    for (const s of series) row[s.key] = (i + 1) * 25;
-    return row;
-  });
-}
 
 const LAYER_ORDER: RoleLayer[] = ['operator', 'manager', 'management'];
 const LAYER_RANK: Record<RoleLayer, number> = {
@@ -39,6 +30,7 @@ const LAYER_RANK: Record<RoleLayer, number> = {
 
 export function RoleDashboard(): JSX.Element {
   const { profile, allowedCards } = useCardEntitlement();
+  const { entityCode } = useEntityCode();
   const role = profile.role;
   const ceiling = useMemo(() => layerCeilingFor(role), [role]);
   const [layer, setLayer] = useState<RoleLayer>(ceiling);
@@ -47,6 +39,23 @@ export function RoleDashboard(): JSX.Element {
     () => deriveRoleDashboard(role, layer, allowedCards as unknown as string[]),
     [role, layer, allowedCards],
   );
+
+  // RPT-4 · T3 fix: real DSC rows per xc KPI. Empty/unresolved → empty-state.
+  const xcRows = useMemo(() => {
+    const map: Record<string, Record<string, unknown>[]> = {};
+    const xc = config.sections.find((s) => s.cardId === 'cross-card');
+    if (!xc) return map;
+    for (const kpi of xc.kpis) {
+      const src = getSource(kpi.dataSource);
+      try {
+        map[kpi.id] = src?.read(entityCode) ?? [];
+      } catch {
+        map[kpi.id] = [];
+      }
+    }
+    return map;
+  }, [config.sections, entityCode]);
+
 
   return (
     <div className="p-6 space-y-6">
@@ -110,19 +119,29 @@ export function RoleDashboard(): JSX.Element {
                 className="grid grid-cols-1 lg:grid-cols-2 gap-3"
                 data-testid="role-dashboard-xc-charts"
               >
-                {section.kpis.map((kpi) => (
-                  <Card key={`${kpi.id}-chart`} className="p-3">
-                    <div className="text-xs text-muted-foreground mb-2">{kpi.label}</div>
-                    <div data-testid={`role-dashboard-xc-chart-${kpi.id}`}>
-                      <ReportChart
-                        data={placeholderDataFor(kpi)}
-                        config={kpi.defaultChart}
-                      />
-                    </div>
-                  </Card>
-                ))}
+                {section.kpis.map((kpi) => {
+                  const rows = xcRows[kpi.id] ?? [];
+                  return (
+                    <Card key={`${kpi.id}-chart`} className="p-3">
+                      <div className="text-xs text-muted-foreground mb-2">{kpi.label}</div>
+                      <div data-testid={`role-dashboard-xc-chart-${kpi.id}`}>
+                        {rows.length > 0 ? (
+                          <ReportChart data={rows} config={kpi.defaultChart} />
+                        ) : (
+                          <div
+                            className="text-xs text-muted-foreground py-6 text-center"
+                            data-testid={`role-dashboard-xc-empty-${kpi.id}`}
+                          >
+                            No data yet for this KPI
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             ) : null}
+
           </section>
         ))
       )}
