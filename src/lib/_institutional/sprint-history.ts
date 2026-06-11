@@ -1315,11 +1315,19 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint RPT-2b-iv T-RPT2biv-EximX-Dashboards-Close · Reporting Arc · CLOSES the EximX dashboard layer · roll the banked RPT-2b-iii dashboard recipe (ReportChart + ScorecardTile/RAG + integrity badge) across the last 5 EximX dashboards (EWS · BuyerReliability · VendorScorecard · CoOLegalization · RMSDeclaration) — each gains ReportChart over computed summary + ScorecardTile (RAG) + integrity badge; existing Card layout/tiles/tables PRESERVED · 5 KPI seeds (ex-ews · ex-buyer-reliability · ex-vendor-score · ex-coo-legal · ex-rms · with thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF (rag.ts · ScorecardTile.tsx · chart-config · period-engine · integrity-sign · ChartLibrary · TableChartToggle · CHART_TYPE_COVERAGE · barrels · src/test/setup.ts) · 6 RPT-2b-iii EximX dashboards + all Comply360 dashboards + all banked pages 0-DIFF · h1-variability test nuance baked in (3 dashboards have h1 · 2 do not — EWS + VendorScorecard via queryAllByText) · close summary COMMITTED · headSha TBD_AT_BANK
   {
     sprintNumber: 'RPT2biv' as unknown as number, code: 'T-RPT2biv-EximX-Dashboards-Close', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '616b95e', loc: 530,
+    headSha: '1ab0450', predecessorSha: '616b95e', loc: 530,
     newSiblings: [],
-    bankDate: '2026-06-10', provenance: 'PENDING_BACKFILL',
+    bankDate: '2026-06-10', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-2e-i T-RPT2ei-GST-Statutory-Registers · Reporting Arc · roll the toggle-wrap recipe across the 6 FinCore GST statutory registers (GSTR1 · GSTR3B · GSTR9 · GSTR2Register · RecoPanel · RCMComplianceReport) — each gains TableChartToggle (default Table) + period chip + integrity badge + drill consume; existing Tables/columns/filters/CSV/JSON download PRESERVED · 6 KPI seeds (fc-gstr1 · fc-gstr3b · fc-gstr9 · fc-gstr2 · fc-reco · fc-rcm-compliance · with higher-good thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF · Form3CD · Form26AS · IRN panels · AuditDashboard 0-DIFF · Comply360 redirects-only (no edits) · close summary COMMITTED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT2ei' as unknown as number, code: 'T-RPT2ei-GST-Statutory-Registers', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '1ab0450', loc: 720,
+    newSiblings: [],
+    bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
 ];
+
 
 
 

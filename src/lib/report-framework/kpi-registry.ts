@@ -733,4 +733,78 @@ registerKpi({
   thresholds: { amber: 90, red: 70, direction: 'higher-good' },
 });
 
+// ─── RPT-2e-i · 6 FinCore GST statutory register KPI seeds (idempotent) ────
+registerKpi({
+  id: 'fc-gstr1',
+  label: 'GSTR-1 section coverage',
+  dataSource: 'fincore.gst.gstr1.section-counts',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'count', label: 'Invoices' }],
+    title: 'GSTR-1 sections',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-gstr3b',
+  label: 'GSTR-3B outward summary',
+  dataSource: 'fincore.gst.gstr3b.outward-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'taxable', label: 'Taxable value' }],
+    title: 'GSTR-3B outward summary',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-gstr9',
+  label: 'GSTR-9 annual summary',
+  dataSource: 'fincore.gst.gstr9.annual-summary',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'table',
+    series: [{ key: 'taxable', label: 'Taxable / reversed' }],
+    title: 'GSTR-9 annual summary',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-gstr2',
+  label: 'GSTR-2 ITC posture',
+  dataSource: 'fincore.gst.gstr2.itc-posture',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Purchases' }],
+    title: 'GSTR-2 ITC posture',
+  }),
+  thresholds: { amber: 85, red: 65, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-reco',
+  label: '2A/2B reconciliation match %',
+  dataSource: 'fincore.gst.reco.match-posture',
+  defaultChart: defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Reco rows' }],
+    title: '2A/2B match posture',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-rcm-compliance',
+  label: 'RCM compliance coverage',
+  dataSource: 'fincore.gst.rcm-compliance.severity',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'severity',
+    series: [{ key: 'count', label: 'Findings' }],
+    title: 'RCM compliance by severity',
+  }),
+  thresholds: { amber: 90, red: 70, direction: 'higher-good' },
+});
+
+
 
