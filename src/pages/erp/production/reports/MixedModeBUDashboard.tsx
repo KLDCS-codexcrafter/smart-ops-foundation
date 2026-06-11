@@ -43,7 +43,7 @@ export default function MixedModeBUDashboard(): JSX.Element {
 
   if (mode !== 'mixed_mode') {
     return (
-      <div className="p-6">
+      <div className="p-6 space-y-4">
         <Card>
           <CardHeader><CardTitle>Mixed-Mode BU Dashboard</CardTitle></CardHeader>
           <CardContent>
@@ -52,6 +52,20 @@ export default function MixedModeBUDashboard(): JSX.Element {
               Current entity mode: <span className="font-mono">{mode}</span>.
             </p>
           </CardContent>
+        </Card>
+        <Card className="p-3 space-y-2" data-testid="prod-mixed-bu-toggle-host">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-mixed-bu-integrity-badge" title={integrityHash}>
+              <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+            </Badge>
+          </div>
+          <TableChartToggle
+            rows={chartRows}
+            columns={[{ key: 'bu', label: 'BU' }, { key: 'output', label: 'Utilisation %', align: 'right' }]}
+            chartConfig={chartConfig}
+            defaultView="table"
+            emptyLabel="No BUs configured"
+          />
         </Card>
       </div>
     );
