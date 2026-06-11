@@ -23,6 +23,7 @@ import { useDrillDown } from '@/hooks/useDrillDown';
 interface GSTR3BPanelProps { entityCode: string; }
 
 export function GSTR3BPanel({ entityCode }: GSTR3BPanelProps) {
+  const drill = useDrillDown();
   const now = new Date();
   const [year, setYear] = useState(String(now.getFullYear()));
   const [month, setMonth] = useState(String(now.getMonth() + 1).padStart(2, '0'));
@@ -123,7 +124,6 @@ export function GSTR3BPanel({ entityCode }: GSTR3BPanelProps) {
 
       {/* RPT-2e-i · additive toggle-wrap */}
       {(() => {
-        const drill = useDrillDown();
         const chartRows = [
           { section: '3.1(a)', taxable: s31a.txval },
           { section: '3.1(b)', taxable: s31b.txval },

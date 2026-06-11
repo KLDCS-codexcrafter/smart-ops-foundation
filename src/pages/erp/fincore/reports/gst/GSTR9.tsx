@@ -33,6 +33,7 @@ function downloadJSON(filename: string, data: object) {
 }
 
 export function GSTR9Panel({ entityCode }: GSTR9PanelProps) {
+  const drill = useDrillDown();
   const now = new Date();
   const currentFY = now.getMonth() >= 3 ? `${now.getFullYear()}-${String(now.getFullYear() + 1).slice(2)}` : `${now.getFullYear() - 1}-${String(now.getFullYear()).slice(2)}`;
   const [fy, setFy] = useState(currentFY);
@@ -121,7 +122,6 @@ export function GSTR9Panel({ entityCode }: GSTR9PanelProps) {
 
       {/* RPT-2e-i · additive toggle-wrap */}
       {(() => {
-        const drill = useDrillDown();
         const chartRows = [
           { table: '4A', taxable: tbl4.txval },
           { table: '5A', taxable: tbl5.txval },

@@ -25,6 +25,7 @@ import { useDrillDown } from '@/hooks/useDrillDown';
 interface GSTR1PanelProps { entityCode: string; }
 
 export function GSTR1Panel({ entityCode }: GSTR1PanelProps) {
+  const drill = useDrillDown();
   const now = new Date();
   const [year, setYear] = useState(String(now.getFullYear()));
   const [month, setMonth] = useState(String(now.getMonth() + 1).padStart(2, '0'));
@@ -154,7 +155,6 @@ export function GSTR1Panel({ entityCode }: GSTR1PanelProps) {
 
       {/* RPT-2e-i · additive toggle-wrap */}
       {(() => {
-        const drill = useDrillDown();
         const chartRows = [
           { section: 'B2B', count: b2b.length },
           { section: 'B2CL', count: b2cl.length },
