@@ -119,19 +119,29 @@ export function RoleDashboard(): JSX.Element {
                 className="grid grid-cols-1 lg:grid-cols-2 gap-3"
                 data-testid="role-dashboard-xc-charts"
               >
-                {section.kpis.map((kpi) => (
-                  <Card key={`${kpi.id}-chart`} className="p-3">
-                    <div className="text-xs text-muted-foreground mb-2">{kpi.label}</div>
-                    <div data-testid={`role-dashboard-xc-chart-${kpi.id}`}>
-                      <ReportChart
-                        data={placeholderDataFor(kpi)}
-                        config={kpi.defaultChart}
-                      />
-                    </div>
-                  </Card>
-                ))}
+                {section.kpis.map((kpi) => {
+                  const rows = xcRows[kpi.id] ?? [];
+                  return (
+                    <Card key={`${kpi.id}-chart`} className="p-3">
+                      <div className="text-xs text-muted-foreground mb-2">{kpi.label}</div>
+                      <div data-testid={`role-dashboard-xc-chart-${kpi.id}`}>
+                        {rows.length > 0 ? (
+                          <ReportChart data={rows} config={kpi.defaultChart} />
+                        ) : (
+                          <div
+                            className="text-xs text-muted-foreground py-6 text-center"
+                            data-testid={`role-dashboard-xc-empty-${kpi.id}`}
+                          >
+                            No data yet for this KPI
+                          </div>
+                        )}
+                      </div>
+                    </Card>
+                  );
+                })}
               </div>
             ) : null}
+
           </section>
         ))
       )}
