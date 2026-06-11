@@ -143,6 +143,24 @@ export function ChallanRegisterPanel({ entityCode }: Props) {
     }
   }, [entityCode]);
 
+  // RPT-2e-iii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    challans.forEach(c => {
+      const key = c.tds_section || 'unspecified';
+      m.set(key, (m.get(key) ?? 0) + c.amount);
+    });
+    return Array.from(m.entries()).map(([type, amount]) => ({ type, amount }));
+  }, [challans]);
+  const chartConfig = getKpi('fc-challan')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'type',
+    series: [{ key: 'amount', label: 'Amount' }],
+    title: 'TDS challan amount by type',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 space-y-4">
       <div className="flex items-center justify-between">
@@ -153,6 +171,27 @@ export function ChallanRegisterPanel({ entityCode }: Props) {
           <Button variant="outline" onClick={handleGenerateFromPayOut}><Layers className="h-4 w-4 mr-1" />Generate from PayOut</Button>
         </div>
       </div>
+
+      <Card className="p-3 space-y-2" data-testid="fc-challan-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-challan-period-chip">AY 2026-27</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-challan-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'type', label: 'Type / Section' },
+            { key: 'amount', label: 'Amount', align: 'right', render: r => inr(Number(r.amount)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No challans"
+        />
+      </Card>
+
 
       {dueAlerts.map(a => (
         <Alert key={a.section} className="border-amber-500/30 bg-amber-500/5">
