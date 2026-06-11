@@ -105,6 +105,24 @@ export function RoleDashboard(): JSX.Element {
                 />
               ))}
             </div>
+            {section.cardId === 'cross-card' && config.layer === 'management' ? (
+              <div
+                className="grid grid-cols-1 lg:grid-cols-2 gap-3"
+                data-testid="role-dashboard-xc-charts"
+              >
+                {section.kpis.map((kpi) => (
+                  <Card key={`${kpi.id}-chart`} className="p-3">
+                    <div className="text-xs text-muted-foreground mb-2">{kpi.label}</div>
+                    <div data-testid={`role-dashboard-xc-chart-${kpi.id}`}>
+                      <ReportChart
+                        data={placeholderDataFor(kpi)}
+                        config={kpi.defaultChart}
+                      />
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : null}
           </section>
         ))
       )}
