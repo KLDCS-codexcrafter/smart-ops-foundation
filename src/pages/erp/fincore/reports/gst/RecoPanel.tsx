@@ -44,6 +44,7 @@ interface RecoRow {
 function normalize(s: string): string { return s.replace(/[^a-zA-Z0-9]/g, '').toUpperCase(); }
 
 export function RecoPanelGST({ entityCode }: RecoPanelGSTProps) {
+  const drill = useDrillDown();
   const now = new Date();
   const [year, setYear] = useState(String(now.getFullYear()));
   const [month, setMonth] = useState(String(now.getMonth() + 1).padStart(2, '0'));
@@ -213,7 +214,6 @@ export function RecoPanelGST({ entityCode }: RecoPanelGSTProps) {
 
       {/* RPT-2e-i · additive toggle-wrap */}
       {(() => {
-        const drill = useDrillDown();
         const chartRows = (['matched', 'not_in_tally', 'not_in_portal', 'partial'] as MatchStatus[]).map(s => ({
           status: s, count: recoRows.filter(r => r.status === s).length,
         }));

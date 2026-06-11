@@ -24,6 +24,7 @@ import { useDrillDown } from '@/hooks/useDrillDown';
 interface GSTR2RegisterPanelProps { entityCode: string; }
 
 export function GSTR2RegisterPanel({ entityCode }: GSTR2RegisterPanelProps) {
+  const drill = useDrillDown();
   const now = new Date();
   const [year, setYear] = useState(String(now.getFullYear()));
   const [month, setMonth] = useState(String(now.getMonth() + 1).padStart(2, '0'));
@@ -156,7 +157,6 @@ export function GSTR2RegisterPanel({ entityCode }: GSTR2RegisterPanelProps) {
 
       {/* RPT-2e-i · additive toggle-wrap */}
       {(() => {
-        const drill = useDrillDown();
         const chartRows = [
           { status: 'Eligible', count: eligible.length },
           { status: 'Blocked', count: blocked.length },
