@@ -25,7 +25,6 @@ const ACTIONS: AuditAction[] = ['create', 'update', 'cancel', 'post', 'unpost', 
 
 export function AuditTrailReportPanel({ entityCode }: { entityCode: string | undefined }) {
   const t = useT();
-  const { entityCode } = useEntityCode();
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [action, setAction] = useState<AuditAction | ''>('');
@@ -62,8 +61,42 @@ export function AuditTrailReportPanel({ entityCode }: { entityCode: string | und
     URL.revokeObjectURL(url);
   }
 
+  // RPT-2e-ii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const e of filtered) map.set(e.action, (map.get(e.action) ?? 0) + 1);
+    return Array.from(map.entries()).map(([action, count]) => ({ action, count }));
+  }, [filtered]);
+  const chartConfig = getKpi('fc-audit-trail')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'action',
+    series: [{ key: 'count', label: 'Events' }],
+    title: 'Audit events by type',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-4">
+      <Card className="p-3 space-y-2" data-testid="fc-audit-trail-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-audit-trail-period-chip">{from || 'all'} → {to || 'now'}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-audit-trail-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'action', label: 'Action' },
+            { key: 'count',  label: 'Events', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No audit events"
+        />
+      </Card>
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
