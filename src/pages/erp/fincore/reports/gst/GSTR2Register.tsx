@@ -12,9 +12,14 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ShieldCheck } from 'lucide-react';
 import { useGSTRegister } from '@/hooks/useGSTRegister';
 import { inr, fmtDate, exportCSV } from '../reportUtils';
 import { onEnterNext } from '@/lib/keyboard';
+// RPT-2e-i · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface GSTR2RegisterPanelProps { entityCode: string; }
 
@@ -148,6 +153,44 @@ export function GSTR2RegisterPanel({ entityCode }: GSTR2RegisterPanelProps) {
         <Card><CardContent className="pt-3"><p className="text-muted-foreground">Blocked ITC</p><p className="text-lg font-bold font-mono">{inr(blockedITC)}</p></CardContent></Card>
         <Card><CardContent className="pt-3"><p className="text-muted-foreground">RCM</p><p className="text-lg font-bold font-mono">{inr(rcmTotal)}</p></CardContent></Card>
       </div>
+
+      {/* RPT-2e-i · additive toggle-wrap */}
+      {(() => {
+        const drill = useDrillDown();
+        const chartRows = [
+          { status: 'Eligible', count: eligible.length },
+          { status: 'Blocked', count: blocked.length },
+          { status: 'RCM', count: rcm.length },
+        ];
+        const chartConfig = getKpi('fc-gstr2')?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'status',
+          series: [{ key: 'count', label: 'Purchases' }],
+          title: 'GSTR-2 ITC posture',
+        });
+        const integrityHash = signReport(chartRows);
+        const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="fc-gstr2-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px]" data-testid="fc-gstr2-period-chip">Period {period}</Badge>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-gstr2-integrity-badge" title={integrityHash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+              </Badge>
+              {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'status', label: 'Posture' },
+                { key: 'count', label: 'Count', align: 'right' },
+              ]}
+              chartConfig={chartConfig}
+              defaultView="table"
+              emptyLabel="No purchases"
+            />
+          </Card>
+        );
+      })()}
 
       <Tabs defaultValue="all" className="space-y-3">
         <TabsList className="flex-wrap h-auto gap-1">
