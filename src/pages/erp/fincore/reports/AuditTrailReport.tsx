@@ -11,15 +11,19 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Shield, Download, Eye } from 'lucide-react';
+import { Shield, Download, Eye, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { readAuditTrail, exportAuditTrailCsv } from '@/lib/audit-trail-engine';
 import type { AuditTrailEntry, AuditAction } from '@/types/audit-trail';
 import { useT } from '@/lib/i18n-engine';
+// RPT-2e-ii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 const ACTIONS: AuditAction[] = ['create', 'update', 'cancel', 'post', 'unpost', 'approve', 'reject'];
 
-export default function AuditTrailReport() {
+export function AuditTrailReportPanel({ entityCode }: { entityCode: string | undefined }) {
   const t = useT();
   const { entityCode } = useEntityCode();
   const [from, setFrom] = useState('');
