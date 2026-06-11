@@ -8,7 +8,7 @@ import '../data-sources';
 
 const RPT6B_KPI_IDS = [
   'rq-indent', 'rq-ageing', 'rq-dept-summary', 'rq-po-against',
-  'rq-closed', 'rq-pending', 'rq-extra',
+  'rq-closed', 'rq-pending', 'rq-service-request',
   'st-issue', 'st-dept-consumption', 'st-receipt-ack',
   'st-cycle-count', 'st-movement',
 ];
