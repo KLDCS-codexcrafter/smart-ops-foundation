@@ -14,23 +14,14 @@ import { Button } from '@/components/ui/button';
 import { ScorecardTile } from './ScorecardTile';
 import { ReportChart } from './ChartLibrary';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   deriveRoleDashboard,
   layerCeilingFor,
   type RoleLayer,
 } from '@/lib/report-framework/role-layer';
-import type { KpiDefinition } from '@/lib/report-framework/kpi-registry';
+import { getSource } from '@/lib/report-framework/data-source-catalog';
 
-/** Tiny placeholder dataset shaped per xc KPI defaultChart so the chart renders. */
-function placeholderDataFor(kpi: KpiDefinition): Array<Record<string, unknown>> {
-  const { xKey, series } = kpi.defaultChart;
-  const buckets = ['Q1', 'Q2', 'Q3', 'Q4'];
-  return buckets.map((b, i) => {
-    const row: Record<string, unknown> = { [xKey]: b };
-    for (const s of series) row[s.key] = (i + 1) * 25;
-    return row;
-  });
-}
 
 const LAYER_ORDER: RoleLayer[] = ['operator', 'manager', 'management'];
 const LAYER_RANK: Record<RoleLayer, number> = {
