@@ -45,7 +45,7 @@ export function DailyWorkRegisterReportPanel(): JSX.Element {
   // RPT-6a · toggle recipe (additive)
   const chartRows = useMemo(() => {
     const m = new Map<string, number>();
-    for (const e of entries) m.set(e.entry_date, (m.get(e.entry_date) ?? 0) + (e.total_produced_qty ?? 0));
+    for (const e of entries) m.set(e.date, (m.get(e.date) ?? 0) + (e.total_produced_qty ?? 0));
     return Array.from(m.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([date, output_qty]) => ({ date, output_qty }));
   }, [entries]);
   const chartConfig = getKpi('prod-daily-work')?.defaultChart ?? defaultChartConfig({ chartType: 'line', xKey: 'date', series: [{ key: 'output_qty', label: 'Output Qty' }], title: 'Daily work output' });

@@ -28,7 +28,7 @@ import type { GenealogyTree, GenealogyNode } from '@/types/process-genealogy';
 import { ShieldCheck } from 'lucide-react';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
-import { useMemo as _useMemoRPT6a } from 'react';
+import { useMemo } from 'react';
 
 export function ProcessGenealogyTrackerPanel(): JSX.Element {
   const navigate = useNavigate();
