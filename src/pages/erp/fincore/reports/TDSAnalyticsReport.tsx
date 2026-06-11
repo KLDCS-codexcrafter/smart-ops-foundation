@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, Send } from 'lucide-react';
+import { Download, Send, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fyStart, today, exportCSV } from './reportUtils';
@@ -19,6 +19,10 @@ import type { TDSDeductionEntry } from '@/types/compliance';
 import { tdsDeductionsKey } from '@/types/compliance';
 import { postVoucher, generateVoucherNo } from '@/lib/fincore-engine';
 import type { Voucher } from '@/types/voucher';
+// RPT-2e-ii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 function ls<T>(key: string): T[] {
   try {
@@ -96,8 +100,45 @@ export function TDSAnalyticsPanel({ entityCode }: Props) {
     toast.success('Exported');
   };
 
+  // RPT-2e-ii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const e of entries) {
+      const sec = e.tds_section || 'Unknown';
+      map.set(sec, (map.get(sec) ?? 0) + e.net_tds_amount);
+    }
+    return Array.from(map.entries()).map(([section, tds]) => ({ section, tds }));
+  }, [entries]);
+  const chartConfig = getKpi('fc-tds-analytics')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'tds', label: 'TDS' }],
+    title: 'TDS by section',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 space-y-4">
+      <Card className="p-3 space-y-2" data-testid="fc-tds-analytics-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-tds-analytics-period-chip">{dateFrom} → {dateTo}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-tds-analytics-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'section', label: 'Section' },
+            { key: 'tds',     label: 'TDS', align: 'right', render: r => inr(Number(r.tds)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No TDS deductions"
+        />
+      </Card>
       <div className="flex items-center justify-between">
         <div><h2 className="text-xl font-bold">TDS Analytics Report</h2>
           <p className="text-xs text-muted-foreground">Central TDS deduction tracking and journal posting</p></div>

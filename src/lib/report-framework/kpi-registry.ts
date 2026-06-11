@@ -806,5 +806,83 @@ registerKpi({
   thresholds: { amber: 90, red: 70, direction: 'higher-good' },
 });
 
+// ─── RPT-2e-ii · 6 FinCore RCM/ITC/TDS/Audit register KPI seeds (idempotent) ─
+registerKpi({
+  id: 'fc-rcm-register',
+  label: 'RCM by section',
+  dataSource: 'fincore.rcm.by-section',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'rcm_value', label: 'RCM value' }],
+    title: 'RCM by section',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-itc',
+  label: 'ITC by status',
+  dataSource: 'fincore.itc.by-status',
+  defaultChart: defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'status',
+    series: [
+      { key: 'eligible',   label: 'Eligible' },
+      { key: 'ineligible', label: 'Ineligible' },
+      { key: 'reversed',   label: 'Reversed' },
+    ],
+    title: 'ITC by status',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-clause44',
+  label: 'Clause-44 expense breakup',
+  dataSource: 'fincore.clause44.expense-breakup',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'category',
+    series: [{ key: 'value', label: 'Value' }],
+    title: 'Clause-44 expense breakup',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-tds-advance',
+  label: 'TDS advance by section',
+  dataSource: 'fincore.tds-advance.by-section',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'tds_amount', label: 'TDS amount' }],
+    title: 'TDS advance by section',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-tds-analytics',
+  label: 'TDS by section',
+  dataSource: 'fincore.tds-analytics.by-section',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'tds', label: 'TDS' }],
+    title: 'TDS by section',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+registerKpi({
+  id: 'fc-audit-trail',
+  label: 'Audit events by type',
+  dataSource: 'fincore.audit-trail.by-action',
+  defaultChart: defaultChartConfig({
+    chartType: 'column', xKey: 'action',
+    series: [{ key: 'count', label: 'Events' }],
+    title: 'Audit events by type',
+  }),
+  thresholds: { amber: 80, red: 50, direction: 'higher-good' },
+});
+
+
 
 

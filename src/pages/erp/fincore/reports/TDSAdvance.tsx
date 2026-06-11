@@ -6,7 +6,7 @@
  */
 import { useState, useMemo, useCallback } from 'react';
 import { roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
-import { IndianRupee, Download, Plus, AlertTriangle } from 'lucide-react';
+import { IndianRupee, Download, Plus, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,10 @@ import { useVouchers } from '@/hooks/useVouchers';
 import { toast } from 'sonner';
 import { onEnterNext } from '@/lib/keyboard';
 import { inr, fyStart, today, exportCSV } from './reportUtils';
+// RPT-2e-ii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 
 interface TDSAdvancePanelProps { entityCode: string; }
 
@@ -108,8 +112,40 @@ export function TDSAdvancePanel({ entityCode }: TDSAdvancePanelProps) {
     );
   };
 
+  // RPT-2e-ii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() =>
+    sectionData.map(d => ({ section: d.section, tds_amount: d.tds })),
+  [sectionData]);
+  const chartConfig = getKpi('fc-tds-advance')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'tds_amount', label: 'TDS amount' }],
+    title: 'TDS advance by section',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 max-w-5xl mx-auto space-y-4">
+      <Card className="p-3 space-y-2" data-testid="fc-tds-advance-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-tds-advance-period-chip">{dateFrom} → {dateTo}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-tds-advance-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'section',    label: 'Section' },
+            { key: 'tds_amount', label: 'TDS amount', align: 'right', render: r => inr(Number(r.tds_amount)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No TDS data"
+        />
+      </Card>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <IndianRupee className="h-5 w-5 text-teal-500" />

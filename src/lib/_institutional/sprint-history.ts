@@ -1319,10 +1319,17 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-10', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-2e-i T-RPT2ei-GST-Statutory-Registers · Reporting Arc · roll the toggle-wrap recipe across the 6 FinCore GST statutory registers (GSTR1 · GSTR3B · GSTR9 · GSTR2Register · RecoPanel · RCMComplianceReport) — each gains TableChartToggle (default Table) + period chip + integrity badge + drill consume; existing Tables/columns/filters/CSV/JSON download PRESERVED · 6 KPI seeds (fc-gstr1 · fc-gstr3b · fc-gstr9 · fc-gstr2 · fc-reco · fc-rcm-compliance · with higher-good thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF · Form3CD · Form26AS · IRN panels · AuditDashboard 0-DIFF · Comply360 redirects-only (no edits) · close summary COMMITTED · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-2e-i T-RPT2ei-GST-Statutory-Registers · Reporting Arc · roll the toggle-wrap recipe across the 6 FinCore GST statutory registers (GSTR1 · GSTR3B · GSTR9 · GSTR2Register · RecoPanel · RCMComplianceReport) — each gains TableChartToggle (default Table) + period chip + integrity badge + drill consume; existing Tables/columns/filters/CSV/JSON download PRESERVED · 6 KPI seeds (fc-gstr1 · fc-gstr3b · fc-gstr9 · fc-gstr2 · fc-reco · fc-rcm-compliance · with higher-good thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF · Form3CD · Form26AS · IRN panels · AuditDashboard 0-DIFF · Comply360 redirects-only (no edits) · close summary COMMITTED · headSha BACKFILLED 31e423e at RPT-2e-ii Block 3
   {
     sprintNumber: 'RPT2ei' as unknown as number, code: 'T-RPT2ei-GST-Statutory-Registers', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '1ab0450', loc: 720,
+    headSha: '31e423e', predecessorSha: '1ab0450', loc: 720,
+    newSiblings: [],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-2e-ii T-RPT2eii-RCM-TDS-Audit-Statutory-Registers · Reporting Arc · roll the banked toggle-wrap recipe across 6 FinCore RCM/ITC/TDS/Audit statutory registers (RCMRegister · ITCRegister · Clause44Report · TDSAdvance · TDSAnalyticsReport · AuditTrailReport) — each gains TableChartToggle (default Table) + period chip + integrity badge + drill consume; HOOKS AT COMPONENT TOP LEVEL (RPT-2e-i T1 lesson baked in) · existing Tables/columns/filters/CSV PRESERVED · 6 KPI seeds (fc-rcm-register · fc-itc · fc-clause44 · fc-tds-advance · fc-tds-analytics · fc-audit-trail · with higher-good thresholds) in kpi-registry (idempotent · seed-data only) · ZERO new SIBLING · frozen-framework files 0-DIFF · 6 RPT-2e-i GST registers + Form3CD + Form26AS + IRN panels + AuditDashboard + EWayBill/Challan/Form24Q/26Q/27Q (RPT-2e-iii) 0-DIFF · Comply360 redirects-only (no edits) · close summary COMMITTED · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT2eii' as unknown as number, code: 'T-RPT2eii-RCM-TDS-Audit-Statutory-Registers', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '31e423e', loc: 640,
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
