@@ -35,6 +35,12 @@ export default function MixedModeBUDashboard(): JSX.Element {
   const preset = useEntityManufacturingMode(entityCode);
   const mode = preset.mode;
 
+  // RPT-6a · toggle recipe (additive) — hooks at top level before any early return
+  const chartRows = useMemo(() => DEMO_BUS.map((b) => ({ bu: b.bu_name, output: b.utilization_pct })), []);
+  const chartConfig = getKpi('prod-mixed-bu')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'bu', series: [{ key: 'output', label: 'Utilisation %' }], title: 'BU output mix' });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   if (mode !== 'mixed_mode') {
     return (
       <div className="p-6">
@@ -52,12 +58,6 @@ export default function MixedModeBUDashboard(): JSX.Element {
   }
 
   const total = DEMO_BUS.reduce((s, b) => s + b.capacity_pct, 0);
-
-  // RPT-6a · toggle recipe (additive)
-  const chartRows = useMemo(() => DEMO_BUS.map((b) => ({ bu: b.bu_name, output: b.utilization_pct })), []);
-  const chartConfig = getKpi('prod-mixed-bu')?.defaultChart ?? defaultChartConfig({ chartType: 'column', xKey: 'bu', series: [{ key: 'output', label: 'Utilisation %' }], title: 'BU output mix' });
-  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
-  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
   return (
     <div className="p-6 space-y-6">
       <div>
