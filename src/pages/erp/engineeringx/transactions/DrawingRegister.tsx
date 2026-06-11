@@ -31,6 +31,10 @@ import {
 import type { DrawingType } from '@/types/engineering-drawing';
 import type { EngineeringXModule } from '../EngineeringXSidebar.types';
 import type { Document } from '@/types/docvault';
+// RPT-6c imports
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 interface Props {
   onNavigate?: (m: EngineeringXModule) => void;
