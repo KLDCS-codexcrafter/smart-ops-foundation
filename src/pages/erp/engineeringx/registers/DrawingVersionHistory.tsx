@@ -116,6 +116,23 @@ export function DrawingVersionHistory({ onNavigate }: Props): JSX.Element {
           </Table>
         </CardContent>
       </Card>
+
+      {(() => {
+        const rows = Object.entries(versions.reduce((a: Record<string, number>, v) => { const d = (v.uploaded_at ?? '').slice(0, 10) || 'unknown'; a[d] = (a[d] ?? 0) + 1; return a; }, {})).sort(([a], [b]) => a.localeCompare(b)).map(([date, revisions]) => ({ date, revisions }));
+        const cfg = getKpi('eng-versions')?.defaultChart ?? defaultChartConfig({ chartType: 'line', xKey: 'date', series: [{ key: 'revisions', label: 'Revisions' }], title: 'Revisions over time' });
+        const hash = signReport(rows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <div className="border rounded-lg p-3 space-y-2" data-testid="eng-versions-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center text-[10px] font-mono border rounded px-1.5 py-0.5" data-testid="eng-versions-integrity-badge" title={hash}>
+                <RPT6cShield className="h-3 w-3 mr-1" />{short}
+              </span>
+            </div>
+            <TableChartToggle rows={rows} columns={[{ key: 'date', label: 'Date' }, { key: 'revisions', label: 'Revisions', align: 'right' }]} chartConfig={cfg} defaultView="table" emptyLabel="No versions" />
+          </div>
+        );
+      })()}
     </div>
   );
 }
