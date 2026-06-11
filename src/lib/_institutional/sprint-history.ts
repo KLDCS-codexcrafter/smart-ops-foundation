@@ -1392,7 +1392,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint RPT-6a T-RPT6a-Production-Reports · Reporting Arc · Phase C (Ops Hub-2, cohort a — Production) · 14 Production analytical pages chart-enabled (8 toggle recipe · 6 dashboard recipe) · 14 layer-tagged KPI seeds (prod-demand-forecast · prod-mixed-bu · prod-trace · prod-itc04 · prod-jw-stock · prod-batch · prod-plan · prod-jw-components · prod-line-oee with thresholds · prod-confirmation · prod-jw-in · prod-jobcard · prod-daily-work · prod-genealogy) · 2 Production DSC sources (production.orders · production.jobwork) read-only wrappers of productionOrdersKey + jobWorkOutOrdersKey · 9 legacy-recharts pages EXCLUDED 0-DIFF (OEEDashboard · CapacityPlanningDashboard · PlanActualRolling · WastageDashboard · ProductionCarbonDashboard · CarbonAwareProductionPlanner · ShiftwiseProductionReport · ManpowerProductionReport · JobWorkAgeingAnalysis) · ScorecardTile included only on RepetitiveLineOEEReport (real Avg OEE %) · ZERO new SIBLINGs · headSha TBD_AT_BANK
   {
     sprintNumber: 'RPT6a' as unknown as number, code: 'T-RPT6a-Production-Reports', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '3afd64a', loc: 1020,
+    headSha: 'f5e1d93', predecessorSha: '3afd64a', loc: 1020,
+    newSiblings: [],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-6b T-RPT6b-RequestX-StoreHub-Reports · Reporting Arc · Phase C (Ops Hub-2, cohort b) · 12 pages chart-enabled across RequestX (7) + Store Hub (5) — 5 toggle recipe (AgeingPendingIndents · DepartmentWiseSummary · POAgainstIndent · IndentClosed · IndentPending · CycleCountStatus) and 7 dashboard recipe (IndentRegister · ServiceRequestRegister · StockIssueRegister · StockReceiptAckRegister · DepartmentConsumptionSummary · StockMovementRegister) · 12 layer-tagged KPI seeds (rq-indent · rq-ageing · rq-dept-summary · rq-po-against · rq-closed · rq-pending · rq-extra · st-issue · st-dept-consumption · st-receipt-ack · st-cycle-count · st-movement) · 4 DSC sources (requestx.indents · requestx.po-conversion · storehub.issues · storehub.movement) read-only wrappers of materialIndentsKey/serviceRequestsKey/capitalIndentsKey/stockIssuesKey/stockReceiptAcksKey · 1 legacy-recharts page EXCLUDED 0-DIFF (CategoryWiseSpendEstimate) · ServiceRequestRegister chosen as 7th RequestX page (CategoryWiseSpendEstimate is the legacy-recharts exclusion) · ScorecardTile OMITTED across all 12 pages — no page exposes a real bounded summary-% (status mixes/counts only) · hooks at top level · NO recharts import added · layouts PRESERVED (additive Card after existing grid/table) · honest empty-state · ZERO new SIBLINGs · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT6b' as unknown as number, code: 'T-RPT6b-RequestX-StoreHub-Reports', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'f5e1d93', loc: 980,
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },

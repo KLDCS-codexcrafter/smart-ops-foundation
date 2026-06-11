@@ -13,12 +13,15 @@
  *              @/lib/form-carry-forward-kit · @/components/canonical/form-carry-forward-kit (PRESERVED verbatim per PB-Q3=(A))
  * @[JWT]       reads via listStockIssues · posts via postStockIssue (single inline action)
  */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Send, Plus, ArrowDown } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Send, Plus, ArrowDown, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listStockIssues, postStockIssue } from '@/lib/stock-issue-engine';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
@@ -148,6 +151,7 @@ export function StockIssueRegisterPanel({ onModuleChange }: Props): JSX.Element 
           <Plus className="h-3.5 w-3.5 mr-1" /> New Issue
         </Button>
       </div>
+      <StockIssueChartCard items={items} />
       <UniversalRegisterGrid<StockIssue>
         entityCode={entityCode}
         meta={meta}
@@ -169,6 +173,40 @@ export function StockIssueRegisterPanel({ onModuleChange }: Props): JSX.Element 
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function StockIssueChartCard({ items }: { items: StockIssue[] }): JSX.Element {
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of items) {
+      const dept = r.department_name || '—';
+      m.set(dept, (m.get(dept) ?? 0) + (r.total_value ?? 0));
+    }
+    return Array.from(m.entries()).map(([department, issue_value]) => ({ department, issue_value }));
+  }, [items]);
+  const chartConfig = getKpi('st-issue')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'department',
+    series: [{ key: 'issue_value', label: 'Issue Value ₹' }],
+    title: 'Stock issue value by department',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+  return (
+    <Card className="p-3 space-y-2" data-testid="st-issue-dashboard-host">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="st-issue-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
+      </div>
+      {chartRows.length === 0 ? (
+        <div className="text-sm text-muted-foreground py-6 text-center">No stock issues yet</div>
+      ) : (
+        <div className="w-full h-72" data-testid="st-issue-chart-host">
+          <ReportChart data={chartRows} config={chartConfig} />
+        </div>
+      )}
+    </Card>
   );
 }
 

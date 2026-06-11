@@ -8,6 +8,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
@@ -135,6 +139,19 @@ export function ServiceRequestRegisterPanel() {
     ];
   };
 
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of rows) m.set(r.service_track ?? 'unknown', (m.get(r.service_track ?? 'unknown') ?? 0) + 1);
+    return Array.from(m.entries()).map(([track, count]) => ({ track, count }));
+  }, [rows]);
+  const chartConfig = getKpi('rq-extra')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'track',
+    series: [{ key: 'count', label: 'Requests' }],
+    title: 'Service requests by track',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
       <UniversalRegisterGrid<ServiceRequest>
@@ -157,6 +174,21 @@ export function ServiceRequestRegisterPanel() {
           {printing && <ServiceRequestPrint request={printing} onClose={() => setPrinting(null)} />}
         </DialogContent>
       </Dialog>
+
+      <Card className="p-3 space-y-2" data-testid="rq-extra-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="rq-extra-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No service requests yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="rq-extra-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

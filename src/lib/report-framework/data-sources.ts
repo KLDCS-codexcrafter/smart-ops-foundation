@@ -21,6 +21,11 @@ import { qaInspectionKey } from '@/types/qa-inspection';
 import { ncrKey } from '@/types/ncr';
 import { productionOrdersKey } from '@/types/production-order';
 import { jobWorkOutOrdersKey } from '@/types/job-work-out-order';
+import { materialIndentsKey } from '@/types/material-indent';
+import { serviceRequestsKey } from '@/types/service-request';
+import { capitalIndentsKey } from '@/types/capital-indent';
+import { stockIssuesKey } from '@/types/stock-issue';
+import { stockReceiptAcksKey } from '@/types/stock-receipt-ack';
 
 function safeRead<T>(key: string): T[] {
   try {
@@ -321,6 +326,84 @@ export function registerAllDataSources(): void {
     ],
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(jobWorkOutOrdersKey(entityCode || 'SMRT')),
+  });
+
+  // ─── RPT-6b · 4 RequestX + Store-hub sources (read-only wrappers of existing keys) ───
+  registerSource({
+    id: 'requestx.indents',
+    label: 'RequestX · Indents (material + service + capital)',
+    card: 'requestx',
+    kind: 'register',
+    fields: [
+      { key: 'voucher_no', label: 'Voucher', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'originating_department_name', label: 'Department', kind: 'dimension' },
+      { key: 'date', label: 'Date', kind: 'dimension' },
+      { key: 'total_estimated_value', label: 'Estimated Value', kind: 'measure' },
+    ],
+    read: (entityCode) => {
+      const ec = entityCode || 'SMRT';
+      const all: Array<Record<string, unknown>> = [];
+      all.push(...safeRead<Record<string, unknown>>(materialIndentsKey(ec)));
+      all.push(...safeRead<Record<string, unknown>>(serviceRequestsKey(ec)));
+      all.push(...safeRead<Record<string, unknown>>(capitalIndentsKey(ec)));
+      return all;
+    },
+  });
+
+  registerSource({
+    id: 'requestx.po-conversion',
+    label: 'RequestX · PO conversion mix (indent → PO)',
+    card: 'requestx',
+    kind: 'register',
+    fields: [
+      { key: 'voucher_no', label: 'Voucher', kind: 'dimension' },
+      { key: 'status', label: 'PO Status', kind: 'dimension' },
+      { key: 'originating_department_name', label: 'Department', kind: 'dimension' },
+    ],
+    read: (entityCode) => {
+      const ec = entityCode || 'SMRT';
+      const all: Array<Record<string, unknown>> = [];
+      all.push(...safeRead<Record<string, unknown>>(materialIndentsKey(ec)));
+      all.push(...safeRead<Record<string, unknown>>(serviceRequestsKey(ec)));
+      all.push(...safeRead<Record<string, unknown>>(capitalIndentsKey(ec)));
+      return all;
+    },
+  });
+
+  registerSource({
+    id: 'storehub.issues',
+    label: 'Store Hub · Stock Issues',
+    card: 'store-hub',
+    kind: 'register',
+    fields: [
+      { key: 'issue_no', label: 'Issue No', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'department_name', label: 'Department', kind: 'dimension' },
+      { key: 'issue_date', label: 'Date', kind: 'dimension' },
+      { key: 'total_value', label: 'Value', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(stockIssuesKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'storehub.movement',
+    label: 'Store Hub · Stock Movement (issues + receipt acks)',
+    card: 'store-hub',
+    kind: 'register',
+    fields: [
+      { key: 'doc_no', label: 'Doc No', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'date', label: 'Date', kind: 'dimension' },
+    ],
+    read: (entityCode) => {
+      const ec = entityCode || 'SMRT';
+      const all: Array<Record<string, unknown>> = [];
+      all.push(...safeRead<Record<string, unknown>>(stockIssuesKey(ec)));
+      all.push(...safeRead<Record<string, unknown>>(stockReceiptAcksKey(ec)));
+      return all;
+    },
   });
 }
 

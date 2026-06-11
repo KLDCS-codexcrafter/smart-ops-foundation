@@ -8,6 +8,9 @@ import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
 import { useServiceRequests } from '@/hooks/useServiceRequests';
 import { useCapitalIndents } from '@/hooks/useCapitalIndents';
@@ -120,6 +123,45 @@ export function IndentClosedPanel(): JSX.Element {
           </Table></SkeletonRows>
         </CardContent>
       </Card>
+      <IndentClosedChartCard rows={enrichedRows} />
     </div>
+  );
+}
+
+function IndentClosedChartCard({ rows }: { rows: Array<{ updated_at: string }> }): JSX.Element {
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of rows) {
+      const day = (r.updated_at || '').slice(0, 10);
+      if (!day) continue;
+      m.set(day, (m.get(day) ?? 0) + 1);
+    }
+    return Array.from(m.entries()).sort((a, b) => a[0].localeCompare(b[0])).map(([date, count]) => ({ date, count }));
+  }, [rows]);
+  const chartConfig = getKpi('rq-closed')?.defaultChart ?? defaultChartConfig({
+    chartType: 'line', xKey: 'date',
+    series: [{ key: 'count', label: 'Closed' }],
+    title: 'Closed indents by date',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+  return (
+    <Card className="p-3 space-y-2" data-testid="rq-closed-toggle-host">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="rq-closed-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
+      </div>
+      <TableChartToggle
+        rows={chartRows}
+        columns={[
+          { key: 'date', label: 'Date' },
+          { key: 'count', label: 'Closed', align: 'right' },
+        ]}
+        chartConfig={chartConfig}
+        defaultView="table"
+        emptyLabel="No closed indents"
+      />
+    </Card>
   );
 }

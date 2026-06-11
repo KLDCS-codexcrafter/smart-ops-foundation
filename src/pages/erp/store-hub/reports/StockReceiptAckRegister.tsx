@@ -7,6 +7,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
@@ -113,6 +117,7 @@ export function StockReceiptAckRegisterPanel() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <StockReceiptAckChartCard rows={rows} />
       <UniversalRegisterGrid<StockReceiptAck>
         entityCode={safeEntity}
         meta={meta}
@@ -134,6 +139,37 @@ export function StockReceiptAckRegisterPanel() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+function StockReceiptAckChartCard({ rows }: { rows: StockReceiptAck[] }): JSX.Element {
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of rows) m.set(r.status, (m.get(r.status) ?? 0) + 1);
+    return Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+  }, [rows]);
+  const chartConfig = getKpi('st-receipt-ack')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'SRAs' }],
+    title: 'SRA records by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+  return (
+    <Card className="p-3 space-y-2" data-testid="st-receipt-ack-dashboard-host">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="st-receipt-ack-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
+      </div>
+      {chartRows.length === 0 ? (
+        <div className="text-sm text-muted-foreground py-6 text-center">No SRA records yet</div>
+      ) : (
+        <div className="w-full h-72" data-testid="st-receipt-ack-chart-host">
+          <ReportChart data={chartRows} config={chartConfig} />
+        </div>
+      )}
+    </Card>
   );
 }
 

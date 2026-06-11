@@ -7,6 +7,9 @@ import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
 import { useServiceRequests } from '@/hooks/useServiceRequests';
 import { useCapitalIndents } from '@/hooks/useCapitalIndents';
@@ -99,6 +102,42 @@ export function AgeingPendingIndentsPanel(): JSX.Element {
           </Table></SkeletonRows>
         </CardContent>
       </Card>
+
+      {(() => null)()}
+      <RqAgeingChartCard buckets={buckets} />
     </div>
+  );
+}
+
+function RqAgeingChartCard({ buckets }: { buckets: Record<'0-7' | '8-15' | '16-30' | '30+', number> }): JSX.Element {
+  const chartRows = useMemo(
+    () => (['0-7', '8-15', '16-30', '30+'] as const).map(b => ({ bucket: b, count: buckets[b] ?? 0 })),
+    [buckets],
+  );
+  const chartConfig = getKpi('rq-ageing')?.defaultChart ?? defaultChartConfig({
+    chartType: 'stacked-column', xKey: 'bucket',
+    series: [{ key: 'count', label: 'Pending' }],
+    title: 'Pending indents by age bucket',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+  return (
+    <Card className="p-3 space-y-2" data-testid="rq-ageing-toggle-host">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="rq-ageing-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
+      </div>
+      <TableChartToggle
+        rows={chartRows}
+        columns={[
+          { key: 'bucket', label: 'Bucket' },
+          { key: 'count', label: 'Pending', align: 'right' },
+        ]}
+        chartConfig={chartConfig}
+        defaultView="table"
+        emptyLabel="No pending indents"
+      />
+    </Card>
   );
 }

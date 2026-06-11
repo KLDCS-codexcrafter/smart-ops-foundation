@@ -7,6 +7,9 @@ import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
 import { useServiceRequests } from '@/hooks/useServiceRequests';
 import { useCapitalIndents } from '@/hooks/useCapitalIndents';
@@ -80,6 +83,41 @@ export function POAgainstIndentPanel(): JSX.Element {
           </Table></SkeletonRows>
         </CardContent>
       </Card>
+      <PoAgainstChartCard counts={counts} />
     </div>
+  );
+}
+
+function PoAgainstChartCard({ counts }: { counts: { no_po: number; raised: number; closed: number } }): JSX.Element {
+  const chartRows = useMemo(() => [
+    { status: 'No PO', count: counts.no_po },
+    { status: 'PO Raised', count: counts.raised },
+    { status: 'PO Closed', count: counts.closed },
+  ], [counts]);
+  const chartConfig = getKpi('rq-po-against')?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Indents' }],
+    title: 'PO conversion mix',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+  return (
+    <Card className="p-3 space-y-2" data-testid="rq-po-against-toggle-host">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="rq-po-against-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
+      </div>
+      <TableChartToggle
+        rows={chartRows}
+        columns={[
+          { key: 'status', label: 'PO Status' },
+          { key: 'count', label: 'Indents', align: 'right' },
+        ]}
+        chartConfig={chartConfig}
+        defaultView="table"
+        emptyLabel="No PO conversion data"
+      />
+    </Card>
   );
 }

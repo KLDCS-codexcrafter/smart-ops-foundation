@@ -13,8 +13,12 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import type { RegisterColumn, RegisterMeta, StatusOption, SummaryCard } from '@/components/registers/UniversalRegisterTypes';
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
@@ -228,6 +232,19 @@ export function IndentRegisterPanel(): JSX.Element {
     setAction(null);
   }, []);
 
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of filteredRows) m.set(r.status ?? 'unknown', (m.get(r.status ?? 'unknown') ?? 0) + 1);
+    return Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+  }, [filteredRows]);
+  const chartConfig = getKpi('rq-indent')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'Indents' }],
+    title: 'Indents by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
       {/* Sprint B.2 · lineage breadcrumb for selected indent (D-NEW-ES) */}
@@ -267,6 +284,21 @@ export function IndentRegisterPanel(): JSX.Element {
         onClose={() => setAction(null)}
         onActionComplete={handleActionComplete}
       />
+
+      <Card className="p-3 space-y-2" data-testid="rq-indent-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="rq-indent-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No indents yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="rq-indent-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
