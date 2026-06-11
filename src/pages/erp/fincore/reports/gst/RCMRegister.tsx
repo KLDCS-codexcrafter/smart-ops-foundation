@@ -12,6 +12,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
+import { ShieldCheck } from 'lucide-react';
+// RPT-2e-ii · additive toggle-wrap
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useDrillDown } from '@/hooks/useDrillDown';
 import type { RCMEntry } from '@/types/compliance';
 import { rcmEntriesKey } from '@/types/compliance';
 import { comply360RCMKey } from '@/pages/erp/accounting/ComplianceSettingsAutomation.constants';
@@ -156,8 +161,45 @@ export function RCMRegisterPanel({ entityCode }: RCMRegisterPanelProps) {
   const months = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'];
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+  // RPT-2e-ii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const acc: Record<string, number> = { 'Section 9(3)': 0, 'Section 9(4)': 0 };
+    for (const e of filtered) {
+      const k = e.rcm_section === 'section_9_3' ? 'Section 9(3)' : 'Section 9(4)';
+      acc[k] += e.cgst_amount + e.sgst_amount + e.igst_amount + e.cess_amount;
+    }
+    return Object.entries(acc).map(([section, rcm_value]) => ({ section, rcm_value }));
+  }, [filtered]);
+  const chartConfig = getKpi('fc-rcm-register')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'rcm_value', label: 'RCM value' }],
+    title: 'RCM by section',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-6 space-y-4">
+      <Card className="p-3 space-y-2" data-testid="fc-rcm-register-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-rcm-register-period-chip">Period {period}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-rcm-register-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'section',   label: 'Section' },
+            { key: 'rcm_value', label: 'RCM value', align: 'right', render: r => inr(Number(r.rcm_value)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No RCM entries"
+        />
+      </Card>
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-bold flex items-center gap-2"><Shield className="h-5 w-5 text-teal-500" /> RCM Register</h2>
