@@ -478,9 +478,7 @@ export function registerAllDataSources(): void {
     ],
     read: (entityCode) => {
       try {
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const eng = require('@/lib/msme-43bh-engine') as { getMSMEBreaches: (e: string) => unknown[] };
-        return eng.getMSMEBreaches(entityCode || 'SMRT') as Record<string, unknown>[];
+        return getMSMEBreaches(entityCode || 'SMRT') as unknown as Record<string, unknown>[];
       } catch { return []; }
     },
   });
