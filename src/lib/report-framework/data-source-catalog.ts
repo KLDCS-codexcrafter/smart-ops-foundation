@@ -6,7 +6,7 @@
  *              source any report/dashboard can consume.
  *
  * Read-only-lock: this file has ZERO react imports, ZERO localStorage.setItem,
- * ZERO post*/save*/write* helpers. The builder's non-mutation guarantee
+ * ZERO post / save / write helpers. The builder's non-mutation guarantee
  * starts here — a test grep-asserts it.
  */
 
