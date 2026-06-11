@@ -141,8 +141,45 @@ export function RTVRegisterPanel({ initialFilter }: RTVRegisterPanelProps = {}) 
 
   const currentRTV = drill.current?.payload as RTV | undefined;
 
+  // RPT-5b · toggle-wrap (hooks at top level)
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of allRtvs) {
+      if (r.status === 'cancelled' || r.status === 'draft') continue;
+      m.set(r.vendor_name, (m.get(r.vendor_name) ?? 0) + r.total_value);
+    }
+    return Array.from(m.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 12)
+      .map(([vendor, rtv_value]) => ({ vendor, rtv_value }));
+  }, [allRtvs]);
+  const chartConfig = getKpi('inv-rtv')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'vendor',
+    series: [{ key: 'rtv_value', label: 'RTV Value ₹' }],
+    title: 'RTV value by vendor',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
+      <Card className="p-3 space-y-2" data-testid="inv-rtv-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="inv-rtv-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'vendor', label: 'Vendor' },
+            { key: 'rtv_value', label: 'RTV Value ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No posted RTVs"
+        />
+      </Card>
       <DrillSourceBanner sourceLabel={filter?.sourceLabel} onClear={() => setFilter(undefined)} />
       <DrillBreadcrumb rootLabel="RTV Register" trail={drill.trail} onGoTo={drill.goTo} onReset={drill.reset} />
       {!currentRTV ? (
