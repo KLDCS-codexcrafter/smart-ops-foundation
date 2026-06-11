@@ -99,6 +99,19 @@ export function StockLedgerReportPanel({ onNavigate }: StockLedgerReportPanelPro
       .sort((a, b) => b.value - a.value);
   }, [godowns, balances]);
 
+  // RPT-5b · toggle-wrap (hooks at top level — BEFORE any early return)
+  const chartRows = useMemo(
+    () => summary.slice(0, 20).map(r => ({ item: r.item_name, balance_qty: r.qty, value: r.value })),
+    [summary],
+  );
+  const chartConfig = getKpi('inv-stock-ledger')?.defaultChart ?? defaultChartConfig({
+    chartType: 'line', xKey: 'item',
+    series: [{ key: 'balance_qty', label: 'Balance Qty' }],
+    title: 'Top item balances',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   // ---------- Level 1: ItemDetailView ----------
   const current = drill.current;
   if (current?.module === 'item-detail' || current?.module === 'item-movements') {
