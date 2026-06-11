@@ -106,17 +106,17 @@ export function registerAllDayBookSources(): void {
       for (const t of listServiceTickets()) {
         if (t.raised_at) out.push({
           id: `${t.id}-raised`, date: t.raised_at.slice(0, 10), time: t.raised_at.slice(11, 16),
-          type: 'Ticket Raised', reference: t.ticket_no ?? t.id, party: t.customer_name ?? '',
+          type: 'Ticket Raised', reference: t.ticket_no ?? t.id, party: t.customer_id ?? '',
           amount: 0, status: t.status ?? 'raised', module: 'sd-service-daybook',
         });
         if (t.resolved_at) out.push({
           id: `${t.id}-resolved`, date: t.resolved_at.slice(0, 10), time: t.resolved_at.slice(11, 16),
-          type: 'Ticket Resolved', reference: t.ticket_no ?? t.id, party: t.customer_name ?? '',
+          type: 'Ticket Resolved', reference: t.ticket_no ?? t.id, party: t.customer_id ?? '',
           amount: 0, status: 'resolved', module: 'sd-service-daybook',
         });
         if (t.closed_at) out.push({
           id: `${t.id}-closed`, date: t.closed_at.slice(0, 10), time: t.closed_at.slice(11, 16),
-          type: 'Ticket Closed', reference: t.ticket_no ?? t.id, party: t.customer_name ?? '',
+          type: 'Ticket Closed', reference: t.ticket_no ?? t.id, party: t.customer_id ?? '',
           amount: 0, status: 'closed', module: 'sd-service-daybook',
         });
       }
