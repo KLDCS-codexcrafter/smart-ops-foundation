@@ -216,3 +216,8 @@ export function AuditTrailReportPanel({ entityCode }: { entityCode: string | und
     </div>
   );
 }
+
+export default function AuditTrailReport() {
+  const { entityCode } = useEntityCode();
+  return <AuditTrailReportPanel entityCode={entityCode} />;
+}
