@@ -170,6 +170,41 @@ export function CycleCountStatusPanel(): JSX.Element {
           </CardContent>
         </Card>
       )}
+      <CycleCountChartCard list={summary.all} />
     </div>
+  );
+}
+
+function CycleCountChartCard({ list }: { list: CycleCount[] }): JSX.Element {
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of list) m.set(r.status, (m.get(r.status) ?? 0) + 1);
+    return Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+  }, [list]);
+  const chartConfig = getKpi('st-cycle-count')?.defaultChart ?? defaultChartConfig({
+    chartType: 'doughnut', xKey: 'status',
+    series: [{ key: 'count', label: 'Cycle Counts' }],
+    title: 'Cycle counts by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+  return (
+    <Card className="p-3 space-y-2" data-testid="st-cycle-count-toggle-host">
+      <div className="flex items-center gap-2 flex-wrap">
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="st-cycle-count-integrity-badge" title={integrityHash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+        </Badge>
+      </div>
+      <TableChartToggle
+        rows={chartRows}
+        columns={[
+          { key: 'status', label: 'Status' },
+          { key: 'count', label: 'Cycle Counts', align: 'right' },
+        ]}
+        chartConfig={chartConfig}
+        defaultView="table"
+        emptyLabel="No cycle counts"
+      />
+    </Card>
   );
 }
