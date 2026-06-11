@@ -54,6 +54,21 @@ export function Form27QPanel({ entityCode }: Props) {
     toast.success('Exported');
   };
 
+  // RPT-2e-iii · top-level hooks for toggle-wrap (HOOKS AT TOP LEVEL)
+  const drill = useDrillDown();
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    entries.forEach(e => m.set(e.tds_section, (m.get(e.tds_section) ?? 0) + e.net_tds_amount));
+    return Array.from(m.entries()).map(([section, tds]) => ({ section, tds }));
+  }, [entries]);
+  const chartConfig = getKpi('fc-form27q')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'section',
+    series: [{ key: 'tds', label: 'TDS' }],
+    title: 'Form 27Q NRI TDS by section',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div data-keyboard-form className="p-5 space-y-4">
       <div className="flex items-center justify-between">
@@ -63,6 +78,27 @@ export function Form27QPanel({ entityCode }: Props) {
         </div>
         <Button data-primary variant="outline" size="sm" onClick={handleExport}><Download className="h-4 w-4 mr-1" />Export CSV</Button>
       </div>
+
+      <Card className="p-3 space-y-2" data-testid="fc-form27q-toggle-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px]" data-testid="fc-form27q-period-chip">{quarter} · AY {ay}</Badge>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="fc-form27q-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+          {drill.trail.length > 0 && <span className="text-[10px] text-muted-foreground">drill depth: {drill.trail.length}</span>}
+        </div>
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'section', label: 'Section' },
+            { key: 'tds', label: 'TDS', align: 'right', render: r => inr(Number(r.tds)) },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No NRI TDS"
+        />
+      </Card>
+
 
       <Card><CardContent className="pt-4 space-y-2">
         <p className="text-xs font-semibold">Part A — Deductor Details</p>
