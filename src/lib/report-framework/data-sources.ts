@@ -286,6 +286,40 @@ export function registerAllDataSources(): void {
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(ncrKey(entityCode || 'SMRT')),
   });
+
+  // ─── RPT-6a · Production DSC sources ─────────────────────────────────
+  // Wraps the SAME storage the wrapped Production pages already read.
+  registerSource({
+    id: 'production.orders',
+    label: 'Production · Production Orders',
+    card: 'production',
+    kind: 'register',
+    fields: [
+      { key: 'doc_no', label: 'PO No', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'production_site_id', label: 'Factory', kind: 'dimension' },
+      { key: 'planned_qty', label: 'Planned Qty', kind: 'measure' },
+      { key: 'target_end_date', label: 'Target End', kind: 'dimension' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(productionOrdersKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'production.jobwork',
+    label: 'Production · Job-Work Out Orders',
+    card: 'production',
+    kind: 'register',
+    fields: [
+      { key: 'doc_no', label: 'JWO No', kind: 'dimension' },
+      { key: 'vendor_id', label: 'Vendor', kind: 'dimension' },
+      { key: 'vendor_name', label: 'Vendor Name', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'jwo_date', label: 'Date', kind: 'dimension' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(jobWorkOutOrdersKey(entityCode || 'SMRT')),
+  });
 }
 
 // Auto-register on import. Idempotent — re-import is a no-op.
