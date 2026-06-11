@@ -10,11 +10,13 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Activity, Download, ExternalLink } from 'lucide-react';
+import { Activity, Download, ExternalLink, ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { getItemMovementHistory, type MovementType } from '@/lib/item-movement-engine';
 import type { InventoryItem } from '@/types/inventory-item';
 import type { MainStoreHubModule } from '../MainStoreHubSidebar.types';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const TYPE_LABELS: Record<MovementType, string> = {
   grn_inward: 'GRN',
