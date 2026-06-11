@@ -27,6 +27,10 @@ import {
   type MSMEBreach,
 } from '@/lib/msme-43bh-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// RPT-6c imports
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { ShieldCheck as RPT6cShield } from 'lucide-react';
 
 type StatusKind = 'safe' | 'caution' | 'warning' | 'overdue';
 
