@@ -1385,7 +1385,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint RPT-5d T-RPT5d-QualiCheck-Reports · Reporting Arc · Phase C sprint 4 (Ops Hub-1, cohort d · CLOSES Ops Hub-1) · 8 QualiCheck pages chart-enabled via toggle recipe (MtcRegister · QualiCheckNcrEvidenceRegister · QcRejectionAnalysis · CFRPart11AuditTrailViewer · QCGodownSummary · QCStkTrnsfer · FGRInspReport · StkIqcStRemarks) · QualiCheckDashboard EXCLUDED 0-DIFF (legacy-charted · imports QCTrendChart/QCParetoChart) · 9 layer-tagged KPI seeds (qc-mtc · qc-ncr · qc-rejection · qc-cfr-audit · qc-godown · qc-stk-transfer · qc-fgr-insp · qc-iqc-remarks · qc-dashboard) · 2 QualiCheck DSC sources (qualicheck.inspections · qualicheck.ncr) read-only wrappers of qaInspectionKey + ncrKey · ScorecardTile OMITTED across all 8 pages — no page exposes a real summary-% (status mixes/counts only) · hooks at top level · NO recharts import added · layouts PRESERVED (additive Card after existing table) · honest empty-state · ZERO new SIBLINGs · headSha TBD_AT_BANK
   {
     sprintNumber: 'RPT5d' as unknown as number, code: 'T-RPT5d-QualiCheck-Reports', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '8d683e5', loc: 680,
+    headSha: '3afd64a', predecessorSha: '8d683e5', loc: 680,
+    newSiblings: [],
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-6a T-RPT6a-Production-Reports · Reporting Arc · Phase C (Ops Hub-2, cohort a — Production) · 14 Production analytical pages chart-enabled (8 toggle recipe · 6 dashboard recipe) · 14 layer-tagged KPI seeds (prod-demand-forecast · prod-mixed-bu · prod-trace · prod-itc04 · prod-jw-stock · prod-batch · prod-plan · prod-jw-components · prod-line-oee with thresholds · prod-confirmation · prod-jw-in · prod-jobcard · prod-daily-work · prod-genealogy) · 2 Production DSC sources (production.orders · production.jobwork) read-only wrappers of productionOrdersKey + jobWorkOutOrdersKey · 9 legacy-recharts pages EXCLUDED 0-DIFF (OEEDashboard · CapacityPlanningDashboard · PlanActualRolling · WastageDashboard · ProductionCarbonDashboard · CarbonAwareProductionPlanner · ShiftwiseProductionReport · ManpowerProductionReport · JobWorkAgeingAnalysis) · ScorecardTile included only on RepetitiveLineOEEReport (real Avg OEE %) · ZERO new SIBLINGs · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT6a' as unknown as number, code: 'T-RPT6a-Production-Reports', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '3afd64a', loc: 1020,
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
   },
