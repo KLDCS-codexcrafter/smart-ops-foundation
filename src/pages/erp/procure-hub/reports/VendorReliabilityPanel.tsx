@@ -18,6 +18,9 @@ import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { getTopVendorsByScore, type VendorScore } from '@/lib/vendor-scoring-engine';
 import { formatDateIN, debounce } from '@/lib/procure360-formatters';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const PAGE_SIZE = 50;
 const FETCH_N = 500;  // Item 9 · scale-to-500 perf target · uses useMemo + pagination
@@ -76,6 +79,19 @@ export function VendorReliabilityPanel(): JSX.Element {
     return { total, avg, topQ };
   }, [sortedVendors]);
 
+  // RPT-5c · dashboard recipe (additive)
+  const chartRows = useMemo(
+    () => sortedVendors.slice(0, 12).map((v) => ({ vendor: v.vendor_name, score: v.total_score })),
+    [sortedVendors],
+  );
+  const chartConfig = getKpi('pr-vendor-reliability')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'vendor',
+    series: [{ key: 'score', label: 'Reliability Score' }],
+    title: 'Top vendors by reliability score',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <TooltipProvider>
       <div className="p-6 space-y-4">
@@ -98,6 +114,21 @@ export function VendorReliabilityPanel(): JSX.Element {
             <CardContent><div className="text-2xl font-bold font-mono">{kpis.topQ}</div></CardContent>
           </Card>
         </div>
+
+        <Card className="p-3 space-y-2" data-testid="pr-vendor-reliability-dashboard-host">
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="outline" className="text-[10px] font-mono" data-testid="pr-vendor-reliability-integrity-badge" title={integrityHash}>
+              <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+            </Badge>
+          </div>
+          {chartRows.length === 0 ? (
+            <div className="text-sm text-muted-foreground py-6 text-center">No vendor scores yet</div>
+          ) : (
+            <div className="w-full h-72" data-testid="pr-vendor-reliability-chart-host">
+              <ReportChart data={chartRows} config={chartConfig} />
+            </div>
+          )}
+        </Card>
 
         <div className="flex items-center justify-between gap-2">
           <Input

@@ -10,8 +10,11 @@ import { useMemo } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
 import { listAllPurchaseCostVariances, type PurchaseCostVariance } from '@/lib/purchase-cost-variance-engine';
 import { round2 } from '@/lib/decimal-helpers';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtMoney = (n: number): string => `₹${n.toLocaleString('en-IN')}`;
 const fmtPct = (n: number): string => `${n >= 0 ? '+' : ''}${round2(n)}%`;
@@ -29,6 +32,22 @@ export function PurchaseCostVarianceItemPanel(): JSX.Element {
     favorable: variances.filter((v) => v.direction === 'favorable').length,
     breaches: variances.filter((v) => v.threshold_breach).length,
   }), [variances]);
+
+  // RPT-5c · dashboard recipe (additive)
+  const chartRows = useMemo(
+    () => [...variances]
+      .sort((a, b) => Math.abs(b.variance_amount) - Math.abs(a.variance_amount))
+      .slice(0, 12)
+      .map((v) => ({ item: v.dimension_name, variance: v.variance_amount })),
+    [variances],
+  );
+  const chartConfig = getKpi('pr-cost-variance-item')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'item',
+    series: [{ key: 'variance', label: 'Variance ₹' }],
+    title: 'Item cost variance',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4">
@@ -49,6 +68,21 @@ export function PurchaseCostVarianceItemPanel(): JSX.Element {
         <Card><CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Threshold Breaches</CardTitle></CardHeader>
           <CardContent><div className="text-2xl font-bold text-warning">{kpis.breaches}</div></CardContent></Card>
       </div>
+
+      <Card className="p-3 space-y-2" data-testid="pr-cost-variance-item-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="pr-cost-variance-item-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No item variances yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="pr-cost-variance-item-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
 
       <Card>
         <CardContent className="p-0">
