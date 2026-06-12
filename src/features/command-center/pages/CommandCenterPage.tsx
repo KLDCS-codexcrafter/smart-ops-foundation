@@ -167,6 +167,9 @@ import RetentionConsolePage from '@/features/retention-console/RetentionConsoleP
 // 🎬 Sprint B2 · T-B2-Comm-Outbox · Communication Console (outbox + dual-sender + DocSendBar floor canon)
 import CommunicationConsolePage from '@/features/communication-console/CommunicationConsolePage';
 
+// 🎬 Sprint W1C-4 · T-W1C4-AutoSend-TierL · Auto-Send Rules (rules→outbox orchestration)
+import AutoSendRulesPage from '@/features/auto-send-rules/AutoSendRulesPage';
+
 // 🎬 Sprint B6 · T-B6-Master-Health · Pillar-B CLOSE · Master Health Scorecard cockpit
 import MasterHealthScorecardPage from '@/features/command-center/modules/MasterHealthScorecardPage';
 
@@ -327,6 +330,8 @@ export type CommandCenterModule =
   | 'retention-console'
   // 🎬 Sprint B2 · B.2 · Communication Console
   | 'communication-console'
+  // 🎬 Sprint W1C-4 · Auto-Send Rules
+  | 'auto-send-rules'
   // 🎬 Sprint B6 · B.6 · Master Health Scorecard
   | 'master-health-scorecard'
   // RPT-9b · User Report Builder · embedded mount
@@ -371,6 +376,7 @@ export default function CommandCenterPage() {
       'audit-integrity',
       'retention-console',
       'communication-console',
+      'auto-send-rules',
       'master-health-scorecard',
     ].includes(hash)) {
       return hash as CommandCenterModule;
@@ -439,6 +445,7 @@ export default function CommandCenterPage() {
       'audit-integrity',
       'retention-console',
       'communication-console',
+      'auto-send-rules',
       'master-health-scorecard',
     ]);
     // 🚚 S124 · A1 — legacy FP&A hashes redirect to /erp/fpa-planning#<new-id>.
@@ -619,6 +626,9 @@ export default function CommandCenterPage() {
 
       // 🎬 Sprint B2 · B.2 · Communication Console
       case 'communication-console':   return <CommunicationConsolePage />;
+
+      // 🎬 Sprint W1C-4 · Auto-Send Rules (rules→outbox orchestration)
+      case 'auto-send-rules':         return <AutoSendRulesPage />;
 
       // 🎬 Sprint B6 · B.6 · Master Health Scorecard (Pillar-B CLOSE)
       case 'master-health-scorecard': return <MasterHealthScorecardPage />;

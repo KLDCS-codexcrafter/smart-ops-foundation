@@ -371,6 +371,9 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       // 🎬 Sprint B2 · B.2 · Communication Console (outbox + dual-sender · DocSendBar floor canon)
       { id: 'communication-console', type: 'item', label: 'Communication Console', icon: ShieldCheck,
         moduleId: 'communication-console' },
+      // 🎬 Sprint W1C-4 · Auto-Send Rules (Tier-L · rules→outbox orchestration · Comm Pillar open item #1)
+      { id: 'auto-send-rules', type: 'item', label: 'Auto-Send Rules', icon: ShieldCheck,
+        moduleId: 'auto-send-rules' },
       // 🎬 Sprint B6 · B.6 · Master Health Scorecard (Pillar-B CLOSE)
       { id: 'master-health-scorecard', type: 'item', label: 'Master Health Scorecard', icon: ShieldCheck,
         moduleId: 'master-health-scorecard' },
