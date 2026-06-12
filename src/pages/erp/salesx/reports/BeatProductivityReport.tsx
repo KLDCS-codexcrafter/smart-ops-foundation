@@ -207,6 +207,39 @@ export function BeatProductivityReportPanel({ entityCode }: Props) {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = rows.map(r => ({
+          beat: r.beat.beat_code,
+          productivity: r.prod.completion_pct,
+        }));
+        const cfg = getKpi('sx-beat')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'beat',
+          series: [{ key: 'productivity', label: 'Completion %' }],
+          title: 'Beat productivity',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="sx-beat-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-beat-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'beat', label: 'Beat' },
+                { key: 'productivity', label: 'Completion %', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No beats configured"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }
