@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Pause, Play, Download } from 'lucide-react';
 import { downloadCsv } from '@/lib/report-framework/export-csv';
 import { describeReport } from '@/lib/report-framework/narrative';
-import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { ReportChart, ScorecardTile, ReportSendHeader } from '@/components/operix-core/report-framework';
 import { deriveRoleDashboard } from '@/lib/report-framework/role-layer';
 import { getSource } from '@/lib/report-framework/data-source-catalog';
 import { defaultChartConfig } from '@/lib/report-framework/chart-config';
@@ -137,6 +137,8 @@ export default function PromoterCockpitPage(): JSX.Element {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <ReportSendHeader title="Promoter Cockpit" rows={[]} />
+
           <div className="flex gap-1" role="tablist" aria-label="Cockpit sections">
             {SECTIONS.map((s, i) => (
               <span
