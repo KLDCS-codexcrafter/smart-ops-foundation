@@ -12,6 +12,8 @@ import { useNavigate } from 'react-router-dom';
 import { EximXWelcome } from './EximXWelcome';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
 import type { EximXModule } from './EximX.types';
+// RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 export default function EximXPage(): JSX.Element {
   const [active, setActive] = useState<EximXModule>('welcome');
@@ -36,6 +38,7 @@ export default function EximXPage(): JSX.Element {
     >
       <div className="p-4 md:p-6 animate-fade-in">
         {active === 'welcome' && <EximXWelcome onNavigate={handleModuleChange} />}
+        {active === 'eximx-rpt-report-builder' && <ReportBuilder cardId="eximx" />}
       </div>
     </Shell>
   );
