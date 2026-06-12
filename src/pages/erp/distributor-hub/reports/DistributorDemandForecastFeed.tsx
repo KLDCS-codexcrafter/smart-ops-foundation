@@ -18,7 +18,9 @@ import {
   TableBody,
   TableCell,
 } from '@/components/ui/table';
-import { LineChart, Sparkles } from 'lucide-react';
+import { LineChart, Sparkles, ShieldCheck } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 export function DistributorDemandForecastFeedPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -154,6 +156,47 @@ export function DistributorDemandForecastFeedPanel(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = latestPerItem.map(f => {
+          const forecast = f.data_points.reduce((s, p) => s + p.forecast_qty, 0);
+          const actual = f.data_points.reduce((s, p) => s + ((p as { actual_qty?: number }).actual_qty ?? 0), 0);
+          return { period: f.item_name || f.item_id, forecast, actual };
+        });
+        const cfg = getKpi('db-demand')?.defaultChart ?? defaultChartConfig({
+          chartType: 'line', xKey: 'period',
+          series: [{ key: 'forecast', label: 'Forecast' }, { key: 'actual', label: 'Actual' }],
+          title: 'Distributor demand forecast vs actual',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="db-demand-toggle-host">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" />
+                Forecast vs Actual
+                <Badge variant="outline" className="text-[10px] font-mono ml-auto" data-testid="db-demand-integrity-badge" title={hash}>
+                  {short}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <TableChartToggle
+                rows={chartRows}
+                columns={[
+                  { key: 'period', label: 'Item' },
+                  { key: 'forecast', label: 'Forecast', align: 'right' },
+                  { key: 'actual', label: 'Actual', align: 'right' },
+                ]}
+                chartConfig={cfg}
+                defaultView="table"
+                emptyLabel="No forecasts yet"
+              />
+            </CardContent>
+          </Card>
+        );
+      })()}
     </div>
   );
 }

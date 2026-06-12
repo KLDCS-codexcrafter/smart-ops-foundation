@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Trophy, Crown, TrendingUp } from 'lucide-react';
+import { Trophy, Crown, TrendingUp, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -14,6 +14,8 @@ import { computeCLV } from '@/lib/customer-clv-engine';
 import type { CLVResult } from '@/types/customer-clv';
 import { logAudit } from '@/lib/card-audit-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
@@ -229,6 +231,32 @@ export function CLVRankingsReportPanel() {
           </div>
         )}
       </Card>
+
+      {(() => {
+        const chartRows = ranked.slice(0, 10).map(r => ({
+          customer: r.name,
+          clv: Math.round(r.projected_12m_value_paise / 100),
+        }));
+        const cfg = getKpi('cu-clv')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'customer',
+          series: [{ key: 'clv', label: '12m Projected ₹' }],
+          title: 'Top customers by projected CLV',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="cu-clv-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="cu-clv-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="cu-clv-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }

@@ -30,6 +30,9 @@ import { ordersKey } from '@/types/order';
 import { quotationsKey } from '@/types/quotation';
 import { projectsKey } from '@/types/projx/project';
 import { projectMilestonesKey } from '@/types/projx/project-milestone';
+import { distributorOrdersKey } from '@/types/distributor-order';
+import { customerOrdersKey } from '@/types/customer-order';
+import { ecOrdersKey } from '@/types/ecomx';
 import { getMSMEBreaches } from '@/lib/msme-43bh-engine';
 
 function safeRead<T>(key: string): T[] {
@@ -570,6 +573,56 @@ export function registerAllDataSources(): void {
     ],
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(projectMilestonesKey(entityCode || 'SMRT')),
+  });
+
+  // ─── RPT-7c · 3 sources (Distributor + Customer + EcomX · read-only) ───
+  registerSource({
+    id: 'distributor.orders',
+    label: 'Distributor · Orders',
+    card: 'distributor-hub',
+    kind: 'register',
+    fields: [
+      { key: 'order_no', label: 'Order No', kind: 'dimension' },
+      { key: 'partner_name', label: 'Distributor', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'submitted_at', label: 'Submitted', kind: 'dimension' },
+      { key: 'grand_total_paise', label: 'Grand Total ₹ (paise)', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(distributorOrdersKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'customer.insights',
+    label: 'Customer · Insights (orders + master)',
+    card: 'customer-hub',
+    kind: 'register',
+    fields: [
+      { key: 'customer_id', label: 'Customer Id', kind: 'dimension' },
+      { key: 'customer_name', label: 'Customer', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'placed_at', label: 'Placed', kind: 'dimension' },
+      { key: 'net_payable_paise', label: 'Net Payable ₹ (paise)', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(customerOrdersKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'ecomx.orders',
+    label: 'EcomX · Marketplace Orders',
+    card: 'ecomx',
+    kind: 'register',
+    fields: [
+      { key: 'marketplaceOrderId', label: 'Order No', kind: 'dimension' },
+      { key: 'marketplaceId', label: 'Marketplace', kind: 'dimension' },
+      { key: 'layer', label: 'Layer', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'orderDate', label: 'Date', kind: 'dimension' },
+      { key: 'grossAmount', label: 'Gross ₹', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(ecOrdersKey(entityCode || 'SMRT')),
   });
 }
 

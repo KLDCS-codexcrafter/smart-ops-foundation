@@ -3,8 +3,13 @@
  * @sprint Sprint 153 · EcomX · channel KPIs (entity-scoped)
  */
 import { useMemo } from 'react';
+import { ShieldCheck } from 'lucide-react';
 import { getImportStats } from '@/lib/ecomx-engine';
 import { useEntityCode } from '@/hooks/useEntityCode';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 export function EcomXDashboardPage(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -36,6 +41,29 @@ export function EcomXDashboardPage(): JSX.Element {
           </div>
         ))}
       </div>
+
+      {(() => {
+        const chartRows = cards.map(c => ({ marketplace: c.label, gmv: c.value }));
+        const cfg = getKpi('ec-gmv')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'marketplace',
+          series: [{ key: 'gmv', label: 'GMV' }],
+          title: 'EcomX posture by metric',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2 mt-6" data-testid="ec-gmv-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="ec-gmv-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="ec-gmv-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }

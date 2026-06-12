@@ -7,6 +7,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
@@ -14,6 +16,8 @@ import { distributorOrdersKey, type DistributorOrder, type DistributorOrderStatu
 import { formatINR } from '@/lib/india-validations';
 import { DistributorOrderDetailPanel } from './detail/DistributorOrderDetailPanel';
 import { DistributorOrderPrint } from './print/DistributorOrderPrint';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const STATUS_LABELS: Record<DistributorOrderStatus, string> = {
   draft: 'Draft', submitted: 'Submitted', approved: 'Approved',
@@ -131,6 +135,34 @@ export function DistributorOrderRegisterPanel() {
           {printing && <DistributorOrderPrint order={printing} onClose={() => setPrinting(null)} />}
         </DialogContent>
       </Dialog>
+
+      {(() => {
+        const byPartner = new Map<string, number>();
+        for (const r of rows) byPartner.set(r.partner_name, (byPartner.get(r.partner_name) ?? 0) + r.grand_total_paise);
+        const chartRows = Array.from(byPartner.entries())
+          .map(([distributor, paise]) => ({ distributor, order_value: Math.round(paise / 100) }))
+          .sort((a, b) => b.order_value - a.order_value)
+          .slice(0, 10);
+        const cfg = getKpi('db-orders')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'distributor',
+          series: [{ key: 'order_value', label: 'Order Value ₹' }],
+          title: 'Top distributors by order value',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="db-orders-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="db-orders-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="db-orders-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }

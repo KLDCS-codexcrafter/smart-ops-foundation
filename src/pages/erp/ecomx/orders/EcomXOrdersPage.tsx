@@ -17,7 +17,7 @@
  *  Binary clip is NEVER persisted to app storage — see DP-EC-11.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Camera, FileUp, Paperclip, Receipt, Square, Video, X } from 'lucide-react';
+import { Camera, FileUp, Paperclip, Receipt, Square, Video, X, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import {
@@ -28,9 +28,13 @@ import {
 import { loadPartyMaster } from '@/lib/party-master-engine';
 import type { EcOrderLayer, EcPackingEvidence } from '@/types/ecomx';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 type Tab = 'all' | 'b2c' | 'b2b_matched' | 'parked' | 'evidence';
 
@@ -205,6 +209,35 @@ export function EcomXOrdersPage(): JSX.Element {
           )}
         </DialogContent>
       </Dialog>
+
+      {(() => {
+        const mpNames = new Map(listMarketplaces(entityCode).map(m => [m.id, m.name]));
+        const byMp = new Map<string, number>();
+        for (const o of rows) {
+          const name = mpNames.get(o.marketplaceId) ?? o.marketplaceId;
+          byMp.set(name, (byMp.get(name) ?? 0) + (o.grossAmount ?? 0));
+        }
+        const chartRows = Array.from(byMp.entries()).map(([marketplace, order_value]) => ({ marketplace, order_value: Math.round(order_value) }));
+        const cfg = getKpi('ec-orders')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'marketplace',
+          series: [{ key: 'order_value', label: 'Order Value ₹' }],
+          title: 'Orders by marketplace',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="ec-orders-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="ec-orders-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="ec-orders-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
