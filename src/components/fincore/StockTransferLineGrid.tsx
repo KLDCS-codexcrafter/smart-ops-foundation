@@ -8,18 +8,18 @@
  * INPUT        lines[], onChange, entityCode
  * OUTPUT       onChange(updatedLines[])
  *
- * DEPENDENCIES GodownPicker, useItemPreferredLocation hook, shadcn Input/Table.
- *              Item field is plain text Input with TODO for T10-pre.2 ItemPicker.
+ * DEPENDENCIES GodownPicker, ItemPicker, useItemPreferredLocation hook, shadcn Input/Table.
  *
  * TALLY-ON-TOP Neutral. Parent voucher is inventory-only (no GL impact).
  *
- * SPEC DOC     Sprint T10-pre.1b Session B — per owner directive Q1 (Item=Input+TODO).
+ * SPEC DOC     Sprint T10-pre.1b Session B · W1C-2 Block 2 (ItemPicker consume).
  */
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Trash2 } from 'lucide-react';
 import { GodownPicker } from '@/components/fincore/pickers/GodownPicker';
+import { ItemPicker } from '@/components/fincore/pickers/ItemPicker';
 import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 
 export interface StockTransferLine {
