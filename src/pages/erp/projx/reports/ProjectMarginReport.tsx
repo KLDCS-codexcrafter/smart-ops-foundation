@@ -164,6 +164,32 @@ export function ProjectMarginReportPanel() {
           </table>
         )}
       </CardContent></Card>
+
+      {(() => {
+        const chartRows = rows.map(r => ({
+          project: r.project.project_no,
+          margin_pct: r.pnl.margin_pct,
+        }));
+        const cfg = getKpi('px-margin')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'project',
+          series: [{ key: 'margin_pct', label: 'Margin %' }],
+          title: 'Project margin %',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="px-margin-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="px-margin-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="px-margin-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
