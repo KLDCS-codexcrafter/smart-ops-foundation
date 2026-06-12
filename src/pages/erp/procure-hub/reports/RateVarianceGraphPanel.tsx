@@ -1,16 +1,18 @@
 /**
  * @file        RateVarianceGraphPanel.tsx
- * @purpose     Time-series rate trend · ItemRateHistory.std_purchase + active contract reference line.
- * @sprint      T-Phase-1.A.3.d-Procure360-Variance-Trident-Polish
+ * @purpose     Time-series rate trend · framework ReportChart with contract reference annotation.
+ * @sprint      T-Phase-1.A.3.d-Procure360-Variance-Trident-Polish · RPT-12c chart-layer swap
  * @decisions   D-NEW-AR
- * @reuses      useItemRates · rate-contract-engine.findActiveRate (3-arg) · po-management-engine · recharts · UI primitives
- * @[JWT]       GET /api/inventory/item-rates/history — localStorage in Phase 1
+ * @reuses      useItemRates · rate-contract-engine.findActiveRate (3-arg) · po-management-engine
  */
 import { useMemo, useState } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ReferenceLine, ResponsiveContainer } from 'recharts';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { useItemRates } from '@/hooks/useItemRates';
 import { findActiveRate } from '@/lib/rate-contract-engine';
 import { listPurchaseOrders } from '@/lib/po-management-engine';
@@ -58,7 +60,6 @@ export function RateVarianceGraphPanel(): JSX.Element {
       }));
   }, [stdPurchase, selectedItemId]);
 
-  // Resolve contract reference: derive vendor from latest PO line for this item, then findActiveRate.
   const contractRate = useMemo<number | null>(() => {
     if (!selectedItemId || !entityCode) return null;
     const pos = listPurchaseOrders(entityCode);
@@ -87,11 +88,19 @@ export function RateVarianceGraphPanel(): JSX.Element {
     return { itemsTracked, recentChanges: recent90d.length, avgPctChange };
   }, [itemOptions, stdPurchase]);
 
+  const hash = useMemo(() => signReport(seriesData), [seriesData]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">Rate Variance Graph</h1>
-        <p className="text-sm text-muted-foreground">Item rate trend over time · with contract reference overlay.</p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">Rate Variance Graph</h1>
+          <p className="text-sm text-muted-foreground">Item rate trend over time · with contract reference overlay.</p>
+        </div>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="pr-rate-variance-integrity-badge" title={hash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{short}
+        </Badge>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -121,30 +130,29 @@ export function RateVarianceGraphPanel(): JSX.Element {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card data-testid="pr-rate-variance-chart-host">
         <CardContent className="p-4">
           {seriesData.length < 2 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">
               {itemOptions.length === 0 ? 'No rate history yet.' : 'Pick an item with at least 2 rate changes to view trend.'}
             </div>
           ) : (
-            <div style={{ width: '100%', height: 320 }}>
-              <ResponsiveContainer>
-                <LineChart data={seriesData} margin={{ top: 10, right: 30, left: 20, bottom: 30 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="dateLabel" />
-                  <YAxis tickFormatter={(v) => `₹${v.toLocaleString('en-IN')}`} />
-                  <Tooltip
-                    formatter={(value: number) => `₹${value.toLocaleString('en-IN')}`}
-                    labelFormatter={(label) => `Date: ${label}`}
-                  />
-                  <Line type="monotone" dataKey="rate" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 4 }} />
-                  {contractRate !== null && (
-                    <ReferenceLine y={contractRate} stroke="hsl(var(--destructive))" strokeDasharray="5 5" label={`Contract: ₹${contractRate}`} />
-                  )}
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            <>
+              {contractRate !== null && (
+                <p className="text-xs text-muted-foreground mb-2">
+                  Active contract reference: ₹{contractRate.toLocaleString('en-IN')}
+                </p>
+              )}
+              <div style={{ width: '100%', height: 320 }}>
+                <ReportChart
+                  data={seriesData}
+                  config={defaultChartConfig({
+                    chartType: 'line', xKey: 'dateLabel',
+                    series: [{ key: 'rate', label: 'Rate ₹' }],
+                  })}
+                />
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

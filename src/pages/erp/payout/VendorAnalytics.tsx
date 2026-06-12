@@ -13,10 +13,8 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   BarChart3, Users, IndianRupee, Clock, AlertOctagon, ShieldCheck, Download,
 } from 'lucide-react';
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend,
-} from 'recharts';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -45,16 +43,7 @@ import { divisionsKey, departmentsKey } from '@/types/org-structure';
 const inr = (n: number): string =>
   '₹' + Math.abs(n || 0).toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
-const PIE_COLORS = [
-  'hsl(258 90% 66%)',  // violet
-  'hsl(220 90% 60%)',  // blue
-  'hsl(160 65% 45%)',  // emerald
-  'hsl(35  92% 55%)',  // amber
-  'hsl(0   75% 60%)',  // red
-  'hsl(290 70% 60%)',  // purple
-  'hsl(190 80% 50%)',  // cyan
-  'hsl(50  95% 55%)',  // yellow
-];
+// RPT-12c: PIE_COLORS removed — ReportChart handles palette via framework
 
 interface BUSummary { id: string; name: string }
 
@@ -351,19 +340,28 @@ function VendorAnalyticsPanel({ entityCode, entityId }: PanelProps) {
                 No vendor data in slice
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height={280}>
-                <BarChart data={topChartData} layout="vertical" margin={{ left: 24, right: 16 }}>
-                  <XAxis type="number" tick={{ fontSize: 10 }} />
-                  <YAxis dataKey="name" type="category" tick={{ fontSize: 10 }} width={120} />
-                  <RTooltip
-                    formatter={(val: number) =>
-                      topMetric === 'spend' ? inr(val)
-                      : topMetric === 'cycle' ? `${val} d`
-                      : `${val}%`}
-                  />
-                  <Bar dataKey="value" fill="hsl(258 90% 66%)" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              (() => {
+                const hash = signReport(topChartData);
+                const short = hash.replace('fnv1a:', '').slice(0, 10);
+                return (
+                  <div data-testid="po-vendor-top-chart-host">
+                    <div className="flex justify-end mb-1">
+                      <Badge variant="outline" className="text-[10px] font-mono" data-testid="po-vendor-top-integrity-badge" title={hash}>
+                        <ShieldCheck className="h-3 w-3 mr-1" />{short}
+                      </Badge>
+                    </div>
+                    <div style={{ width: '100%', height: 280 }}>
+                      <ReportChart
+                        data={topChartData}
+                        config={defaultChartConfig({
+                          chartType: 'bar', xKey: 'name',
+                          series: [{ key: 'value', label: 'Value' }],
+                        })}
+                      />
+                    </div>
+                  </div>
+                );
+              })()
             )}
           </CardContent>
         </Card>
@@ -387,22 +385,28 @@ function VendorAnalyticsPanel({ entityCode, entityId }: PanelProps) {
                 No tagged vouchers in slice
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height={280}>
-                <PieChart>
-                  <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={90} label={{ fontSize: 10 }}>
-                    {pieData.map((_, i) => (
-                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <RTooltip
-                    formatter={(val: number, _name, props: { payload?: { spend?: number } }) => {
-                      const spend = props.payload?.spend ?? 0;
-                      return [`${val} vendors · ${inr(spend)}`, 'Total'];
-                    }}
-                  />
-                  <Legend wrapperStyle={{ fontSize: 10 }} />
-                </PieChart>
-              </ResponsiveContainer>
+              (() => {
+                const hash = signReport(pieData);
+                const short = hash.replace('fnv1a:', '').slice(0, 10);
+                return (
+                  <div data-testid="po-vendor-distribution-chart-host">
+                    <div className="flex justify-end mb-1">
+                      <Badge variant="outline" className="text-[10px] font-mono" data-testid="po-vendor-distribution-integrity-badge" title={hash}>
+                        <ShieldCheck className="h-3 w-3 mr-1" />{short}
+                      </Badge>
+                    </div>
+                    <div style={{ width: '100%', height: 280 }}>
+                      <ReportChart
+                        data={pieData}
+                        config={defaultChartConfig({
+                          chartType: 'doughnut', xKey: 'name',
+                          series: [{ key: 'value', label: 'Vendors' }],
+                        })}
+                      />
+                    </div>
+                  </div>
+                );
+              })()
             )}
           </CardContent>
         </Card>

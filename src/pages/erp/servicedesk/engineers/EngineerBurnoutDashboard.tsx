@@ -1,18 +1,25 @@
 /**
  * @file        src/pages/erp/servicedesk/engineers/EngineerBurnoutDashboard.tsx
- * @purpose     S31 Engineer Burnout Dashboard · >15 tickets/wk = flag
- * @sprint      T-Phase-1.C.1f · Block G.2
- * @iso         Functional Suitability + Usability
+ * @purpose     S31 Engineer Burnout Dashboard · >15 tickets/wk = flag · framework ReportChart
+ * @sprint      T-Phase-1.C.1f · Block G.2 · RPT-12c chart-layer swap
  */
+import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { detectEngineerBurnout } from '@/lib/servicedesk-engine';
 
 export function EngineerBurnoutDashboard(): JSX.Element {
   const flags = detectEngineerBurnout().sort((a, b) => b.tickets_this_week - a.tickets_this_week);
-  const chart = flags.map((f) => ({ name: f.engineer_id.slice(0, 12), tickets: f.tickets_this_week }));
+  const chart = useMemo(
+    () => flags.map((f) => ({ name: f.engineer_id.slice(0, 12), tickets: f.tickets_this_week })),
+    [flags],
+  );
+  const hash = useMemo(() => signReport(chart), [chart]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
 
   const tone = (n: number): 'destructive' | 'secondary' | 'default' => {
     if (n > 15) return 'destructive';
@@ -22,28 +29,31 @@ export function EngineerBurnoutDashboard(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">Engineer Burnout Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          S31 Tier 2 OOB · {flags.length} engineer(s) tracked · &gt;15 tickets/week = burnout flag
-        </p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">Engineer Burnout Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            S31 Tier 2 OOB · {flags.length} engineer(s) tracked · &gt;15 tickets/week = burnout flag
+          </p>
+        </div>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="sd-burnout-integrity-badge" title={hash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{short}
+        </Badge>
       </div>
 
-      <Card className="p-4">
+      <Card className="p-4" data-testid="sd-burnout-chart-host">
         <h2 className="font-semibold mb-3">Weekly Ticket Load</h2>
         {chart.length === 0 ? (
           <p className="text-sm text-muted-foreground">No assigned tickets in last 7 days.</p>
         ) : (
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chart}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="tickets" fill="hsl(var(--primary))" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ReportChart
+              data={chart}
+              config={defaultChartConfig({
+                chartType: 'column', xKey: 'name',
+                series: [{ key: 'tickets', label: 'Tickets (7d)' }],
+              })}
+            />
           </div>
         )}
       </Card>

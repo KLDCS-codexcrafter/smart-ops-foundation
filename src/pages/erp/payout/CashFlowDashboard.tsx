@@ -9,12 +9,10 @@
  */
 import { useMemo, useState } from 'react';
 import {
-  TrendingUp, TrendingDown, IndianRupee, AlertTriangle, Calendar, Wallet,
+  TrendingUp, TrendingDown, IndianRupee, AlertTriangle, Calendar, Wallet, ShieldCheck,
 } from 'lucide-react';
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip as RTooltip, ResponsiveContainer,
-  CartesianGrid, ReferenceLine, LineChart, Line,
-} from 'recharts';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -145,60 +143,69 @@ function CashFlowDashboardPanel({ entityCode, mode = 'all' }: Props) {
       </div>
 
       {/* Cash-flow projection chart */}
-      {showCashFlow && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <Calendar className="h-4 w-4 text-violet-500" />30-day Cash Projection
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[320px]">
-              <ResponsiveContainer>
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`} />
-                  <RTooltip formatter={(v: number) => inr(v)} />
-                  <ReferenceLine y={0} stroke="hsl(var(--destructive))" strokeDasharray="3 3" />
-                  <Line type="monotone" dataKey="closing" name="Closing balance"
-                    stroke="hsl(258 90% 66%)" strokeWidth={2} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {showCashFlow && (() => {
+        const hash = signReport(chartData);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card data-testid="po-cashflow-projection-chart-host">
+            <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-violet-500" />30-day Cash Projection
+              </CardTitle>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="po-cashflow-projection-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[320px]">
+                <ReportChart
+                  data={chartData}
+                  config={defaultChartConfig({
+                    chartType: 'line', xKey: 'date',
+                    series: [{ key: 'closing', label: 'Closing balance ₹' }],
+                  })}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* 13-week forecast */}
-      {showForecast && (
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-violet-500" />13-Week Forecast
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[320px]">
-              <ResponsiveContainer>
-                <BarChart data={forecastChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="week" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => `₹${(v / 100000).toFixed(0)}L`} />
-                  <RTooltip formatter={(v: number) => inr(v)} />
-                  <ReferenceLine y={0} stroke="hsl(var(--destructive))" strokeDasharray="3 3" />
-                  <Bar dataKey="receivables" fill="hsl(160 65% 45%)" name="Receivables" />
-                  <Bar dataKey="committed" fill="hsl(35 92% 55%)" name="Committed" />
-                  <Bar dataKey="net" fill="hsl(258 90% 66%)" name="Net" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-2">
-              Net = receivables − committed − auto-pay predicted. Negative weeks need attention.
-            </p>
-          </CardContent>
-        </Card>
-      )}
+      {showForecast && (() => {
+        const hash = signReport(forecastChartData);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card data-testid="po-cashflow-forecast-chart-host">
+            <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <TrendingUp className="h-4 w-4 text-violet-500" />13-Week Forecast
+              </CardTitle>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="po-cashflow-forecast-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[320px]">
+                <ReportChart
+                  data={forecastChartData}
+                  config={defaultChartConfig({
+                    chartType: 'column', xKey: 'week',
+                    series: [
+                      { key: 'receivables', label: 'Receivables ₹' },
+                      { key: 'committed', label: 'Committed ₹' },
+                      { key: 'net', label: 'Net ₹' },
+                    ],
+                  })}
+                />
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-2">
+                Net = receivables − committed − auto-pay predicted. Negative weeks need attention.
+              </p>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Suggested timing */}
       {showCashFlow && (

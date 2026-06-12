@@ -1,12 +1,14 @@
 /**
  * @file        src/pages/erp/servicedesk/reports/CustomerPnLReport.tsx
- * @purpose     S28 Customer P&L · per-customer revenue/cost/margin · waterfall + top/bottom 10
- * @sprint      T-Phase-1.C.1f · Block E.1
- * @iso         Functional Suitability + Usability
+ * @purpose     S28 Customer P&L · per-customer revenue/cost/margin via framework ReportChart
+ * @sprint      T-Phase-1.C.1f · Block E.1 · RPT-12c chart-layer swap · wires sd-customer-pnl
  */
+import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ResponsiveContainer, ComposedChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
 import { computeCustomerPnL } from '@/lib/servicedesk-engine';
 
 export function CustomerPnLReport(): JSX.Element {
@@ -14,36 +16,44 @@ export function CustomerPnLReport(): JSX.Element {
   const top10 = rows.slice(0, 10);
   const bottom10 = rows.slice(-10).reverse();
 
-  const chartData = rows.slice(0, 15).map((r) => ({
+  const chartData = useMemo(() => rows.slice(0, 15).map((r) => ({
     customer: r.customer_id.slice(0, 10),
     revenue: r.revenue_paise / 100,
     cost: r.cost_paise / 100,
     margin: r.margin_paise / 100,
-  }));
+  })), [rows]);
+
+  const hash = useMemo(() => signReport(chartData), [chartData]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
+
+  const cfg = getKpi('sd-customer-pnl')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'customer',
+    series: [
+      { key: 'revenue', label: 'Revenue ₹' },
+      { key: 'cost', label: 'Cost ₹' },
+      { key: 'margin', label: 'Margin ₹' },
+    ],
+    title: 'Revenue · Cost · Margin (top 15)',
+  });
 
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">Customer P&amp;L Report</h1>
-        <p className="text-sm text-muted-foreground">
-          S28 Tier 2 OOB · {rows.length} customer(s) with AMC activity
-        </p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">Customer P&amp;L Report</h1>
+          <p className="text-sm text-muted-foreground">
+            S28 Tier 2 OOB · {rows.length} customer(s) with AMC activity
+          </p>
+        </div>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="sd-customer-pnl-integrity-badge" title={hash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{short}
+        </Badge>
       </div>
 
-      <Card className="p-4">
+      <Card className="p-4" data-testid="sd-customer-pnl-chart-host">
         <h2 className="font-semibold mb-3">Revenue · Cost · Margin (top 15)</h2>
         <div className="h-72">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="customer" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="revenue" fill="hsl(var(--primary))" />
-              <Bar dataKey="cost" fill="hsl(var(--destructive))" />
-              <Bar dataKey="margin" fill="hsl(var(--accent))" />
-            </ComposedChart>
-          </ResponsiveContainer>
+          <ReportChart data={chartData} config={cfg} />
         </div>
       </Card>
 

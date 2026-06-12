@@ -1,10 +1,9 @@
 /**
  * @file        src/pages/erp/vendor-portal/panels/VendorScoringPanel.tsx
- * @purpose     Vendor Scoring Dashboard · 6-factor radar + top vendors + drill-down
- * @sprint      T-Phase-1.A-b.1-VendorPortal-Performance-Triad
+ * @purpose     Vendor Scoring Dashboard · 6-factor radar (framework column) + top vendors
+ * @sprint      T-Phase-1.A-b.1-VendorPortal-Performance-Triad · RPT-12c chart-layer swap
  * @decisions   D-NEW-DN · A-b-Q2=A · A-b-Q5=B · A-b-Q8=C · A-b-Q9=C
  * @reuses      vendor-scoring-engine (consume only · 0-diff)
- * @[JWT]       N/A (panel reads via engine)
  */
 import { useMemo, useState } from 'react';
 import {
@@ -13,11 +12,9 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import {
-  ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
-  Tooltip as RechartsTooltip,
-} from 'recharts';
-import { Award, TrendingUp, TrendingDown, Minus, Bot, X } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
+import { Award, TrendingUp, TrendingDown, Minus, Bot, X, ShieldCheck } from 'lucide-react';
 import {
   getTopVendorsByScore,
   type VendorScore, type ScoreFactorName,
@@ -67,9 +64,11 @@ export function VendorScoringPanel(): JSX.Element {
     return source.factor_breakdown.map(f => ({
       metric: FACTOR_LABELS[f.name],
       score: f.raw_score,
-      fullMark: 100,
     }));
   }, [selectedVendor, topVendors]);
+
+  const hash = useMemo(() => signReport(radarData), [radarData]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="space-y-6">
@@ -135,12 +134,17 @@ export function VendorScoringPanel(): JSX.Element {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <Card>
+        <Card data-testid="vp-scoring-chart-host">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Award className="h-4 w-4" />
-              {selectedVendor ? selectedVendor.vendor_name : (topVendors[0]?.vendor_name ?? 'No data')}
-              <span className="text-xs text-muted-foreground font-normal">· Performance Radar</span>
+            <CardTitle className="text-base flex items-center gap-2 justify-between">
+              <span className="flex items-center gap-2">
+                <Award className="h-4 w-4" />
+                {selectedVendor ? selectedVendor.vendor_name : (topVendors[0]?.vendor_name ?? 'No data')}
+                <span className="text-xs text-muted-foreground font-normal">· Performance Breakdown</span>
+              </span>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="vp-scoring-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
             </CardTitle>
             <CardDescription>
               {selectedVendor ? 'Click X to clear selection' : 'Showing #1 ranked vendor · click any vendor on right to drill down'}
@@ -149,23 +153,13 @@ export function VendorScoringPanel(): JSX.Element {
           <CardContent>
             {radarData.length > 0 ? (
               <div className="h-72 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart data={radarData}>
-                    <PolarGrid stroke="hsl(var(--border))" />
-                    <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                    <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fontSize: 10 }} />
-                    <Radar
-                      name="Score"
-                      dataKey="score"
-                      stroke="rgb(71, 85, 105)"
-                      fill="rgb(71, 85, 105)"
-                      fillOpacity={0.35}
-                    />
-                    <RechartsTooltip
-                      contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', fontSize: 12 }}
-                    />
-                  </RadarChart>
-                </ResponsiveContainer>
+                <ReportChart
+                  data={radarData}
+                  config={defaultChartConfig({
+                    chartType: 'column', xKey: 'metric',
+                    series: [{ key: 'score', label: 'Score' }],
+                  })}
+                />
               </div>
             ) : (
               <div className="h-72 flex items-center justify-center text-sm text-muted-foreground">

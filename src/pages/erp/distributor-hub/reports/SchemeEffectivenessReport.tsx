@@ -5,12 +5,12 @@
 
 import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import {
-  Sparkles, IndianRupee, ShoppingCart, Percent, BarChart3,
+  Sparkles, IndianRupee, ShoppingCart, Percent, BarChart3, ShieldCheck,
 } from 'lucide-react';
-import {
-  ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid,
-} from 'recharts';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
 import { schemesKey, appliedSchemesKey, type Scheme, type AppliedScheme } from '@/types/scheme';
 import { formatINR } from '@/lib/india-validations';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
@@ -150,24 +150,30 @@ export function SchemeEffectivenessReportPanel() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <p className="text-xs font-semibold uppercase text-muted-foreground mb-3">
-                Monthly Discount Trend
-              </p>
-              <div style={{ width: '100%', height: 240 }}>
-                <ResponsiveContainer>
-                  <LineChart data={trend}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis dataKey="month" className="text-xs" />
-                    <YAxis className="text-xs" />
-                    <Tooltip />
-                    <Line type="monotone" dataKey="discount" stroke="hsl(258 90% 66%)" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+          {(() => {
+            const hash = signReport(trend);
+            const short = hash.replace('fnv1a:', '').slice(0, 10);
+            const cfg = getKpi('db-scheme-eff')?.defaultChart ?? defaultChartConfig({
+              chartType: 'line', xKey: 'month',
+              series: [{ key: 'discount', label: 'Discount ₹' }],
+              title: 'Monthly discount trend',
+            });
+            return (
+              <Card data-testid="db-scheme-eff-chart-host">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs font-semibold uppercase text-muted-foreground">Monthly Discount Trend</p>
+                    <Badge variant="outline" className="text-[10px] font-mono" data-testid="db-scheme-eff-integrity-badge" title={hash}>
+                      <ShieldCheck className="h-3 w-3 mr-1" />{short}
+                    </Badge>
+                  </div>
+                  <div style={{ width: '100%', height: 240 }}>
+                    <ReportChart data={trend} config={cfg} />
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })()}
         </>
       )}
     </div>

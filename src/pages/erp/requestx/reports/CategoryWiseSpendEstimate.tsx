@@ -1,12 +1,15 @@
 /**
  * @file        CategoryWiseSpendEstimate.tsx
- * @sprint      T-Phase-1.2.6f-pre-2 · Block B
+ * @sprint      T-Phase-1.2.6f-pre-2 · Block B · RPT-12c chart-layer swap
  */
 import { useMemo } from 'react';
 import { SkeletonRows } from '@/components/ui/SkeletonRows';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Bar, BarChart, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { useMaterialIndents } from '@/hooks/useMaterialIndents';
 import { groupByCategory, inrFmt } from '@/lib/requestx-report-engine';
 
@@ -30,25 +33,31 @@ export function CategoryWiseSpendEstimatePanel(): JSX.Element {
   }, [mi]);
 
   const total = rows.reduce((a, r) => a + r.total_value, 0);
+  const hash = useMemo(() => signReport(rows), [rows]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4">
-      <div>
-        <h1 className="text-2xl font-bold">Category-wise Spend Estimate</h1>
-        <p className="text-sm text-muted-foreground">Material indents grouped by category · estimated value</p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-2xl font-bold">Category-wise Spend Estimate</h1>
+          <p className="text-sm text-muted-foreground">Material indents grouped by category · estimated value</p>
+        </div>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="rx-category-spend-integrity-badge" title={hash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{short}
+        </Badge>
       </div>
-      <Card>
+      <Card data-testid="rx-category-spend-chart-host">
         <CardHeader><CardTitle className="text-base">Total estimate: {inrFmt(total)}</CardTitle></CardHeader>
         <CardContent>
           <div className="h-64 mb-4">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={rows}>
-                <XAxis dataKey="label" tick={{ fontSize: 10 }} />
-                <YAxis tick={{ fontSize: 10 }} />
-                <Tooltip formatter={(v: number) => inrFmt(v)} />
-                <Bar dataKey="total_value" fill="hsl(var(--primary))" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ReportChart
+              data={rows}
+              config={defaultChartConfig({
+                chartType: 'column', xKey: 'label',
+                series: [{ key: 'total_value', label: 'Estimated ₹' }],
+              })}
+            />
           </div>
           <SkeletonRows><Table>
             <TableHeader>

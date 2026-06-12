@@ -1,16 +1,14 @@
 /**
- * LoyaltyPerformanceReport.tsx — Sprint 13c · Module ch-r-loyalty
- * Tier distribution + earn vs redeem + top earners.
- * Teal-500 accent. Read-only.
+ * LoyaltyPerformanceReport.tsx — Sprint 13c · Module ch-r-loyalty · RPT-12c chart-layer swap
+ * Tier distribution + earn vs redeem + top earners. Wires cu-loyalty.
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Award, TrendingUp, Gift, Users } from 'lucide-react';
+import { Award, TrendingUp, Gift, Users, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell,
-} from 'recharts';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
 import {
   loyaltyStateKey, loyaltyLedgerKey,
   type CustomerLoyaltyState, type LoyaltyLedgerEntry, type LoyaltyTier,
@@ -63,7 +61,7 @@ export function LoyaltyPerformanceReportPanel() {
   const tierData = useMemo(() => {
     const counts: Record<LoyaltyTier, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 };
     for (const s of states) counts[s.current_tier]++;
-    return TIER_ORDER.map(t => ({ tier: t.toUpperCase(), count: counts[t], fill: TIER_COLORS[t] }));
+    return TIER_ORDER.map(t => ({ tier: t.toUpperCase(), count: counts[t] }));
   }, [states]);
 
   const totals = useMemo(() => {
@@ -86,19 +84,31 @@ export function LoyaltyPerformanceReportPanel() {
       .map(s => ({ ...s, name: nameOf(s.customer_id) }));
   }, [states, customers]);
 
+  const hash = useMemo(() => signReport(tierData), [tierData]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
+  const cfg = getKpi('cu-loyalty')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'tier',
+    series: [{ key: 'count', label: 'Members' }],
+    title: 'Loyalty members by tier',
+  });
+
   return (
     <div className="space-y-4 animate-fade-in max-w-6xl">
-      <header>
-        <h1 className="text-xl font-bold flex items-center gap-2">
-          <Award className="h-5 w-5 text-teal-500" />
-          Loyalty Performance
-        </h1>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          Tier distribution · earn vs redeem · top loyalty earners
-        </p>
+      <header className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-xl font-bold flex items-center gap-2">
+            <Award className="h-5 w-5 text-teal-500" />
+            Loyalty Performance
+          </h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Tier distribution · earn vs redeem · top loyalty earners
+          </p>
+        </div>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="cu-loyalty-integrity-badge" title={hash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{short}
+        </Badge>
       </header>
 
-      {/* KPI strip */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card className="p-3">
           <div className="flex items-center gap-2 text-muted-foreground text-[11px]">
@@ -132,31 +142,17 @@ export function LoyaltyPerformanceReportPanel() {
         </Card>
       </div>
 
-      {/* Tier distribution */}
-      <Card className="p-4">
+      <Card className="p-4" data-testid="cu-loyalty-chart-host">
         <h2 className="text-sm font-semibold mb-3">Tier Distribution</h2>
         {states.length === 0 ? (
           <p className="text-xs text-muted-foreground py-8 text-center">No loyalty data yet.</p>
         ) : (
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={tierData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="tier" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} allowDecimals={false} />
-                <Tooltip
-                  contentStyle={{ background: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: 8, fontSize: 12 }}
-                />
-                <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                  {tierData.map(d => <Cell key={d.tier} fill={d.fill} />)}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <ReportChart data={tierData} config={cfg} />
           </div>
         )}
       </Card>
 
-      {/* Top earners */}
       <Card className="p-4">
         <h2 className="text-sm font-semibold mb-3">Top 10 Lifetime Earners</h2>
         {topEarners.length === 0 ? (
