@@ -126,13 +126,13 @@ describe('RPT-9a · ReportBuilder · entitlement lock', () => {
 });
 
 describe('RPT-9a · ReportBuilder · integrity + preview + empty-state', () => {
-  it('shows the "pick a measure" hint before any measure is added', () => {
+  it('shows source picker trigger on initial render (embedded)', () => {
     mockUser({ role: 'finance', cards: ['fincore'] });
-    const { container } = render(<ReportBuilder cardId="fincore" />);
-    // Pick the source via direct event on the hidden select
-    const hidden = container.querySelector('select');
-    if (hidden) fireEvent.change(hidden, { target: { value: 'fincore.orders' } });
-    expect(screen.queryByTestId('rb-no-measures') || screen.queryByText(/pick at least one measure/i)).toBeTruthy();
+    render(<ReportBuilder cardId="fincore" />);
+    expect(screen.getByTestId('rb-source-trigger')).toBeInTheDocument();
+    // Preview card has not yet appeared (no source picked)
+    expect(screen.queryByTestId('rb-integrity-badge')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('rb-empty')).not.toBeInTheDocument();
   });
 
   it('source picker for centralized mode lists only entitled cards (cross-card lock for non-management)', () => {
