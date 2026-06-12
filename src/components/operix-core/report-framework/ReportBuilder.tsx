@@ -25,6 +25,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ShieldCheck, Save, Trash2, FolderOpen, Lock, Download, Wand2 } from 'lucide-react';
 import { TableChartToggle, type TableChartColumn } from './TableChartToggle';
 import { PivotMatrix } from './PivotMatrix';
+import { ReportSendHeader } from './ReportSendHeader';
 import {
   runQuery,
   allowedSourcesFor,
@@ -393,7 +394,13 @@ export default function ReportBuilder({ cardId }: ReportBuilderProps) {
                   <Download className="h-3 w-3 mr-1" /> CSV
                 </Button>
               )}
-              {result && !('error' in result) && (
+              {result && !('error' in result) && result.rows.length > 0 && (
+                <ReportSendHeader
+                  title={`Report · ${activeSource?.id ?? 'preview'}`}
+                  rows={result.rows as Record<string, unknown>[]}
+                  spec={spec}
+                />
+              )}
                 <Badge variant="outline" className="font-mono text-[10px] flex items-center gap-1" data-testid="rb-integrity-badge">
                   <ShieldCheck className="h-3 w-3" />
                   {result.integrityHash.slice(0, 12)}
