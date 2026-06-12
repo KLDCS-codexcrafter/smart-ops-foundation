@@ -17,6 +17,8 @@ import { rememberModule } from '@/lib/breadcrumb-memory';
 import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
 import { DraftTray, type FinCoreModule, type DraftEntry } from '@/components/fincore/DraftTray';
 import { ComingSoonPanel } from '@/components/fincore/ComingSoonPanel';
+// RPT-9a · User Report Builder · embedded mount
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 import { FinCoreHubPanel } from './FinCoreHub';
 import { SalesInvoicePanel } from '@/pages/erp/accounting/vouchers/SalesInvoice';
 import { PurchaseInvoicePanel } from '@/pages/erp/accounting/vouchers/PurchaseInvoice';
