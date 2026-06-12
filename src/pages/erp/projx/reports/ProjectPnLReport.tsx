@@ -163,6 +163,33 @@ export function ProjectPnLReportPanel() {
           </table>
         )}
       </CardContent></Card>
+
+      {(() => {
+        const chartRows = rows.map(r => ({
+          project: r.project.project_no,
+          revenue: r.pnl.revenue_billed,
+          cost: r.pnl.cost_incurred,
+        }));
+        const cfg = getKpi('px-pnl')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'project',
+          series: [{ key: 'revenue', label: 'Revenue ₹' }, { key: 'cost', label: 'Cost ₹' }],
+          title: 'Project P&L',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="px-pnl-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="px-pnl-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="px-pnl-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
