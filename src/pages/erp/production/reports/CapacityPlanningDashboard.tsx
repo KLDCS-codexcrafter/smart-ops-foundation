@@ -32,11 +32,8 @@ const STATUS_COLOR: Record<CapacityRowStatus, string> = {
   overbooked: 'bg-destructive/10 text-destructive border-destructive/30',
 };
 
-const STATUS_FILL: Record<CapacityRowStatus, string> = {
-  available: 'hsl(var(--success))',
-  tight: 'hsl(var(--warning))',
-  overbooked: 'hsl(var(--destructive))',
-};
+// STATUS_FILL retained intent — chart now uses framework palette via ReportChart
+
 
 export function CapacityPlanningDashboardPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
