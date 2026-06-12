@@ -151,7 +151,7 @@ export function PlanActualRollingPanel(): JSX.Element {
       </div>
 
       {(() => {
-        const __hash = signReport([...groups, ...trendData]);
+        const __hash = signReport([...groups, ...trendData] as unknown as Record<string, unknown>[]);
         const __short = __hash.replace('fnv1a:', '').slice(0, 10);
         return (
           <>
