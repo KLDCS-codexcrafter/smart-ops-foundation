@@ -155,6 +155,32 @@ export function MilestoneStatusReportPanel() {
           </table>
         )}
       </CardContent></Card>
+
+      {(() => {
+        const chartRows = (Object.keys(MILESTONE_STATUS_LABELS) as MilestoneStatus[]).map(s => ({
+          status: MILESTONE_STATUS_LABELS[s],
+          count: stats[s] ?? 0,
+        }));
+        const cfg = getKpi('px-milestones')?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'status',
+          series: [{ key: 'count', label: 'Milestones' }],
+          title: 'Milestone status',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="px-milestones-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="px-milestones-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="px-milestones-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
