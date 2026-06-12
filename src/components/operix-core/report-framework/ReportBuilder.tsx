@@ -401,6 +401,7 @@ export default function ReportBuilder({ cardId }: ReportBuilderProps) {
                   spec={spec}
                 />
               )}
+              {result && !('error' in result) && (
                 <Badge variant="outline" className="font-mono text-[10px] flex items-center gap-1" data-testid="rb-integrity-badge">
                   <ShieldCheck className="h-3 w-3" />
                   {result.integrityHash.slice(0, 12)}
