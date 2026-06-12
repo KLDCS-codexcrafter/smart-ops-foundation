@@ -137,6 +137,7 @@ const breadcrumbLabels: Partial<Record<FinCoreModule, string>> = {
   'fc-ord-purchase-order': 'Purchase Order',
   'fc-ord-sales-order': 'Sales Order',
   'fc-rpt-daybook': 'Day Book',
+  'fc-rpt-report-builder': 'Report Builder',
   'fc-rpt-ledger': 'Ledger Report',
   'fc-rpt-trial-balance': 'Trial Balance',
   'fc-rpt-pl': 'Profit & Loss',
