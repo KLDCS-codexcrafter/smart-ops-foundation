@@ -47,10 +47,28 @@ describe('RPT-1a · read-only-lock · core/ is React-free and write-free', () =>
     }
   });
 
-  it('no core file writes via localStorage.setItem', () => {
+  // RPT-9a · sole writer exemption: report-definitions.ts is the only file
+  // in core/ permitted to write localStorage (under its own namespaced key).
+  const WRITE_EXEMPT = new Set(['report-definitions.ts']);
+
+  it('no core file writes via localStorage.setItem (except report-definitions.ts)', () => {
     for (const f of files) {
+      const base = f.split(/[\\/]/).pop() ?? '';
+      if (WRITE_EXEMPT.has(base)) continue;
       const src = readFileSync(f, 'utf8');
       expect(/localStorage\.setItem/.test(src), `${f} writes localStorage`).toBe(false);
+    }
+  });
+
+  it('report-definitions.ts writes ONLY the namespaced key', () => {
+    const f = files.find((p) => p.endsWith('report-definitions.ts'));
+    expect(f, 'report-definitions.ts exists').toBeTruthy();
+    if (!f) return;
+    const src = readFileSync(f, 'utf8');
+    const setCalls = src.match(/localStorage\.setItem\(([^,)]+)/g) ?? [];
+    expect(setCalls.length).toBeGreaterThan(0);
+    for (const call of setCalls) {
+      expect(call.includes('REPORT_DEFINITIONS_KEY'), `setItem must use REPORT_DEFINITIONS_KEY · got ${call}`).toBe(true);
     }
   });
 
