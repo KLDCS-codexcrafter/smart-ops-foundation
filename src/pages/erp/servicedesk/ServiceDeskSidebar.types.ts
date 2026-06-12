@@ -74,4 +74,6 @@ export type ServiceDeskModule =
   | 'service-benchmark'
   | 'engineer-reputation'
   // C.1f · Future Task Register NEW
-  | 'future-task-register';
+  | 'future-task-register'
+  // 🆕 RPT-9e · Report Builder mount
+  | 'sd-rpt-report-builder';

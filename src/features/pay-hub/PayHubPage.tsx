@@ -44,6 +44,7 @@ import { AdminAndMonitoringPanel } from '@/pages/erp/pay-hub/transactions/AdminA
 import { ExitAndFnFPanel } from '@/pages/erp/pay-hub/transactions/ExitAndFnF';
 import { ContractManpowerPanel } from '@/pages/erp/pay-hub/transactions/ContractManpower';
 import { PayHubDayBookPanel } from '@/pages/erp/pay-hub/transactions/PayHubDayBook';
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
@@ -113,6 +114,8 @@ function renderModule(mod: PayHubModule, selectedEntityId?: string): React.React
     case 'ph-contract-workers':    return <ContractManpowerPanel defaultTab="workers" />;
     case 'ph-contract-orders':     return <ContractManpowerPanel defaultTab="orders" />;
     case 'ph-contract-compliance': return <ContractManpowerPanel defaultTab="compliance" />;
+    // 🆕 RPT-9e · Report Builder mount (frozen component · cardId='peoplepay')
+    case 'ph-rpt-report-builder': return <ReportBuilder cardId="peoplepay" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
@@ -174,6 +177,7 @@ const breadcrumbLabels: Record<PayHubModule, string> = {
   'ph-contract-workers':    'Contract Workers',
   'ph-contract-orders':     'Work Orders',
   'ph-contract-compliance': 'Compliance Register',
+  'ph-rpt-report-builder':  'Report Builder',
 };
 
 export function PayHubPagePanel() {

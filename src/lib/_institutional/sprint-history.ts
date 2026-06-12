@@ -1466,10 +1466,17 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-12', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-9d T-RPT9d-Builder-Rollout-Sales · Reporting Arc · Phase D builder rollout 3 of 4 · MECHANICAL ADDITIVE · mount the frozen <ReportBuilder cardId="…" /> from RPT-9a into 5 Sales cards (salesx · distributor-hub · customer-hub · projx · ecomx) mirroring the RPT-9b/9c recipe: (1) add module id <card>-rpt-report-builder to module union/sidebar config · (2) add Sparkles "Report Builder" sidebar entry · (3) add switch case rendering <ReportBuilder cardId="<card>" /> · WebStoreX SKIPPED (zero DSC sources per RPT-7 honest study — hub-wide skip · 0-DIFF) · ZERO new components · ZERO engine edits · ZERO new SIBLINGs · walls held: ReportBuilder.tsx + report-builder-engine.ts + report-definitions.ts FROZEN · WebStoreX + all other cards + framework + banked pages 0-DIFF · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-9d T-RPT9d-Builder-Rollout-Sales · Reporting Arc · Phase D builder rollout 3 of 4 · MECHANICAL ADDITIVE · mount the frozen <ReportBuilder cardId="…" /> from RPT-9a into 5 Sales cards (salesx · distributor-hub · customer-hub · projx · ecomx) mirroring the RPT-9b/9c recipe: (1) add module id <card>-rpt-report-builder to module union/sidebar config · (2) add Sparkles "Report Builder" sidebar entry · (3) add switch case rendering <ReportBuilder cardId="<card>" /> · WebStoreX SKIPPED (zero DSC sources per RPT-7 honest study — hub-wide skip · 0-DIFF) · ZERO new components · ZERO engine edits · ZERO new SIBLINGs · walls held: ReportBuilder.tsx + report-builder-engine.ts + report-definitions.ts FROZEN · WebStoreX + all other cards + framework + banked pages 0-DIFF · headSha 2b62547
   {
     sprintNumber: 'RPT9d' as unknown as number, code: 'T-RPT9d-Builder-Rollout-Sales', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '8dfc18f', loc: 180,
+    headSha: '2b62547', predecessorSha: '8dfc18f', loc: 180,
+    newSiblings: [],
+    bankDate: '2026-06-12', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-9e T-RPT9e-Builder-Rollout-Support · Reporting Arc · Phase D builder rollout 4 of 4 · CLOSES RPT-9 · MECHANICAL ADDITIVE · mount the frozen <ReportBuilder cardId="…" /> from RPT-9a into 6 Support cards (frontdesk · servicedesk · taskflow · docvault · pay-hub→peoplepay · dispatch→dispatch-hub) mirroring the RPT-9b/9c/9d recipe: (1) add module id <card>-rpt-report-builder to module union/sidebar config · (2) add Sparkles "Report Builder" sidebar entry · (3) add switch case rendering <ReportBuilder cardId="<canonical entitlement id>" /> · Canonical ids honoured: pay-hub→peoplepay · dispatch→dispatch-hub · ZERO new components · ZERO engine edits · ZERO new SIBLINGs · walls held: ReportBuilder.tsx + report-builder-engine.ts + report-definitions.ts FROZEN · all other cards + framework + banked pages 0-DIFF · ≥30 cards now carry the builder (RPT-9 close coverage assertion green) · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT9e' as unknown as number, code: 'T-RPT9e-Builder-Rollout-Support', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '2b62547', loc: 210,
     newSiblings: [],
     bankDate: '2026-06-12', provenance: 'PENDING_BACKFILL',
   },

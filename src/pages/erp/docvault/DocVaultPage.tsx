@@ -35,6 +35,7 @@ import SharingAclPage from './registers/SharingAclPage';
 import RetentionReviewPage from './registers/RetentionReviewPage';
 import CircularsPage from './registers/CircularsPage';
 import CompletenessPage from './registers/CompletenessPage';
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 import type { DocVaultModule } from './DocVaultSidebar.types';
 
 export default function DocVaultPage(): JSX.Element {
@@ -60,6 +61,8 @@ export default function DocVaultPage(): JSX.Element {
       case 'retention-review':   return <RetentionReviewPage />;
       case 'circulars':          return <CircularsPage />;
       case 'completeness':       return <CompletenessPage />;
+      // 🆕 RPT-9e · Report Builder mount (frozen component · cardId='docvault')
+      case 'dv-rpt-report-builder': return <ReportBuilder cardId="docvault" />;
       default:                   return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };

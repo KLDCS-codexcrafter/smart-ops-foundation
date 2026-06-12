@@ -19,6 +19,7 @@ import {
   Wrench,
   Package,
   Rocket,
+  Sparkles,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -179,4 +180,6 @@ export const servicedeskSidebarItems: SidebarItem[] = [
       { id: 'future-task-register', type: 'item', label: 'Future Task Register', moduleId: 'future-task-register', requiredCards: ['servicedesk'], keyboard: 'd g f' },
     ],
   },
+  // 🆕 RPT-9e · Report Builder (frozen component · cardId='servicedesk')
+  { id: 'sd-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'sd-rpt-report-builder', requiredCards: ['servicedesk'] },
 ];

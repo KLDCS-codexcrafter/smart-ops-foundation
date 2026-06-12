@@ -32,4 +32,6 @@ export type DocVaultModule =
   | 'sharing-acl'
   | 'retention-review'
   | 'circulars'
-  | 'completeness';
+  | 'completeness'
+  // 🆕 RPT-9e · Report Builder mount
+  | 'dv-rpt-report-builder';

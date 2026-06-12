@@ -60,6 +60,7 @@ import { CommissionRatesSettings } from './settings/CommissionRatesSettings';
 import { EmailTemplatesSettings } from './settings/EmailTemplatesSettings';
 import { TellicallerTriggersSettings } from './settings/TellicallerTriggersSettings';
 import { CallTypeMasterSettings } from './settings/CallTypeMasterSettings';
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 export default function ServiceDeskPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<ServiceDeskModule>('welcome');
@@ -239,6 +240,9 @@ export default function ServiceDeskPage(): JSX.Element {
         return <TellicallerTriggersSettings />;
       case 'call-type-master':
         return <CallTypeMasterSettings />;
+      // 🆕 RPT-9e · Report Builder mount (frozen component · cardId='servicedesk')
+      case 'sd-rpt-report-builder':
+        return <ReportBuilder cardId="servicedesk" />;
       default:
         return <ServiceDeskWelcome onNavigate={setActiveModule} />;
     }

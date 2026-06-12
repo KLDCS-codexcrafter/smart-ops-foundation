@@ -38,4 +38,6 @@ export type TaskFlowModule =
   // ─ Approval Rail (Sprint B1S1) ─────────────────────────────────────
   | 'approvals-inbox'
   // ─ My Reminders (Sprint B1S2) ──────────────────────────────────────
-  | 'my-reminders';
+  | 'my-reminders'
+  // 🆕 RPT-9e · Report Builder mount
+  | 'tf-rpt-report-builder';

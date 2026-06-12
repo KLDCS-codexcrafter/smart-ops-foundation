@@ -25,6 +25,7 @@ import { MailInwardPage } from './mail/MailInwardPage';
 import { MailOutwardPage } from './mail/MailOutwardPage';
 import { AssetCustodyPage } from './records/AssetCustodyPage';
 import { ReceptionDiaryPage } from './records/ReceptionDiaryPage';
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 import type { FrontDeskModule } from './FrontDeskSidebar.types';
 
 export default function FrontDeskPage(): JSX.Element {
@@ -48,6 +49,8 @@ export default function FrontDeskPage(): JSX.Element {
       case 'mail-outward':     return <MailOutwardPage />;
       case 'asset-custody':    return <AssetCustodyPage />;
       case 'reception-diary':  return <ReceptionDiaryPage />;
+      // 🆕 RPT-9e · Report Builder mount (frozen component · cardId='frontdesk')
+      case 'fd-rpt-report-builder': return <ReportBuilder cardId="frontdesk" />;
       default:                 return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };

@@ -10,6 +10,7 @@ import {
   MessageSquare, Hash, Mail, Mic,
   Gauge, ShieldCheck, NotebookPen, Receipt,
   ListTodo, ShieldAlert, ArrowRightLeft, BellRing,
+  Sparkles,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -49,5 +50,7 @@ export const taskflowSidebarItems: SidebarItem[] = [
   { id: 'approvals-inbox',    type: 'item', label: 'Approvals Inbox',   icon: ShieldCheck,    keyboard: 'k 1' },
   // ── My Reminders (Sprint B1S2) ─────────────────────────────────────
   { id: 'my-reminders',       type: 'item', label: 'My Reminders',      icon: BellRing,       keyboard: 'k 2' },
+  // 🆕 RPT-9e · Report Builder (frozen component · cardId='taskflow')
+  { id: 'tf-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles },
 ];
 

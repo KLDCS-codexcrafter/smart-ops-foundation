@@ -36,6 +36,7 @@ import ChatGovernancePage from './ChatGovernancePage';
 import HandoverPage from './HandoverPage';
 import ApprovalsInboxPage from './ApprovalsInboxPage';
 import MyRemindersPage from './MyRemindersPage';
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 import type { TaskFlowModule } from './TaskFlowSidebar.types';
 
 const VALID_MODULES: TaskFlowModule[] = [
@@ -49,6 +50,8 @@ const VALID_MODULES: TaskFlowModule[] = [
   'expense-center',
   'approvals-inbox',
   'my-reminders',
+  // 🆕 RPT-9e · Report Builder
+  'tf-rpt-report-builder',
 ];
 
 export default function TaskFlowPage(): JSX.Element {
@@ -98,6 +101,8 @@ export default function TaskFlowPage(): JSX.Element {
       case 'expense-center':     return <ExpenseCenterPage />;
       case 'approvals-inbox':    return <ApprovalsInboxPage />;
       case 'my-reminders':       return <MyRemindersPage />;
+      // 🆕 RPT-9e · Report Builder mount (frozen component · cardId='taskflow')
+      case 'tf-rpt-report-builder': return <ReportBuilder cardId="taskflow" />;
       default:                   return <ComingSoonPanel module={`taskflow-${activeModule}`} />;
     }
   };
