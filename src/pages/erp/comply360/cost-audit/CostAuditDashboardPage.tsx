@@ -189,9 +189,16 @@ export default function CostAuditDashboardPage(): JSX.Element {
         const sig = signReport(chartRows);
         return (
           <section className="space-y-3" data-testid="rpt2ai-costaudit-section">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <ScorecardTile label="CRA filings on time %" value={`${pct}%`} rag={rag} hint={adverseCount > 0 ? 'Adverse findings present' : 'CRA-1/2/3/4'} />
               <ScorecardTile label="Adverse findings" value={adverseCount} hint="Reports flagged" />
+              {/* 🆕 RPT-10b · cmp-cost-audit mgmt summary tile (additive · seed actually rendered) */}
+              <ScorecardTile
+                label="Cost-audit posture"
+                value={`${pct}%`}
+                rag={rag}
+                hint="cmp-cost-audit · higher-good"
+              />
               <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-costaudit">
                 <ShieldCheck className="h-4 w-4 text-primary" />
                 <span className="text-xs text-muted-foreground">Integrity</span>
