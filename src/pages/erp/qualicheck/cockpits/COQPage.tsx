@@ -98,6 +98,7 @@ export default function COQPage(): JSX.Element {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <ReportSendHeader title="Cost of Quality" rows={ncrRows as unknown as Record<string, unknown>[]} />
           <Button size="sm" variant="outline" type="button" data-testid="coq-csv"
             onClick={() => downloadCsv(`coq-ncr-${entityCode}-${Date.now()}`, ncrRows)} disabled={ncrRows.length === 0}>
             <Download className="h-3 w-3 mr-1" /> CSV

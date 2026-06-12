@@ -109,6 +109,7 @@ export default function OEEBoardPage(): JSX.Element {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <ReportSendHeader title="OEE Board" rows={lineOEE as unknown as Record<string, unknown>[]} />
           <Button size="sm" variant="outline" type="button" data-testid="oee-board-csv"
             onClick={() => downloadCsv(`oee-board-${factoryId}-${date}`, lineOEE as unknown as Record<string, unknown>[])} disabled={lineOEE.length === 0}>
             <Download className="h-3 w-3 mr-1" /> CSV

@@ -27,6 +27,7 @@ import {
 } from '@/lib/report-framework/daybook-aggregator';
 import { listDayBookSources } from '@/lib/report-framework/daybook-source-registry';
 import { signReport } from '@/lib/report-framework/integrity-sign';
+import { ReportSendHeader } from '@/components/operix-core/report-framework';
 
 function fmtINR(n: number): string {
   if (!Number.isFinite(n)) return '—';
