@@ -202,6 +202,41 @@ export function TargetVsAchievementPanel({ entityCode }: Props) {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = filtered.map(r => ({
+          person: r.target.person_name ?? 'Company',
+          target: r.target.target_value,
+          achieved: r.actual,
+        }));
+        const cfg = getKpi('sx-target-ach')?.defaultChart ?? defaultChartConfig({
+          chartType: 'combo', xKey: 'person',
+          series: [{ key: 'target', label: 'Target ₹' }, { key: 'achieved', label: 'Achieved ₹' }],
+          title: 'Target vs Achievement',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="sx-target-ach-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-target-ach-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'person', label: 'Person' },
+                { key: 'target', label: 'Target ₹', align: 'right' },
+                { key: 'achieved', label: 'Achieved ₹', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No active targets"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }
