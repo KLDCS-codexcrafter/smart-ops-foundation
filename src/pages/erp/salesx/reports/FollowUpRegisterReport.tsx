@@ -183,19 +183,22 @@ export function FollowUpRegisterReportPanel({ entityCode, onNavigate }: Props) {
         </CardContent>
       </Card>
 
-      <Card className="p-3 space-y-2" data-testid="sx-followups-dashboard-host">
+      <Card className="p-3 space-y-2" data-testid="sx-followups-toggle-host">
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-followups-integrity-badge" title={integrityHash}>
             <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
           </Badge>
         </div>
-        {chartRows.length === 0 ? (
-          <div className="text-sm text-muted-foreground py-6 text-center">No enquiries yet</div>
-        ) : (
-          <div className="w-full h-72" data-testid="sx-followups-chart-host">
-            <ReportChart data={chartRows} config={chartConfig} />
-          </div>
-        )}
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status', label: 'Status' },
+            { key: 'count', label: 'Enquiries', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No enquiries yet"
+        />
       </Card>
     </div>
   );
