@@ -56,4 +56,6 @@ export type QualiCheckModule =
   | 'qc-r-schedule-m-compliance'
   | 'qc-r-cfr-part-11-audit-trail'
   // 🆕 RPT-9c · Report Builder mount
-  | 'qc-rpt-report-builder';
+  | 'qc-rpt-report-builder'
+  // 🆕 RPT-10b · Cost of Quality cockpit
+  | 'qc-coq';
