@@ -63,6 +63,8 @@ export function LogisticLayout({ children, title, subtitle }: LogisticLayoutProp
     { title: 'Payments',       url: '/erp/logistic/payments',      icon: IndianRupee,     badge: 0 },
     { title: 'Disputes',       url: '/erp/logistic/disputes',      icon: AlertCircle,     badge: openDisputeCount },
     { title: 'Profile',        url: '/erp/logistic/profile',       icon: Building2,       badge: 0 },
+    // 🆕 RPT-9c · Report Builder (route mode · cardId="logistics" · lg-rpt-report-builder)
+    { title: 'Report Builder', url: '/erp/logistic/report-builder', icon: Sparkles,        badge: 0 },
   ];
 
   const initials = session.party_name
