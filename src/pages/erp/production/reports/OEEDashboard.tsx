@@ -142,40 +142,47 @@ export function OEEDashboardPanel(): JSX.Element {
         </CardContent></Card>
       </div>
 
-      {chartData.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm">
-              {formulaMode === 'classic_apq'
-                ? 'A · P · Q Breakdown'
-                : formulaMode === 'simplified_aq'
-                  ? 'A · Q Breakdown'
-                  : 'OEE per Machine'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="machine" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {formulaMode === 'classic_apq' && <>
-                  <Bar dataKey="A" name="Availability %" fill="hsl(var(--primary))" />
-                  <Bar dataKey="P" name="Performance %" fill="hsl(var(--warning))" />
-                  <Bar dataKey="Q" name="Quality %" fill="hsl(var(--success))" />
-                </>}
-                {formulaMode === 'simplified_aq' && <>
-                  <Bar dataKey="A" name="Availability %" fill="hsl(var(--primary))" />
-                  <Bar dataKey="Q" name="Quality %" fill="hsl(var(--success))" />
-                </>}
-                <Bar dataKey="OEE" name="OEE %" fill="hsl(var(--muted-foreground))" />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
+      {chartData.length > 0 && (() => {
+        const __hash = signReport(chartData);
+        const __short = __hash.replace('fnv1a:', '').slice(0, 10);
+        const series = formulaMode === 'classic_apq'
+          ? [
+              { key: 'A', label: 'Availability %' },
+              { key: 'P', label: 'Performance %' },
+              { key: 'Q', label: 'Quality %' },
+              { key: 'OEE', label: 'OEE %' },
+            ]
+          : formulaMode === 'simplified_aq'
+            ? [
+                { key: 'A', label: 'Availability %' },
+                { key: 'Q', label: 'Quality %' },
+                { key: 'OEE', label: 'OEE %' },
+              ]
+            : [{ key: 'OEE', label: 'OEE %' }];
+        return (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm flex items-center justify-between">
+                <span>
+                  {formulaMode === 'classic_apq'
+                    ? 'A · P · Q Breakdown'
+                    : formulaMode === 'simplified_aq'
+                      ? 'A · Q Breakdown'
+                      : 'OEE per Machine'}
+                </span>
+                <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-oee-integrity-badge" title={__hash}>
+                  <ShieldCheck className="h-3 w-3 mr-1" />{__short}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="w-full h-[260px]" data-testid="prod-oee-chart-host">
+                <ReportChart data={chartData} config={defaultChartConfig({ chartType: 'column', xKey: 'machine', series })} />
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       <Card>
         <CardContent className="p-0">
