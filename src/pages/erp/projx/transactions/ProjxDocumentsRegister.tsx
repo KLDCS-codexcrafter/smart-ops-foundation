@@ -16,10 +16,12 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { FolderOpen, Plus } from 'lucide-react';
+import { FolderOpen, Plus, ShieldCheck } from 'lucide-react';
 import { useProjects } from '@/hooks/useProjects';
 import { listAllProjectDocuments } from '@/lib/projx-documents-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import type { ProjXModule } from '../ProjXSidebar.types';
 
 interface ProjxDocumentsRegisterProps {
