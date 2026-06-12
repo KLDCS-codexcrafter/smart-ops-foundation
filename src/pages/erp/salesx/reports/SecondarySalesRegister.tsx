@@ -160,19 +160,22 @@ export function SecondarySalesRegisterPanel({ initialFilter }: SecondarySalesReg
           {printSec && <SecondarySalesPrint sec={printSec} onClose={() => setPrintSec(null)} />}
         </DialogContent>
       </Dialog>
-      <Card className="p-3 space-y-2" data-testid="sx-secondary-dashboard-host">
+      <Card className="p-3 space-y-2" data-testid="sx-secondary-toggle-host">
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-secondary-integrity-badge" title={integrityHash}>
             <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
           </Badge>
         </div>
-        {chartRows.length === 0 ? (
-          <div className="text-sm text-muted-foreground py-6 text-center">No secondary sales yet</div>
-        ) : (
-          <div className="w-full h-72" data-testid="sx-secondary-chart-host">
-            <ReportChart data={chartRows} config={chartConfig} />
-          </div>
-        )}
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'date', label: 'Date' },
+            { key: 'secondary_value', label: 'Secondary Value ₹', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No secondary sales yet"
+        />
       </Card>
     </div>
   );
