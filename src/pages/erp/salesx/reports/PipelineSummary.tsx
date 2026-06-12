@@ -16,12 +16,15 @@ import { Progress } from '@/components/ui/progress';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
+import { ShieldCheck } from 'lucide-react';
 import { useEnquiries } from '@/hooks/useEnquiries';
 import { useQuotations } from '@/hooks/useQuotations';
 import type { EnquiryStatus } from '@/types/enquiry';
 import { cn } from '@/lib/utils';
 import { dSum, round2 } from '@/lib/decimal-helpers';
 import { useT } from '@/lib/i18n-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface Props { entityCode: string }
 
