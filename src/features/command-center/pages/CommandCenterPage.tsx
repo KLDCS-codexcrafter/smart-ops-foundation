@@ -625,6 +625,9 @@ export default function CommandCenterPage() {
       // 🎬 Sprint B2 · B.2 · Communication Console
       case 'communication-console':   return <CommunicationConsolePage />;
 
+      // 🎬 Sprint W1C-4 · Auto-Send Rules (rules→outbox orchestration)
+      case 'auto-send-rules':         return <AutoSendRulesPage />;
+
       // 🎬 Sprint B6 · B.6 · Master Health Scorecard (Pillar-B CLOSE)
       case 'master-health-scorecard': return <MasterHealthScorecardPage />;
 
