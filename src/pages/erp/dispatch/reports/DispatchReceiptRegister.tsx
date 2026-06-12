@@ -153,6 +153,30 @@ export function DispatchReceiptRegisterPanel() {
           {printing && <DispatchReceiptPrint receipt={printing} onClose={() => setPrinting(null)} />}
         </DialogContent>
       </Dialog>
+      {(() => {
+        const byStatus = new Map<string, number>();
+        for (const r of rows) byStatus.set(r.status, (byStatus.get(r.status) ?? 0) + 1);
+        const chartRows = Array.from(byStatus.entries()).map(([status, count]) => ({ status, count }));
+        const cfg = getKpi('dp-receipts')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'status',
+          series: [{ key: 'count', label: 'Receipts' }],
+          title: 'Dispatch receipts by status',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="dp-receipts-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="dp-receipts-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="dp-receipts-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
