@@ -140,6 +140,8 @@ const REPORT_ITEMS: SidebarItem[] = [
   { id: 'fc-rpt-challan', label: 'Challan Management', icon: Receipt },
   { id: 'fc-rpt-audit-trail', label: 'Audit Trail (MCA Rule 3(1))', icon: Shield },
   { id: 'fc-rpt-monthly-production', label: 'Monthly Production (CGST 56(12))', icon: Factory },
+  // RPT-9a · User Report Builder · embedded
+  { id: 'fc-rpt-report-builder', label: 'Report Builder', icon: Sparkles },
 ];
 
 // [T10-pre.2d-B] 13 voucher-type registers — fixed columns, drill back to DayBook.
