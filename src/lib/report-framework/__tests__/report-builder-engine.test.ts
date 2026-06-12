@@ -118,7 +118,8 @@ describe('RPT-9a · report-builder-engine · query correctness', () => {
       filters: [{ field: 'amount', op: 'lt', value: 1000 }],
       groupBy: [], measures: [{ field: 'id', agg: 'count' }],
     }, 'E1');
-    expect(lt.rows[0].count).toBe(2);
+    // amounts < 1000: 500, 700, 200 → 3
+    expect(lt.rows[0].count).toBe(3);
 
     const contains = runQuery(FIXTURE_ID, {
       filters: [{ field: 'region', op: 'contains', value: 'sou' }],
