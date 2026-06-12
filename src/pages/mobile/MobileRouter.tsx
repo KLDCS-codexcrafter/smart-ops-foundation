@@ -196,6 +196,20 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/captures/docvault-capture') return <MobileDocVaultCapturePage />;
   // AM.3 · Universal Mobile Reporting viewer
   if (pathname === '/mobile/reports') return <MobileUniversalReportPage />;
+  // M1 · Transporter routes
+  if (pathname === '/mobile/transporter' || pathname === '/mobile/transporter/' || pathname === '/mobile/transporter/home') return <MobileTransporterHome />;
+  if (pathname === '/mobile/transporter/lr-queue') return <MobileLRQueuePage />;
+  if (pathname === '/mobile/transporter/manifest') return <MobileManifestAckPage />;
+  if (pathname === '/mobile/transporter/pod') return <MobilePODCapturePage />;
+  if (pathname === '/mobile/transporter/disputes') return <MobileTransporterDisputesPage />;
+  if (pathname === '/mobile/transporter/payments') return <MobileTransporterPaymentsPage />;
+  // M1 · Vendor routes
+  if (pathname === '/mobile/vendor' || pathname === '/mobile/vendor/' || pathname === '/mobile/vendor/home') return <MobileVendorHome />;
+  if (pathname === '/mobile/vendor/po-ack') return <MobilePOAckPage />;
+  if (pathname === '/mobile/vendor/asn') return <MobileASNCreatePage />;
+  if (pathname === '/mobile/vendor/invoice') return <MobileVendorInvoiceSubmitPage />;
+  if (pathname === '/mobile/vendor/payments') return <MobileVendorPaymentsPage />;
+  if (pathname === '/mobile/vendor/docs') return <MobileVendorDocsPage />;
   return <MobileHome />;
 }
 
