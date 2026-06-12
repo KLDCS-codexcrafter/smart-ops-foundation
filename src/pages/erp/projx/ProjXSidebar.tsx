@@ -28,6 +28,8 @@ const LIVE_MODULES: ProjXModule[] = [
   'r-project-register', 'r-milestone-register', 'r-time-entry-register',
   // RPT-9d · User Report Builder · embedded mount
   'projx-rpt-report-builder',
+  // 🆕 RPT-10b · Earned Value cockpit
+  'projx-evm',
 ];
 
 interface SidebarItem {
