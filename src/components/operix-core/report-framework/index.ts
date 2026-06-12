@@ -8,3 +8,5 @@ export { TableChartToggle, type TableChartToggleProps, type TableChartColumn } f
 export { CHART_TYPE_COVERAGE, type ChartCoverageEntry } from './CHART_TYPE_COVERAGE';
 export { ScorecardTile, type ScorecardTileProps } from './ScorecardTile';
 export { RoleDashboard } from './RoleDashboard';
+// RPT-9a · User Report Builder
+export { default as ReportBuilder, type ReportBuilderProps } from './ReportBuilder';
