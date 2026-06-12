@@ -20,11 +20,10 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
-} from 'recharts';
-import {
-  TrendingUp, Target, Wallet, AlertTriangle, ArrowRight, Activity,
+  TrendingUp, Target, Wallet, AlertTriangle, ArrowRight, Activity, ShieldCheck,
 } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { enquiriesKey } from '@/types/enquiry';
@@ -208,38 +207,40 @@ export function SalesXAnalyticsPanel({ entityCode, onNavigate }: Props) {
       {/* Section 1 — Interactive funnel */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm flex items-center gap-2">
-            <TrendingUp className="h-4 w-4 text-orange-500" />
-            Sales Funnel
-            <Badge variant="outline" className="ml-2 text-[10px]">
-              Conversion: {conversionPct}%
-            </Badge>
+          <CardTitle className="text-sm flex items-center gap-2 justify-between">
+            <span className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4 text-orange-500" />
+              Sales Funnel
+              <Badge variant="outline" className="ml-2 text-[10px]">
+                Conversion: {conversionPct}%
+              </Badge>
+            </span>
+            {(() => { const __h = signReport(funnelData); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-analytics-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={funnelData}
-                onClick={(d) => {
-                  const payload = d?.activePayload?.[0]?.payload as { stage: FunnelStage } | undefined;
-                  if (payload?.stage) setDrillStage(payload.stage);
-                }}
+          <div className="h-56" data-testid="sx-analytics-chart-host">
+            <ReportChart
+              data={funnelData}
+              config={defaultChartConfig({
+                chartType: 'column',
+                xKey: 'label',
+                series: [{ key: 'count', label: 'Count' }],
+              })}
+            />
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {funnelData.map(d => (
+              <Button
+                key={d.stage}
+                size="sm"
+                variant={drillStage === d.stage ? 'default' : 'outline'}
+                onClick={() => setDrillStage(d.stage)}
+                className="text-xs"
               >
-                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} />
-                <Tooltip />
-                <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                  {funnelData.map(d => (
-                    <Cell
-                      key={d.stage}
-                      fill={drillStage === d.stage ? 'hsl(24 95% 53%)' : 'hsl(24 95% 53% / 0.6)'}
-                      cursor="pointer"
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+                {d.label}: {d.count}
+              </Button>
+            ))}
           </div>
           {drillStage && (
             <div className="border-t pt-3 space-y-2">
@@ -276,6 +277,7 @@ export function SalesXAnalyticsPanel({ entityCode, onNavigate }: Props) {
           )}
         </CardContent>
       </Card>
+
 
       {/* Section 2 — Commission health */}
       <Card>
