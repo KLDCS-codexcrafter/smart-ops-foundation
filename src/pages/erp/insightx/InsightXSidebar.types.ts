@@ -12,6 +12,8 @@ export type InsightXModule =
   | 'ix-drill-to-root'
   | 'ix-operix-score'
   | 'ix-insights-inbox'
-  | 'ix-predictive';
+  | 'ix-predictive'
+  // RPT-9a · User Report Builder · centralized mount
+  | 'ix-report-builder';
 
 
