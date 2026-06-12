@@ -21,8 +21,10 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { ShieldCheck, Save, Trash2, FolderOpen, Lock } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { ShieldCheck, Save, Trash2, FolderOpen, Lock, Download, Wand2 } from 'lucide-react';
 import { TableChartToggle, type TableChartColumn } from './TableChartToggle';
+import { PivotMatrix } from './PivotMatrix';
 import {
   runQuery,
   allowedSourcesFor,
@@ -41,6 +43,9 @@ import {
   type ReportScope,
 } from '@/lib/report-framework/report-definitions';
 import { layerCeilingFor } from '@/lib/report-framework/role-layer';
+import { matchIntent } from '@/lib/report-framework/intent-match';
+import { describeReport } from '@/lib/report-framework/narrative';
+import { downloadCsv } from '@/lib/report-framework/export-csv';
 import type { DataSource } from '@/lib/report-framework/data-source-catalog';
 import type { ReportChartConfig } from '@/lib/report-framework/chart-config';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
@@ -78,6 +83,14 @@ export default function ReportBuilder({ cardId }: ReportBuilderProps) {
   const [saveName, setSaveName] = useState('');
   const [saveScope, setSaveScope] = useState<ReportScope>('private');
   const [savedTick, setSavedTick] = useState(0); // re-render trigger
+
+  // Block 4 · NL intent input
+  const [intentText, setIntentText] = useState('');
+  const [intentNoMatch, setIntentNoMatch] = useState(false);
+  const [intentLastMatch, setIntentLastMatch] = useState<{ sourceId: string } | null>(null);
+
+  // Block 1 · Pivot tab measure-key selection
+  const [pivotMeasureKey] = useState<string | null>(null);
 
   const activeSource = useMemo(
     () => sources.find((s) => s.id === sourceId),
@@ -175,6 +188,21 @@ export default function ReportBuilder({ cardId }: ReportBuilderProps) {
     }
   }, [layer, userId]);
 
+  const handleIntentApply = useCallback(() => {
+    const m = matchIntent(intentText);
+    if (!m) {
+      setIntentNoMatch(true);
+      setIntentLastMatch(null);
+      return;
+    }
+    setIntentNoMatch(false);
+    setSourceId(m.sourceId);
+    setGroupBy(m.spec.groupBy);
+    setMeasures(m.spec.measures.map((mm) => ({ field: mm.field, agg: mm.agg })));
+    setFilters([]);
+    setIntentLastMatch({ sourceId: m.sourceId });
+  }, [intentText]);
+
   if (isNotEntitled) {
     return (
       <Card data-testid="rb-not-entitled">
@@ -198,7 +226,32 @@ export default function ReportBuilder({ cardId }: ReportBuilderProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Source picker */}
+          {/* Intent input (Block 4) — modest, client-side, honest */}
+          <div className="grid gap-2" data-testid="rb-intent-row">
+            <Label className="text-xs flex items-center gap-1"><Wand2 className="h-3 w-3" /> Describe the report (optional)</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                value={intentText}
+                onChange={(e) => { setIntentText(e.target.value); setIntentNoMatch(false); }}
+                placeholder='e.g. "total amount by party for receivx"'
+                data-testid="rb-intent-input"
+              />
+              <Button size="sm" variant="outline" type="button" data-testid="rb-intent-apply" onClick={handleIntentApply}>
+                Match
+              </Button>
+            </div>
+            {intentNoMatch && (
+              <p className="text-xs text-muted-foreground" data-testid="rb-intent-nomatch">
+                Couldn't match that — pick a source below.
+              </p>
+            )}
+            {intentLastMatch && (
+              <p className="text-xs text-muted-foreground" data-testid="rb-intent-prefilled">
+                Pre-filled from <span className="font-mono">{intentLastMatch.sourceId}</span>. Review and run.
+              </p>
+            )}
+          </div>
+
           <div className="grid gap-2">
             <Label className="text-xs">Source</Label>
             <Select value={sourceId} onValueChange={(v) => { setSourceId(v); setGroupBy([]); setMeasures([]); setFilters([]); }}>
@@ -325,12 +378,28 @@ export default function ReportBuilder({ cardId }: ReportBuilderProps) {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle className="text-sm">Preview</CardTitle>
-            {result && !('error' in result) && (
-              <Badge variant="outline" className="font-mono text-[10px] flex items-center gap-1" data-testid="rb-integrity-badge">
-                <ShieldCheck className="h-3 w-3" />
-                {result.integrityHash.slice(0, 12)}
-              </Badge>
-            )}
+            <div className="flex items-center gap-2">
+              {result && !('error' in result) && result.rows.length > 0 && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  type="button"
+                  data-testid="rb-csv-export"
+                  onClick={() => downloadCsv(
+                    `report-${activeSource.id}-${Date.now()}`,
+                    result.rows as Record<string, unknown>[],
+                  )}
+                >
+                  <Download className="h-3 w-3 mr-1" /> CSV
+                </Button>
+              )}
+              {result && !('error' in result) && (
+                <Badge variant="outline" className="font-mono text-[10px] flex items-center gap-1" data-testid="rb-integrity-badge">
+                  <ShieldCheck className="h-3 w-3" />
+                  {result.integrityHash.slice(0, 12)}
+                </Badge>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {!result && (
@@ -343,15 +412,62 @@ export default function ReportBuilder({ cardId }: ReportBuilderProps) {
               <p className="text-xs text-muted-foreground" data-testid="rb-empty">No rows for the current spec.</p>
             )}
             {result && !('error' in result) && result.rows.length > 0 && (
-              <TableChartToggle
-                rows={result.rows as Record<string, unknown>[]}
-                columns={tableColumns}
-                chartConfig={chartConfig}
-              />
+              <>
+                {/* Block 5 · Narrative line — numbers computed from real rows */}
+                <p className="text-xs text-muted-foreground mb-2" data-testid="rb-narrative">
+                  {describeReport(result.rows as Record<string, unknown>[], spec)}
+                </p>
+                {spec.groupBy.length === 2 ? (
+                  <Tabs defaultValue="table">
+                    <TabsList className="h-8">
+                      <TabsTrigger value="table" className="text-xs h-7" data-testid="rb-tab-table">Table</TabsTrigger>
+                      <TabsTrigger value="chart" className="text-xs h-7" data-testid="rb-tab-chart">Chart</TabsTrigger>
+                      <TabsTrigger value="pivot" className="text-xs h-7" data-testid="rb-tab-pivot">Pivot</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="table">
+                      <TableChartToggle
+                        rows={result.rows as Record<string, unknown>[]}
+                        columns={tableColumns}
+                        chartConfig={chartConfig}
+                      />
+                    </TabsContent>
+                    <TabsContent value="chart">
+                      <TableChartToggle
+                        rows={result.rows as Record<string, unknown>[]}
+                        columns={tableColumns}
+                        chartConfig={chartConfig}
+                        defaultView="chart"
+                      />
+                    </TabsContent>
+                    <TabsContent value="pivot">
+                      {(() => {
+                        const m0 = measures[0];
+                        const alias = m0 ? (m0.agg === 'count' ? 'count' : `${m0.agg}_${m0.field}`) : 'count';
+                        const key = pivotMeasureKey ?? alias;
+                        return (
+                          <PivotMatrix
+                            rows={result.rows as Record<string, unknown>[]}
+                            groupBy={[spec.groupBy[0], spec.groupBy[1]] as [string, string]}
+                            measureKey={key}
+                            measureLabel={key}
+                          />
+                        );
+                      })()}
+                    </TabsContent>
+                  </Tabs>
+                ) : (
+                  <TableChartToggle
+                    rows={result.rows as Record<string, unknown>[]}
+                    columns={tableColumns}
+                    chartConfig={chartConfig}
+                  />
+                )}
+              </>
             )}
           </CardContent>
         </Card>
       )}
+
 
       {/* Save / Load */}
       {activeSource && (

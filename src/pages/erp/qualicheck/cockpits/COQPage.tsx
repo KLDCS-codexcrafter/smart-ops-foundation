@@ -13,6 +13,9 @@
 import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+import { downloadCsv } from '@/lib/report-framework/export-csv';
 import {
   ReportChart, ScorecardTile,
 } from '@/components/operix-core/report-framework';
@@ -94,10 +97,17 @@ export default function COQPage(): JSX.Element {
             metrics derivable from real row fields are rendered.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-[10px]" data-testid="coq-integrity">
-          ◇ {sig.slice(0, 12)}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" type="button" data-testid="coq-csv"
+            onClick={() => downloadCsv(`coq-ncr-${entityCode}-${Date.now()}`, ncrRows)} disabled={ncrRows.length === 0}>
+            <Download className="h-3 w-3 mr-1" /> CSV
+          </Button>
+          <Badge variant="outline" className="font-mono text-[10px]" data-testid="coq-integrity">
+            ◇ {sig.slice(0, 12)}
+          </Badge>
+        </div>
       </header>
+
 
       {inspRows.length === 0 && ncrRows.length === 0 ? (
         <Card className="p-8 text-center text-sm text-muted-foreground" data-testid="coq-empty">

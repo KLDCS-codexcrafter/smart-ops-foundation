@@ -7,6 +7,9 @@ import "@/lib/hierarchical-ledger-wiring";
 import "@/lib/report-framework/daybook-sources";
 // RPT-3b · Plant the Data Source Catalog (DSC) — depends on RPT-3a registry above.
 import "@/lib/report-framework/data-sources";
+// RPT-12a · Block 3 · Register report-search entries into the command palette (idempotent).
+import { registerReportSearchEntries } from "@/lib/report-framework/report-search-entries";
+registerReportSearchEntries();
 
 // Sprint 151 · DP-WS-22 · PWA rider · guarded SW registration.
 // Skip in dev / Lovable preview / iframe — see PWA skill.

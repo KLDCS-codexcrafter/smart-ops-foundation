@@ -13,6 +13,9 @@
 import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+import { downloadCsv } from '@/lib/report-framework/export-csv';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -105,10 +108,17 @@ export default function OEEBoardPage(): JSX.Element {
             <code>src/lib/oee-engine.ts</code> — same wiring as the legacy OEE Dashboard.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-[10px]" data-testid="oee-board-integrity">
-          ◇ {sig.slice(0, 12)}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" type="button" data-testid="oee-board-csv"
+            onClick={() => downloadCsv(`oee-board-${factoryId}-${date}`, lineOEE as unknown as Record<string, unknown>[])} disabled={lineOEE.length === 0}>
+            <Download className="h-3 w-3 mr-1" /> CSV
+          </Button>
+          <Badge variant="outline" className="font-mono text-[10px]" data-testid="oee-board-integrity">
+            ◇ {sig.slice(0, 12)}
+          </Badge>
+        </div>
       </header>
+
 
       <Card className="p-4 grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
