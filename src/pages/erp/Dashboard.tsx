@@ -195,7 +195,7 @@ function AppCard({ app }: { app: AppDefinition }) {
       {app.status === "coming_soon" && (
         <span className="absolute top-3 right-3 z-20 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
           <Clock className="h-3 w-3" />
-          Coming Soon
+          Wave-2
         </span>
       )}
       {app.status === "wip" && (
