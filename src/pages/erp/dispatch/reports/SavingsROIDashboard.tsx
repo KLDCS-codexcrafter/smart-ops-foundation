@@ -19,9 +19,10 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
 import {
-  TrendingUp, Settings, Download, AlertCircle, CheckCircle2, Lightbulb,
+  TrendingUp, Settings, Download, AlertCircle, CheckCircle2, Lightbulb, ShieldCheck,
 } from 'lucide-react';
-import { Bar, Line, ComposedChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
@@ -352,25 +353,27 @@ export function SavingsROIDashboardPanel() {
       {/* Monthly trend */}
       <Card>
         <CardContent className="p-4">
-          <h3 className="text-sm font-semibold mb-3">Monthly Trend (12 months)</h3>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={monthlyTrend}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="month" className="text-xs" />
-                <YAxis yAxisId="left" className="text-xs" />
-                <YAxis yAxisId="right" orientation="right" className="text-xs" unit="%" />
-                <Tooltip />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                <Bar yAxisId="left" dataKey="flagged" fill="hsl(0 84% 60%)" name="Flagged" />
-                <Bar yAxisId="left" dataKey="recovered" fill="hsl(160 84% 39%)" name="Recovered" />
-                <Line yAxisId="right" type="monotone" dataKey="cumROI"
-                  stroke="hsl(217 91% 60%)" strokeWidth={2} name="Cumulative ROI %" />
-              </ComposedChart>
-            </ResponsiveContainer>
+          <h3 className="text-sm font-semibold mb-3 flex items-center justify-between">
+            <span>Monthly Trend (12 months)</span>
+            {(() => { const __h = signReport(monthlyTrend); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="dp-savings-roi-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}
+          </h3>
+          <div className="h-64" data-testid="dp-savings-roi-chart-host">
+            <ReportChart
+              data={monthlyTrend}
+              config={defaultChartConfig({
+                chartType: 'combo',
+                xKey: 'month',
+                series: [
+                  { key: 'flagged', label: 'Flagged', renderAs: 'bar' },
+                  { key: 'recovered', label: 'Recovered', renderAs: 'bar' },
+                  { key: 'cumROI', label: 'Cumulative ROI %', renderAs: 'line' },
+                ],
+              })}
+            />
           </div>
         </CardContent>
       </Card>
+
 
       {/* Top 3 Opportunities */}
       <div>

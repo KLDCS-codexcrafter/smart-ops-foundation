@@ -19,11 +19,10 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from '@/components/ui/dialog';
 import {
-  Award, Settings, Download, TrendingUp, TrendingDown, Minus, LineChart as LineIcon,
+  Award, Settings, Download, TrendingUp, TrendingDown, Minus, LineChart as LineIcon, ShieldCheck,
 } from 'lucide-react';
-import {
-  LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
-} from 'recharts';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { toast } from 'sonner';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
@@ -412,30 +411,30 @@ export function TransporterScorecardPanel() {
       <Dialog open={!!trendDialog} onOpenChange={(o) => !o && setTrendDialog(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>
-              {trendDialog?.logistic_name} · 12-Month Trend
+            <DialogTitle className="flex items-center justify-between">
+              <span>{trendDialog?.logistic_name} · 12-Month Trend</span>
+              {trendData.length > 0 && (() => { const __h = signReport(trendData); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="dp-transporter-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}
             </DialogTitle>
           </DialogHeader>
-          <div className="h-72">
+          <div className="h-72" data-testid="dp-transporter-chart-host">
             {trendData.length === 0 ? (
               <div className="h-full flex items-center justify-center text-xs text-muted-foreground">
                 No historical data available yet. Trend will populate after multiple recomputes.
               </div>
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                  <XAxis dataKey="month" className="text-xs" />
-                  <YAxis domain={[0, 100]} className="text-xs" />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="score" stroke="hsl(217 91% 60%)"
-                    strokeWidth={2} dot={{ r: 4 }} />
-                </LineChart>
-              </ResponsiveContainer>
+              <ReportChart
+                data={trendData}
+                config={defaultChartConfig({
+                  chartType: 'spline',
+                  xKey: 'month',
+                  series: [{ key: 'score', label: 'Score' }],
+                })}
+              />
             )}
           </div>
         </DialogContent>
       </Dialog>
+
     </div>
   );
 }
