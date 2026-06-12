@@ -28,7 +28,7 @@ describe('M1 · DocSendBar-mobile floor (structural mounts)', () => {
     expect(sh).toMatch(/T-M1-MobileARC-Close/);
     expect(sh).toMatch(/headSha: 'da3dd3b'/);
     // W1C-4 backfilled (no longer TBD)
-    const w1c4Block = sh.match(/T-W1C4-AutoSend-TierL[\s\S]{0,400}/);
+    const w1c4Block = sh.match(/sprintNumber: 'W1C4'[\s\S]{0,400}/);
     expect(w1c4Block).toBeTruthy();
     expect(w1c4Block![0]).toMatch(/headSha: 'da3dd3b'/);
   });
