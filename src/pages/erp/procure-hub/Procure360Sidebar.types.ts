@@ -80,5 +80,7 @@ export type Procure360Module =
   | 'vendor-advance-entry'
   | 'vendor-advance-register'
   // 🆕 RPT-9c · Report Builder mount
-  | 'p360-rpt-report-builder';
+  | 'p360-rpt-report-builder'
+  // 🆕 RPT-10a · Spend Funnel executive cockpit
+  | 'spend-funnel';
 

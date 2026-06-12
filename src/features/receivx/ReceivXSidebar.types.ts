@@ -22,7 +22,9 @@ export type ReceivXModule =
   | 'rx-r-aging-broker' | 'rx-r-aging-telecaller'
   | 'rx-r-collection-eff' | 'rx-r-comm-log' | 'rx-r-credit-risk'
   // RPT-9b · User Report Builder · embedded mount
-  | 'rx-rpt-report-builder';
+  | 'rx-rpt-report-builder'
+  // RPT-10a · Credit X-Ray executive cockpit
+  | 'rx-credit-xray';
 
 export const LIVE_RECEIVX_MODULES: ReceivXModule[] = [
   'rx-hub','rx-m-reminder-template','rx-m-collection-exec',
@@ -35,4 +37,6 @@ export const LIVE_RECEIVX_MODULES: ReceivXModule[] = [
   'rx-r-collection-eff','rx-r-comm-log','rx-r-credit-risk',
   // RPT-9b
   'rx-rpt-report-builder',
+  // RPT-10a
+  'rx-credit-xray',
 ];

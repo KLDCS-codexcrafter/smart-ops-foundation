@@ -100,6 +100,8 @@ const RecentErrorsPage = lazy(() => import('./features/command-center/pages/Rece
 const RoleDashboardPage = lazy(() => import('./components/operix-core/report-framework/RoleDashboard').then(m => ({ default: m.RoleDashboard })));
 // 🆕 RPT-5a · Cross-Card Day Book surface (pure consumption of RPT-3a/3b)
 const CrossCardDayBookPage = lazy(() => import('./features/command-center/pages/CrossCardDayBookPage'));
+// 🆕 RPT-10a · Block 2 · Promoter Cockpit (TV mode · executive cockpit)
+const PromoterCockpitPage = lazy(() => import('./features/command-center/pages/PromoterCockpitPage'));
 const ProformaInvoicePrint = lazy(() => import('./pages/erp/salesx/transactions/ProformaInvoicePrint'));
 const ParentCompany = lazy(() => import('./pages/erp/foundation/ParentCompany'));
 const CompanyCreate = lazy(() => import('./pages/erp/foundation/CompanyCreate'));
@@ -789,6 +791,8 @@ const App = () => (
               <Route path="/erp/command-center/my-dashboard" element={<P><RoleDashboardPage /></P>} />
               {/* 🆕 RPT-5a · Cross-card Day Book */}
               <Route path="/erp/command-center/daybook" element={<P><CrossCardDayBookPage /></P>} />
+              {/* 🆕 RPT-10a · Promoter Cockpit · TV mode */}
+              <Route path="/erp/command-center/promoter" element={<P><PromoterCockpitPage /></P>} />
               <Route path="/erp" element={<P><ErpDashboard /></P>} />
               <Route path="/erp/dashboard" element={<P><ErpDashboard /></P>} />
               {/* 🆕 Sprint 68 FAR-4 · Block 14 · FAR-2 deferred Block 9 route supplement · Q-LOCK-12 A */}

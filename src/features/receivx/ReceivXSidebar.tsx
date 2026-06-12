@@ -90,6 +90,8 @@ export function ReceivXSidebar({ activeModule, onModuleChange }: Props) {
           {btn('rx-t-task-board', 'Task Board', ClipboardCheck)}
           {/* RPT-9b · User Report Builder · embedded mount */}
           {btn('rx-rpt-report-builder', 'Report Builder', Sparkles)}
+          {/* RPT-10a · Credit X-Ray executive cockpit */}
+          {btn('rx-credit-xray', 'Credit X-Ray', AlertTriangle)}
         </SidebarMenu>
 
         <Collapsible open={mastersOpen} onOpenChange={setMastersOpen} className="px-2">
