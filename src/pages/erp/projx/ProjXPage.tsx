@@ -32,6 +32,8 @@ import type { ProjXModule } from './ProjXSidebar.types';
 import { useT } from '@/lib/i18n-engine';
 // RPT-9d · User Report Builder · embedded mount (FinCore reference pattern)
 import { ReportBuilder } from '@/components/operix-core/report-framework';
+// 🆕 RPT-10b · Earned Value cockpit
+import EVMPage from './cockpits/EVMPage';
 
 export default function ProjXPage() {
   const t = useT();
