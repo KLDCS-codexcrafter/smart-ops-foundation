@@ -13,6 +13,7 @@ import {
   type CustomerOrder, type CustomerOrderStatus,
   customerOrdersKey,
 } from '@/types/customer-order';
+import { ReportSendHeader } from '@/components/operix-core/report-framework/ReportSendHeader';
 
 function readSession(): MobileSession | null {
   try { const raw = sessionStorage.getItem('opx_mobile_session'); return raw ? (JSON.parse(raw) as MobileSession) : null; } catch { return null; }
