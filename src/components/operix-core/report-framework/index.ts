@@ -11,4 +11,5 @@ export { RoleDashboard } from './RoleDashboard';
 // RPT-9a · User Report Builder
 export { default as ReportBuilder, type ReportBuilderProps } from './ReportBuilder';
 // RPT-12a · Block 1 · Pivot matrix
-export { PivotMatrix, buildPivotModel, type PivotMatrixProps } from './PivotMatrix';
+export { PivotMatrix, type PivotMatrixProps } from './PivotMatrix';
+export { buildPivotModel, type PivotModel } from './pivot-model';
