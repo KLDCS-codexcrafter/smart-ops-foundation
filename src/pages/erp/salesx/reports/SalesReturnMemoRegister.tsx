@@ -15,11 +15,14 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Check, X, Send, Eye } from 'lucide-react';
+import { Check, X, Send, Eye, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import type {
   RegisterColumn, RegisterMeta, SummaryCard, StatusOption,
 } from '@/components/registers/UniversalRegisterTypes';
@@ -187,6 +190,22 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
     ];
   };
 
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of memos) {
+      const reason = String(r.reason ?? 'unknown');
+      m.set(reason, (m.get(reason) ?? 0) + r.total_amount);
+    }
+    return Array.from(m.entries()).map(([reason, return_value]) => ({ reason, return_value }));
+  }, [memos]);
+  const chartConfig = getKpi('sx-returns')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'reason',
+    series: [{ key: 'return_value', label: 'Return Value ₹' }],
+    title: 'Sales returns by reason',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="space-y-4">
       <UniversalRegisterGrid<SalesReturnMemo>
@@ -237,6 +256,21 @@ export function SalesReturnMemoRegisterPanel({ entityCode }: Props) {
         onClose={closeAction}
         onActionComplete={onActionComplete}
       />
+
+      <Card className="p-3 space-y-2" data-testid="sx-returns-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-returns-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No sales return memos yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="sx-returns-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
 
     </div>
   );
