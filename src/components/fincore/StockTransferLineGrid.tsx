@@ -8,18 +8,18 @@
  * INPUT        lines[], onChange, entityCode
  * OUTPUT       onChange(updatedLines[])
  *
- * DEPENDENCIES GodownPicker, useItemPreferredLocation hook, shadcn Input/Table.
- *              Item field is plain text Input with TODO for T10-pre.2 ItemPicker.
+ * DEPENDENCIES GodownPicker, ItemPicker, useItemPreferredLocation hook, shadcn Input/Table.
  *
  * TALLY-ON-TOP Neutral. Parent voucher is inventory-only (no GL impact).
  *
- * SPEC DOC     Sprint T10-pre.1b Session B — per owner directive Q1 (Item=Input+TODO).
+ * SPEC DOC     Sprint T10-pre.1b Session B · W1C-2 Block 2 (ItemPicker consume).
  */
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Plus, Trash2 } from 'lucide-react';
 import { GodownPicker } from '@/components/fincore/pickers/GodownPicker';
+import { ItemPicker } from '@/components/fincore/pickers/ItemPicker';
 import { useItemPreferredLocation } from '@/hooks/useItemPreferredLocation';
 
 export interface StockTransferLine {
@@ -102,11 +102,15 @@ function StockTransferRow({
   return (
     <TableRow>
       <TableCell>
-        {/* TODO (T10-pre.2): replace with real ItemPicker */}
-        <Input
-          value={line.item_name}
-          onChange={e => onUpdate({ item_id: `tmp-${e.target.value.toLowerCase().replace(/\s+/g, '-')}`, item_name: e.target.value })}
-          className="h-8 text-sm" placeholder="Item name"
+        <ItemPicker
+          value={line.item_id}
+          onChange={row => onUpdate({
+            item_id: row?.id ?? '',
+            item_name: row?.name ?? '',
+            uom: row?.uom ?? line.uom,
+          })}
+          entityCode={entityCode}
+          compact
         />
       </TableCell>
       <TableCell>
