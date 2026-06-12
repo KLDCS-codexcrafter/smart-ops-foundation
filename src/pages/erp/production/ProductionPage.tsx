@@ -67,6 +67,8 @@ import FALinkedMachinesPanel from './reports/FALinkedMachinesPanel';
 import { MachineMasterPanel } from '@/pages/erp/masters/MachineMaster';
 import type { ProductionModule } from './ProductionSidebar.types';
 import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
+// 🆕 RPT-10b · OEE Board cockpit
+import OEEBoardPage from './cockpits/OEEBoardPage';
 
 export default function ProductionPage(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
