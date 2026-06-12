@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BarChart3, Download } from 'lucide-react';
+import { BarChart3, Download, ShieldCheck } from 'lucide-react';
 import { useProjectMilestones } from '@/hooks/useProjectMilestones';
 import { useProjects } from '@/hooks/useProjects';
 import {
@@ -16,6 +16,8 @@ import {
 } from '@/types/projx/project-milestone';
 import type { MilestoneStatus } from '@/types/projx/project-milestone';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtINR = (n: number) =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
