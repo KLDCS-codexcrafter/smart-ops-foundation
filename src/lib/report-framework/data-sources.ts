@@ -200,7 +200,7 @@ export function registerAllDataSources(): void {
   registerSource({
     id: 'inventory.stock-ledger',
     label: 'Inventory · Stock Ledger',
-    card: 'inventory',
+    card: 'inventory-hub',
     kind: 'register',
     fields: [
       { key: 'item_id', label: 'Item Id', kind: 'dimension' },
@@ -217,7 +217,7 @@ export function registerAllDataSources(): void {
   registerSource({
     id: 'inventory.consumption',
     label: 'Inventory · Consumption Entries',
-    card: 'inventory',
+    card: 'inventory-hub',
     kind: 'register',
     fields: [
       { key: 'ce_no', label: 'CE No', kind: 'dimension' },
@@ -500,7 +500,7 @@ export function registerAllDataSources(): void {
   registerSource({
     id: 'logistic.shipments',
     label: 'Logistic · LR Acceptances',
-    card: 'logistic',
+    card: 'logistics',
     kind: 'register',
     fields: [
       { key: 'dln_voucher_no', label: 'LR No', kind: 'dimension' },
@@ -669,7 +669,7 @@ export function registerAllDataSources(): void {
   registerSource({
     id: 'dispatch.shipments',
     label: 'Dispatch · Shipment Receipts',
-    card: 'dispatch',
+    card: 'dispatch-hub',
     kind: 'register',
     fields: [
       { key: 'receipt_no', label: 'Receipt No', kind: 'dimension' },
@@ -686,7 +686,7 @@ export function registerAllDataSources(): void {
   registerSource({
     id: 'dispatch.inward',
     label: 'Dispatch · Inward Receipts',
-    card: 'dispatch',
+    card: 'dispatch-hub',
     kind: 'register',
     fields: [
       { key: 'receipt_no', label: 'Receipt No', kind: 'dimension' },
@@ -752,7 +752,7 @@ export function registerAllDataSources(): void {
   registerSource({
     id: 'payhub.payroll',
     label: 'Pay-hub · Payroll Runs',
-    card: 'pay-hub',
+    card: 'peoplepay',
     kind: 'register',
     fields: [
       { key: 'payPeriod', label: 'Period', kind: 'dimension' },
