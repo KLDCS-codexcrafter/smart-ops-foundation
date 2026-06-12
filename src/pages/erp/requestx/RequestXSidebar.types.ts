@@ -9,4 +9,6 @@ export type RequestXModule =
   | 'rpt-po-against-indent' | 'rpt-department-summary'
   | 'rpt-category-spend' | 'rpt-ageing-pending'
   | 'rpt-service-request-register'
-  | 'master-departments' | 'master-approval-matrix' | 'master-voucher-types' | 'master-pinned-templates';
+  | 'master-departments' | 'master-approval-matrix' | 'master-voucher-types' | 'master-pinned-templates'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'rqx-rpt-report-builder';

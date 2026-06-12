@@ -11,6 +11,7 @@
  */
 
 import {
+  Sparkles,
   Home, FileText, Send, BarChart3, Award, TrendingUp, Users, Activity,
   ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt, Plus,
   Wallet, AlertTriangle,   // NEW · A.3.b
@@ -187,4 +188,6 @@ export const procure360SidebarItems: SidebarItem[] = [
         icon: Wallet, moduleId: 'vendor-advance-register', requiredCards: ['procure360'], keyboard: 'p v' },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='procure360')
+  { id: 'p360-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'p360-rpt-report-builder', requiredCards: ['procure360'] },
 ];

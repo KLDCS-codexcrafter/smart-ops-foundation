@@ -66,6 +66,7 @@ import Phase3v2ClosureDashboardPanel from './reports/Phase3v2ClosureDashboard';
 import FALinkedMachinesPanel from './reports/FALinkedMachinesPanel';
 import { MachineMasterPanel } from '@/pages/erp/masters/MachineMaster';
 import type { ProductionModule } from './ProductionSidebar.types';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 export default function ProductionPage(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -142,6 +143,7 @@ export default function ProductionPage(): JSX.Element {
       // 🆕 Sprint 66 FAR-2 · Block 5 · FK-CAP-6
       case 'mst-machine-master': return <MachineMasterPanel />;
       case 'rpt-fa-linked-machines': return <FALinkedMachinesPanel />;
+      case 'prod-rpt-report-builder': return <ReportBuilder cardId="production" />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }

@@ -38,6 +38,7 @@ const ICONS: Record<RequestXModule, React.ElementType> = {
   'master-approval-matrix': ListChecks,
   'master-voucher-types':   FileText,
   'master-pinned-templates':FileText,
+  'rqx-rpt-report-builder': FileText,
 };
 
 interface Props {

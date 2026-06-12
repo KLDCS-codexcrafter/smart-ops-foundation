@@ -11,4 +11,6 @@ export type VendorPortalModule =
   | 'vendor-communication-log' | 'vendor-broadcast' | 'saathi-admin'
   // 🆕 VP-GAPS additive surfaces
   | 'vendor-zones' | 'vendor-risk-monitor' | 'vendor-compliance-checklists'
-  | 'vendor-dcn' | 'vendor-document-requests' | 'vendor-payment-batches';
+  | 'vendor-dcn' | 'vendor-document-requests' | 'vendor-payment-batches'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'vp-rpt-report-builder';

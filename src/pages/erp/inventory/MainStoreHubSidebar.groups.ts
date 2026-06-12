@@ -43,4 +43,5 @@ export const INVENTORY_MODULE_GROUP: Record<
   'm-hazmat-profiles': 'masters',
   'm-substitute-master': 'masters',
   'm-returnable-packaging': 'masters',
+  'inv-rpt-report-builder': 'reports',
 };

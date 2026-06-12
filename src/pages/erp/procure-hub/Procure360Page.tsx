@@ -108,6 +108,7 @@ import { BudgetUtilizationDashboard } from './reports/BudgetUtilizationDashboard
 // ─── NEW · HK-5-2 Block H · D-NEW-GP · Vendor Advance (23rd SIBLING ⭐) ───
 import { VendorAdvanceEntry } from './transactions/VendorAdvanceEntry';
 import { VendorAdvanceRegister } from './reports/VendorAdvanceRegister';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
@@ -449,6 +450,7 @@ export default function Procure360Page(): JSX.Element {
       // ─── NEW · HK-5-2 Block H · D-NEW-GP · N1 Vendor Advance (23rd SIBLING ⭐) ───
       case 'vendor-advance-entry':            return <VendorAdvanceEntry />;
       case 'vendor-advance-register':         return <VendorAdvanceRegister />;
+      case 'p360-rpt-report-builder': return <ReportBuilder cardId="procure360" />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }

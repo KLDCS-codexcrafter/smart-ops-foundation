@@ -78,5 +78,7 @@ export type Procure360Module =
   | 'budget-utilization-dashboard'
   // ─── NEW · T-Phase-2.HK-5-2 · Block H · D-NEW-GP · N1 Vendor Advance ───
   | 'vendor-advance-entry'
-  | 'vendor-advance-register';
+  | 'vendor-advance-register'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'p360-rpt-report-builder';
 

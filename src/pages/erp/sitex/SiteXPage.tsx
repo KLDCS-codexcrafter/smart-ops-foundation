@@ -23,6 +23,7 @@ import { CustomerSignoffPanel } from './closeout/CustomerSignoffPanel';
 import { CommissioningReportBuilder } from './closeout/CommissioningReportBuilder';
 import { TurnkeyChecklist } from './closeout/TurnkeyChecklist';
 import { DemobilizationWorkflow } from './closeout/DemobilizationWorkflow';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 export default function SiteXPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<SiteXModule>('welcome');
@@ -46,6 +47,7 @@ export default function SiteXPage(): JSX.Element {
       case 'turnkey-checklist':       return <TurnkeyChecklist onNavigate={nav} />;
       case 'final-reconciliation':
       case 'surplus-returns':         return <DemobilizationWorkflow onNavigate={nav} />;
+      case 'sx-rpt-report-builder': return <ReportBuilder cardId="sitex" />;
       default:                        return <SiteXWelcome onNavigate={setActiveModule} />;
     }
   };

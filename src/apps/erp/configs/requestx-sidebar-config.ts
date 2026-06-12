@@ -17,6 +17,7 @@
  *   (existing prefixes in use: 'd' / 'e' / 'g' / 'm' / 'q' / 's' / 'x' · 'r' is FREE)
  */
 import {
+  Sparkles,
   Home, ClipboardList, FileText, Building2, Inbox, ListChecks, BarChart3,
   Briefcase, AlertCircle, Clock, TrendingDown, FolderTree,
 } from 'lucide-react';
@@ -75,4 +76,6 @@ export const requestxSidebarItems: SidebarItem[] = [
       { id: 'master-pinned-templates', type: 'item', label: 'Pinned Templates', icon: FileText, moduleId: 'master-pinned-templates', requiredCards: ['requestx'], keyboard: 'r n' },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='requestx')
+  { id: 'rqx-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'rqx-rpt-report-builder', requiredCards: ['requestx'] },
 ];

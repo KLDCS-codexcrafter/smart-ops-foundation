@@ -26,6 +26,7 @@ import { VendorDcnPanel } from './panels/VendorDcnPanel';
 import { VendorDocumentRequestsPanel } from './panels/VendorDocumentRequestsPanel';
 import { VendorPaymentBatchesPanel } from './panels/VendorPaymentBatchesPanel';
 import type { VendorPortalModule } from './VendorPortalSidebar.types';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 function renderModule(active: VendorPortalModule, setActive: (m: VendorPortalModule) => void): JSX.Element {
   switch (active) {
@@ -46,6 +47,7 @@ function renderModule(active: VendorPortalModule, setActive: (m: VendorPortalMod
     case 'vendor-dcn':                 return <VendorDcnPanel />;
     case 'vendor-document-requests':   return <VendorDocumentRequestsPanel />;
     case 'vendor-payment-batches':     return <VendorPaymentBatchesPanel />;
+    case 'vp-rpt-report-builder': return <ReportBuilder cardId="vendor-portal" />;
     default:
       return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
   }

@@ -16,4 +16,6 @@ export type EngineeringXModule =
   | 'similarity-predictor'          // A.13 (renamed from 'similarity-placeholder')
   | 'change-impact-analyzer'        // A.13 NEW
   | 'production-handoff'            // A.13 NEW
-  | 'engineeringx-reports';         // A.13 (renamed from 'reports-placeholder')
+  | 'engineeringx-reports'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'ex-rpt-report-builder';         // A.13 (renamed from 'reports-placeholder')

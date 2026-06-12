@@ -19,6 +19,7 @@
  * to avoid breaking QualiCheckPage's renderModule() switch.
  */
 import {
+  Sparkles,
   Home, ClipboardCheck, FileText, Beaker, ListChecks,
   ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory, BarChart3,
   AlertOctagon, FileWarning, Wrench, FileBadge, Ruler, Clock,
@@ -398,4 +399,6 @@ export const qualicheckSidebarItems: SidebarItem[] = [
       },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='qualicheck')
+  { id: 'qc-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'qc-rpt-report-builder', requiredCards: ['qualicheck'] },
 ];

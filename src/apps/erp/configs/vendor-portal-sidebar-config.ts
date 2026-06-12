@@ -6,6 +6,7 @@
  * Keyboard namespace: 'v *' prefix · Theme accent: 'slate'
  */
 import {
+  Sparkles,
   Home, Building2, FileSignature, UserPlus, ListChecks,
   BarChart3, Activity, Award,
   MessageSquare, Megaphone, Bot,
@@ -76,4 +77,6 @@ export const vendorPortalSidebarItems: SidebarItem[] = [
       { id: 'vendor-payment-batches', type: 'item', label: 'Payment Batches', icon: Banknote, moduleId: 'vendor-payment-batches', requiredCards: ['vendor-portal'], keyboard: 'v y' },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='vendor-portal')
+  { id: 'vp-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'vp-rpt-report-builder', requiredCards: ['vendor-portal'] },
 ];

@@ -10,7 +10,7 @@ import {
   ListOrdered, AlertTriangle, FileText, BarChart3, Printer,
   Warehouse, Boxes, Layers, Flame, Grid3X3, Hash, MapPin, Repeat, Truck,
   TrendingUp, Replace, Recycle, Clock, ClipboardCheck, RotateCcw, Activity,
-  Search,
+  Search, Sparkles,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -34,6 +34,7 @@ const LIVE_MODULES: MainStoreHubModule[] = [
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
   'm-reorder-matrix',
   'm-abc-classification', 'm-hazmat-profiles', 'm-substitute-master', 'm-returnable-packaging',
+  'inv-rpt-report-builder',
 ];
 
 interface SidebarItem {
@@ -68,6 +69,7 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-cycle-count-register', label: 'Cycle Count Register', icon: ClipboardCheck },
   { id: 'r-rtv-register', label: 'RTV Register', icon: RotateCcw },
   { id: 'r-part-no-search', label: 'Part-No Search', icon: Search },
+  { id: 'inv-rpt-report-builder', label: 'Report Builder', icon: Sparkles },
 ];
 
 const MAS_ITEMS: SidebarItem[] = [

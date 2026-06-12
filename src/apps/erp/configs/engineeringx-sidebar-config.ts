@@ -151,4 +151,6 @@ export const engineeringxSidebarItems: SidebarItem[] = [
     requiredCards: ['engineeringx'],
     keyboard: 'e t',
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='engineeringx')
+  { id: 'ex-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'ex-rpt-report-builder', requiredCards: ['engineeringx'] },
 ];

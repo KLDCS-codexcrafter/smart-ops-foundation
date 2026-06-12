@@ -18,6 +18,7 @@
  * Keyboard namespace: 's *' prefix · D-NEW-CC uniqueness preserved (no collision with qualicheck's 'q *').
  */
 import {
+  Sparkles,
   Home, Boxes, Layers, TrendingUp, Package, ClipboardCheck, ArrowDown,
   Warehouse, BarChart3, Activity, Flame, Inbox,
 } from 'lucide-react';
@@ -141,5 +142,7 @@ export const storeHubSidebarItems: SidebarItem[] = [
       },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='store-hub')
+  { id: 'sh-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'sh-rpt-report-builder', requiredCards: ['store-hub'] },
 ];
 
