@@ -50,8 +50,8 @@ import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 function ComingSoonPanel({ module }: { module: PayHubModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-      <p className="text-lg font-semibold">Coming Soon</p>
-      <p className="text-sm mt-1">{module} — will be built in a future sprint</p>
+      <p className="text-lg font-semibold">Module not yet wired</p>
+      <p className="text-sm mt-1">{module}</p>
     </div>
   );
 }

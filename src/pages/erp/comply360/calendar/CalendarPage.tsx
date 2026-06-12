@@ -1,7 +1,7 @@
 /**
  * @file        src/pages/erp/comply360/calendar/CalendarPage.tsx
  * @purpose     Sprint 78b · Compliance Calendar mega-menu shell · consumes comply360-calendar-engine.
- *              First live surface under the 'calendar' sidebar group (Coming Soon since S69).
+ *              First live surface under the 'calendar' sidebar group (live since Sprint 78b).
  * @sprint      Sprint 78b · T-Phase-5.A.1.10-PASS-B · Block 3
  * @decisions   D-S69-1 (NATIVE) · DP-S78-1 (calendar = mega-menu) · FR-106
  */

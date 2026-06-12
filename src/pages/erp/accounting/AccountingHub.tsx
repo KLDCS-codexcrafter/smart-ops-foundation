@@ -6,11 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, ArrowRight, Calculator, FileText, Shield, BookOpen,
-  BarChart3, Landmark, FileSpreadsheet, Briefcase, Coins, PiggyBank,
-  MapPin, Users, Settings, Building2, FolderTree, Zap,
+  Landmark, FileSpreadsheet, Coins,
+  MapPin, Users, Settings, FolderTree, Zap,
 } from 'lucide-react';
 
 const COMPLIANCE_CARDS = [
@@ -28,9 +27,9 @@ const PAYROLL_CARDS = [
   { title: 'Compliance Settings & Automation', desc: 'Enable GST automation, Auto RCM, Auto TDS — mirrors Tally Alt+F8', icon: Shield, href: '/erp/accounting/compliance-settings-automation' },
 ];
 
-const PAYROLL_COMING_SOON = [
-  { title: 'Capital Assets', desc: 'Asset register, depreciation, disposal and transfer', icon: Building2 },
-];
+// W1C-3 Block 2: removed stale "future tile" sections
+// (Chart of Accounts · Cost Centres · Budget Master) — no live routes exist for these
+// in the post-arc tree and the prior "Coming Soon" tiles were stale promises.
 
 const ACCOUNT_STRUCTURE_CARDS = [
   { title: 'FinFrame — Account Groups', desc: '4-level account hierarchy — configure L4 user-defined groups', icon: FolderTree, href: '/erp/accounting/finframe' },
@@ -38,12 +37,6 @@ const ACCOUNT_STRUCTURE_CARDS = [
   { title: 'Currency Master', desc: 'Foreign currencies, rate of exchange — date-wise selling/buying/standard', icon: Coins, href: '/erp/accounting/currency-master' },
   { title: 'Voucher Types', desc: 'Behaviour matrix — 24 Tally-aligned types with embedded rules', icon: FileSpreadsheet, href: '/erp/accounting/voucher-types' },
   { title: 'Transaction Templates', desc: 'Standard narrations, T&C and payment enforcement — 26 ready templates', icon: Zap, href: '/erp/accounting/transaction-templates' },
-];
-
-const COMING_SOON_CARDS = [
-  { title: 'Chart of Accounts', desc: 'Multi-level account tree with grouping', icon: BarChart3 },
-  { title: 'Cost Centres', desc: 'Departmental and project cost tracking', icon: Briefcase },
-  { title: 'Budget Master', desc: 'Annual budget allocation and tracking', icon: PiggyBank },
 ];
 
 export function AccountingHubPanel() {
@@ -187,23 +180,7 @@ export default function AccountingHub() {
                   </div>
                 </button>
               ))}
-              {PAYROLL_COMING_SOON.map(c => (
-                <div
-                  key={c.title}
-                  className="flex flex-col gap-3 p-5 rounded-xl border bg-card opacity-50 cursor-default"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                      <c.icon className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground">Coming Soon</Badge>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
-                  </div>
-                </div>
-              ))}
+              {/* W1C-3 Block 2: stale future-tile section removed (Capital Assets · Chart of Accounts · Cost Centres · Budget Master). */}
             </div>
           </div>
 
@@ -219,30 +196,6 @@ export default function AccountingHub() {
                   </div>
                   <div><h3 className="text-sm font-semibold text-foreground">{c.title}</h3><p className="text-xs text-muted-foreground mt-1">{c.desc}</p></div>
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Coming Soon */}
-          <div>
-            <h2 className="text-lg font-semibold text-foreground mb-3">Coming Soon</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {COMING_SOON_CARDS.map(c => (
-                <div
-                  key={c.title}
-                  className="flex flex-col gap-3 p-5 rounded-xl border bg-card opacity-50 cursor-default"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                      <c.icon className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground">Coming Soon</Badge>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
-                  </div>
-                </div>
               ))}
             </div>
           </div>

@@ -54,7 +54,7 @@ import { ReportBuilder } from '@/components/operix-core/report-framework';
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-      <p className="text-lg font-semibold">Coming Soon</p>
+      <p className="text-lg font-semibold">Module not yet wired</p>
       <p className="text-sm mt-1">{module}</p>
     </div>
   );
