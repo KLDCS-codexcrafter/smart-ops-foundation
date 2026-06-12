@@ -181,23 +181,7 @@ export default function AccountingHub() {
                   </div>
                 </button>
               ))}
-              {PAYROLL_COMING_SOON.map(c => (
-                <div
-                  key={c.title}
-                  className="flex flex-col gap-3 p-5 rounded-xl border bg-card opacity-50 cursor-default"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                      <c.icon className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground">Coming Soon</Badge>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
-                  </div>
-                </div>
-              ))}
+              {/* W1C-3 Block 2: stale "Coming Soon" tiles removed (Capital Assets · Chart of Accounts · Cost Centres · Budget Master). */}
             </div>
           </div>
 
@@ -213,30 +197,6 @@ export default function AccountingHub() {
                   </div>
                   <div><h3 className="text-sm font-semibold text-foreground">{c.title}</h3><p className="text-xs text-muted-foreground mt-1">{c.desc}</p></div>
                 </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Coming Soon */}
-          <div>
-            <h2 className="text-lg font-semibold text-foreground mb-3">Coming Soon</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {COMING_SOON_CARDS.map(c => (
-                <div
-                  key={c.title}
-                  className="flex flex-col gap-3 p-5 rounded-xl border bg-card opacity-50 cursor-default"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
-                      <c.icon className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    <Badge variant="outline" className="text-[10px] bg-muted text-muted-foreground">Coming Soon</Badge>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground">{c.title}</h3>
-                    <p className="text-xs text-muted-foreground mt-1">{c.desc}</p>
-                  </div>
-                </div>
               ))}
             </div>
           </div>
