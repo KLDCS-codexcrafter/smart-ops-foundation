@@ -3,6 +3,7 @@
 **Sprint code:** `T-M1-MobileARC-Close`
 **Predecessor HEAD:** `da3dd3b` ("Committed CC admin & sync")
 **HEAD at close:** `da3dd3b`
+**Addendum (T-FIX):** The line above was written pre-final-commit; actual bank HEAD is `b9dfbcc` ("Completed M1 sprint deliverable"). Sprint-history `headSha` corrected to `TBD_AT_BANK` per self-seed canon — the next sprint backfills the real bank HEAD.
 **Wave-1 status:** **FINAL BUILD SPRINT — Wave-1 build closed.**
 
 ---
