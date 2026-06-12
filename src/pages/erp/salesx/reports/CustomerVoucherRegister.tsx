@@ -7,8 +7,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import {
   customerInVoucherKey, customerOutVoucherKey,
@@ -157,6 +161,23 @@ export function CustomerVoucherRegisterPanel() {
     ];
   };
 
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of rows) {
+      const kind = r._kind === 'in' ? 'In · Intake' : 'Out · Delivery';
+      const value = r._kind === 'out' ? (r as CustomerOutVoucher).charges_paise / 100 : 0;
+      m.set(kind, (m.get(kind) ?? 0) + value);
+    }
+    return Array.from(m.entries()).map(([voucher_type, value]) => ({ voucher_type, value }));
+  }, [rows]);
+  const chartConfig = getKpi('sx-vouchers')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'voucher_type',
+    series: [{ key: 'value', label: 'Charges ₹' }],
+    title: 'Customer vouchers by type',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
       <UniversalRegisterGrid<CustomerVoucherUnified & { id: string }>
@@ -179,6 +200,20 @@ export function CustomerVoucherRegisterPanel() {
           {printing && <CustomerVoucherPrint voucher={printing} onClose={() => setPrinting(null)} />}
         </DialogContent>
       </Dialog>
+      <Card className="p-3 space-y-2" data-testid="sx-vouchers-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-vouchers-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No customer vouchers yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="sx-vouchers-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

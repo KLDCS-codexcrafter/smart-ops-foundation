@@ -10,9 +10,13 @@
 import { useMemo, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useOrders } from '@/hooks/useOrders';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import type { RegisterColumn, RegisterMeta, SummaryCard, StatusOption } from '@/components/registers/UniversalRegisterTypes';
 import type { Order } from '@/types/order';
 import { SalesOrderDetailPanel } from './detail/SalesOrderDetailPanel';
@@ -93,6 +97,19 @@ export function SalesOrderRegisterPanel(): JSX.Element {
     ];
   };
 
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const r of rows) m.set(r.status, (m.get(r.status) ?? 0) + r.net_amount);
+    return Array.from(m.entries()).map(([status, order_value]) => ({ status, order_value }));
+  }, [rows]);
+  const chartConfig = getKpi('sx-sales-orders')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'order_value', label: 'Order Value ₹' }],
+    title: 'Sales orders by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="max-w-7xl mx-auto space-y-4 p-6">
       <UniversalRegisterGrid<Order>
@@ -115,6 +132,20 @@ export function SalesOrderRegisterPanel(): JSX.Element {
           {printing && <SalesOrderPrint order={printing} onClose={() => setPrinting(null)} />}
         </DialogContent>
       </Dialog>
+      <Card className="p-3 space-y-2" data-testid="sx-sales-orders-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-sales-orders-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No sales orders yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="sx-sales-orders-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

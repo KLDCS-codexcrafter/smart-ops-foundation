@@ -26,6 +26,8 @@ import { serviceRequestsKey } from '@/types/service-request';
 import { capitalIndentsKey } from '@/types/capital-indent';
 import { stockIssuesKey } from '@/types/stock-issue';
 import { stockReceiptAcksKey } from '@/types/stock-receipt-ack';
+import { ordersKey } from '@/types/order';
+import { quotationsKey } from '@/types/quotation';
 import { getMSMEBreaches } from '@/lib/msme-43bh-engine';
 
 function safeRead<T>(key: string): T[] {
@@ -494,6 +496,42 @@ export function registerAllDataSources(): void {
     ],
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(`erp_lr_acceptances_${entityCode || 'SMRT'}`),
+  });
+
+  // ─── RPT-7a · 2 SalesX sources (read-only wrappers) ───
+  registerSource({
+    id: 'salesx.orders',
+    label: 'SalesX · Sales Orders',
+    card: 'salesx',
+    kind: 'register',
+    fields: [
+      { key: 'order_no', label: 'Order No', kind: 'dimension' },
+      { key: 'party_name', label: 'Customer', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'date', label: 'Date', kind: 'dimension' },
+      { key: 'net_amount', label: 'Net Amount', kind: 'measure' },
+    ],
+    read: (entityCode) => {
+      const ec = entityCode || 'SMRT';
+      return safeRead<Record<string, unknown>>(ordersKey(ec))
+        .filter((o) => (o as { base_voucher_type?: string }).base_voucher_type === 'Sales Order');
+    },
+  });
+
+  registerSource({
+    id: 'salesx.pipeline',
+    label: 'SalesX · Quotation Pipeline',
+    card: 'salesx',
+    kind: 'register',
+    fields: [
+      { key: 'quotation_no', label: 'Quotation No', kind: 'dimension' },
+      { key: 'customer_name', label: 'Customer', kind: 'dimension' },
+      { key: 'quotation_stage', label: 'Stage', kind: 'dimension' },
+      { key: 'quotation_date', label: 'Date', kind: 'dimension' },
+      { key: 'total_amount', label: 'Total', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(quotationsKey(entityCode || 'SMRT')),
   });
 }
 

@@ -1403,12 +1403,19 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-11', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-6c T-RPT6c-SmallCards-Close · Reporting Arc · Phase C (Ops Hub-2, final cohort — closes the hub) · 12 pages chart-enabled across EngX (4) + SiteX (3) + MaintainPro (4) + VendorPortal (1) + Logistic (1) — 5 toggle recipe (DrawingRegister · DrawingVersionHistory · ProductionHandoff · Msme43BhTrackerPanel — chart cards mount additive TableChartToggle) and 7 dashboard recipe (EngineeringXReports · DPRRegister · SnagRegister · LookAheadPlan · BreakdownReport · FireSafetyExpiryReport · TopReportersByDepartment · OpenTicketsLive · LogisticDashboard) · 13 layer-tagged KPI seeds (eng-drawings · eng-versions · eng-handoff · eng-reports · site-dpr · site-snags · site-lookahead · mnt-breakdown · mnt-fire-expiry · mnt-top-reporters · mnt-open-tickets · vp-msme-43bh · log-shipments) · 5 DSC sources (engineeringx.drawings · sitex.dpr · maintainpro.tickets · vendorportal.msme · logistic.shipments) · 3 legacy-recharts pages EXCLUDED 0-DIFF (SiteTwinDashboard · ESGEnergyDashboard · VendorScoringPanel) · GateFlow card SKIPPED — no genuine register page (only GateFlowPage + panel slot files) · RIDER: rq-extra renamed → rq-service-request (kpi-registry + ServiceRequestRegister consumer + service-request-register.test.tsx + requestx-storehub-kpis-and-sources.test.ts) · ScorecardTile OMITTED — no page exposes a real bounded summary-% · NO recharts import added · layouts PRESERVED (additive blocks) · ZERO new SIBLINGs · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-6c T-RPT6c-SmallCards-Close · Reporting Arc · Phase C (Ops Hub-2, final cohort — closes the hub) · 12 pages chart-enabled across EngX (4) + SiteX (3) + MaintainPro (4) + VendorPortal (1) + Logistic (1) — 13 layer-tagged KPI seeds · 5 DSC sources · RIDER: rq-extra renamed → rq-service-request · ScorecardTile OMITTED · ZERO new SIBLINGs · headSha BACKFILLED bf838cf at RPT-7a Block 3 · forward-extended in RPT-7a
   {
     sprintNumber: 'RPT6c' as unknown as number, code: 'T-RPT6c-SmallCards-Close', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '3b25c2e', loc: 1010,
+    headSha: 'bf838cf', predecessorSha: '3b25c2e', loc: 1010,
     newSiblings: [],
-    bankDate: '2026-06-11', provenance: 'PENDING_BACKFILL',
+    bankDate: '2026-06-11', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-7a T-RPT7a-SalesX-Registers · Reporting Arc · Phase C (Sales Hub, cohort a) · 11 SalesX register pages chart-enabled via dashboard recipe (ReportChart + integrity badge) — SalesOrderRegister · CustomerOrderRegister · QuotationRegisterV2 · SOMRegister · SRMRegister · DOMRegister · CustomerVoucherRegister · SalesReturnMemoRegister · CommissionRegister · FollowUpRegisterReport · SecondarySalesRegister · 11 layer-tagged KPI seeds (sx-sales-orders · sx-customer-orders · sx-quotations · sx-som · sx-srm · sx-dom · sx-vouchers · sx-returns · sx-commission · sx-followups · sx-secondary) · 2 SalesX DSC sources (salesx.orders wrapping ordersKey filtered to Sales Order · salesx.pipeline wrapping quotationsKey) — read-only · ScorecardTile OMITTED across all 11 pages — no page exposes a real bounded summary-% (status mixes/counts/value sums only) · SalesXAnalytics + CampaignPerformanceReport (legacy-recharts) and the 6 RPT-7b analytical pages (TargetVsAchievement · PipelineSummary · CoverageReport · BeatProductivityReport · SecondarySalesReport · CrossDeptHandoffTracker) left 0-DIFF · hooks at top level · NO recharts import added · layouts PRESERVED (additive Card after existing grid/table) · honest empty-state · ZERO new SIBLINGs · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT7a' as unknown as number, code: 'T-RPT7a-SalesX-Registers', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'bf838cf', loc: 980,
+    newSiblings: [],
+    bankDate: '2026-06-12', provenance: 'PENDING_BACKFILL',
   },
 ];
 
