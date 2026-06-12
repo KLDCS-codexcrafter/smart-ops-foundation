@@ -100,6 +100,20 @@ import MobileFrontDeskCheckInPage from './captures/MobileFrontDeskCheckInPage';
 import MobileDocVaultCapturePage from './captures/MobileDocVaultCapturePage';
 // AM.3 · Universal Mobile Reporting (read-only · CONSUMES mobile-report-registry)
 import MobileUniversalReportPage from './MobileUniversalReportPage';
+// M1 · Mobile-ARC Close · Transporter app
+import MobileTransporterHome from './transporter/MobileTransporterHome';
+import MobileLRQueuePage from './transporter/MobileLRQueuePage';
+import MobileManifestAckPage from './transporter/MobileManifestAckPage';
+import MobilePODCapturePage from './transporter/MobilePODCapturePage';
+import MobileTransporterDisputesPage from './transporter/MobileTransporterDisputesPage';
+import MobileTransporterPaymentsPage from './transporter/MobileTransporterPaymentsPage';
+// M1 · Mobile-ARC Close · Vendor app
+import MobileVendorHome from './vendor/MobileVendorHome';
+import MobilePOAckPage from './vendor/MobilePOAckPage';
+import MobileASNCreatePage from './vendor/MobileASNCreatePage';
+import MobileVendorInvoiceSubmitPage from './vendor/MobileVendorInvoiceSubmitPage';
+import MobileVendorPaymentsPage from './vendor/MobileVendorPaymentsPage';
+import MobileVendorDocsPage from './vendor/MobileVendorDocsPage';
 
 function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/salesman' || pathname === '/mobile/salesman/') return <MobileSalesmanHome />;
