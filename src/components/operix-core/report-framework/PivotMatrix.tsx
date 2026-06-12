@@ -7,6 +7,7 @@
  */
 import { useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { buildPivotModel } from './pivot-model';
 
 export interface PivotMatrixProps {
   rows: Record<string, unknown>[];
@@ -17,51 +18,6 @@ export interface PivotMatrixProps {
   measureLabel?: string;
 }
 
-interface MatrixModel {
-  rowKeys: string[];
-  colKeys: string[];
-  cells: Map<string, number>; // `${r}\u0001${c}` → value
-  rowTotals: Map<string, number>;
-  colTotals: Map<string, number>;
-  grandTotal: number;
-}
-
-export function buildPivotModel(
-  rows: Record<string, unknown>[],
-  groupBy: [string, string],
-  measureKey: string,
-): MatrixModel {
-  const [rDim, cDim] = groupBy;
-  const cells = new Map<string, number>();
-  const rowTotals = new Map<string, number>();
-  const colTotals = new Map<string, number>();
-  const rowKeySet = new Set<string>();
-  const colKeySet = new Set<string>();
-  let grand = 0;
-
-  for (const row of rows) {
-    const r = String(row[rDim] ?? '');
-    const c = String(row[cDim] ?? '');
-    const raw = row[measureKey];
-    const v = typeof raw === 'number' ? raw : Number(raw ?? 0);
-    if (!Number.isFinite(v)) continue;
-    rowKeySet.add(r);
-    colKeySet.add(c);
-    cells.set(`${r}\u0001${c}`, (cells.get(`${r}\u0001${c}`) ?? 0) + v);
-    rowTotals.set(r, (rowTotals.get(r) ?? 0) + v);
-    colTotals.set(c, (colTotals.get(c) ?? 0) + v);
-    grand += v;
-  }
-
-  return {
-    rowKeys: Array.from(rowKeySet).sort(),
-    colKeys: Array.from(colKeySet).sort(),
-    cells,
-    rowTotals,
-    colTotals,
-    grandTotal: grand,
-  };
-}
 
 function fmt(n: number): string {
   if (!Number.isFinite(n)) return '—';
