@@ -34,6 +34,7 @@ const LIVE_MODULES: MainStoreHubModule[] = [
   'm-heat-master', 'm-batch-grid', 'm-serial-grid', 'm-bin-labels',
   'm-reorder-matrix',
   'm-abc-classification', 'm-hazmat-profiles', 'm-substitute-master', 'm-returnable-packaging',
+  'inv-rpt-report-builder',
 ];
 
 interface SidebarItem {
