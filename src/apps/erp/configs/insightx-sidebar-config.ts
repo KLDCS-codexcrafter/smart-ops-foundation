@@ -6,7 +6,7 @@
  *              FP&A). NO commandCenterShellConfig borrow.
  * @disciplines FR-74 ('i *' namespace) · all items type:'item' (navigable canon)
  */
-import { Home, LayoutDashboard, FileBarChart, Layers, GitBranch, Gauge, Inbox, Sparkles } from 'lucide-react';
+import { Home, LayoutDashboard, FileBarChart, Layers, GitBranch, Gauge, Inbox, Sparkles, Wrench } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
 export const insightxSidebarItems: SidebarItem[] = [
@@ -18,4 +18,6 @@ export const insightxSidebarItems: SidebarItem[] = [
   { id: 'ix-operix-score',   type: 'item', label: 'Operix Score',                icon: Gauge,           moduleId: 'ix-operix-score',   requiredCards: ['insightx'], keyboard: 'i s' },
   { id: 'ix-insights-inbox', type: 'item', label: 'Insights Inbox',              icon: Inbox,           moduleId: 'ix-insights-inbox', requiredCards: ['insightx'], keyboard: 'i i' },
   { id: 'ix-predictive',     type: 'item', label: 'Predictive Insights · β',     icon: Sparkles,        moduleId: 'ix-predictive',     requiredCards: ['insightx'], keyboard: 'i p' },
+  // RPT-9a · User Report Builder · centralized mount
+  { id: 'ix-report-builder', type: 'item', label: 'Report Builder',              icon: Wrench,          moduleId: 'ix-report-builder', requiredCards: ['insightx'], keyboard: 'i b' },
 ];

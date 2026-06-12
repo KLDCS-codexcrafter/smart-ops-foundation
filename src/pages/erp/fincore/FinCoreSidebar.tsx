@@ -65,6 +65,8 @@ const LIVE_MODULES: FinCoreModule[] = [
   'fc-rpt-delivery-note-register', 'fc-rpt-receipt-note-register',
   'fc-rpt-stock-adjustment-register', 'fc-rpt-stock-journal-register',
   'fc-rpt-stock-transfer-register',
+  // RPT-9a
+  'fc-rpt-report-builder',
 ];
 
 interface SidebarItem {
@@ -140,6 +142,8 @@ const REPORT_ITEMS: SidebarItem[] = [
   { id: 'fc-rpt-challan', label: 'Challan Management', icon: Receipt },
   { id: 'fc-rpt-audit-trail', label: 'Audit Trail (MCA Rule 3(1))', icon: Shield },
   { id: 'fc-rpt-monthly-production', label: 'Monthly Production (CGST 56(12))', icon: Factory },
+  // RPT-9a · User Report Builder · embedded
+  { id: 'fc-rpt-report-builder', label: 'Report Builder', icon: Sparkles },
 ];
 
 // [T10-pre.2d-B] 13 voucher-type registers — fixed columns, drill back to DayBook.
@@ -267,7 +271,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
     const rpt = ['fc-rpt-daybook','fc-rpt-ledger','fc-rpt-trial-balance','fc-rpt-pl',
       'fc-rpt-bs','fc-rpt-stock-summary','fc-rpt-outstanding','fc-rpt-26as',
       'fc-rpt-24q','fc-rpt-26q','fc-rpt-27q','fc-rpt-challan',
-      'fc-rpt-audit-trail','fc-rpt-monthly-production'];
+      'fc-rpt-audit-trail','fc-rpt-monthly-production','fc-rpt-report-builder'];
     const gst = ['fc-gst-gstr1','fc-gst-gstr3b','fc-gst-2a','fc-gst-itc',
       'fc-gst-gstr2','fc-gst-gstr9'];
     const tds = ['fc-tds-advance','fc-tds-analytics'];

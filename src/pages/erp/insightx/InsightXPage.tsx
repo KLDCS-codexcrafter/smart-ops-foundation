@@ -18,6 +18,8 @@ import DrillToRootPage from '@/features/insightx-drill-to-root/DrillToRootPage';
 import OperixScorePage from '@/features/insightx-operix-score/OperixScorePage';
 import InsightsInboxPage from '@/features/insightx-insights-inbox/InsightsInboxPage';
 import PredictiveInsightsPage from '@/features/insightx-predictive/PredictiveInsightsPage';
+// RPT-9a · User Report Builder · centralized mount
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 const KNOWN_MODULES = new Set<InsightXModule>([
   'ix-overview',
@@ -28,6 +30,7 @@ const KNOWN_MODULES = new Set<InsightXModule>([
   'ix-operix-score',
   'ix-insights-inbox',
   'ix-predictive',
+  'ix-report-builder',
 ]);
 
 export default function InsightXPage() {
@@ -57,6 +60,8 @@ export default function InsightXPage() {
         return <InsightsInboxPage />;
       case 'ix-predictive':
         return <PredictiveInsightsPage />;
+      case 'ix-report-builder':
+        return <ReportBuilder />;
       case 'ix-overview':
       default:
         return <InsightXOverviewPage />;

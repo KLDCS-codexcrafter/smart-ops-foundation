@@ -12,3 +12,6 @@ export * from './daybook-source-registry';
 export * from './daybook-aggregator';
 export * from './data-source-catalog';
 export * from './role-layer';
+// RPT-9a · User Report Builder
+export * from './report-builder-engine';
+export * from './report-definitions';

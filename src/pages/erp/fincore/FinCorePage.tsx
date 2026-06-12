@@ -17,6 +17,8 @@ import { rememberModule } from '@/lib/breadcrumb-memory';
 import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
 import { DraftTray, type FinCoreModule, type DraftEntry } from '@/components/fincore/DraftTray';
 import { ComingSoonPanel } from '@/components/fincore/ComingSoonPanel';
+// RPT-9a · User Report Builder · embedded mount
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 import { FinCoreHubPanel } from './FinCoreHub';
 import { SalesInvoicePanel } from '@/pages/erp/accounting/vouchers/SalesInvoice';
 import { PurchaseInvoicePanel } from '@/pages/erp/accounting/vouchers/PurchaseInvoice';
@@ -137,6 +139,7 @@ const breadcrumbLabels: Partial<Record<FinCoreModule, string>> = {
   'fc-ord-purchase-order': 'Purchase Order',
   'fc-ord-sales-order': 'Sales Order',
   'fc-rpt-daybook': 'Day Book',
+  'fc-rpt-report-builder': 'Report Builder',
   'fc-rpt-ledger': 'Ledger Report',
   'fc-rpt-trial-balance': 'Trial Balance',
   'fc-rpt-pl': 'Profit & Loss',
@@ -358,6 +361,7 @@ export function FinCorePagePanel() {
       case 'fc-rpt-stock-adjustment-register': return <StockAdjustmentRegisterPanel  entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-stock-journal-register':    return <StockJournalRegisterPanel     entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-stock-transfer-register':   return <StockTransferRegisterPanel    entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-report-builder':            return <ReportBuilder cardId="fincore" />;
       default: return <ComingSoonPanel module={activeModule} />;
     }
   };
