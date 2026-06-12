@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Search } from 'lucide-react';
+import { Search, ShieldCheck } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { targetsKey } from '@/pages/erp/salesx/masters/TargetMaster.types';
 import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types';
@@ -20,6 +20,8 @@ import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
 import Decimal from 'decimal.js';
 import { dSum, round2 } from '@/lib/decimal-helpers';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface Props { entityCode: string }
 
