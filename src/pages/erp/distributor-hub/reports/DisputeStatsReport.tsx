@@ -1,12 +1,13 @@
 /**
  * DisputeStatsReport.tsx — Dispute volume, resolution time, per-reason breakdown
- * Module id: dh-r-dispute-stats
+ * Module id: dh-r-dispute-stats · RPT-12c chart-layer swap · wires db-disputes
  */
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell,
-} from 'recharts';
+import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   disputesKey, DISPUTE_REASON_LABELS,
@@ -14,8 +15,6 @@ import {
 } from '@/types/invoice-dispute';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
-const COLOURS = ['#4F46E5', '#F59E0B', '#EF4444', '#10B981', '#8B5CF6', '#64748B'];
 
 const RESOLVED_STATUSES = new Set(['credit_noted', 'rejected', 'partial']);
 
@@ -50,11 +49,24 @@ export function DisputeStatsReportPanel() {
     return { total: disputes.length, open, resolved, avgDays, reasonSeries };
   }, []);
 
+  const hash = useMemo(() => signReport(stats.reasonSeries), [stats.reasonSeries]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
+  const cfg = getKpi('db-disputes')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'reason',
+    series: [{ key: 'count', label: 'Disputes' }],
+    title: 'Disputes by reason',
+  });
+
   return (
     <div className="p-4 md:p-6 space-y-4 animate-fade-in">
-      <div>
-        <h2 className="text-xl font-bold">Dispute Statistics</h2>
-        <p className="text-sm text-muted-foreground">Volume, resolution time, reason breakdown.</p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h2 className="text-xl font-bold">Dispute Statistics</h2>
+          <p className="text-sm text-muted-foreground">Volume, resolution time, reason breakdown.</p>
+        </div>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="db-disputes-integrity-badge" title={hash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{short}
+        </Badge>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <Card><CardContent className="p-3">
@@ -74,7 +86,7 @@ export function DisputeStatsReportPanel() {
           <p className="text-2xl font-bold font-mono">{stats.avgDays}</p>
         </CardContent></Card>
       </div>
-      <Card>
+      <Card data-testid="db-disputes-chart-host">
         <CardHeader className="pb-2"><CardTitle className="text-base">By reason</CardTitle></CardHeader>
         <CardContent>
           <div style={{ width: '100%', height: 260 }}>
@@ -83,19 +95,7 @@ export function DisputeStatsReportPanel() {
                 No disputes recorded yet.
               </div>
             ) : (
-              <ResponsiveContainer>
-                <BarChart data={stats.reasonSeries}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="reason" fontSize={10} />
-                  <YAxis fontSize={10} allowDecimals={false} />
-                  <Tooltip />
-                  <Bar dataKey="count">
-                    {stats.reasonSeries.map((_, i) => (
-                      <Cell key={i} fill={COLOURS[i % COLOURS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <ReportChart data={stats.reasonSeries} config={cfg} />
             )}
           </div>
         </CardContent>

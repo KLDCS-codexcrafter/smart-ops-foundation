@@ -13,7 +13,9 @@ import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { toast } from 'sonner';
 // Precision Arc · Stage 3B · Block 4c — paise integer-domain conversion (rupees->paise).
 import { roundTo, dMul } from '@/lib/decimal-helpers';
@@ -30,7 +32,7 @@ import type { RefurbStatus, RefurbGrade, RefurbAcquisitionType } from '@/types/r
 const ENTITY = 'OPRX';
 const ACTOR = 'desk_user';
 const STATUSES: RefurbStatus[] = ['in_refurb', 'ready', 'sold', 'recycled'];
-const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--muted-foreground))'];
+// RPT-12c: framework migration · pie removed in favour of ReportChart doughnut
 
 export function RefurbishedUnitLifecycle(): JSX.Element {
   const [refresh, setRefresh] = useState(0);
@@ -156,24 +158,33 @@ export function RefurbishedUnitLifecycle(): JSX.Element {
         )}
       </Card>
 
-      <Card className="p-4">
-        <h2 className="font-semibold mb-3">Margin per Grade (sold units)</h2>
-        {pieData.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No sold units yet.</p>
-        ) : (
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie data={pieData} dataKey="value" nameKey="name" outerRadius={80} label>
-                  {pieData.map((_, i) => <Cell key={`cell-${i}`} fill={COLORS[i % COLORS.length]} />)}
-                </Pie>
-                <Tooltip />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </Card>
+      {(() => {
+        const hash = signReport(pieData);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-4" data-testid="sd-refurb-chart-host">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold">Margin per Grade (sold units)</h2>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="sd-refurb-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            {pieData.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No sold units yet.</p>
+            ) : (
+              <div className="h-64">
+                <ReportChart
+                  data={pieData}
+                  config={defaultChartConfig({
+                    chartType: 'doughnut', xKey: 'name',
+                    series: [{ key: 'value', label: 'Margin ₹' }],
+                  })}
+                />
+              </div>
+            )}
+          </Card>
+        );
+      })()}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>

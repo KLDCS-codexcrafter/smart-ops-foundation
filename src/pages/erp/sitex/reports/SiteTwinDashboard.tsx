@@ -1,13 +1,14 @@
 /**
  * @file        src/pages/erp/sitex/reports/SiteTwinDashboard.tsx
- * @purpose     Site Twin Dashboard (OOB #1) · 6 RAG cards per site · investor-demo signature panel
+ * @purpose     Site Twin Dashboard (OOB #1) · 6 RAG cards per site · RPT-12c chart-layer swap
  * @sprint      T-Phase-1.A.15a · Q-LOCK-12a · Block D.1
  */
 import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { LineChart, Line, ResponsiveContainer } from 'recharts';
-import { Activity, AlertTriangle, Wallet, FlaskConical, Package, PiggyBank } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
+import { Activity, AlertTriangle, Wallet, FlaskConical, Package, PiggyBank, ShieldCheck } from 'lucide-react';
 import { listSites } from '@/lib/sitex-engine';
 import { computeSiteHealthScore } from '@/lib/site-health-score-engine';
 import { computeImprestHealthMetrics } from '@/lib/sitex-imprest-engine';
@@ -29,6 +30,11 @@ const ragClass = (rag: 'green' | 'amber' | 'red'): string =>
     : rag === 'amber' ? 'bg-warning/10 text-warning border-warning/30'
     : 'bg-destructive/10 text-destructive border-destructive/30';
 
+const sparkCfg = defaultChartConfig({
+  chartType: 'line', xKey: 'i',
+  series: [{ key: 'v', label: 'Trend' }],
+});
+
 export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Element {
   const entity = DEFAULT_ENTITY_SHORTCODE;
   const sites = useMemo(() => listSites(entity), [entity]);
@@ -47,11 +53,22 @@ export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Eleme
     { title: 'Imprest', icon: PiggyBank, value: `${(imprest?.utilization_pct ?? 0).toFixed(0)}%`, target: '60-85%', rag: (imprest?.utilization_pct ?? 0) > 90 ? 'red' : (imprest?.utilization_pct ?? 0) > 70 ? 'amber' : 'green', trend: [50, 55, 60, 65, 70, 72] },
   ] : [];
 
+  const aggregated = useMemo(() =>
+    cards.map(c => ({ title: c.title, score: c.trend[c.trend.length - 1] ?? 0 })),
+    [cards]);
+  const hash = useMemo(() => signReport(aggregated), [aggregated]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="min-h-screen p-6 max-w-7xl mx-auto space-y-6">
-      <div className="flex items-center gap-3">
-        <Activity className="h-6 w-6 text-amber-600" />
-        <h1 className="text-2xl font-bold">Site Twin Dashboard</h1>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <Activity className="h-6 w-6 text-amber-600" />
+          <h1 className="text-2xl font-bold">Site Twin Dashboard</h1>
+        </div>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-site-twin-integrity-badge" title={hash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{short}
+        </Badge>
       </div>
 
       <Card className="p-4">
@@ -74,7 +91,7 @@ export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Eleme
         </Card>
       )}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="sx-site-twin-chart-host">
         {cards.map((c) => (
           <Card key={c.title} className={`p-5 border ${ragClass(c.rag)}`}>
             <div className="flex justify-between items-start mb-3">
@@ -85,11 +102,7 @@ export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Eleme
             <div className="text-2xl font-bold mt-1">{c.value}</div>
             <div className="text-xs text-muted-foreground mt-1">Target: {c.target}</div>
             <div className="h-12 mt-3">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={c.trend.map((v, i) => ({ i, v }))}>
-                  <Line type="monotone" dataKey="v" stroke="currentColor" strokeWidth={2} dot={false} />
-                </LineChart>
-              </ResponsiveContainer>
+              <ReportChart data={c.trend.map((v, i) => ({ i, v }))} config={sparkCfg} />
             </div>
           </Card>
         ))}

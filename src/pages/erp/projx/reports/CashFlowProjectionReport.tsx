@@ -13,10 +13,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu';
-import { Wallet, Calendar, RotateCcw, Table as TableIcon, BarChart3 } from 'lucide-react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-} from 'recharts';
+import { Wallet, Calendar, RotateCcw, Table as TableIcon, BarChart3, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
 import { toast } from 'sonner';
 import { useProjects } from '@/hooks/useProjects';
 import { useProjectInvoiceSchedule } from '@/hooks/useProjectInvoiceSchedule';
@@ -74,7 +73,7 @@ const STATUS_BADGE_CLASS: Record<InvoiceScheduleStatus, string> = {
   future: 'bg-slate-500/10 text-slate-700 border-slate-500/30',
 };
 
-const CHART_COLORS = ['#6366f1', '#f97316', '#10b981', '#f59e0b', '#3b82f6'];
+// RPT-12c: CHART_COLORS removed — ReportChart palette via framework
 
 const MONTH_LABEL = (ymKey: string): string => {
   const [y, m] = ymKey.split('-').map(Number);
@@ -501,35 +500,29 @@ export function CashFlowProjectionReportPanel() {
             </table>
           </CardContent>
         </Card>
-      ) : (
-        <Card>
-          <CardContent className="p-4">
-            <ResponsiveContainer width="100%" height={320}>
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" opacity={0.3} />
-                <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                <YAxis
-                  tickFormatter={(v: number) => `₹${(v / 100000).toFixed(0)}L`}
-                  tick={{ fontSize: 11 }}
-                />
-                <Tooltip
-                  formatter={(v: number) => `₹${v.toLocaleString('en-IN')}`}
-                  contentStyle={{ fontSize: 12 }}
-                />
-                <Legend wrapperStyle={{ fontSize: 11 }} />
-                {pivot.rows.map((p, idx) => (
-                  <Bar
-                    key={p.id}
-                    dataKey={p.project_no}
-                    stackId="a"
-                    fill={CHART_COLORS[idx % CHART_COLORS.length]}
-                  />
-                ))}
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      )}
+      ) : (() => {
+        const hash = signReport(chartData);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        const cfg = getKpi('px-cashflow')?.defaultChart ?? defaultChartConfig({
+          chartType: 'stacked-column', xKey: 'month',
+          series: pivot.rows.map(p => ({ key: p.project_no, label: p.project_no })),
+          title: 'Cash flow projection',
+        });
+        return (
+          <Card data-testid="px-cashflow-chart-host">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-end mb-2">
+                <Badge variant="outline" className="text-[10px] font-mono" data-testid="px-cashflow-integrity-badge" title={hash}>
+                  <ShieldCheck className="h-3 w-3 mr-1" />{short}
+                </Badge>
+              </div>
+              <div style={{ width: '100%', height: 320 }}>
+                <ReportChart data={chartData} config={cfg} />
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
 
       {/* Drill-down dialog */}
       <Dialog open={drill !== null} onOpenChange={(o) => !o && setDrill(null)}>

@@ -4,7 +4,7 @@
  * @sprint      T-Phase-1.C.1f · Block D.1
  * @iso         Functional Suitability + Usability
  */
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,9 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { toast } from 'sonner';
 // Precision Arc · Stage 3B · Block 4c — paise integer-domain conversion (rupees->paise).
 import { roundTo, dMul } from '@/lib/decimal-helpers';
@@ -75,7 +77,13 @@ export function EngineerMarketplace({ defaultTab = 'all', showCapacityOnly = fal
     setRefresh((r) => r + 1);
   };
 
-  const chartData = all.map((p) => ({ name: p.engineer_name.slice(0, 12), hours: p.capacity_hours_per_week }));
+  const chartData = useMemo(() => all.map((p) => ({ name: p.engineer_name.slice(0, 12), hours: p.capacity_hours_per_week })), [all]);
+  const hash = useMemo(() => signReport(chartData), [chartData]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
+  const chartCfg = defaultChartConfig({
+    chartType: 'column', xKey: 'name',
+    series: [{ key: 'hours', label: 'hrs/week' }],
+  });
 
   return (
     <div className="p-6 space-y-4">
@@ -90,17 +98,15 @@ export function EngineerMarketplace({ defaultTab = 'all', showCapacityOnly = fal
       </div>
 
       {showCapacityOnly && (
-        <Card className="p-4">
-          <h2 className="font-semibold mb-3">Capacity Heatmap (hours/week)</h2>
+        <Card className="p-4" data-testid="sd-marketplace-cap-chart-host-only">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="font-semibold">Capacity Heatmap (hours/week)</h2>
+            <Badge variant="outline" className="text-[10px] font-mono" data-testid="sd-marketplace-integrity-badge" title={hash}>
+              <ShieldCheck className="h-3 w-3 mr-1" />{short}
+            </Badge>
+          </div>
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData}>
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="hours" fill="hsl(var(--primary))" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ReportChart data={chartData} config={chartCfg} />
           </div>
         </Card>
       )}
@@ -157,17 +163,15 @@ export function EngineerMarketplace({ defaultTab = 'all', showCapacityOnly = fal
           </Tabs>
 
           {all.length > 0 && (
-            <Card className="p-4">
-              <h2 className="font-semibold mb-3">Capacity Heatmap (hours/week)</h2>
+            <Card className="p-4" data-testid="sd-marketplace-chart-host">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="font-semibold">Capacity Heatmap (hours/week)</h2>
+                <Badge variant="outline" className="text-[10px] font-mono" title={hash}>
+                  <ShieldCheck className="h-3 w-3 mr-1" />{short}
+                </Badge>
+              </div>
               <div className="h-48">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="hours" fill="hsl(var(--primary))" />
-                  </BarChart>
-                </ResponsiveContainer>
+                <ReportChart data={chartData} config={chartCfg} />
               </div>
             </Card>
           )}

@@ -1,7 +1,7 @@
 /**
  * @file        src/pages/erp/maintainpro/reports/ESGEnergyDashboard.tsx
- * @sprint      T-Phase-3.PROD-5 · Theme A Block 2
- * @purpose     ESG energy + Scope 1/2 dashboard · 12-month trend · MOAT-38 supporting UI.
+ * @sprint      T-Phase-3.PROD-5 · Theme A Block 2 · RPT-12c chart-layer swap
+ * @purpose     ESG energy + Scope 1/2 dashboard · 12-month trend
  */
 import { useMemo } from 'react';
 import { useEntityCode } from '@/hooks/useEntityCode';
@@ -12,10 +12,9 @@ import {
 } from '@/lib/maintainpro-engine';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-} from 'recharts';
-import { Leaf, Zap, Factory } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
+import { Leaf, Zap, Factory, ShieldCheck } from 'lucide-react';
 
 export function ESGEnergyDashboardPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -37,6 +36,8 @@ export function ESGEnergyDashboardPanel(): JSX.Element {
     () => (entityCode ? computeScope2Emissions(entityCode, fy) : { gridKwh: 0, emissionFactorKgPerKwh: 0, totalKgCO2: 0 }),
     [entityCode, fy],
   );
+  const hash = useMemo(() => signReport(historical as unknown as Record<string, unknown>[]), [historical]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
 
   if (!entityCode) {
     return (
@@ -55,7 +56,12 @@ export function ESGEnergyDashboardPanel(): JSX.Element {
           </h1>
           <p className="text-sm text-muted-foreground">{fy} · CEA 2024 baseline 0.82 kg CO₂/kWh</p>
         </div>
-        <Badge variant="outline">BRSR-ready</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="mp-esg-integrity-badge" title={hash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{short}
+          </Badge>
+          <Badge variant="outline">BRSR-ready</Badge>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -100,23 +106,21 @@ export function ESGEnergyDashboardPanel(): JSX.Element {
         </Card>
       </div>
 
-      <Card className="glass-card">
+      <Card className="glass-card" data-testid="mp-esg-chart-host">
         <CardHeader>
           <CardTitle>Last 12 months · Energy + Carbon Trend</CardTitle>
         </CardHeader>
         <CardContent style={{ height: 320 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={historical}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="month" fontSize={11} />
-              <YAxis yAxisId="left" fontSize={11} />
-              <YAxis yAxisId="right" orientation="right" fontSize={11} />
-              <Tooltip />
-              <Legend />
-              <Line yAxisId="left" type="monotone" dataKey="kwh" name="kWh" stroke="hsl(var(--primary))" strokeWidth={2} />
-              <Line yAxisId="right" type="monotone" dataKey="kgCO2" name="kg CO₂" stroke="hsl(var(--success))" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+          <ReportChart
+            data={historical as unknown as Record<string, unknown>[]}
+            config={defaultChartConfig({
+              chartType: 'line', xKey: 'month',
+              series: [
+                { key: 'kwh', label: 'kWh' },
+                { key: 'kgCO2', label: 'kg CO₂' },
+              ],
+            })}
+          />
         </CardContent>
       </Card>
     </div>

@@ -1,14 +1,14 @@
 /**
  * @file        src/pages/erp/servicedesk/reports/SLAPerformance.tsx
- * @purpose     C.1d · SLA Performance report · response/resolution attainment % by severity
- * @sprint      T-Phase-1.C.1d · Block D.3
- * @iso         Functional Suitability + Usability
+ * @purpose     C.1d · SLA Performance · response/resolution attainment % by severity (framework ReportChart)
+ * @sprint      T-Phase-1.C.1d · Block D.3 · RPT-12c chart-layer swap
  */
 import { useEffect, useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-} from 'recharts';
+import { Badge } from '@/components/ui/badge';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { listServiceTickets } from '@/lib/servicedesk-engine';
 import type { ServiceTicket, ServiceTicketSeverity } from '@/types/service-ticket';
 
@@ -58,6 +58,8 @@ export function SLAPerformance(): JSX.Element {
 
   const rows = useMemo(() => computeRows(tickets), [tickets]);
   const empty = rows.every((r) => r.total === 0);
+  const hash = useMemo(() => signReport(rows as unknown as Record<string, unknown>[]), [rows]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
   const overall = useMemo(() => {
     const total = rows.reduce((s, r) => s + r.total, 0);
     const r_met = rows.reduce((s, r) => s + r.response_met, 0);
@@ -71,11 +73,16 @@ export function SLAPerformance(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-semibold">SLA Performance</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Response + Resolution attainment by severity · all tickets · entity OPRX
-        </p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-2xl font-semibold">SLA Performance</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Response + Resolution attainment by severity · all tickets · entity OPRX
+          </p>
+        </div>
+        <Badge variant="outline" className="text-[10px] font-mono" data-testid="sd-sla-performance-integrity-badge" title={hash}>
+          <ShieldCheck className="h-3 w-3 mr-1" />{short}
+        </Badge>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -93,30 +100,23 @@ export function SLAPerformance(): JSX.Element {
         </Card>
       </div>
 
-      <Card className="glass-card p-4">
+      <Card className="glass-card p-4" data-testid="sd-sla-performance-chart-host">
         {empty ? (
           <div className="text-center py-12 text-muted-foreground">
             No tickets yet · attainment will populate as tickets are acknowledged and resolved.
           </div>
         ) : (
           <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={rows}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="severity" stroke="hsl(var(--muted-foreground))" />
-                <YAxis stroke="hsl(var(--muted-foreground))" unit="%" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: 'hsl(var(--card))',
-                    border: '1px solid hsl(var(--border))',
-                    borderRadius: '0.5rem',
-                  }}
-                />
-                <Legend />
-                <Bar dataKey="response_pct" name="Response %" fill="hsl(var(--primary))" />
-                <Bar dataKey="resolution_pct" name="Resolution %" fill="hsl(var(--success))" />
-              </BarChart>
-            </ResponsiveContainer>
+            <ReportChart
+              data={rows as unknown as Record<string, unknown>[]}
+              config={defaultChartConfig({
+                chartType: 'column', xKey: 'severity',
+                series: [
+                  { key: 'response_pct', label: 'Response %' },
+                  { key: 'resolution_pct', label: 'Resolution %' },
+                ],
+              })}
+            />
           </div>
         )}
       </Card>

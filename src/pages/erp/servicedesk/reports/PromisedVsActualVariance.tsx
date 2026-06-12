@@ -1,16 +1,15 @@
 /**
  * @file        src/pages/erp/servicedesk/reports/PromisedVsActualVariance.tsx
- * @purpose     C.1e · Carry-forward UI from C.1d T2 · 4-axis variance + trust score
- * @sprint      T-Phase-1.C.1e · Block C
- * @iso         Functional Suitability + Usability
+ * @purpose     C.1e · 4-axis variance + trust score · framework ReportChart
+ * @sprint      T-Phase-1.C.1e · Block C · RPT-12c chart-layer swap · wires sd-promise-variance
  */
 import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-} from 'recharts';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import {
   computeTicketVariance,
   listServiceTickets,
@@ -78,6 +77,8 @@ export function PromisedVsActualVariance(): JSX.Element {
     () => [...rows].sort((a, b) => a.trust_score - b.trust_score).slice(0, 5),
     [rows],
   );
+  const hash = useMemo(() => signReport(rows as unknown as Record<string, unknown>[]), [rows]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4 animate-fade-in">
@@ -88,7 +89,10 @@ export function PromisedVsActualVariance(): JSX.Element {
             4-axis variance + weighted trust score · {rows.length} groups · {tickets.filter(t => t.closed_at).length} closed tickets
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="sd-promise-variance-integrity-badge" title={hash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{short}
+          </Badge>
           {(['engineer', 'customer', 'product'] as GroupBy[]).map((g) => (
             <Button key={g} variant={groupBy === g ? 'default' : 'outline'} size="sm" onClick={() => setGroupBy(g)}>
               By {g}
@@ -103,21 +107,20 @@ export function PromisedVsActualVariance(): JSX.Element {
         </Card>
       ) : (
         <>
-          <Card className="glass-card p-4">
+          <Card className="glass-card p-4" data-testid="sd-promise-variance-chart-host">
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={rows}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="label" stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                  <YAxis stroke="hsl(var(--muted-foreground))" fontSize={11} />
-                  <Tooltip contentStyle={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
-                  <Legend />
-                  <Bar dataKey="timeline_variance_days" fill="hsl(var(--primary))" name="Timeline Δ days" />
-                  <Bar dataKey="cost_variance_paise" fill="hsl(var(--destructive))" name="Cost Δ paise" />
-                  <Bar dataKey="route_changed_pct" fill="hsl(var(--warning))" name="Route changed %" />
-                  <Bar dataKey="spares_variance_qty" fill="hsl(var(--success))" name="Spares Δ qty" />
-                </BarChart>
-              </ResponsiveContainer>
+              <ReportChart
+                data={rows as unknown as Record<string, unknown>[]}
+                config={defaultChartConfig({
+                  chartType: 'column', xKey: 'label',
+                  series: [
+                    { key: 'timeline_variance_days', label: 'Timeline Δ days' },
+                    { key: 'cost_variance_paise', label: 'Cost Δ paise' },
+                    { key: 'route_changed_pct', label: 'Route changed %' },
+                    { key: 'spares_variance_qty', label: 'Spares Δ qty' },
+                  ],
+                })}
+              />
             </div>
           </Card>
 

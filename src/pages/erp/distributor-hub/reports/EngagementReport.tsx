@@ -7,10 +7,10 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Download, Smile, TrendingUp, LogIn } from 'lucide-react';
-import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-} from 'recharts';
+import { Download, Smile, TrendingUp, LogIn, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
+import { Badge } from '@/components/ui/badge';
 import { distributorsKey, type Distributor } from '@/types/distributor';
 import { distributorOrdersKey, type DistributorOrder } from '@/types/distributor-order';
 import { ratingsKey, type RatingEntry } from '@/types/distributor-rating';
@@ -121,24 +121,31 @@ export function EngagementReportPanel() {
         </CardContent></Card>
       </div>
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">Orders — last 30 days</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div style={{ width: '100%', height: 240 }}>
-            <ResponsiveContainer>
-              <LineChart data={data.series}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" fontSize={10} />
-                <YAxis fontSize={10} />
-                <Tooltip />
-                <Line type="monotone" dataKey="count" stroke="#4F46E5" strokeWidth={2} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+      {(() => {
+        const hash = signReport(data.series);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card data-testid="db-engagement-chart-host">
+            <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+              <CardTitle className="text-base">Orders — last 30 days</CardTitle>
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="db-engagement-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </CardHeader>
+            <CardContent>
+              <div style={{ width: '100%', height: 240 }}>
+                <ReportChart
+                  data={data.series}
+                  config={defaultChartConfig({
+                    chartType: 'line', xKey: 'day',
+                    series: [{ key: 'count', label: 'Orders' }],
+                  })}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
