@@ -11,10 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Gauge, TrendingUp, Sparkles } from 'lucide-react';
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid,
-} from 'recharts';
+import { Gauge, TrendingUp, Sparkles, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { ViewModeSelector } from '@/components/ViewModeSelector';
 import { useFactories } from '@/hooks/useFactories';
 import { useMachines } from '@/hooks/useMachines';
