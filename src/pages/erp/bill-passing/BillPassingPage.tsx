@@ -13,6 +13,8 @@ import {
 import { BillPassingRegisterPanel } from './BillPassingRegisterPanel';
 import { RateContractListPanel } from './RateContractListPanel';
 import type { BillPassingModule } from './BillPassingSidebar.types';
+// RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 export default function BillPassingPage(): JSX.Element {
   const [active, setActive] = useState<BillPassingModule>('welcome');
@@ -25,6 +27,8 @@ export default function BillPassingPage(): JSX.Element {
       case 'approved-for-fcpi':      return <ApprovedForFcpiPanel />;
       case 'bill-passing-register':  return <BillPassingRegisterPanel />;
       case 'rate-contract-list':     return <RateContractListPanel />;
+      // RPT-9b · User Report Builder · embedded mount
+      case 'bp-rpt-report-builder':  return <ReportBuilder cardId="bill-passing" />;
       default:                       return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };

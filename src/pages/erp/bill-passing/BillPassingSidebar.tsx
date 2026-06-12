@@ -12,7 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { Home, Inbox, AlertTriangle, CheckCircle2, FileText, FileSignature } from 'lucide-react';
+import { Home, Inbox, AlertTriangle, CheckCircle2, FileText, FileSignature, Sparkles } from 'lucide-react';
 import type { BillPassingModule } from './BillPassingSidebar.types';
 
 interface Group {
@@ -43,6 +43,13 @@ const GROUPS: Group[] = [
     label: 'Rate Contracts',
     items: [
       { id: 'rate-contract-list', label: 'Rate Contracts', icon: FileSignature },
+    ],
+  },
+  // RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+  {
+    label: 'Report Builder',
+    items: [
+      { id: 'bp-rpt-report-builder', label: 'Report Builder', icon: Sparkles },
     ],
   },
 ];
