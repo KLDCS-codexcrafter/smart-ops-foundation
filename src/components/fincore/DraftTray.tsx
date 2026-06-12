@@ -51,7 +51,9 @@ export type FinCoreModule =
   // [Sprint 68 FAR-4 · AI/IoT/Mobile/Analytics · Block 5 · Q-LOCK-3/4/5 A]
   | 'fc-fa-ai-classification' | 'fc-fa-document-ai' | 'fc-fa-iot-rfid' | 'fc-fa-insightx-staging'
   // [Sprint 68 FAR-4 Wire-Up T-fix · Tier 3 · 4 NEW module IDs · F-13 + F-DEAD-2 absorption]
-  | 'fc-fa-brsr-disclosure' | 'fc-cc-fa-health-lane' | 'fc-fa-audit-trail' | 'fc-fa-epcg-status';
+  | 'fc-fa-brsr-disclosure' | 'fc-cc-fa-health-lane' | 'fc-fa-audit-trail' | 'fc-fa-epcg-status'
+  // RPT-9a · User Report Builder · embedded mount
+  | 'fc-rpt-report-builder';
 
 export interface DraftEntry {
   id: string;
