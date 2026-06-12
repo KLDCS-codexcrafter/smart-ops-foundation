@@ -4,7 +4,8 @@
  */
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { PivotMatrix, buildPivotModel } from '@/components/operix-core/report-framework/PivotMatrix';
+import { PivotMatrix } from '@/components/operix-core/report-framework/PivotMatrix';
+import { buildPivotModel } from '@/components/operix-core/report-framework/pivot-model';
 
 const FIXTURE = [
   { region: 'North', product: 'A', sum_amount: 100 },
