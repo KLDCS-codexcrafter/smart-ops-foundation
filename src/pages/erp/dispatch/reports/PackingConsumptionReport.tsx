@@ -11,10 +11,9 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Download, AlertTriangle } from 'lucide-react';
-import {
-  LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
-} from 'recharts';
+import { Download, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import type { Voucher } from '@/types/voucher';
 import { vouchersKey } from '@/lib/fincore-engine';
@@ -302,19 +301,21 @@ export function PackingConsumptionReportPanel() {
       )}
 
       <Card>
-        <CardHeader className="pb-2"><CardTitle className="text-sm">Monthly Variance % (last 6 months)</CardTitle></CardHeader>
+        <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center justify-between"><span>Monthly Variance % (last 6 months)</span>{(() => { const __h = signReport(monthly); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="dp-packing-consumption-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}</CardTitle></CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={220}>
-            <LineChart data={monthly}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-              <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-              <YAxis tick={{ fontSize: 11 }} unit="%" />
-              <Tooltip />
-              <Line type="monotone" dataKey="variance_pct" stroke="#2563eb" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+          <div className="w-full h-[220px]" data-testid="dp-packing-consumption-chart-host">
+            <ReportChart
+              data={monthly}
+              config={defaultChartConfig({
+                chartType: 'spline',
+                xKey: 'month',
+                series: [{ key: 'variance_pct', label: 'Variance %' }],
+              })}
+            />
+          </div>
         </CardContent>
       </Card>
+
     </div>
   );
 }
