@@ -27,7 +27,7 @@ const PAYROLL_CARDS = [
   { title: 'Compliance Settings & Automation', desc: 'Enable GST automation, Auto RCM, Auto TDS — mirrors Tally Alt+F8', icon: Shield, href: '/erp/accounting/compliance-settings-automation' },
 ];
 
-// W1C-3 Block 2: removed PAYROLL_COMING_SOON (Capital Assets) and COMING_SOON_CARDS
+// W1C-3 Block 2: removed stale "future tile" sections
 // (Chart of Accounts · Cost Centres · Budget Master) — no live routes exist for these
 // in the post-arc tree and the prior "Coming Soon" tiles were stale promises.
 
@@ -180,7 +180,7 @@ export default function AccountingHub() {
                   </div>
                 </button>
               ))}
-              {/* W1C-3 Block 2: stale "Coming Soon" tiles removed (Capital Assets · Chart of Accounts · Cost Centres · Budget Master). */}
+              {/* W1C-3 Block 2: stale future-tile section removed (Capital Assets · Chart of Accounts · Cost Centres · Budget Master). */}
             </div>
           </div>
 
