@@ -14,7 +14,7 @@ import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterG
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
 import { DrillSourceBanner } from '@/components/registers/DrillSourceBanner';
 import { useDrillDown } from '@/hooks/useDrillDown';
-import { ReportChart } from '@/components/operix-core/report-framework';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import type {
   RegisterColumn, RegisterMeta, SummaryCard, StatusOption,
