@@ -23,7 +23,8 @@ const RECHARTS_LEGACY_ALLOWLIST = new Set<string>([
   'src/pages/bridge/ReconciliationWorkbench.tsx',
   'src/pages/customer/CustomerDashboard.tsx',
   'src/pages/tower/Billing.tsx',
-  'src/pages/vendor-portal/VendorPerformanceView.tsx',
+  // W1C-2 Block 3 · VendorPerformanceView migrated · allowlist no longer
+  // shields any vendor-portal page.
 ]);
 
 /** Chart-surface integrity coverage exceptions — pages that import ReportChart
