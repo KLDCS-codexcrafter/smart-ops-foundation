@@ -146,6 +146,8 @@ export default function ProductionPage(): JSX.Element {
       case 'mst-machine-master': return <MachineMasterPanel />;
       case 'rpt-fa-linked-machines': return <FALinkedMachinesPanel />;
       case 'prod-rpt-report-builder': return <ReportBuilder cardId="production" />;
+      // 🆕 RPT-10b · OEE Board cockpit (consumes computeOEE)
+      case 'prod-oee-board': return <OEEBoardPage />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }
