@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, Truck, IndianRupee, AlertCircle,
-  Building2, ChevronLeft, ChevronRight, LogOut, Bell,
+  Building2, ChevronLeft, ChevronRight, LogOut, Bell, Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/components/theme';
