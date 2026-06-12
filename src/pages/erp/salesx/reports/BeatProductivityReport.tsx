@@ -15,11 +15,13 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Route, TrendingUp } from 'lucide-react';
+import { Route, TrendingUp, ShieldCheck } from 'lucide-react';
 import { type BeatRoute, beatRoutesKey, FREQUENCY_LABELS } from '@/types/beat-route';
 import { type VisitLog, visitLogsKey } from '@/types/visit-log';
 import { type SAMPerson, samPersonsKey } from '@/types/sam-person';
 import { computeBeatProductivity } from '@/lib/field-force-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface Props { entityCode: string }
 
