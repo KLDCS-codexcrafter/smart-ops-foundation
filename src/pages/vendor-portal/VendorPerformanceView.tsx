@@ -12,10 +12,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer,
-} from 'recharts';
-import { BarChart, Award, TrendingUp, Target, CheckCircle, Sparkles } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
+import { BarChart, Award, TrendingUp, Target, CheckCircle, Sparkles, ShieldCheck } from 'lucide-react';
 import { getVendorSession } from '@/lib/vendor-portal-auth-engine';
 import {
   computeVendorScore,
