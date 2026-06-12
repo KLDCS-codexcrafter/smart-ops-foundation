@@ -12,6 +12,10 @@
  * [JWT] Phase 8: dashboard data feeds via /api/comply360/audit-framework/dashboard
  */
 import { Fragment, useEffect, useMemo, useState } from 'react';
+// 🆕 RPT-10b · additive dashboard recipe (banked RPT-2a pattern)
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, defaultChartConfig, resolveRag, getKpi } from '@/lib/report-framework';
+import { ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
