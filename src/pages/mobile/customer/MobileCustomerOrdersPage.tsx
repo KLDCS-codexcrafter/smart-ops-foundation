@@ -56,6 +56,13 @@ export default function MobileCustomerOrdersPage() {
         <Badge variant="outline" className="ml-auto text-[10px]">{orders.length}</Badge>
       </div>
 
+      {/* M1 · DocSendBar-mobile floor — Factory's stated View+Send case (receipts) */}
+      <ReportSendHeader
+        title="My Orders"
+        rows={orders.map(o => ({ order_no: o.order_no, status: o.status, amount: o.net_payable_paise }))}
+      />
+
+
       {orders.length === 0 ? (
         <Card className="p-6 text-center">
           <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
