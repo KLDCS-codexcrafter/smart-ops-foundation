@@ -60,6 +60,8 @@ export default function InsightXPage() {
         return <InsightsInboxPage />;
       case 'ix-predictive':
         return <PredictiveInsightsPage />;
+      case 'ix-report-builder':
+        return <ReportBuilder />;
       case 'ix-overview':
       default:
         return <InsightXOverviewPage />;
