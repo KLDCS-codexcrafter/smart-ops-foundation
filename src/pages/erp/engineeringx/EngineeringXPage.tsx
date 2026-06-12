@@ -23,6 +23,7 @@ import { SimilarityPredictor } from './transactions/SimilarityPredictor';
 import { ChangeImpactAnalyzer } from './registers/ChangeImpactAnalyzer';
 import { ProductionHandoff } from './registers/ProductionHandoff';
 import { EngineeringXReports } from './registers/EngineeringXReports';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 export default function EngineeringXPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<EngineeringXModule>('welcome');
@@ -43,6 +44,7 @@ export default function EngineeringXPage(): JSX.Element {
       case 'change-impact-analyzer':   return <ChangeImpactAnalyzer onNavigate={setActiveModule} />;
       case 'production-handoff':       return <ProductionHandoff onNavigate={setActiveModule} />;
       case 'engineeringx-reports':     return <EngineeringXReports onNavigate={setActiveModule} />;
+      case 'ex-rpt-report-builder': return <ReportBuilder cardId="engineeringx" />;
       default:                         return <EngineeringXWelcome onNavigate={setActiveModule} />;
     }
   };

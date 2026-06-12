@@ -48,6 +48,7 @@ import PredictiveMachineHealth from './reports/PredictiveMachineHealth';
 // 🆕 Sprint 63 PROD-5 · Theme A · ESG & BRSR
 import ESGEnergyDashboardPanel from './reports/ESGEnergyDashboard';
 import BRSRComplianceSnapshotPanel from './reports/BRSRComplianceSnapshot';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 export default function MaintainProPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<MaintainProModule>('welcome');
@@ -137,6 +138,7 @@ export default function MaintainProPage(): JSX.Element {
         return <ESGEnergyDashboardPanel />;
       case 'brsr-compliance-snapshot':
         return <BRSRComplianceSnapshotPanel />;
+      case 'mp-rpt-report-builder': return <ReportBuilder cardId="maintainpro" />;
       default:
         return <MaintainProWelcome onNavigate={setActiveModule} />;
     }

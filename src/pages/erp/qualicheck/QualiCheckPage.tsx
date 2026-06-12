@@ -60,6 +60,7 @@ import { QualiCheckNcrEvidenceEntryPanel } from './transactions/QualiCheckNcrEvi
 // 🆕 Sprint 62 PROD-4.5 · Theme C + D
 import ScheduleMComplianceDashboard from './reports/ScheduleMComplianceDashboard';
 import CFRPart11AuditTrailViewer from './reports/CFRPart11AuditTrailViewer';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 export default function QualiCheckPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<QualiCheckModule>('welcome');
@@ -146,6 +147,7 @@ export default function QualiCheckPage(): JSX.Element {
       // 🆕 Sprint 62 PROD-4.5
       case 'qc-r-schedule-m-compliance':   return <ScheduleMComplianceDashboard />;
       case 'qc-r-cfr-part-11-audit-trail': return <CFRPart11AuditTrailViewer />;
+      case 'qc-rpt-report-builder': return <ReportBuilder cardId="qualicheck" />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }

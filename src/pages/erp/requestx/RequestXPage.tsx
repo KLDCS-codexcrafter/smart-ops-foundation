@@ -33,6 +33,7 @@ import { ApprovalMatrixTemplatesPanel } from './masters/ApprovalMatrixTemplates'
 import { RequestXVoucherTypesMasterPanel } from './masters/RequestXVoucherTypesMaster';
 import { PinnedTemplatesPanel } from './masters/PinnedTemplatesPanel';
 import type { RequestXModule } from './RequestXSidebar.types';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 function renderModule(active: RequestXModule, setActive: (m: RequestXModule) => void): JSX.Element {
   switch (active) {
@@ -53,6 +54,7 @@ function renderModule(active: RequestXModule, setActive: (m: RequestXModule) => 
     case 'master-approval-matrix':   return <ApprovalMatrixTemplatesPanel />;
     case 'master-voucher-types':     return <RequestXVoucherTypesMasterPanel />;
     case 'master-pinned-templates':  return <PinnedTemplatesPanel />;
+    case 'rqx-rpt-report-builder': return <ReportBuilder cardId="requestx" />;
     default:
       return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
   }

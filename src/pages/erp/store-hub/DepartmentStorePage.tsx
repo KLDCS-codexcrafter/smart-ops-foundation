@@ -32,6 +32,7 @@ import { DepartmentConsumptionSummaryPanel } from './reports/DepartmentConsumpti
 import { DepartmentStoreWelcomePanel } from './DepartmentStoreWelcome';
 // UPRA-3 Phase A Step 2 · Tier-1 NEW
 import { StockReceiptAckRegisterPanel } from './reports/StockReceiptAckRegister';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 function WelcomePanel(): JSX.Element {
   return (
@@ -72,6 +73,7 @@ function renderModule(
     case 'sh-t-stock-issue-entry':      return <StockIssueEntryPanel onModuleChange={onModuleChange} />;
     case 'sh-t-stock-issue-register':   return <StockIssueRegisterPanel onModuleChange={onModuleChange} />;
     case 'sh-t-receipt-ack':            return <StockReceiptAckPanel />;
+    case 'sh-rpt-report-builder': return <ReportBuilder cardId="store-hub" />;
     default:                            return <DepartmentStoreWelcomePanel onModuleChange={onModuleChange} />;
   }
 }

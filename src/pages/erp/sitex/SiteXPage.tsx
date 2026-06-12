@@ -46,6 +46,7 @@ export default function SiteXPage(): JSX.Element {
       case 'turnkey-checklist':       return <TurnkeyChecklist onNavigate={nav} />;
       case 'final-reconciliation':
       case 'surplus-returns':         return <DemobilizationWorkflow onNavigate={nav} />;
+      case 'sx-rpt-report-builder': return <ReportBuilder cardId="sitex" />;
       default:                        return <SiteXWelcome onNavigate={setActiveModule} />;
     }
   };

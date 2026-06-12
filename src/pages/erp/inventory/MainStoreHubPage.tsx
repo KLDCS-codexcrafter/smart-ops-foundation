@@ -46,6 +46,7 @@ import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import type { MainStoreHubModule } from './MainStoreHubSidebar.types';
 import type { DrillNavigationContext } from '@/types/drill-context';
+import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
 
 export default function MainStoreHubPage() {
   const [activeModule, setActiveModule] = useState<MainStoreHubModule>('welcome');
@@ -111,6 +112,7 @@ export default function MainStoreHubPage() {
       case 'r-bin-utilization':      return <BinUtilizationReportPanel onNavigate={navigateToModule} />;
       case 'r-item-movement':        return <ItemMovementHistoryReportPanel onNavigate={navigateToModule} />;
       case 'r-part-no-search':       return <PartNoSearchPanel />;
+      case 'inv-rpt-report-builder': return <ReportBuilder cardId="inventory-hub" />;
       default:                       return <MainStoreHubWelcomePanel onNavigate={setActiveModule} />;
     }
   };
