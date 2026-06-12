@@ -11,11 +11,10 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { BarChart3 } from 'lucide-react';
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid,
-  LineChart, Line,
-} from 'recharts';
+import { BarChart3, ShieldCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { useProductionPlans } from '@/hooks/useProductionPlans';
 import { useProductionOrders } from '@/hooks/useProductionOrders';
 import type { ProductionPlan } from '@/types/production-plan';
@@ -151,49 +150,66 @@ export function PlanActualRollingPanel(): JSX.Element {
         </Select>
       </div>
 
-      <Card>
-        <CardHeader><CardTitle className="text-base">Comparison</CardTitle></CardHeader>
-        <CardContent>
-          {groups.length === 0 ? (
-            <div className="text-sm text-muted-foreground text-center py-8">No data in window.</div>
-          ) : (
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={groups}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="label" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="planned" fill="hsl(var(--muted-foreground))" />
-                <Bar dataKey="ordered" fill="hsl(var(--primary))" />
-                <Bar dataKey="produced" fill="hsl(var(--success))" />
-              </BarChart>
-            </ResponsiveContainer>
-          )}
-        </CardContent>
-      </Card>
+      {(() => {
+        const __hash = signReport([...groups, ...trendData]);
+        const __short = __hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center justify-between">
+                  <span>Comparison</span>
+                  <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-plan-actual-integrity-badge" title={__hash}>
+                    <ShieldCheck className="h-3 w-3 mr-1" />{__short}
+                  </Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {groups.length === 0 ? (
+                  <div className="text-sm text-muted-foreground text-center py-8">No data in window.</div>
+                ) : (
+                  <div className="w-full h-[300px]" data-testid="prod-plan-actual-chart-host">
+                    <ReportChart
+                      data={groups}
+                      config={defaultChartConfig({
+                        chartType: 'column',
+                        xKey: 'label',
+                        series: [
+                          { key: 'planned', label: 'Planned' },
+                          { key: 'ordered', label: 'Ordered' },
+                          { key: 'produced', label: 'Produced' },
+                        ],
+                      })}
+                    />
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Achievement Trend · Last {days} Days</CardTitle>
-        </CardHeader>
-        <CardContent className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={trendData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                dataKey="date"
-                tickFormatter={(d) => new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}
-              />
-              <YAxis domain={[0, 110]} />
-              <Tooltip />
-              <Legend />
-              <Line type="monotone" dataKey="achievement_pct" stroke="hsl(var(--primary))" strokeWidth={2} name="Cumulative Achievement %" dot={false} />
-              <Line type="monotone" dataKey="target_pct" stroke="hsl(var(--muted-foreground))" strokeDasharray="5 5" name="Target (100%)" dot={false} />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Achievement Trend · Last {days} Days</CardTitle>
+              </CardHeader>
+              <CardContent className="h-[300px]">
+                <div className="w-full h-full" data-testid="prod-plan-actual-trend-host">
+                  <ReportChart
+                    data={trendData}
+                    config={defaultChartConfig({
+                      chartType: 'line',
+                      xKey: 'date',
+                      series: [
+                        { key: 'achievement_pct', label: 'Cumulative Achievement %' },
+                        { key: 'target_pct', label: 'Target (100%)' },
+                      ],
+                    })}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        );
+      })()}
+
 
       <Card>
         <CardContent className="p-0">
