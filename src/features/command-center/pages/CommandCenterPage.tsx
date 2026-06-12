@@ -188,6 +188,8 @@ import { MachineMasterPanel } from '@/pages/erp/masters/MachineMaster';
 
 import { Card, CardContent } from '@/components/ui/card';
 import { getPrimaryEntity } from '@/data/mock-entities';
+// RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 export type CommandCenterModule =
   | 'overview'
@@ -326,7 +328,9 @@ export type CommandCenterModule =
   // 🎬 Sprint B2 · B.2 · Communication Console
   | 'communication-console'
   // 🎬 Sprint B6 · B.6 · Master Health Scorecard
-  | 'master-health-scorecard';
+  | 'master-health-scorecard'
+  // RPT-9b · User Report Builder · embedded mount
+  | 'cc-rpt-report-builder';
 export function CommandCenterPagePanel() {
   return <CommandCenterPage />;
 }
@@ -618,6 +622,9 @@ export default function CommandCenterPage() {
 
       // 🎬 Sprint B6 · B.6 · Master Health Scorecard (Pillar-B CLOSE)
       case 'master-health-scorecard': return <MasterHealthScorecardPage />;
+
+      // RPT-9b · User Report Builder · embedded mount
+      case 'cc-rpt-report-builder':   return <ReportBuilder cardId="command-center" />;
 
       default: return <OverviewModule onNavigate={handleNavigate} />;
     }
