@@ -485,6 +485,38 @@ export function CrossDeptHandoffTrackerPanel({ entityCode }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {(() => {
+        const m = new Map<string, number>();
+        for (const r of allRows) m.set(r.soStatus, (m.get(r.soStatus) ?? 0) + 1);
+        const chartRows = Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+        const cfg = getKpi('sx-handoff')?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'status',
+          series: [{ key: 'count', label: 'SOs' }],
+          title: 'Cross-dept handoff status',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="sx-handoff-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-handoff-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'status', label: 'SO Status' },
+                { key: 'count', label: 'SOs', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No sales orders yet"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }
