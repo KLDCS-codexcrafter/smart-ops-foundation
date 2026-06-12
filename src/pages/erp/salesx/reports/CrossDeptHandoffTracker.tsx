@@ -27,9 +27,11 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Search, GitMerge, AlertTriangle, Briefcase } from 'lucide-react';
+import { Search, GitMerge, AlertTriangle, Briefcase, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 import type { Order } from '@/types/order';
 import type { Quotation, QuotationStage } from '@/types/quotation';
