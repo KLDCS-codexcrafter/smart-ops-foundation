@@ -18,6 +18,7 @@
  * Keyboard namespace: 's *' prefix · D-NEW-CC uniqueness preserved (no collision with qualicheck's 'q *').
  */
 import {
+  Sparkles,
   Home, Boxes, Layers, TrendingUp, Package, ClipboardCheck, ArrowDown,
   Warehouse, BarChart3, Activity, Flame, Inbox,
 } from 'lucide-react';

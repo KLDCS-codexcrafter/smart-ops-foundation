@@ -19,6 +19,7 @@
  * to avoid breaking QualiCheckPage's renderModule() switch.
  */
 import {
+  Sparkles,
   Home, ClipboardCheck, FileText, Beaker, ListChecks,
   ShieldCheck, Award, FileCheck, AlertTriangle, Layers, Factory, BarChart3,
   AlertOctagon, FileWarning, Wrench, FileBadge, Ruler, Clock,

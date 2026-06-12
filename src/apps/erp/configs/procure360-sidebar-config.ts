@@ -11,6 +11,7 @@
  */
 
 import {
+  Sparkles,
   Home, FileText, Send, BarChart3, Award, TrendingUp, Users, Activity,
   ListChecks, ShoppingCart, Truck, PackageCheck, Clock, Receipt, Plus,
   Wallet, AlertTriangle,   // NEW · A.3.b

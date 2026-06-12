@@ -14,6 +14,7 @@
  */
 
 import {
+  Sparkles,
   Home, Calendar, ClipboardList, PackageMinus, CheckCircle,
   Truck, PackagePlus, IdCard,
   List, TrendingUp, BarChart3, Download, Activity, CalendarDays,

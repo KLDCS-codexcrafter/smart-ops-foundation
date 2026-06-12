@@ -17,6 +17,7 @@
  *   (existing prefixes in use: 'd' / 'e' / 'g' / 'm' / 'q' / 's' / 'x' · 'r' is FREE)
  */
 import {
+  Sparkles,
   Home, ClipboardList, FileText, Building2, Inbox, ListChecks, BarChart3,
   Briefcase, AlertCircle, Clock, TrendingDown, FolderTree,
 } from 'lucide-react';

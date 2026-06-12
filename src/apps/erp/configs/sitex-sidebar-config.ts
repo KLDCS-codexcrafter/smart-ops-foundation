@@ -13,6 +13,7 @@
  */
 
 import {
+  Sparkles,
   Home, MapPin, FileText, ClipboardList, AlertTriangle, Calendar, BookOpen, ListChecks,
   HardHat, UserCheck, Shield, Stamp, ScrollText, Activity,
   Package, Warehouse, ArrowDownToLine, ArrowUpFromLine, Trash2,

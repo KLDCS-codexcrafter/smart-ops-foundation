@@ -12,6 +12,7 @@
  */
 
 import {
+  Sparkles,
   Home,
   Wrench,
   Settings,

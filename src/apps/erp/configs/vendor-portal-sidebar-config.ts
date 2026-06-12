@@ -6,6 +6,7 @@
  * Keyboard namespace: 'v *' prefix · Theme accent: 'slate'
  */
 import {
+  Sparkles,
   Home, Building2, FileSignature, UserPlus, ListChecks,
   BarChart3, Activity, Award,
   MessageSquare, Megaphone, Bot,
