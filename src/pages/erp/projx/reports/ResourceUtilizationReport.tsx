@@ -7,10 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Activity, Download, AlertTriangle } from 'lucide-react';
+import { Activity, Download, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useProjectResources } from '@/hooks/useProjectResources';
 import { useProjects } from '@/hooks/useProjects';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const today = () => new Date().toISOString().slice(0, 10);
 const fmtINR = (n: number) =>
