@@ -13,6 +13,7 @@ import {
   type CustomerOrder, type CustomerOrderStatus,
   customerOrdersKey,
 } from '@/types/customer-order';
+import { ReportSendHeader } from '@/components/operix-core/report-framework/ReportSendHeader';
 
 function readSession(): MobileSession | null {
   try { const raw = sessionStorage.getItem('opx_mobile_session'); return raw ? (JSON.parse(raw) as MobileSession) : null; } catch { return null; }
@@ -54,6 +55,13 @@ export default function MobileCustomerOrdersPage() {
         <h1 className="text-base font-semibold">My Orders</h1>
         <Badge variant="outline" className="ml-auto text-[10px]">{orders.length}</Badge>
       </div>
+
+      {/* M1 · DocSendBar-mobile floor — Factory's stated View+Send case (receipts) */}
+      <ReportSendHeader
+        title="My Orders"
+        rows={orders.map(o => ({ order_no: o.order_no, status: o.status, amount: o.net_payable_paise }))}
+      />
+
 
       {orders.length === 0 ? (
         <Card className="p-6 text-center">

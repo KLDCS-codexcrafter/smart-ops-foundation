@@ -19,6 +19,7 @@ import {
   MOBILE_REPORT_HONESTY,
   type MobileReportCard,
 } from '@/lib/mobile-report-registry';
+import { ReportSendHeader } from '@/components/operix-core/report-framework/ReportSendHeader';
 
 const CARD_LABEL: Record<MobileReportCard, string> = {
   eximx: 'EximX',
@@ -56,6 +57,13 @@ export default function MobileUniversalReportPage(): JSX.Element {
           <p className="text-muted-foreground">{MOBILE_REPORT_HONESTY}</p>
         </div>
       </Card>
+
+      {/* M1 · DocSendBar-mobile floor — honest send for the report list itself */}
+      <ReportSendHeader
+        title={card ? `${CARD_LABEL[card]} reports` : 'Universal Reporting'}
+        rows={reports.map(r => ({ id: r.id, label: r.label, kind: r.kind, route_len: r.desktopRoute.length }))}
+      />
+
 
       {!card && (
         <div className="grid grid-cols-2 gap-3">

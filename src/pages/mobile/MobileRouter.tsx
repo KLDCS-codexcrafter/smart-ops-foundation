@@ -100,6 +100,20 @@ import MobileFrontDeskCheckInPage from './captures/MobileFrontDeskCheckInPage';
 import MobileDocVaultCapturePage from './captures/MobileDocVaultCapturePage';
 // AM.3 · Universal Mobile Reporting (read-only · CONSUMES mobile-report-registry)
 import MobileUniversalReportPage from './MobileUniversalReportPage';
+// M1 · Mobile-ARC Close · Transporter app
+import MobileTransporterHome from './transporter/MobileTransporterHome';
+import MobileLRQueuePage from './transporter/MobileLRQueuePage';
+import MobileManifestAckPage from './transporter/MobileManifestAckPage';
+import MobilePODCapturePage from './transporter/MobilePODCapturePage';
+import MobileTransporterDisputesPage from './transporter/MobileTransporterDisputesPage';
+import MobileTransporterPaymentsPage from './transporter/MobileTransporterPaymentsPage';
+// M1 · Mobile-ARC Close · Vendor app
+import MobileVendorHome from './vendor/MobileVendorHome';
+import MobilePOAckPage from './vendor/MobilePOAckPage';
+import MobileASNCreatePage from './vendor/MobileASNCreatePage';
+import MobileVendorInvoiceSubmitPage from './vendor/MobileVendorInvoiceSubmitPage';
+import MobileVendorPaymentsPage from './vendor/MobileVendorPaymentsPage';
+import MobileVendorDocsPage from './vendor/MobileVendorDocsPage';
 
 function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/salesman' || pathname === '/mobile/salesman/') return <MobileSalesmanHome />;
@@ -182,6 +196,20 @@ function renderRoleRoute(pathname: string): React.ReactElement {
   if (pathname === '/mobile/captures/docvault-capture') return <MobileDocVaultCapturePage />;
   // AM.3 · Universal Mobile Reporting viewer
   if (pathname === '/mobile/reports') return <MobileUniversalReportPage />;
+  // M1 · Transporter routes
+  if (pathname === '/mobile/transporter' || pathname === '/mobile/transporter/' || pathname === '/mobile/transporter/home') return <MobileTransporterHome />;
+  if (pathname === '/mobile/transporter/lr-queue') return <MobileLRQueuePage />;
+  if (pathname === '/mobile/transporter/manifest') return <MobileManifestAckPage />;
+  if (pathname === '/mobile/transporter/pod') return <MobilePODCapturePage />;
+  if (pathname === '/mobile/transporter/disputes') return <MobileTransporterDisputesPage />;
+  if (pathname === '/mobile/transporter/payments') return <MobileTransporterPaymentsPage />;
+  // M1 · Vendor routes
+  if (pathname === '/mobile/vendor' || pathname === '/mobile/vendor/' || pathname === '/mobile/vendor/home') return <MobileVendorHome />;
+  if (pathname === '/mobile/vendor/po-ack') return <MobilePOAckPage />;
+  if (pathname === '/mobile/vendor/asn') return <MobileASNCreatePage />;
+  if (pathname === '/mobile/vendor/invoice') return <MobileVendorInvoiceSubmitPage />;
+  if (pathname === '/mobile/vendor/payments') return <MobileVendorPaymentsPage />;
+  if (pathname === '/mobile/vendor/docs') return <MobileVendorDocsPage />;
   return <MobileHome />;
 }
 
