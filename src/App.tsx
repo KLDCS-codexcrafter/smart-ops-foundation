@@ -214,6 +214,8 @@ const SmartAPHub = lazy(() => import('./pages/erp/payout/SmartAPHub'));
 const BulkPayBuilder = lazy(() => import('./pages/erp/payout/BulkPayBuilder'));
 const AutoPayRulesEditor = lazy(() => import('./pages/erp/payout/AutoPayRulesEditor'));
 const CashFlowDashboard = lazy(() => import('./pages/erp/payout/CashFlowDashboard'));
+// RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder as PayOutReportBuilder } from '@/components/operix-core/report-framework';
 const SalesInvoice = lazy(() => import('./pages/erp/accounting/vouchers/SalesInvoice'));
 const PurchaseInvoice = lazy(() => import('./pages/erp/accounting/vouchers/PurchaseInvoice'));
 const ReceiptVoucher = lazy(() => import('./pages/erp/accounting/vouchers/Receipt'));
@@ -633,6 +635,8 @@ const App = () => (
                 <Route path="smart-ap-bulk-pay" element={<BulkPayBuilder />} />
                 <Route path="smart-ap-auto-pay-rules" element={<AutoPayRulesEditor />} />
                 <Route path="smart-ap-cash-flow" element={<CashFlowDashboard />} />
+                {/* RPT-9b · User Report Builder · embedded mount */}
+                <Route path="report-builder" element={<PayOutReportBuilder cardId="payout" />} />
               </Route>
               <Route path="/erp/accounting/vouchers/sales-invoice" element={<P><SalesInvoice /></P>} />
               <Route path="/erp/accounting/vouchers/purchase-invoice" element={<P><PurchaseInvoice /></P>} />

@@ -34,6 +34,8 @@ import { CreditRiskReportPanel } from '@/pages/erp/receivx/reports/CreditRiskRep
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { shouldPromptToday, markPrompted, getTodaysFollowUps } from '@/lib/receivx-followup-engine';
 import { toast } from 'sonner';
+// RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 const breadcrumbLabels: Record<ReceivXModule, string> = {
   'rx-hub':                  'Hub Overview',
@@ -55,6 +57,8 @@ const breadcrumbLabels: Record<ReceivXModule, string> = {
   'rx-r-collection-eff':     'Collection Efficiency',
   'rx-r-comm-log':           'Communication Log',
   'rx-r-credit-risk':        'Credit Risk Report',
+  // RPT-9b
+  'rx-rpt-report-builder':   'Report Builder',
 };
 
 function renderModule(
@@ -83,6 +87,8 @@ function renderModule(
     case 'rx-r-collection-eff':     return <CollectionEfficiencyPanel entityCode={entityCode} />;
     case 'rx-r-comm-log':           return <CommunicationLogReportPanel entityCode={entityCode} />;
     case 'rx-r-credit-risk':        return <CreditRiskReportPanel entityCode={entityCode} />;
+    // RPT-9b · User Report Builder · embedded mount
+    case 'rx-rpt-report-builder':   return <ReportBuilder cardId="receivx" />;
   }
 }
 

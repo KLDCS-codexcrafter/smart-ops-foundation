@@ -8,7 +8,9 @@ export type EximXModule =
   | 'welcome'
   | 'eximx-export'
   | 'eximx-import'
-  | 'eximx-unified';
+  | 'eximx-unified'
+  // RPT-9b · User Report Builder · embedded mount
+  | 'eximx-rpt-report-builder';
 
 export type EximXExportModule =
   | 'export-welcome' | 'lut-master' | 'export-orders' | 'shipping-bills'

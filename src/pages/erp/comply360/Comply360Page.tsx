@@ -58,6 +58,8 @@ import Form15CAPage from './exim/foreign-tax/Form15CAPage';
 import ScheduleMPage from './companies/ScheduleMPage';
 import { Comply360Breadcrumb } from './_shared/Comply360Breadcrumb';
 import type { Comply360Module } from './Comply360Sidebar.types';
+// RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 export default function Comply360Page(): JSX.Element {
   const [activeModule, setActiveModule] = useState<Comply360Module>('welcome');
@@ -157,6 +159,9 @@ export default function Comply360Page(): JSX.Element {
         return <Form15CAPage />;
       case 'schedule-m':
         return <ScheduleMPage />;
+      // RPT-9b · User Report Builder · embedded mount
+      case 'c360-rpt-report-builder':
+        return <ReportBuilder cardId="comply360" />;
       // remaining mega-menus · modules light up in later sprints per Q-LOCK
       default:
         return <ComingSoonPanel module={`c360-${activeModule}`} />;

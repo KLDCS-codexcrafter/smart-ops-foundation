@@ -3,7 +3,7 @@
  * Amber-500 accent. Hub / Masters / Transactions / Reports.
  */
 import { useState } from 'react';
-import { TrendingUp, LayoutDashboard, Bell, MessageCircle, Mail, ClipboardCheck, AlertTriangle, Shield, Users, Settings, CalendarClock, BadgeIndianRupee, Activity, ChevronRight, CreditCard, MailWarning } from 'lucide-react';
+import { TrendingUp, LayoutDashboard, Bell, MessageCircle, Mail, ClipboardCheck, AlertTriangle, Shield, Users, Settings, CalendarClock, BadgeIndianRupee, Activity, ChevronRight, CreditCard, MailWarning, Sparkles } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
   SidebarMenu, SidebarMenuItem, SidebarMenuButton,
@@ -88,6 +88,8 @@ export function ReceivXSidebar({ activeModule, onModuleChange }: Props) {
         <SidebarMenu className="px-3">
           {btn('rx-hub', 'Hub Overview', LayoutDashboard)}
           {btn('rx-t-task-board', 'Task Board', ClipboardCheck)}
+          {/* RPT-9b · User Report Builder · embedded mount */}
+          {btn('rx-rpt-report-builder', 'Report Builder', Sparkles)}
         </SidebarMenu>
 
         <Collapsible open={mastersOpen} onOpenChange={setMastersOpen} className="px-2">

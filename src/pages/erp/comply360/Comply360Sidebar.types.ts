@@ -21,4 +21,6 @@ export type Comply360Module =
   | 'mca-tier2' | 'legal-ipr'               // 🆕 S94 · Floor 5.6 CAPSTONE · CLOSES FLOOR 5
   | 'cost-audit' | 'meetings' | 'survival-kit' | 'csr'  // 🆕 S103 · Arc 1 UX surfacing · 4 new dashboards (CSR rescoped SURFACE→BUILD)
   | 'form-15ca' | 'schedule-m'              // 🆕 S103 · Arc 1 surfaced (Form 15CA + Schedule M canonical)
-  | 'reports' | 'ai-center' | 'docs' | 'integrations' | 'workflow' | 'admin';
+  | 'reports' | 'ai-center' | 'docs' | 'integrations' | 'workflow' | 'admin'
+  // RPT-9b · User Report Builder · embedded mount
+  | 'c360-rpt-report-builder';

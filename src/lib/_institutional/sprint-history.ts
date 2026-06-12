@@ -1448,8 +1448,15 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint RPT-9a T-RPT9a-User-Report-Builder · Reporting Arc · Phase D MOAT sprint 1 · per-card×per-role User Report Builder · NEW SIBLING report-builder-engine (pure runQuery over DSC · React-free · ZERO writes · validates dimension/measure kinds · allowedSourcesFor cross-card lock at operator/manager / management+ allowed cross-card aggregate) · NEW report-definitions module (role-scoped save/list/delete under SOLE namespaced key operix.report-builder.definitions.v1 · operator→private · manager→private|team · management→up to card · owner/admin→curated · delete own or management+ any · sole-writer exemption added to read-only-lock test · grep-asserts ONLY REPORT_DEFINITIONS_KEY is written) · NEW ReportBuilder component (ONE embeddable; cardId prop = embedded · absent = centralized · entitlement lock not-entitled state · live preview via TableChartToggle · integrity badge from runQuery · save flow restricted to allowedSaveScopesFor) · 2 reference mounts: FinCore embedded at fc-rpt-report-builder (DraftTray union + sidebar + breadcrumb + switch case additive) · InsightX centralized at ix-report-builder (sidebar-config + types + InsightXPage additive · 8 existing insightx features 0-DIFF) · walls held: insightx-aggregator-engine 0-DIFF · register-saved-views-storage 0-DIFF · data-source-catalog/role-layer/daybook framework 0-DIFF (consumed) · all banked pages 0-DIFF · ScorecardTile OMITTED · NO recharts import · honest empty-state · headSha TBD_AT_BANK
   {
     sprintNumber: 'RPT9a' as unknown as number, code: 'T-RPT9a-User-Report-Builder', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '862f0c3', loc: 920,
+    headSha: 'b99cd9a', predecessorSha: '862f0c3', loc: 920,
     newSiblings: ['report-builder-engine'],
+    bankDate: '2026-06-12', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-9b T-RPT9b-Builder-Rollout-FinHub · Reporting Arc · Phase D builder rollout 1 of 4 · MECHANICAL ADDITIVE · mount the frozen <ReportBuilder cardId="…" /> from RPT-9a into 6 cards (eximx · receivx · payout · bill-passing · comply360 · command-center) mirroring the FinCore reference pattern: (1) add module id <card>-rpt-report-builder to module union/sidebar config · (2) add Sparkles "Report Builder" sidebar entry · (3) add switch case rendering <ReportBuilder cardId="<card>" /> · ZERO new components · ZERO engine edits · ZERO new SIBLINGs · walls held: ReportBuilder.tsx + report-builder-engine.ts + report-definitions.ts FROZEN · all other cards + framework + banked pages 0-DIFF · payout uses route mode (/erp/payout/report-builder) since it is Outlet/route-driven · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT9b' as unknown as number, code: 'T-RPT9b-Builder-Rollout-FinHub', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'b99cd9a', loc: 240,
+    newSiblings: [],
     bankDate: '2026-06-12', provenance: 'PENDING_BACKFILL',
   },
 ];

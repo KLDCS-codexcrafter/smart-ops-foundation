@@ -10,4 +10,6 @@ export type BillPassingModule =
   | 'match-review'
   | 'approved-for-fcpi'
   | 'bill-passing-register'
-  | 'rate-contract-list';
+  | 'rate-contract-list'
+  // RPT-9b · User Report Builder · embedded mount
+  | 'bp-rpt-report-builder';

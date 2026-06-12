@@ -20,7 +20,9 @@ export type ReceivXModule =
   | 'rx-t-followups-today' | 'rx-t-planned-reminders'
   | 'rx-r-aging-salesman' | 'rx-r-aging-agent'
   | 'rx-r-aging-broker' | 'rx-r-aging-telecaller'
-  | 'rx-r-collection-eff' | 'rx-r-comm-log' | 'rx-r-credit-risk';
+  | 'rx-r-collection-eff' | 'rx-r-comm-log' | 'rx-r-credit-risk'
+  // RPT-9b · User Report Builder · embedded mount
+  | 'rx-rpt-report-builder';
 
 export const LIVE_RECEIVX_MODULES: ReceivXModule[] = [
   'rx-hub','rx-m-reminder-template','rx-m-collection-exec',
@@ -31,4 +33,6 @@ export const LIVE_RECEIVX_MODULES: ReceivXModule[] = [
   'rx-r-aging-salesman','rx-r-aging-agent',
   'rx-r-aging-broker','rx-r-aging-telecaller',
   'rx-r-collection-eff','rx-r-comm-log','rx-r-credit-risk',
+  // RPT-9b
+  'rx-rpt-report-builder',
 ];

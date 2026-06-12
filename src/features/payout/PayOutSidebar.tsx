@@ -13,7 +13,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Wallet, ClipboardList, Receipt, FileText,
-  AlertTriangle, BarChart3, Zap,
+  AlertTriangle, BarChart3, Zap, Sparkles,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -46,6 +46,8 @@ const PAYOUT_MENU: PayOutMenuItem[] = [
   { id: 'po-vendor-analytics',  label: 'Vendor Analytics',    icon: BarChart3,       route: '/erp/payout/vendor-analytics' },
   // [T-T8.7-SmartAP] Bulk Pay · Maker-Checker · Auto-Pay · Cash-Flow · Bank Files · ACTIVATED
   { id: 'po-smart-ap',          label: 'Smart AP',            icon: Zap,             route: '/erp/payout/smart-ap' },
+  // RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+  { id: 'po-rpt-report-builder', label: 'Report Builder',     icon: Sparkles,        route: '/erp/payout/report-builder' },
 ];
 
 export function PayOutSidebar() {

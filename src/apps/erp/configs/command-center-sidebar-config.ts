@@ -13,7 +13,7 @@ import {
   Upload, BookOpen, HandCoins, Users, ShoppingCart, CreditCard,
   Truck, Network, Layers, Briefcase, FileText, ListChecks,
   Receipt, FileSignature, DoorOpen,
-  Factory as FactoryIcon, Cog, Wrench, ShieldCheck,
+  Factory as FactoryIcon, Cog, Wrench, ShieldCheck, Sparkles,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -384,5 +384,10 @@ export const commandCenterSidebarItems: SidebarItem[] = [
       { id: 'utility-import', type: 'item', label: 'Import Hub', icon: Upload,
         moduleId: 'utility-import', requiredCards: ['command-center'] },
     ],
+  },
+  // RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+  {
+    id: 'cc-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles,
+    moduleId: 'cc-rpt-report-builder', requiredCards: ['command-center'],
   },
 ];

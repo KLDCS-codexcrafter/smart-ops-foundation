@@ -80,4 +80,6 @@ export const comply360SidebarItems: SidebarItem[] = [
   // 🆕 Sprint 104 · T-Phase-6.A.1.3 · Arc 1 CAPSTONE · UX-surfacing closure (2 genuine orphans)
   { id: 'audit-framework',   type: 'item', label: 'Statutory Audit Framework',       icon: Shield,       keyboard: 'c 8' },
   { id: 'rule-11g',          type: 'item', label: 'MCA Rule 11(g) · Auditor Report', icon: FileBarChart, keyboard: 'c 9' },
+  // 🆕 RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
+  { id: 'c360-rpt-report-builder', type: 'item', label: 'Report Builder',            icon: Sparkles },
 ];
