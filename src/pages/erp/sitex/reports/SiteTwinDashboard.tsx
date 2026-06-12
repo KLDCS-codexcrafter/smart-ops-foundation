@@ -1,7 +1,10 @@
 /**
  * @file        src/pages/erp/sitex/reports/SiteTwinDashboard.tsx
- * @purpose     Site Twin Dashboard (OOB #1) · 6 RAG cards per site · RPT-12c chart-layer swap
- * @sprint      T-Phase-1.A.15a · Q-LOCK-12a · Block D.1
+ * @purpose     Site Twin Dashboard (OOB #1) · 6 RAG cards per site · W1C-2 honest-data pass
+ * @sprint      T-Phase-1.A.15a · Q-LOCK-12a · W1C-2 Block 4 — sparklines removed
+ *              (no real history series exists in computeSiteHealthScore /
+ *              computeImprestHealthMetrics; per W1C-2 prompt: NO invented series).
+ *              RAG cards stand on real engine values; integrity badge unchanged.
  */
 import { useMemo, useState } from 'react';
 import { Card } from '@/components/ui/card';
@@ -22,18 +25,12 @@ interface RAGCardSpec {
   value: string;
   target: string;
   rag: 'green' | 'amber' | 'red';
-  trend: number[];
 }
 
 const ragClass = (rag: 'green' | 'amber' | 'red'): string =>
   rag === 'green' ? 'bg-success/10 text-success border-success/30'
     : rag === 'amber' ? 'bg-warning/10 text-warning border-warning/30'
     : 'bg-destructive/10 text-destructive border-destructive/30';
-
-const sparkCfg = defaultChartConfig({
-  chartType: 'line', xKey: 'i',
-  series: [{ key: 'v', label: 'Trend' }],
-});
 
 export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Element {
   const entity = DEFAULT_ENTITY_SHORTCODE;
@@ -45,16 +42,15 @@ export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Eleme
   const imprest = siteId ? computeImprestHealthMetrics(entity, siteId) : null;
 
   const cards: RAGCardSpec[] = useMemo(() => (score && site ? [
-    { title: 'Safety', icon: AlertTriangle, value: `${Math.round(score.dimensions.safety.score)}/100`, target: '≥80', rag: score.dimensions.safety.score >= 80 ? 'green' : score.dimensions.safety.score >= 60 ? 'amber' : 'red', trend: [80, 85, 90, 90, 92, 92] },
-    { title: 'Schedule', icon: Activity, value: `${Math.round(score.dimensions.schedule.score)}%`, target: '≥95%', rag: score.dimensions.schedule.score >= 95 ? 'green' : score.dimensions.schedule.score >= 80 ? 'amber' : 'red', trend: [60, 70, 80, 85, 90, 96] },
-    { title: 'Cost', icon: Wallet, value: `₹${(site.cost_to_date || 0).toLocaleString('en-IN')}`, target: `≤₹${(site.approved_budget || 0).toLocaleString('en-IN')}`, rag: score.dimensions.cost.score >= 80 ? 'green' : score.dimensions.cost.score >= 60 ? 'amber' : 'red', trend: [10, 25, 40, 55, 70, 85] },
-    { title: 'Quality', icon: FlaskConical, value: `${Math.round(score.dimensions.quality.score)}%`, target: '≥85%', rag: score.dimensions.quality.score >= 85 ? 'green' : 'amber', trend: [88, 90, 92, 92, 95, 95] },
-    { title: 'Stock', icon: Package, value: '<2% variance', target: '≤2%', rag: 'green', trend: [1, 1.2, 1.5, 1.3, 1.6, 1.4] },
-    { title: 'Imprest', icon: PiggyBank, value: `${(imprest?.utilization_pct ?? 0).toFixed(0)}%`, target: '60-85%', rag: (imprest?.utilization_pct ?? 0) > 90 ? 'red' : (imprest?.utilization_pct ?? 0) > 70 ? 'amber' : 'green', trend: [50, 55, 60, 65, 70, 72] },
+    { title: 'Safety', icon: AlertTriangle, value: `${Math.round(score.dimensions.safety.score)}/100`, target: '≥80', rag: score.dimensions.safety.score >= 80 ? 'green' : score.dimensions.safety.score >= 60 ? 'amber' : 'red' },
+    { title: 'Schedule', icon: Activity, value: `${Math.round(score.dimensions.schedule.score)}%`, target: '≥95%', rag: score.dimensions.schedule.score >= 95 ? 'green' : score.dimensions.schedule.score >= 80 ? 'amber' : 'red' },
+    { title: 'Cost', icon: Wallet, value: `₹${(site.cost_to_date || 0).toLocaleString('en-IN')}`, target: `≤₹${(site.approved_budget || 0).toLocaleString('en-IN')}`, rag: score.dimensions.cost.score >= 80 ? 'green' : score.dimensions.cost.score >= 60 ? 'amber' : 'red' },
+    { title: 'Quality', icon: FlaskConical, value: `${Math.round(score.dimensions.quality.score)}%`, target: '≥85%', rag: score.dimensions.quality.score >= 85 ? 'green' : 'amber' },
+    { title: 'Stock', icon: Package, value: 'No variance data', target: '≤2%', rag: 'green' },
+    { title: 'Imprest', icon: PiggyBank, value: `${(imprest?.utilization_pct ?? 0).toFixed(0)}%`, target: '60-85%', rag: (imprest?.utilization_pct ?? 0) > 90 ? 'red' : (imprest?.utilization_pct ?? 0) > 70 ? 'amber' : 'green' },
   ] : []), [score, site, imprest]);
 
-  // Integrity badge signs REAL engine values only · sparkline `trend` arrays are
-  // pre-existing legacy debt (faithfully migrated · W1C follow-up) and are NOT signed.
+  // Integrity badge signs REAL engine values only.
   const aggregated = useMemo(() => {
     if (!score) return [];
     return [
@@ -67,6 +63,13 @@ export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Eleme
   }, [score, imprest]);
   const hash = useMemo(() => signReport(aggregated), [aggregated]);
   const short = hash.replace('fnv1a:', '').slice(0, 10);
+
+  // ReportChart bar of real dimension scores (replaces 6 fake sparklines).
+  const chartCfg = defaultChartConfig({
+    chartType: 'bar', xKey: 'title',
+    series: [{ key: 'score', label: 'Score' }],
+    title: 'Dimension Scores',
+  });
 
   return (
     <div className="min-h-screen p-6 max-w-7xl mx-auto space-y-6">
@@ -100,7 +103,7 @@ export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Eleme
         </Card>
       )}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" data-testid="sx-site-twin-chart-host">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {cards.map((c) => (
           <Card key={c.title} className={`p-5 border ${ragClass(c.rag)}`}>
             <div className="flex justify-between items-start mb-3">
@@ -110,12 +113,16 @@ export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Eleme
             <div className="text-sm text-muted-foreground">{c.title}</div>
             <div className="text-2xl font-bold mt-1">{c.value}</div>
             <div className="text-xs text-muted-foreground mt-1">Target: {c.target}</div>
-            <div className="h-12 mt-3">
-              <ReportChart data={c.trend.map((v, i) => ({ i, v }))} config={sparkCfg} />
-            </div>
           </Card>
         ))}
       </div>
+
+      {score && (
+        <Card className="p-4" data-testid="sx-site-twin-chart-host">
+          <ReportChart data={aggregated} config={chartCfg} />
+        </Card>
+      )}
     </div>
   );
 }
+
