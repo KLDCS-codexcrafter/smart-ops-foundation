@@ -15,3 +15,8 @@ export * from './role-layer';
 // RPT-9a · User Report Builder
 export * from './report-builder-engine';
 export * from './report-definitions';
+// RPT-12a · Builder/UX close
+export * from './export-csv';
+export * from './intent-match';
+export * from './narrative';
+export * from './report-search-entries';

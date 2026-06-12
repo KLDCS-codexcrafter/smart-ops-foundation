@@ -11,7 +11,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Pause, Play } from 'lucide-react';
+import { Pause, Play, Download } from 'lucide-react';
+import { downloadCsv } from '@/lib/report-framework/export-csv';
+import { describeReport } from '@/lib/report-framework/narrative';
 import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
 import { deriveRoleDashboard } from '@/lib/report-framework/role-layer';
 import { getSource } from '@/lib/report-framework/data-source-catalog';
@@ -181,8 +183,21 @@ export default function PromoterCockpitPage(): JSX.Element {
         <section data-testid="cockpit-section-cash-ar" className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-semibold">② Cash & A/R</h2>
-            <IntegrityBadge rows={[...cashRows, ...arRows]} />
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="outline" type="button" data-testid="promoter-csv"
+                onClick={(e) => { e.stopPropagation(); downloadCsv(`promoter-ar-${entityCode}-${Date.now()}`, arRows); }}
+                disabled={arRows.length === 0}>
+                <Download className="h-3 w-3 mr-1" /> CSV
+              </Button>
+              <IntegrityBadge rows={[...cashRows, ...arRows]} />
+            </div>
           </div>
+          {arByBucket.length > 0 && (
+            <p className="text-xs text-muted-foreground" data-testid="promoter-narrative">
+              {describeReport(arByBucket as Record<string, unknown>[], { groupBy: ['age_bucket'], measures: [{ field: 'outstanding', agg: 'sum' }] })}
+            </p>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <Card className="p-4">
               <div className="text-sm text-muted-foreground mb-2">Cash Position</div>

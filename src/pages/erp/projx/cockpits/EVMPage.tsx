@@ -14,6 +14,9 @@
 import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+import { downloadCsv } from '@/lib/report-framework/export-csv';
 import {
   ReportChart, ScorecardTile,
 } from '@/components/operix-core/report-framework';
@@ -87,10 +90,17 @@ export default function EVMPage(): JSX.Element {
             from real row fields. AC leg DECLARED absent — never synthesised.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-[10px]" data-testid="evm-integrity">
-          ◇ {sig.slice(0, 12)}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" type="button" data-testid="evm-csv"
+            onClick={() => downloadCsv(`evm-${entityCode}-${Date.now()}`, projectLegs as unknown as Record<string, unknown>[])} disabled={projectLegs.length === 0}>
+            <Download className="h-3 w-3 mr-1" /> CSV
+          </Button>
+          <Badge variant="outline" className="font-mono text-[10px]" data-testid="evm-integrity">
+            ◇ {sig.slice(0, 12)}
+          </Badge>
+        </div>
       </header>
+
 
       {projects.length === 0 ? (
         <Card className="p-8 text-center text-sm text-muted-foreground" data-testid="evm-empty">

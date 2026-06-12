@@ -9,6 +9,9 @@
 import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+import { downloadCsv } from '@/lib/report-framework/export-csv';
 import {
   ReportChart, ScorecardTile, TableChartToggle,
   type TableChartColumn,
@@ -89,10 +92,17 @@ export default function CreditXRayPage({ entityCode }: Props): JSX.Element {
             {isManagement ? <> + <code>distributor.orders</code> (cross-card · mgmt only).</> : '.'}
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-[10px]" data-testid="credit-xray-integrity">
-          ◇ {sig.slice(0, 12)}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" type="button" data-testid="credit-xray-csv"
+            onClick={() => downloadCsv(`credit-xray-${entityCode}-${Date.now()}`, arRows)} disabled={arRows.length === 0}>
+            <Download className="h-3 w-3 mr-1" /> CSV
+          </Button>
+          <Badge variant="outline" className="font-mono text-[10px]" data-testid="credit-xray-integrity">
+            ◇ {sig.slice(0, 12)}
+          </Badge>
+        </div>
       </header>
+
 
       {arRows.length === 0 ? (
         <Card className="p-8 text-sm text-muted-foreground text-center" data-testid="credit-xray-empty">

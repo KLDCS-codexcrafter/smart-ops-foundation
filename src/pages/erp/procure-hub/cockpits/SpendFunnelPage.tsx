@@ -10,6 +10,9 @@
 import { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
+import { downloadCsv } from '@/lib/report-framework/export-csv';
 import {
   ReportChart, ScorecardTile,
 } from '@/components/operix-core/report-framework';
@@ -99,10 +102,17 @@ export default function SpendFunnelPage({ entityCode }: Props): JSX.Element {
             {' + '}<code>procure.budget-utilization</code>. Only stages with real data render.
           </p>
         </div>
-        <Badge variant="outline" className="font-mono text-[10px]" data-testid="spend-funnel-integrity">
-          ◇ {sig.slice(0, 12)}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" type="button" data-testid="spend-funnel-csv"
+            onClick={() => downloadCsv(`spend-funnel-${entityCode}-${Date.now()}`, poRows)} disabled={poRows.length === 0}>
+            <Download className="h-3 w-3 mr-1" /> CSV
+          </Button>
+          <Badge variant="outline" className="font-mono text-[10px]" data-testid="spend-funnel-integrity">
+            ◇ {sig.slice(0, 12)}
+          </Badge>
+        </div>
       </header>
+
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         <ScorecardTile label="POs in scope" value={poRows.length} hint="procure.purchase-orders" />
