@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { downloadCsv } from '@/lib/report-framework/export-csv';
 import {
-  ReportChart, ScorecardTile, TableChartToggle,
+  ReportChart, ScorecardTile, TableChartToggle, ReportSendHeader,
   type TableChartColumn,
 } from '@/components/operix-core/report-framework';
 import { getSource } from '@/lib/report-framework/data-source-catalog';

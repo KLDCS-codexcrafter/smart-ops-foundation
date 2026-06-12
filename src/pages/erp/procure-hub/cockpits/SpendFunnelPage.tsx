@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { downloadCsv } from '@/lib/report-framework/export-csv';
 import {
-  ReportChart, ScorecardTile,
+  ReportChart, ScorecardTile, ReportSendHeader,
 } from '@/components/operix-core/report-framework';
 import { getSource } from '@/lib/report-framework/data-source-catalog';
 import { defaultChartConfig } from '@/lib/report-framework/chart-config';

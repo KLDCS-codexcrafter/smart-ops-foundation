@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Scale, FileCheck2, Gavel, Sparkles, Layers, Plus, ShieldCheck } from 'lucide-react';
-import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { ReportChart, ScorecardTile, ReportSendHeader } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig, resolveRag } from '@/lib/report-framework';
 import {
   listCostAuditorAppointments,
@@ -142,6 +142,7 @@ export default function CostAuditDashboardPage(): JSX.Element {
               ? '§148 Records Only'
               : '§148 Not Applicable'}
         </Badge>
+        <ReportSendHeader title="Cost Audit · Section 148" rows={appointmentsFy as unknown as Record<string, unknown>[]} />
       </header>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

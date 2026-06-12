@@ -20,7 +20,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
-  ReportChart, ScorecardTile,
+  ReportChart, ScorecardTile, ReportSendHeader,
 } from '@/components/operix-core/report-framework';
 import { defaultChartConfig } from '@/lib/report-framework/chart-config';
 import { resolveRag } from '@/lib/report-framework/rag';
