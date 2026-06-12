@@ -10,10 +10,10 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
   Table, TableHeader, TableRow, TableHead, TableBody, TableCell,
 } from '@/components/ui/table';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from 'recharts';
-import { Activity } from 'lucide-react';
+import { Activity, ShieldCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 
 export function ProductionCarbonDashboardPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -49,20 +49,25 @@ export function ProductionCarbonDashboardPanel(): JSX.Element {
 
       <Card className="glass-card">
         <CardHeader>
-          <CardTitle>12-month carbon trend</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            <span>12-month carbon trend</span>
+            {(() => { const __h = signReport(trend as unknown as Record<string, unknown>[]); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-carbon-trend-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}
+          </CardTitle>
         </CardHeader>
         <CardContent style={{ height: 300 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={trend}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="month" fontSize={11} />
-              <YAxis fontSize={11} />
-              <Tooltip />
-              <Line type="monotone" dataKey="totalKg" name="kg CO₂" stroke="hsl(var(--success))" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+          <div className="w-full h-full" data-testid="prod-carbon-trend-chart-host">
+            <ReportChart
+              data={trend as unknown as Record<string, unknown>[]}
+              config={defaultChartConfig({
+                chartType: 'spline',
+                xKey: 'month',
+                series: [{ key: 'totalKg', label: 'kg CO₂' }],
+              })}
+            />
+          </div>
         </CardContent>
       </Card>
+
 
       <Card className="glass-card">
         <CardHeader>

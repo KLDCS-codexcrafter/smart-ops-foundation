@@ -16,10 +16,9 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableHeader, TableRow, TableHead, TableBody, TableCell,
 } from '@/components/ui/table';
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-} from 'recharts';
-import { Leaf, Clock, TrendingDown } from 'lucide-react';
+import { Leaf, Clock, TrendingDown, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { toast } from 'sonner';
 
 const MOCK_ORDERS = ['PO-1001', 'PO-1002', 'PO-1003', 'PO-1004', 'PO-1005'];
@@ -127,20 +126,25 @@ export function CarbonAwareProductionPlannerPanel(): JSX.Element {
 
       <Card className="glass-card">
         <CardHeader>
-          <CardTitle>24-hour India grid intensity (mock · CEA 2024 baseline)</CardTitle>
+          <CardTitle className="flex items-center justify-between">
+            <span>24-hour India grid intensity (mock · CEA 2024 baseline)</span>
+            {(() => { const __h = signReport(intensity24h); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-carbon-planner-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}
+          </CardTitle>
         </CardHeader>
         <CardContent style={{ height: 280 }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={intensity24h}>
-              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-              <XAxis dataKey="hour" fontSize={10} />
-              <YAxis domain={[0.6, 1.0]} fontSize={11} />
-              <Tooltip />
-              <Line type="monotone" dataKey="intensity" stroke="hsl(var(--primary))" strokeWidth={2} />
-            </LineChart>
-          </ResponsiveContainer>
+          <div className="w-full h-full" data-testid="prod-carbon-planner-chart-host">
+            <ReportChart
+              data={intensity24h}
+              config={defaultChartConfig({
+                chartType: 'spline',
+                xKey: 'hour',
+                series: [{ key: 'intensity', label: 'Intensity' }],
+              })}
+            />
+          </div>
         </CardContent>
       </Card>
+
     </div>
   );
 }
