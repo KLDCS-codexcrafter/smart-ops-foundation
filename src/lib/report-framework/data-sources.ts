@@ -628,6 +628,74 @@ export function registerAllDataSources(): void {
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(ecOrdersKey(entityCode || 'SMRT')),
   });
+
+  // ─── RPT-8a · 4 sources (ServiceDesk + Dispatch · read-only wrappers) ───
+  registerSource({
+    id: 'servicedesk.tickets',
+    label: 'ServiceDesk · Service Tickets',
+    card: 'servicedesk',
+    kind: 'register',
+    fields: [
+      { key: 'ticket_no', label: 'Ticket No', kind: 'dimension' },
+      { key: 'channel', label: 'Channel', kind: 'dimension' },
+      { key: 'severity', label: 'Severity', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'raised_at', label: 'Raised', kind: 'dimension' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(serviceTicketKey(entityCode || 'OPRX')),
+  });
+
+  registerSource({
+    id: 'servicedesk.amc',
+    label: 'ServiceDesk · AMC Records',
+    card: 'servicedesk',
+    kind: 'register',
+    fields: [
+      { key: 'amc_code', label: 'AMC Code', kind: 'dimension' },
+      { key: 'customer_id', label: 'Customer', kind: 'dimension' },
+      { key: 'oem_name', label: 'OEM', kind: 'dimension' },
+      { key: 'contract_end', label: 'Contract End', kind: 'dimension' },
+      { key: 'risk_bucket', label: 'Risk', kind: 'dimension' },
+      { key: 'contract_value_paise', label: 'Contract ₹ (paise)', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(amcRecordKey(entityCode || 'OPRX')),
+  });
+
+  registerSource({
+    id: 'dispatch.shipments',
+    label: 'Dispatch · Shipment Receipts',
+    card: 'dispatch',
+    kind: 'register',
+    fields: [
+      { key: 'receipt_no', label: 'Receipt No', kind: 'dimension' },
+      { key: 'customer_name', label: 'Customer', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'delivery_date', label: 'Delivery Date', kind: 'dimension' },
+      { key: 'total_delivered', label: 'Delivered', kind: 'measure' },
+      { key: 'total_damage', label: 'Damage', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(dispatchReceiptsKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'dispatch.inward',
+    label: 'Dispatch · Inward Receipts',
+    card: 'dispatch',
+    kind: 'register',
+    fields: [
+      { key: 'receipt_no', label: 'Receipt No', kind: 'dimension' },
+      { key: 'vendor_name', label: 'Vendor', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'arrival_date', label: 'Arrival', kind: 'dimension' },
+      { key: 'total_lines', label: 'Lines', kind: 'measure' },
+      { key: 'quarantine_lines', label: 'Quarantine Lines', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(inwardReceiptsKey(entityCode || 'SMRT')),
+  });
 }
 
 // Auto-register on import. Idempotent — re-import is a no-op.
