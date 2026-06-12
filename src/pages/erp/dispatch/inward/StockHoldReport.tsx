@@ -220,6 +220,39 @@ export function StockHoldReportPanel() {
               </div>
             </CardContent>
           </Card>
+
+          {(() => {
+            const chartRows = vendors.map(v => ({
+              hold_reason: v.vendor_name,
+              qty: v.total_lines,
+            }));
+            const cfg = getKpi('dp-stock-hold')?.defaultChart ?? defaultChartConfig({
+              chartType: 'column', xKey: 'hold_reason',
+              series: [{ key: 'qty', label: 'Lines on Hold' }],
+              title: 'Stock hold by vendor',
+            });
+            const hash = signReport(chartRows);
+            const short = hash.replace('fnv1a:', '').slice(0, 10);
+            return (
+              <Card className="p-3 space-y-2" data-testid="dp-stock-hold-toggle-host">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge variant="outline" className="text-[10px] font-mono" data-testid="dp-stock-hold-integrity-badge" title={hash}>
+                    <ShieldCheck className="h-3 w-3 mr-1" />{short}
+                  </Badge>
+                </div>
+                <TableChartToggle
+                  rows={chartRows}
+                  columns={[
+                    { key: 'hold_reason', label: 'Vendor' },
+                    { key: 'qty', label: 'Lines on Hold', align: 'right' },
+                  ]}
+                  chartConfig={cfg}
+                  defaultView="table"
+                  emptyLabel="No quarantine holds"
+                />
+              </Card>
+            );
+          })()}
         </>
       )}
     </div>
