@@ -1452,10 +1452,17 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: ['report-builder-engine'],
     bankDate: '2026-06-12', provenance: 'CONFIRMED',
   },
-  // 🆕 Sprint RPT-9b T-RPT9b-Builder-Rollout-FinHub · Reporting Arc · Phase D builder rollout 1 of 4 · MECHANICAL ADDITIVE · mount the frozen <ReportBuilder cardId="…" /> from RPT-9a into 6 cards (eximx · receivx · payout · bill-passing · comply360 · command-center) mirroring the FinCore reference pattern: (1) add module id <card>-rpt-report-builder to module union/sidebar config · (2) add Sparkles "Report Builder" sidebar entry · (3) add switch case rendering <ReportBuilder cardId="<card>" /> · ZERO new components · ZERO engine edits · ZERO new SIBLINGs · walls held: ReportBuilder.tsx + report-builder-engine.ts + report-definitions.ts FROZEN · all other cards + framework + banked pages 0-DIFF · payout uses route mode (/erp/payout/report-builder) since it is Outlet/route-driven · headSha TBD_AT_BANK
+  // 🆕 Sprint RPT-9b T-RPT9b-Builder-Rollout-FinHub · Reporting Arc · Phase D builder rollout 1 of 4 · MECHANICAL ADDITIVE · mount the frozen <ReportBuilder cardId="…" /> from RPT-9a into 6 cards (eximx · receivx · payout · bill-passing · comply360 · command-center) mirroring the FinCore reference pattern: (1) add module id <card>-rpt-report-builder to module union/sidebar config · (2) add Sparkles "Report Builder" sidebar entry · (3) add switch case rendering <ReportBuilder cardId="<card>" /> · ZERO new components · ZERO engine edits · ZERO new SIBLINGs · walls held: ReportBuilder.tsx + report-builder-engine.ts + report-definitions.ts FROZEN · all other cards + framework + banked pages 0-DIFF · payout uses route mode (/erp/payout/report-builder) since it is Outlet/route-driven · headSha 7ae3576
   {
     sprintNumber: 'RPT9b' as unknown as number, code: 'T-RPT9b-Builder-Rollout-FinHub', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'b99cd9a', loc: 240,
+    headSha: '7ae3576', predecessorSha: 'b99cd9a', loc: 240,
+    newSiblings: [],
+    bankDate: '2026-06-12', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint RPT-9c T-RPT9c-Builder-Rollout-Ops · Reporting Arc · Phase D builder rollout 2 of 4 · MECHANICAL ADDITIVE · mount the frozen <ReportBuilder cardId="…" /> from RPT-9a into 11 Ops cards (inventory · procure-hub · qualicheck · production · requestx · store-hub · engineeringx · sitex · maintainpro · vendor-portal · logistic) mirroring the RPT-9b recipe: (1) add module id <card>-rpt-report-builder to module union/sidebar config · (2) add Sparkles "Report Builder" sidebar entry · (3) add switch case rendering <ReportBuilder cardId="<card>" /> · GateFlow SKIPPED (zero DSC sources per RPT-6c honest study — empty builder is noise, not value · 0-DIFF) · Logistic uses route mode (/erp/logistic/report-builder via LogisticReportBuilder.tsx · transporter portal mirrors PayOut RPT-9b route pattern · cardId='logistics') · ZERO new components (only 1 thin route wrapper for Logistic mirror of PayOut precedent) · ZERO engine edits · ZERO new SIBLINGs · walls held: ReportBuilder.tsx + report-builder-engine.ts + report-definitions.ts FROZEN · GateFlow + all RPT-9b cards + all other cards + framework + banked pages 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'RPT9c' as unknown as number, code: 'T-RPT9c-Builder-Rollout-Ops', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '7ae3576', loc: 320,
     newSiblings: [],
     bankDate: '2026-06-12', provenance: 'PENDING_BACKFILL',
   },
