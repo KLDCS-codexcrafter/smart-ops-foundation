@@ -376,6 +376,7 @@ export default function CommandCenterPage() {
       'audit-integrity',
       'retention-console',
       'communication-console',
+      'auto-send-rules',
       'master-health-scorecard',
     ].includes(hash)) {
       return hash as CommandCenterModule;
