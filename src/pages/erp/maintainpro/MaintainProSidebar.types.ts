@@ -71,4 +71,6 @@ export type MaintainProModule =
   | 'mp-r-predictive-alerts'
   // 🆕 Sprint 63 PROD-5 · Theme A · ESG & BRSR
   | 'esg-energy-dashboard'
-  | 'brsr-compliance-snapshot';
+  | 'brsr-compliance-snapshot'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'mp-rpt-report-builder';

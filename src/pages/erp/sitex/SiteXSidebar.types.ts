@@ -27,4 +27,6 @@ export type SiteXModule =
   // Closeout & Reports
   | 'customer-signoff' | 'commissioning-report' | 'servicedesk-handoff' | 'maintainpro-handoff'
   | 'asset-capitalization' | 'turnkey-checklist' | 'surplus-returns' | 'final-reconciliation'
-  | 'close-certificate' | 'sitex-reports';
+  | 'close-certificate' | 'sitex-reports'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'sx-rpt-report-builder';

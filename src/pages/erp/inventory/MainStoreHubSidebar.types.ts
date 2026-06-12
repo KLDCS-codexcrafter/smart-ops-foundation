@@ -44,4 +44,6 @@ export type MainStoreHubModule =
   | 'r-cycle-count-register'
   | 'r-rtv-register'
   // Sprint T-CLN1-Wave1-Cleanups · Item 1 · B25 part-no search
-  | 'r-part-no-search';
+  | 'r-part-no-search'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'inv-rpt-report-builder';

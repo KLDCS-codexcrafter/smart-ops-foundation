@@ -54,4 +54,6 @@ export type QualiCheckModule =
   | 'ncr-evidence-entry'
   // 🆕 Sprint 62 PROD-4.5 · Theme C + D
   | 'qc-r-schedule-m-compliance'
-  | 'qc-r-cfr-part-11-audit-trail';
+  | 'qc-r-cfr-part-11-audit-trail'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'qc-rpt-report-builder';

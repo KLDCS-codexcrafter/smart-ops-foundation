@@ -59,5 +59,7 @@ export type ProductionModule =
   | 'phase3v2-closure-dashboard'
   // 🆕 Sprint 66 FAR-2 · Block 5 · FK-CAP-6
   | 'mst-machine-master'
-  | 'rpt-fa-linked-machines';
+  | 'rpt-fa-linked-machines'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'prod-rpt-report-builder';
 
