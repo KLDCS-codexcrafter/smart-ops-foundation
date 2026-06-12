@@ -15,9 +15,11 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Search } from 'lucide-react';
+import { Search, ShieldCheck } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { useEnquiries } from '@/hooks/useEnquiries';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -84,6 +86,19 @@ export function FollowUpRegisterReportPanel({ entityCode, onNavigate }: Props) {
     if (n === 0) return <Badge variant="outline" className="text-[10px] bg-amber-500/15 text-amber-700 border-amber-500/30">Due today</Badge>;
     return <Badge variant="outline" className="text-[10px] bg-destructive/15 text-destructive border-destructive/30">{n} days overdue</Badge>;
   };
+
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const e of enquiries) m.set(e.status, (m.get(e.status) ?? 0) + 1);
+    return Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+  }, [enquiries]);
+  const chartConfig = getKpi('sx-followups')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'Enquiries' }],
+    title: 'Follow-ups by status',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="space-y-4" data-keyboard-form>
@@ -166,6 +181,21 @@ export function FollowUpRegisterReportPanel({ entityCode, onNavigate }: Props) {
             </Table>
           )}
         </CardContent>
+      </Card>
+
+      <Card className="p-3 space-y-2" data-testid="sx-followups-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-followups-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No enquiries yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="sx-followups-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
       </Card>
     </div>
   );

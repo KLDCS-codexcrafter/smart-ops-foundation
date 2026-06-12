@@ -18,10 +18,13 @@ import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Wallet, FileCheck, Banknote } from 'lucide-react';
+import { Wallet, FileCheck, Banknote, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterGrid';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import type {
   RegisterColumn, RegisterMeta, SummaryCard, StatusOption,
 } from '@/components/registers/UniversalRegisterTypes';
@@ -332,6 +335,22 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
     ];
   };
 
+  const chartRows = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const e of register) m.set(e.person_name, (m.get(e.person_name) ?? 0) + e.total_commission);
+    return Array.from(m.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([agent, commission]) => ({ agent, commission }));
+  }, [register]);
+  const chartConfig = getKpi('sx-commission')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'agent',
+    series: [{ key: 'commission', label: 'Commission ₹' }],
+    title: 'Commission by agent (top 10)',
+  });
+  const integrityHash = useMemo(() => signReport(chartRows), [chartRows]);
+  const shortHash = integrityHash.replace('fnv1a:', '').slice(0, 10);
+
   return (
     <div className="space-y-4" data-keyboard-form>
       <UniversalRegisterGrid<CommissionEntry>
@@ -366,6 +385,21 @@ export function CommissionRegisterPanel({ entityCode }: Props) {
         onClose={() => setAgentInvoiceEntry(null)}
         onSaved={() => reload()}
       />
+
+      <Card className="p-3 space-y-2" data-testid="sx-commission-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-commission-integrity-badge" title={integrityHash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
+          </Badge>
+        </div>
+        {chartRows.length === 0 ? (
+          <div className="text-sm text-muted-foreground py-6 text-center">No commission entries yet</div>
+        ) : (
+          <div className="w-full h-72" data-testid="sx-commission-chart-host">
+            <ReportChart data={chartRows} config={chartConfig} />
+          </div>
+        )}
+      </Card>
     </div>
   );
 }
