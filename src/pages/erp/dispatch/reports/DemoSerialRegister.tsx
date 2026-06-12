@@ -5,12 +5,16 @@
  */
 import { useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { ShieldCheck } from 'lucide-react';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 import { buildDemoSerialRegister } from '@/lib/dispatch-residual-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 export function DemoSerialRegisterPanel() {
   const { entityCode } = useCardEntitlement();
