@@ -184,6 +184,36 @@ export function PipelineSummaryPanel({ entityCode }: Props) {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = STAGE_GROUPS.map(s => ({ stage: s.label, count: stageCounts[s.id] ?? 0 }));
+        const cfg = getKpi('sx-pipeline')?.defaultChart ?? defaultChartConfig({
+          chartType: 'stacked-column', xKey: 'stage',
+          series: [{ key: 'count', label: 'Enquiries' }],
+          title: 'Pipeline by stage',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="sx-pipeline-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-pipeline-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'stage', label: 'Stage' },
+                { key: 'count', label: 'Enquiries', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No enquiries yet"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }
