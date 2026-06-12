@@ -34,7 +34,7 @@
 - `frontdesk.contacts` — wraps `fdPartyContactsKey(entityCode)`
 - `taskflow.tasks` — wraps `tfSLAKey(entityCode)`
 - `docvault.documents` — wraps `erp_documents_${entityCode}`
-- `payhub.payroll` — wraps `payrollRunsKey(entityCode)` (THE SAME storage the pay-hub workflow modules already read · feeds Role Dashboard + builder · resolves the deferred pay-hub DSC)
+- `payhub.payroll` — wraps `payrollRunsKey(entityCode)` (THE SAME storage the pay-hub workflow modules already read · resolves the deferred pay-hub DSC)
 
 ## Pay-hub embedded-analytics 0-DIFF note
 
@@ -58,7 +58,7 @@ All pay-hub workflow modules (Onboarding · PayrollProcessing · ExitAndFnF · e
 
 Registry test asserts: all 6 KPIs idempotent · all 4 sources `read()` return arrays · `payhub.payroll` returns real payroll rows OR honestly empty array (no synthetic seed).
 
-## Triple Gate
+## Triple Gate (verified before this summary)
 
 ```
 $ npx tsc -p tsconfig.app.json --noEmit
@@ -73,19 +73,6 @@ $ npx vitest run <7 new test files>
    Duration  4.18s
 ```
 
-## Verification
-
-```
-$ ls src/pages/erp/frontdesk/contacts/__tests__/address-book-report-page.test.tsx
-$ ls src/pages/erp/taskflow/__tests__/sla-management-page.test.tsx
-$ ls src/pages/erp/docvault/transactions/__tests__/document-register.test.tsx
-$ ls src/pages/erp/docvault/registers/__tests__/drawing-register-tree.test.tsx
-$ ls src/pages/erp/docvault/registers/__tests__/expiry-review-page.test.tsx
-$ ls src/pages/erp/pay-hub/transactions/__tests__/statutory-returns.test.tsx
-$ ls src/lib/report-framework/__tests__/rpt-8b-kpis-and-sources.test.ts
-(all present)
-```
-
-**No synthetic/placeholder data.** All chart rows are derived in-line from the real records each page already loads (parties/contacts, SLA rules, documents, drawings, expiry evaluations, statutory challans). Honest empty-state preserved on every page.
+**No synthetic/placeholder data.** All chart rows derive in-line from the real records each page already loads (parties/contacts, SLA rules, documents, drawings, expiry evaluations, statutory challans). Honest empty-state preserved.
 
 **Phase C closed.** All hub rollouts complete.
