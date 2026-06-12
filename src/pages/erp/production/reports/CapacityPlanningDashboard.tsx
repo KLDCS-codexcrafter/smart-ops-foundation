@@ -10,10 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Calendar, Clock, BarChart3, Activity, Wrench } from 'lucide-react';
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, Cell,
-} from 'recharts';
+import { Calendar, Clock, BarChart3, Activity, Wrench, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { ViewModeSelector } from '@/components/ViewModeSelector';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useFactories } from '@/hooks/useFactories';
