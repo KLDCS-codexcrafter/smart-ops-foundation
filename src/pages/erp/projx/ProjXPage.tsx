@@ -79,6 +79,8 @@ export default function ProjXPage() {
       case 'r-time-entry-register':   return <TimeEntryRegisterPanel />;
       // RPT-9d · User Report Builder · embedded mount
       case 'projx-rpt-report-builder': return <ReportBuilder cardId="projx" />;
+      // 🆕 RPT-10b · Earned Value cockpit
+      case 'projx-evm': return <EVMPage />;
       default: return <ProjXWelcomePanel onNavigate={setActiveModule} />;
     }
   };
