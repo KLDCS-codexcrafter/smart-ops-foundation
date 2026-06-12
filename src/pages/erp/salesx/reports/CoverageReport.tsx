@@ -22,8 +22,6 @@ import { type SAMPerson, samPersonsKey } from '@/types/sam-person';
 import { computeCoveragePct, daysSinceLastVisit } from '@/lib/field-force-engine';
 import { TableChartToggle } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
-import { Badge as _UnusedBadge } from '@/components/ui/badge';
-void _UnusedBadge;
 
 interface Props { entityCode: string }
 interface CustomerLite { id: string; partyName: string; territory_id?: string | null }
