@@ -150,6 +150,8 @@ export default function QualiCheckPage(): JSX.Element {
       case 'qc-r-schedule-m-compliance':   return <ScheduleMComplianceDashboard />;
       case 'qc-r-cfr-part-11-audit-trail': return <CFRPart11AuditTrailViewer />;
       case 'qc-rpt-report-builder': return <ReportBuilder cardId="qualicheck" />;
+      // 🆕 RPT-10b · Cost of Quality cockpit
+      case 'qc-coq': return <COQPage />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }
