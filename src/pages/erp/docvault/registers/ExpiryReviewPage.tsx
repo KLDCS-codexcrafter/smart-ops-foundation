@@ -5,10 +5,11 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { toast } from 'sonner';
-import { CalendarClock, Archive } from 'lucide-react';
+import { CalendarClock, Archive, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import {
@@ -16,6 +17,8 @@ import {
   type ExpiryEvaluation,
 } from '@/lib/docvault-control-engine';
 import { getDocument } from '@/lib/docvault-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 export default function ExpiryReviewPage(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -105,6 +108,53 @@ export default function ExpiryReviewPage(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const buckets: Record<string, { expired: number; review: number }> = {
+          '0-30': { expired: 0, review: 0 },
+          '31-90': { expired: 0, review: 0 },
+          '90+': { expired: 0, review: 0 },
+        };
+        const today = Date.now();
+        const bucketFor = (iso: string): string => {
+          const days = Math.floor((today - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));
+          if (days <= 30) return '0-30';
+          if (days <= 90) return '31-90';
+          return '90+';
+        };
+        for (const r of evalResult.toExpire) buckets[bucketFor(r.expiryDate)].expired += 1;
+        for (const r of evalResult.reviewDue) buckets[bucketFor(r.reviewDate)].review += 1;
+        const chartRows = Object.entries(buckets).map(([expiry_bucket, v]) => ({
+          expiry_bucket, expired: v.expired, review: v.review,
+        }));
+        const cfg = getKpi('dv-expiry')?.defaultChart ?? defaultChartConfig({
+          chartType: 'stacked-column', xKey: 'expiry_bucket',
+          series: [{ key: 'expired', label: 'Expired' }, { key: 'review', label: 'Review Due' }],
+          title: 'Expiry/review by bucket',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="glass-card rounded-2xl p-3 space-y-2" data-testid="dv-expiry-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="dv-expiry-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'expiry_bucket', label: 'Bucket' },
+                { key: 'expired', label: 'Expired', align: 'right' },
+                { key: 'review', label: 'Review Due', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No documents past expiry or review"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }
