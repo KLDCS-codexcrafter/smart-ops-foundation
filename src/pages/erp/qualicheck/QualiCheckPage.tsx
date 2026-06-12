@@ -61,6 +61,8 @@ import { QualiCheckNcrEvidenceEntryPanel } from './transactions/QualiCheckNcrEvi
 import ScheduleMComplianceDashboard from './reports/ScheduleMComplianceDashboard';
 import CFRPart11AuditTrailViewer from './reports/CFRPart11AuditTrailViewer';
 import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
+// 🆕 RPT-10b · Cost of Quality cockpit
+import COQPage from './cockpits/COQPage';
 
 export default function QualiCheckPage(): JSX.Element {
   const [activeModule, setActiveModule] = useState<QualiCheckModule>('welcome');
@@ -148,6 +150,8 @@ export default function QualiCheckPage(): JSX.Element {
       case 'qc-r-schedule-m-compliance':   return <ScheduleMComplianceDashboard />;
       case 'qc-r-cfr-part-11-audit-trail': return <CFRPart11AuditTrailViewer />;
       case 'qc-rpt-report-builder': return <ReportBuilder cardId="qualicheck" />;
+      // 🆕 RPT-10b · Cost of Quality cockpit
+      case 'qc-coq': return <COQPage />;
       default:
         return <QualiCheckWelcome onNavigate={setActiveModule} />;
     }

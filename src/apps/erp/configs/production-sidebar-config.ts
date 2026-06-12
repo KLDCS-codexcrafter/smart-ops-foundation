@@ -177,4 +177,6 @@ export const productionSidebarItems: SidebarItem[] = [
   },
   // 🆕 RPT-9c · Report Builder (frozen component · cardId='production')
   { id: 'prod-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'prod-rpt-report-builder', requiredCards: ['production'] },
+  // 🆕 RPT-10b · OEE Board cockpit (consumes computeOEE · 0-diff oee-engine)
+  { id: 'prod-oee-board', type: 'item', label: 'OEE Board', icon: Activity, moduleId: 'prod-oee-board', requiredCards: ['production'] },
 ];

@@ -401,4 +401,6 @@ export const qualicheckSidebarItems: SidebarItem[] = [
   },
   // 🆕 RPT-9c · Report Builder (frozen component · cardId='qualicheck')
   { id: 'qc-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'qc-rpt-report-builder', requiredCards: ['qualicheck'] },
+  // 🆕 RPT-10b · Cost of Quality cockpit (qualicheck.inspections + qualicheck.ncr)
+  { id: 'qc-coq', type: 'item', label: 'Cost of Quality', icon: Sparkles, moduleId: 'qc-coq', requiredCards: ['qualicheck'] },
 ];

@@ -12,6 +12,10 @@
  * [JWT] Phase 8: dashboard data feeds via /api/comply360/audit-framework/dashboard
  */
 import { Fragment, useEffect, useMemo, useState } from 'react';
+// 🆕 RPT-10b · additive dashboard recipe (banked RPT-2a pattern)
+import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { signReport, defaultChartConfig, resolveRag, getKpi } from '@/lib/report-framework';
+import { ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -648,6 +652,69 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
           Audit Replay + Lineage (S80e) · Rule 11(g) auto-report (S80f).
         </p>
       </header>
+
+      {/* 🆕 RPT-10b · additive dashboard recipe (banked RPT-2a) · existing layout PRESERVED below */}
+      {(() => {
+        const auditFwKpi = getKpi('cmp-audit-fw');
+        const subRows = score
+          ? (Object.keys(SUB_SCORE_LABELS) as Array<keyof SubScoreBreakdown>).map((k) => ({
+              sub_score: SUB_SCORE_LABELS[k], value: score.sub_scores[k],
+            }))
+          : [];
+        const sig = signReport(subRows as unknown as Array<Record<string, unknown>>);
+        const overall = score?.overall_score ?? null;
+        const rag = overall != null
+          ? resolveRag(overall, auditFwKpi?.thresholds ?? { amber: 75, red: 60, direction: 'higher-good' })
+          : undefined;
+        return (
+          <section
+            className="space-y-3"
+            data-testid="rpt10b-audit-fw-section"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {overall != null ? (
+                <ScorecardTile
+                  label="Audit-Ready (overall)"
+                  value={`${overall}%`}
+                  rag={rag}
+                  hint="cmp-audit-fw · higher-good"
+                />
+              ) : (
+                <ScorecardTile
+                  label="Audit-Ready (overall)"
+                  value="—"
+                  hint="select an engagement to compute"
+                />
+              )}
+              <ScorecardTile
+                label="Sub-scores tracked"
+                value={subRows.length}
+                hint="OOB-1 breakdown"
+              />
+              <Card className="p-3 flex items-center gap-2" data-testid="integrity-badge-auditfw">
+                <ShieldCheck className="h-4 w-4 text-primary" />
+                <span className="text-xs text-muted-foreground">Integrity</span>
+                <span className="font-mono text-xs">{sig.slice(0, 12)}</span>
+              </Card>
+            </div>
+            {subRows.length > 0 && (
+              <Card className="p-4">
+                <div className="h-64">
+                  <ReportChart
+                    data={subRows}
+                    config={defaultChartConfig({
+                      chartType: 'column',
+                      xKey: 'sub_score',
+                      series: [{ key: 'value', label: 'Score' }],
+                    })}
+                  />
+                </div>
+              </Card>
+            )}
+          </section>
+        );
+      })()}
+
 
       {/* Sprint 80e · OOB-1 Audit-Ready Score banner */}
       <Card className="glass-card">

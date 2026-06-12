@@ -67,6 +67,8 @@ import FALinkedMachinesPanel from './reports/FALinkedMachinesPanel';
 import { MachineMasterPanel } from '@/pages/erp/masters/MachineMaster';
 import type { ProductionModule } from './ProductionSidebar.types';
 import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
+// 🆕 RPT-10b · OEE Board cockpit
+import OEEBoardPage from './cockpits/OEEBoardPage';
 
 export default function ProductionPage(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -144,6 +146,8 @@ export default function ProductionPage(): JSX.Element {
       case 'mst-machine-master': return <MachineMasterPanel />;
       case 'rpt-fa-linked-machines': return <FALinkedMachinesPanel />;
       case 'prod-rpt-report-builder': return <ReportBuilder cardId="production" />;
+      // 🆕 RPT-10b · OEE Board cockpit (consumes computeOEE)
+      case 'prod-oee-board': return <OEEBoardPage />;
       default: return <ProductionWelcome onNavigate={(m) => navigate(m as ProductionModule)} />;
     }
   }

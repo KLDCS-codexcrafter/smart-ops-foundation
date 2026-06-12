@@ -28,6 +28,8 @@ const LIVE_MODULES: ProjXModule[] = [
   'r-project-register', 'r-milestone-register', 'r-time-entry-register',
   // RPT-9d · User Report Builder · embedded mount
   'projx-rpt-report-builder',
+  // 🆕 RPT-10b · Earned Value cockpit
+  'projx-evm',
 ];
 
 interface SidebarItem {
@@ -67,6 +69,8 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-cash-flow-projection', label: 'Cash Flow Projection', icon: Wallet },
   // RPT-9d · User Report Builder · embedded mount
   { id: 'projx-rpt-report-builder', label: 'Report Builder', icon: Sparkles },
+  // 🆕 RPT-10b · Earned Value cockpit
+  { id: 'projx-evm', label: 'Earned Value', icon: TrendingUp },
 ];
 
 interface ProjXSidebarProps {
