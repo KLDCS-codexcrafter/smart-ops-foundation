@@ -24,4 +24,6 @@ export const PROJX_MODULE_GROUP: Record<ProjXModule, 'transactions' | 'masters' 
   'r-time-entry-register': 'reports',
   // RPT-9d · User Report Builder · embedded mount
   'projx-rpt-report-builder': 'reports',
+  // 🆕 RPT-10b · Earned Value cockpit
+  'projx-evm': 'reports',
 };
