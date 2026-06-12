@@ -102,11 +102,15 @@ function StockTransferRow({
   return (
     <TableRow>
       <TableCell>
-        {/* TODO (T10-pre.2): replace with real ItemPicker */}
-        <Input
-          value={line.item_name}
-          onChange={e => onUpdate({ item_id: `tmp-${e.target.value.toLowerCase().replace(/\s+/g, '-')}`, item_name: e.target.value })}
-          className="h-8 text-sm" placeholder="Item name"
+        <ItemPicker
+          value={line.item_id}
+          onChange={row => onUpdate({
+            item_id: row?.id ?? '',
+            item_name: row?.name ?? '',
+            uom: row?.uom ?? line.uom,
+          })}
+          entityCode={entityCode}
+          compact
         />
       </TableCell>
       <TableCell>
