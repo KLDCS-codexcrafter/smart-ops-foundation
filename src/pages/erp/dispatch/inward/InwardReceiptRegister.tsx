@@ -9,7 +9,7 @@
  * Props.onModuleChange preserved for DispatchHubPage interface compat (currently unused in body).
  * [JWT] GET /api/logistic/inward-receipts
  */
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
