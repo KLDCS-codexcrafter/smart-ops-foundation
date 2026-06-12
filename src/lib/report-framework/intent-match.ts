@@ -97,7 +97,7 @@ export function matchIntent(text: string): IntentMatch | null {
   if (!best || best.score < 2) return null;
 
   // 2. Pick aggregation
-  let agg: AggOp = detectVerb(raw) ?? 'sum';
+  const agg: AggOp = detectVerb(raw) ?? 'sum';
 
   // 3. Pick measure + groupBy
   const fieldsByKind = (kind: 'dimension' | 'measure') =>
