@@ -167,6 +167,9 @@ import RetentionConsolePage from '@/features/retention-console/RetentionConsoleP
 // 🎬 Sprint B2 · T-B2-Comm-Outbox · Communication Console (outbox + dual-sender + DocSendBar floor canon)
 import CommunicationConsolePage from '@/features/communication-console/CommunicationConsolePage';
 
+// 🎬 Sprint W1C-4 · T-W1C4-AutoSend-TierL · Auto-Send Rules (rules→outbox orchestration)
+import AutoSendRulesPage from '@/features/auto-send-rules/AutoSendRulesPage';
+
 // 🎬 Sprint B6 · T-B6-Master-Health · Pillar-B CLOSE · Master Health Scorecard cockpit
 import MasterHealthScorecardPage from '@/features/command-center/modules/MasterHealthScorecardPage';
 
