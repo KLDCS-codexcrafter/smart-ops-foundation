@@ -27,6 +27,7 @@ import {
 } from '@/lib/report-framework/daybook-aggregator';
 import { listDayBookSources } from '@/lib/report-framework/daybook-source-registry';
 import { signReport } from '@/lib/report-framework/integrity-sign';
+import { ReportSendHeader } from '@/components/operix-core/report-framework';
 
 function fmtINR(n: number): string {
   if (!Number.isFinite(n)) return '—';
@@ -92,10 +93,13 @@ export function CrossCardDayBookPage(): JSX.Element {
             {entityCode && <> · <span className="font-mono">{entityCode}</span></>}
           </p>
         </div>
-        <Badge variant="outline" className="font-mono gap-1" aria-label="Integrity signature">
-          <ShieldCheck className="h-3.5 w-3.5 text-success" />
-          {shortHash}
-        </Badge>
+        <div className="flex items-center gap-2">
+          <ReportSendHeader title="Day Book · All Cards" rows={entries as unknown as Record<string, unknown>[]} />
+          <Badge variant="outline" className="font-mono gap-1" aria-label="Integrity signature">
+            <ShieldCheck className="h-3.5 w-3.5 text-success" />
+            {shortHash}
+          </Badge>
+        </div>
       </header>
 
       <DrillBreadcrumb

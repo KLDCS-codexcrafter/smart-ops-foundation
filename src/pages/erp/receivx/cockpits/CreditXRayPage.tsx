@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { downloadCsv } from '@/lib/report-framework/export-csv';
 import {
-  ReportChart, ScorecardTile, TableChartToggle,
+  ReportChart, ScorecardTile, TableChartToggle, ReportSendHeader,
   type TableChartColumn,
 } from '@/components/operix-core/report-framework';
 import { getSource } from '@/lib/report-framework/data-source-catalog';
@@ -93,6 +93,7 @@ export default function CreditXRayPage({ entityCode }: Props): JSX.Element {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <ReportSendHeader title="Credit X-Ray" rows={arRows as unknown as Record<string, unknown>[]} />
           <Button size="sm" variant="outline" type="button" data-testid="credit-xray-csv"
             onClick={() => downloadCsv(`credit-xray-${entityCode}-${Date.now()}`, arRows)} disabled={arRows.length === 0}>
             <Download className="h-3 w-3 mr-1" /> CSV

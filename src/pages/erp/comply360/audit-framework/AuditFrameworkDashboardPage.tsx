@@ -13,7 +13,7 @@
  */
 import { Fragment, useEffect, useMemo, useState } from 'react';
 // 🆕 RPT-10b · additive dashboard recipe (banked RPT-2a pattern)
-import { ReportChart, ScorecardTile } from '@/components/operix-core/report-framework';
+import { ReportChart, ScorecardTile, ReportSendHeader } from '@/components/operix-core/report-framework';
 import { signReport, defaultChartConfig, resolveRag, getKpi } from '@/lib/report-framework';
 import { ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -645,12 +645,15 @@ export default function AuditFrameworkDashboardPage(): JSX.Element {
 
   return (
     <div className="p-6 space-y-4">
-      <header>
-        <h1 className="text-2xl font-bold">Audit Framework Dashboard</h1>
-        <p className="text-sm text-muted-foreground">
-          18 Tally-equivalent analytical procedures · MCA Rule 11(g) compliance hardening (S80d) ·
-          Audit Replay + Lineage (S80e) · Rule 11(g) auto-report (S80f).
-        </p>
+      <header className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold">Audit Framework Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            18 Tally-equivalent analytical procedures · MCA Rule 11(g) compliance hardening (S80d) ·
+            Audit Replay + Lineage (S80e) · Rule 11(g) auto-report (S80f).
+          </p>
+        </div>
+        <ReportSendHeader title="Audit Framework Dashboard" rows={recentRuns as unknown as Record<string, unknown>[]} />
       </header>
 
       {/* 🆕 RPT-10b · additive dashboard recipe (banked RPT-2a) · existing layout PRESERVED below */}

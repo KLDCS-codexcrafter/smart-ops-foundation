@@ -14,7 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { downloadCsv } from '@/lib/report-framework/export-csv';
 import {
-  ReportChart, ScorecardTile,
+  ReportChart, ScorecardTile, ReportSendHeader,
 } from '@/components/operix-core/report-framework';
 import { getSource } from '@/lib/report-framework/data-source-catalog';
 import { defaultChartConfig } from '@/lib/report-framework/chart-config';
@@ -103,6 +103,7 @@ export default function SpendFunnelPage({ entityCode }: Props): JSX.Element {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <ReportSendHeader title="Spend Funnel" rows={poRows as unknown as Record<string, unknown>[]} />
           <Button size="sm" variant="outline" type="button" data-testid="spend-funnel-csv"
             onClick={() => downloadCsv(`spend-funnel-${entityCode}-${Date.now()}`, poRows)} disabled={poRows.length === 0}>
             <Download className="h-3 w-3 mr-1" /> CSV

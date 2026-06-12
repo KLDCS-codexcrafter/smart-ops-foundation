@@ -8,6 +8,7 @@ import { useState, type ReactNode } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { ReportChart } from './ChartLibrary';
+import { ReportSendHeader } from './ReportSendHeader';
 import type { ReportChartConfig } from '@/lib/report-framework/chart-config';
 
 export interface TableChartColumn<TRow> {
@@ -24,6 +25,14 @@ export interface TableChartToggleProps<TRow extends Record<string, unknown>> {
   defaultView?: 'table' | 'chart';
   chartRows?: Record<string, unknown>[];
   emptyLabel?: string;
+  /** W1C-1 · escape hatch for the DocSendBar floor (default: ON). */
+  hideSend?: boolean;
+}
+
+function deriveReportTitle(config: ReportChartConfig): string {
+  if (config.title && config.title.trim()) return config.title.trim();
+  if (typeof document !== 'undefined' && document.title) return document.title;
+  return 'Report';
 }
 
 export function TableChartToggle<TRow extends Record<string, unknown>>({
@@ -33,16 +42,23 @@ export function TableChartToggle<TRow extends Record<string, unknown>>({
   defaultView = 'table',
   chartRows,
   emptyLabel = 'No data',
+  hideSend = false,
 }: TableChartToggleProps<TRow>) {
   const [view, setView] = useState<'table' | 'chart'>(defaultView);
   const chartData = chartRows ?? (rows as Record<string, unknown>[]);
+  const sendTitle = deriveReportTitle(chartConfig);
 
   return (
     <Tabs value={view} onValueChange={(v) => setView(v as 'table' | 'chart')} data-testid="table-chart-toggle">
-      <TabsList className="h-8">
-        <TabsTrigger value="table" className="text-xs h-7" data-testid="tct-tab-table">Table</TabsTrigger>
-        <TabsTrigger value="chart" className="text-xs h-7" data-testid="tct-tab-chart">Chart</TabsTrigger>
-      </TabsList>
+      <div className="flex items-center justify-between gap-2">
+        <TabsList className="h-8">
+          <TabsTrigger value="table" className="text-xs h-7" data-testid="tct-tab-table">Table</TabsTrigger>
+          <TabsTrigger value="chart" className="text-xs h-7" data-testid="tct-tab-chart">Chart</TabsTrigger>
+        </TabsList>
+        {!hideSend && (
+          <ReportSendHeader title={sendTitle} rows={chartData} />
+        )}
+      </div>
 
       <TabsContent value="table">
         <Table>

@@ -5,6 +5,8 @@
  */
 export { ReportChart, type ReportChartProps } from './ChartLibrary';
 export { TableChartToggle, type TableChartToggleProps, type TableChartColumn } from './TableChartToggle';
+// W1C-1 · DocSendBar floor wrapper
+export { ReportSendHeader, type ReportSendHeaderProps } from './ReportSendHeader';
 export { CHART_TYPE_COVERAGE, type ChartCoverageEntry } from './CHART_TYPE_COVERAGE';
 export { ScorecardTile, type ScorecardTileProps } from './ScorecardTile';
 export { RoleDashboard } from './RoleDashboard';
