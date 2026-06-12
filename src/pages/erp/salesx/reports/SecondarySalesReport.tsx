@@ -11,7 +11,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { ListTree, Boxes, Users, CalendarDays } from 'lucide-react';
+import { ListTree, Boxes, Users, CalendarDays, ShieldCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { type SecondarySales, secondarySalesKey } from '@/types/secondary-sales';
 import {
   aggregateSecondarySalesByItem,
@@ -19,6 +20,8 @@ import {
   aggregateSecondarySalesByMonth,
 } from '@/lib/field-force-engine';
 import { dSum, round2 } from '@/lib/decimal-helpers';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface Props { entityCode: string }
 
