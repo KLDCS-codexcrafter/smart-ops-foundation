@@ -21,10 +21,12 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Plus } from 'lucide-react';
+import { Plus, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listSLARules, upsertSLARule } from '@/lib/taskflow-governance-engine';
 import type { TaskSLARule, TaskCategory, TaskPriority } from '@/types/taskflow';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const CATEGORIES: TaskCategory[] = [
   'operations','finance','compliance','hr','it','sales','marketing','support','general',
@@ -176,6 +178,41 @@ export default function SLAManagementPage(): JSX.Element {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const byStatus = new Map<string, number>();
+        for (const r of sorted) {
+          const s = r.isActive ? 'active' : 'inactive';
+          byStatus.set(s, (byStatus.get(s) ?? 0) + 1);
+        }
+        const chartRows = Array.from(byStatus.entries()).map(([sla_status, count]) => ({ sla_status, count }));
+        const cfg = getKpi('tf-sla')?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'sla_status',
+          series: [{ key: 'count', label: 'Rules' }],
+          title: 'SLA rules by status',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="rounded-2xl p-3 space-y-2" data-testid="tf-sla-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="tf-sla-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'sla_status', label: 'Status' },
+                { key: 'count', label: 'Rules', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No SLA rules"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }
