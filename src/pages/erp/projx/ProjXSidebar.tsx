@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Briefcase, FolderKanban, ChevronRight, ExternalLink,
   Milestone, Users, Clock, FileText, BarChart3, TrendingUp, PieChart, Activity, Wallet,
-  FolderOpen, Plus,
+  FolderOpen, Plus, Sparkles,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
@@ -26,6 +26,8 @@ const LIVE_MODULES: ProjXModule[] = [
   'r-project-pnl', 'r-resource-utilization', 'r-milestone-status', 'r-project-margin',
   'r-cash-flow-projection',
   'r-project-register', 'r-milestone-register', 'r-time-entry-register',
+  // RPT-9d · User Report Builder · embedded mount
+  'projx-rpt-report-builder',
 ];
 
 interface SidebarItem {
@@ -63,6 +65,8 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-milestone-status', label: 'Milestone Status', icon: BarChart3 },
   { id: 'r-project-margin', label: 'Project Margin', icon: TrendingUp },
   { id: 'r-cash-flow-projection', label: 'Cash Flow Projection', icon: Wallet },
+  // RPT-9d · User Report Builder · embedded mount
+  { id: 'projx-rpt-report-builder', label: 'Report Builder', icon: Sparkles },
 ];
 
 interface ProjXSidebarProps {

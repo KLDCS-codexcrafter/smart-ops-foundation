@@ -35,7 +35,9 @@ export type DistributorHubModule =
   // UPRA-3 Phase A Step 2 · Tier-1 NEW
   | 'dh-r-distributor-order-register'
   // 🆕 Sprint 61 PROD-4 PASS 2 · OOB-PROD-1 · MOAT 35
-  | 'dh-r-demand-forecast-feed';
+  | 'dh-r-demand-forecast-feed'
+  // RPT-9d · User Report Builder · embedded mount
+  | 'dh-rpt-report-builder';
 
 interface DistributorHubSidebarProps {
   activeModule: DistributorHubModule;
@@ -72,6 +74,8 @@ const REPORTS_ITEMS: { label: string; module: DistributorHubModule;
   { label: 'Distributor Order Register', module: 'dh-r-distributor-order-register', icon: ClipboardList },
   // 🆕 Sprint 61 PROD-4 PASS 2 · OOB-PROD-1 · MOAT 35
   { label: 'Demand Forecast Feed', module: 'dh-r-demand-forecast-feed', icon: Sparkles },
+  // RPT-9d · User Report Builder · embedded mount
+  { label: 'Report Builder',       module: 'dh-rpt-report-builder',     icon: Sparkles },
 ];
 
 export function DistributorHubSidebar(props: DistributorHubSidebarProps) {

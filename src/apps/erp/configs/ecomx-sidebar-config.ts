@@ -7,7 +7,7 @@
  */
 import {
   Home, LayoutDashboard, Gauge, Store, Boxes, Inbox, Upload, Receipt,
-  Banknote, Scale, AlertTriangle, Undo2, Split,
+  Banknote, Scale, AlertTriangle, Undo2, Split, Sparkles,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -28,4 +28,6 @@ export const ecomxSidebarItems: SidebarItem[] = [
   { id: 'claims',        type: 'item', label: 'Claims',          icon: AlertTriangle,   moduleId: 'claims',        keyboard: 'e c' },
   { id: 'returns',       type: 'item', label: 'Returns',         icon: Undo2,           moduleId: 'returns',       keyboard: 'e t' },
   { id: 'allocation',    type: 'item', label: 'Allocation',      icon: Split,           moduleId: 'allocation',    keyboard: 'e a' },
+  // RPT-9d · User Report Builder · embedded mount
+  { id: 'ecomx-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'ecomx-rpt-report-builder' },
 ];

@@ -51,6 +51,9 @@ import { DistributorOrderRegisterPanel } from './reports/DistributorOrderRegiste
 // Sprint 61 PROD-4 PASS 2 · OOB-PROD-1 · MOAT 35
 import { DistributorDemandForecastFeedPanel } from './reports/DistributorDemandForecastFeed';
 
+// RPT-9d · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
+
 function ComingSoonPanel({ module }: { module: DistributorHubModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
@@ -93,6 +96,9 @@ function renderModule(mod: DistributorHubModule): React.ReactElement {
 
     // Sprint 61 PROD-4 PASS 2 · OOB-PROD-1 · MOAT 35
     case 'dh-r-demand-forecast-feed':       return <DistributorDemandForecastFeedPanel />;
+
+    // RPT-9d · User Report Builder · embedded mount
+    case 'dh-rpt-report-builder':           return <ReportBuilder cardId="distributor-hub" />;
 
     default: return <ComingSoonPanel module={mod} />;
   }

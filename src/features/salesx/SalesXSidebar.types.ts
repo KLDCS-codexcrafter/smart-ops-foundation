@@ -79,7 +79,9 @@ export type SalesXModule =
   // Sprint 128 · Arc D.2 · MarketingX (SalesX EXTENSION · DP-P7-2) · Attribution + Segmentation
   | 'sx-attribution-segmentation'
   // Sprint 129 · 🏁 Arc D.2 CAPSTONE · MarketingX (SalesX EXTENSION · DP-P7-2) · ABM + NPS + MarketingX dashboard
-  | 'sx-abm-nps';
+  | 'sx-abm-nps'
+  // RPT-9d · User Report Builder · embedded mount (FinCore reference pattern)
+  | 'sx-rpt-report-builder';
 
 export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-hub',
@@ -149,4 +151,6 @@ export const LIVE_SALESX_MODULES: SalesXModule[] = [
   'sx-attribution-segmentation',
   // Sprint 129 · 🏁 Arc D.2 CAPSTONE · MarketingX (SalesX EXTENSION) · ABM + NPS + dashboard
   'sx-abm-nps',
+  // RPT-9d · User Report Builder · embedded mount
+  'sx-rpt-report-builder',
 ];

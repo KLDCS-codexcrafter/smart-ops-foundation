@@ -85,6 +85,8 @@ import { AttributionSegmentationPage } from '@/features/attribution-segmentation
 // Sprint 129 · 🏁 Arc D.2 CAPSTONE · MarketingX (SalesX EXTENSION · DP-P7-2) · ABM + NPS + dashboard
 import { ABMNpsPage } from '@/features/abm-nps/ABMNpsPage';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+// RPT-9d · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-hub':                  'Hub Overview',
@@ -156,6 +158,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
   'sx-attribution-segmentation': 'Attribution & Segmentation',
   // Sprint 129 · 🏁 Arc D.2 CAPSTONE · ABM + NPS + MarketingX dashboard (SalesX EXTENSION)
   'sx-abm-nps':                'ABM, NPS & MarketingX',
+  // RPT-9d · User Report Builder · embedded mount
+  'sx-rpt-report-builder':     'Report Builder',
 };
 
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
@@ -309,10 +313,14 @@ function renderModule(
     // Sprint 129 · 🏁 Arc D.2 CAPSTONE · MarketingX (SalesX EXTENSION) · ABM + NPS + dashboard
     case 'sx-abm-nps':
       return <ABMNpsPage entityCode={entityCode} />;
+    // RPT-9d · User Report Builder · embedded mount
+    case 'sx-rpt-report-builder':
+      return <ReportBuilder cardId="salesx" />;
     default:
       return <ComingSoonPanel module={mod} />;
   }
 }
+
 
 export default function SalesXPage() {
   const { entities, selectedEntityId, isMultiEntity } = useEntityList();

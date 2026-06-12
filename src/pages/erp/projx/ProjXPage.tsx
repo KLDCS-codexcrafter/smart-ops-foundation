@@ -30,6 +30,8 @@ import { logAudit } from '@/lib/card-audit-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
 import type { ProjXModule } from './ProjXSidebar.types';
 import { useT } from '@/lib/i18n-engine';
+// RPT-9d · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 export default function ProjXPage() {
   const t = useT();
@@ -73,6 +75,8 @@ export default function ProjXPage() {
       case 'r-project-register':      return <ProjectRegisterPanel />;
       case 'r-milestone-register':    return <MilestoneRegisterPanel />;
       case 'r-time-entry-register':   return <TimeEntryRegisterPanel />;
+      // RPT-9d · User Report Builder · embedded mount
+      case 'projx-rpt-report-builder': return <ReportBuilder cardId="projx" />;
       default: return <ProjXWelcomePanel onNavigate={setActiveModule} />;
     }
   };
