@@ -193,7 +193,7 @@ export function PlanActualRollingPanel(): JSX.Element {
               <CardContent className="h-[300px]">
                 <div className="w-full h-full" data-testid="prod-plan-actual-trend-host">
                   <ReportChart
-                    data={trendData}
+                    data={trendData as unknown as Record<string, unknown>[]}
                     config={defaultChartConfig({
                       chartType: 'line',
                       xKey: 'date',
