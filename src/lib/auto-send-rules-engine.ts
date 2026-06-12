@@ -5,7 +5,7 @@
  *   CC-editable rule rows → renderTemplate (existing) → enqueue on the
  *   existing outbox with delivery_mode='queued_for_wave2' → existing
  *   communication log. Pure orchestration — ZERO new delivery code,
- *   ZERO direct sends (no mailto / fetch / smtp in this file · grep-lock).
+ *   ZERO direct sends (grep-lock: no mailto / fetch / XHR / mail-protocol).
  *
  * Binding canons (Comm Pillar Master v1):
  *   - Rules are CC-editable DATA rows under the sole namespaced key
