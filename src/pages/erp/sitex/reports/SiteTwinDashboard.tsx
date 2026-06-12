@@ -44,18 +44,27 @@ export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Eleme
   const score = siteId ? computeSiteHealthScore(entity, siteId) : null;
   const imprest = siteId ? computeImprestHealthMetrics(entity, siteId) : null;
 
-  const cards: RAGCardSpec[] = score && site ? [
+  const cards: RAGCardSpec[] = useMemo(() => (score && site ? [
     { title: 'Safety', icon: AlertTriangle, value: `${Math.round(score.dimensions.safety.score)}/100`, target: '≥80', rag: score.dimensions.safety.score >= 80 ? 'green' : score.dimensions.safety.score >= 60 ? 'amber' : 'red', trend: [80, 85, 90, 90, 92, 92] },
     { title: 'Schedule', icon: Activity, value: `${Math.round(score.dimensions.schedule.score)}%`, target: '≥95%', rag: score.dimensions.schedule.score >= 95 ? 'green' : score.dimensions.schedule.score >= 80 ? 'amber' : 'red', trend: [60, 70, 80, 85, 90, 96] },
     { title: 'Cost', icon: Wallet, value: `₹${(site.cost_to_date || 0).toLocaleString('en-IN')}`, target: `≤₹${(site.approved_budget || 0).toLocaleString('en-IN')}`, rag: score.dimensions.cost.score >= 80 ? 'green' : score.dimensions.cost.score >= 60 ? 'amber' : 'red', trend: [10, 25, 40, 55, 70, 85] },
     { title: 'Quality', icon: FlaskConical, value: `${Math.round(score.dimensions.quality.score)}%`, target: '≥85%', rag: score.dimensions.quality.score >= 85 ? 'green' : 'amber', trend: [88, 90, 92, 92, 95, 95] },
     { title: 'Stock', icon: Package, value: '<2% variance', target: '≤2%', rag: 'green', trend: [1, 1.2, 1.5, 1.3, 1.6, 1.4] },
     { title: 'Imprest', icon: PiggyBank, value: `${(imprest?.utilization_pct ?? 0).toFixed(0)}%`, target: '60-85%', rag: (imprest?.utilization_pct ?? 0) > 90 ? 'red' : (imprest?.utilization_pct ?? 0) > 70 ? 'amber' : 'green', trend: [50, 55, 60, 65, 70, 72] },
-  ] : [];
+  ] : []), [score, site, imprest]);
 
-  const aggregated = useMemo(() =>
-    cards.map(c => ({ title: c.title, score: c.trend[c.trend.length - 1] ?? 0 })),
-    [cards]);
+  // Integrity badge signs REAL engine values only · sparkline `trend` arrays are
+  // pre-existing legacy debt (faithfully migrated · W1C follow-up) and are NOT signed.
+  const aggregated = useMemo(() => {
+    if (!score) return [];
+    return [
+      { title: 'Safety', score: score.dimensions.safety.score },
+      { title: 'Schedule', score: score.dimensions.schedule.score },
+      { title: 'Cost', score: score.dimensions.cost.score },
+      { title: 'Quality', score: score.dimensions.quality.score },
+      { title: 'Imprest', score: imprest?.utilization_pct ?? 0 },
+    ];
+  }, [score, imprest]);
   const hash = useMemo(() => signReport(aggregated), [aggregated]);
   const short = hash.replace('fnv1a:', '').slice(0, 10);
 
