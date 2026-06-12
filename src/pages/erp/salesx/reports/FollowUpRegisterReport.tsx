@@ -18,7 +18,7 @@ import {
 import { Search, ShieldCheck } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { useEnquiries } from '@/hooks/useEnquiries';
-import { ReportChart } from '@/components/operix-core/report-framework';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { cn } from '@/lib/utils';
 
