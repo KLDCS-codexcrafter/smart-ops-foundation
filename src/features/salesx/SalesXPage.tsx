@@ -165,8 +165,8 @@ const breadcrumbLabels: Record<SalesXModule, string> = {
 function ComingSoonPanel({ module }: { module: SalesXModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-      <p className="text-lg font-semibold">Coming Soon</p>
-      <p className="text-sm mt-1">{breadcrumbLabels[module]} — Sprint 2</p>
+      <p className="text-lg font-semibold">Module not yet wired</p>
+      <p className="text-sm mt-1">{breadcrumbLabels[module]}</p>
     </div>
   );
 }
