@@ -47,6 +47,8 @@ import { WMS2PutawayConsolePanel } from './wms/PutawayConsole';
 import { WMS2ShelfViewPanel } from './wms/ShelfView';
 // Sprint WMS3 · Warehouse · Manifest Console (ARC CLOSE)
 import { WMS3ManifestConsolePanel } from './wms/ManifestConsole';
+// 🆕 RPT-9e · Report Builder mount
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 
 function ComingSoonPanel({ module }: { module: DispatchHubModule }) {
@@ -95,6 +97,8 @@ function renderModule(
     case 'dh-w-shelf-view':                   return <WMS2ShelfViewPanel />;
     // Sprint WMS3 · ARC CLOSE
     case 'dh-w-manifest-console':             return <WMS3ManifestConsolePanel />;
+    // 🆕 RPT-9e · Report Builder mount (frozen component · cardId='dispatch-hub')
+    case 'disp-rpt-report-builder':           return <ReportBuilder cardId="dispatch-hub" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }

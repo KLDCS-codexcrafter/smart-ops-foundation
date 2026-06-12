@@ -30,9 +30,8 @@ import {
   Inbox as InboxIcon, LayoutGrid,
   // Sprint WMS3 · Warehouse · Manifest Console (ARC CLOSE)
   ClipboardCheck,
-
-
-
+  // RPT-9e · Report Builder mount
+  Sparkles,
 } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter,
@@ -77,7 +76,9 @@ export type DispatchHubModule =
   | 'dh-w-putaway-console'
   | 'dh-w-shelf-view'
   // Sprint WMS3 · Warehouse · Manifest Console (additive · ARC CLOSE)
-  | 'dh-w-manifest-console';
+  | 'dh-w-manifest-console'
+  // 🆕 RPT-9e · Report Builder mount (cardId='dispatch-hub')
+  | 'disp-rpt-report-builder';
 
 
 interface DispatchHubSidebarProps {
@@ -167,7 +168,19 @@ export function DispatchHubSidebar(props: DispatchHubSidebarProps) {
               <span>Welcome</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          {/* 🆕 RPT-9e · Report Builder (frozen component · cardId='dispatch-hub') */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              isActive={activeModule === 'disp-rpt-report-builder'}
+              onClick={() => onModuleChange('disp-rpt-report-builder')}
+              className={cn(activeModule === 'disp-rpt-report-builder' && 'bg-blue-500/15 text-blue-600')}
+            >
+              <Sparkles className="h-4 w-4" />
+              <span>Report Builder</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         </SidebarMenu>
+
 
         {/* Masters (external link to Command Center) */}
         <Collapsible open={mastersOpen} onOpenChange={setMastersOpen} className="mt-2">

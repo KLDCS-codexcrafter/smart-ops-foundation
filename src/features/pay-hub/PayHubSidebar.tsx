@@ -4,7 +4,7 @@
  */
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users2, LayoutDashboard, IndianRupee, Calculator, Award, Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box, ClipboardList, FileText, ChevronRight, Shield, HardHat, CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket, Star, Grid3X3, TrendingUp, GraduationCap, Bell, UserCog, Mail, Monitor, LogOut, ExternalLink } from 'lucide-react';
+import { Users2, LayoutDashboard, IndianRupee, Calculator, Award, Users, Clock, Palmtree, Calendar, Timer, Coins, Gift, Heart, Box, ClipboardList, FileText, ChevronRight, Shield, HardHat, CreditCard, Wallet, Receipt, Briefcase, BookOpen, FolderOpen, Rocket, Star, Grid3X3, TrendingUp, GraduationCap, Bell, UserCog, Mail, Monitor, LogOut, ExternalLink, Sparkles } from 'lucide-react';
 import {
   Sidebar, SidebarContent, SidebarHeader, SidebarFooter, SidebarMenu,
   SidebarMenuItem, SidebarMenuButton,
@@ -69,7 +69,9 @@ export type PayHubModule =
   | 'ph-doc-templates'
   | 'ph-contract-workers'
   | 'ph-contract-orders'
-  | 'ph-contract-compliance';
+  | 'ph-contract-compliance'
+  // 🆕 RPT-9e · Report Builder mount (cardId='peoplepay')
+  | 'ph-rpt-report-builder';
 const LIVE_MODULES: PayHubModule[] = [
   'ph-dashboard', 'ph-pay-heads', 'ph-salary-structures', 'ph-pay-grades', 'ph-employees',
   'ph-shifts', 'ph-leave-types', 'ph-holiday-calendar', 'ph-attendance-types',
@@ -288,6 +290,21 @@ export function PayHubSidebar({ activeModule, onModuleChange }: PayHubSidebarPro
             >
               <LayoutDashboard className="h-3.5 w-3.5" />
               <span>Dashboard</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          {/* 🆕 RPT-9e · Report Builder (frozen component · cardId='peoplepay') */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Report Builder"
+              onClick={() => onModuleChange('ph-rpt-report-builder')}
+              className={cn(
+                'text-xs h-8 gap-2',
+                activeModule === 'ph-rpt-report-builder' && 'bg-violet-500/15 text-violet-700 dark:text-violet-300 border border-violet-500/30',
+                activeModule !== 'ph-rpt-report-builder' && 'hover:bg-violet-500/10',
+              )}
+            >
+              <Sparkles className="h-3.5 w-3.5" />
+              <span>Report Builder</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

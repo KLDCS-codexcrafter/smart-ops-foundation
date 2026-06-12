@@ -17,5 +17,7 @@ export type FrontDeskModule =
   | 'mail-inward'
   | 'mail-outward'
   | 'asset-custody'
-  | 'reception-diary';
+  | 'reception-diary'
+  // 🆕 RPT-9e · Report Builder mount
+  | 'fd-rpt-report-builder';
 

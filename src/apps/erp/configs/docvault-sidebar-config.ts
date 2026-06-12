@@ -16,7 +16,7 @@
 import {
   Home, FileText, FilePlus, CheckSquare, TreePine, Bookmark, ListFilter,
   BarChart3, Clock, TrendingUp, FolderTree, Hash, CalendarClock,
-  Share2, Archive, Megaphone, ListChecks,
+  Share2, Archive, Megaphone, ListChecks, Sparkles,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -206,4 +206,6 @@ export const docVaultSidebarItems: SidebarItem[] = [
       },
     ],
   },
+  // 🆕 RPT-9e · Report Builder (frozen component · cardId='docvault')
+  { id: 'dv-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'dv-rpt-report-builder', requiredCards: ['docvault'] },
 ];

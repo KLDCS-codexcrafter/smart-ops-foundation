@@ -10,6 +10,7 @@
 import {
   Home, Users, UserPlus, LogIn, BookUser, ShieldAlert, ClipboardList,
   DoorOpen, CalendarRange, Briefcase, Mail, Inbox, Send, Package, ClipboardCheck, NotebookText,
+  Sparkles,
 } from 'lucide-react';
 import type { SidebarItem } from '@/shell/types';
 
@@ -63,5 +64,7 @@ export const frontdeskSidebarItems: SidebarItem[] = [
       { id: 'watchlist', type: 'item', label: 'Watchlist', icon: ShieldAlert, moduleId: 'watchlist', keyboard: 'f l' },
     ],
   },
+  // 🆕 RPT-9e · Report Builder (frozen component · cardId='frontdesk')
+  { id: 'fd-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'fd-rpt-report-builder' },
 ];
 
