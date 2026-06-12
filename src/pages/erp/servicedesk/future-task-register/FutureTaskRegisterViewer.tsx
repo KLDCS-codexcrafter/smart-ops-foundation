@@ -1,15 +1,17 @@
 /**
  * @file        src/pages/erp/servicedesk/future-task-register/FutureTaskRegisterViewer.tsx
- * @purpose     Future Task Register viewer · 5 seeded entries · MOAT #24 criterion 14
- * @sprint      T-Phase-1.C.1f · Block I.2
- * @iso         Functional Suitability + Usability
+ * @purpose     Future Task Register viewer · MOAT #24 criterion 14 · RPT-8a chart-enabled
+ * @sprint      T-Phase-1.C.1f · Block I.2 · RPT-8a (additive)
  */
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ShieldCheck } from 'lucide-react';
 import { seedFutureTaskRegister, listFutureTasks } from '@/lib/servicedesk-engine';
 import type { FTStatus } from '@/types/future-task-register';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const ENTITY = 'OPRX';
 
@@ -21,6 +23,19 @@ export function FutureTaskRegisterViewer(): JSX.Element {
 
   const all = listFutureTasks({ entity_id: ENTITY });
   const filtered = tab === 'all' ? all : all.filter((t) => t.status === tab);
+
+  const chartRows = (() => {
+    const byStatus = new Map<string, number>();
+    for (const t of all) byStatus.set(t.status, (byStatus.get(t.status) ?? 0) + 1);
+    return Array.from(byStatus.entries()).map(([status, count]) => ({ status, count }));
+  })();
+  const cfg = getKpi('sd-future-tasks')?.defaultChart ?? defaultChartConfig({
+    chartType: 'column', xKey: 'status',
+    series: [{ key: 'count', label: 'Tasks' }],
+    title: 'Future tasks by status',
+  });
+  const hash = signReport(chartRows);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <div className="p-6 space-y-4">
@@ -76,6 +91,16 @@ export function FutureTaskRegisterViewer(): JSX.Element {
             </tbody>
           </table>
         )}
+      </Card>
+      <Card className="p-3 space-y-2" data-testid="sd-future-tasks-dashboard-host">
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="sd-future-tasks-integrity-badge" title={hash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{short}
+          </Badge>
+        </div>
+        <div className="w-full h-56" data-testid="sd-future-tasks-chart-host">
+          <ReportChart data={chartRows} config={cfg} />
+        </div>
       </Card>
     </div>
   );

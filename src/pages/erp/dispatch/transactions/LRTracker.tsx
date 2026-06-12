@@ -9,7 +9,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { Download, Search } from 'lucide-react';
+import { Download, Search, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import type { Voucher } from '@/types/voucher';
 import type { POD } from '@/types/pod';
 import { podsKey } from '@/types/pod';
@@ -205,6 +207,39 @@ export function LRTrackerPanel({ onModuleChange }: Props) {
         </CardContent>
       </Card>
       <PODDetailDialog pod={podDialog} open={podOpen} onOpenChange={setPodOpen} />
+      {(() => {
+        const byStatus = new Map<string, number>();
+        for (const d of dlns) {
+          const pod = podByDln.get(d.id);
+          const key = pod?.status === 'verified' ? 'delivered'
+            : pod?.status === 'disputed' || pod?.is_exception ? 'exception'
+            : d.lr_no ? 'lr_issued'
+            : 'awaiting';
+          byStatus.set(key, (byStatus.get(key) ?? 0) + 1);
+        }
+        const chartRows = Array.from(byStatus.entries()).map(([lr_status, count]) => ({ lr_status, count }));
+        const cfg = getKpi('dp-lr')?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'lr_status',
+          series: [{ key: 'count', label: 'DLNs' }],
+          title: 'LR status mix',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="dp-lr-dashboard-host">
+            <CardContent className="pt-3 space-y-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="outline" className="text-[10px] font-mono" data-testid="dp-lr-integrity-badge" title={hash}>
+                  <ShieldCheck className="h-3 w-3 mr-1" />{short}
+                </Badge>
+              </div>
+              <div className="w-full h-64" data-testid="dp-lr-chart-host">
+                <ReportChart data={chartRows} config={cfg} />
+              </div>
+            </CardContent>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
