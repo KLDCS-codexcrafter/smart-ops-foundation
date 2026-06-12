@@ -17,12 +17,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { PackageX, Search, ShieldAlert } from 'lucide-react';
+import { PackageX, Search, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
   getStockHoldReport, getStockHoldByVendor,
   type StockHoldRow, type StockHoldVendorSummary, type StockHoldQAStatus,
 } from '@/lib/oob/stock-hold-report-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const QA_LABEL: Record<StockHoldQAStatus, string> = {
   no_inspection: 'No Inspection',
