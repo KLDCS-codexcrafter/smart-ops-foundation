@@ -61,5 +61,7 @@ export type ProductionModule =
   | 'mst-machine-master'
   | 'rpt-fa-linked-machines'
   // 🆕 RPT-9c · Report Builder mount
-  | 'prod-rpt-report-builder';
+  | 'prod-rpt-report-builder'
+  // 🆕 RPT-10b · OEE Board cockpit
+  | 'prod-oee-board';
 
