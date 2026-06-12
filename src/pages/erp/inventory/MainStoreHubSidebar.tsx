@@ -69,6 +69,7 @@ const RPT_ITEMS: SidebarItem[] = [
   { id: 'r-cycle-count-register', label: 'Cycle Count Register', icon: ClipboardCheck },
   { id: 'r-rtv-register', label: 'RTV Register', icon: RotateCcw },
   { id: 'r-part-no-search', label: 'Part-No Search', icon: Search },
+  { id: 'inv-rpt-report-builder', label: 'Report Builder', icon: Sparkles },
 ];
 
 const MAS_ITEMS: SidebarItem[] = [
