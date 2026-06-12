@@ -31,7 +31,9 @@ export type CustomerHubModule =
   // Transactions — Sprint 13c
   | 'ch-t-family-wallet' | 'ch-t-sample-kits'
   // Reports — Sprint 13c
-  | 'ch-r-loyalty' | 'ch-r-clv' | 'ch-r-churn' | 'ch-r-social-proof';
+  | 'ch-r-loyalty' | 'ch-r-clv' | 'ch-r-churn' | 'ch-r-social-proof'
+  // RPT-9d · User Report Builder · embedded mount
+  | 'ch-rpt-report-builder';
 
 interface CustomerHubSidebarProps {
   activeModule: CustomerHubModule;
@@ -66,6 +68,8 @@ const REPORTS_ITEMS: MenuItem[] = [
   { label: 'CLV Rankings',          module: 'ch-r-clv',          icon: Trophy },
   { label: 'Churn Risk',            module: 'ch-r-churn',        icon: AlertTriangle },
   { label: 'Social Proof Dashboard',module: 'ch-r-social-proof', icon: Sparkles },
+  // RPT-9d · User Report Builder · embedded mount
+  { label: 'Report Builder',        module: 'ch-rpt-report-builder', icon: Sparkles },
 ];
 
 export function CustomerHubSidebar(props: CustomerHubSidebarProps) {

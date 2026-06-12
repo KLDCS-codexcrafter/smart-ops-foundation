@@ -238,6 +238,8 @@ export function SalesXSidebar({ activeModule, onModuleChange, entityCode, active
     { id: 'sx-r-som-register',        label: 'SOM Register',         icon: ListChecks,    live: true },
     { id: 'sx-r-dom-register',        label: 'DOM Register',         icon: ClipboardList, live: true },
     { id: 'sx-r-so-register',         label: 'Sales Order Register', icon: ClipboardList, live: true },
+    // RPT-9d · User Report Builder · embedded mount
+    { id: 'sx-rpt-report-builder',    label: 'Report Builder',       icon: Sparkles,      live: true },
   ], [cfg]);
 
   const filteredMasterItems = useMemo(() =>

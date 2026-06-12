@@ -21,4 +21,6 @@ export type ProjXModule =
   | 'r-cash-flow-projection'
   | 'r-project-register'
   | 'r-milestone-register'
-  | 'r-time-entry-register';
+  | 'r-time-entry-register'
+  // RPT-9d · User Report Builder · embedded mount
+  | 'projx-rpt-report-builder';

@@ -22,4 +22,6 @@ export const PROJX_MODULE_GROUP: Record<ProjXModule, 'transactions' | 'masters' 
   'r-project-register': 'reports',
   'r-milestone-register': 'reports',
   'r-time-entry-register': 'reports',
+  // RPT-9d · User Report Builder · embedded mount
+  'projx-rpt-report-builder': 'reports',
 };

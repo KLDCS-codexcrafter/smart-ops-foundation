@@ -15,4 +15,6 @@ export type EcomXModule =
   | 'reconciliation'
   | 'claims'
   | 'returns'
-  | 'allocation';
+  | 'allocation'
+  // RPT-9d · User Report Builder · embedded mount
+  | 'ecomx-rpt-report-builder';

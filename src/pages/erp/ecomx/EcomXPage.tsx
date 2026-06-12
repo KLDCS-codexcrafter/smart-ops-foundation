@@ -21,6 +21,8 @@ import { EcomXClaimsPage } from './claims/EcomXClaimsPage';
 import { EcomXReturnsPage } from './returns/EcomXReturnsPage';
 import { EcomXAllocationPage } from './allocation/EcomXAllocationPage';
 import type { EcomXModule } from './EcomXSidebar.types';
+// RPT-9d · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
 
 export default function EcomXPage(): JSX.Element {
   const [active, setActive] = useState<EcomXModule>('welcome');
@@ -41,6 +43,8 @@ export default function EcomXPage(): JSX.Element {
       case 'claims':         return <EcomXClaimsPage />;
       case 'returns':        return <EcomXReturnsPage />;
       case 'allocation':     return <EcomXAllocationPage />;
+      // RPT-9d · User Report Builder · embedded mount
+      case 'ecomx-rpt-report-builder': return <ReportBuilder cardId="ecomx" />;
       default:               return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }
   };

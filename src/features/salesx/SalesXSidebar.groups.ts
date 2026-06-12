@@ -94,6 +94,8 @@ export const SALESX_MODULE_GROUP: Record<SalesXModule, SalesXGroup> = {
   'sx-attribution-segmentation': 'master',
   // Sprint 129 · 🏁 Arc D.2 CAPSTONE · ABM + NPS + MarketingX dashboard (SalesX EXTENSION)
   'sx-abm-nps':                'master',
+  // RPT-9d · User Report Builder · embedded mount
+  'sx-rpt-report-builder':     'report',
 };
 
 /** Default landing module per group when user clicks the tab */

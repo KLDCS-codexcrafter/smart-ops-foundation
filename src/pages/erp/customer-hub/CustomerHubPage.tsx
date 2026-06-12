@@ -36,6 +36,9 @@ import { CLVRankingsReportPanel } from './reports/CLVRankingsReport';
 import { ChurnRiskReportPanel } from './reports/ChurnRiskReport';
 import { SocialProofReportPanel } from './reports/SocialProofReport';
 
+// RPT-9d · User Report Builder · embedded mount (FinCore reference pattern)
+import { ReportBuilder } from '@/components/operix-core/report-framework';
+
 function ComingSoonPanel({ module }: { module: CustomerHubModule }) {
   return (
     <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
@@ -64,6 +67,8 @@ function renderModule(
     case 'ch-r-clv':                return <CLVRankingsReportPanel />;
     case 'ch-r-churn':              return <ChurnRiskReportPanel />;
     case 'ch-r-social-proof':       return <SocialProofReportPanel />;
+    // RPT-9d · User Report Builder · embedded mount
+    case 'ch-rpt-report-builder':   return <ReportBuilder cardId="customer-hub" />;
     default: return <ComingSoonPanel module={mod} />;
   }
 }
