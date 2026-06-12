@@ -74,6 +74,13 @@ export default function VendorPerformanceView(): JSX.Element {
     score: f.raw_score,
     fullMark: 100,
   }));
+  const chartCfg = defaultChartConfig({
+    chartType: 'bar', xKey: 'factor',
+    series: [{ key: 'score', label: 'Score' }],
+    title: 'Factor Breakdown',
+  });
+  const hash = signReport(radarData as unknown as Record<string, unknown>[]);
+  const short = hash.replace('fnv1a:', '').slice(0, 10);
 
   return (
     <VendorPortalLayout>
@@ -82,7 +89,7 @@ export default function VendorPerformanceView(): JSX.Element {
           <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
             <BarChart className="h-6 w-6 text-primary" />
           </div>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold flex items-center gap-2">
               Your Performance
               <Badge variant="outline" className="text-[10px] gap-1">
@@ -93,6 +100,9 @@ export default function VendorPerformanceView(): JSX.Element {
               How procurement scores you · transparent · with improvement guidance
             </p>
           </div>
+          <Badge variant="outline" className="text-[10px] font-mono" data-testid="vp-performance-integrity-badge" title={hash}>
+            <ShieldCheck className="h-3 w-3 mr-1" />{short}
+          </Badge>
         </div>
 
         <Card>
@@ -137,17 +147,10 @@ export default function VendorPerformanceView(): JSX.Element {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Factor Breakdown</CardTitle>
-            <CardDescription>6 factors scored · radar view</CardDescription>
+            <CardDescription>6 factors scored · per-factor view</CardDescription>
           </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={350}>
-              <RadarChart data={radarData}>
-                <PolarGrid stroke="hsl(var(--muted-foreground))" strokeOpacity={0.3} />
-                <PolarAngleAxis dataKey="factor" tick={{ fill: 'hsl(var(--foreground))', fontSize: 11 }} />
-                <PolarRadiusAxis angle={90} domain={[0, 100]} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10 }} />
-                <Radar name="Score" dataKey="score" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} />
-              </RadarChart>
-            </ResponsiveContainer>
+          <CardContent data-testid="vp-performance-chart-host">
+            <ReportChart data={radarData} config={chartCfg} />
           </CardContent>
         </Card>
 
