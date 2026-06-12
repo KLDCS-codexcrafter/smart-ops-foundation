@@ -5,8 +5,10 @@
  */
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Hourglass, AlertTriangle } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Hourglass, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { useJobWorkOutOrders } from '@/hooks/useJobWorkOutOrders';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { round2 } from '@/lib/decimal-helpers';
@@ -69,26 +71,30 @@ export function JobWorkAgeingAnalysisPanel(): JSX.Element {
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-sm">Vendor Ageing Distribution</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm flex items-center justify-between"><span>Vendor Ageing Distribution</span>{byVendor.length > 0 && (() => { const __h = signReport(byVendor as unknown as Record<string, unknown>[]); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-jw-ageing-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}</CardTitle></CardHeader>
         <CardContent style={{ height: 360 }}>
           {byVendor.length === 0 ? (
             <div className="text-center text-muted-foreground py-8">No pending stock</div>
           ) : (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={byVendor}>
-                <XAxis dataKey="vendor" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="0-30" stackId="a" fill="hsl(var(--primary))" />
-                <Bar dataKey="31-60" stackId="a" fill="hsl(var(--secondary))" />
-                <Bar dataKey="61-90" stackId="a" fill="hsl(var(--warning, 38 92% 50%))" />
-                <Bar dataKey="90+" stackId="a" fill="hsl(var(--destructive))" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="w-full h-full" data-testid="prod-jw-ageing-chart-host">
+              <ReportChart
+                data={byVendor as unknown as Record<string, unknown>[]}
+                config={defaultChartConfig({
+                  chartType: 'stacked-column',
+                  xKey: 'vendor',
+                  series: [
+                    { key: '0-30', label: '0-30' },
+                    { key: '31-60', label: '31-60' },
+                    { key: '61-90', label: '61-90' },
+                    { key: '90+', label: '90+' },
+                  ],
+                })}
+              />
+            </div>
           )}
         </CardContent>
       </Card>
+
     </div>
   );
 }

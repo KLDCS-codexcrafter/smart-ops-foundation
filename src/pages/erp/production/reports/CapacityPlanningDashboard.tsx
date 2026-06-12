@@ -10,10 +10,9 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Calendar, Clock, BarChart3, Activity, Wrench } from 'lucide-react';
-import {
-  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid, Cell,
-} from 'recharts';
+import { Calendar, Clock, BarChart3, Activity, Wrench, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { ViewModeSelector } from '@/components/ViewModeSelector';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useFactories } from '@/hooks/useFactories';
@@ -33,11 +32,8 @@ const STATUS_COLOR: Record<CapacityRowStatus, string> = {
   overbooked: 'bg-destructive/10 text-destructive border-destructive/30',
 };
 
-const STATUS_FILL: Record<CapacityRowStatus, string> = {
-  available: 'hsl(var(--success))',
-  tight: 'hsl(var(--warning))',
-  overbooked: 'hsl(var(--destructive))',
-};
+// STATUS_FILL retained intent — chart now uses framework palette via ReportChart
+
 
 export function CapacityPlanningDashboardPanel(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -198,29 +194,37 @@ export function CapacityPlanningDashboardPanel(): JSX.Element {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">Top 10 Most-Utilized · {viewMode.replace('_', ' ')}</CardTitle>
+          <CardTitle className="text-sm flex items-center justify-between">
+            <span>Top 10 Most-Utilized · {viewMode.replace('_', ' ')}</span>
+            {top10.length > 0 && (() => {
+              const __hash = signReport(top10);
+              const __short = __hash.replace('fnv1a:', '').slice(0, 10);
+              return (
+                <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-capacity-integrity-badge" title={__hash}>
+                  <ShieldCheck className="h-3 w-3 mr-1" />{__short}
+                </Badge>
+              );
+            })()}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {top10.length === 0 ? (
             <div className="text-sm text-muted-foreground text-center py-8">No capacity data in window.</div>
           ) : (
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={top10}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="machine_name" />
-                <YAxis label={{ value: 'Utilization %', angle: -90, position: 'insideLeft' }} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="utilization_pct" name="Utilization %">
-                  {top10.map((row, i) => (
-                    <Cell key={i} fill={STATUS_FILL[row.status]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="w-full h-[250px]" data-testid="prod-capacity-chart-host">
+              <ReportChart
+                data={top10}
+                config={defaultChartConfig({
+                  chartType: 'column',
+                  xKey: 'machine_name',
+                  series: [{ key: 'utilization_pct', label: 'Utilization %' }],
+                })}
+              />
+            </div>
           )}
         </CardContent>
       </Card>
+
 
       <Card>
         <CardContent className="p-0">

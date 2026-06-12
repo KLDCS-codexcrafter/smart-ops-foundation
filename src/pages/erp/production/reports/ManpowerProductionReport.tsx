@@ -17,8 +17,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Users, TrendingUp, AlertCircle } from 'lucide-react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts';
+import { Users, TrendingUp, AlertCircle, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { useDailyWorkRegister } from '@/hooks/useDailyWorkRegister';
 import { useFactories } from '@/hooks/useFactories';
 import { dAdd, round2 } from '@/lib/decimal-helpers';
@@ -168,21 +169,24 @@ export function ManpowerProductionReportPanel(): JSX.Element {
       </div>
 
       <Card>
-        <CardHeader><CardTitle className="text-base flex items-center gap-2"><TrendingUp className="h-4 w-4" /> Top 10 Operators by Output</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base flex items-center justify-between"><span className="flex items-center gap-2"><TrendingUp className="h-4 w-4" /> Top 10 Operators by Output</span>{(() => { const __h = signReport(chartData); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-manpower-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}</CardTitle></CardHeader>
         <CardContent className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} angle={-20} textAnchor="end" height={80} />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="Produced" fill="hsl(var(--primary))" />
-              <Bar dataKey="Rejected" fill="hsl(var(--destructive))" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="w-full h-full" data-testid="prod-manpower-chart-host">
+            <ReportChart
+              data={chartData}
+              config={defaultChartConfig({
+                chartType: 'column',
+                xKey: 'name',
+                series: [
+                  { key: 'Produced', label: 'Produced' },
+                  { key: 'Rejected', label: 'Rejected' },
+                ],
+              })}
+            />
+          </div>
         </CardContent>
       </Card>
+
 
       <Card>
         <CardHeader><CardTitle className="text-base">Operator Details</CardTitle></CardHeader>

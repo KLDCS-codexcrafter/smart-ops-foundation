@@ -14,11 +14,9 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
-  PieChart, Pie, Legend,
-} from 'recharts';
-import { Search } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
+import { Search, ShieldCheck } from 'lucide-react';
 import { campaignsKey } from '@/types/campaign';
 import type {
   Campaign, CampaignType, CampaignStatus,
@@ -183,52 +181,55 @@ export function CampaignPerformanceReportPanel({ entityCode }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Avg ROI % by Campaign Type (Completed)</CardTitle>
+            <CardTitle className="text-sm flex items-center justify-between">
+              <span>Avg ROI % by Campaign Type (Completed)</span>
+              {roiByType.length > 0 && (() => { const __h = signReport(roiByType); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-campaign-roi-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}
+            </CardTitle>
           </CardHeader>
           <CardContent style={{ height: 260 }}>
             {roiByType.length === 0 ? (
               <p className="text-xs text-muted-foreground text-center py-12">No completed campaigns.</p>
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={roiByType}>
-                  <XAxis dataKey="type" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} unit="%" />
-                  <Tooltip />
-                  <Bar dataKey="roi" radius={[4, 4, 0, 0]}>
-                    {roiByType.map(d => (
-                      <Cell key={d.type} fill={TYPE_HEX[d.type]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="w-full h-full" data-testid="sx-campaign-roi-chart-host">
+                <ReportChart
+                  data={roiByType}
+                  config={defaultChartConfig({
+                    chartType: 'column',
+                    xKey: 'type',
+                    series: [{ key: 'roi', label: 'ROI %' }],
+                  })}
+                />
+              </div>
             )}
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm">Enquiries by Campaign Type</CardTitle>
+            <CardTitle className="text-sm flex items-center justify-between">
+              <span>Enquiries by Campaign Type</span>
+              {enqByType.length > 0 && (() => { const __h = signReport(enqByType); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-campaign-enq-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}
+            </CardTitle>
           </CardHeader>
           <CardContent style={{ height: 260 }}>
             {enqByType.length === 0 ? (
               <p className="text-xs text-muted-foreground text-center py-12">No enquiry data.</p>
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={enqByType} dataKey="value" nameKey="name"
-                    cx="50%" cy="50%" outerRadius={80} label={{ fontSize: 10 }}
-                  >
-                    {enqByType.map(d => <Cell key={d.type} fill={TYPE_HEX[d.type]} />)}
-                  </Pie>
-                  <Legend wrapperStyle={{ fontSize: 10 }} />
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
+              <div className="w-full h-full" data-testid="sx-campaign-enq-chart-host">
+                <ReportChart
+                  data={enqByType}
+                  config={defaultChartConfig({
+                    chartType: 'pie',
+                    xKey: 'type',
+                    series: [{ key: 'value', label: 'Enquiries' }],
+                  })}
+                />
+              </div>
             )}
           </CardContent>
         </Card>
       </div>
+
 
       {/* Top 5 */}
       <Card>

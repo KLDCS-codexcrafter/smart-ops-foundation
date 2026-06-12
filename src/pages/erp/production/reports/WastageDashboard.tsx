@@ -9,11 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Recycle, Layers, Sparkles, AlertTriangle } from 'lucide-react';
-import {
-  ResponsiveContainer, ComposedChart, Bar, Line, XAxis, YAxis,
-  Tooltip, Legend, CartesianGrid, ReferenceLine,
-} from 'recharts';
+import { Recycle, Layers, Sparkles, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { ViewModeSelector } from '@/components/ViewModeSelector';
 import { useFactoryContext } from '@/hooks/useFactoryContext';
 import { useMachines } from '@/hooks/useMachines';
@@ -111,29 +109,31 @@ export function WastageDashboardPanel(): JSX.Element {
       </Card>
 
       <Card>
-        <CardHeader><CardTitle className="text-sm">Pareto · {viewMode.replace(/_/g, ' ')}</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-sm flex items-center justify-between"><span>Pareto · {viewMode.replace(/_/g, ' ')}</span>{paretoData.length > 0 && (() => { const __h = signReport(paretoData); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-wastage-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}</CardTitle></CardHeader>
         <CardContent>
           {paretoData.length === 0 ? (
             <div className="flex items-center justify-center text-sm text-muted-foreground py-12">
               <AlertTriangle className="h-4 w-4 mr-2" /> No wastage data for selected filters
             </div>
           ) : (
-            <ResponsiveContainer width="100%" height={300}>
-              <ComposedChart data={paretoData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <Tooltip />
-                <Legend />
-                <Bar yAxisId="left" dataKey="qty" fill="hsl(var(--destructive))" name="Wastage Qty" />
-                <Line yAxisId="right" type="monotone" dataKey="cumulative_pct" stroke="hsl(var(--foreground))" name="Cumulative %" />
-                <ReferenceLine yAxisId="right" y={80} stroke="hsl(var(--muted-foreground))" strokeDasharray="3 3" label="80%" />
-              </ComposedChart>
-            </ResponsiveContainer>
+            <div className="w-full h-[300px]" data-testid="prod-wastage-chart-host">
+              <ReportChart
+                data={paretoData}
+                config={defaultChartConfig({
+                  chartType: 'combo',
+                  xKey: 'name',
+                  series: [
+                    { key: 'qty', label: 'Wastage Qty', renderAs: 'bar' },
+                    { key: 'cumulative_pct', label: 'Cumulative %', renderAs: 'line' },
+                  ],
+                  thresholdBands: [{ value: 80, color: 'hsl(var(--muted-foreground))', label: '80%' }],
+                })}
+              />
+            </div>
           )}
         </CardContent>
       </Card>
+
 
       <Card>
         <CardHeader><CardTitle className="text-sm">Detail</CardTitle></CardHeader>

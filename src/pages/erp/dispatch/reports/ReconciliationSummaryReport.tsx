@@ -11,10 +11,10 @@ import { Label } from '@/components/ui/label';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Download, Lightbulb, AlertTriangle } from 'lucide-react';
-import {
-  LineChart, Line, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid,
-} from 'recharts';
+import { Download, Lightbulb, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import {
   type MatchLine, type Dispute, matchLinesKey, disputesKey,
@@ -322,17 +322,22 @@ export function ReconciliationSummaryReportPanel() {
         </CardContent></Card>
 
         <Card><CardContent className="p-4">
-          <p className="text-sm font-semibold mb-2">Variance % · Last 6 months</p>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={trend}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" tick={{ fontSize: 10 }} />
-              <YAxis tick={{ fontSize: 10 }} />
-              <Tooltip />
-              <Line type="monotone" dataKey="variance_pct" stroke="#2563eb" strokeWidth={2} dot={{ r: 3 }} />
-            </LineChart>
-          </ResponsiveContainer>
+          <p className="text-sm font-semibold mb-2 flex items-center justify-between">
+            <span>Variance % · Last 6 months</span>
+            {(() => { const __h = signReport(trend); const __s = __h.replace('fnv1a:', '').slice(0, 10); return (<Badge variant="outline" className="text-[10px] font-mono" data-testid="dp-recon-summary-integrity-badge" title={__h}><ShieldCheck className="h-3 w-3 mr-1" />{__s}</Badge>); })()}
+          </p>
+          <div className="w-full h-[200px]" data-testid="dp-recon-summary-chart-host">
+            <ReportChart
+              data={trend}
+              config={defaultChartConfig({
+                chartType: 'spline',
+                xKey: 'month',
+                series: [{ key: 'variance_pct', label: 'Variance %' }],
+              })}
+            />
+          </div>
         </CardContent></Card>
+
       </div>
     </div>
   );
