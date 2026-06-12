@@ -81,3 +81,25 @@ $ npx tsc -p tsconfig.app.json --noEmit   →   0 errors
 ## New HEAD
 
 `TBD_AT_BANK` — committed with this close summary, banks at sprint flip.
+
+---
+
+## ADDENDUM · T-FIX · SiteTwin Integrity + ESLint Gate
+
+The original RPT-12c close summary claimed **ESLint 0/0** — this was inaccurate. The
+true count at HEAD `545ae10` was **0 errors / 1 warning** (`react-hooks/exhaustive-deps`
+in `SiteTwinDashboard.tsx`). This fix corrects two defects in that single file:
+
+1. **ESLint warning resolved** — `cards` construction is now wrapped in `useMemo(...,
+   [score, site, imprest])`, satisfying exhaustive-deps for the downstream `aggregated`
+   memo.
+2. **Integrity badge now signs REAL data** — `aggregated` is rebuilt from the engine
+   values already computed on the page (`score.dimensions.{safety,schedule,cost,quality}.score`
+   + `imprest.utilization_pct`), NOT from the hardcoded `trend[last]` literals. The
+   badge hash now reflects real site-health output.
+3. **Sparkline `trend` arrays** are declared **pre-existing legacy debt** — they were
+   faithfully migrated through the chart-layer swap and remain decoration only. They
+   are no longer fed into `signReport`. Logged as W1C honest-data follow-up.
+
+Touched: `src/pages/erp/sitex/reports/SiteTwinDashboard.tsx` only. 0-DIFF elsewhere.
+No sprint-history change · RPT-12c stays `TBD_AT_BANK` until banked at this fix's HEAD.
