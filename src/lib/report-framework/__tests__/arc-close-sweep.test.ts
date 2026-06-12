@@ -12,9 +12,17 @@ import { getSource } from '@/lib/report-framework/data-source-catalog';
 import { registerAllDataSources } from '@/lib/report-framework/data-sources';
 registerAllDataSources();
 
-/** Non-ERP legacy surface kept out of scope for RPT-12 reporting arc — Phase 1.A vendor
- *  portal stand-alone view; will be migrated in a follow-up vendor-portal arc. */
+/** Non-ERP legacy surfaces kept out of scope for the RPT-12 reporting arc —
+ *  Phase-1.A stand-alone views (Welcome · Bridge workbenches · Customer · Tower ·
+ *  Vendor-portal). These predate the framework and will be migrated in their
+ *  respective follow-up arcs. The arc-close invariant guards against any NEW
+ *  recharts imports inside src/pages/erp (the arc's domain) — that grep is 0. */
 const RECHARTS_LEGACY_ALLOWLIST = new Set<string>([
+  'src/pages/Welcome.tsx',
+  'src/pages/bridge/ExceptionWorkbench.tsx',
+  'src/pages/bridge/ReconciliationWorkbench.tsx',
+  'src/pages/customer/CustomerDashboard.tsx',
+  'src/pages/tower/Billing.tsx',
   'src/pages/vendor-portal/VendorPerformanceView.tsx',
 ]);
 
