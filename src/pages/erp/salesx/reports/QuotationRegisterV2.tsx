@@ -14,7 +14,7 @@ import { UniversalRegisterGrid } from '@/components/registers/UniversalRegisterG
 import { DrillBreadcrumb } from '@/components/registers/DrillBreadcrumb';
 import { DrillSourceBanner } from '@/components/registers/DrillSourceBanner';
 import { useDrillDown } from '@/hooks/useDrillDown';
-import { ReportChart } from '@/components/operix-core/report-framework';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import type {
   RegisterColumn, RegisterMeta, SummaryCard, StatusOption,
@@ -167,19 +167,22 @@ export function QuotationRegisterV2Panel({ initialFilter }: QuotationRegisterV2P
           {printQ && <QuotationPrint quotation={printQ} onClose={() => setPrintQ(null)} />}
         </DialogContent>
       </Dialog>
-      <Card className="p-3 space-y-2" data-testid="sx-quotations-dashboard-host">
+      <Card className="p-3 space-y-2" data-testid="sx-quotations-toggle-host">
         <div className="flex items-center gap-2 flex-wrap">
           <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-quotations-integrity-badge" title={integrityHash}>
             <ShieldCheck className="h-3 w-3 mr-1" />{shortHash}
           </Badge>
         </div>
-        {chartRows.length === 0 ? (
-          <div className="text-sm text-muted-foreground py-6 text-center">No quotations yet</div>
-        ) : (
-          <div className="w-full h-72" data-testid="sx-quotations-chart-host">
-            <ReportChart data={chartRows} config={chartConfig} />
-          </div>
-        )}
+        <TableChartToggle
+          rows={chartRows}
+          columns={[
+            { key: 'status', label: 'Stage' },
+            { key: 'count', label: 'Quotations', align: 'right' },
+          ]}
+          chartConfig={chartConfig}
+          defaultView="table"
+          emptyLabel="No quotations yet"
+        />
       </Card>
     </div>
   );
