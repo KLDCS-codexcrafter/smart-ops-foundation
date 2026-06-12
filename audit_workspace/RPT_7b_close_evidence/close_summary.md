@@ -116,3 +116,49 @@ src/lib/report-framework/__tests__/rpt-7b-kpis-and-sources.test.ts
 - src/pages/erp/projx/reports/MilestoneStatusReport.tsx
 - src/pages/erp/projx/reports/ResourceUtilizationReport.tsx
 - src/pages/erp/projx/transactions/ProjxDocumentsRegister.tsx
+
+---
+
+## ADDENDUM · T2 Fix · 12 missing page tests added
+
+**Predecessor HEAD:** `c28f78f` ("Completed RPT-7b build")
+**Scope:** the original RPT-7b shipped without per-page tests (only the 70-line registry/DSC test). This addendum adds the standing one-test-per-page coverage. Pages, recipes, KPI seeds, DSC sources, sprint-history — all **0-DIFF**.
+
+### Files added (12)
+- src/pages/erp/salesx/reports/__tests__/target-vs-achievement.test.tsx
+- src/pages/erp/salesx/reports/__tests__/pipeline-summary.test.tsx
+- src/pages/erp/salesx/reports/__tests__/coverage-report.test.tsx
+- src/pages/erp/salesx/reports/__tests__/beat-productivity-report.test.tsx
+- src/pages/erp/salesx/reports/__tests__/secondary-sales-report.test.tsx
+- src/pages/erp/salesx/reports/__tests__/cross-dept-handoff-tracker.test.tsx
+- src/pages/erp/projx/reports/__tests__/project-register.test.tsx
+- src/pages/erp/projx/transactions/__tests__/projx-documents-register.test.tsx
+- src/pages/erp/projx/reports/__tests__/project-pnl-report.test.tsx
+- src/pages/erp/projx/reports/__tests__/project-margin-report.test.tsx
+- src/pages/erp/projx/reports/__tests__/milestone-status-report.test.tsx
+- src/pages/erp/projx/reports/__tests__/resource-utilization-report.test.tsx
+
+**Assertion count:** 8 toggle × 4 + 4 dashboard × 3 = **44 assertions** (≥ 24 required).
+
+### Vitest output (the 12 new files)
+```
+ ✓ src/pages/erp/projx/transactions/__tests__/projx-documents-register.test.tsx (1 test)
+ ✓ src/pages/erp/salesx/reports/__tests__/secondary-sales-report.test.tsx (1 test)
+ ✓ src/pages/erp/salesx/reports/__tests__/cross-dept-handoff-tracker.test.tsx (1 test)
+ ✓ src/pages/erp/salesx/reports/__tests__/target-vs-achievement.test.tsx (1 test)
+ ✓ src/pages/erp/salesx/reports/__tests__/beat-productivity-report.test.tsx (1 test)
+ ✓ src/pages/erp/salesx/reports/__tests__/pipeline-summary.test.tsx (1 test)
+ ✓ src/pages/erp/salesx/reports/__tests__/coverage-report.test.tsx (1 test)
+ ✓ src/pages/erp/projx/reports/__tests__/project-register.test.tsx (1 test)
+ ✓ src/pages/erp/projx/reports/__tests__/resource-utilization-report.test.tsx (1 test)
+ ✓ src/pages/erp/projx/reports/__tests__/milestone-status-report.test.tsx (1 test)
+ ✓ src/pages/erp/projx/reports/__tests__/project-margin-report.test.tsx (1 test)
+ ✓ src/pages/erp/projx/reports/__tests__/project-pnl-report.test.tsx (1 test)
+
+ Test Files  12 passed (12)
+      Tests  12 passed (12)
+```
+
+Recharts width/height stderr warnings are jsdom-environment artifacts (no DOM layout) and do not cause failures.
+
+**Triple Gate:** Vitest 12/12 green · pages/seeds/history untouched · sprint-history RPT-7b remains `TBD_AT_BANK` per standing rule.
