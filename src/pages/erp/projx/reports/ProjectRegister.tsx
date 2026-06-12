@@ -182,6 +182,38 @@ export function ProjectRegisterPanel({ initialFilter }: ProjectRegisterPanelProp
           )}
         </DialogContent>
       </Dialog>
+
+      {(() => {
+        const m = new Map<string, number>();
+        for (const p of allProjects) m.set(p.status, (m.get(p.status) ?? 0) + 1);
+        const chartRows = Array.from(m.entries()).map(([status, count]) => ({ status, count }));
+        const cfg = getKpi('px-projects')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'status',
+          series: [{ key: 'count', label: 'Projects' }],
+          title: 'Projects by status',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="px-projects-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="px-projects-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'status', label: 'Status' },
+                { key: 'count', label: 'Projects', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No projects yet"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }
