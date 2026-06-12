@@ -28,6 +28,8 @@ import { stockIssuesKey } from '@/types/stock-issue';
 import { stockReceiptAcksKey } from '@/types/stock-receipt-ack';
 import { ordersKey } from '@/types/order';
 import { quotationsKey } from '@/types/quotation';
+import { projectsKey } from '@/types/projx/project';
+import { projectMilestonesKey } from '@/types/projx/project-milestone';
 import { getMSMEBreaches } from '@/lib/msme-43bh-engine';
 
 function safeRead<T>(key: string): T[] {
