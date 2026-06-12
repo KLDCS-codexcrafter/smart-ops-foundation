@@ -172,8 +172,8 @@ function AppCard({ app }: { app: AppDefinition }) {
 
   function handleClick() {
     if (app.status === 'coming_soon') {
-      toast.info(`${app.name} — coming soon`, {
-        description: 'This module is in development and will be available in a future release.',
+      toast.info(`${app.name} — arrives with Wave-2`, {
+        description: 'This module ships in the Wave-2 release. No live route yet.',
       });
       return;
     }
