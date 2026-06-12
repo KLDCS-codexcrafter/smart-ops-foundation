@@ -9,6 +9,8 @@ import { readFileSync, readdirSync, statSync } from 'fs';
 import { resolve, join } from 'path';
 import { listKpis } from '@/lib/report-framework';
 import { getSource } from '@/lib/report-framework/data-source-catalog';
+import { registerAllDataSources } from '@/lib/report-framework/data-sources';
+registerAllDataSources();
 
 /** Non-ERP legacy surface kept out of scope for RPT-12 reporting arc — Phase 1.A vendor
  *  portal stand-alone view; will be migrated in a follow-up vendor-portal arc. */
