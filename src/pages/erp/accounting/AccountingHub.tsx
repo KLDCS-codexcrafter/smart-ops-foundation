@@ -6,11 +6,10 @@ import { useNavigate } from 'react-router-dom';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, ArrowRight, Calculator, FileText, Shield, BookOpen,
-  BarChart3, Landmark, FileSpreadsheet, Briefcase, Coins, PiggyBank,
-  MapPin, Users, Settings, Building2, FolderTree, Zap,
+  Landmark, FileSpreadsheet, Coins,
+  MapPin, Users, Settings, FolderTree, Zap,
 } from 'lucide-react';
 
 const COMPLIANCE_CARDS = [
