@@ -307,6 +307,25 @@ const MOBILE_PRODUCTS: MobileProduct[] = [
     route: '/operix-go/service-engineer',
     phase: 'live',
   },
+  // M1 · Mobile-ARC Close · external personas (built-now, opened-Wave-2)
+  {
+    id: 'persona-transporter',
+    title: 'Transporter — Freight Partner',
+    icon: Truck,
+    description: '6-page transporter PWA · LR worklist with aging chips · LR queue + record view · manifest acknowledgement · POD capture (photo + e-sign + pending_sync) · read-only disputes + payments.',
+    details: 'Live (M1): pages under src/pages/mobile/transporter/ wired via MobileRouter. Consumes lrAcceptancesKey + manifestsKey + manifestAcksKey (acknowledgeManifest writes the SAME field as desktop W3 seam) + podsKey + freight disputesKey + transporterInvoicesKey. External transporter login opens at Wave-2.',
+    route: '/mobile/transporter/home',
+    phase: 'live',
+  },
+  {
+    id: 'persona-vendor',
+    title: 'Vendor — Supply Partner',
+    icon: Factory,
+    description: '6-page vendor PWA · open POs worklist · PO acknowledge (PoFollowup) · ASN create · invoice submit into 3-way-match intake · read-only payments + document requests.',
+    details: 'Live (M1): pages under src/pages/mobile/vendor/ wired via MobileRouter. Consumes purchaseOrdersKey + billPassingKey (pending_match intake) + vendorPaymentBatchKey + vendorDocumentRequestKey. ZERO new engines, ZERO new SIBLINGs. External vendor login opens at Wave-2.',
+    route: '/mobile/vendor/home',
+    phase: 'live',
+  },
 ];
 
 const PHASE_CONFIG: Record<AppPhase, { label: string; color: string }> = {
