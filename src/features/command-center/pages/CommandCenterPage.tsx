@@ -330,6 +330,8 @@ export type CommandCenterModule =
   | 'retention-console'
   // 🎬 Sprint B2 · B.2 · Communication Console
   | 'communication-console'
+  // 🎬 Sprint W1C-4 · Auto-Send Rules
+  | 'auto-send-rules'
   // 🎬 Sprint B6 · B.6 · Master Health Scorecard
   | 'master-health-scorecard'
   // RPT-9b · User Report Builder · embedded mount
