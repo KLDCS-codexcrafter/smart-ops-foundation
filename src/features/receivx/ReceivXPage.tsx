@@ -36,6 +36,8 @@ import { shouldPromptToday, markPrompted, getTodaysFollowUps } from '@/lib/recei
 import { toast } from 'sonner';
 // RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
 import { ReportBuilder } from '@/components/operix-core/report-framework';
+// RPT-10a · Block 3 · Credit X-Ray executive cockpit
+import CreditXRayPage from '@/pages/erp/receivx/cockpits/CreditXRayPage';
 
 const breadcrumbLabels: Record<ReceivXModule, string> = {
   'rx-hub':                  'Hub Overview',
@@ -59,6 +61,8 @@ const breadcrumbLabels: Record<ReceivXModule, string> = {
   'rx-r-credit-risk':        'Credit Risk Report',
   // RPT-9b
   'rx-rpt-report-builder':   'Report Builder',
+  // RPT-10a · Credit X-Ray executive cockpit
+  'rx-credit-xray':          'Credit X-Ray',
 };
 
 function renderModule(
@@ -89,6 +93,8 @@ function renderModule(
     case 'rx-r-credit-risk':        return <CreditRiskReportPanel entityCode={entityCode} />;
     // RPT-9b · User Report Builder · embedded mount
     case 'rx-rpt-report-builder':   return <ReportBuilder cardId="receivx" />;
+    // RPT-10a · Credit X-Ray executive cockpit
+    case 'rx-credit-xray':          return <CreditXRayPage entityCode={entityCode} />;
   }
 }
 

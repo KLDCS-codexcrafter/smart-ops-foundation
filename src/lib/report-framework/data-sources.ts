@@ -41,6 +41,10 @@ import { fdPartyContactsKey } from '@/types/frontdesk';
 import { payrollRunsKey } from '@/types/payroll-run';
 import { tfSLAKey } from '@/lib/taskflow-governance-engine';
 import { getMSMEBreaches } from '@/lib/msme-43bh-engine';
+// RPT-10a · Block 1 · Fin-hub DSC repair (wraps existing storage keys/engines — no new engines)
+import { billPassingKey } from '@/types/bill-passing';
+import { vendorPaymentBatchKey } from '@/types/vendor-payment-batch';
+import { loadShippingBills } from '@/lib/shipping-bill-engine';
 
 function safeRead<T>(key: string): T[] {
   try {
@@ -762,6 +766,132 @@ export function registerAllDataSources(): void {
     ],
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(payrollRunsKey(entityCode || 'SMRT')),
+  });
+
+  // ─── RPT-10a · Block 1 · Fin-hub DSC repair (4 sources) ────────────────
+  // Wraps the SAME storage the banked RPT-1b/2b/2c report pages already load.
+  // un-empties receivx / payout / bill-passing / eximx Report Builder previews.
+  registerSource({
+    id: 'receivx.ar',
+    label: 'ReceivX · A/R Outstanding',
+    card: 'receivx',
+    kind: 'register',
+    fields: [
+      { key: 'party_name', label: 'Customer', kind: 'dimension' },
+      { key: 'voucher_no', label: 'Voucher No', kind: 'dimension' },
+      { key: 'voucher_date', label: 'Voucher Date', kind: 'dimension' },
+      { key: 'due_date', label: 'Due Date', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'age_bucket', label: 'Age Bucket', kind: 'dimension' },
+      { key: 'pending_amount', label: 'Outstanding', kind: 'measure' },
+      { key: 'overdue_amount', label: 'Overdue', kind: 'measure' },
+    ],
+    read: (entityCode) => {
+      const rows = safeRead<Record<string, unknown>>(outstandingKey(entityCode || 'SMRT'))
+        .filter((r) => (r as { party_type?: string }).party_type === 'debtor')
+        .filter((r) => (r as { status?: string }).status !== 'cancelled');
+      const today = Date.now();
+      return rows.map((r) => {
+        const due = (r as { due_date?: string }).due_date;
+        const pending = Number((r as { pending_amount?: number }).pending_amount ?? 0);
+        const ageDays = due ? Math.floor((today - new Date(due).getTime()) / 86400000) : 0;
+        const bucket =
+          ageDays <= 0 ? 'current' :
+          ageDays <= 30 ? '1-30' :
+          ageDays <= 60 ? '31-60' :
+          ageDays <= 90 ? '61-90' :
+          ageDays <= 180 ? '91-180' : '180+';
+        return {
+          ...r,
+          age_bucket: bucket,
+          overdue_amount: ageDays > 0 ? pending : 0,
+        };
+      });
+    },
+  });
+
+  registerSource({
+    id: 'payout.payments',
+    label: 'PayOut · Vendor Payment Batches',
+    card: 'payout',
+    kind: 'register',
+    fields: [
+      { key: 'batch_no', label: 'Batch No', kind: 'dimension' },
+      { key: 'scheduled_date', label: 'Scheduled', kind: 'dimension' },
+      { key: 'channel', label: 'Mode', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'line_count', label: 'Lines', kind: 'measure' },
+      { key: 'total_amount_paise', label: 'Amount (paise)', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(vendorPaymentBatchKey(entityCode || 'SMRT'))
+        .filter((b) => (b as { status?: string }).status !== 'cancelled'),
+  });
+
+  registerSource({
+    id: 'billpassing.bills',
+    label: 'Bill Passing · Bills',
+    card: 'bill-passing',
+    kind: 'register',
+    fields: [
+      { key: 'bill_no', label: 'Bill No', kind: 'dimension' },
+      { key: 'bill_date', label: 'Bill Date', kind: 'dimension' },
+      { key: 'vendor_name', label: 'Vendor', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'match_type', label: 'Match Type', kind: 'dimension' },
+      { key: 'age_bucket', label: 'Age Bucket', kind: 'dimension' },
+      { key: 'total_invoice_value', label: 'Invoice Value', kind: 'measure' },
+      { key: 'total_variance', label: 'Variance', kind: 'measure' },
+    ],
+    read: (entityCode) => {
+      const rows = safeRead<Record<string, unknown>>(billPassingKey(entityCode || 'SMRT'))
+        .filter((b) => (b as { status?: string }).status !== 'cancelled');
+      const today = Date.now();
+      return rows.map((r) => {
+        const dt = (r as { bill_date?: string }).bill_date;
+        const ageDays = dt ? Math.floor((today - new Date(dt).getTime()) / 86400000) : 0;
+        const bucket =
+          ageDays <= 7 ? '0-7' :
+          ageDays <= 15 ? '8-15' :
+          ageDays <= 30 ? '16-30' :
+          ageDays <= 60 ? '31-60' : '60+';
+        return { ...r, age_bucket: bucket };
+      });
+    },
+  });
+
+  registerSource({
+    id: 'eximx.shipments',
+    label: 'EximX · Shipping Bills',
+    card: 'eximx',
+    kind: 'register',
+    fields: [
+      { key: 'sb_no', label: 'SB No', kind: 'dimension' },
+      { key: 'filing_date', label: 'Filing Date', kind: 'dimension' },
+      { key: 'sb_type', label: 'Type', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'port_of_loading', label: 'Port', kind: 'dimension' },
+      { key: 'fob_value_inr', label: 'FOB Value INR', kind: 'measure' },
+      { key: 'realised_value_inr', label: 'Realised INR', kind: 'measure' },
+    ],
+    read: (entityCode) => {
+      try {
+        return loadShippingBills(entityCode || 'SMRT').map((sb) => {
+          const fob = (sb.lines ?? []).reduce(
+            (s, l) => s + (l.fob_value_inr ?? 0),
+            0,
+          );
+          const realised = sb.status === 'goods_dispatched' ? fob : 0;
+          return {
+            ...(sb as unknown as Record<string, unknown>),
+            fob_value_inr: fob,
+            realised_value_inr: realised,
+          };
+        });
+      } catch {
+        return [];
+      }
+    },
   });
 }
 

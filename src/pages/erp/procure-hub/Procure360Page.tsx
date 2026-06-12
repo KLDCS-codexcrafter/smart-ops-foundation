@@ -109,6 +109,8 @@ import { BudgetUtilizationDashboard } from './reports/BudgetUtilizationDashboard
 import { VendorAdvanceEntry } from './transactions/VendorAdvanceEntry';
 import { VendorAdvanceRegister } from './reports/VendorAdvanceRegister';
 import ReportBuilder from '@/components/operix-core/report-framework/ReportBuilder';
+// RPT-10a · Block 4 · Spend Funnel executive cockpit
+import SpendFunnelPage from '@/pages/erp/procure-hub/cockpits/SpendFunnelPage';
 
 const HASH_ALLOWLIST: Procure360Module[] = [
   'welcome',
@@ -451,6 +453,8 @@ export default function Procure360Page(): JSX.Element {
       case 'vendor-advance-entry':            return <VendorAdvanceEntry />;
       case 'vendor-advance-register':         return <VendorAdvanceRegister />;
       case 'p360-rpt-report-builder': return <ReportBuilder cardId="procure360" />;
+      // RPT-10a · Spend Funnel executive cockpit
+      case 'spend-funnel':            return <SpendFunnelPage entityCode={entityCode} />;
       default:
         return <div className="p-6 text-sm text-muted-foreground">Module not found.</div>;
     }

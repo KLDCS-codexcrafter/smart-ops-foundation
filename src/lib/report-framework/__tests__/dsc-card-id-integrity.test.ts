@@ -61,4 +61,35 @@ describe('DSC ↔ CardId join integrity (T1 drift lock)', () => {
     expect(listSourcesByCard('dispatch')).toHaveLength(0);
     expect(listSourcesByCard('pay-hub')).toHaveLength(0);
   });
+
+  // ─── RPT-10a · Block 1 · Fin-hub repair · close empty-builder gap class ───
+  // Every card with an embedded builder mount (-rpt-report-builder module id,
+  // minus centralized meta cards: 'ix-' InsightX and 'cc-' Command Center
+  // which compose cross-card data rather than carrying their own DSC sources).
+  it('every mounted-builder card resolves ≥ 1 DSC source (Fin-hub repair)', () => {
+    const MOUNTED_CARDS = [
+      'fincore', 'receivx', 'payout', 'bill-passing', 'eximx', 'comply360',
+      'inventory-hub', 'procure360', 'qualicheck', 'production', 'requestx',
+      'store-hub', 'engineeringx', 'sitex', 'maintainpro', 'vendor-portal',
+      'logistics',
+      'salesx', 'distributor-hub', 'customer-hub', 'projx', 'ecomx',
+      'frontdesk', 'servicedesk', 'taskflow', 'docvault', 'peoplepay',
+      'dispatch-hub',
+    ];
+    const offenders = MOUNTED_CARDS.filter(
+      (c) => listSourcesByCard(c).length < 1,
+    );
+    expect(
+      offenders,
+      `cards with mounted builder but zero DSC sources: ${offenders.join(', ')}`,
+    ).toEqual([]);
+  });
+
+  it('receivx · payout · bill-passing · eximx each resolve ≥ 1 source after RPT-10a', () => {
+    expect(listSourcesByCard('receivx').length).toBeGreaterThanOrEqual(1);
+    expect(listSourcesByCard('payout').length).toBeGreaterThanOrEqual(1);
+    expect(listSourcesByCard('bill-passing').length).toBeGreaterThanOrEqual(1);
+    // eximx already had reg:ex-tt-payments; now has eximx.shipments too → ≥ 2
+    expect(listSourcesByCard('eximx').length).toBeGreaterThanOrEqual(2);
+  });
 });

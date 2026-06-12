@@ -190,4 +190,6 @@ export const procure360SidebarItems: SidebarItem[] = [
   },
   // 🆕 RPT-9c · Report Builder (frozen component · cardId='procure360')
   { id: 'p360-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'p360-rpt-report-builder', requiredCards: ['procure360'] },
+  // 🆕 RPT-10a · Spend Funnel executive cockpit
+  { id: 'spend-funnel', type: 'item', label: 'Spend Funnel', icon: Sparkles, moduleId: 'spend-funnel', requiredCards: ['procure360'] },
 ];

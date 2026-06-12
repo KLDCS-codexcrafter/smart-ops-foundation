@@ -32,6 +32,11 @@ export const commandCenterSidebarItems: SidebarItem[] = [
     id: 'cross-card-daybook', type: 'item', label: 'Day Book · All Cards', icon: BookOpen,
     route: '/erp/command-center/daybook', requiredCards: ['command-center'],
   },
+  // 🆕 RPT-10a · Promoter Cockpit · TV mode
+  {
+    id: 'promoter-cockpit', type: 'item', label: 'Promoter Cockpit', icon: Sparkles,
+    route: '/erp/command-center/promoter', requiredCards: ['command-center'],
+  },
   {
     id: 'foundation-group', type: 'group', label: 'Foundation & Core', icon: Building2,
     children: [
