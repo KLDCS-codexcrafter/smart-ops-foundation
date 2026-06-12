@@ -94,6 +94,33 @@ export function DispatchAnalyticsPanel() {
           <Badge variant="outline" className="text-[10px] mr-2">snapshot</Badge>
           generated_at · {snap.generated_at}
         </div>
+
+        {(() => {
+          const chartRows = [
+            { route: 'Delivered', dispatch_value: snap.delivery_memos.delivered },
+            { route: 'In Transit', dispatch_value: snap.delivery_memos.in_transit },
+            { route: 'Pending', dispatch_value: snap.delivery_memos.pending },
+          ];
+          const cfg = getKpi('dp-analytics')?.defaultChart ?? defaultChartConfig({
+            chartType: 'column', xKey: 'route',
+            series: [{ key: 'dispatch_value', label: 'Memos' }],
+            title: 'Dispatch posture by status',
+          });
+          const hash = signReport(chartRows);
+          const short = hash.replace('fnv1a:', '').slice(0, 10);
+          return (
+            <Card className="p-3 space-y-2" data-testid="dp-analytics-dashboard-host">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="outline" className="text-[10px] font-mono" data-testid="dp-analytics-integrity-badge" title={hash}>
+                  <ShieldCheck className="h-3 w-3 mr-1" />{short}
+                </Badge>
+              </div>
+              <div className="w-full h-64" data-testid="dp-analytics-chart-host">
+                <ReportChart data={chartRows} config={cfg} />
+              </div>
+            </Card>
+          );
+        })()}
       </div>
     </PageFloorShell>
   );
