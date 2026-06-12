@@ -197,29 +197,37 @@ export function CapacityPlanningDashboardPanel(): JSX.Element {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm">Top 10 Most-Utilized · {viewMode.replace('_', ' ')}</CardTitle>
+          <CardTitle className="text-sm flex items-center justify-between">
+            <span>Top 10 Most-Utilized · {viewMode.replace('_', ' ')}</span>
+            {top10.length > 0 && (() => {
+              const __hash = signReport(top10);
+              const __short = __hash.replace('fnv1a:', '').slice(0, 10);
+              return (
+                <Badge variant="outline" className="text-[10px] font-mono" data-testid="prod-capacity-integrity-badge" title={__hash}>
+                  <ShieldCheck className="h-3 w-3 mr-1" />{__short}
+                </Badge>
+              );
+            })()}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           {top10.length === 0 ? (
             <div className="text-sm text-muted-foreground text-center py-8">No capacity data in window.</div>
           ) : (
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={top10}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="machine_name" />
-                <YAxis label={{ value: 'Utilization %', angle: -90, position: 'insideLeft' }} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="utilization_pct" name="Utilization %">
-                  {top10.map((row, i) => (
-                    <Cell key={i} fill={STATUS_FILL[row.status]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="w-full h-[250px]" data-testid="prod-capacity-chart-host">
+              <ReportChart
+                data={top10}
+                config={defaultChartConfig({
+                  chartType: 'column',
+                  xKey: 'machine_name',
+                  series: [{ key: 'utilization_pct', label: 'Utilization %' }],
+                })}
+              />
+            </div>
           )}
         </CardContent>
       </Card>
+
 
       <Card>
         <CardContent className="p-0">
