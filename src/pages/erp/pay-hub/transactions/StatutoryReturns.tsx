@@ -18,8 +18,10 @@ import { SmartDateInput } from '@/components/ui/smart-date-input';
 import { Separator } from '@/components/ui/separator';
 import {
   Download, CheckCircle, AlertTriangle, Clock, Plus,
-  Landmark, Shield, IndianRupee, FileText, Calendar, AlertCircle,
+  Landmark, Shield, IndianRupee, FileText, Calendar, AlertCircle, ShieldCheck,
 } from 'lucide-react';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { toast } from 'sonner';
 import type { PayrollRun, EmployeePayslip } from '@/types/payroll-run';
 import type {
@@ -945,6 +947,46 @@ export function StatutoryReturnsPanel({ defaultTab = 'calendar' }: StatutoryRetu
           )}
         </TabsContent>
       </Tabs>
+
+      {(() => {
+        const byType = new Map<string, { filed: number; pending: number }>();
+        for (const c of periodChallans) {
+          const t = c.challanType;
+          const cur = byType.get(t) ?? { filed: 0, pending: 0 };
+          if (c.status === 'paid') cur.filed += 1; else cur.pending += 1;
+          byType.set(t, cur);
+        }
+        const chartRows = Array.from(byType.entries()).map(([return_type, v]) => ({
+          return_type, filed: v.filed, pending: v.pending,
+        }));
+        const cfg = getKpi('ph-statutory')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'return_type',
+          series: [{ key: 'filed', label: 'Filed' }, { key: 'pending', label: 'Pending' }],
+          title: 'Statutory returns by type',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="ph-statutory-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="ph-statutory-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'return_type', label: 'Return Type' },
+                { key: 'filed', label: 'Filed', align: 'right' },
+                { key: 'pending', label: 'Pending', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No challans for selected period"
+            />
+          </Card>
+        );
+      })()}
 
       {/* ════════ Challan Sheet ════════ */}
       <Sheet open={challanSheetOpen} onOpenChange={setChallanSheetOpen}>

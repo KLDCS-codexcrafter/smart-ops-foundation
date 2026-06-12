@@ -23,7 +23,7 @@ import {
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Lock, Settings2 } from 'lucide-react';
+import { Lock, Settings2, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import { loadDocuments } from '@/lib/docvault-engine';
@@ -35,6 +35,8 @@ import {
 import type {
   DocumentCategory, DocumentLifecycleStatus, ConfidentialityLevel,
 } from '@/types/docvault';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const CATEGORIES: DocumentCategory[] = [
   'policy', 'procedure', 'work_instruction', 'contract', 'agreement',
@@ -216,6 +218,41 @@ export function DocumentRegister(): JSX.Element {
           </Table>
         </CardContent>
       </Card>
+
+      {(() => {
+        const byType = new Map<string, number>();
+        for (const d of filtered) {
+          const t = (d.document_type as string) || 'unknown';
+          byType.set(t, (byType.get(t) ?? 0) + 1);
+        }
+        const chartRows = Array.from(byType.entries()).map(([doc_type, count]) => ({ doc_type, count }));
+        const cfg = getKpi('dv-documents')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'doc_type',
+          series: [{ key: 'count', label: 'Documents' }],
+          title: 'Documents by type',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="glass-card rounded-2xl p-3 space-y-2" data-testid="dv-documents-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="dv-documents-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'doc_type', label: 'Doc Type' },
+                { key: 'count', label: 'Count', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No documents"
+            />
+          </Card>
+        );
+      })()}
 
       {controlDocId && (
         <DocumentControlPanel

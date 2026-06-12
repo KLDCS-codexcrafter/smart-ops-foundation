@@ -17,11 +17,13 @@
 import { useMemo, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, ChevronDown, FileText } from 'lucide-react';
+import { ChevronRight, ChevronDown, FileText, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { loadDocuments } from '@/lib/docvault-engine';
 import { buildVersionTree, type VersionNode } from '@/lib/docvault-tree-util';
 import type { Document } from '@/types/docvault';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 function TreeNode({ node, depth }: { node: VersionNode; depth: number }): JSX.Element {
   const [open, setOpen] = useState(true);
@@ -87,6 +89,33 @@ export function DrawingRegisterTree(): JSX.Element {
           </Card>
         );
       })}
+      {(() => {
+        const byDisc = new Map<string, number>();
+        for (const d of drawings) {
+          const k = d.originating_department_id || 'unassigned';
+          byDisc.set(k, (byDisc.get(k) ?? 0) + 1);
+        }
+        const chartRows = Array.from(byDisc.entries()).map(([discipline, count]) => ({ discipline, count }));
+        const cfg = getKpi('dv-drawings')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'discipline',
+          series: [{ key: 'count', label: 'Drawings' }],
+          title: 'Drawings by discipline',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="dv-drawings-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="dv-drawings-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-56" data-testid="dv-drawings-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }

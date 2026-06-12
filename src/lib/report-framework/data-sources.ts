@@ -37,6 +37,9 @@ import { serviceTicketKey } from '@/types/service-ticket';
 import { amcRecordKey } from '@/types/servicedesk';
 import { dispatchReceiptsKey } from '@/types/dispatch-receipt';
 import { inwardReceiptsKey } from '@/types/inward-receipt';
+import { fdPartyContactsKey } from '@/types/frontdesk';
+import { payrollRunsKey } from '@/types/payroll-run';
+import { tfSLAKey } from '@/lib/taskflow-governance-engine';
 import { getMSMEBreaches } from '@/lib/msme-43bh-engine';
 
 function safeRead<T>(key: string): T[] {
@@ -695,6 +698,70 @@ export function registerAllDataSources(): void {
     ],
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(inwardReceiptsKey(entityCode || 'SMRT')),
+  });
+
+  // ─── RPT-8b · 4 sources (FrontDesk + TaskFlow + DocVault + Pay-hub · read-only wrappers) ───
+  // payhub.payroll wraps the SAME storage the pay-hub workflow modules already read.
+  registerSource({
+    id: 'frontdesk.contacts',
+    label: 'FrontDesk · Party Contacts',
+    card: 'frontdesk',
+    kind: 'register',
+    fields: [
+      { key: 'partyId', label: 'Party', kind: 'dimension' },
+      { key: 'name', label: 'Contact', kind: 'dimension' },
+      { key: 'designation', label: 'Designation', kind: 'dimension' },
+      { key: 'isPrimary', label: 'Primary', kind: 'dimension' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(fdPartyContactsKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'taskflow.tasks',
+    label: 'TaskFlow · SLA Rules',
+    card: 'taskflow',
+    kind: 'register',
+    fields: [
+      { key: 'id', label: 'Rule Id', kind: 'dimension' },
+      { key: 'name', label: 'Name', kind: 'dimension' },
+      { key: 'category', label: 'Category', kind: 'dimension' },
+      { key: 'priority', label: 'Priority', kind: 'dimension' },
+      { key: 'isActive', label: 'Active', kind: 'dimension' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(tfSLAKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'docvault.documents',
+    label: 'DocVault · Documents',
+    card: 'docvault',
+    kind: 'register',
+    fields: [
+      { key: 'id', label: 'Doc Id', kind: 'dimension' },
+      { key: 'title', label: 'Title', kind: 'dimension' },
+      { key: 'document_type', label: 'Type', kind: 'dimension' },
+      { key: 'originating_department_id', label: 'Discipline', kind: 'dimension' },
+      { key: 'current_version', label: 'Version', kind: 'dimension' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(`erp_documents_${entityCode || 'SMRT'}`),
+  });
+
+  registerSource({
+    id: 'payhub.payroll',
+    label: 'Pay-hub · Payroll Runs',
+    card: 'pay-hub',
+    kind: 'register',
+    fields: [
+      { key: 'payPeriod', label: 'Period', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'totalEmployees', label: 'Employees', kind: 'measure' },
+      { key: 'totalNet', label: 'Net ₹', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(payrollRunsKey(entityCode || 'SMRT')),
   });
 }
 
