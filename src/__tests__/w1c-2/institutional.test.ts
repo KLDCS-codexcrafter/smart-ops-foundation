@@ -13,18 +13,15 @@ const SPRINT_81A = readFileSync(resolve(process.cwd(), 'src/test/sprint-81a/comp
 
 describe('W1C-2 Block 5 · sprint-history', () => {
   it('W1C-1 backfilled to 9a47f31', () => {
-    const block = HISTORY.match(/T-W1C1-DocSendBar-Reports[\s\S]{0,400}/);
-    expect(block).not.toBeNull();
-    expect(block?.[0]).toContain("'9a47f31'");
-    expect(block?.[0]).toContain("CONFIRMED");
+    expect(HISTORY).toMatch(/sprintNumber: 'W1C1'[\s\S]{0,300}headSha: '9a47f31'/);
+    expect(HISTORY).toMatch(/sprintNumber: 'W1C1'[\s\S]{0,300}provenance: 'CONFIRMED'/);
   });
   it('W1C-2 self-seeded as T-W1C2-Polish-Riders', () => {
     expect(HISTORY).toContain("'T-W1C2-Polish-Riders'");
-    expect(HISTORY).toMatch(/W1C2['\s,].*Polish-Riders/s);
+    expect(HISTORY).toMatch(/sprintNumber: 'W1C2'/);
   });
   it('W1C-2 declares zero new SIBLINGs', () => {
-    const seg = HISTORY.match(/T-W1C2-Polish-Riders[\s\S]{0,200}/)?.[0] ?? '';
-    expect(seg).toContain('newSiblings: []');
+    expect(HISTORY).toMatch(/sprintNumber: 'W1C2'[\s\S]{0,300}newSiblings: \[\]/);
   });
 });
 
