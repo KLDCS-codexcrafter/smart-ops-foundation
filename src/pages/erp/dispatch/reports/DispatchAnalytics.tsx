@@ -9,6 +9,9 @@ import { Badge } from '@/components/ui/badge';
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 import { buildDispatchAnalyticsSnapshot } from '@/lib/dispatch-residual-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
+import { ShieldCheck } from 'lucide-react';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 function Tile({ label, value, hint }: { label: string; value: number | string; hint?: string }) {
   return (
