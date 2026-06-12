@@ -445,6 +445,7 @@ export default function CommandCenterPage() {
       'audit-integrity',
       'retention-console',
       'communication-console',
+      'auto-send-rules',
       'master-health-scorecard',
     ]);
     // 🚚 S124 · A1 — legacy FP&A hashes redirect to /erp/fpa-planning#<new-id>.
