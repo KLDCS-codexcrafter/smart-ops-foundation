@@ -42,7 +42,9 @@ export type DepartmentStoreModule =
   // Transactions (NEW · Card #7 · D-381 + D-382)
   | 'sh-t-stock-issue-entry'
   | 'sh-t-stock-issue-register'
-  | 'sh-t-receipt-ack';
+  | 'sh-t-receipt-ack'
+  // 🆕 RPT-9c · Report Builder mount
+  | 'sh-rpt-report-builder';
 
 interface DepartmentStoreSidebarProps {
   activeModule: DepartmentStoreModule;
