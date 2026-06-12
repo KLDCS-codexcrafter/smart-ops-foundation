@@ -58,6 +58,13 @@ export default function MobileUniversalReportPage(): JSX.Element {
         </div>
       </Card>
 
+      {/* M1 · DocSendBar-mobile floor — honest send for the report list itself */}
+      <ReportSendHeader
+        title={card ? `${CARD_LABEL[card]} reports` : 'Universal Reporting'}
+        rows={reports.map(r => ({ id: r.id, label: r.label, kind: r.kind, route_len: r.desktopRoute.length }))}
+      />
+
+
       {!card && (
         <div className="grid grid-cols-2 gap-3">
           {cards.map(c => (
