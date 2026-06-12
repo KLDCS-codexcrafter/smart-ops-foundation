@@ -70,6 +70,7 @@ export default function RequestXPage(): JSX.Element {
       'rpt-po-against-indent', 'rpt-department-summary',
       'rpt-category-spend', 'rpt-ageing-pending', 'rpt-service-request-register',
       'master-departments', 'master-approval-matrix', 'master-voucher-types', 'master-pinned-templates',
+      'rqx-rpt-report-builder',
     ];
     if ((validModules as string[]).includes(hash)) return hash as RequestXModule;
     return 'welcome';
