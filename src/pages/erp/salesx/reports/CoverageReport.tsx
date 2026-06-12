@@ -227,6 +227,44 @@ export function CoverageReportPanel({ entityCode }: Props) {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const byTerr = new Map<string, { sum: number; n: number }>();
+        for (const r of rows) {
+          const cur = byTerr.get(r.territoryName) ?? { sum: 0, n: 0 };
+          cur.sum += r.coverage; cur.n += 1;
+          byTerr.set(r.territoryName, cur);
+        }
+        const chartRows = Array.from(byTerr.entries()).map(([territory, v]) => ({
+          territory, coverage: v.n > 0 ? Math.round(v.sum / v.n) : 0,
+        }));
+        const cfg = getKpi('sx-coverage')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'territory',
+          series: [{ key: 'coverage', label: 'Coverage %' }],
+          title: 'Coverage by territory',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="sx-coverage-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-coverage-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'territory', label: 'Territory' },
+                { key: 'coverage', label: 'Coverage %', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No territory coverage yet"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }
