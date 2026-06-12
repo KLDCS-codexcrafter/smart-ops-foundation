@@ -65,6 +65,8 @@ const LIVE_MODULES: FinCoreModule[] = [
   'fc-rpt-delivery-note-register', 'fc-rpt-receipt-note-register',
   'fc-rpt-stock-adjustment-register', 'fc-rpt-stock-journal-register',
   'fc-rpt-stock-transfer-register',
+  // RPT-9a
+  'fc-rpt-report-builder',
 ];
 
 interface SidebarItem {
