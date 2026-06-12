@@ -5,13 +5,15 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Sparkles, TrendingUp, Star, Users } from 'lucide-react';
+import { Sparkles, TrendingUp, Star, Users, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { signalsForCatalog, type SocialProofSignal } from '@/lib/social-proof-engine';
 import { logAudit } from '@/lib/card-audit-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
@@ -217,6 +219,33 @@ export function SocialProofReportPanel() {
           </div>
         )}
       </Card>
+
+      {(() => {
+        const tallyByKind = new Map<string, number>();
+        for (const arr of signalMap.values()) {
+          for (const s of arr) tallyByKind.set(KIND_LABEL[s.kind], (tallyByKind.get(KIND_LABEL[s.kind]) ?? 0) + 1);
+        }
+        const chartRows = Array.from(tallyByKind.entries()).map(([channel, mentions]) => ({ channel, mentions }));
+        const cfg = getKpi('cu-social')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'channel',
+          series: [{ key: 'mentions', label: 'Mentions' }],
+          title: 'Social proof mentions by channel',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="cu-social-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="cu-social-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="cu-social-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }

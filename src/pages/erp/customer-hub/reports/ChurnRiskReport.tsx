@@ -5,7 +5,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Activity, Mail, Gift } from 'lucide-react';
+import { AlertTriangle, Activity, Mail, Gift, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,8 @@ import type { ChurnResult, ChurnRiskTier } from '@/lib/customer-churn-engine';
 import { logAudit } from '@/lib/card-audit-engine';
 import { toast } from 'sonner';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
@@ -215,6 +217,31 @@ export function ChurnRiskReportPanel() {
           </div>
         )}
       </Card>
+
+      {(() => {
+        const chartRows = (Object.keys(tally) as ChurnRiskTier[])
+          .map(t => ({ risk_band: TIER_LABEL[t], count: tally[t] }))
+          .filter(r => r.count > 0);
+        const cfg = getKpi('cu-churn')?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'risk_band',
+          series: [{ key: 'count', label: 'Customers' }],
+          title: 'Churn risk distribution',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="cu-churn-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="cu-churn-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="cu-churn-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }

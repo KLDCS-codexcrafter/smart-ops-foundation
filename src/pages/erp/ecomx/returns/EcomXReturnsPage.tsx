@@ -3,10 +3,14 @@
  * @sprint Sprint 154 · EcomX Money Suite · DP-EC-8 · returns register
  */
 import { useMemo, useState } from 'react';
-import { Undo2 } from 'lucide-react';
+import { Undo2, ShieldCheck } from 'lucide-react';
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listMarketplaces } from '@/lib/ecomx-engine';
 import { listReturns } from '@/lib/ecomx-recon-engine';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 export function EcomXReturnsPage(): JSX.Element {
   const { entityCode } = useEntityCode();
@@ -58,6 +62,31 @@ export function EcomXReturnsPage(): JSX.Element {
           </div>
         )}
       </section>
+
+      {(() => {
+        const byReason = new Map<string, number>();
+        for (const r of rows) byReason.set(r.kind, (byReason.get(r.kind) ?? 0) + 1);
+        const chartRows = Array.from(byReason.entries()).map(([reason, return_count]) => ({ reason, return_count }));
+        const cfg = getKpi('ec-returns')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'reason',
+          series: [{ key: 'return_count', label: 'Returns' }],
+          title: 'Returns by reason',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="ec-returns-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="ec-returns-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="ec-returns-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }
