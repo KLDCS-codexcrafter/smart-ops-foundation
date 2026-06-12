@@ -361,6 +361,7 @@ export function FinCorePagePanel() {
       case 'fc-rpt-stock-adjustment-register': return <StockAdjustmentRegisterPanel  entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-stock-journal-register':    return <StockJournalRegisterPanel     entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
       case 'fc-rpt-stock-transfer-register':   return <StockTransferRegisterPanel    entityCode={entityCode} onNavigate={(mod, filters) => { setActiveModule(mod); if (filters) setDayBookInitialFilters(filters); }} />;
+      case 'fc-rpt-report-builder':            return <ReportBuilder cardId="fincore" />;
       default: return <ComingSoonPanel module={activeModule} />;
     }
   };
