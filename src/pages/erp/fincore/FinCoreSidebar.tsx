@@ -271,7 +271,7 @@ export function FinCoreSidebar({ active, onNavigate }: FinCoreSidebarProps) {
     const rpt = ['fc-rpt-daybook','fc-rpt-ledger','fc-rpt-trial-balance','fc-rpt-pl',
       'fc-rpt-bs','fc-rpt-stock-summary','fc-rpt-outstanding','fc-rpt-26as',
       'fc-rpt-24q','fc-rpt-26q','fc-rpt-27q','fc-rpt-challan',
-      'fc-rpt-audit-trail','fc-rpt-monthly-production'];
+      'fc-rpt-audit-trail','fc-rpt-monthly-production','fc-rpt-report-builder'];
     const gst = ['fc-gst-gstr1','fc-gst-gstr3b','fc-gst-2a','fc-gst-itc',
       'fc-gst-gstr2','fc-gst-gstr9'];
     const tds = ['fc-tds-advance','fc-tds-analytics'];
