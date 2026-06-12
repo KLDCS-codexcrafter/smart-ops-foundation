@@ -19,6 +19,7 @@ import {
   MOBILE_REPORT_HONESTY,
   type MobileReportCard,
 } from '@/lib/mobile-report-registry';
+import { ReportSendHeader } from '@/components/operix-core/report-framework/ReportSendHeader';
 
 const CARD_LABEL: Record<MobileReportCard, string> = {
   eximx: 'EximX',
