@@ -11,7 +11,8 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { ListTree, Boxes, Users, CalendarDays } from 'lucide-react';
+import { ListTree, Boxes, Users, CalendarDays, ShieldCheck } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { type SecondarySales, secondarySalesKey } from '@/types/secondary-sales';
 import {
   aggregateSecondarySalesByItem,
@@ -19,6 +20,8 @@ import {
   aggregateSecondarySalesByMonth,
 } from '@/lib/field-force-engine';
 import { dSum, round2 } from '@/lib/decimal-helpers';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface Props { entityCode: string }
 
@@ -203,6 +206,36 @@ export function SecondarySalesReportPanel({ entityCode }: Props) {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {(() => {
+        const chartRows = byMonth.map(m => ({ date: m.month, secondary_value: m.total_amount }));
+        const cfg = getKpi('sx-secondary-rpt')?.defaultChart ?? defaultChartConfig({
+          chartType: 'line', xKey: 'date',
+          series: [{ key: 'secondary_value', label: 'Secondary Value ₹' }],
+          title: 'Secondary sales by date',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="sx-secondary-rpt-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-secondary-rpt-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'date', label: 'Month' },
+                { key: 'secondary_value', label: 'Secondary Value ₹', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No secondary sales yet"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }

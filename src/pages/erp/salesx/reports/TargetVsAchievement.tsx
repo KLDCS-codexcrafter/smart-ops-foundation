@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Search } from 'lucide-react';
+import { Search, ShieldCheck } from 'lucide-react';
 import { onEnterNext } from '@/lib/keyboard';
 import { targetsKey } from '@/pages/erp/salesx/masters/TargetMaster.types';
 import type { SalesTarget } from '@/pages/erp/salesx/masters/TargetMaster.types';
@@ -20,6 +20,8 @@ import type { Voucher } from '@/types/voucher';
 import { cn } from '@/lib/utils';
 import Decimal from 'decimal.js';
 import { dSum, round2 } from '@/lib/decimal-helpers';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface Props { entityCode: string }
 
@@ -200,6 +202,41 @@ export function TargetVsAchievementPanel({ entityCode }: Props) {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = filtered.map(r => ({
+          person: r.target.person_name ?? 'Company',
+          target: r.target.target_value,
+          achieved: r.actual,
+        }));
+        const cfg = getKpi('sx-target-ach')?.defaultChart ?? defaultChartConfig({
+          chartType: 'combo', xKey: 'person',
+          series: [{ key: 'target', label: 'Target ₹' }, { key: 'achieved', label: 'Achieved ₹' }],
+          title: 'Target vs Achievement',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="sx-target-ach-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-target-ach-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'person', label: 'Person' },
+                { key: 'target', label: 'Target ₹', align: 'right' },
+                { key: 'achieved', label: 'Achieved ₹', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No active targets"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }

@@ -15,11 +15,13 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { SmartDateInput } from '@/components/ui/smart-date-input';
-import { Route, TrendingUp } from 'lucide-react';
+import { Route, TrendingUp, ShieldCheck } from 'lucide-react';
 import { type BeatRoute, beatRoutesKey, FREQUENCY_LABELS } from '@/types/beat-route';
 import { type VisitLog, visitLogsKey } from '@/types/visit-log';
 import { type SAMPerson, samPersonsKey } from '@/types/sam-person';
 import { computeBeatProductivity } from '@/lib/field-force-engine';
+import { TableChartToggle } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 interface Props { entityCode: string }
 
@@ -205,6 +207,39 @@ export function BeatProductivityReportPanel({ entityCode }: Props) {
           )}
         </CardContent>
       </Card>
+
+      {(() => {
+        const chartRows = rows.map(r => ({
+          beat: r.beat.beat_code,
+          productivity: r.prod.completion_pct,
+        }));
+        const cfg = getKpi('sx-beat')?.defaultChart ?? defaultChartConfig({
+          chartType: 'column', xKey: 'beat',
+          series: [{ key: 'productivity', label: 'Completion %' }],
+          title: 'Beat productivity',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="sx-beat-toggle-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="sx-beat-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <TableChartToggle
+              rows={chartRows}
+              columns={[
+                { key: 'beat', label: 'Beat' },
+                { key: 'productivity', label: 'Completion %', align: 'right' },
+              ]}
+              chartConfig={cfg}
+              defaultView="table"
+              emptyLabel="No beats configured"
+            />
+          </Card>
+        );
+      })()}
     </div>
   );
 }

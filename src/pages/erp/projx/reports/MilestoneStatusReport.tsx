@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BarChart3, Download } from 'lucide-react';
+import { BarChart3, Download, ShieldCheck } from 'lucide-react';
 import { useProjectMilestones } from '@/hooks/useProjectMilestones';
 import { useProjects } from '@/hooks/useProjects';
 import {
@@ -16,6 +16,8 @@ import {
 } from '@/types/projx/project-milestone';
 import type { MilestoneStatus } from '@/types/projx/project-milestone';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { ReportChart } from '@/components/operix-core/report-framework';
+import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
 const fmtINR = (n: number) =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -153,6 +155,32 @@ export function MilestoneStatusReportPanel() {
           </table>
         )}
       </CardContent></Card>
+
+      {(() => {
+        const chartRows = (Object.keys(MILESTONE_STATUS_LABELS) as MilestoneStatus[]).map(s => ({
+          status: MILESTONE_STATUS_LABELS[s],
+          count: stats[s] ?? 0,
+        }));
+        const cfg = getKpi('px-milestones')?.defaultChart ?? defaultChartConfig({
+          chartType: 'doughnut', xKey: 'status',
+          series: [{ key: 'count', label: 'Milestones' }],
+          title: 'Milestone status',
+        });
+        const hash = signReport(chartRows);
+        const short = hash.replace('fnv1a:', '').slice(0, 10);
+        return (
+          <Card className="p-3 space-y-2" data-testid="px-milestones-dashboard-host">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="text-[10px] font-mono" data-testid="px-milestones-integrity-badge" title={hash}>
+                <ShieldCheck className="h-3 w-3 mr-1" />{short}
+              </Badge>
+            </div>
+            <div className="w-full h-64" data-testid="px-milestones-chart-host">
+              <ReportChart data={chartRows} config={cfg} />
+            </div>
+          </Card>
+        );
+      })()}
     </div>
   );
 }

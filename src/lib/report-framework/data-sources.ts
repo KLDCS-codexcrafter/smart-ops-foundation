@@ -28,6 +28,8 @@ import { stockIssuesKey } from '@/types/stock-issue';
 import { stockReceiptAcksKey } from '@/types/stock-receipt-ack';
 import { ordersKey } from '@/types/order';
 import { quotationsKey } from '@/types/quotation';
+import { projectsKey } from '@/types/projx/project';
+import { projectMilestonesKey } from '@/types/projx/project-milestone';
 import { getMSMEBreaches } from '@/lib/msme-43bh-engine';
 
 function safeRead<T>(key: string): T[] {
@@ -532,6 +534,42 @@ export function registerAllDataSources(): void {
     ],
     read: (entityCode) =>
       safeRead<Record<string, unknown>>(quotationsKey(entityCode || 'SMRT')),
+  });
+
+  // ─── RPT-7b · 2 ProjX sources (read-only wrappers · reuse existing storage keys) ───
+  registerSource({
+    id: 'projx.projects',
+    label: 'ProjX · Projects',
+    card: 'projx',
+    kind: 'register',
+    fields: [
+      { key: 'project_no', label: 'Project No', kind: 'dimension' },
+      { key: 'project_name', label: 'Project', kind: 'dimension' },
+      { key: 'customer_name', label: 'Customer', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'start_date', label: 'Start', kind: 'dimension' },
+      { key: 'current_contract_value', label: 'Contract ₹', kind: 'measure' },
+      { key: 'billed_to_date', label: 'Billed ₹', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(projectsKey(entityCode || 'SMRT')),
+  });
+
+  registerSource({
+    id: 'projx.financials',
+    label: 'ProjX · Milestone Financials',
+    card: 'projx',
+    kind: 'register',
+    fields: [
+      { key: 'milestone_no', label: 'Milestone No', kind: 'dimension' },
+      { key: 'milestone_name', label: 'Milestone', kind: 'dimension' },
+      { key: 'status', label: 'Status', kind: 'dimension' },
+      { key: 'target_date', label: 'Target Date', kind: 'dimension' },
+      { key: 'invoice_amount', label: 'Invoice ₹', kind: 'measure' },
+      { key: 'invoice_pct', label: 'Invoice %', kind: 'measure' },
+    ],
+    read: (entityCode) =>
+      safeRead<Record<string, unknown>>(projectMilestonesKey(entityCode || 'SMRT')),
   });
 }
 
