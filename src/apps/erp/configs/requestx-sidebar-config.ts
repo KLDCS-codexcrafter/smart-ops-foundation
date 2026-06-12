@@ -76,4 +76,6 @@ export const requestxSidebarItems: SidebarItem[] = [
       { id: 'master-pinned-templates', type: 'item', label: 'Pinned Templates', icon: FileText, moduleId: 'master-pinned-templates', requiredCards: ['requestx'], keyboard: 'r n' },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='requestx')
+  { id: 'rqx-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'rqx-rpt-report-builder', requiredCards: ['requestx'] },
 ];

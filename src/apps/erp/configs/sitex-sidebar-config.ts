@@ -156,4 +156,6 @@ export const sitexSidebarItems: SidebarItem[] = [
       { id: 'sitex-reports', type: 'item', label: 'Site Reports', icon: BarChart3, moduleId: 'sitex-reports', requiredCards: ['sitex'], keyboard: 's r' },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='sitex')
+  { id: 'sx-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'sx-rpt-report-builder', requiredCards: ['sitex'] },
 ];

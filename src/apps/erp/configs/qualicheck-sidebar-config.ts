@@ -399,4 +399,6 @@ export const qualicheckSidebarItems: SidebarItem[] = [
       },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='qualicheck')
+  { id: 'qc-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'qc-rpt-report-builder', requiredCards: ['qualicheck'] },
 ];

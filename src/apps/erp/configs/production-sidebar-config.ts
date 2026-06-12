@@ -175,4 +175,6 @@ export const productionSidebarItems: SidebarItem[] = [
         icon: Boxes, moduleId: 'rpt-fa-linked-machines', requiredCards: ['production'] },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='production')
+  { id: 'prod-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'prod-rpt-report-builder', requiredCards: ['production'] },
 ];

@@ -142,5 +142,7 @@ export const storeHubSidebarItems: SidebarItem[] = [
       },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='store-hub')
+  { id: 'sh-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'sh-rpt-report-builder', requiredCards: ['store-hub'] },
 ];
 

@@ -173,4 +173,6 @@ export const maintainproSidebarItems: SidebarItem[] = [
       { id: 'brsr-compliance-snapshot', type: 'item', label: 'BRSR Compliance Snapshot', icon: ShieldAlert, moduleId: 'brsr-compliance-snapshot', requiredCards: ['maintainpro'] },
     ],
   },
+  // 🆕 RPT-9c · Report Builder (frozen component · cardId='maintainpro')
+  { id: 'mp-rpt-report-builder', type: 'item', label: 'Report Builder', icon: Sparkles, moduleId: 'mp-rpt-report-builder', requiredCards: ['maintainpro'] },
 ];
