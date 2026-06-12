@@ -11,7 +11,7 @@
  *  - save flow respects role-allowed scopes (operator → only "private" option)
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import {
   registerSource,
   __resetDataSourceCatalogForTests,
