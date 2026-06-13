@@ -4,7 +4,7 @@
  * [JWT] Read by orchestrator → POST /api/masters/customers + /api/masters/vendors
  */
 
-export type DemoArchetype = 'trading' | 'services' | 'manufacturing';
+export type DemoArchetype = 'trading' | 'services' | 'manufacturing' | 'valve-mfg';
 
 interface DemoContact {
   id: string; contactPerson: string; designation: string;
