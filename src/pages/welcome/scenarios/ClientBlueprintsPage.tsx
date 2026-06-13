@@ -27,6 +27,8 @@ import { purgeDemoData } from '@/lib/demo-seed-manifest';
 // Sprint W1C-5 · Block 4b · audit B9-F1 · route legacy-group-store purge through engine.
 import { purgeLegacyGroupStoresForEntity } from '@/lib/fincore-engine';
 import type { DemoArchetype } from '@/data/demo-customers-vendors';
+// Sprint T-B1-Abdos-Group-Seed · multi-entity group seeder for the ABDOS blueprint.
+import { seedAbdosGroup } from '@/data/demo-abdos-group';
 
 type ScenarioPhase = 'live' | 'phase2' | 'planned';
 
@@ -51,13 +53,14 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
   {
     id: 'abdos',
     title: 'Abdos India',
-    subtitle: 'Multi-BU Conglomerate',
+    // Sprint T-B1-Abdos-Group-Seed · multi-entity group: parent + 5 verticals
+    subtitle: 'Multi-Entity Group · parent + 5 verticals · mixed Ind-AS consolidation',
     icon: Factory,
     description:
-      'Diversified 5-BU group: Life Sciences, Contract Manufacturing, Packaging, Distribution, Hygiene & Homecare. Validates multi-BU, contract mfg, export, multi-channel.',
+      'Real multi-company group: Abdos Group Holdings (parent) + Life Sciences · Contract Manufacturing · Packaging · Distribution · Hygiene & Homecare. Seeds the group-structure tree (3 full · 1 proportional JV · 1 equity associate), per-entity trial balances, and intercompany transactions — feeds the Group Consolidation page (Consolidated P&L + TB + eliminations).',
     details:
-      "1967 · 2500+ employees · 10 mfg facilities · 90+ countries served. Clients include Unilever, P&G, Serum Institute, Novartis, Dr Reddy's. Pattern: large diversified conglomerate.",
-    pattern: 'Multi-BU Conglomerate + Contract Mfg + Export + FMCG',
+      '1967 · 2500+ employees · 10 mfg facilities · 90+ countries served. Clients include Unilever, P&G, Serum Institute, Novartis, Dr Reddy\'s. Honest scope wall (DP-A3-9): feeds Consolidated P&L/TB + eliminations; Consolidated BS/CF/NCI/FX remain walled.',
+    pattern: 'Multi-Entity Group + Mixed Ind-AS Methods + Intercompany Flows',
     phase: 'live',
     entityCode: 'ABDOS',
     archetype: 'manufacturing',
@@ -381,8 +384,21 @@ export function ClientBlueprintsPagePanel() {
         // [JWT] POST /api/demo/seed-entity
         const result = seedEntityDemoData(entityCode, archetype);
 
+        // Sprint T-B1-Abdos-Group-Seed · for ABDOS, additionally seed the
+        // full multi-entity group (parent + 5 verticals · structure tree ·
+        // per-entity TBs · IC txns) so Group Consolidation has real input.
+        let groupSuffix = '';
+        if (entityCode === 'ABDOS') {
+          try {
+            const g = seedAbdosGroup();
+            groupSuffix = ` · group: ${g.entities}e/${g.structureNodes}n/${g.icTransactionsSeeded}ic`;
+          } catch (err) {
+            groupSuffix = ` · group seed FAILED: ${(err as Error).message}`;
+          }
+        }
+
         toast.success(
-          `${clientName} demo loaded · ${result.customers}c · ${result.vendors}v · ${result.items}i · ${result.enquiries}e · ${result.quotations}q · ${result.salesInvoices}si · ${result.receipts}r · ${result.ptps}ptp`,
+          `${clientName} demo loaded · ${result.customers}c · ${result.vendors}v · ${result.items}i · ${result.enquiries}e · ${result.quotations}q · ${result.salesInvoices}si · ${result.receipts}r · ${result.ptps}ptp${groupSuffix}`,
           { duration: 6000 },
         );
         bumpCoverage();
