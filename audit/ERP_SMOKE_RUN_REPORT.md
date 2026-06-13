@@ -3,7 +3,7 @@ HEAD target: `3cfbfc9`
 
 ## LEDGER
 ```
-DONE: [1,2,3,4,5,6,7,8,9,10]   NEXT: Batch 11   REMAINING: 6
+DONE: [1,2,3,4,5,6,7,8,9,10,11]   NEXT: Batch 12   REMAINING: 5
 BATCH ORDER:
   1. Abdos Group Consolidation                                       ✅
   2. Command Center foundation (multi-co/branch on Abdos seed)       ⚠️ STATIC
@@ -444,5 +444,37 @@ Combined remediation surface now **~96 files** across 9 cards · 5 distinct flav
 
 ### Verdict
 **MIXED** — Command Center main PASS (dispatcher correct · sub-module fidelity already graded in B2). Cross-Card DayBook PASS (7-card canonical aggregator · entity-scoped reads · integrity-signed). Recent Errors FAIL · B10-F-1 (raw `erp_selected_company` read + lazy-initializer-captured stale entity — the fifth distinct flavour of the entity-resolution anti-pattern class). 9-card anti-pattern roll-up across ~96 files · 5 flavours · remediation sprint critical-path before GA.
+
+STOP.
+
+---
+
+## Batch 11 · Edge sweep (theme · print · report toggle+export) — run 13 Jun 2026 — VERDICT: MIXED (3 PASS · 1 PARTIAL — long-tail chrome leakage)
+
+Pre-state: **SMRTP** manufacturing blueprint continued. Three edge concerns audited: (a) theme-toggle round-trip after the W1C-9 saga, (b) one print/PDF surface fires real document, (c) one report surface toggles Table⇄Chart + exports CSV.
+
+| # | Edge surface | Source contract | LIVE/STATIC | PASS/FAIL/CNR |
+|---|---|---|---|---|
+| 1 | **Theme toggle round-trip** | `ThemeProvider.tsx` mounted in `App.tsx` L413. `getInitialTheme()` reads `localStorage['4ds-theme']` → falls back to `prefers-color-scheme` (no hardcoded default). `useEffect` adds/removes `.dark` on `document.documentElement` + persists. `ThemeToggle.tsx` flips `theme` via `toggleTheme()`. **Guards in place**: `w1c-9fix/theme-html-no-forced-dark.test.ts` asserts `index.html <html>` tag has no hardcoded `class="dark"` AND ThemeProvider retains both `classList.add("dark")` + `classList.remove("dark")`. `tower-layout-fix/tower-layout-theme.test.ts` + `bridge-layout-fix/bridge-layout-theme.test.ts` + `w1c-9/tower-theme-tokens.test.ts` assert Tower/Bridge layouts have ZERO `bg-[#...]` / `text-white` / `border-white` / `#0D1B2A` chrome and DO use canonical tokens (`bg-card`/`bg-background`/`border-border`/`text-foreground`/`text-muted-foreground`). | **LIVE** (round-trip · 4 guard tests pin the contract) | **PASS** (saga fixes hold for Tower + Bridge + index.html) |
+| 2 | **Theme token sweep across ERP long tail** | Same scan against `src/pages/erp/**` (the W1C-9 saga only swept Tower + Bridge layouts + index.html — NOT the ERP page tree). Result: **56 ERP page files still contain hardcoded `bg-[#...]` arbitrary chrome OR `bg-white` / `text-white` literal classes** (`LedgerMaster`, `VoucherTypesMaster`, `SalesInvoicePrint`, `bill-passing/panels`, 7 `customer-hub/*` transactions, `dispatch/masters/{PackingBOMMaster,PackingMaterialMaster}`, `dispatch/transactions/{LRUpdate,PackingSlipPrint}`, `distributor-hub/*`, 4 `distributor/*` pages, … 56 total). No automated guard covers `src/pages/erp/**`. These pages will render correctly in dark mode by coincidence (the literal whites match the dark-bg accent surfaces) but break in light mode — the theme toggle exists but is one-way honest only on Tower/Bridge chrome. | **PARTIAL** (Tower/Bridge clean · ERP long tail leaky) | **B11-F-1 PARTIAL** (theme saga incomplete · 56 ERP pages need a follow-on sweep) |
+| 3 | **Print/PDF surface** (`SalesInvoicePrint.tsx`) | A4 3-copy GST Tax Invoice (Original/Duplicate/Triplicate) · pulls voucher via `vouchersKey(entityCode)` · merges IRN QR (`irnRecordsKey`) + EWB (`ewbRecordsKey`) + entity GST config (`entityGstKey`) + branding (`loadEntityBranding`) + UPI intent (`buildUpiIntent`). `entity` resolved from URL searchParam with `DEFAULT_ENTITY_SHORTCODE` fallback. `window.print()` wired at L159 + `PrintToolbarExport` (L158) exports rows via `buildInvoiceExportRows`. DocSendBar mounted per W1C-1 floor. Resolved-toggles gating per T10-pre.2b.3b-B2 sprint. | **LIVE** (real voucher reads + print fires + export wired) | **PASS** |
+| 4 | **Report Table⇄Chart + CSV export** | `TableChartToggle.tsx` (`@/components/operix-core/report-framework`) — universal toggle, defaults to Table (zero visual regression), wraps `ReportChart` (recharts) + `Table`. Wired into `ReportBuilder.tsx` which imports `downloadCsv` from `@/lib/report-framework/export-csv` (L49) and triggers download at L389. `export-csv.ts` is React-free + dependency-free RFC-4180 CSV builder + Blob link download (only DOM API touched). Guard tests: `w1c-1/table-chart-toggle-send.test.tsx` + `w1c-1/w1c-docsend-floor.test.ts` + `rpt-10a/credit-xray.test.tsx` exercise the toggle + DocSendBar floor. CSV download asserted in `rpt-12a/*` sweep. | **LIVE** (engine + UI + guard tests · pass at unit level) | **PASS** |
+
+### Browser click-through
+All 4 surfaces hit login wall → **CNR-browser-auth**. Source + test-guard analysis is dispositive.
+
+### Fails (1 honest — partial · long-tail chrome leakage)
+- **B11-F-1 PARTIAL** Theme saga incomplete across ERP pages — Tower/Bridge layouts + `index.html` are fully canonicalised (4 guard tests pin the contract), but **56 ERP page files** under `src/pages/erp/**` still carry hardcoded `bg-[#...]` arbitrary chrome or `bg-white` / `text-white` literal classes. The toggle technically works (adds/removes `.dark` on `<html>`) but the long-tail pages are written for dark-bg only — light-mode toggle reveals broken chrome on those 56 surfaces. No automated guard exists for `src/pages/erp/**`. **One-class fix**: extend the W1C-9 sweep guard to `src/pages/erp/**` and replace literal whites with semantic tokens (`bg-card`/`text-foreground`/`border-border`).
+
+### Scope-notes (honest · neither PASS nor FAIL)
+- **ReportBuilder consumer count** in production pages is only 1 (`bill-passing/RateContractListPanel.tsx`) — the Table⇄Chart + CSV mechanism is built but adoption is light. Most existing reports are bespoke (per-card Table component + per-card export logic). Mechanism PASS is per-the-mechanism; cross-card adoption is a separate sprint concern.
+- **`SalesInvoicePrint.tsx` also appears in the 56-file long-tail chrome list** — it uses some hardcoded styling for print-only A4 layout (where light backgrounds are correct on paper regardless of screen theme). This is a legitimate carve-out; the broader 55 non-print pages are the honest concern.
+- **W1C-1 DocSendBar floor** is enforced via `useDocSendBarFloor` and the universal-floor-logic memory — independent of the theme saga; not a Batch 11 concern.
+
+### Anti-pattern roll-up (carried forward · no new flavour in B11)
+No new entity-resolution flavour in B11. Theme/print/report edges are orthogonal to the entity-contract roll-up. The 9-card · 5-flavour · ~96-file remediation surface from B5–B10 is unchanged.
+
+### Verdict
+**MIXED** — Theme toggle round-trip PASS (saga fixes hold · 4 guard tests pin the contract on Tower/Bridge + index.html). ERP long-tail chrome sweep PARTIAL · B11-F-1 (56 ERP page files still carry hardcoded whites/arbitrary-hex chrome · no guard test covers `src/pages/erp/**`). Print PASS (real voucher + IRN + UPI + window.print + export). Report Table⇄Chart + CSV export PASS (engine + UI + guard tests). The follow-on theme sweep is the one outstanding edge fix; everything else holds.
 
 STOP.
