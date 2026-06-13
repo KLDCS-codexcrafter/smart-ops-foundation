@@ -573,6 +573,28 @@ function resolveSupplyType(voucher: Voucher, _entityGSTIN: string): GSTEntry['su
 // ── Post Voucher — writes to all 4 storage keys atomically ──────────
 
 export function postVoucher(voucher: Voucher, entityCode: string): void {
+  // W1C-5 · Block 1 · audit B2 HIGH — wire the dead Dr=Cr guard.
+  // validateVoucher() embeds the Decimal-precision Dr=Cr check + period-lock check.
+  // Previously exported but unwired on the post path → unbalanced journals could be
+  // persisted. Now: validation FIRST, audit-log the rejection, throw on failure.
+  const __w1c5_validation = validateVoucher(voucher);
+  if (!__w1c5_validation.valid) {
+    try {
+      logAudit({
+        entityCode,
+        action: 'update', // closest verb in AuditAction union (no 'post-rejected' verb exists)
+        entityType: 'voucher',
+        recordId: voucher.id,
+        recordLabel: voucher.voucher_no || `${voucher.base_voucher_type}/${voucher.id}`,
+        beforeState: null,
+        afterState: { ...voucher, status: 'rejected-by-guard' },
+        reason: `post-rejected: ${__w1c5_validation.errors.join(' · ')}`,
+        sourceModule: 'fincore',
+      });
+    } catch { /* audit must never block the throw */ }
+    throw new Error(`Voucher rejected: ${__w1c5_validation.errors.join(' · ')}`);
+  }
+
   // Sprint T-Phase-2.7-c · Q2-d · IRN 24h lock — reject edits/cancels engine-side.
   const beforeRecord = ls<Voucher>(vouchersKey(entityCode)).find(v => v.id === voucher.id);
   if (beforeRecord) {

@@ -44,7 +44,14 @@ export interface ApprovalContext {
   fields?: Partial<ApprovalFieldMap>;
   /** Human-readable label for audit log (defaults to record id) */
   recordLabel?: (record: ApprovalRecord) => string;
+  /**
+   * W1C-5 · Block 2 · audit B-01 HIGH — Separation of Duties (SoD) override.
+   * When true, allows submitter == approver (sole-proprietor entities only).
+   * Default absent (= false) so the rail is fraud-safe by default.
+   */
+  allowSelfApproval?: boolean;
 }
+
 
 export interface ApprovalFieldMap {
   status: string;            // default 'status'
@@ -169,6 +176,29 @@ export function approve<T extends ApprovalRecord>(
   if (status !== 'submitted') {
     return { ok: false, reason: `Cannot approve · current status is '${status ?? 'unknown'}'` };
   }
+  // W1C-5 · Block 2 · audit B-01 HIGH — Separation of Duties.
+  // Submitter (stamped into f.counterId by submit()) MUST NOT be the approver,
+  // EXCEPT when both are the 'current-user' Tier-L seam literal (single-user
+  // mode; this check self-arms when Wave-2 real user ids replace the seam),
+  // OR when ctx.allowSelfApproval === true (sole-proprietor opt-in).
+  const __w1c5_submitter = rec[f.counterId] as string | undefined;
+  const __w1c5_isSeam = approver.id === 'current-user' && __w1c5_submitter === 'current-user';
+  if (__w1c5_submitter && approver.id === __w1c5_submitter && !__w1c5_isSeam && ctx.allowSelfApproval !== true) {
+    try {
+      logAudit({
+        entityCode: ctx.entityCode || 'GLOBAL',
+        action: 'update',
+        entityType: ctx.auditEntityType,
+        recordId: rec.id,
+        recordLabel: ctx.recordLabel?.(rec) ?? rec.id,
+        beforeState: { ...rec },
+        afterState: { ...rec },
+        reason: `SoD-rejected: approver ${approver.id} is the submitter`,
+        sourceModule: ctx.sourceModule,
+      });
+    } catch { /* audit must never block the rejection */ }
+    return { ok: false, reason: 'Separation of duties: submitter cannot approve own record' };
+  }
   const now = new Date().toISOString();
   const next = stamp(rec, {
     [f.status]: 'approved',
@@ -188,6 +218,7 @@ export function approve<T extends ApprovalRecord>(
   return { ok: true, next };
 }
 
+
 /** submitted → rejected */
 export function reject<T extends ApprovalRecord>(
   rec: T,
@@ -203,6 +234,28 @@ export function reject<T extends ApprovalRecord>(
   if (!reason.trim()) {
     return { ok: false, reason: 'Rejection reason required' };
   }
+  // W1C-5 · Block 2 · audit B-01 HIGH — SoD on reject() (same rail as approve()).
+  // A submitter rejecting their own record is the same conflict-of-interest as
+  // approving it (it bypasses the second-set-of-eyes control). Same seam + flag.
+  const __w1c5_submitter_r = rec[f.counterId] as string | undefined;
+  const __w1c5_isSeam_r = approver.id === 'current-user' && __w1c5_submitter_r === 'current-user';
+  if (__w1c5_submitter_r && approver.id === __w1c5_submitter_r && !__w1c5_isSeam_r && ctx.allowSelfApproval !== true) {
+    try {
+      logAudit({
+        entityCode: ctx.entityCode || 'GLOBAL',
+        action: 'update',
+        entityType: ctx.auditEntityType,
+        recordId: rec.id,
+        recordLabel: ctx.recordLabel?.(rec) ?? rec.id,
+        beforeState: { ...rec },
+        afterState: { ...rec },
+        reason: `SoD-rejected: rejecter ${approver.id} is the submitter`,
+        sourceModule: ctx.sourceModule,
+      });
+    } catch { /* audit must never block the rejection */ }
+    return { ok: false, reason: 'Separation of duties: submitter cannot approve own record' };
+  }
+
   const now = new Date().toISOString();
   const next = stamp(rec, {
     [f.status]: 'rejected',
