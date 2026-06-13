@@ -40,7 +40,6 @@ import type { VendorActivity } from '@/types/vendor-portal';
 import { vendorActivityKey } from '@/types/vendor-portal';
 
 const NOW = '2026-04-15T10:00:00.000Z';
-const TODAY = '2026-04-15';
 const FY = 'FY-2026-27';
 
 const id = (suffix: string): string => `demo-w1c7b-${suffix}`;
