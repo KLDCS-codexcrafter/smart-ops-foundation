@@ -144,3 +144,31 @@ ORDER: 1.Login✓ 2./tower/dashboard 3./bridge/dashboard 4./partner/dashboard 5.
 **Surface 1 verdict:** **PASS** — all 3 login methods render & validate, reset opens, submit routes coherently to `/welcome`.
 
 **STOP per batching rule.** Next dispatch: `/tower/dashboard`.
+
+---
+
+## SURFACE 2 · /tower/dashboard — Control Tower (HEAD target fd2fe48)
+**Purpose:** platform super-admin cockpit.
+
+| Check | Result | Evidence |
+|---|---|---|
+| Page loads behind auth | **PASS** | Direct hit redirected to `/auth/login`; after login (`demo@4dsmartops.com / demo1234`) `/tower/dashboard` renders fully. |
+| Top metrics render with data | **PASS** | "30 Screens Delivered · 3 Panels Live · 99.8% Platform Uptime · 27 Security Panels" all visible. |
+| Tenant/customer counts | **PASS** | KPI cards: **Total Customers 24 (+3 this month)** · **Active Users 187** · **Security Score 91 (CERT-In compliant)** · **Audit Events 2.8K (Last 30 days)**. |
+| System health | **PASS** | Platform Health panel: API Server LIVE 12ms · Database LIVE 4ms · Bridge Agent LIVE 28ms · CDN LIVE 8ms · Queue Worker DEGRADED 340ms. |
+| Bridge health | **PASS** | "Bridge Agent LIVE 28ms" row visible (treated as bridge health row inside Platform Health). |
+| Audit / activity log | **PASS** | Recent Activity feed shows 10 dated entries incl. "MFA enabled for user admin@acmeindia.in 2 min ago", "New customer provisioned: Bharat Traders Pvt Ltd 14 min ago", "Invoice #INV-2026-047 generated — ₹18,500", "Bridge Agent v2.4.1 deployed", "Audit log exported by superadmin — 2,847 events". |
+| Sidebar nav opens sub-page | **PASS** | Clicked "Customers" → routed to `/tower/customers` → "Customer Management" page renders with an 8-row customer table. |
+| Theme toggle (just-fixed) | **PASS** | Clicked header sun/moon toggle → page switched to LIGHT mode cleanly; clicked again → back to dark. No layout breakage, no hardcoded-dark patches (W1C-9 + TowerLayout fix verified live). |
+
+**Console:** only the pre-existing React Router v6→v7 future-flag warnings.
+
+**Surface 2 verdict:** **PASS** — Tower cockpit fully functional, theme toggle holds both ways, sidebar navigates, all KPI/health/activity sections populated.
+
+## PROGRESS LEDGER (updated)
+```
+DONE: [Login, /tower/dashboard]   NEXT: /bridge/dashboard   REMAINING: 6
+ORDER: 1.Login✓ 2./tower/dashboard✓ 3./bridge/dashboard 4./partner/dashboard 5./customer/dashboard 6./welcome/scenarios 7./welcome/dev-tools 8./build-your-plan
+```
+
+**STOP per batching rule.** Next dispatch: `/bridge/dashboard`.
