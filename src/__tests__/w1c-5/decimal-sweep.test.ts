@@ -35,7 +35,10 @@ function scan(): Hit[] {
   for (const f of listTs(LIB)) {
     const src = fs.readFileSync(f, 'utf8');
     src.split('\n').forEach((text, i) => {
-      if (HIT_RE.test(text)) hits.push({ file: path.relative(LIB, f), line: i + 1, text: text.trim() });
+      const trimmed = text.trim();
+      // skip pure comment lines — they cannot execute float math
+      if (trimmed.startsWith('//') || trimmed.startsWith('*') || trimmed.startsWith('/*')) return;
+      if (HIT_RE.test(text)) hits.push({ file: path.relative(LIB, f), line: i + 1, text: trimmed });
     });
   }
   return hits;
