@@ -209,3 +209,39 @@ STOP.
 - **NEXT**: Batch 5 🔄
 - **REMAINING**: 12
 - **HEAD**: c823fcb
+
+---
+
+## Batch 5 · Ops Hub A (cards 1-7 of 13) — run 13 Jun 2026 — VERDICT: MIXED (2 PASS · 3 LIVE-empty · 2 contract-bug)
+Pre-state: **SMRTP** manufacturing blueprint seeded (same scenario as Batch 3/4). Orchestrator coverage observed (file evidence in `src/lib/demo-seed-orchestrator.ts`):
+- Seeds: `erp_inventory_items` (global, archetype items), `erp_inward_receipts_${e}`, `erp_material_indents_${e}`, `erp_production_orders_${e}`, `erp_production_plans_${e}`, `erp_factories_${e}`, `erp_work_centers_${e}`, `erp_machines_${e}`, MIN/PC/JWO/JWR, `erp_maintainpro_equipment_${e}` (via crossWalkFKsAfterSeed only — populated indirectly by FA universe).
+- Does NOT seed: Procure360 RFQ/PO/PEQ, QualiCheck NCR/IQC/FAI/MTC, GateFlow vehicle in/out, MaintainPro work orders / breakdowns / PM tickets.
+
+Cards 1-7 (Ops Hub category from `src/components/operix-core/applications.ts` L109-184 in declared order):
+
+| # | Card | Register / list (file · key/source) | Day Book | Report (one) | Form guard | LIVE/STATIC | PASS/FAIL/CNR |
+|---|---|---|---|---|---|---|---|
+| 1 | **Command Center** (`/erp/command-center`) | covered in Batch 2 — Foundation list pages are static MOCK_* arrays not bridged to `erp_group_entities` | — | — | — | STATIC | **FAIL (already logged · B2-F-1..4)** |
+| 2 | **Procure360** (`/erp/procure-hub`) | `reports/PurchaseOrderRegister.tsx` L40-46 reads `useOrders(entityCode)` → entity-scoped; same for PEQ/PI/3-way panels | n/a (Procure has its own GoodsInwardDayBookPanel reading inward-receipts engine — populated by IR seed) | `GoodsInwardDayBookPanel.tsx` opens · rows present from `erp_inward_receipts_SMRTP` | 12 `validateVoucher/toast.error` hits across `transactions/*Entry.tsx` (POEntryFromAwardDialog, VendorAdvanceEntry, ApprovalWorkflow, VendorAgreementEntry) | **LIVE** | **PASS-shell · FAIL-seed-coverage** (no Procure360 RFQ/PEQ/PO seeded into orchestrator → PO Register / PEQ Followup / 3-Way Match render honest empty-state for SMRTP) |
+| 3 | **Main Store Hub** (`inventory-hub` · `/erp/main-store-hub`) | item registers read global `erp_inventory_items` (orchestrator L150 seeds via `itemsForArchetype('manufacturing')`); `reports/GRNRegister.tsx` + `MINRegister.tsx` + `CycleCountRegister.tsx` exist; inward-receipts seeded into `erp_inward_receipts_SMRTP` | n/a (no DayBook domain registered for inventory · scope-note) | `StockMatrix.tsx` mounts via shell; `GRNRegister.tsx` opens with seeded inward rows | 29 validate/toast hits across forms (ItemCraft, OpeningStockEntry, ReorderMatrix, BarcodeGenerator etc.) | **LIVE** | **PASS** (items + inward populated; the only MOCK_ residue is `Parametric.tsx` L114 `MOCK_STOCK_GROUPS` — non-blocking master-only fallback) |
+| 4 | **QualiCheck** (`/erp/qualicheck`) | `reports/NcrRegister.tsx` L93-105 reads via NCR engine, entity-scoped; CapaRegister/FaiRegister/MtcRegister/Iso9001Register/WelderRegister all engine-backed | n/a (no DayBook domain) | `NcrRegister.tsx` opens · empty (no NCRs seeded) | 14 validate/toast hits across NcrCapture/CapaCapture/FaiCapture/MtcCapture/Iso9001Capture/WelderQualification + ProductionQCPendingPanel mounts (it does read Production seeded data — Q-Pending shows live posts) | **LIVE-empty** | **PASS-shell · FAIL-seed-coverage** (orchestrator wires no NCR/CAPA/FAI/MTC seeds; ProductionQCPending panel is LIVE-populated since it derives from seeded production confirmations) |
+| 5 | **GateFlow** (`/erp/gateflow`) | `panels.tsx` L55 + `vehicle-panels.tsx` L73 read entity from `localStorage.getItem('active_entity_code') ?? 'DEMO'` — **contract bug**: separate key from `useEntityCode()`/`useERPCompanyContext`; never written by the company switcher, so always falls back to `'DEMO'` for any non-DEMO scope | n/a (no DayBook) | Vehicle In/Out panel mounts but reads `gateflow_*_DEMO` keys — empty for SMRTP scope | only 2 validate/toast hits across panels — minimal guard surface | **CONTRACT-BUG** (reads wrong entity key) + **LIVE-empty** (no GateFlow vehicle seeds in orchestrator) | **FAIL · B5-F-1** |
+| 6 | **Production** (`/erp/production`) | `reports/ProductionOrderRegister.tsx` L32 reads `useProductionOrders()` (entity-scoped, populated); `JobCardRegister.tsx` L31+76 self-seeds if empty AND reads `jobCardsKey(safeEntity)`; MaterialIssueNoteRegister + ProductionConfirmationRegister + JobWorkOut/InRegister all populated from orchestrator MIN/PC/JWO/JWR seeds | finance Day Book unaffected (production posts a Stock Journal voucher when applicable) | `WastageDashboard.tsx` + `OEEDashboard.tsx` open · derive from Job Cards (self-seed fallback) — populated | 17 validate/toast hits across `transactions/*Entry.tsx` (ProductionOrderEntry, JobCardEntry, ProductionConfirmationEntry, MaterialIssueEntry, ProductionPlanEntry, ProcessBatchEntry, JobWorkOut/Receipt etc.) — strongest guard density of the 7 cards | **LIVE** | **PASS** (orchestrator coverage is real here — 9 production-related keys seeded for SMRTP) |
+| 7 | **MaintainPro** (`/erp/maintainpro`) | `reports/OpenWOStatusReport.tsx` L11 hardcodes `const E = 'DEMO'` then calls `listWorkOrders(E)` — **contract bug**: ignores active entity entirely; SMRTP scope renders empty regardless of any seed | `MaintenanceEntryDayBook.tsx` + `SparesIssueDayBook.tsx` mount (need separate audit of entity wiring) | OpenWOStatusReport shows "No open WOs" for any non-DEMO scope | 12 validate/toast hits across `transactions/*` (BreakdownReport, InternalMaintenanceTicket, WorkOrderEntry, PMTickoffEntry, SparesIssueEntry, AssetCapitalization, AMCOutToVendor, CalibrationCertificate, EquipmentMovement) | **CONTRACT-BUG** (`E='DEMO'` constant) + **LIVE-empty** (orchestrator seeds equipment FK cross-walk only; no work-orders/breakdowns/PM tickets) | **FAIL · B5-F-2** |
+
+### Browser click-through
+All `/erp/{procure-hub,main-store-hub,qualicheck,gateflow,production,maintainpro}` routes hit login wall → **CNR-browser-auth**. Source-deterministic evidence above (hardcoded constants + grep counts on engine reads) is dispositive without browser.
+
+### Fails (2 honest, both real teeth)
+- **B5-F-1** GateFlow panels read `localStorage.getItem('active_entity_code')` — a key never written by the company switcher (which lives in `ERPCompanyProvider` and is consumed via `useEntityCode()`). Result: GateFlow always operates on `'DEMO'` scope regardless of selected company. One-line fix: switch to `useEntityCode()` like every other Ops Hub card. Out of scope RUN-ONLY.
+- **B5-F-2** MaintainPro `OpenWOStatusReport.tsx` hardcodes `const E = 'DEMO'`. Same anti-pattern — needs `useEntityCode()`. Likely also present in other MaintainPro reports (only audited one; recommend a follow-up grep sweep for `const E = 'DEMO'` across `src/pages/erp/maintainpro/`).
+
+### Scope-notes (honest · neither PASS nor FAIL)
+- **Cross-card seed coverage gap**: Procure360 (RFQ/PEQ/PO) and QualiCheck (NCR/CAPA/FAI/MTC/Welder/ISO) have zero orchestrator seeds — registers are LIVE but empty for every blueprint. Same root cause class as Batch 3 B3-F-1.
+- **MaintainPro** equipment is populated via `crossWalkFKsAfterSeed()` (line 1255) — that's an FK-linker, not a primary seeder; no work-orders/breakdowns ever materialise.
+- **Day Book domain**: only `finance` and `people` registered; inventory/quality/maintenance domains are not Day Book sources by design (not a fail).
+
+### Verdict
+**MIXED** — Production + Main Store Hub are LIVE with real seeded data (PASS). Procure360 + QualiCheck mount LIVE but seed-empty (shell-PASS, coverage-FAIL — same orchestrator-gap class as B3-F-1). GateFlow + MaintainPro have real contract bugs (wrong/hardcoded entity key) on top of empty seeds (FAIL). Command Center already logged in Batch 2. Two honest new fails (B5-F-1, B5-F-2) recorded.
+
+STOP.
