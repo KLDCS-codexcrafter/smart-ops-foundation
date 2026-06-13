@@ -223,6 +223,45 @@ export async function postStockIssue(
     throw new Error(`Cannot post stock issue from status: ${cur.status}`);
   }
 
+  // Sprint W1C-5 · Block 3 · audit B-02 HIGH · Stock Availability Guard.
+  // Use existing stock-reservation-engine getAvailabilityMap (consume, do NOT duplicate).
+  // Untracked items (no inventory record / not in onHand map) PASS — we cannot assert
+  // what isn't tracked. Override via CompanySettings.allow_negative_stock (audit-logged).
+  const w1c5_overrideAllowed = readAllowNegativeStock(cur.entity_id);
+  const w1c5_trackedNames = listTrackedItemNames();
+  const w1c5_availability = getAvailabilityMap(
+    cur.lines.map(l => l.item_name),
+    entityCode,
+  );
+  // Aggregate requested per item_name (multiple lines of same item compound).
+  const w1c5_requested = new Map<string, number>();
+  for (const l of cur.lines) {
+    w1c5_requested.set(l.item_name, (w1c5_requested.get(l.item_name) ?? 0) + Math.abs(l.qty));
+  }
+  for (const [name, requested] of w1c5_requested) {
+    if (!w1c5_trackedNames.has(name)) continue; // untracked item — pass
+    const cell = w1c5_availability.get(name);
+    const available = cell?.available ?? 0;
+    if (requested > available) {
+      if (w1c5_overrideAllowed) {
+        logAudit({
+          entityCode, action: 'update', entityType: 'stock_issue',
+          recordId: cur.id, recordLabel: cur.issue_no,
+          beforeState: null,
+          afterState: {
+            guard: 'w1c5-block3-negative-stock-override',
+            item_name: name, requested, available,
+          },
+          sourceModule: 'store-hub',
+        });
+        continue;
+      }
+      throw new Error(
+        `Insufficient stock: ${name} available ${available}, requested ${requested}`,
+      );
+    }
+  }
+
   const voucher = buildStockIssueVoucher(cur, entityCode);
   postVoucher(voucher, entityCode);
 
