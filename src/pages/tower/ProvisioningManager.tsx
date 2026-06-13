@@ -108,7 +108,12 @@ export default function ProvisioningManager() {
   const [partnerName, setPartnerName] = useState('');
 
   function refresh() {
-    setRequests(listProvisionRequests(ENTITY));
+    // W1C-10 F-4 · merge demo-entity + public-build-your-plan scopes so BYP requests appear.
+    const merged = [
+      ...listProvisionRequests(ENTITY),
+      ...listProvisionRequests(BYP_ENTITY),
+    ];
+    setRequests(merged);
     setNodes(listAccountNodes(ENTITY));
     setVariants(listVariants(ENTITY));
   }
