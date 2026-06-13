@@ -159,6 +159,32 @@ export const DEMO_CUSTOMERS: ArchetypedCustomer[] = [
       'Tamil Nadu', '33', '600001', `Industrial Estate Plot ${i+1}`)],
     isActive: true, openingBalance: 0,
   })),
+
+  // ─── 4 Valve-Mfg (Sprint W1C-8 · SigmaFlow archetype) — water-works buyers
+  { _archetype: 'valve-mfg', partyCode: 'CUST-V001', partyName: 'Kolkata Municipal Corporation — Water Supply Dept',
+    customerType: 'government', gstin: '19AAAGK0001F1Z5', pan: 'AAAGK0001F',
+    creditLimit: 15000000, creditDays: 90,
+    contacts: [contact('Chief Engineer (Water Works)', '+919830555101', 'ce.waterworks@kmcgov.in')],
+    addresses: [addr('Kolkata', 'West Bengal', '19', '700013', '5 S N Banerjee Road')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'CUST-V002', partyName: 'Public Health Engineering Dept · West Bengal (PHED)',
+    customerType: 'government', gstin: '19AAAGP0002F1Z5', pan: 'AAAGP0002F',
+    creditLimit: 20000000, creditDays: 90,
+    contacts: [contact('Superintending Engineer', '+919830555102', 'se.phed@wbgov.in')],
+    addresses: [addr('Kolkata', 'West Bengal', '19', '700091', 'Bikash Bhavan, Salt Lake')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'CUST-V003', partyName: 'L&T Construction — Water & Effluent Treatment',
+    customerType: 'epc_contractor', gstin: '27AAACL0003F1Z5', pan: 'AAACL0003F',
+    creditLimit: 12000000, creditDays: 60,
+    contacts: [contact('Procurement Lead (WET)', '+919820555103', 'wet.proc@lntecc.in')],
+    addresses: [addr('Mumbai', 'Maharashtra', '27', '400072', 'Powai Campus')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'CUST-V004', partyName: 'VA Tech Wabag Ltd — Water Treatment EPC',
+    customerType: 'epc_contractor', gstin: '33AAACV0004F1Z5', pan: 'AAACV0004F',
+    creditLimit: 10000000, creditDays: 60,
+    contacts: [contact('Sourcing Manager', '+919840555104', 'sourcing@wabag.in')],
+    addresses: [addr('Chennai', 'Tamil Nadu', '33', '600032', '11 Murrays Gate Road')],
+    isActive: true, openingBalance: 0 },
 ];
 
 // ─── Vendors ───────────────────────────────────────────────────────────
