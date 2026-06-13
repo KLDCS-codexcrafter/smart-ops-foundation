@@ -1620,6 +1620,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-13', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint W1C-10 T-W1C10-Smoke-Cleanup · Wave-1 Close Arc · closes all 5 smoke-test findings (F-1..F-5) · presentation/wiring only · ZERO logic-rewrite · F-1 CustomerLayout.tsx sidebar inline style hsl(222 47% 11%) + rgba(255,255,255,0.06) border converted to bg-card border-border (4th & final theme-layer · mirrors TowerLayout/BridgeLayout token vocabulary) · F-3 demo-seed-manifest.purgeDemoData augmented with belt-and-suspenders entity-suffix scan (`*_${entityCode}`) so purge clears keys even when seeders forgot to recordDemoKeys — round-trip seed→purge→assert-cleared now true · F-4 ProvisioningManager.refresh merges listProvisionRequests('demo-entity') + listProvisionRequests('public-build-your-plan') so BYP-submitted requests appear in the Tower queue (cross-scope inbox) · F-2 CustomerDashboard hardcoded RECENT_INVOICES/RECENT_ORDERS/MONTHLY_PURCHASES constants replaced by real reads of customerOrdersKey(SMRT) — derived invoices (status-mapped from order lifecycle · honest derivation comment) · derived monthly buckets · honest empty-state when no seeded orders (no synthetic rows · founder-rule held) · F-5 ClientBlueprintsPage line 453 "Seven design-partner" → CLIENT_BLUEPRINTS.length with sync comment (2nd instance · W1C-9 fixed the card-description) · ZERO new SIBLINGs · 4 new guard/behavioral tests: customer-layout-theme · demo-purge-roundtrip · provisioning-manager-byp-merge · customer-dashboard-real-reads · walls held: seed orchestrator write logic 0-DIFF (chose purge-scan path) · partner-portal-engine 0-DIFF (consumed pattern only) · all other layouts 0-DIFF · predecessor 0cfb411 · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'W1C10' as unknown as number, code: 'T-W1C10-Smoke-Cleanup', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '0cfb411', loc: 220,
+    newSiblings: [],
+    bankDate: '2026-06-13', provenance: 'CONFIRMED',
+  },
 ];
 
 
