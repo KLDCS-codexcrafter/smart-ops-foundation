@@ -384,8 +384,21 @@ export function ClientBlueprintsPagePanel() {
         // [JWT] POST /api/demo/seed-entity
         const result = seedEntityDemoData(entityCode, archetype);
 
+        // Sprint T-B1-Abdos-Group-Seed · for ABDOS, additionally seed the
+        // full multi-entity group (parent + 5 verticals · structure tree ·
+        // per-entity TBs · IC txns) so Group Consolidation has real input.
+        let groupSuffix = '';
+        if (entityCode === 'ABDOS') {
+          try {
+            const g = seedAbdosGroup();
+            groupSuffix = ` · group: ${g.entities}e/${g.structureNodes}n/${g.icTransactionsSeeded}ic`;
+          } catch (err) {
+            groupSuffix = ` · group seed FAILED: ${(err as Error).message}`;
+          }
+        }
+
         toast.success(
-          `${clientName} demo loaded · ${result.customers}c · ${result.vendors}v · ${result.items}i · ${result.enquiries}e · ${result.quotations}q · ${result.salesInvoices}si · ${result.receipts}r · ${result.ptps}ptp`,
+          `${clientName} demo loaded · ${result.customers}c · ${result.vendors}v · ${result.items}i · ${result.enquiries}e · ${result.quotations}q · ${result.salesInvoices}si · ${result.receipts}r · ${result.ptps}ptp${groupSuffix}`,
           { duration: 6000 },
         );
         bumpCoverage();
