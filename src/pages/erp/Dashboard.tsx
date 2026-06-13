@@ -30,6 +30,8 @@ const CrossCardSearch = lazy(() =>
 );
 // Sprint B1S2-R · R2 · additive lazy My Reminders dashboard widget.
 const MyRemindersWidget = lazy(() => import("@/components/dashboard/MyRemindersWidget"));
+// Sprint W1C-6 · Block 2 · first-run onboarding banner (hides once entities exist).
+import { FirstRunOnboardingBanner } from "@/components/dashboard/FirstRunOnboardingBanner";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useCardEntitlement } from "@/hooks/useCardEntitlement";
 import { topCardsForUser } from "@/lib/card-frequency-tracker";
@@ -315,10 +317,14 @@ export default function ErpDashboard() {
           </p>
         </div>
 
+        {/* Sprint W1C-6 · Block 2 · first-run onboarding banner */}
+        <FirstRunOnboardingBanner />
+
         {/* Stage 3b — Suspended sessions banner */}
         <div className="mb-4">
           <SuspendedSessionBanner />
         </div>
+
 
         {/* B1S2-R · R2 · My Reminders widget · additive lazy block */}
         <Suspense fallback={null}>
