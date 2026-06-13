@@ -26,6 +26,10 @@ import {
   comply360ConfigKey,
   integrationsKey,
 } from '@/lib/cc-config-seed';
+import {
+  seedFinanceProcurementTxnsForDemo,
+  finProcDemoKeys,
+} from '@/data/demo-transactions-finance-procurement';
 
 // ── DemoModule registry ─────────────────────────────────────────────────
 
@@ -240,6 +244,21 @@ export const DEMO_MODULES: DemoModule[] = [
         const mod = require('@/lib/demo-seed-orchestrator') as typeof import('@/lib/demo-seed-orchestrator');
         mod.seedEntityDemoData(DEFAULT_ENTITY_SHORTCODE, 'trading');
       } catch { /* not yet loaded */ }
+    },
+    getCount: (key: string) => getStoredCount(key),
+  },
+  {
+    // W1C-7b · demo-seed sprint 2 of 3 · financial/procurement TRANSACTIONS
+    // written through real engine shapes so registers/reports/prints render.
+    id: 'finance-procurement-txns',
+    label: 'Finance & Procurement (demo txns)',
+    sprint: 'W1C-7b · T-W1C7b-Demo-Txns-Finance',
+    status: 'complete' as const,
+    masterKeys: [],
+    transactionKeys: finProcDemoKeys(DEFAULT_ENTITY_SHORTCODE),
+    loadMasters: () => { /* no masters · txns only */ },
+    loadTransactions: () => {
+      seedFinanceProcurementTxnsForDemo(DEFAULT_ENTITY_SHORTCODE);
     },
     getCount: (key: string) => getStoredCount(key),
   },
