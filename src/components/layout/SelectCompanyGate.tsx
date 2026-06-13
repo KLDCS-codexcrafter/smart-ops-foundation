@@ -127,6 +127,7 @@ export function SelectCompanyGate({
           Consolidated view across all companies is coming in Horizon 1.5 (Group P&amp;L, Consolidated Trial Balance).
         </p>
       </div>
+      <QuickCreateEntityDialog open={quickOpen} onOpenChange={setQuickOpen} />
     </div>
   );
 }
