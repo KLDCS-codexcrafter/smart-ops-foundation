@@ -245,3 +245,44 @@ All `/erp/{procure-hub,main-store-hub,qualicheck,gateflow,production,maintainpro
 **MIXED** — Production + Main Store Hub are LIVE with real seeded data (PASS). Procure360 + QualiCheck mount LIVE but seed-empty (shell-PASS, coverage-FAIL — same orchestrator-gap class as B3-F-1). GateFlow + MaintainPro have real contract bugs (wrong/hardcoded entity key) on top of empty seeds (FAIL). Command Center already logged in Batch 2. Two honest new fails (B5-F-1, B5-F-2) recorded.
 
 STOP.
+
+---
+
+## Batch 6 · Ops Hub B (cards 8-13 of 13) — run 13 Jun 2026 — VERDICT: MIXED (2 PASS · 2 LIVE-empty · 2 contract-bug-class)
+Pre-state: **SMRTP** manufacturing blueprint still seeded (continued from Batch 3/4/5). Orchestrator coverage observed for Ops Hub B keys (`src/lib/demo-seed-orchestrator.ts`):
+- Seeds: `erp_material_indents_${e}` (RequestX · L240+253), `erp_bom_${e}` (EngineeringX · L516), `erp_bom_drift_alerts_${e}` (L1043), inward receipts.
+- Does **NOT** seed: drawings, stock-issues, stock-receipt-acks, sites/DPRs, vendor-portal threads/agreements/DCNs, logistic LR queue.
+
+Cards 8-13 (Ops Hub category from `src/components/operix-core/applications.ts` L177-355):
+
+| # | Card | Register / list (file · entity wiring) | Day Book | Report (one) | Form guard | LIVE/STATIC | PASS/FAIL/CNR |
+|---|---|---|---|---|---|---|---|
+| 8 | **RequestX** (`/erp/requestx`) | `reports/IndentRegister.tsx` L101-104 uses `useMaterialIndents()` + `useServiceRequests()` + `useCapitalIndents()` + `useEntityCode()` — clean (11 files use canonical hook · 0 anti-pattern); material indents seeded for SMRTP (L240,253 in orchestrator) | n/a (no DayBook domain) | `IndentPending.tsx` + `AgeingPendingIndents.tsx` open, derive from seeded material indents — rows present | 6 files with validate/toast across `transactions/*Entry.tsx` (MaterialIndentEntry, CapitalIndentEntry, ServiceRequestEntry, IndentApprovalInbox) | **LIVE** | **PASS** (canonical entity wiring + real seeded rows) |
+| 9 | **EngineeringX** (`/erp/engineeringx`) | `registers/BomRegister.tsx` L30 uses `useEntityCode()` (13 files use canonical hook · 0 anti-pattern); BOM seeded (`erp_bom_SMRTP`); BOM drift alerts seeded | n/a | `BomRegister.tsx` opens · BOM rows present from L516 seed; `DrawingVersionHistory.tsx` LIVE-empty (no drawings seed); `ChangeImpactAnalyzer.tsx` mounts | 4 files with validate/toast across `registers/*` + `approvals/*` | **LIVE** (mixed seed) | **PASS-shell · PASS-bom · FAIL-seed-coverage-drawings** (BOM populated · drawings register empty) |
+| 10 | **Department Stores** (`store-hub` · `/erp/department-store`) | `transactions/StockIssueRegister.tsx` L46 uses `useEntityCode()` (9 files clean · 0 anti-pattern); StockIssueEntry uses canonical hook + `useItemPreferredLocation` for godown auto-fill | n/a | `reports/StockMovementRegister.tsx` + `CycleCountStatus.tsx` + `StockReceiptAckRegister.tsx` mount LIVE-empty (orchestrator seeds **no** `erp_stock_issues_${e}` nor `erp_stock_receipt_acks_${e}`) | 5 files with validate/toast (StockIssueEntry, StockReceiptAck) | **LIVE-empty** | **PASS-shell · FAIL-seed-coverage** (clean entity wiring, zero seeded rows — same orchestrator-gap class as B3-F-1, B5 Procure/QC) |
+| 11 | **Vendor Portal** (`/erp/vendor-portal`) | `panels/VendorActivityMonitorPanel.tsx` L157-160 reads `localStorage.getItem('active_entity_code') ?? DEFAULT_ENTITY_SHORTCODE` — **CONTRACT-BUG (same anti-pattern class as B5-F-1 GateFlow)**; tally: **6 panel files use raw `active_entity_code` and 0 use `useEntityCode()`** | n/a | `Msme43BhTrackerPanel`, `VendorAgreementsPanel`, `VendorBroadcastConsolePanel`, `VendorDcnPanel`, `VendorDocumentRequestsPanel`, `VendorActivityMonitorPanel` — all render against `active_entity_code` (a key the company switcher never writes), so they bind to whatever was last set or fall back to `DEFAULT_ENTITY_SHORTCODE` | 0 files with `validateVoucher/toast.error` — guard density is the lowest of all 13 Ops Hub cards | **CONTRACT-BUG** + **LIVE-empty** (no vendor-portal seeds in orchestrator) | **FAIL · B6-F-1** |
+| 12 | **SiteX** (`/erp/sitex`) | `registers/DPRRegister.tsx` L34 hardcodes `const entity = DEFAULT_ENTITY_SHORTCODE` — **CONTRACT-BUG (same anti-pattern class as B5-F-2 MaintainPro `const E='DEMO'`)**; tally: **9 sitex files hardcode `DEFAULT_ENTITY_SHORTCODE` directly and 0 use `useEntityCode()`**; `transactions/SiteList.tsx` L40-46 self-seeds `MOCK_SITES` only into the `DEFAULT_ENTITY_SHORTCODE`-scoped key (not SMRTP) | n/a | `SiteTwinDashboard.tsx`, `MOATCriteriaValidator.tsx`, `SnagRegister.tsx`, `LookAheadPlan.tsx`, `MobilizationChecklist.tsx`, `DPRRegister.tsx` — all read `DEFAULT_ENTITY_SHORTCODE`-scoped stores regardless of selected entity | 0 validate/toast files (registers/transactions rely on simple required-field React state checks, not toast guards) | **CONTRACT-BUG** + **LIVE-default-entity-only** | **FAIL · B6-F-2** |
+| 13 | **Logistics** (`logistics` · `/erp/logistic`) | `LogisticLRQueue.tsx` L51-55 reads `session.entity_code` from `getLogisticSession()` — **by-design distinct sub-portal session** (parallel to vendor-portal-engine pattern), separate login flow (`LogisticLogin.tsx`); does NOT consume `useEntityCode()` because it's a transporter-side panel not a tenant-side card | n/a | `LogisticDashboard`, `LogisticLRQueue`, `LogisticManifestQueue`, `LogisticPayments`, `LogisticDisputes`, `LogisticInvoiceSubmit`, `LogisticReportBuilder` all auto-seed from canonical vouchers when session present | 6 files with validate/toast | **LIVE-by-session** | **PASS-by-design** (acceptable scope-note: separate transporter-portal session contract; not a tenant Ops Hub card in the same sense) |
+
+### Browser click-through
+All `/erp/{requestx,engineeringx,department-store,vendor-portal,sitex,logistic}` routes hit login wall → **CNR-browser-auth**. Source-deterministic counts (canonical hook usage vs anti-pattern keys) are dispositive without browser.
+
+### Fails (2 honest, both real teeth — same anti-pattern classes flagged in Batch 5)
+- **B6-F-1** Vendor Portal panels — **6 panel files read raw `active_entity_code`**, **0 use `useEntityCode()`**. Same anti-pattern class as **B5-F-1 GateFlow**. Result: panels always bind to a key the company switcher never writes; selecting SMRTP/ABDOS/any non-default entity does not flow through. One-class fix: refactor all 6 vendor-portal panels to `useEntityCode()`.
+- **B6-F-2** SiteX — **9 sitex files hardcode `DEFAULT_ENTITY_SHORTCODE`**, **0 use `useEntityCode()`**. Same anti-pattern class as **B5-F-2 MaintainPro `const E='DEMO'`**. Result: every SiteX surface ignores the selected entity; `SiteList.tsx` self-seeds MOCK_SITES only into the default-entity key, so SMRTP scope shows zero sites even though the demo data exists.
+
+### Anti-pattern roll-up across Batches 5+6 (recurring entity-resolution failure class)
+The same systemic gap surfaces in **4 of 13 Ops Hub cards** (B5-F-1 GateFlow, B5-F-2 MaintainPro, B6-F-1 Vendor Portal, B6-F-2 SiteX) — all bypass `useEntityCode()` (the canonical hook backed by `ERPCompanyProvider` Context). Two flavours:
+- **raw `active_entity_code` localStorage read** (GateFlow + 6 Vendor Portal panels = **8 files**)
+- **hardcoded `const E='DEMO'` / `DEFAULT_ENTITY_SHORTCODE` constant** (MaintainPro 1+ reports + 9 SiteX files = **10+ files**)
+
+Recommend a dedicated remediation sprint to migrate all 18+ files to `useEntityCode()` and to add a lint rule banning raw `active_entity_code` reads and `const entity = DEFAULT_ENTITY_SHORTCODE` at module scope. Out of scope RUN-ONLY.
+
+### Scope-notes (honest · neither PASS nor FAIL)
+- **Logistics (`#13`)** intentionally uses `getLogisticSession()` — that's the transporter-portal session contract, NOT the tenant company-switcher contract. Not a fail.
+- **EngineeringX drawings register** + **Department Stores stock-issue/ack registers** are LIVE-empty (same orchestrator-gap class as B3-F-1 Purchase/Payment/Journal seeds, B5 Procure/QC seeds). Not a per-card bug.
+
+### Verdict
+**MIXED** — RequestX + EngineeringX (BOM) are LIVE with real seeded data (PASS). Department Stores is shell-clean but seed-empty. Vendor Portal + SiteX both have real entity-resolution contract bugs (B6-F-1, B6-F-2). Logistics passes by-design (separate session contract). Anti-pattern class confirmed across 4 of 13 Ops Hub cards — remediation sprint recommended.
+
+STOP.
