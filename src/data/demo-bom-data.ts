@@ -172,5 +172,46 @@ export const DEMO_BOM_EDGE_CASE: Bom[] = [
   },
 ];
 
+/**
+ * Sprint W1C-8 · SigmaFlow valve-mfg archetype.
+ * Flagship DN100 DI Butterfly Valve BOM — references DEMO_ITEMS_VALVE_MFG ids.
+ * Wired through the existing orchestrator under `erp_bom_${entity}` when archetype === 'valve-mfg'.
+ */
+export const DEMO_BOM_VALVE_MFG: Bom[] = [
+  {
+    id: 'bom-demo-vlv-dn100-001',
+    entity_id: DEFAULT_ENTITY_SHORTCODE,
+    product_item_id: 'it-v-1',
+    product_item_code: 'VLV-BFV-DN100',
+    product_item_name: 'DI Butterfly Valve DN100 PN16',
+    version_no: 1,
+    output_qty: 1,
+    output_uom: 'PCS',
+    valid_from: '2025-04-01',
+    valid_to: null,
+    is_active: true,
+    components: [
+      { id: 'bcomp-vlv-001-body',  item_id: 'it-v-r1', item_code: 'RAW-DI-BODY-DN100', item_name: 'DI Casting — Valve Body DN100 (Blank)',
+        component_type: 'raw_material', qty: 14.5, uom: 'KG',  wastage_percent: 4, sub_bom_id: null },
+      { id: 'bcomp-vlv-001-disc',  item_id: 'it-v-r2', item_code: 'RAW-DI-DISC-DN100', item_name: 'DI Casting — Disc DN100 (Blank)',
+        component_type: 'raw_material', qty: 3.2,  uom: 'KG',  wastage_percent: 3, sub_bom_id: null },
+      { id: 'bcomp-vlv-001-stem',  item_id: 'it-v-r3', item_code: 'RAW-SS-STEM',       item_name: 'SS-410 Stem Bar 25mm',
+        component_type: 'raw_material', qty: 0.9,  uom: 'KG',  wastage_percent: 5, sub_bom_id: null },
+      { id: 'bcomp-vlv-001-seat',  item_id: 'it-v-r4', item_code: 'RAW-EPDM-SEAT-DN100', item_name: 'EPDM Rubber Seat Ring DN100',
+        component_type: 'consumable',   qty: 1,    uom: 'PCS', wastage_percent: 0, sub_bom_id: null },
+      { id: 'bcomp-vlv-001-fst',   item_id: 'it-v-r5', item_code: 'RAW-FST-M16',       item_name: 'MS Hex Bolt + Nut M16x80 (Set)',
+        component_type: 'consumable',   qty: 8,    uom: 'SET', wastage_percent: 1, sub_bom_id: null },
+    ],
+    byproducts: [],
+    overhead_ledger_id: null,
+    overhead_ledger_name: null,
+    notes: 'Flagship DN100 PN16 wafer-type butterfly valve · BS-EN-593 face-to-face · EPDM seat · SS-410 stem.',
+    created_at: '2025-04-01T11:00:00.000Z',
+    updated_at: '2025-04-01T11:00:00.000Z',
+    created_by: 'demo-seed-w1c8',
+  },
+];
+
 /** Combined seed — what a demo-seed-loader would install. */
 export const DEMO_BOMS_ALL: Bom[] = [...DEMO_BOM_HAPPY_PATH, ...DEMO_BOM_EDGE_CASE];
+
