@@ -17,6 +17,8 @@ import { cycleAdjustmentVoucherKey } from '@/types/cycle-count-voucher';
 import type { CycleCount } from '@/types/cycle-count';
 import { logAudit } from '@/lib/audit-trail-engine'; // P8.4 · Block 1a-ii
 import type { AuditEntityType } from '@/types/audit-trail';
+// Sprint W1C-5 · Block 4a · audit B-03 HIGH · CGST Rule 56(8) immutability.
+import { canMutateInPlace } from '@/lib/voucher-version-engine';
 
 export function generateCycleAdjustmentVoucher(
   cycleCount: CycleCount,
