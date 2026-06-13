@@ -1,11 +1,12 @@
 # OPERIX · FULL-ERP SMOKE RUN REPORT
-HEAD target: `bcb1574`
+HEAD target: `bf85d50`
 
 ## LEDGER
 ```
-DONE: [1]   NEXT: Batch 2 (Command Center foundation)   REMAINING: 15
+DONE: [1,2]   NEXT: Batch 3 (Fin Hub)   REMAINING: 14
 BATCH ORDER:
   1. Abdos Group Consolidation                                       ✅
+  2. Command Center foundation (multi-co/branch on Abdos seed)       ⚠️ STATIC
   2. Command Center foundation (multi-co/branch on Abdos seed)
   3. Fin Hub (6)
   4. Sales Hub (6)
