@@ -41,6 +41,10 @@ import { VOUCHER_TYPE_SEEDS } from '@/data/voucher-type-seed-data';
 import type { VoucherType, VoucherClass } from '@/types/voucher-type';
 
 // ── Storage key helpers ──────────────────────────────────────────────
+// CANON: group-keyed stores carry entity_id PER RECORD; Wave-2 mapping MUST scope by entity column.
+// Sprint W1C-5 · Block 4b · audit B9-F1 · legacy unscoped keys (erp_group_vouchers,
+// erp_outstanding without `_${e}`) are NOT used by this engine — see
+// purgeLegacyGroupStoresForEntity() for safe pruning by callers (no page-direct setItem).
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
 export const journalKey = (e: string) => `erp_journal_${e}`;
 export const stockLedgerKey = (e: string) => `erp_stock_ledger_${e}`;
