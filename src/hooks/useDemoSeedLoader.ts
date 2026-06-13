@@ -20,6 +20,12 @@ import { payrollRunsKey } from '@/types/payroll-run';
 import { employeesKey } from '@/types/employee';
 import { attendanceRecordsKey } from '@/types/attendance-entry';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
+  seedCCConfigForDemoEntities,
+  DEMO_ENTITY_CODES,
+  comply360ConfigKey,
+  integrationsKey,
+} from '@/lib/cc-config-seed';
 
 // ── DemoModule registry ─────────────────────────────────────────────────
 
