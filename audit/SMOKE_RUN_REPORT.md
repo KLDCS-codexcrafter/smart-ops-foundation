@@ -115,3 +115,32 @@ Opened `/operix-go` (Sahayak hub) — page renders, "34 Live · 0 Phase 2 · 0 P
 
 ## 6.5 ONE-LINE VERDICT
 **The W1C-6 first-run-seed blocker is genuinely fixed** — one click on `/erp` "Load Demo" seeds 2 companies, FinCore unlocks, voucher forms render and enforce required-field validation; based on this small physical sample the frontend looks demo-ready, but with only 3/33 ERP cards actually opened in this run a confident pilot-ready verdict is **not earned yet** — re-run with a larger action budget is required. **Worst thing observed:** several JS chunks exceed 500 kB (Comply360 / SalesX / Dashboard / PayHub / FinCore / index) — first-paint cost concern, not a blocker.
+
+---
+
+# RUN · 13 Jun 2026 · BATCHED SMOKE TEST (HEAD 332cd6f target)
+
+## PROGRESS LEDGER
+```
+DONE: [Login]   NEXT: /tower/dashboard   REMAINING: 7
+ORDER: 1.Login✓ 2./tower/dashboard 3./bridge/dashboard 4./partner/dashboard 5./customer/dashboard 6./welcome/scenarios 7./welcome/dev-tools 8./build-your-plan
+```
+
+## SURFACE 1 · Login Page — `/auth/login`
+**Purpose:** authenticate + route in.
+
+| Check | Result | Evidence |
+|---|---|---|
+| Email tab renders + validates | **PASS** | Clicked submit empty → "Please enter a valid email" + "Password must be at least 6 characters" inline errors shown. |
+| Nick Name tab renders | **PASS** | Clicked tab → input swaps to "Nick Name" field (placeholder `john_doe`) + Remember-me checkbox visible. |
+| Mobile tab renders | **PASS** | Clicked tab → input swaps to mobile number field (placeholder `9876543210`) + password + Sign In. |
+| Forgot password flow opens | **PASS** | Clicked "Forgot password?" → in-card view swaps to "Reset Password · Enter your email to receive a reset link · Send Reset Link · Back to Sign In". Back link returns to login form. |
+| Submit reaches somewhere coherent | **PASS** | Filled `demo@4dsmartops.com / demo1234`, clicked Sign In → routed to `/welcome` (workspace landing). No console errors. |
+| Theme toggle | **N/A (by design)** | Login is the gradient-hero screen — intentionally has no theme toggle (per project memory: "Login is intentionally a gradient hero — DO NOT touch it"). Recorded, not failed. |
+| Known-deferred — all-roles-route-to-/welcome + mock auth | **Recorded (Wave-2)** | Role-aware routing & real JWT are Wave-2 per prompt. Not failed. |
+
+**Console:** only the existing React Router v6→v7 future-flag warnings (pre-existing, non-blocking).
+
+**Surface 1 verdict:** **PASS** — all 3 login methods render & validate, reset opens, submit routes coherently to `/welcome`.
+
+**STOP per batching rule.** Next dispatch: `/tower/dashboard`.
