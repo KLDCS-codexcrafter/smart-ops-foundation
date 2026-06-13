@@ -20,7 +20,7 @@
  *
  * T-Phase-1.2.2: DEMO_BOM_HAPPY_PATH seeded · erp_bom_{entityCode}
  */
-import { DEMO_BOM_HAPPY_PATH } from '@/data/demo-bom-data';
+import { DEMO_BOM_HAPPY_PATH, DEMO_BOM_VALVE_MFG } from '@/data/demo-bom-data';
 import { applyManufacturingModeToEntity } from '@/lib/entity-setup-service';
 import {
   customersForArchetype, vendorsForArchetype, type DemoArchetype,
@@ -510,9 +510,11 @@ export function seedEntityDemoData(
   }
 
   // Sprint T-Phase-1.2.2 · BOM demo data (required for consumption variance computation)
+  // Sprint W1C-8 · valve-mfg archetype uses the DN100 valve BOM (references DEMO_ITEMS_VALVE_MFG).
+  const bomSeed = archetype === 'valve-mfg' ? DEMO_BOM_VALVE_MFG : DEMO_BOM_HAPPY_PATH;
   safeSetArray(
     `erp_bom_${entityCode}`,
-    DEMO_BOM_HAPPY_PATH.map(b => ({ ...b, entity_id: entityCode })),
+    bomSeed.map(b => ({ ...b, entity_id: entityCode })),
   );
 
   // Sprint HK-6.T1 · §19 closure · 4 mock bank statements for Banking Reconciliation demo (55 transactions)

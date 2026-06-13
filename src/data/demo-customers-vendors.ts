@@ -4,7 +4,7 @@
  * [JWT] Read by orchestrator → POST /api/masters/customers + /api/masters/vendors
  */
 
-export type DemoArchetype = 'trading' | 'services' | 'manufacturing';
+export type DemoArchetype = 'trading' | 'services' | 'manufacturing' | 'valve-mfg';
 
 interface DemoContact {
   id: string; contactPerson: string; designation: string;
@@ -159,6 +159,32 @@ export const DEMO_CUSTOMERS: ArchetypedCustomer[] = [
       'Tamil Nadu', '33', '600001', `Industrial Estate Plot ${i+1}`)],
     isActive: true, openingBalance: 0,
   })),
+
+  // ─── 4 Valve-Mfg (Sprint W1C-8 · SigmaFlow archetype) — water-works buyers
+  { _archetype: 'valve-mfg', partyCode: 'CUST-V001', partyName: 'Kolkata Municipal Corporation — Water Supply Dept',
+    customerType: 'government', gstin: '19AAAGK0001F1Z5', pan: 'AAAGK0001F',
+    creditLimit: 15000000, creditDays: 90,
+    contacts: [contact('Chief Engineer (Water Works)', '+919830555101', 'ce.waterworks@kmcgov.in')],
+    addresses: [addr('Kolkata', 'West Bengal', '19', '700013', '5 S N Banerjee Road')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'CUST-V002', partyName: 'Public Health Engineering Dept · West Bengal (PHED)',
+    customerType: 'government', gstin: '19AAAGP0002F1Z5', pan: 'AAAGP0002F',
+    creditLimit: 20000000, creditDays: 90,
+    contacts: [contact('Superintending Engineer', '+919830555102', 'se.phed@wbgov.in')],
+    addresses: [addr('Kolkata', 'West Bengal', '19', '700091', 'Bikash Bhavan, Salt Lake')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'CUST-V003', partyName: 'L&T Construction — Water & Effluent Treatment',
+    customerType: 'epc_contractor', gstin: '27AAACL0003F1Z5', pan: 'AAACL0003F',
+    creditLimit: 12000000, creditDays: 60,
+    contacts: [contact('Procurement Lead (WET)', '+919820555103', 'wet.proc@lntecc.in')],
+    addresses: [addr('Mumbai', 'Maharashtra', '27', '400072', 'Powai Campus')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'CUST-V004', partyName: 'VA Tech Wabag Ltd — Water Treatment EPC',
+    customerType: 'epc_contractor', gstin: '33AAACV0004F1Z5', pan: 'AAACV0004F',
+    creditLimit: 10000000, creditDays: 60,
+    contacts: [contact('Sourcing Manager', '+919840555104', 'sourcing@wabag.in')],
+    addresses: [addr('Chennai', 'Tamil Nadu', '33', '600032', '11 Murrays Gate Road')],
+    isActive: true, openingBalance: 0 },
 ];
 
 // ─── Vendors ───────────────────────────────────────────────────────────
@@ -198,6 +224,32 @@ export const DEMO_VENDORS: ArchetypedVendor[] = [
     addresses: [addr(['Mumbai','Pune','Chennai','Delhi'][i % 4], 'Maharashtra', '27', '400070', `RM Plot ${i+1}`)],
     isActive: true, openingBalance: 0,
   })),
+
+  // ─── 4 Valve-Mfg vendors (Sprint W1C-8 · SigmaFlow archetype) ────────
+  { _archetype: 'valve-mfg', partyCode: 'VEND-V001', partyName: 'Eastern DI Foundry Pvt Ltd',
+    vendorType: 'casting_foundry', gstin: '19AAAFE0001F1Z5', pan: 'AAAFE0001F',
+    creditDays: 45,
+    contacts: [contact('Foundry Manager', '+919830666101', 'sales@easterndi.in')],
+    addresses: [addr('Howrah', 'West Bengal', '19', '711101', 'Liluah Industrial Estate')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'VEND-V002', partyName: 'Sigma Corp USA — Castings & Components (Import)',
+    vendorType: 'import_supplier', gstin: '', pan: '',
+    creditDays: 60,
+    contacts: [contact('Export Sales', '+1-330-555-0102', 'export@sigmacorp.us')],
+    addresses: [addr('Ohio (USA)', 'Foreign', '96', '44256', '1185 Pleasant Valley Rd · Stow OH')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'VEND-V003', partyName: 'Polymech Rubber Industries',
+    vendorType: 'rubber_seat_supplier', gstin: '27AAACP0003F1Z5', pan: 'AAACP0003F',
+    creditDays: 30,
+    contacts: [contact('Sales Head', '+919820666103', 'sales@polymechrubber.in')],
+    addresses: [addr('Mumbai', 'Maharashtra', '27', '400072', 'Sakinaka Industrial Area')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'VEND-V004', partyName: 'Ludhiana Fastener Works',
+    vendorType: 'fastener_supplier', gstin: '03AAAFL0004F1Z5', pan: 'AAAFL0004F',
+    creditDays: 30,
+    contacts: [contact('Proprietor', '+919876666104', 'ludhianafast@gmail.com')],
+    addresses: [addr('Ludhiana', 'Punjab', '03', '141003', 'Focal Point Phase 5')],
+    isActive: true, openingBalance: 0 },
 ];
 
 export function customersForArchetype(a: DemoArchetype): ArchetypedCustomer[] {
