@@ -17,13 +17,15 @@ function getGreeting() {
   return "Good evening";
 }
 
+// static platform-admin landing data — intentional status-accent text colors (not theme chrome)
 const bannerStats = [
-  { value: "30", label: "Screens Delivered", color: "text-cyan-400" },
-  { value: "3", label: "Panels Live", color: "text-cyan-400" },
-  { value: "99.8%", label: "Platform Uptime", color: "text-emerald-400" },
-  { value: "27", label: "Security Panels", color: "text-cyan-400" },
+  { value: "30", label: "Screens Delivered", color: "text-info" },
+  { value: "3", label: "Panels Live", color: "text-info" },
+  { value: "99.8%", label: "Platform Uptime", color: "text-success" },
+  { value: "27", label: "Security Panels", color: "text-info" },
 ];
 
+// static platform-admin landing data
 const services = [
   { name: "API Server", icon: Server, status: "LIVE" as const, latency: "12ms" },
   { name: "Database", icon: Database, status: "LIVE" as const, latency: "4ms" },
@@ -32,6 +34,7 @@ const services = [
   { name: "Queue Worker", icon: Layers, status: "DEGRADED" as const, latency: "340ms" },
 ];
 
+// static platform-admin landing data — gauge stroke colors are intentional status accents (kept as data, not theme chrome)
 const gauges = [
   { label: "Total Customers", value: 24, display: "24", max: 100, pct: 24, color: "#0EA5E9", subtitle: "+3 this month" },
   { label: "Active Users", value: 187, display: "187", max: 500, pct: 37, color: "#8B5CF6", subtitle: "Across all customers" },
@@ -48,16 +51,17 @@ const actions = [
   { icon: Activity, label: "System Health", to: null },
 ];
 
+// intentional semantic status-accent colors for activity feed (not theme chrome)
 const activityTypeColors: Record<string, string> = {
-  Security: "text-red-400 bg-red-400",
-  Customer: "text-cyan-400 bg-cyan-400",
-  User: "text-purple-400 bg-purple-400",
-  Billing: "text-amber-400 bg-amber-400",
-  System: "text-emerald-400 bg-emerald-400",
-  Audit: "text-slate-400 bg-slate-400",
+  Security: "text-destructive bg-destructive",
+  Customer: "text-info bg-info",
+  User: "text-primary bg-primary",
+  Billing: "text-warning bg-warning",
+  System: "text-success bg-success",
+  Audit: "text-muted-foreground bg-muted-foreground",
 };
 
-// [JWT] Replace with real activity feed from API
+// [JWT] Replace with real activity feed from API — static platform-admin landing data
 const recentActivity = [
   { type: "Security", desc: "MFA enabled for user admin@acmeindia.in", time: "2 min ago" },
   { type: "Customer", desc: "New customer provisioned: Bharat Traders Pvt Ltd", time: "14 min ago" },
@@ -78,9 +82,9 @@ function RadialGauge({ pct, color, display, label, subtitle }: {
   const circ = 2 * Math.PI * r;
   const offset = circ - (pct / 100) * circ;
   return (
-    <div className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-6 flex flex-col items-center">
+    <div className="bg-card rounded-xl border border-border p-6 flex flex-col items-center">
       <svg width={size} height={size} className="mb-2">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#334155" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="hsl(var(--border))" strokeWidth={stroke} />
         <circle
           cx={size / 2} cy={size / 2} r={r} fill="none"
           stroke={color} strokeWidth={stroke}
@@ -94,8 +98,8 @@ function RadialGauge({ pct, color, display, label, subtitle }: {
           {display}
         </text>
       </svg>
-      <span className="text-xs text-slate-400 font-medium">{label}</span>
-      <span className="text-[10px] text-slate-500 mt-0.5">{subtitle}</span>
+      <span className="text-xs text-muted-foreground font-medium">{label}</span>
+      <span className="text-[10px] text-muted-foreground mt-0.5">{subtitle}</span>
     </div>
   );
 }
@@ -109,11 +113,11 @@ export default function TowerDashboard() {
       <div className="flex flex-col gap-6">
 
         {/* SECTION 1 — Greeting Banner */}
-        <div className="bg-[#1E3A5F] rounded-xl p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+        <div className="bg-card rounded-xl border border-border p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-white">{getGreeting()}, {ADMIN_NAME} 👋</h2>
-            <p className="text-sm text-slate-400 mt-1">Platform is healthy · Last checked just now</p>
-            <span className="inline-block mt-2 text-[10px] bg-slate-700 text-slate-400 px-2 py-0.5 rounded-full font-medium">
+            <h2 className="text-2xl font-bold text-foreground">{getGreeting()}, {ADMIN_NAME} 👋</h2>
+            <p className="text-sm text-muted-foreground mt-1">Platform is healthy · Last checked just now</p>
+            <span className="inline-block mt-2 text-[10px] bg-secondary text-muted-foreground px-2 py-0.5 rounded-full font-medium">
               4DSmartOps Tower · Confidential
             </span>
           </div>
@@ -121,7 +125,7 @@ export default function TowerDashboard() {
             {bannerStats.map((s) => (
               <div key={s.label} className="flex flex-col items-center">
                 <span className={cn("text-3xl font-bold font-mono", s.color)}>{s.value}</span>
-                <span className="text-xs text-slate-400">{s.label}</span>
+                <span className="text-xs text-muted-foreground">{s.label}</span>
               </div>
             ))}
           </div>
@@ -130,26 +134,26 @@ export default function TowerDashboard() {
         {/* SECTION 2 — PulseRing */}
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-sm font-semibold text-slate-300">Platform Health</span>
-            <span className="text-[10px] bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full font-bold">All Systems</span>
+            <span className="text-sm font-semibold text-foreground">Platform Health</span>
+            <span className="text-[10px] bg-success/15 text-success px-2 py-0.5 rounded-full font-bold">All Systems</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
             {services.map((svc) => {
               const live = svc.status === "LIVE";
               return (
-                <div key={svc.name} className="bg-[#1E3A5F] rounded-xl border border-slate-700 p-4 flex flex-col gap-2">
+                <div key={svc.name} className="bg-card rounded-xl border border-border p-4 flex flex-col gap-2">
                   <div className="flex items-center gap-2">
-                    <svc.icon className="h-4 w-4 text-slate-300" />
-                    <span className="text-sm text-white font-semibold">{svc.name}</span>
+                    <svc.icon className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-sm text-foreground font-semibold">{svc.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={cn("w-2 h-2 rounded-full animate-pulse", live ? "bg-emerald-400" : "bg-amber-400")} />
+                    <span className={cn("w-2 h-2 rounded-full animate-pulse", live ? "bg-success" : "bg-warning")} />
                     <span className={cn(
                       "text-xs font-bold px-2 py-0.5 rounded-full",
-                      live ? "bg-emerald-900/60 text-emerald-400" : "bg-amber-900/60 text-amber-400"
+                      live ? "bg-success/15 text-success" : "bg-warning/15 text-warning"
                     )}>{svc.status}</span>
                   </div>
-                  <span className="text-xs text-slate-400 font-mono">{svc.latency}</span>
+                  <span className="text-xs text-muted-foreground font-mono">{svc.latency}</span>
                 </div>
               );
             })}
@@ -169,10 +173,10 @@ export default function TowerDashboard() {
             <button
               key={a.label}
               onClick={() => a.to ? navigate(a.to) : toast("System Health: All nominal")}
-              className="bg-[#1E3A5F] rounded-xl border border-slate-700 hover:border-cyan-500 p-4 flex flex-col items-center gap-2 cursor-pointer transition-all hover:bg-[#24466d] group"
+              className="bg-card rounded-xl border border-border hover:border-primary p-4 flex flex-col items-center gap-2 cursor-pointer transition-all hover:bg-accent group"
             >
-              <a.icon className="h-5 w-5 text-cyan-400 transition-transform group-hover:scale-105" />
-              <span className="text-xs text-slate-300">{a.label}</span>
+              <a.icon className="h-5 w-5 text-primary transition-transform group-hover:scale-105" />
+              <span className="text-xs text-muted-foreground">{a.label}</span>
             </button>
           ))}
         </div>
@@ -180,11 +184,11 @@ export default function TowerDashboard() {
         {/* SECTION 5 — Activity + Security */}
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
           {/* Activity Feed */}
-          <div className="lg:col-span-3 bg-[#1E3A5F] rounded-xl border border-slate-700 p-5">
-            <h3 className="text-sm font-semibold text-white mb-4">Recent Activity</h3>
+          <div className="lg:col-span-3 bg-card rounded-xl border border-border p-5">
+            <h3 className="text-sm font-semibold text-foreground mb-4">Recent Activity</h3>
             <div className="space-y-3">
               {recentActivity.map((item, i) => {
-                const colors = activityTypeColors[item.type] || "text-slate-400 bg-slate-400";
+                const colors = activityTypeColors[item.type] || "text-muted-foreground bg-muted-foreground";
                 const [textColor, dotColor] = colors.split(" ");
                 return (
                   <div key={i} className="flex items-start gap-3">
@@ -193,10 +197,10 @@ export default function TowerDashboard() {
                       <div className="flex items-center gap-2 mb-0.5">
                         <span className={cn("text-[10px] font-bold uppercase", textColor)}>{item.type}</span>
                       </div>
-                      <p className="text-sm text-white truncate">{item.desc}</p>
-                      <span className="text-xs text-slate-400">{item.time}</span>
+                      <p className="text-sm text-foreground truncate">{item.desc}</p>
+                      <span className="text-xs text-muted-foreground">{item.time}</span>
                     </div>
-                    <button className="text-xs text-cyan-400 shrink-0 hover:underline">View</button>
+                    <button className="text-xs text-primary shrink-0 hover:underline">View</button>
                   </div>
                 );
               })}
@@ -204,31 +208,31 @@ export default function TowerDashboard() {
           </div>
 
           {/* Security Health */}
-          <div className="lg:col-span-2 bg-[#1E3A5F] rounded-xl border border-slate-700 p-5 flex flex-col">
+          <div className="lg:col-span-2 bg-card rounded-xl border border-border p-5 flex flex-col">
             <div className="flex items-center gap-2 mb-6">
-              <Shield className="h-4 w-4 text-white" />
-              <span className="text-sm font-semibold text-white">Security Health</span>
+              <Shield className="h-4 w-4 text-foreground" />
+              <span className="text-sm font-semibold text-foreground">Security Health</span>
             </div>
             <div className="flex-1 flex flex-col items-center justify-center">
-              <span className="text-6xl font-black text-emerald-400 font-mono">91</span>
-              <span className="text-xs text-slate-400 mt-1">Platform Security Score</span>
-              <div className="w-full h-2 rounded-full bg-slate-700 mt-4 overflow-hidden">
-                <div className="h-full rounded-full bg-emerald-400" style={{ width: "91%" }} />
+              <span className="text-6xl font-black text-success font-mono">91</span>
+              <span className="text-xs text-muted-foreground mt-1">Platform Security Score</span>
+              <div className="w-full h-2 rounded-full bg-secondary mt-4 overflow-hidden">
+                <div className="h-full rounded-full bg-success" style={{ width: "91%" }} />
               </div>
             </div>
             <div className="space-y-2 mt-6">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
-                <span className="text-xs text-amber-400">Queue Worker degraded — monitor closely</span>
+                <span className="w-2 h-2 rounded-full bg-warning shrink-0" />
+                <span className="text-xs text-warning">Queue Worker degraded — monitor closely</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-red-400 shrink-0" />
-                <span className="text-xs text-red-400">3 failed login attempts in last hour</span>
+                <span className="w-2 h-2 rounded-full bg-destructive shrink-0" />
+                <span className="text-xs text-destructive">3 failed login attempts in last hour</span>
               </div>
             </div>
             <button
               onClick={() => navigate("/tower/security")}
-              className="mt-4 w-full text-sm text-cyan-400 border border-cyan-500/40 rounded-lg py-2 hover:bg-cyan-500/10 transition-colors"
+              className="mt-4 w-full text-sm text-primary border border-primary/40 rounded-lg py-2 hover:bg-primary/10 transition-colors"
             >
               View Security Console →
             </button>

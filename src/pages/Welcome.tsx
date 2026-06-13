@@ -117,7 +117,8 @@ const panelCards = [
     title: "Client Blueprints",
     icon: Building,
     route: "/welcome/scenarios",
-    description: "Seven design-partner client scenarios — Abdos · Cherise · BCPL · Smartpower · Amith · Shankar Pharma · Sinha Industries ★. Reference templates that validate universal ERP patterns across industries.",
+    // sync: keep count aligned with CLIENT_SCENARIOS roster in src/pages/welcome/scenarios/ClientBlueprintsPage.tsx (currently 8 entries)
+    description: "Eight design-partner client scenarios — Abdos · Cherise · BCPL · Smartpower · Amith · Shankar Pharma · Sinha Industries ★ · SigmaFlow Control. Reference templates that validate universal ERP patterns across industries.",
     badge: null,
   },
   {
