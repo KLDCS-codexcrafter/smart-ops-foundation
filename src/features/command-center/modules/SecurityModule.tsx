@@ -197,13 +197,16 @@ const SERVICES = [
   { name: "Email Service",  icon: Mail,     status: "healthy" as const },
 ];
 
-const INTEGRATIONS_DATA = [
-  { name: "Tally ERP",          status: "connected",    category: "Accounting",   icon: Database },
-  { name: "GST Portal",         status: "connected",    category: "Compliance",   icon: Shield },
-  { name: "SMTP Email",         status: "connected",    category: "Communication",icon: Mail },
-  { name: "WhatsApp Business",  status: "disconnected", category: "Communication",icon: MessageSquare },
-  { name: "SMS Gateway",        status: "disconnected", category: "Communication",icon: Smartphone },
-];
+// W1C-7a · Integrations are now config-driven via loadIntegrationsForEntity.
+// Icon mapping kept local — the persisted shape (name/category/status) carries
+// no icon ref. Unknown names fall back to Link2.
+const INTEGRATION_ICONS: Record<string, React.ElementType> = {
+  'Tally ERP':          Database,
+  'GST Portal':         Shield,
+  'SMTP Email':         Mail,
+  'WhatsApp Business':  MessageSquare,
+  'SMS Gateway':        Smartphone,
+};
 
 // ── Scope Architecture ────────────────────────────────────────
 type ScopeLevel = 'global' | 'company' | 'user';
