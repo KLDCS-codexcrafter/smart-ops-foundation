@@ -30,6 +30,10 @@ import {
   seedFinanceProcurementTxnsForDemo,
   finProcDemoKeys,
 } from '@/data/demo-transactions-finance-procurement';
+import {
+  seedOpsCloseTxnsForDemo,
+  opsCloseDemoKeys,
+} from '@/data/demo-transactions-ops-close';
 
 // ── DemoModule registry ─────────────────────────────────────────────────
 
@@ -259,6 +263,21 @@ export const DEMO_MODULES: DemoModule[] = [
     loadMasters: () => { /* no masters · txns only */ },
     loadTransactions: () => {
       seedFinanceProcurementTxnsForDemo(DEFAULT_ENTITY_SHORTCODE);
+    },
+    getCount: (key: string) => getStoredCount(key),
+  },
+  {
+    // W1C-7c · demo-seed sprint 3 of 3 · ops/support TRANSACTIONS · closes
+    // the full-demo capability so every remaining card register populates.
+    id: 'ops-close-txns',
+    label: 'Ops & Support (demo txns)',
+    sprint: 'W1C-7c · T-W1C7c-Demo-Txns-Ops-Close',
+    status: 'complete' as const,
+    masterKeys: [],
+    transactionKeys: opsCloseDemoKeys(DEFAULT_ENTITY_SHORTCODE),
+    loadMasters: () => { /* no masters · txns only */ },
+    loadTransactions: () => {
+      seedOpsCloseTxnsForDemo(DEFAULT_ENTITY_SHORTCODE);
     },
     getCount: (key: string) => getStoredCount(key),
   },
