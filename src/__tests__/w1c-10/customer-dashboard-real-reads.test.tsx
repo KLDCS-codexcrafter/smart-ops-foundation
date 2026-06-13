@@ -12,13 +12,18 @@ import { ThemeProvider } from '@/components/theme';
 import { customerOrdersKey, type CustomerOrder } from '@/types/customer-order';
 import CustomerDashboard from '@/pages/customer/CustomerDashboard';
 
-const renderDash = () => renderDash(
-  <ThemeProvider></ThemeProvider>
-);
-
 const ENTITY = 'SMRT';
-
 const dashSrc = readFileSync('src/pages/customer/CustomerDashboard.tsx', 'utf8');
+
+function renderDash() {
+  return render(
+    <ThemeProvider>
+      <MemoryRouter>
+        <CustomerDashboard />
+      </MemoryRouter>
+    </ThemeProvider>
+  );
+}
 
 function makeOrder(overrides: Partial<CustomerOrder>): CustomerOrder {
   const now = new Date().toISOString();
@@ -50,11 +55,8 @@ describe('W1C-10 F-2 · CustomerDashboard real reads', () => {
   });
 
   it('renders honest empty-state when entity has no seeded orders', () => {
-    renderDash(
-      
-    );
+    renderDash();
     expect(screen.getByText(/No transactions yet/i)).toBeInTheDocument();
-    // No synthetic invoice numbers like INV-2026-0412 (the deleted hardcoded fake)
     expect(screen.queryByText(/INV-2026-0412/)).toBeNull();
   });
 
@@ -65,16 +67,11 @@ describe('W1C-10 F-2 · CustomerDashboard real reads', () => {
     ];
     localStorage.setItem(customerOrdersKey(ENTITY), JSON.stringify(orders));
 
-    renderDash(
-      
-    );
+    renderDash();
 
-    // Real seeded order numbers appear (we render multiple instances — both panels)
     expect(screen.getAllByText('ORD-W1C10-001').length).toBeGreaterThan(0);
     expect(screen.getAllByText('ORD-W1C10-002').length).toBeGreaterThan(0);
-    // Empty-state is gone
     expect(screen.queryByText(/No transactions yet/i)).toBeNull();
-    // The deleted hardcoded synthetic row must NOT appear
     expect(screen.queryByText(/INV-2026-0412/)).toBeNull();
   });
 });
