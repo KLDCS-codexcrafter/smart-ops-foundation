@@ -191,3 +191,80 @@ export function emitTierScopeRegistered(
   }
 }
 
+// ─── Sprint W1C-6 · Block 3 · Minimal first-run entity helper ─────────────
+//
+// Surfaces a SHORT path to register a usable company without the 7-step
+// CompanyForm wizard. Writes the SAME foundation keys the wizard
+// (erp_companies) and the demo seeder (erp_group_entities + erp_parent_company)
+// populate, so downstream readers (useEntityList, SelectCompanyGate, Dashboard
+// banner) see the entity immediately on next render.
+//
+// CompanyForm.tsx stays 0-DIFF. ZERO new SIBLINGs.
+
+export interface MinimalEntityResult {
+  id: string;
+  name: string;
+  shortCode: string;
+  gstin?: string;
+  state?: string;
+}
+
+function deriveShortCode(name: string): string {
+  const cleaned = name.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (cleaned.length >= 4) return cleaned.slice(0, 4);
+  return (cleaned + 'XXXX').slice(0, 4);
+}
+
+export function createMinimalEntity(
+  name: string,
+  gstin?: string,
+  state?: string,
+): MinimalEntityResult {
+  const trimmed = name.trim();
+  if (!trimmed) throw new Error('Company name is required');
+
+  const id = `c-${Date.now().toString(36)}`;
+  const shortCode = deriveShortCode(trimmed);
+
+  // 1) erp_group_entities — the registry useEntityList / gate read.
+  try {
+    // [JWT] POST /api/foundation/entities
+    const raw = localStorage.getItem('erp_group_entities');
+    const list: Array<Record<string, unknown>> = raw ? JSON.parse(raw) : [];
+    list.push({ id, name: trimmed, shortCode, type: 'parent' });
+    localStorage.setItem('erp_group_entities', JSON.stringify(list));
+  } catch { /* storage best-effort */ }
+
+  // 2) erp_companies — the foundation list page + master forms read.
+  try {
+    // [JWT] POST /api/foundation/companies
+    const raw = localStorage.getItem('erp_companies');
+    const list: Array<Record<string, unknown>> = raw ? JSON.parse(raw) : [];
+    list.push({
+      id,
+      legalEntityName: trimmed,
+      shortCode,
+      status: 'Active',
+      state: state ?? '',
+      city: '',
+      gstRegs: gstin ? [{ gstin, state: state ?? '' }] : [],
+    });
+    localStorage.setItem('erp_companies', JSON.stringify(list));
+  } catch { /* storage best-effort */ }
+
+  // 3) erp_parent_company — only seed if absent so we don't clobber a real one.
+  try {
+    const existing = localStorage.getItem('erp_parent_company');
+    if (!existing) {
+      // [JWT] POST /api/foundation/parent-company
+      localStorage.setItem('erp_parent_company', JSON.stringify({
+        id, legalEntityName: trimmed, shortCode,
+        state: state ?? '', gstRegs: gstin ? [{ gstin, state: state ?? '' }] : [],
+      }));
+    }
+  } catch { /* storage best-effort */ }
+
+  return { id, name: trimmed, shortCode, gstin, state };
+}
+
+
