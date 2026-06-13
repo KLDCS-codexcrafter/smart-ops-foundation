@@ -39,7 +39,7 @@ import { ebrcKey, edpmsKey } from '@/types/ebrc-edpms';
 import type { VendorActivity } from '@/types/vendor-portal';
 import { vendorActivityKey } from '@/types/vendor-portal';
 
-const NOW = '2026-04-15T10:00:00.000Z';
+import { applyDemoSeed as applyComply360DemoSeed } from '@/lib/comply360-demo-seed-engine';
 const FY = 'FY-2026-27';
 
 const id = (suffix: string): string => `demo-w1c7b-${suffix}`;
