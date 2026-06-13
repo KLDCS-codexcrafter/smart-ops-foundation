@@ -324,3 +324,41 @@ Combined remediation surface: **38+ files** across 6 cards. The fix recipe is un
 **MIXED** — FrontDesk is the cleanest card audited so far (15/15 canonical hook + real p81 seed → PASS). Pay Hub is read-partial but write-broken (16 master files pin writes to default entity → PARTIAL · B7-F-2). Dispatch Hub repeats the SiteX/MaintainPro hardcode pattern across 4 route wrappers (FAIL · B7-F-1). The 6-card anti-pattern roll-up now spans 38+ files — remediation sprint is overdue.
 
 STOP.
+
+---
+
+## Batch 8 · Support Hub (3 cards) — run 13 Jun 2026 — VERDICT: MIXED (2 PASS · 1 engine-default-bug)
+Pre-state: **SMRTP** manufacturing blueprint continued. Orchestrator coverage observed for the 3 Support Hub cards:
+- Seeds: `serviceTicketKey(e)` + `amcRecordKey(e)` (via `demo-transactions-ops-close.ts` L431-432 · 1 in_progress ticket + 1 active AMC), `erp_documents_${e}` (L433 · 2 docs incl 1 contract + 1 engineering drawing — same store EngineeringX drawings consume), `taskflow_v1_${e}` (via `seedTaskFlowDemo` in `demo-seeders-p81.ts` L96-148 · TF spine: create→ack→reassign→due-date→evidence-close + 1 open task).
+- Does **NOT** seed: standby loans, OEM claims, refurbished inventory, repair routing queues, marketplace listings (ServiceDesk Phase-2 stubs · neither PASS nor FAIL).
+
+| # | Card | Register / list (file · entity wiring) | Day Book | Report (one) | Form guard | LIVE/STATIC | PASS/FAIL/CNR |
+|---|---|---|---|---|---|---|---|
+| 1 | **ServiceDesk** (`/erp/servicedesk`) | `amc-pipeline/AMCActiveList.tsx` L15 calls `getAMCsByLifecycleStage('active')` with **NO entity_id argument**; engine signature at `servicedesk-engine.ts` L569-572 has `entity_id: string = DEFAULT_ENTITY` — so the page silently binds to `DEFAULT_ENTITY` regardless of switcher. Same pattern repeats across `AMCExpiringList`, `AMCLapsedList`, `AMCApplicabilityDecision`, `AMCProposalList`, `AMCProposalDetail`. Tally: **58 servicedesk files · only 3 use `useEntityCode()`** — **engine-default-leak (NEW flavour of the entity-resolution failure class)**. Seeded AMC (`amc-1`) + ticket only materialise when active entity equals `DEFAULT_ENTITY`. | n/a (separate support domain) | `customer-hub/*`, `engineers/*`, `future-task-register/*`, `installation-verification/*`, `oem-claims/*`, `quote-optimizer/*`, `refurbished/*`, `repair-routing/*`, `standby-loans/*`, `phase2-preview/*` — registers/reports mount; AMC + ticket reports leak via engine defaults | guards present (8 files with `toast.error/validateVoucher` in `service-tickets/*`, `amc-pipeline/AMCProposalDetail`, `installation-verification/*`) — guard density healthy | **ENGINE-DEFAULT-LEAK** + LIVE-default-entity-only (Phase 2 stubs neither PASS nor FAIL) | **FAIL · B8-F-1** |
+| 2 | **TaskFlow** (`/erp/taskflow`) | `TaskFlowLandingPage.tsx` L15-21 uses `useEntityCode()` + passes to `getStats(entityCode)`, `listDueWithin24h(entityCode)`, `getOpenBlocked(entityCode)`. Tally: **27 taskflow files · 25 use `useEntityCode()`** — cleanest adoption of the canonical hook in the entire ERP after FrontDesk. Engine functions all accept entity as required arg (no silent defaults). `seedTaskFlowDemo` (p81 L96-148) writes `taskflow_v1_${e}` with full lifecycle spine. | n/a | `TaskFlowAllTasksPage`, `ApprovalsInboxPage`, `EscalationsPage`, `WorkDiaryPage`, `AccountabilityDashboardPage`, `SLAManagementPage`, `RemindersPage`, `MyRemindersPage`, `BlockedListPage` mount LIVE from `taskflow_v1_SMRTP` seed | 12 files with `toast.error` (TaskFlowLandingPage + TaskRoom + ApprovalChains + Workflows + Templates + ClosePolicies + ComplianceSources + Decisions + MeetingMinutes + Handover + Escalations + Follow-Ups) — state-machine guards per TaskFlow lifecycle | **LIVE** (canonical entity wiring + p81 seed materialises) | **PASS** |
+| 3 | **DocVault** (`/erp/docvault`) | `registers/*` + `transactions/*` + `approvals/*` + `reports/*` use `useEntityCode()`. Tally: **23 docvault files · 17 use `useEntityCode()`** (6 are pure-presentation cells like `DocumentControlPanel.tsx` that receive entity via props). `erp_documents_${e}` seeded by ops-close (2 docs · 1 contract + 1 engineering drawing). | n/a | `DocVaultWelcome`, `registers/*` (master document register), `reports/*` (versioning + retention reports), `approvals/*` (document approval inbox) mount LIVE from seeded `erp_documents_SMRTP` | 7 files with `toast.error/validateVoucher` (`transactions/DocumentUploadEntry`, `approvals/*`, `transactions/DocumentSupersedeEntry`, retention overrides) — DP-FD-18 ID-capture canon adjacent guards present | **LIVE** (canonical entity wiring + ops-close seed materialises) | **PASS** |
+
+### Browser click-through
+All `/erp/{servicedesk,taskflow,docvault}` routes hit login wall → **CNR-browser-auth**. Source-deterministic tallies (canonical-hook usage vs engine-default leak vs seed-key writes) are dispositive without browser session.
+
+### Fails (1 honest, real teeth — NEW flavour of the entity-resolution anti-pattern class)
+- **B8-F-1** ServiceDesk — **58 servicedesk files · only 3 use `useEntityCode()`**. The remaining 55 files rely on engine helpers (`getAMCsByLifecycleStage`, `getAMCsAwaitingApplicabilityDecision`, `getActiveTickets`, etc.) whose signatures declare `entity_id: string = DEFAULT_ENTITY` as a **default argument**. Pages never pass the active entity → every read silently leaks to `DEFAULT_ENTITY` regardless of switcher. This is a **distinct third flavour** of the same root-cause failure class (B5/B6/B7 = page-level hardcode · B8 = engine-signature default). Same end-state symptom: seeded SMRTP rows invisible unless switcher happens to equal `DEFAULT_ENTITY`. One-class fix: remove default values from engine function signatures (force-pass entity), then wrap pages with `useEntityCode()` + `SelectCompanyGate`.
+
+### Anti-pattern roll-up across Batches 5+6+7+8 (now 7 of 19 cards · 3 flavours)
+| Flavour | Cards | Files (est.) |
+|---|---|---|
+| **raw `active_entity_code` localStorage read** | GateFlow · 6 Vendor Portal panels | 8 |
+| **hardcoded `const E='DEMO'` / `DEFAULT_ENTITY_SHORTCODE` at module/wrapper scope** | MaintainPro · SiteX · Dispatch · 16 Pay Hub masters (write-scope variant) | 30+ |
+| **engine-signature default `entity_id = DEFAULT_ENTITY`** (NEW · B8) | ServiceDesk | 55 page-files leaking through ~12 engine functions |
+
+Combined remediation surface now **93+ files** across 7 cards. Engine-signature defaults (flavour 3) are arguably the most insidious because the page source looks clean — only auditing the engine signature reveals the leak.
+
+### Scope-notes (honest · neither PASS nor FAIL)
+- **ServiceDesk Phase-2 stubs** (`phase2-preview/EngineerReputationRating`, `IoTReadyFoundation`, `ServicePerformanceBenchmark`) are intentional placeholders per the card description ("Phase 2 full implementation") — neither PASS nor FAIL.
+- **TaskFlow's 25-of-27 canonical-hook adoption** stands alongside FrontDesk (B7) and RequestX/EngineeringX (B6) as the reference good-citizen cards. The proof that the fix recipe works in production is on-codebase.
+- **DocVault drawings register** doubles as EngineeringX drawings source (same `erp_documents_${e}` store) — the cross-card share is healthy by design.
+
+### Verdict
+**MIXED** — TaskFlow + DocVault are LIVE-clean PASS (canonical entity wiring + real seeds via p81/ops-close). ServiceDesk fails on the third (and most subtle) flavour of the entity-resolution anti-pattern: engine-signature `= DEFAULT_ENTITY` defaults leak across 55 page-files via ~12 engine functions. The 7-card anti-pattern roll-up now spans 93+ files across 3 distinct flavours — the dedicated remediation sprint is now critical-path before any production GA.
+
+STOP.
