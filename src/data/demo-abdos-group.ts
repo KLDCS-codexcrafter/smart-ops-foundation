@@ -72,10 +72,14 @@ function registerEntities(): void {
 // ─── Block 2 · group-structure tree · the Ind-AS method mix ─────────────────
 
 function seedGroupStructure(): void {
-  // 3 full + 1 proportional (JV >50%) + 1 equity (associate <50%)
+  // Parent root node so IC txns that target the parent (royalty/mgmt fee)
+  // pass the `getGroupStructure(to_entity)` guard in postICTransaction.
   upsertGroupStructure({
-    entity_id: 'e-ablsc', parent_entity_id: 'e-abdos',
-    relationship: 'subsidiary', ownership_pct: 100,
+    entity_id: 'e-abdos', parent_entity_id: null,
+    relationship: 'parent', ownership_pct: 100,
+    consolidation_method: 'full', effective_from: STRUCTURE_EFFECTIVE_FROM,
+  });
+  // 3 full + 1 proportional (JV >50%) + 1 equity (associate <50%)
     consolidation_method: 'full', effective_from: STRUCTURE_EFFECTIVE_FROM,
   });
   upsertGroupStructure({
