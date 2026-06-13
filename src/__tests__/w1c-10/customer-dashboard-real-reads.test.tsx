@@ -12,8 +12,8 @@ import { ThemeProvider } from '@/components/theme';
 import { customerOrdersKey, type CustomerOrder } from '@/types/customer-order';
 import CustomerDashboard from '@/pages/customer/CustomerDashboard';
 
-const renderDash = () => render(
-  <ThemeProvider><MemoryRouter><CustomerDashboard /></MemoryRouter></ThemeProvider>
+const renderDash = () => renderDash(
+  <ThemeProvider></ThemeProvider>
 );
 
 const ENTITY = 'SMRT';
@@ -50,8 +50,8 @@ describe('W1C-10 F-2 · CustomerDashboard real reads', () => {
   });
 
   it('renders honest empty-state when entity has no seeded orders', () => {
-    render(
-      <MemoryRouter><CustomerDashboard /></MemoryRouter>
+    renderDash(
+      
     );
     expect(screen.getByText(/No transactions yet/i)).toBeInTheDocument();
     // No synthetic invoice numbers like INV-2026-0412 (the deleted hardcoded fake)
@@ -65,8 +65,8 @@ describe('W1C-10 F-2 · CustomerDashboard real reads', () => {
     ];
     localStorage.setItem(customerOrdersKey(ENTITY), JSON.stringify(orders));
 
-    render(
-      <MemoryRouter><CustomerDashboard /></MemoryRouter>
+    renderDash(
+      
     );
 
     // Real seeded order numbers appear (we render multiple instances — both panels)
