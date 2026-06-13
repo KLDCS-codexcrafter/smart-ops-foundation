@@ -34,7 +34,7 @@ function makeBalancedVoucher(id: string): Voucher {
     posted_at: null,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-  } as Voucher;
+  } as unknown as Voucher;
 }
 
 describe('W1C-5 · Block 4a · Posted-record immutability (attack-test)', () => {
