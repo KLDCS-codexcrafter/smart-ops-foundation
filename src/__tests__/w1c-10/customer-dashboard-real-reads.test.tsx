@@ -8,8 +8,13 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
+import { ThemeProvider } from '@/components/theme';
 import { customerOrdersKey, type CustomerOrder } from '@/types/customer-order';
 import CustomerDashboard from '@/pages/customer/CustomerDashboard';
+
+const renderDash = () => render(
+  <ThemeProvider><MemoryRouter><CustomerDashboard /></MemoryRouter></ThemeProvider>
+);
 
 const ENTITY = 'SMRT';
 
