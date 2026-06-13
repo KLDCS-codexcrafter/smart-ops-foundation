@@ -44,7 +44,14 @@ export interface ApprovalContext {
   fields?: Partial<ApprovalFieldMap>;
   /** Human-readable label for audit log (defaults to record id) */
   recordLabel?: (record: ApprovalRecord) => string;
+  /**
+   * W1C-5 · Block 2 · audit B-01 HIGH — Separation of Duties (SoD) override.
+   * When true, allows submitter == approver (sole-proprietor entities only).
+   * Default absent (= false) so the rail is fraud-safe by default.
+   */
+  allowSelfApproval?: boolean;
 }
+
 
 export interface ApprovalFieldMap {
   status: string;            // default 'status'
