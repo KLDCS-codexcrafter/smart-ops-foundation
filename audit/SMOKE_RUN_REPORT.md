@@ -172,3 +172,34 @@ ORDER: 1.Login✓ 2./tower/dashboard✓ 3./bridge/dashboard 4./partner/dashboard
 ```
 
 **STOP per batching rule.** Next dispatch: `/bridge/dashboard`.
+
+---
+
+## SURFACE 3 · /bridge/dashboard — Bridge Console (HEAD target 5fc4b03)
+**Purpose:** ERP↔Bridge sync orchestration cockpit — pipeline, alerts, company health, agent fleet, queue.
+
+| Check | Result | Evidence | Data type |
+|---|---|---|---|
+| Page loads behind auth | **PASS** | Direct hit redirected to `/auth/login`; after login (`demo@4dsmartops.com / demo1234`) `/bridge/dashboard` renders fully inside BridgeLayout (sidebar + header + breadcrumb). | — |
+| Sync Pipeline (8-stage) | **PASS** | "Sync Pipeline · 8-stage workflow — 42 active requests" with per-stage counts: Draft 2 · Submitted 3 · Validating 1 · Approved 4 · Queued 2 · Executing 1 · Verifying 1 · Reconciled 28. | **STATIC** demo values (in-file constants in `ConsoleDashboard.tsx`). |
+| Top alert tiles | **PASS** | "3 BLOCKED REQUESTS · Oldest 3h 15m" · "1 PENDING APPROVAL · SLA 1h 45m left" · "2 AGENT ERRORS · AGENT-04 timeout" · "1 FAILED RECONCILIATION · 1 pending sign-off" · "47 QUEUE DEPTH · Oldest batch 2h 14m". | **STATIC** demo values. |
+| Company Health table | **PASS** | 4 rows render with agent + syncs + errors + status: Reliance Digital Solutions / TNT-001 / AGENT-01 / 156 / 2 / 94 Online · Tata Motors Finance / TNT-002 / AGENT-02 / 89 / 8 / 78 Online · Infosys BPM Limited / TNT-003 / AGENT-03 / 234 / 19 / 7 Offline · Wipro Enterprises / TNT-004 / AGENT-04 / 451 / 26 / 2 Error. | **STATIC** demo values (`const COMPANIES = [...]` in source). |
+| Smart Queue (AI Prioritised) | **PASS** | 5 prioritised rows: 95 REQ-0042 Reliance Digital Sales Vouchers "SLA urgent + large dataset (8,920 records)" · 82 REQ-0041 Tata Motors Finance Ledger Masters "Tenant tier: Enterprise" · 71 REQ-0040 Infosys BPM Stock Items "Scheduled window approaching" · 65 REQ-0039 Reliance Digital Purchase Vouchers "Standard priority" · 45 REQ-0038 Wipro Enterprises Journal Entries "Low volume, no SLA pressure". | **STATIC** demo values. |
+| Agent Fleet panel | **PASS** | 4 agent rows with last-seen: AGENT-01 Reliance Digital 2s ago · AGENT-02 Tata Motors Finance 5s ago · AGENT-03 Infosys BPM 15m ago · AGENT-04 Wipro Enterprises 1m ago. "View All Agents" link present. | **STATIC** demo values. |
+| Live Activity feed | **PASS** | 6 entries: REQ-0037 reconciled (324 records, 2m) · REQ-0038 submitted for approval Reliance Digital — Vouchers (5m) · REQ-0035 validation warning 3 records flagged (12m) · REQ-0036 auto-approved Below approval threshold (15m) · REQ-0034 execution failed AGENT-04 timeout (23m) · AGENT-01 reconnected Latency 12ms (28m). "Live" badge shown. | **STATIC** demo values. |
+| Sidebar nav opens sub-page | **PASS** | All 13 nav items render (Dashboard, Sync Monitor, Approval Inbox, Exceptions, Reconciliation, Agent Fleet, Company Registry, Sync Profiles, Field Mapper, Import Hub, Export Hub, Audit Explorer, Settings). Collapse toggle works (mirrors TowerLayout token vocabulary). |
+| Theme toggle (post-BridgeLayout fix) | **PASS** | Sun/moon toggle in header switches BOTH ways — sidebar follows global theme, no hardcoded-dark patches; matches TowerLayout behaviour (W1C-10 BridgeLayout-Theme-Tokens fix verified live). |
+| Ask Dishani panel | **PASS** | Right-side "Ask Dishani" assistant card renders with context "You are in: Bridge Console", greeting, 6 suggested prompts, and input box. |
+| Back to App breadcrumb | **PASS** | Header breadcrumb "Back to App › Bridge Console" routes back to `/welcome` on click. |
+
+**Console:** only the pre-existing React Router v6→v7 future-flag warnings; no errors specific to Bridge.
+
+**Surface 3 verdict:** **PASS (rendering & navigation)**. ⚠️ All numeric content on this dashboard is **STATIC demo data** (in-file constants — `COMPANIES`, `REQUESTS`, `ACTIVITY` in `src/pages/bridge/ConsoleDashboard.tsx`); values do not change with underlying sync state because no live data source is wired yet. Honest cockpit visualisation; live wiring is a backend deliverable.
+
+## PROGRESS LEDGER (updated)
+```
+DONE: [Login, /tower/dashboard, /bridge/dashboard]   NEXT: /partner/dashboard   REMAINING: 5
+ORDER: 1.Login✓ 2./tower/dashboard✓ 3./bridge/dashboard✓ 4./partner/dashboard 5./customer/dashboard 6./welcome/scenarios 7./welcome/dev-tools 8./build-your-plan
+```
+
+**STOP per batching rule.** Next dispatch: `/partner/dashboard`.
