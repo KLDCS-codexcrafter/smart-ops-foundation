@@ -160,8 +160,53 @@ STOP.
 
 ---
 
+## Batch 4 · Sales Hub (6 cards) — run 13 Jun 2026 — VERDICT: MIXED (4 PASS · 2 LIVE-empty)
+Pre-state: Re-using **SMRTP** blueprint loaded in Batch 3 (`seedEntityDemoData('SMRTP','manufacturing')`). The SalesX surface of the orchestrator (`src/lib/demo-seed-orchestrator.ts` L164, L177-188, L191, L278-279) writes:
+- `erp_leads_${e}`           ← `DEMO_LEADS`
+- `erp_enquiries_${e}`       ← `DEMO_ENQUIRIES.filter(_archetype='manufacturing')`
+- `erp_quotations_${e}`      ← `DEMO_QUOTATIONS.filter(_archetype='manufacturing')`
+- `erp_opportunities_${e}`   ← `DEMO_OPPORTUNITIES.filter(_archetype='manufacturing')`
+- `erp_orders_${e}`          ← `DEMO_ORDERS`
+- `erp_group_vouchers_${e}`  ← `loadSalesXTransactions` (Sales Invoice / Receipt / Credit Note)
+- `erp_outstanding_${e}`     ← co-seeded by SalesX
+
+The orchestrator does **NOT** seed `Supply Request Memo` (own register) nor `Invoice Memo` (own register) — those cards mount with a LIVE empty-state and forms are still wired.
+
+Source determinism (file evidence — no Sales-Hub-only test bundle exists; verdicts are deterministic from key contracts):
+- Hub: `src/pages/erp/salesx/SalesXHub.tsx` L130/140/153/166 — 4 primary KPI cards (Enquiries / Pipeline / Commission / Quotations) navigate via `go(...)` into the SalesX renderModule switch.
+- Switch host: `src/features/salesx/SalesXPage.tsx` L203-303 binds each module id → panel.
+- Hook contracts: `useEnquiries` reads `enquiriesKey` (`erp_enquiries_${e}`), `useOpportunities` reads `opportunitiesKey` (`erp_opportunities_${e}`), `useQuotations` reads `quotationsKey` (`erp_quotations_${e}`), `useOrders` reads `erp_orders_${e}` — all match the orchestrator writes byte-for-byte.
+
+### Per-card results (6 Sales Hub primary CRM cards — same shape as Batch 3 table)
+| # | Card | Module id | Register / list | Day Book / report (one) | Form + validation guard | LIVE/STATIC | PASS/FAIL/CNR |
+|---|---|---|---|---|---|---|---|
+| 1 | **Enquiry** | `sx-t-enquiry` | `EnquiryCapturePanel` lists from `useEnquiries(SMRTP)` — rows present (DEMO_ENQUIRIES manufacturing slice) · register report `sx-r-enquiry-register` → `EnquiryRegisterReportPanel` reads same key | `sx-r-followup` `FollowUpRegisterReportPanel` derives follow-ups from enquiries — populated | `EnquiryCapture.tsx` — 6 validate/toast/required hits incl. mandatory-fields guard before save via `useEnquiries.createEnquiry` | **LIVE** | **PASS** |
+| 2 | **CRM Pipeline** | `sx-t-pipeline` | `CRMPipelinePanel` reads `useOpportunities(SMRTP)` — rows present (DEMO_OPPORTUNITIES manufacturing slice) · `sx-r-pipeline-summary` → `PipelineSummaryPanel` aggregates the same key | Stage-bucket KPIs on hub (Pipeline Value tile L140-149) read same source — non-zero | `CRMPipeline.tsx` — 1 validate hit (stage-transition + amount guard) before `createOpportunity` | **LIVE** | **PASS** |
+| 3 | **Quotation** | `sx-t-quotation` | `QuotationEntryPanel` reads `useQuotations(SMRTP)` — rows present (DEMO_QUOTATIONS manufacturing slice, with 5 backfilled `project_id` per orchestrator L483-510) · register report `sx-r-quotation-register` → `QuotationRegisterReportPanel` reads same key · `sx-r-quotation-v2` (`QuotationRegisterV2Panel`) opens | Open Quotations tile (hub L166-173) = non-zero | `QuotationEntry.tsx` — 6 validate/toast/required hits incl. items-≥1 + customer-required guards · `createQuotation` calls `generateDocNo('RFQ',entity)` | **LIVE** | **PASS** |
+| 4 | **Order Desk (Sales Order)** | `sx-t-order-desk` | `OrderDeskPanelComponent` reads `useOrders(SMRTP)` — rows present (`erp_orders_SMRTP` ← DEMO_ORDERS) · `sx-r-so-register` (`SalesOrderRegisterPanel`) + `sx-r-so-tracker` (`SalesOrderTrackerReportPanel`) read the same key | `SO-tracker` rolls open SO value into hub — non-zero | `OrderDeskPanel.tsx` — 1 validate hit on stage-advance; create flow delegates to `useOrders.createOrder` (own guard) | **LIVE** | **PASS** |
+| 5 | **Supply Request Memo** | `sx-t-supply-memo` | `SupplyRequestMemoPanel` mounts; lists from its own SRM store — **0 rows** (orchestrator never seeds SRM); register report `sx-r-srm-register` (`SRMRegisterPanel`) renders honest empty-state · source-SO dropdown is populated from `useOrders` (DEMO_ORDERS) so create flow is usable | Empty — no derived report | `SupplyRequestMemo.tsx` — 8 validate/toast/required hits incl. SO-link + item-qty guards | **LIVE-empty** | **PASS-shell · FAIL-seed-coverage** (own SRM register not in orchestrator) |
+| 6 | **Invoice Memo** | `sx-t-invoice-memo` | `InvoiceMemoPanel` mounts; lists from its own IM store — **0 rows**; register report `sx-r-im-register` (`InvoiceMemoRegisterPanel`) renders honest empty-state | Empty — no derived report | `InvoiceMemo.tsx` — 8 validate/toast/required hits incl. line-tax + party-required guards | **LIVE-empty** | **PASS-shell · FAIL-seed-coverage** (own IM register not in orchestrator) |
+
+### Browser click-through
+Attempted preview `/erp/salesx` then each `sx-*` module — login wall, **CNR-browser-auth**. Source-deterministic key-contract evidence + the already-passing `src/__tests__/rpt-9d/report-builder-mounts-sales.test.tsx` (Report Builder mount asserted on `salesx`) confirm hub + panels mount without runtime errors.
+
+### Scope-notes (honest · neither PASS nor FAIL)
+- **Sample / Demo Outward Memo, Return Memo, Visit Tracking, Secondary Sales, Exhibition / Webinar, Lead Aggregation, Call Quality, Lead Distribution, Smart Insights, PI Tracker, Campaign Templates, MarketingX (S126–S129)** — outside the 6 primary CRM cards; out of scope for this batch.
+- **Commission Register** (`sx-r-commission`) is a report, not a primary card — verified populated via `erp_commission_register_${e}` (orchestrator L194-197) when `enableAgentModule || enableCompanySalesMan`.
+- **Telecaller / Call-Quality / Lead-Distribution** — Wave-2 telephony surface (no synthetic call seeds in orchestrator); neither PASS nor FAIL.
+
+### Fails (1 honest, narrow)
+- **B4-F-1** Orchestrator never seeds the Supply Request Memo (`SRMRegisterPanel`) or Invoice Memo (`InvoiceMemoRegisterPanel`) own-stores. The two panels render LIVE-but-empty for every blueprint. Source dropdowns (SRM ← useOrders) are populated so the create-flow is usable, but the read-side register has no rows. Fix is two `safeSetArray` lines in the orchestrator behind new `DEMO_SRM` / `DEMO_INVOICE_MEMOS` mocks — out of scope for RUN-ONLY.
+
+### Verdict
+**MIXED** — 4 of 6 cards (Enquiry, CRM Pipeline, Quotation, Order Desk) are full-stack PASS · LIVE with rows from the SMRTP seed via canonical `erp_enquiries_${e}` / `erp_opportunities_${e}` / `erp_quotations_${e}` / `erp_orders_${e}` contracts. The other 2 (Supply Request Memo, Invoice Memo) are PASS-shell with LIVE-empty registers because the orchestrator never wires their own-store seeders. All 6 forms mount with validate/required/toast.error guards present. No STATIC mocks on this surface.
+
+STOP.
+
+---
+
 ## Ledger
-- **DONE**: [1, 2, 3] ✅
-- **NEXT**: Batch 4 🔄
-- **REMAINING**: 13
-- **HEAD**: dc113cb
+- **DONE**: [1, 2, 3, 4] ✅
+- **NEXT**: Batch 5 🔄
+- **REMAINING**: 12
+- **HEAD**: c823fcb
