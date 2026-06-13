@@ -1553,11 +1553,19 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint W1C-5 T-W1C5-Fraud-Guard · Wave-1 Close Arc · hardening sprint from the two-auditor consolidated audit (self-audit × independent cross-check) · SIX surgical guard blocks with attack-tests · Block 1 validateVoucher wired into postVoucher (unbalanced journals THROW · dr-cr-guard.test.ts) · Block 2 SoD on approve()/reject() (submitter cannot approve own record · sod-approval.test.ts) · Block 3 stock availability guard in postStockIssue (consumes getAvailabilityMap from stock-reservation-engine · allow_negative_stock override is audit-logged · stock-availability-guard.test.ts) · Block 4 posted-record immutability via canMutateInPlace in postVoucher + saveCycleAdjustmentVouchers (CGST Rule 56(8)) + ClientBlueprintsPage direct-write purge via new purgeLegacyGroupStoresForEntity helper (posted-immutability-guard.test.ts + no-page-direct-writes.test.ts) · Block 5 Decimal sweep across ~32 financial sites onto dSum/dMul/dAdd/dPct/round2 with EXEMPT-and-declare whitelist for display-only / probability / OEE / density (decimal-sweep.test.ts) · Block 6 manualChunks isolation for vendor-pdf (jspdf + jspdf-autotable) and vendor-xlsx (xlsx) — heavy export libs split from main bundle · DO NOT touch route splitting (296 routes already lazy) · perf-chunks.test.ts · ZERO new SIBLINGs (pure guards onto existing engines + vite chunk config) · walls held: validateVoucher canon consumed 0-DIFF · getAvailabilityMap consumed 0-DIFF · canMutateInPlace consumed 0-DIFF · decimal-helpers canon consumed 0-DIFF · all route splits 0-DIFF · all banked pages 0-DIFF · sprint-history backfill M1 headSha pending bank · self-seed W1C-5 · headSha TBD_AT_BANK
   {
     sprintNumber: 'W1C5' as unknown as number, code: 'T-W1C5-Fraud-Guard', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'TBD_AT_BANK', loc: 850,
+    headSha: 'b710a79', predecessorSha: 'da3dd3b', loc: 850,
+    newSiblings: [],
+    bankDate: '2026-06-13', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint W1C-6 T-W1C6-First-Run-Seed · Wave-1 Close Arc · sprint 6 · LEAN onboarding pass to clear the smoke-test blocker (fresh boot lands every financial card behind SelectCompanyGate because zero companies are seeded) · Block 1 SelectCompanyGate empty-state CTA: Load demo company + sample data → useDemoSeedLoader.loadModule('foundation','all') → reload (re-evaluates entities.length); secondary Quick add company opens QuickCreateEntityDialog; manual Command-Center link preserved · Block 2 Dashboard.tsx FirstRunOnboardingBanner above the 33-card grid · hidden when erp_group_entities populated · dismissible via erp_first_run_banner_dismissed · Block 3 createMinimalEntity(name, gstin?, state?) added to existing foundation engine entity-setup-service.ts (writes erp_group_entities + erp_companies + seeds erp_parent_company only if absent) · QuickCreateEntityDialog consumes it · 7-step CompanyForm.tsx stays 0-DIFF · Block 4 sprint-history backfill W1C-5 headSha → b710a79 + self-seed W1C-6 · 4 test files (gate-load-demo-cta · onboarding-banner-conditional · quick-create-minimal · institutional) · ZERO new SIBLINGs (useDemoSeedLoader + EntitySetupDialog + CompanyForm all CONSUMED 0-DIFF · createMinimalEntity is an added function on the EXISTING foundation engine) · walls held: useDemoSeedLoader.ts 0-DIFF · EntitySetupDialog.tsx 0-DIFF · CompanyForm.tsx 0-DIFF · all 49 gate-using surfaces 0-DIFF · all banked pages 0-DIFF · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'W1C6' as unknown as number, code: 'T-W1C6-First-Run-Seed', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'b710a79', loc: 280,
     newSiblings: [],
     bankDate: '2026-06-13', provenance: 'CONFIRMED',
   },
 ];
+
 
 
 
