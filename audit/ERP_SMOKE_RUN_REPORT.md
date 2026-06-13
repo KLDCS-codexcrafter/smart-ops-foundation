@@ -404,3 +404,45 @@ Combined remediation surface now **~95 files** across 8 cards · 4 distinct flav
 **MIXED** — InsightX PASS-by-design (entity-agnostic aggregator · 10 files clean). EximX FAIL · B9-F-1 (reader contract is the cleanest in the audit but seed contract is broken on two axes: literal `sinha-trading` baked into key strings + finance-procurement seeded under `DEFAULT_ENTITY_SHORTCODE`). The **fourth flavour** of the entity-resolution anti-pattern class is now logged; remediation sprint must include seed-key string audit (not just page-source audit).
 
 STOP.
+
+---
+
+## Batch 10 · Command Center main + Cross-Card DayBook + Recent Errors — run 13 Jun 2026 — VERDICT: MIXED (1 PASS · 1 PASS · 1 raw-key + stale-on-switch bug)
+Pre-state: **SMRTP** manufacturing blueprint continued. Three Command Center surfaces audited for real cross-card aggregation and entity contract.
+
+| # | Surface | Aggregation source / entity wiring | LIVE/STATIC | PASS/FAIL/CNR |
+|---|---|---|---|---|
+| 1 | **Command Center main** (`/erp/command-center` · `CommandCenterPage.tsx` L344) | Default landing = `OverviewModule` (L483). Module dispatcher with ~80 routed sub-modules (Foundation · Security · FinCoreMasters · Production · Tax/TDS/TCS/HSN/PT/EPF · LedgerMaster · VoucherTypes · Currency · FY Calendar · ModeOfPayment · TermsOfPayment · BusinessUnit · AssetCentre · VoucherClass · ProjectCentre · 14 Inventory masters · Geography · OrgStructure · Opening Ledger Balance · 12 Pay Hub masters · ImportHub). Sub-modules read entity-scoped masters via their own panels (most already audited in B2). Active-module persistence via URL hash (L416). Records audit + activity on module switch (`logAudit`, `recordActivity`, `rememberModule`). | **LIVE-dispatcher** (modules render real seeded masters per B2 audit · Overview module is the static landing tiles) | **PASS** (dispatcher surface — sub-module fidelity already graded in B2 STATIC verdict; the hub itself is wired correctly) |
+| 2 | **Cross-Card DayBook** (`CrossCardDayBookPage.tsx`) | Uses **`useEntityCode()`** (canonical hook · L48) + `getCrossCardDayBook(entityCode, filter)` from `daybook-aggregator.ts` L28-65. Aggregator fans **7 registered DayBook sources** via `listDayBookSources()` — registered at app init by `daybook-sources.ts` (imported as side-effect in `src/main.tsx` L7): `fc-fincore-daybook/finance` · `ph-payhub-daybook/people` · `sd-service-daybook/service` · `p360-goods-inward/procure` · `mp-maintenance-entry/maintenance-entry` · `mp-spares-issue/maintenance-spares` · `ex-custom/eximx`. Each `source.read(entityCode)` wraps the EXISTING loader the per-card DayBook page uses (no duplicate stores · canon-consume per RPT-3a sibling register doc L549). Integrity hash via `signReport(entries)` rendered in ReportSendHeader. Filters: domains · cardIds · date range. Date-desc sort. | **LIVE** (7-card fan-out · entity-scoped reads · honest empty-state when no rows) | **PASS** (cleanest cross-card aggregator surface in the audit · canonical hook + side-effect-registered sources + integrity sign) |
+| 3 | **Recent Errors** (`RecentErrorsPage.tsx`) | **Reads `localStorage.getItem('erp_selected_company')` directly** (L37-42 `getActiveEntity()`) — bypasses `useEntityCode()` / `useERPCompanyContext`. Worse, the entity is captured in a **`useState` lazy initializer** (L46 `useState(() => getActiveEntity())`) — **never re-reads on entity switch**, so the page is silently stale after the user changes company in the header. Falls back to literal string `'system'` when selectedCompany is `'all'` or unset (vs the canonical pattern of rendering `SelectCompanyGate`). Once entity is captured, `readErrorLog(entityCode)` correctly reads `errorLogKey(entityCode)` from `error-engine.ts` L94 → entity-scoped log. 10-second refresh polls only re-bind `refreshTick`, not the entity. No seed → log is LIVE-empty until errors are logged at runtime. | **STALE-on-switch** + LIVE-empty (no seed of historical errors) | **FAIL · B10-F-1** |
+
+### Browser click-through
+All three routes hit login wall → **CNR-browser-auth**. Source analysis of the entity-resolution path + side-effect-registered source count (7) + lazy-initializer capture are dispositive.
+
+### Fails (1 honest, real teeth — NEW flavour of the entity-resolution anti-pattern class)
+- **B10-F-1** Recent Errors — Two compounding bugs:
+  - **Bug A — raw `erp_selected_company` localStorage read** at `RecentErrorsPage.tsx` L37-42: bypasses `useEntityCode()` / `useERPCompanyContext`. Cousin of the B5/B6 `active_entity_code` raw-read flavour but pointed at a different localStorage key (`erp_selected_company` is the dropdown selection key, not the resolved code).
+  - **Bug B — entity captured in `useState` lazy initializer** at L46: `useState<string>(() => getActiveEntity())` runs once on mount. Subsequent entity switches in the header dropdown do NOT update the state, do NOT trigger `eventBus 'entity.changed'`, do NOT re-bind. The 10-second `setInterval(refreshTick)` polls but only against the *stale* entity captured at mount. This is the **fifth flavour** of the anti-pattern class: **stale-entity-snapshot via lazy state initializer**.
+  - Net effect: open Recent Errors under SMRTP → switch to ABDOS → page still shows SMRTP error log; the header chip "Entity: SMRTP · 0 entries" remains until full page reload.
+  - **One-class fix**: replace the lazy initializer with `const { entityCode } = useEntityCode()` and add it to the `useMemo` deps; render `SelectCompanyGate` when `entityCode === ''`; remove the literal `'system'` fallback.
+
+### Anti-pattern roll-up across Batches 5+6+7+8+9+10 (now 9 of 24 cards · 5 flavours)
+| Flavour | Cards | Files (est.) |
+|---|---|---|
+| **raw `active_entity_code` / `erp_selected_company` localStorage read** | GateFlow · 6 Vendor Portal panels · Recent Errors | 9 |
+| **hardcoded `const E='DEMO'` / `DEFAULT_ENTITY_SHORTCODE` at module/wrapper scope** | MaintainPro · SiteX · Dispatch · 16 Pay Hub masters (write-variant) | 30+ |
+| **engine-signature default `entity_id = DEFAULT_ENTITY`** | ServiceDesk | 55 page-files · ~12 engine fns |
+| **literal entity ID baked into seed-key string** | EximX seeder + finance-procurement orchestrator call | 1 seeder + 1 orchestrator call · ~9 register surfaces leak |
+| **stale-entity snapshot via `useState` lazy initializer** (NEW · B10) | Recent Errors | 1 |
+
+Combined remediation surface now **~96 files** across 9 cards · 5 distinct flavours.
+
+### Scope-notes (honest · neither PASS nor FAIL)
+- **Overview module** inside Command Center main is the static-tile landing surface graded FAIL in B2 ("STATIC surfaces"). The dispatcher itself is fine; the Overview tile content is the static piece.
+- **Cross-Card DayBook 7-source fan-out** is the cleanest cross-card aggregator in the audit — sources registered as a one-time side-effect of `main.tsx` import, each `read(entityCode)` wraps the existing loader (no duplicate stores), aggregator is React-free + write-free + read-only-lock asserted in sibling register L549. Reference good-citizen alongside FrontDesk/TaskFlow/InsightX.
+- **Recent Errors LIVE-empty** is not a fail — no historical-error seed exists by design (ops error log captures runtime errors); the FAIL is on the stale-entity contract, not on row count.
+
+### Verdict
+**MIXED** — Command Center main PASS (dispatcher correct · sub-module fidelity already graded in B2). Cross-Card DayBook PASS (7-card canonical aggregator · entity-scoped reads · integrity-signed). Recent Errors FAIL · B10-F-1 (raw `erp_selected_company` read + lazy-initializer-captured stale entity — the fifth distinct flavour of the entity-resolution anti-pattern class). 9-card anti-pattern roll-up across ~96 files · 5 flavours · remediation sprint critical-path before GA.
+
+STOP.
