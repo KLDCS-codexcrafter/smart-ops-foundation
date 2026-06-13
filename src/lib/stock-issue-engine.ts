@@ -336,6 +336,35 @@ function write(e: string, list: StockIssue[]): void {
   localStorage.setItem(stockIssuesKey(e), JSON.stringify(list));
 }
 
+// Sprint W1C-5 · Block 3 · audit B-02 · entity-scoped negative-stock override.
+// [JWT] GET /api/company/settings?entity_id=
+function readAllowNegativeStock(entityId: string): boolean {
+  try {
+    const raw = localStorage.getItem('erp_company_settings');
+    if (!raw) return false;
+    const all: CompanySettings[] = JSON.parse(raw);
+    const s = all.find(x => x.entity_id === entityId);
+    return s?.allow_negative_stock === true;
+  } catch { return false; }
+}
+
+// Sprint W1C-5 · Block 3 · audit B-02 · set of item_names with a tracked balance record.
+// Items NOT in this set are "untracked" — guard passes (cannot assert what isn't tracked).
+// [JWT] GET /api/inventory/items
+function listTrackedItemNames(): Set<string> {
+  try {
+    const raw = localStorage.getItem('erp_inventory_items');
+    if (!raw) return new Set();
+    const items: Array<{ name?: string; itemName?: string }> = JSON.parse(raw);
+    const set = new Set<string>();
+    for (const it of items) {
+      const n = it.itemName ?? it.name ?? '';
+      if (n) set.add(n);
+    }
+    return set;
+  } catch { return new Set(); }
+}
+
 /**
  * Cancel a Stock Issue · DRAFT-ONLY (D-399 · D-128 boundary respect)
  * Posted vouchers (status='issued') must use fincore.cancelVoucher API
