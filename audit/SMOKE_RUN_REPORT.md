@@ -216,10 +216,30 @@ ORDER: 1.Login✓ 2./tower/dashboard✓ 3./bridge/dashboard 4./partner/dashboard
 
 **Surface 4 verdict:** **PASS (rendering & navigation)**. Dashboard counts are computed from seeded localStorage (not static inline constants) and would update if the underlying store mutates; honest Tier-L demo posture clearly stated.
 
+## SURFACE 5 · /customer/dashboard — Customer Self-Service Portal (HEAD target 905c9d4)
+**Purpose:** Customer-facing account overview — outstanding, invoices, orders, payments, documents.
+
+| Check | Result | Evidence | Data type |
+|---|---|---|---|
+| Page loads behind auth | **PASS** | Direct hit redirected to `/auth/login`; after login (`demo@4dsmartops.com / demo1234`) `/customer/dashboard` renders fully inside CustomerLayout (sidebar + header). | — |
+| Account health cards | **PASS** | 4 cards visible: Outstanding **₹1,835** · Overdue **₹450** "Action needed" · Credit Used **37%** with progress bar · Last Payment **₹1,200** (28 Mar 2026). | **STATIC** — hardcoded `ACCOUNT` constant in `CustomerDashboard.tsx` with `[JWT] Replace with real customer account data from API`. |
+| Monthly Purchases chart | **PASS** | 6-month bar chart renders (Oct ₹1.45L · Nov ₹1.89L · Dec ₹2.10L · Jan ₹1.75L · Feb ₹1.68L · Mar ₹2.40L). Tooltip works on hover. | **STATIC** — `MONTHLY_PURCHASES` hardcoded array. |
+| Recent Invoices table | **PASS** | 5 rows with invoice no, date, amount, due date, status badge: INV-2026-0412 ₹840 Unpaid · INV-2026-0389 ₹545 Overdue · INV-2026-0361 ₹450 Paid · INV-2026-0334 ₹1,200 Paid · INV-2026-0298 ₹678 Overdue. Status badges use semantic token tints (success/warning/destructive). | **STATIC** — `RECENT_INVOICES` hardcoded array. |
+| Recent Orders panel | **PASS** | 3 orders: ORD-0881 4 items ₹840 Confirmed · ORD-0854 2 items ₹545 Delivered · ORD-0821 6 items ₹1,650 Delivered. | **STATIC** — `RECENT_ORDERS` hardcoded array. |
+| Account Summary panel | **PASS** | Customer Code CUST-0091 · GSTIN 27AABCS5678T1ZX · Credit Limit ₹5,00,000 · Outstanding ₹1,835 · Account With Reliance Digital Solutions. | **STATIC** — from same `ACCOUNT` constant. |
+| Make Payment CTA | **PASS** | Clicked **Make Payment** button → routed to `/customer/payments` → "Make Payment" tab active, invoice checkboxes (INV-2026-0412 ₹840, INV-2026-0389 ₹545 OVERDUE), payment amount spinbutton, Payment Method combobox (NEFT), Transaction Reference textbox, date picker, Remarks textarea, Submit Payment button. Full payment form renders. | — |
+| Sidebar nav opens sub-page | **PASS** | Clicked **Invoices** in sidebar → routed to `/customer/invoices` → "My Invoices" page renders with search box, status filter "All", date-range pickers, and a table with 6+ invoice rows (INV-2026-0412 through INV-2026-0271) each with a download button. | — |
+| Theme toggle | **PARTIAL** | Clicked header sun/moon toggle → button label flipped ("Switch to dark theme"), confirming global theme state changed. **However**, `CustomerLayout.tsx` line 49 hardcodes `style={{ background: "hsl(222 47% 11%)", borderColor: "rgba(255,255,255,0.06)" }}` — identical pre-fix pattern to BridgeLayout. Sidebar will stay dark in light mode. Recorded as **theme-token debt**, not a surface failure. | — |
+| Customer profile footer | **PASS** | Sidebar footer shows "Rajesh Procurement · Sharma Traders Pvt Ltd" with RP initials avatar. Collapse/expand chevron works. | **STATIC** — `CUSTOMER` mock constant in `CustomerLayout.tsx`. |
+
+**Console:** only the pre-existing React Router v6→v7 future-flag warnings; no errors specific to Customer portal.
+
+**Surface 5 verdict:** **PASS (rendering & navigation)**. All dashboard numeric content is **STATIC demo data** (hardcoded constants in `src/pages/customer/CustomerDashboard.tsx` — `ACCOUNT`, `RECENT_INVOICES`, `RECENT_ORDERS`, `MONTHLY_PURCHASES`); values do not change with underlying data because no live API is wired yet. Honest customer-portal shell; live wiring is a backend deliverable. ⚠️ **New finding:** `CustomerLayout.tsx` sidebar hardcodes dark chrome (`hsl(222 47% 11%)` background + `rgba(255,255,255,0.06)` border) — the exact same pattern fixed in BridgeLayout (T-BridgeLayout-Theme-Tokens). It will not follow the global toggle into light mode. Recommend a follow-up fix mirroring the BridgeLayout token sweep.
+
 ## PROGRESS LEDGER (updated)
 ```
-DONE: [Login, /tower/dashboard, /bridge/dashboard, /partner/dashboard]   NEXT: /customer/dashboard   REMAINING: 4
-ORDER: 1.Login✓ 2./tower/dashboard✓ 3./bridge/dashboard✓ 4./partner/dashboard✓ 5./customer/dashboard 6./welcome/scenarios 7./welcome/dev-tools 8./build-your-plan
+DONE: [Login, /tower/dashboard, /bridge/dashboard, /partner/dashboard, /customer/dashboard]   NEXT: /welcome/scenarios   REMAINING: 3
+ORDER: 1.Login✓ 2./tower/dashboard✓ 3./bridge/dashboard✓ 4./partner/dashboard✓ 5./customer/dashboard✓ 6./welcome/scenarios 7./welcome/dev-tools 8./build-your-plan
 ```
 
-**STOP per batching rule.** Next dispatch: `/customer/dashboard`.
+**STOP per batching rule.** Next dispatch: `/welcome/scenarios`.
