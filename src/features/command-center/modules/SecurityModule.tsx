@@ -19,6 +19,8 @@ import {
   LineChart, Line, RadarChart, Radar, PolarGrid, PolarAngleAxis,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
+import { useEntityCode } from "@/hooks/useEntityCode";
+import { loadIntegrationsForEntity } from "@/lib/cc-config-seed";
 
 // ── Types ─────────────────────────────────────────────────────
 type ConsoleTab =
