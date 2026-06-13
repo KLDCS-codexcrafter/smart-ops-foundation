@@ -9,6 +9,7 @@ import { readFileSync } from 'node:fs';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { ThemeProvider } from '@/components/theme';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { customerOrdersKey, type CustomerOrder } from '@/types/customer-order';
 import CustomerDashboard from '@/pages/customer/CustomerDashboard';
 
@@ -18,9 +19,11 @@ const dashSrc = readFileSync('src/pages/customer/CustomerDashboard.tsx', 'utf8')
 function renderDash() {
   return render(
     <ThemeProvider>
-      <MemoryRouter>
-        <CustomerDashboard />
-      </MemoryRouter>
+      <TooltipProvider>
+        <MemoryRouter>
+          <CustomerDashboard />
+        </MemoryRouter>
+      </TooltipProvider>
     </ThemeProvider>
   );
 }
