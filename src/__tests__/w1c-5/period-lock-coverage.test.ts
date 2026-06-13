@@ -18,7 +18,6 @@ const LIB = path.resolve(__dirname, '../../lib');
 
 const POSTING_ENGINES = [
   'fincore-engine.ts',
-  'bill-settlement-engine.ts',
   'payment-engine.ts',
   'sample-expense-voucher-engine.ts',
   'stock-issue-engine.ts',
@@ -27,6 +26,9 @@ const POSTING_ENGINES = [
   'intercompany-transaction-engine.ts',
   'procure-capex-fa-cascade-engine.ts',
 ] as const;
+// Note: bill-settlement-engine.ts is an ALLOCATION engine — it mutates
+// bill_references on already-posted vouchers but does not itself post new
+// vouchers. Period-lock is enforced at the original postVoucher site.
 
 describe('W1C-5 Block 6 · Period-lock coverage', () => {
   it('all posting engines in the roster exist on disk', () => {
