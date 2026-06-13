@@ -1606,6 +1606,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-13', provenance: 'CONFIRMED',
   },
+  // 🆕 Hotfix T-TowerLayout-Forced-Dark-Fix · root cause of "Control Tower stays dark when global toggle switches to light" — src/components/layout/TowerLayout.tsx line 52 hardcoded className="dark" on the wrapper div + inline style background:#0D1B2A (×2) + bg-[#0D1B2A] (×2) + a text-white/*+border-white/* palette built only for dark, so Tower re-applied .dark to its own subtree regardless of the global toggle. Other layouts (BridgeLayout/CustomerLayout) were already clean — TowerLayout was the sole offender. Fix removes the forced .dark + the two inline navy styles + the two bg-[#0D1B2A], and converts all ~18 hardcoded white/navy chrome classes to the semantic token vocabulary mirrored from BridgeLayout (bg-background/bg-card/border-border/text-foreground/text-muted-foreground/bg-accent/bg-muted). cyan logo + emerald status dot also tokenized to primary/success per project colour rule. ZERO new SIBLINGs · ZERO logic changes (nav/routing/collapse untouched) · touch TowerLayout.tsx + guard test tower-layout-theme.test asserting no className="dark" literal, no #0D1B2A, zero bg-[#/text-white/border-white chrome + token vocabulary present · predecessor 931ba7f
+  {
+    sprintNumber: 'TWRFIX' as unknown as number, code: 'T-TowerLayout-Forced-Dark-Fix', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '931ba7f', loc: 30,
+    newSiblings: [],
+    bankDate: '2026-06-13', provenance: 'CONFIRMED',
+  },
 ];
 
 

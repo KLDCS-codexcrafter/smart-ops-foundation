@@ -49,26 +49,25 @@ export function TowerLayout({ children, title, subtitle: _subtitle }: TowerLayou
   const pageLabel = title ?? activeNav?.title ?? "";
 
   return (
-    <div className="dark flex h-screen overflow-hidden" style={{ background: "#0D1B2A" }}>
+    <div className="flex h-screen overflow-hidden bg-background">
       {/* Sidebar */}
       <aside
         className={cn(
-          "flex flex-col h-full shrink-0 transition-all duration-300 border-r border-white/[0.08]",
+          "flex flex-col h-full shrink-0 transition-all duration-300 border-r border-border bg-card",
           collapsed ? "w-[72px]" : "w-[260px]"
         )}
-        style={{ background: "#0D1B2A" }}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-500/10">
-            <Zap className="h-5 w-5 text-cyan-500" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+            <Zap className="h-5 w-5 text-primary" />
           </div>
           {!collapsed && (
             <div className="animate-fade-in">
-              <p className="text-sm font-semibold text-white tracking-tight">
+              <p className="text-sm font-semibold text-foreground tracking-tight">
                 4DSmartOps
               </p>
-              <p className="text-xs text-white/50">Control Tower</p>
+              <p className="text-xs text-muted-foreground">Control Tower</p>
             </div>
           )}
         </div>
@@ -88,8 +87,8 @@ export function TowerLayout({ children, title, subtitle: _subtitle }: TowerLayou
                 className={cn(
                   "flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm transition-colors",
                   active
-                    ? "bg-white/10 text-white font-medium"
-                    : "text-white/55 hover:bg-white/[0.06] hover:text-white/90"
+                    ? "bg-accent text-foreground font-medium"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 )}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
@@ -127,10 +126,10 @@ export function TowerLayout({ children, title, subtitle: _subtitle }: TowerLayou
         </nav>
 
         {/* Collapse toggle */}
-        <div className="p-3 border-t border-white/[0.06]">
+        <div className="p-3 border-t border-border">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm text-white/40 hover:bg-white/[0.06] hover:text-white/70 transition-colors"
+            className="flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
           >
             {collapsed ? (
               <ChevronRight className="h-4 w-4 shrink-0" />
@@ -145,41 +144,39 @@ export function TowerLayout({ children, title, subtitle: _subtitle }: TowerLayou
       </aside>
 
       {/* Main area */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-[#0D1B2A]">
+      <div className="flex-1 flex flex-col overflow-hidden bg-background">
         {/* Header */}
-        <header className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] shrink-0 bg-[#0D1B2A]">
+        <header className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0 bg-background">
           <div className="flex items-center gap-2 text-sm">
             <button
               onClick={() => navigate("/welcome")}
-              className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/80 transition-colors group"
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors group"
             >
               <ArrowLeft className="h-3 w-3 group-hover:-translate-x-0.5 transition-transform" />
               Back to App
             </button>
-            <span className="text-white/30">›</span>
-            <span className="text-white/60 font-medium">Control Tower</span>
+            <span className="text-muted-foreground/50">›</span>
+            <span className="text-muted-foreground font-medium">Control Tower</span>
             {pageLabel && (
               <>
-                <span className="text-white/30">›</span>
-                <span className="text-white font-medium">{pageLabel}</span>
+                <span className="text-muted-foreground/50">›</span>
+                <span className="text-foreground font-medium">{pageLabel}</span>
               </>
             )}
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="relative p-2 rounded-lg text-white/50 hover:text-white/80 hover:bg-white/[0.06] transition-colors">
+            <button className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
               <Bell className="h-5 w-5" />
-              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-white">
+              <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-medium text-destructive-foreground">
                 3
               </span>
             </button>
-            <div className="[&_button]:text-white/50 [&_button]:hover:text-white/80 [&_button]:hover:bg-white/[0.06]">
-              <ThemeToggle />
-            </div>
-            <div className="flex items-center gap-3 pl-4 border-l border-white/[0.08]">
-              <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-white/[0.05]">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="text-xs text-white/70 font-medium">Super Admin</span>
+            <ThemeToggle />
+            <div className="flex items-center gap-3 pl-4 border-l border-border">
+              <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-muted">
+                <div className="w-1.5 h-1.5 rounded-full bg-success" />
+                <span className="text-xs text-muted-foreground font-medium">Super Admin</span>
               </div>
               <UserProfileDropdown variant="app" />
             </div>
