@@ -224,6 +224,32 @@ export const DEMO_VENDORS: ArchetypedVendor[] = [
     addresses: [addr(['Mumbai','Pune','Chennai','Delhi'][i % 4], 'Maharashtra', '27', '400070', `RM Plot ${i+1}`)],
     isActive: true, openingBalance: 0,
   })),
+
+  // ─── 4 Valve-Mfg vendors (Sprint W1C-8 · SigmaFlow archetype) ────────
+  { _archetype: 'valve-mfg', partyCode: 'VEND-V001', partyName: 'Eastern DI Foundry Pvt Ltd',
+    vendorType: 'casting_foundry', gstin: '19AAAFE0001F1Z5', pan: 'AAAFE0001F',
+    creditDays: 45,
+    contacts: [contact('Foundry Manager', '+919830666101', 'sales@easterndi.in')],
+    addresses: [addr('Howrah', 'West Bengal', '19', '711101', 'Liluah Industrial Estate')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'VEND-V002', partyName: 'Sigma Corp USA — Castings & Components (Import)',
+    vendorType: 'import_supplier', gstin: '', pan: '',
+    creditDays: 60,
+    contacts: [contact('Export Sales', '+1-330-555-0102', 'export@sigmacorp.us')],
+    addresses: [addr('Ohio (USA)', 'Foreign', '96', '44256', '1185 Pleasant Valley Rd · Stow OH')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'VEND-V003', partyName: 'Polymech Rubber Industries',
+    vendorType: 'rubber_seat_supplier', gstin: '27AAACP0003F1Z5', pan: 'AAACP0003F',
+    creditDays: 30,
+    contacts: [contact('Sales Head', '+919820666103', 'sales@polymechrubber.in')],
+    addresses: [addr('Mumbai', 'Maharashtra', '27', '400072', 'Sakinaka Industrial Area')],
+    isActive: true, openingBalance: 0 },
+  { _archetype: 'valve-mfg', partyCode: 'VEND-V004', partyName: 'Ludhiana Fastener Works',
+    vendorType: 'fastener_supplier', gstin: '03AAAFL0004F1Z5', pan: 'AAAFL0004F',
+    creditDays: 30,
+    contacts: [contact('Proprietor', '+919876666104', 'ludhianafast@gmail.com')],
+    addresses: [addr('Ludhiana', 'Punjab', '03', '141003', 'Focal Point Phase 5')],
+    isActive: true, openingBalance: 0 },
 ];
 
 export function customersForArchetype(a: DemoArchetype): ArchetypedCustomer[] {
