@@ -16,6 +16,7 @@ import {
   Home,
   FlaskConical,
   Wrench,
+  Gauge,
   Info,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
