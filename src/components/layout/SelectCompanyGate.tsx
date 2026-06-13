@@ -23,11 +23,15 @@
  * this component. FinCorePage is the first consumer; other cards adopt the
  * pattern as they hit the need (Q3 — not enforced platform-wide this sprint).
  */
-import { Building2, ArrowRight, AlertCircle } from 'lucide-react';
+import { useState } from 'react';
+import { Building2, ArrowRight, AlertCircle, Sparkles, Plus } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useERPCompanyContext } from '@/components/layout/ERPCompanyProvider';
 import { useEntityList } from '@/hooks/useEntityList';
+import { useDemoSeedLoader } from '@/hooks/useDemoSeedLoader';
+import { QuickCreateEntityDialog } from '@/components/foundation/QuickCreateEntityDialog';
 
 interface SelectCompanyGateProps {
   title?: string;
@@ -40,6 +44,15 @@ export function SelectCompanyGate({
 }: SelectCompanyGateProps) {
   const [, setSelectedCompany] = useERPCompanyContext();
   const { entities } = useEntityList();
+  const { loadModule } = useDemoSeedLoader();
+  const [quickOpen, setQuickOpen] = useState(false);
+
+  function handleLoadDemo() {
+    loadModule('foundation', 'all');
+    // useEntityList memoises its snapshot · reload so the gate re-evaluates
+    // against the newly-populated erp_group_entities / erp_companies keys.
+    setTimeout(() => window.location.reload(), 300);
+  }
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center p-8">
@@ -54,10 +67,27 @@ export function SelectCompanyGate({
 
         {entities.length === 0 ? (
           <Card>
-            <CardContent className="p-8 text-center text-sm text-muted-foreground">
-              No entities configured yet. Go to{' '}
-              <a href="/erp/command-center" className="text-primary underline">Command Center → Entity Management</a>{' '}
-              to set up your first company.
+            <CardContent className="p-6 space-y-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                No companies set up yet. Load a demo company to explore, or add your own.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                <Button onClick={handleLoadDemo} className="gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Load demo company + sample data
+                </Button>
+                <Button variant="outline" onClick={() => setQuickOpen(true)} className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Quick add company
+                </Button>
+              </div>
+              <p className="text-[11px] text-muted-foreground">
+                Loads a demo company with sample data so you can explore. Replace with your own company anytime.
+              </p>
+              <p className="text-[11px] text-muted-foreground">
+                Prefer the full profile? Set up manually in{' '}
+                <a href="/erp/command-center" className="text-primary underline">Command Center → Entity Management</a>.
+              </p>
             </CardContent>
           </Card>
         ) : (
