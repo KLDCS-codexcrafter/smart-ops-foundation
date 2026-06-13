@@ -312,7 +312,7 @@ function writeSalesOrderVoucher(
       hsn_sac_code: '',
       qty: cl.qty, uom: 'NOS',
       rate, discount_percent: 0,
-      taxable_value: +(cl.qty * rate).toFixed(2),
+      taxable_value: round2(dMul(cl.qty, rate)),
       gst_rate: 0,
       pending_qty: cl.qty, fulfilled_qty: 0,
       status: 'open',
