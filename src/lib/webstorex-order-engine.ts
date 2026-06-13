@@ -21,6 +21,7 @@ import { ordersKey } from '@/types/order';
 import type { Quotation, QuotationItem } from '@/types/quotation';
 import { quotationsKey } from '@/types/quotation';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+import { dMul, round2 } from '@/lib/decimal-helpers';
 import {
   getStoreItem, listVariants, listStoreItems,
 } from '@/lib/webstorex-engine';
@@ -311,7 +312,7 @@ function writeSalesOrderVoucher(
       hsn_sac_code: '',
       qty: cl.qty, uom: 'NOS',
       rate, discount_percent: 0,
-      taxable_value: +(cl.qty * rate).toFixed(2),
+      taxable_value: round2(dMul(cl.qty, rate)),
       gst_rate: 0,
       pending_qty: cl.qty, fulfilled_qty: 0,
       status: 'open',
@@ -414,7 +415,7 @@ export function requestQuote(
     if (!item) throw new Error(`Unknown store item: ${cl.storeItemId}`);
     const eff = getEffectivePrice(entityCode, cl.storeItemId, opts.partyId, opts.nowISO);
     const rate = eff.effective;
-    const subTotal = +(cl.qty * rate).toFixed(2);
+    const subTotal = round2(dMul(cl.qty, rate));
     let descrSuffix = '';
     if (cl.variantId) {
       const v = listVariants(entityCode, cl.storeItemId).find((x) => x.id === cl.variantId);
