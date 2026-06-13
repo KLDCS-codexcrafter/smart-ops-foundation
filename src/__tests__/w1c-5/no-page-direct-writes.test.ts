@@ -13,7 +13,12 @@ import { resolve } from 'node:path';
 const FILE = resolve(__dirname, '../../pages/welcome/scenarios/ClientBlueprintsPage.tsx');
 
 describe('W1C-5 · Block 4b · ClientBlueprintsPage page-direct writes (grep-assert)', () => {
-  const src = readFileSync(FILE, 'utf8');
+  const raw = readFileSync(FILE, 'utf8');
+  // Strip line- and block-comments so historical-context comments don't trip the guard.
+  const src = raw
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/(^|[^:])\/\/[^\n]*/g, '$1');
+
 
   it('contains ZERO setItem to erp_group_vouchers', () => {
     expect(/localStorage\.setItem\(\s*['"]erp_group_vouchers['"]/.test(src)).toBe(false);
