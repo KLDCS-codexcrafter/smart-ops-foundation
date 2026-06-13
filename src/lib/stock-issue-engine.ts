@@ -20,6 +20,9 @@ import { generateDocNo, postVoucher, fyForDate } from '@/lib/fincore-engine';
 import { appendAuditEntry } from '@/lib/audit-trail-hash-chain';
 // Sprint T-Phase-1.Hardening-B.ATELC · Rule 11(g) audit-trail coverage extension (MCA Rule 3(1))
 import { logAudit } from '@/lib/audit-trail-engine';
+// Sprint W1C-5 · Block 3 · audit B-02 HIGH · availability guard (consume, don't duplicate)
+import { getAvailabilityMap } from '@/lib/stock-reservation-engine';
+import type { CompanySettings } from '@/types/company-settings';
 
 // ============================================================
 // PUBLIC TYPES
