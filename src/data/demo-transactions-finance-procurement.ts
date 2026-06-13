@@ -424,11 +424,10 @@ export function seedFinanceProcurementTxnsForDemo(entityCode: string): FinProcDe
 
   // Comply360 transactional seed lives in its own engine (NBFC loans · RERA
   // projects · AI ROI rows). Idempotent · marker-guarded.
-  // Comply360 transactional seed lives in its own engine (NBFC loans · RERA
-  // projects · AI ROI rows). Idempotent · marker-guarded.
   try {
     applyComply360DemoSeed();
   } catch { /* engine not yet loaded in some test contexts */ }
+
 
 
   return {
