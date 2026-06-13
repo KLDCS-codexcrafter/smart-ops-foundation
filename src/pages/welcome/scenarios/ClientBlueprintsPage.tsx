@@ -27,6 +27,8 @@ import { purgeDemoData } from '@/lib/demo-seed-manifest';
 // Sprint W1C-5 · Block 4b · audit B9-F1 · route legacy-group-store purge through engine.
 import { purgeLegacyGroupStoresForEntity } from '@/lib/fincore-engine';
 import type { DemoArchetype } from '@/data/demo-customers-vendors';
+// Sprint T-B1-Abdos-Group-Seed · multi-entity group seeder for the ABDOS blueprint.
+import { seedAbdosGroup } from '@/data/demo-abdos-group';
 
 type ScenarioPhase = 'live' | 'phase2' | 'planned';
 
