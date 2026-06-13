@@ -147,6 +147,21 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
     entityCode: 'SINHA',
     archetype: 'manufacturing',
   },
+  // Sprint W1C-8 · 8th blueprint · SigmaFlow Control India · valve-mfg archetype.
+  {
+    id: 'sigmaflow',
+    title: 'SigmaFlow Control India',
+    subtitle: 'Water-Works Valve Mfg · ISO 9001 · Import + Project Supply',
+    icon: Gauge,
+    description:
+      'Ductile-iron valves (butterfly · sluice · check · air-release) + water-works fittings (couplings, adaptors, tapping saddles, repair clamps). Sigma Corp USA technical collaboration. ISO 9001 · BIS · British-Standard. PQRS (Price-Quality-Range-Service) mantra. Imports DI castings + key components.',
+    details:
+      'Kolkata · ~74 employees. Segments: water-works, waste-water, process industries. Turnkey project supply to municipal/PHED/EPC buyers + AMC after-sales. Validates valve-manufacturing pattern with import-cast + project-tender + EximX flow.',
+    pattern: 'DI Valve Mfg + Import-Cast + Project Tender Supply + AMC',
+    phase: 'live',
+    entityCode: 'SIGMA',
+    archetype: 'valve-mfg',
+  },
 ];
 
 const PHASE_CONFIG: Record<ScenarioPhase, { label: string; color: string }> = {
