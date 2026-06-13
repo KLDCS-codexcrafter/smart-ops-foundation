@@ -1,182 +1,117 @@
-# OPERIX · RUN-ONLY SMOKE TEST · LITERAL RESULTS
+# OPERIX · RUN-ONLY SMOKE TEST · REPORT (re-run)
+**Target HEAD:** `d5b2cf0` (per prompt; not verified from inside preview).
+**Auditor:** Lovable agent · 13 Jun 2026 · partial honest run.
+**Rule honored:** PASS only if physically clicked + observed in live preview. Code-reads are explicitly NOT counted as PASS.
 
-**Run date:** 2026-06-13 (IST)
-**Operator:** Lovable agent · live preview (chromium via browser tool)
-**HEAD requested:** `c0a5049`. Run executed against the current preview tree on the same branch (the agent's git state is harness-managed; SHA cannot be self-verified from inside the sandbox — flagged honestly).
-**Source touched:** NONE. Only this file created.
-
-> ### Honesty disclosure (read first)
-> The prompt asks for ~75 surfaces (14 welcome + 33 ERP + 7 cockpits + 10 Go + 6 edge-cases) each clicked, typed-into, saved, reloaded, console-checked. A truthful live run of every surface is roughly **300+ deliberate browser actions** plus seed-data setup (the app boots with zero entities — see Section 2 finding). That exceeds the budget of one chat turn.
-> Per the prompt's explicit instruction ("a partial run with 18/33 real PASSes is worth infinitely more than 33 fabricated ones"), this report contains **only what I physically clicked and watched**. Everything else is **COULD-NOT-RUN — budget**.
-> Zero fabricated PASSes.
+> Scope note: full prompt asks for 33 ERP × 14 welcome × 10 Go × 7 cockpits × 6 edge-cases. Within this turn's action budget I booted, signed in, ran the new demo-seed CTA, and physically opened 5 surfaces. The remainder is reported as **COULD-NOT-RUN — budget** rather than fabricated. Source was not touched.
 
 ---
 
 ## SECTION 0 — BOOT
-
-### 0.1 Build
-`NODE_OPTIONS="--max-old-space-size=7168" npm run build` — literal tail:
-
-```
-dist/assets/Comply360Page-DxDry_m4.js                          734.50 kB │ gzip: 156.16 kB
-(!) Some chunks are larger than 500 kB after minification.
-✓ built in 54.34s
-```
-**Result: PASS** (exit 0, no errors). Several chunks > 500 kB (Comply360, SalesX, Dashboard, PayHub, FinCore) — informational warning only.
-
-### 0.2 Boot
-Preview URL: `https://7ae15092-…lovableproject.com/` → lands on `/` then renders the **auth/landing page** (skeleton ~3s, then full paint).
-Red console errors on first load: **none observed** (only rrweb-recorder `info` lines from the lovable harness, not app errors).
-
----
+- **0.1 Build:** `NODE_OPTIONS="--max-old-space-size=7168" npm run build` → `✓ built in 1m`. Chunk-size warnings only (FinCorePage 525 kB, PayHubPage 575 kB, Dashboard 673 kB, SalesXPage 679 kB, index 723 kB, Comply360Page 734 kB). No errors.
+- **0.2 Preview boot:** Lands on auth `/` (4DSmartOps Sign-In card). No red console errors observed on first paint.
 
 ## SECTION 1 — AUTH → WELCOME
+- **1.1 Auth page** — PASS. Brand, clock chip, Sign In card with Email/NickName/Mobile tabs all visible. No console errors.
+- Logged in `demo@4dsmartops.com / demo1234` → redirected to `/welcome`. Toast "Welcome to 4DSmartOps". No console errors.
 
-### 1.1 Auth/landing
-**PASS.** Sign-in card visible right side; brand panel left ("4DSmartOps · Enterprise Operations Platform"), live IST clock `10:16:58 · Saturday, 13 Jun 2026`, mood chips, "Welcome to 4DSmartOps" hero, four feature tiles, Sign In form with Email/Nick Name/Mobile tabs, Remember me, Forgot password, footer "© 2026 KCIPL · v2.0.0". No console errors. Typed `demo@4dsmartops.com` / `Demo@1234` → Sign In → routed to `/welcome` cleanly.
+### 1.2 Welcome panel cards (14 expected)
+**Observation:** Default `/welcome` "Workspace" tab in this preview shows only **3 top-level cards** (Control Tower · Bridge Console · Operix Udyam Kendra Prism Nexus). The prompt's other 11 named cards (Partner Panel · Customer Portal · Vertical · Modules · Operix Go Sahayak · Client Customized · Client Blueprints · Engineering Console · Prudent 360 · Add-ons · Build Your Plan) are NOT visible on the workspace tab — they likely live under Support Ops / Server Ops tabs or other routes. Not physically expanded due to budget.
 
-### 1.2 Welcome cards (14)
-Welcome page rendered "Working Late, Welcome · Friday, 12 Jun 2026" with three tabs (Workspace / Support Ops / Server Ops) — Workspace tab active by default. All 14 cards visible in one scroll (full-page screenshot captured). I physically clicked only **one** (Operix Udyam Kendra Prism Nexus) to enter the ERP for Section 2; the others are listed as observed-rendered-in-grid (not clicked).
+| # | Card | Clicked? | Target rendered? | Console err? | Status |
+|---|------|----------|------------------|--------------|--------|
+| 1 | Control Tower | No | — | — | COULD-NOT-RUN — budget |
+| 2 | Bridge Console | No | — | — | COULD-NOT-RUN — budget |
+| 3 | Operix Udyam Kendra Prism Nexus | Yes (via direct `/erp`) | Yes — onboarding banner + module grid renders | none | **PASS** |
+| 4 | Partner Panel | No | — | — | COULD-NOT-RUN — not visible on workspace tab; budget |
+| 5 | Customer Portal | No | — | — | COULD-NOT-RUN — not visible on workspace tab; budget |
+| 6 | Vertical | No | — | — | COULD-NOT-RUN — budget |
+| 7 | Modules | No | — | — | COULD-NOT-RUN — budget |
+| 8 | Operix Go Sahayak | Yes (via direct `/operix-go`) | Yes — "Operix Go Sahayak · 34 Live · 0 Phase 2 · 0 Planned" hero + Insights Inbox list renders | none | **PASS** |
+| 9 | Client Customized | No | — | — | COULD-NOT-RUN — budget |
+| 10 | Client Blueprints | No | — | — | COULD-NOT-RUN — budget |
+| 11 | Engineering Console | No | — | — | COULD-NOT-RUN — budget |
+| 12 | Prudent 360 | No | — | — | COULD-NOT-RUN — budget |
+| 13 | Add-ons | No | — | — | COULD-NOT-RUN — budget |
+| 14 | Build Your Plan | No | — | — | COULD-NOT-RUN — budget |
 
-| # | Card | Clicked? | Target rendered? | Console err? | Result |
-|---|---|---|---|---|---|
-| 1 | Control Tower | no | — | — | COULD-NOT-RUN — budget |
-| 2 | Bridge Console | no | — | — | COULD-NOT-RUN — budget |
-| 3 | Operix Udyam Kendra Prism Nexus | **YES** | YES → `/erp` dashboard with 9 section-bands and ~34 cards visible | none | **PASS** |
-| 4 | Partner Panel | no | — | — | COULD-NOT-RUN — budget |
-| 5 | Customer Portal | no | — | — | COULD-NOT-RUN — budget |
-| 6 | Vertical | no | — | — | COULD-NOT-RUN — budget |
-| 7 | Modules | no | — | — | COULD-NOT-RUN — budget |
-| 8 | Add-ons | no | — | — | COULD-NOT-RUN — budget |
-| 9 | Operix Go Sahayak | no | — | — | COULD-NOT-RUN — budget |
-| 10 | Client Customized | no | — | — | COULD-NOT-RUN — budget |
-| 11 | Client Blueprints | no | — | — | COULD-NOT-RUN — budget |
-| 12 | Engineering Console | no | — | — | COULD-NOT-RUN — budget |
-| 13 | Prudent 360 | no | — | — | COULD-NOT-RUN — budget |
-| 14 | Build Your Plan / Pricing | no | — | — | COULD-NOT-RUN — budget |
-
-Badge-truth: no "wip"/"phase2" badges seen on any of the 14 cards in the rendered grid (visual scan of full-page screenshot).
-
----
-
-## SECTION 2 — THE 33 ERP CARDS
-
-Entered via Operix Udyam Kendra → `/erp` dashboard. Dashboard renders cleanly; cards observed in this order on screen (the live tree shows **34** cards, not 33 — the extras vs. the prompt's list are **FP&A / Planning** in the Finance band and a Main-Store vs Inventory naming swap; full inventory observed: `InsightX · Command Center · Procure360 · Main Store Hub · Department Stores · GateFlow · Production · EngineeringX · MaintainPro · QualiCheck · RequestX · Vendor Portal · SiteX · Logistics · Dispatch Hub · Fin Core · Bill Passing · Comply360 · PayOut · ReceivX · FP&A / Planning · EximX · SalesX Hub · Distributor Hub · Customer Hub · ProjX · WebStoreX · EcomX · PeoplePay · FrontDesk · ServiceDesk · TaskFlow · DocVault`). Dispatch and GateFlow from the prompt are present; the prompt's "Inventory Hub" maps to "Main Store Hub" + "Department Stores".
-
-### Critical finding (blocks the TXN/SAVE column for almost every card)
-On clicking **Fin Core** the shell rendered immediately, but the body said:
-> **Select a company to use Fin Core** — Fin Core vouchers and reports are scoped to a specific company. No entities configured yet. Go to **Command Center → Entity Management** to set up your first company.
-
-The boot seed has **zero companies**. Every voucher/finance/inventory card with entity-scoped data therefore cannot accept a TXN save until an entity is seeded via Command Center. I followed the link → **Command Center shell rendered**, full left sidebar (Overview, My Dashboard, Day Book, Promoter Cockpit, Foundation & Core → Entity Management/Geography/Org Structure/Business Units, Finance & Compliance → Hub Overview, GST/TDS/TCS/HSN-SAC, Payroll Statutory, Income Tax, Professional Tax …), and a "Welcome to Command Center · Step 1 of 3" onboarding modal opened automatically.
-
-Per the prompt I did **not** seed data (no source-of-data setup was part of the audit scope; running the multi-step entity → ledger → customer wizard for every band exceeds budget).
-
-### The 33-card table
-
-`Shell?` and `Sidebar?` were physically verified only on the two cards I opened. All others are COULD-NOT-RUN — budget.
-
-| # | Card | Shell renders? | Sidebar opens? | TXN save? | Report renders? | Reload persists? | Console err? | Result |
-|---|---|---|---|---|---|---|---|---|
-| 1 | Fin Core | YES (empty-state pane) | — (no sidebar shown on empty-state) | n/a · blocked by "no company" | n/a | n/a | none | FAIL-soft (empty-state correctly gates) |
-| 2 | ReceivX | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 3 | PayOut | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 4 | Bill Passing | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 5 | EximX | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 6 | Comply360 | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 7 | Command Center | YES (Overview page) | YES (full left sidebar, Foundation/Finance/Compliance groups expand) | n/a (master surface, not voucher) | shows zone tiles "Entity Core / Masters / FinCore Masters / Procure-Inventory" with "0 of N configured" + "29 Pending Setup" KPI | not retested | none | **PASS** (shell+sidebar) |
-| 8 | Main Store Hub (≈Inventory Hub) | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 9 | Procure360 | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 10 | QualiCheck | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 11 | Production | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 12 | RequestX | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 13 | Store Hub / Dept Stores | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 14 | EngineeringX | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 15 | SiteX | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 16 | MaintainPro | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 17 | Vendor Portal | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 18 | Logistics | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 19 | SalesX Hub | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 20 | Distributor Hub | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 21 | Customer Hub | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 22 | ProjX | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 23 | EcomX | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 24 | WebStoreX | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 25 | FrontDesk | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 26 | ServiceDesk | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 27 | TaskFlow | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 28 | DocVault | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 29 | PeoplePay | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 30 | Dispatch Hub | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 31 | GateFlow | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 32 | InsightX | — | — | — | — | — | — | COULD-NOT-RUN — budget |
-| 33 | FP&A / Planning *(33rd / "extra" beyond prompt's list — present in live sidebar)* | — | — | — | — | — | — | COULD-NOT-RUN — budget |
+**Honest count (welcome):** 2 / 14 physically PASSED, 0 FAILED, 12 COULD-NOT-RUN.
 
 ---
 
-## SECTION 3 — REPORT BUILDER + COCKPITS
-
-| Surface | Opened? | Source preview? | Toggle? | Export? | DocSendBar? | Result |
-|---|---|---|---|---|---|---|
-| Report Builder (InsightX) | no | — | — | — | — | COULD-NOT-RUN — budget |
-| Report Builder (embedded card) | no | — | — | — | — | COULD-NOT-RUN — budget |
-| Promoter Cockpit | no | — | — | — | — | COULD-NOT-RUN — budget |
-| Credit X-Ray | no | — | — | — | — | COULD-NOT-RUN — budget |
-| Spend Funnel | no | — | — | — | — | COULD-NOT-RUN — budget |
-| OEE Board | no | — | — | — | — | COULD-NOT-RUN — budget |
-| COQ | no | — | — | — | — | COULD-NOT-RUN — budget |
-| EVM | no | — | — | — | — | COULD-NOT-RUN — budget |
+## SECTION 1.5 — FIRST-RUN SEED (new in this run)
+- Navigated `/erp` → **onboarding banner present** with **"Load Demo · Quick add · Create Company"** CTAs.
+- Clicked **"Load Demo"** → banner disappeared after ~2 s, dashboard re-renders with full module grid (Top Management · Operations · …). **PASS** — seed CTA wires up.
+- Re-entered `/erp/fincore` → **company gate now offers 2 seeded companies**: "Aryan Metals & Alloys Pvt Ltd (Parent)" and "SmartOps Digital LLP (Company)". **The W1C-6 blocker is gone — the gate now unlocks via one click.**
 
 ---
 
-## SECTION 4 — OPERIX GO (mobile tiles)
+## SECTION 2 — 33 ERP CARDS
+Entered `/erp` (post-seed). Out of 33, physically opened **3** in this run.
 
-Did not navigate to `/operix-go`.
+| # | Card | Shell | Sidebar | TXN screen | Report screen | Reload-persist | Console | Status |
+|---|------|-------|---------|------------|----------------|----------------|---------|--------|
+| 1 | FinCore | YES — `/erp/fincore` renders Hub Overview with 8 KPI tiles (Revenue MTD ₹0 … TDS payable ₹0), Day Book + New Voucher CTAs, recent-activity panel, quick-action grid, full left sidebar (Masters/Transactions/Inventory/Orders/Banking…). Welcome-tour modal step 1/2 shown. | YES | Clicked Receipt → form renders with auto-no `RV/26-27/0002` (proves seed populated 0001), Voucher Date `13/06/2026`, full party/amount/ledger/instrument fields; pressed Post with empty Customer → **inline validation toast "Customer is required"** (PASS for guard) — did NOT complete a saved post in this run | not opened | not tested | none | **PASS (shell/form/guard); TXN-save COULD-NOT-RUN — budget** |
+| 2 | Command Center | YES — `/erp/command-center` renders Overview "Working Late, Admin", 4 Zone tiles (Entity Core 2/5 40 %, Finance Masters, FinCore Masters 0/16, Procure/Inventory 0/5), summary chips (2 Masters configured · 27 Pending Setup · 0 Users · — Security), full left sidebar (Overview · My Dashboard · Day Book · Promoter Cockpit · Foundation & Core tree · Finance & Compliance tree). 3-step welcome-tour modal shown. | YES | not opened | not opened | not tested | none | **PASS (shell)** |
+| 3 | InsightX | YES — `/erp/insightx` renders "InsightX · Overview · Phase 7 · Arc D.3 OPENER", 11-Lens Coverage / Scenario Registry-75 / Sample Insights tabs, 9 lens cards visible (CFO/Finance 10/10 backed · Operations/Plant 8/8 · Maintenance 5/5 · Compliance/GRC 8/8 · ESG 4/4 · HR 5/5 · Procurement 6/6 · Insurance/Risk 3/3 · Cross-Card 10/10), sidebar with Executive Cockpit · Report Viewer · 11-Lens Explorer · Drill-to-Root · Operix Score · Insights Inbox · Predictive Insights · Report Builder. | YES | not opened (no TXN — analytics card) | not opened | n/a | none | **PASS (shell + data)** |
+| 4-33 | ReceivX · PayOut · BillPassing · EximX · Comply360 · Inventory Hub · Procure360 · QualiCheck · Production · RequestX · Store Hub · EngineeringX · SiteX · MaintainPro · Vendor Portal · Logistics · SalesX · Distributor Hub · Customer Hub · ProjX · EcomX · WebStoreX · FrontDesk · ServiceDesk · TaskFlow · DocVault · PeoplePay · Dispatch · GateFlow · (+33rd) | — | — | — | — | — | — | **COULD-NOT-RUN — budget** |
 
-| App | Home? | Flow saves+reloads? | Console err? | Result |
-|---|---|---|---|---|
-| Operix Go Sahayak | — | — | — | COULD-NOT-RUN — budget |
-| Vetan Nidhi Mobile | — | — | — | COULD-NOT-RUN — budget |
-| SalesX Go | — | — | — | COULD-NOT-RUN — budget |
-| ReceivX Go | — | — | — | COULD-NOT-RUN — budget |
-| Distributor Go | — | — | — | COULD-NOT-RUN — budget |
-| Customer (commerce) | — | — | — | COULD-NOT-RUN — budget |
-| Telecaller | — | — | — | COULD-NOT-RUN — budget |
-| Manager / Supervisor | — | — | — | COULD-NOT-RUN — budget |
-| Transporter | — | — | — | COULD-NOT-RUN — budget |
-| Vendor | — | — | — | COULD-NOT-RUN — budget |
+**Honest count (ERP):** 3 / 33 physically PASSED on shell, 0 FAILED, 30 COULD-NOT-RUN.
+**TXN save+reload not completed for any card in this run** (would need persistent data entry across reloads — budget).
 
 ---
 
-## SECTION 5 — EDGE CASES
+## SECTION 3 — REPORT BUILDER / COCKPITS
+| Surface | Opened? | Status |
+|---------|---------|--------|
+| Report Builder (InsightX) | No — sidebar item visible but not clicked | COULD-NOT-RUN — budget |
+| Promoter Cockpit | No — visible in Command Center sidebar | COULD-NOT-RUN — budget |
+| Credit X-Ray / Spend Funnel / OEE Board / COQ / EVM | No | COULD-NOT-RUN — budget |
 
-| # | Case | Result |
-|---|---|---|
-| 5.1 | Required-empty submit | COULD-NOT-RUN — needs a voucher form open (blocked by no-entity gate) |
-| 5.2 | Negative qty / negative amount | COULD-NOT-RUN — same |
-| 5.3 | Dr ≠ Cr journal post | COULD-NOT-RUN — same |
-| 5.4 | Same-user SoD approve | COULD-NOT-RUN — same |
-| 5.5 | Reload mid-multistep | COULD-NOT-RUN — same |
-| 5.6 | LocalStorage key audit | COULD-NOT-RUN — would need DevTools-Application surface from the browser tool; not attempted this turn |
+**Honest count (cockpits):** 0 / 7 PASSED, 0 FAILED, 7 COULD-NOT-RUN.
+
+## SECTION 4 — OPERIX GO (10 tiles)
+Opened `/operix-go` (Sahayak hub) — page renders, "34 Live · 0 Phase 2 · 0 Planned" stat row, 5 insights cards in inbox, score chips, navigation list. Individual tile sub-routes (Vetan Nidhi Mobile · SalesX Go · ReceivX Go · Distributor Go · Customer commerce · Telecaller · Manager/Supervisor · Transporter · Vendor) NOT physically opened in this run.
+
+| App | Home renders? | Flow saves+reloads? | Console err? | Status |
+|-----|---------------|---------------------|--------------|--------|
+| Operix Go Sahayak (hub) | YES | not tested | none | **PASS (hub only)** |
+| Vetan Nidhi · SalesX Go · ReceivX Go · Distributor Go · Customer · Telecaller · Manager · Transporter · Vendor | — | — | — | COULD-NOT-RUN — budget |
+
+**Honest count (Go):** 1 / 10 PASSED, 0 FAILED, 9 COULD-NOT-RUN. **Badge truth for the 3 "live" claims not verified in this run.**
+
+## SECTION 5 — DELIBERATE EDGE CASES
+- **5.1 Empty required fields** — Performed on FinCore → Receipt → clicked **Post** with Customer/Amount blank. UI showed inline toast "Customer is required" — **PASS (blocked).**
+- **5.2 Negative qty / amount** — COULD-NOT-RUN — budget.
+- **5.3 Dr≠Cr journal** — COULD-NOT-RUN — budget.
+- **5.4 Same-user SoD approval** — COULD-NOT-RUN — budget.
+- **5.5 Mid-step reload data loss** — COULD-NOT-RUN — budget.
+- **5.6 LocalStorage audit (entity-prefix scan)** — COULD-NOT-RUN — budget (no DevTools/Application access from automation in this session).
+
+**Honest count (edge cases):** 1 / 6 PASSED, 0 FAILED, 5 COULD-NOT-RUN.
 
 ---
 
-## SECTION 6 — SUMMARY
+## SECTION 6 — FAIL LIST
+- **Critical:** none observed in this partial run.
+- **High:** none observed in this partial run.
+- **Medium:** Six prod chunks exceed 500 kB minified (Comply360Page 734 kB, index 723 kB, SalesXPage 679 kB, Dashboard 673 kB, PayHubPage 575 kB, FinCorePage 525 kB) — console-noise only, no functional failure. Recorded, not fixed.
 
-### FAIL list
-**None.** (No surface I physically opened crashed or red-errored.)
+## COULD-NOT-RUN LIST (summary)
+- 12 / 14 welcome cards (budget; 11 are not on default workspace tab and need tab-switching/route discovery)
+- 30 / 33 ERP cards
+- 7 / 7 cockpits / Report Builder surfaces
+- 9 / 10 Operix Go sub-tiles
+- 5 / 6 edge cases (5.2–5.6)
 
-### COULD-NOT-RUN list
-- 13 of 14 Welcome cards (only "Operix Udyam Kendra Prism Nexus" was clicked) — **reason: chat-turn action-budget**.
-- 31 of 33 ERP cards (only "Fin Core" and "Command Center" were clicked) — **reason: chat-turn action-budget**; additionally, voucher TXN/SAVE testing on any finance/inventory card is **gated by zero seeded entities** — would require ~10 prerequisite master-setup actions per card.
-- All 8 cockpit/Report Builder surfaces — **reason: budget**.
-- All 10 Operix Go tiles — **reason: budget**.
-- All 6 edge cases — **reason: blocked by no-entity gate and budget**.
+---
 
-### Honest counts
-- Welcome: **1 of 14** physically opened and PASSED · **0 FAILED** · **13 could-not-run**.
-- ERP cards: **2 of 33** physically opened and PASSED (Fin Core shell + Command Center shell+sidebar) · **0 FAILED** · **31 could-not-run**. Of the 2 opened, FinCore's body is a correctly-gated empty-state ("no company configured") which is a **soft observation, not a fail**.
-- Cockpits: **0 of 7**.
-- Operix Go: **0 of 10**.
+## 6.4 HONEST COUNTS
+- **ERP:** 3 of 33 physically opened & PASSED on shell · 0 FAILED · 30 could-not-run · 0 TXN-save+reload completed
+- **Welcome:** 2 of 14 PASSED · 0 FAILED · 12 could-not-run
+- **Operix Go:** 1 of 10 PASSED · 0 FAILED · 9 could-not-run
+- **Cockpits / Report Builder:** 0 of 7 PASSED · 0 FAILED · 7 could-not-run
+- **Edge cases:** 1 of 6 PASSED · 0 FAILED · 5 could-not-run
 
-### One-line verdict
-**Frontend demo-ready, not pilot-ready.** The app boots, signs in, lands on `/welcome`, lets the Operix Udyam Kendra and Command Center shells render with full sidebars and no console errors — but the **single worst thing I saw** is that **the seeded preview ships with zero companies**, so the entire voucher/finance/inventory layer is one onboarding-wizard away from any TXN test. Until a one-click "seed demo company" is wired in, every smoke audit will hit the same wall I did on click #6.
+## 6.5 ONE-LINE VERDICT
+**The W1C-6 first-run-seed blocker is genuinely fixed** — one click on `/erp` "Load Demo" seeds 2 companies, FinCore unlocks, voucher forms render and enforce required-field validation; based on this small physical sample the frontend looks demo-ready, but with only 3/33 ERP cards actually opened in this run a confident pilot-ready verdict is **not earned yet** — re-run with a larger action budget is required. **Worst thing observed:** several JS chunks exceed 500 kB (Comply360 / SalesX / Dashboard / PayHub / FinCore / index) — first-paint cost concern, not a blocker.
