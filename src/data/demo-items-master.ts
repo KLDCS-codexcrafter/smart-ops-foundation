@@ -68,8 +68,40 @@ export const DEMO_ITEMS_MFG: DemoItem[] = [
   { id: 'it-m-20', itemCode: 'MF-R008', itemName: 'Lubricant Oil Industrial', hsn: '27101981', uom: 'LTR', gstRate: 18, rate: 165,   openingStock: 120, itemType: 'raw_material', _archetype: 'manufacturing' },
 ];
 
+/**
+ * Sprint W1C-8 · SigmaFlow valve-mfg archetype.
+ * DI valves + water-works fittings · real HSN per CBIC/ITC(HS).
+ *   HSN 8481  → valves (butterfly/sluice/check/air-release/control)
+ *   HSN 7307  → cast/wrought-iron pipe fittings (couplings, adaptors, flange adaptors, tapping saddles, repair clamps)
+ *   HSN 4016  → vulcanised-rubber articles (seat rings, gaskets)
+ *   HSN 7318  → fasteners (bolts/nuts)
+ *   HSN 7325  → DI castings (raw casting blanks)
+ * Standard GST: 18% on industrial valves & fittings.
+ */
+export const DEMO_ITEMS_VALVE_MFG: DemoItem[] = [
+  // Finished — DI valves (HSN 8481)
+  { id: 'it-v-1',  itemCode: 'VLV-BFV-DN100', itemName: 'DI Butterfly Valve DN100 PN16',     hsn: '84818030', uom: 'PCS', gstRate: 18, rate: 8400,  openingStock: 60,  itemType: 'finished', _archetype: 'valve-mfg' },
+  { id: 'it-v-2',  itemCode: 'VLV-BFV-DN150', itemName: 'DI Butterfly Valve DN150 PN16',     hsn: '84818030', uom: 'PCS', gstRate: 18, rate: 12500, openingStock: 40,  itemType: 'finished', _archetype: 'valve-mfg' },
+  { id: 'it-v-3',  itemCode: 'VLV-SLV-DN100', itemName: 'DI Sluice Valve DN100 PN16 BS-5163', hsn: '84818090', uom: 'PCS', gstRate: 18, rate: 9800,  openingStock: 50,  itemType: 'finished', _archetype: 'valve-mfg' },
+  { id: 'it-v-4',  itemCode: 'VLV-CHK-DN100', itemName: 'DI Check Valve (Reflux) DN100',      hsn: '84818030', uom: 'PCS', gstRate: 18, rate: 7200,  openingStock: 45,  itemType: 'finished', _archetype: 'valve-mfg' },
+  { id: 'it-v-5',  itemCode: 'VLV-ARV-DN80',  itemName: 'DI Air Release Valve DN80 Single-Air', hsn: '84818030', uom: 'PCS', gstRate: 18, rate: 5400,  openingStock: 70,  itemType: 'finished', _archetype: 'valve-mfg' },
+  // Finished — water-works fittings (HSN 7307)
+  { id: 'it-v-6',  itemCode: 'FIT-CPL-DN100', itemName: 'DI Universal Coupling DN100',        hsn: '73079990', uom: 'PCS', gstRate: 18, rate: 2200,  openingStock: 120, itemType: 'finished', _archetype: 'valve-mfg' },
+  { id: 'it-v-7',  itemCode: 'FIT-ADP-DN100', itemName: 'DI Flange Adaptor DN100',            hsn: '73079990', uom: 'PCS', gstRate: 18, rate: 1850,  openingStock: 140, itemType: 'finished', _archetype: 'valve-mfg' },
+  { id: 'it-v-8',  itemCode: 'FIT-TSD-DN100', itemName: 'Tapping Saddle DI 100x50',           hsn: '73079990', uom: 'PCS', gstRate: 18, rate: 1450,  openingStock: 90,  itemType: 'finished', _archetype: 'valve-mfg' },
+  { id: 'it-v-9',  itemCode: 'FIT-RCL-DN150', itemName: 'DI Repair Clamp DN150 (Single Band)', hsn: '73079990', uom: 'PCS', gstRate: 18, rate: 2950,  openingStock: 75,  itemType: 'finished', _archetype: 'valve-mfg' },
+  { id: 'it-v-10', itemCode: 'FIT-BND-DN100', itemName: 'DI 90° Bend DN100 Flanged',           hsn: '73079990', uom: 'PCS', gstRate: 18, rate: 1650,  openingStock: 110, itemType: 'finished', _archetype: 'valve-mfg' },
+  // Raw — DI casting blanks + EPDM seat (HSN 7325 + 4016 + 7318)
+  { id: 'it-v-r1', itemCode: 'RAW-DI-BODY-DN100', itemName: 'DI Casting — Valve Body DN100 (Blank)', hsn: '73259910', uom: 'KG',  gstRate: 18, rate: 145, openingStock: 800, itemType: 'raw_material', _archetype: 'valve-mfg' },
+  { id: 'it-v-r2', itemCode: 'RAW-DI-DISC-DN100', itemName: 'DI Casting — Disc DN100 (Blank)',       hsn: '73259910', uom: 'KG',  gstRate: 18, rate: 152, openingStock: 350, itemType: 'raw_material', _archetype: 'valve-mfg' },
+  { id: 'it-v-r3', itemCode: 'RAW-SS-STEM',       itemName: 'SS-410 Stem Bar 25mm',                  hsn: '72224000', uom: 'KG',  gstRate: 18, rate: 285, openingStock: 200, itemType: 'raw_material', _archetype: 'valve-mfg' },
+  { id: 'it-v-r4', itemCode: 'RAW-EPDM-SEAT-DN100', itemName: 'EPDM Rubber Seat Ring DN100',         hsn: '40169320', uom: 'PCS', gstRate: 18, rate: 320, openingStock: 250, itemType: 'raw_material', _archetype: 'valve-mfg' },
+  { id: 'it-v-r5', itemCode: 'RAW-FST-M16',       itemName: 'MS Hex Bolt + Nut M16x80 (Set)',        hsn: '73181500', uom: 'SET', gstRate: 18, rate: 38,  openingStock: 2000, itemType: 'raw_material', _archetype: 'valve-mfg' },
+];
+
 export function itemsForArchetype(a: DemoArchetype): DemoItem[] {
   if (a === 'trading')      return DEMO_ITEMS_TRADING;
   if (a === 'services')     return DEMO_ITEMS_SERVICES;
+  if (a === 'valve-mfg')    return DEMO_ITEMS_VALVE_MFG;
   return DEMO_ITEMS_MFG;
 }
