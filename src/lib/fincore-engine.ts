@@ -610,6 +610,17 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
     }
   }
 
+  // Sprint W1C-5 · Block 4a · audit B-03 HIGH · CGST Rule 56(8) immutability.
+  // In-place re-post of an already-posted/cancelled voucher is forbidden — callers
+  // MUST use buildNextVersion() (edit-as-new-version) or cancelVoucher() (soft-delete).
+  if (beforeRecord && !canMutateInPlace(beforeRecord)) {
+    throw new Error(
+      `Voucher ${beforeRecord.voucher_no || beforeRecord.id} is ${beforeRecord.status} ` +
+      `and cannot be mutated in place (CGST Rule 56(8)). ` +
+      `Use buildNextVersion() to edit or cancelVoucher() to reverse.`,
+    );
+  }
+
   // Sprint T-Phase-1.2.5h-b2 · Storage quota guard (H-4) — block at >= 95%
   const quotaCheck = checkWriteAllowed('voucher_create');
   if (!quotaCheck.allowed) {
