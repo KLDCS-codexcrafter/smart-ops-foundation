@@ -1550,6 +1550,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-12', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint W1C-5 T-W1C5-Fraud-Guard · Wave-1 Close Arc · hardening sprint from the two-auditor consolidated audit (self-audit × independent cross-check) · SIX surgical guard blocks with attack-tests · Block 1 validateVoucher wired into postVoucher (unbalanced journals THROW · dr-cr-guard.test.ts) · Block 2 SoD on approve()/reject() (submitter cannot approve own record · sod-approval.test.ts) · Block 3 stock availability guard in postStockIssue (consumes getAvailabilityMap from stock-reservation-engine · allow_negative_stock override is audit-logged · stock-availability-guard.test.ts) · Block 4 posted-record immutability via canMutateInPlace in postVoucher + saveCycleAdjustmentVouchers (CGST Rule 56(8)) + ClientBlueprintsPage direct-write purge via new purgeLegacyGroupStoresForEntity helper (posted-immutability-guard.test.ts + no-page-direct-writes.test.ts) · Block 5 Decimal sweep across ~32 financial sites onto dSum/dMul/dAdd/dPct/round2 with EXEMPT-and-declare whitelist for display-only / probability / OEE / density (decimal-sweep.test.ts) · Block 6 manualChunks isolation for vendor-pdf (jspdf + jspdf-autotable) and vendor-xlsx (xlsx) — heavy export libs split from main bundle · DO NOT touch route splitting (296 routes already lazy) · perf-chunks.test.ts · ZERO new SIBLINGs (pure guards onto existing engines + vite chunk config) · walls held: validateVoucher canon consumed 0-DIFF · getAvailabilityMap consumed 0-DIFF · canMutateInPlace consumed 0-DIFF · decimal-helpers canon consumed 0-DIFF · all route splits 0-DIFF · all banked pages 0-DIFF · sprint-history backfill M1 headSha pending bank · self-seed W1C-5 · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'W1C5' as unknown as number, code: 'T-W1C5-Fraud-Guard', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'TBD_AT_BANK', loc: 850,
+    newSiblings: [],
+    bankDate: '2026-06-13', provenance: 'CONFIRMED',
+  },
 ];
 
 

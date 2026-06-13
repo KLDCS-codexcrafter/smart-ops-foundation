@@ -56,6 +56,11 @@ export default defineConfig(({ mode }) => ({
           'vendor-dates': ['date-fns', 'react-day-picker'],
           'vendor-overlays': ['embla-carousel-react', 'cmdk', 'sonner', 'vaul'],
           'vendor-form': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          // W1C-5 Block 6 · isolate heavy export libs so main bundle stays lean.
+          // Engines that import these are themselves dynamic-imported from pages,
+          // so these chunks only load on-demand (export/print actions).
+          'vendor-pdf': ['jspdf', 'jspdf-autotable'],
+          'vendor-xlsx': ['xlsx'],
         },
       },
     },
