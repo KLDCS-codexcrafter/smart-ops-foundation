@@ -362,3 +362,45 @@ Combined remediation surface now **93+ files** across 7 cards. Engine-signature 
 **MIXED** — TaskFlow + DocVault are LIVE-clean PASS (canonical entity wiring + real seeds via p81/ops-close). ServiceDesk fails on the third (and most subtle) flavour of the entity-resolution anti-pattern: engine-signature `= DEFAULT_ENTITY` defaults leak across 55 page-files via ~12 engine functions. The 7-card anti-pattern roll-up now spans 93+ files across 3 distinct flavours — the dedicated remediation sprint is now critical-path before any production GA.
 
 STOP.
+
+---
+
+## Batch 9 · EximX + InsightX (2 cards) — run 13 Jun 2026 — VERDICT: MIXED (1 PASS-by-design · 1 seed-pin-bug-class)
+Pre-state: **SMRTP** manufacturing blueprint continued. Orchestrator coverage observed for the 2 cards:
+- **EximX**: layouts auto-invoke `seedSinhaEximX()` (`src/data/sinha-eximx-seed.ts` L61-66) on mount in `EximXPage.tsx` L23, `EximXExportLayout.tsx` L82, `EximXImportLayout.tsx` L91 — **but the seeder hardcodes `erp_sinha-trading_iec` / `erp_sinha-trading_lut` as the storage keys** (literal entity ID, not the active one). Separately, `useDemoSeedLoader.ts` L265 calls `seedFinanceProcurementTxnsForDemo(DEFAULT_ENTITY_SHORTCODE)` which writes EBRC/EDPMS/PO/GRN/billPassing/paymentBatches/vendorAdvances under `${DEFAULT_ENTITY_SHORTCODE}` scope, not the active entity.
+- **InsightX**: `InsightXOverviewPage.tsx` reads ONLY `insightx-aggregator-engine` (cross-card scenario registry · entity-agnostic by design per the file header: "Reads ONLY insightx-aggregator-engine"). No per-entity seeds because the aggregator is a platform-wide registry.
+
+| # | Card | Register / list (file · entity wiring) | Day Book | Report (one) | Form guard | LIVE/STATIC | PASS/FAIL/CNR |
+|---|---|---|---|---|---|---|---|
+| 1 | **EximX** (`/erp/eximx`) | Reader pages use `useEntityCode()` (tally: **94 eximx files · 20 use `useEntityCode()` · 0 hardcoded `DEFAULT_ENTITY_SHORTCODE` · 0 raw `active_entity_code`**) — reader contract is mostly clean. BUT the seed contract is broken on TWO axes: (a) `seedSinhaEximX()` hardcodes the storage keys as `` `erp_sinha-trading_iec` `` and `` `erp_sinha-trading_lut` `` (literal entity ID baked into the key string) — IEC/LUT only materialise when active entity ID happens to equal `sinha-trading`; (b) `seedFinanceProcurementTxnsForDemo(DEFAULT_ENTITY_SHORTCODE)` writes EBRC, EDPMS, POs, GRNs, BillPassing rows, payment batches, vendor advances under `${DEFAULT_ENTITY_SHORTCODE}` scope regardless of the active entity (same write-pin flavour as **B7-F-2 Pay Hub masters**). Net effect: SMRTP scenario active → IEC, LUT, EBRC, EDPMS, BoE, ShippingBill, ExportPO, ImportPO, PackingCredit registers all render LIVE-empty even though seed-functions ran. | n/a (separate eximx domain) | `ExportDispatchList`, `ShippingBillList`, `BoEList`, `LCList`, `PackingCreditList`, `EBRCEDPMSDashboard`, `BuyerReliabilityDashboard`, `Form3CEBDashboard`, `CAROTARRoOMatrix`, `AEOBenefitsDashboard`, `VendorScorecardDashboard` mount; reads return empty arrays from SMRTP-scoped keys | 12 files with `toast`/`required`/`errors.` validation density (`ExportPOList`, `CIList`, `BoEList`, hedge-contract, packing-credit, LC pages) — guard density healthy where present | **SEED-PIN-BUG** + **LIVE-empty-under-active-entity** (reader contract clean · seed contract broken) | **FAIL · B9-F-1** |
+| 2 | **InsightX** (`/erp/insightx`) | `InsightXOverviewPage.tsx` reads `INSIGHT_LENSES`, `getScenarioRegistry()`, `aggregateInsight(scenario_id)` from `@/lib/insightx-aggregator-engine` — cross-card aggregator that is entity-agnostic by design (per file header L9: "Reads ONLY insightx-aggregator-engine (no dead UI)"). Tally: **10 insightx files · 0 use `useEntityCode()` · 0 hardcoded constants · 0 raw localStorage reads**. No per-entity registers — InsightX is a read-only aggregator over the 11-lens · 75-scenario registry. Cockpit, ReportViewer, LensExplorer, DrillToRoot, OperixScore, InsightsInbox, Predictive, ReportBuilder all consume the same aggregator engine. | n/a (aggregator card) | `InsightXOverviewPage` renders 11-lens coverage + one sample backed insight per lens via `aggregateInsight()`; `InsightXCockpitPage`, `ReportViewerPage`, `LensExplorerPage`, `DrillToRootPage`, `OperixScorePage`, `InsightsInboxPage`, `PredictiveInsightsPage`, `ReportBuilder` mount — all read from the same aggregator registry, no entity-scoped localStorage keys | n/a (no input forms · pure read-only viewer) | **LIVE-by-design** (aggregator reads · entity-agnostic) | **PASS** (by-design · entity-agnostic aggregator) |
+
+### Browser click-through
+Both `/erp/{eximx,insightx}` routes hit login wall → **CNR-browser-auth**. Source-deterministic tallies + seed-key string analysis are dispositive.
+
+### Fails (1 honest, real teeth — NEW flavour combining seed-pin + write-default)
+- **B9-F-1** EximX — Reader contract is the cleanest in the audit so far (20 of 94 files use `useEntityCode()`, **0 anti-pattern instances**), but the **seed contract is broken on two axes**:
+  - **Axis 1 — literal entity ID baked into key string** (`sinha-eximx-seed.ts` L62-63): `` const iecKey = `erp_sinha-trading_iec`; const lutKey = `erp_sinha-trading_lut`; `` — bypasses `iecKey(entityCode)` / `lutKey(entityCode)` builders, writes only to the literal-`sinha-trading` scope. This is a **fourth flavour** of the anti-pattern class: **hardcoded entity ID in seed key string** (vs the previous three flavours at page/engine layer).
+  - **Axis 2 — write-pinned to `DEFAULT_ENTITY_SHORTCODE`** (`useDemoSeedLoader.ts` L265): `seedFinanceProcurementTxnsForDemo(DEFAULT_ENTITY_SHORTCODE)` pumps EBRC, EDPMS, POs, GRNs, BillPassing, payment batches, vendor advances under the default scope — same flavour as B7-F-2 Pay Hub.
+  - Net effect: under SMRTP scenario, **every EximX register/dashboard renders LIVE-empty** even though seed functions ran successfully. The w1c-7b test (`eximx.test.ts`) passes precisely because the test passes `ENTITY = 'SMRT'` directly to `seedFinanceProcurementTxnsForDemo` — proving the builder IS entity-parameterized; only the orchestrator-side call is wrong.
+  - **One-class fix**: (a) refactor `seedSinhaEximX()` to accept `entityCode` and use the `iecKey(e)` / `lutKey(e)` builders; (b) replace `seedFinanceProcurementTxnsForDemo(DEFAULT_ENTITY_SHORTCODE)` in `useDemoSeedLoader.ts` with the active entity code; (c) auto-seed the EximX subset on entity-switch via the orchestrator (not on layout `useEffect`).
+
+### Anti-pattern roll-up across Batches 5+6+7+8+9 (now 8 of 21 cards · 4 flavours)
+| Flavour | Cards | Files (est.) |
+|---|---|---|
+| **raw `active_entity_code` localStorage read** | GateFlow · 6 Vendor Portal panels | 8 |
+| **hardcoded `const E='DEMO'` / `DEFAULT_ENTITY_SHORTCODE` at module/wrapper scope** | MaintainPro · SiteX · Dispatch · 16 Pay Hub masters (write-variant) | 30+ |
+| **engine-signature default `entity_id = DEFAULT_ENTITY`** | ServiceDesk | 55 page-files · ~12 engine fns |
+| **literal entity ID baked into seed-key string** (NEW · B9) | EximX seeder + finance-procurement orchestrator call | 1 seeder + 1 orchestrator call · ~9 register surfaces leak |
+
+Combined remediation surface now **~95 files** across 8 cards · 4 distinct flavours. The B9 flavour is the only one that masquerades as a clean-source card (94 eximx files with 0 anti-pattern markers) — only seed-key string inspection reveals the leak.
+
+### Scope-notes (honest · neither PASS nor FAIL)
+- **InsightX** is the only audited card so far that is **legitimately entity-agnostic** (cross-card aggregator over a 75-scenario registry). Its 0/10 useEntityCode tally is correct-by-design, NOT a gap. RPT-9b builder and RPT-10/12 viewers all consume the same aggregator.
+- **EximX reader contract** is the cleanest of any card audited (0 anti-pattern instances) — the recipe of `useEntityCode()` + builder-key seeds is already in place at the read layer; only the seed-write layer is broken.
+- **w1c-7b/eximx.test.ts** is a Tier-L test that exercises `seedFinanceProcurementTxnsForDemo('SMRT')` directly and asserts `ebrcKey(ENTITY)` + `edpmsKey(ENTITY)` populate — proves the builder is correct and isolates the bug to the orchestrator-side caller.
+
+### Verdict
+**MIXED** — InsightX PASS-by-design (entity-agnostic aggregator · 10 files clean). EximX FAIL · B9-F-1 (reader contract is the cleanest in the audit but seed contract is broken on two axes: literal `sinha-trading` baked into key strings + finance-procurement seeded under `DEFAULT_ENTITY_SHORTCODE`). The **fourth flavour** of the entity-resolution anti-pattern class is now logged; remediation sprint must include seed-key string audit (not just page-source audit).
+
+STOP.
