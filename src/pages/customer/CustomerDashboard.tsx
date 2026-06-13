@@ -1,5 +1,6 @@
+import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { IndianRupee } from "lucide-react";
+import { IndianRupee, Inbox } from "lucide-react";
 import { CustomerLayout } from "@/components/layout/CustomerLayout";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,48 +12,48 @@ import {
   Tooltip, ResponsiveContainer,
 } from "recharts";
 import { cn } from "@/lib/utils";
+import { customerOrdersKey, type CustomerOrder } from "@/types/customer-order";
 
 // [JWT] Replace with real customer account data from API
 const ACCOUNT = {
   customerName:    "Sharma Traders Pvt Ltd",
   customerCode:    "CUST-0091",
   gstin:           "27AABCS5678T1ZX",
-  creditLimit:     500000,
-  outstanding:     183500,
-  overdue:         45000,
-  lastPayment:     120000,
-  lastPaymentDate: "28 Mar 2026",
-  creditUsed:      37,
+  creditLimit:     50000000, // paise · 5,00,000
+  lastPaymentDate: "—",
 };
 
-const RECENT_INVOICES = [
-  { id: "INV-2026-0412", date: "01 Apr 2026", amount: 84000,  status: "unpaid",  dueDate: "15 Apr 2026" },
-  { id: "INV-2026-0389", date: "22 Mar 2026", amount: 54500,  status: "unpaid",  dueDate: "05 Apr 2026" },
-  { id: "INV-2026-0361", date: "15 Mar 2026", amount: 45000,  status: "paid",    dueDate: "29 Mar 2026" },
-  { id: "INV-2026-0334", date: "05 Mar 2026", amount: 120000, status: "paid",    dueDate: "19 Mar 2026" },
-  { id: "INV-2026-0298", date: "18 Feb 2026", amount: 67800,  status: "overdue", dueDate: "04 Mar 2026" },
-];
+/** W1C-10 F-2 · seeded entity for the customer portal (mirrors
+ *  partner-portal-engine.SEED_ENTITY pattern · single-tenant Tier-L). */
+const CUSTOMER_PORTAL_ENTITY = "SMRT";
 
-const RECENT_ORDERS = [
-  { id: "ORD-0881", date: "02 Apr 2026", items: 4, amount: 84000,  status: "confirmed" },
-  { id: "ORD-0854", date: "22 Mar 2026", items: 2, amount: 54500,  status: "delivered" },
-  { id: "ORD-0821", date: "10 Mar 2026", items: 6, amount: 165000, status: "delivered" },
-];
-
-const MONTHLY_PURCHASES = [
-  { month: "Oct", amount: 145000 },
-  { month: "Nov", amount: 189000 },
-  { month: "Dec", amount: 210000 },
-  { month: "Jan", amount: 175000 },
-  { month: "Feb", amount: 168000 },
-  { month: "Mar", amount: 239500 },
-];
+/** Read real seeded orders for the active customer-portal entity.
+ *  Honest empty-state when nothing is seeded — no synthetic rows. */
+function readCustomerOrders(entityCode: string): CustomerOrder[] {
+  try {
+    // [JWT] GET /api/customer/orders?entityCode=:entityCode
+    const raw = localStorage.getItem(customerOrdersKey(entityCode));
+    if (!raw) return [];
+    const arr = JSON.parse(raw);
+    return Array.isArray(arr) ? (arr as CustomerOrder[]) : [];
+  } catch {
+    return [];
+  }
+}
 
 function formatINR(paise: number): string {
   const r = paise / 100;
   if (r >= 100000) return `₹${(r / 100000).toFixed(2)}L`;
   if (r >= 1000) return `₹${(r / 1000).toFixed(1)}K`;
   return `₹${r.toLocaleString("en-IN")}`;
+}
+
+function formatDate(iso: string | null): string {
+  if (!iso) return "—";
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+  } catch { return "—"; }
 }
 
 const INVOICE_STATUS: Record<string, { label: string; color: string }> = {
@@ -62,21 +63,97 @@ const INVOICE_STATUS: Record<string, { label: string; color: string }> = {
 };
 
 const ORDER_STATUS: Record<string, { label: string; color: string }> = {
+  draft:     { label: "Draft",     color: "bg-muted text-muted-foreground" },
+  placed:    { label: "Placed",    color: "bg-primary/10 text-primary" },
   confirmed: { label: "Confirmed", color: "bg-primary/10 text-primary" },
+  packed:    { label: "Packed",    color: "bg-primary/10 text-primary" },
+  shipped:   { label: "Shipped",   color: "bg-primary/10 text-primary" },
   delivered: { label: "Delivered", color: "bg-success/10 text-success" },
+  cancelled: { label: "Cancelled", color: "bg-destructive/10 text-destructive" },
+  returned:  { label: "Returned",  color: "bg-warning/10 text-warning" },
 };
+
+/** Map a CustomerOrder to an invoice-shaped row (delivered/shipped/packed/confirmed
+ *  are treated as billed; placed/draft are not). Honest: derived view, not synthetic. */
+function deriveInvoiceStatus(o: CustomerOrder): "paid" | "unpaid" | "overdue" {
+  if (o.status === "delivered") return "paid";
+  // Overdue if placed > 30d ago and not delivered
+  if (o.placed_at) {
+    const ageDays = (Date.now() - new Date(o.placed_at).getTime()) / 86400000;
+    if (ageDays > 30) return "overdue";
+  }
+  return "unpaid";
+}
 
 export function CustomerDashboardPanel() { return <CustomerDashboard />; }
 export default function CustomerDashboard() {
   const navigate = useNavigate();
 
-  const creditColor = ACCOUNT.creditUsed <= 50
-    ? "text-success" : ACCOUNT.creditUsed <= 80
+  // Real reads — single pass, memoized.
+  const orders = useMemo(() => readCustomerOrders(CUSTOMER_PORTAL_ENTITY), []);
+
+  const derived = useMemo(() => {
+    const outstanding = orders
+      .filter(o => o.status !== "delivered" && o.status !== "cancelled" && o.status !== "returned")
+      .reduce((s, o) => s + (o.net_payable_paise || 0), 0);
+
+    const overdue = orders
+      .filter(o => deriveInvoiceStatus(o) === "overdue")
+      .reduce((s, o) => s + (o.net_payable_paise || 0), 0);
+
+    const lastDelivered = orders
+      .filter(o => o.status === "delivered" && o.delivered_at)
+      .sort((a, b) => (b.delivered_at! > a.delivered_at! ? 1 : -1))[0];
+
+    const lastPayment = lastDelivered?.net_payable_paise ?? 0;
+    const lastPaymentDate = lastDelivered ? formatDate(lastDelivered.delivered_at) : "—";
+
+    const creditUsed = ACCOUNT.creditLimit > 0
+      ? Math.min(100, Math.round((outstanding / ACCOUNT.creditLimit) * 100))
+      : 0;
+
+    // Monthly buckets · last 6 months from now (IST-friendly via toLocaleString)
+    const months: { month: string; amount: number }[] = [];
+    const now = new Date();
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      months.push({ month: d.toLocaleString("en-IN", { month: "short" }), amount: 0 });
+    }
+    for (const o of orders) {
+      if (!o.placed_at) continue;
+      const d = new Date(o.placed_at);
+      const diffMonths = (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
+      if (diffMonths >= 0 && diffMonths < 6) {
+        months[5 - diffMonths].amount += o.net_payable_paise || 0;
+      }
+    }
+
+    const recentOrders = [...orders]
+      .sort((a, b) => (b.placed_at || b.created_at).localeCompare(a.placed_at || a.created_at))
+      .slice(0, 5);
+
+    const recentInvoices = recentOrders
+      .filter(o => o.status !== "draft")
+      .map(o => ({
+        id: o.order_no || o.id,
+        date: formatDate(o.placed_at || o.created_at),
+        amount: o.net_payable_paise || 0,
+        status: deriveInvoiceStatus(o),
+        dueDate: formatDate(o.delivered_at) ?? "—",
+      }));
+
+    return { outstanding, overdue, lastPayment, lastPaymentDate, creditUsed, months, recentOrders, recentInvoices };
+  }, [orders]);
+
+  const creditColor = derived.creditUsed <= 50
+    ? "text-success" : derived.creditUsed <= 80
     ? "text-warning" : "text-destructive";
 
-  const creditBarColor = ACCOUNT.creditUsed <= 50
-    ? "bg-success" : ACCOUNT.creditUsed <= 80
+  const creditBarColor = derived.creditUsed <= 50
+    ? "bg-success" : derived.creditUsed <= 80
     ? "bg-warning" : "bg-destructive";
+
+  const hasData = orders.length > 0;
 
   return (
     <CustomerLayout title="My Dashboard" subtitle="Account overview — Sharma Traders Pvt Ltd">
@@ -104,61 +181,69 @@ export default function CustomerDashboard() {
 
       {/* Account Health Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {/* Outstanding */}
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">Outstanding</span>
             <IndianRupee className="h-4 w-4 text-warning" />
           </div>
-          <p className="font-mono text-xl font-bold text-warning">{formatINR(ACCOUNT.outstanding)}</p>
+          <p className="font-mono text-xl font-bold text-warning">{formatINR(derived.outstanding)}</p>
         </div>
 
-        {/* Overdue */}
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">Overdue</span>
             <IndianRupee className="h-4 w-4 text-destructive" />
           </div>
-          <p className="font-mono text-xl font-bold text-destructive">{formatINR(ACCOUNT.overdue)}</p>
-          <p className="text-[10px] text-destructive mt-1">Action needed</p>
+          <p className="font-mono text-xl font-bold text-destructive">{formatINR(derived.overdue)}</p>
+          {derived.overdue > 0 && <p className="text-[10px] text-destructive mt-1">Action needed</p>}
         </div>
 
-        {/* Credit Used */}
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">Credit Used</span>
             <IndianRupee className="h-4 w-4 text-muted-foreground" />
           </div>
-          <p className={cn("font-mono text-xl font-bold", creditColor)}>{ACCOUNT.creditUsed}%</p>
+          <p className={cn("font-mono text-xl font-bold", creditColor)}>{derived.creditUsed}%</p>
           <div className="w-full h-1.5 mt-2 bg-secondary rounded-full">
             <div
               className={cn("h-full rounded-full transition-all", creditBarColor)}
-              style={{ width: `${ACCOUNT.creditUsed}%` }}
+              style={{ width: `${derived.creditUsed}%` }}
             />
           </div>
         </div>
 
-        {/* Last Payment */}
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs text-muted-foreground uppercase tracking-wider">Last Payment</span>
             <IndianRupee className="h-4 w-4 text-success" />
           </div>
-          <p className="font-mono text-xl font-bold text-success">{formatINR(ACCOUNT.lastPayment)}</p>
-          <p className="text-[10px] text-muted-foreground mt-1">{ACCOUNT.lastPaymentDate}</p>
+          <p className="font-mono text-xl font-bold text-success">{formatINR(derived.lastPayment)}</p>
+          <p className="text-[10px] text-muted-foreground mt-1">{derived.lastPaymentDate}</p>
         </div>
       </div>
 
+      {/* Honest empty-state */}
+      {!hasData && (
+        <div className="bg-card border border-dashed border-border rounded-xl p-10 text-center mb-6">
+          <Inbox className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+          <p className="text-sm font-semibold text-foreground">No transactions yet</p>
+          <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
+            This portal shows your real seeded orders + invoices for entity
+            <span className="font-mono"> {CUSTOMER_PORTAL_ENTITY}</span>. Seed demo data from
+            Dev Tools → Seed Lab, or place an order to populate this dashboard.
+          </p>
+        </div>
+      )}
+
       {/* Two-col layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT col-span-2 */}
         <div className="lg:col-span-2 space-y-6">
           {/* Purchase Trend Chart */}
           <div className="bg-card border border-border rounded-xl p-5">
             <p className="text-sm font-semibold text-foreground">Monthly Purchases</p>
             <p className="text-xs text-muted-foreground mb-4">Last 6 months</p>
             <ResponsiveContainer width="100%" height={160}>
-              <BarChart data={MONTHLY_PURCHASES}>
+              <BarChart data={derived.months}>
                 <CartesianGrid vertical={false} stroke="hsl(var(--border))" strokeDasharray="3 3" />
                 <XAxis
                   dataKey="month"
@@ -181,7 +266,7 @@ export default function CustomerDashboard() {
             </ResponsiveContainer>
           </div>
 
-          {/* Recent Invoices */}
+          {/* Recent Invoices (derived from real orders) */}
           <div className="bg-card border border-border rounded-xl overflow-hidden">
             <div className="p-4 border-b border-border flex items-center justify-between">
               <p className="text-sm font-semibold text-foreground">Recent Invoices</p>
@@ -192,46 +277,49 @@ export default function CustomerDashboard() {
                 View All →
               </button>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="text-xs">Invoice No</TableHead>
-                  <TableHead className="text-xs">Date</TableHead>
-                  <TableHead className="text-xs">Amount</TableHead>
-                  <TableHead className="text-xs">Due Date</TableHead>
-                  <TableHead className="text-xs">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {RECENT_INVOICES.map((inv) => (
-                  <TableRow key={inv.id}>
-                    <TableCell className="font-mono text-xs text-primary">{inv.id}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">{inv.date}</TableCell>
-                    <TableCell className={cn(
-                      "font-mono text-sm font-semibold",
-                      inv.status === "paid" ? "text-success" : inv.status === "overdue" ? "text-destructive" : "text-foreground"
-                    )}>
-                      {formatINR(inv.amount)}
-                    </TableCell>
-                    <TableCell className="font-mono text-xs text-muted-foreground">{inv.dueDate}</TableCell>
-                    <TableCell>
-                      <span className={cn(
-                        "text-xs border rounded-lg px-2 py-0.5",
-                        INVOICE_STATUS[inv.status].color
-                      )}>
-                        {INVOICE_STATUS[inv.status].label}
-                      </span>
-                    </TableCell>
+            {derived.recentInvoices.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">No invoices yet.</p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-xs">Invoice No</TableHead>
+                    <TableHead className="text-xs">Date</TableHead>
+                    <TableHead className="text-xs">Amount</TableHead>
+                    <TableHead className="text-xs">Due Date</TableHead>
+                    <TableHead className="text-xs">Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {derived.recentInvoices.map((inv) => (
+                    <TableRow key={inv.id}>
+                      <TableCell className="font-mono text-xs text-primary">{inv.id}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">{inv.date}</TableCell>
+                      <TableCell className={cn(
+                        "font-mono text-sm font-semibold",
+                        inv.status === "paid" ? "text-success" : inv.status === "overdue" ? "text-destructive" : "text-foreground"
+                      )}>
+                        {formatINR(inv.amount)}
+                      </TableCell>
+                      <TableCell className="font-mono text-xs text-muted-foreground">{inv.dueDate}</TableCell>
+                      <TableCell>
+                        <span className={cn(
+                          "text-xs border rounded-lg px-2 py-0.5",
+                          INVOICE_STATUS[inv.status].color
+                        )}>
+                          {INVOICE_STATUS[inv.status].label}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
           </div>
         </div>
 
-        {/* RIGHT col-span-1 */}
+        {/* RIGHT col */}
         <div className="space-y-4">
-          {/* Account Summary */}
           <div className="bg-card border border-border rounded-xl p-5">
             <p className="text-sm font-semibold text-foreground mb-4">Account Summary</p>
             <div className="space-y-0">
@@ -239,7 +327,7 @@ export default function CustomerDashboard() {
                 { label: "Customer Code", value: ACCOUNT.customerCode, className: "font-mono text-xs text-primary" },
                 { label: "GSTIN", value: ACCOUNT.gstin, className: "font-mono text-xs uppercase" },
                 { label: "Credit Limit", value: formatINR(ACCOUNT.creditLimit), className: "font-mono text-xs text-success" },
-                { label: "Outstanding", value: formatINR(ACCOUNT.outstanding), className: "font-mono text-xs text-warning" },
+                { label: "Outstanding", value: formatINR(derived.outstanding), className: "font-mono text-xs text-warning" },
                 { label: "Account With", value: "Reliance Digital Solutions", className: "text-xs text-foreground" },
               ].map((row) => (
                 <div key={row.label} className="flex items-center justify-between py-2.5 border-b border-border/50 last:border-0">
@@ -261,24 +349,29 @@ export default function CustomerDashboard() {
                 View All →
               </button>
             </div>
-            {RECENT_ORDERS.map((ord) => (
-              <div key={ord.id} className="p-3 border-b border-border/50 last:border-0">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-primary">{ord.id}</span>
-                  <span className="text-[10px] text-muted-foreground">{ord.date}</span>
+            {derived.recentOrders.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-8">No orders yet.</p>
+            ) : derived.recentOrders.map((ord) => {
+              const statusCfg = ORDER_STATUS[ord.status] ?? ORDER_STATUS.placed;
+              return (
+                <div key={ord.id} className="p-3 border-b border-border/50 last:border-0">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs text-primary">{ord.order_no || ord.id}</span>
+                    <span className="text-[10px] text-muted-foreground">{formatDate(ord.placed_at || ord.created_at)}</span>
+                  </div>
+                  <div className="flex items-center justify-between mt-1">
+                    <span className="text-xs text-muted-foreground">{ord.lines?.length ?? 0} items</span>
+                    <span className="font-mono text-sm font-semibold text-foreground">{formatINR(ord.net_payable_paise || 0)}</span>
+                  </div>
+                  <span className={cn(
+                    "inline-block text-xs px-2 py-0.5 rounded-lg mt-1.5",
+                    statusCfg.color
+                  )}>
+                    {statusCfg.label}
+                  </span>
                 </div>
-                <div className="flex items-center justify-between mt-1">
-                  <span className="text-xs text-muted-foreground">{ord.items} items</span>
-                  <span className="font-mono text-sm font-semibold text-foreground">{formatINR(ord.amount)}</span>
-                </div>
-                <span className={cn(
-                  "inline-block text-xs px-2 py-0.5 rounded-lg mt-1.5",
-                  ORDER_STATUS[ord.status].color
-                )}>
-                  {ORDER_STATUS[ord.status].label}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

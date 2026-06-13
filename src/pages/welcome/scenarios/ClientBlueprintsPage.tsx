@@ -450,7 +450,8 @@ export function ClientBlueprintsPagePanel() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Client Blueprints</h1>
             <p className="text-sm text-muted-foreground mt-1">
-              Seven design-partner client scenarios that anchor Operix's universal ERP architecture.
+              {/* keep in sync with CLIENT_BLUEPRINTS roster · W1C-10 F-5 */}
+              {CLIENT_BLUEPRINTS.length} design-partner client scenarios that anchor Operix's universal ERP architecture.
               Click "Load Demo Data" on any card to seed that entity with the manufacturing
               archetype (22 localStorage keys populated). Use "Reset" to clear entity-scoped data
               and iterate. Shared masters (customers/vendors/items) are preserved across resets.

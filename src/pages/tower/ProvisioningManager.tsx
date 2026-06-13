@@ -53,6 +53,9 @@ import { listVariants } from '@/lib/product-variant-engine';
 import type { ProductVariant } from '@/types/product-variant';
 
 const ENTITY = 'demo-entity';
+/** W1C-10 F-4 · cross-scope inbox: BYP (`/build-your-plan`) writes requests under
+ *  this scope; Tower merges them so submitted plans show in the queue. */
+const BYP_ENTITY = 'public-build-your-plan';
 
 const TYPE_LABEL: Record<ProvisionRequestType, string> = {
   demo: 'Demo',
@@ -105,7 +108,12 @@ export default function ProvisioningManager() {
   const [partnerName, setPartnerName] = useState('');
 
   function refresh() {
-    setRequests(listProvisionRequests(ENTITY));
+    // W1C-10 F-4 · merge demo-entity + public-build-your-plan scopes so BYP requests appear.
+    const merged = [
+      ...listProvisionRequests(ENTITY),
+      ...listProvisionRequests(BYP_ENTITY),
+    ];
+    setRequests(merged);
     setNodes(listAccountNodes(ENTITY));
     setVariants(listVariants(ENTITY));
   }

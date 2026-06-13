@@ -147,16 +147,42 @@ export function purgeDemoData(entityCode: string): PurgeResult {
   let recordsRemoved = 0;
   let recordsSkippedMissing = 0;
 
-  // 1 · Whole-key sweep
+  // 1 · Whole-key sweep (manifest-tracked)
+  const purged = new Set<string>();
   for (const key of m.keys) {
     try {
       // [JWT] DELETE /api/entity/storage/:key
       if (localStorage.getItem(key) != null) {
         localStorage.removeItem(key);
         keysRemoved += 1;
+        purged.add(key);
       }
     } catch { /* ignore */ }
   }
+
+  // 1b · W1C-10 F-3 · belt-and-suspenders entity-suffix scan.
+  // Catches keys written by seeders that forgot to call recordDemoKey/recordDemoKeys.
+  // Scope: only keys ending in `_${entityCode}` (the canonical entity-scoped key shape).
+  // Excludes the manifest itself and seeder-token keys (handled in step 3).
+  try {
+    const suffix = `_${entityCode}`;
+    const manifestKey = demoSeedManifestKey(entityCode);
+    const tokenPrefix = `demo_seed_token_${entityCode}_`;
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      if (k === manifestKey) continue;
+      if (k.startsWith(tokenPrefix)) continue;
+      if (purged.has(k)) continue;
+      if (k.endsWith(suffix)) {
+        try {
+          localStorage.removeItem(k);
+          keysRemoved += 1;
+          purged.add(k);
+        } catch { /* ignore */ }
+      }
+    }
+  } catch { /* ignore */ }
 
   // 2 · Record-id sweep (groups by key for one read/write per key)
   const byKey = new Map<string, Set<string>>();
