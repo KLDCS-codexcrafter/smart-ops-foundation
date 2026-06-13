@@ -53,13 +53,14 @@ const CLIENT_BLUEPRINTS: ClientBlueprint[] = [
   {
     id: 'abdos',
     title: 'Abdos India',
-    subtitle: 'Multi-BU Conglomerate',
+    // Sprint T-B1-Abdos-Group-Seed · multi-entity group: parent + 5 verticals
+    subtitle: 'Multi-Entity Group · parent + 5 verticals · mixed Ind-AS consolidation',
     icon: Factory,
     description:
-      'Diversified 5-BU group: Life Sciences, Contract Manufacturing, Packaging, Distribution, Hygiene & Homecare. Validates multi-BU, contract mfg, export, multi-channel.',
+      'Real multi-company group: Abdos Group Holdings (parent) + Life Sciences · Contract Manufacturing · Packaging · Distribution · Hygiene & Homecare. Seeds the group-structure tree (3 full · 1 proportional JV · 1 equity associate), per-entity trial balances, and intercompany transactions — feeds the Group Consolidation page (Consolidated P&L + TB + eliminations).',
     details:
-      "1967 · 2500+ employees · 10 mfg facilities · 90+ countries served. Clients include Unilever, P&G, Serum Institute, Novartis, Dr Reddy's. Pattern: large diversified conglomerate.",
-    pattern: 'Multi-BU Conglomerate + Contract Mfg + Export + FMCG',
+      '1967 · 2500+ employees · 10 mfg facilities · 90+ countries served. Clients include Unilever, P&G, Serum Institute, Novartis, Dr Reddy\'s. Honest scope wall (DP-A3-9): feeds Consolidated P&L/TB + eliminations; Consolidated BS/CF/NCI/FX remain walled.',
+    pattern: 'Multi-Entity Group + Mixed Ind-AS Methods + Intercompany Flows',
     phase: 'live',
     entityCode: 'ABDOS',
     archetype: 'manufacturing',
