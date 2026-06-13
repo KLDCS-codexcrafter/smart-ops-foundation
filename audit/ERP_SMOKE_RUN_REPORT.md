@@ -3,7 +3,7 @@ HEAD target: `3cfbfc9`
 
 ## LEDGER
 ```
-DONE: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]   NEXT: Batch 16   REMAINING: 1
+DONE: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]   NEXT: Batch 17 (mobile reconcile)   REMAINING: 1
 BATCH ORDER:
   1. Abdos Group Consolidation                                       ✅
   2. Command Center foundation (multi-co/branch on Abdos seed)       ⚠️ STATIC
@@ -766,4 +766,62 @@ STOP.
 ### Progress Ledger
 - **DONE**: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] ✅
 - **NEXT**: Batch 16 🔄
+- **REMAINING**: 1
+
+---
+
+## BATCH 16 · Mobile personas + PWA (last test batch)
+**HEAD target**: `a4f2ae6` · **Run date**: 13 Jun 2026 · **Method**: route-walk + source-deterministic shell-mount + PWA-surface analysis (browser CNR per login wall).
+
+### Persona pages
+
+| Page | Route | Renders | Persona engine call | OfflineIndicator | Theme | Verdict | Entity flavour |
+|---|---|---|---|---|---|---|---|
+| **MobileSiteEngineerPage** | `/operix-go/site-engineer` | YES — sites grid + 4 QuickActions (DPR · Snag · Safety · Material) | `listSites(ENTITY)` from `sitex-engine` | YES (header) | design tokens (`bg-card` · `text-primary` · `text-muted-foreground`) — clean | **PASS** | Flavour #2 — `DEFAULT_ENTITY_SHORTCODE` (L17) |
+| **MobileMaintenanceTechnicianPage** | `/operix-go/maintenance-technician` | YES — 4 capture tiles + 3 summary tiles (Active WOs · Today PMs · Open Tickets) | `listWorkOrders` · `listPMTickoffs` · `listInternalTickets` from `maintainpro-engine` (5s tick refresh) | YES (header) | design tokens — clean | **PASS** | Flavour #2 — `const E = 'DEMO'` (L15) |
+| **MobileShopFloorOperatorPage** | `/operix-go/shop-floor-operator` | YES — today's job cards + machine health + 5 QuickActions (Confirm · JobCard · MatIssue · JWO · FA-Scan) | reads via `useEntityCode` → job cards + machine health summary | **NO** (header lacks it · B16-F-1) | design tokens — clean | **PARTIAL** | useEntityCode (CLEAN — canonical hook) |
+
+### B16-F-1 PARTIAL · OfflineIndicator drift across personas
+
+The 3 persona headers diverge: SiteEngineer + MaintenanceTechnician mount `<OfflineIndicator />` in the right of the header; ShopFloorOperator only renders `<ArrowLeft />` + title (no OfflineIndicator). For an "offline-first" shop-floor surface the missing indicator is a UX regression — the operator cannot see online/offline/sync-pending state at a glance. Two-line fix in `MobileShopFloorOperatorPage.tsx` header. Not graded as FAIL because the page itself renders + workflow is functional.
+
+### OfflineIndicator behaviour (source-deterministic)
+- Subscribes to `service-worker-setup` state (`online` · `registered` · `updateAvailable`).
+- Polls `getQueueSize()` from `offline-queue-engine` every 2s.
+- Three branches: online + queue=0 → green "Online" chip · offline → amber "Offline · N pending" · online + queue>0 → blue animated "Syncing · N".
+- **Anti-pattern flag**: hardcoded `bg-emerald-500/10 text-emerald-600 border-emerald-500/30` (also amber / blue) violates project rule "never use Tailwind named colors". Pre-existing, surfaced here for the remediation backlog (not a B16 fail).
+
+### InstallPromptBanner behaviour
+- Standard `beforeinstallprompt` listener, calls `event.prompt()` + records dismissal in `localStorage['opx_install_dismissed_at']` with **7-day NAG_COOLDOWN**.
+- Renders a fixed bottom-corner card with "Install OperixGo · Faster access · Works offline".
+- Mount: **only `MobileRouter` L369 mounts it** (`/mobile/*` Wave-2 shell).
+- **B16-F-2 PARTIAL** · The 3 persona pages live at `/operix-go/*` (Wave-1 shell) where `<InstallPromptBanner />` is **NOT mounted at shell level**. So a user on `/operix-go/site-engineer` never sees the install banner — they only see it if they bounce through `/mobile/*` first. This is the same Wave-1/Wave-2 architecture split already flagged in B13; calling it out again because PWA install discoverability is supposed to be universal. Two-line fix to mount the banner in the Operix-Go shell.
+
+### Theme on mobile
+- Project rule: mobile is dark-only (no toggle by design).
+- All 3 persona pages use semantic design tokens (`bg-card`, `bg-background`, `bg-primary/10`, `text-muted-foreground`, `text-primary`, `text-success/warning/destructive`). No hardcoded hex, no `bg-white`, no `text-gray-*`.
+- OperixGo brand chrome (`bg-slate-900` etc.) is confined to the Wave-2 shell header per documented OperixGo brand spec — not in persona page bodies.
+- **PASS** — theme tokens hold cleanly on mobile layouts.
+
+### PWA surface (source-deterministic)
+- `public/sw.js` exists; registered from **two** places: `src/main.tsx` L30 (`navigator.serviceWorker.register('/sw.js')` in PROD) AND `src/lib/service-worker-setup.ts` L45 (same path, used by MobileRouter for `subscribe` state + `triggerQueueReplay`).
+- `public/manifest.webmanifest` present (project manifest).
+- **PWA skill conformance NOTE** (not a B16 fail · pre-existing): The current SW is hand-written and registered ad-hoc from two call sites. Per the PWA skill, the canonical path is `vite-plugin-pwa` + single guarded wrapper that refuses to register in Lovable preview / iframes / `id-preview--*` / `lovableproject.com`. The current `main.tsx` registration only guards on `import.meta.env.PROD` — it would register in any non-dev preview iframe that builds. Catalogue for the PWA remediation sprint; not graded here because no install regression observed under CNR-browser-auth.
+
+### Entity-resolution roll-up (no new flavour)
+- 2 of 3 personas use Flavour #2 (`DEFAULT_ENTITY_SHORTCODE` / `const E='DEMO'`)
+- 1 of 3 uses canonical `useEntityCode` (ShopFloorOperator — good citizen)
+- No new flavour. Remediation count unchanged: **6 distinct flavours across 10 cards · ~97 files**.
+
+### Browser click-through
+All 3 persona routes → Operix-Go login wall → **CNR-browser-auth**. Source-deterministic shell-mount analysis is dispositive.
+
+### Verdict
+**MIXED-PASS** — 3 of 3 persona pages render their workflow correctly with the right engine reads. OfflineIndicator is mounted on 2 of 3 (B16-F-1). InstallPromptBanner is shell-mounted only on the Wave-2 `/mobile/*` shell, not Wave-1 `/operix-go/*` (B16-F-2). Theme tokens hold on mobile. PWA SW + manifest are present and registered, but the registration is not PWA-skill-conformant (hand-written SW · dual registration · weak preview guard) — pre-existing, catalogued for remediation. No new entity-resolution flavour.
+
+STOP.
+
+### Progress Ledger
+- **DONE**: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] ✅
+- **NEXT**: Batch 17 (mobile reconcile) 🔄
 - **REMAINING**: 1
