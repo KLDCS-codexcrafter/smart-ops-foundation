@@ -3,7 +3,7 @@ HEAD target: `3cfbfc9`
 
 ## LEDGER
 ```
-DONE: [1,2,3,4,5,6,7,8,9,10,11,12,13,14]   NEXT: Batch 15   REMAINING: 2
+DONE: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]   NEXT: Batch 16   REMAINING: 1
 BATCH ORDER:
   1. Abdos Group Consolidation                                       ✅
   2. Command Center foundation (multi-co/branch on Abdos seed)       ⚠️ STATIC
@@ -706,3 +706,64 @@ STOP.
 - **DONE**: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] ✅
 - **NEXT**: Batch 15 🔄
 - **REMAINING**: 2
+
+---
+
+## BATCH 15 · Mobile capture flows B (POD · spares-issue · PM-tickoff · site-DPR · safety-incident · FA-scan · asset-photo)
+**HEAD target**: `64b6f12` · **Run date**: 13 Jun 2026 · **Method**: route-walk + source-deterministic engine-import + register-key analysis (browser CNR per project login wall).
+
+### Per-flow results
+
+| # | Flow | Route | Opens | Capture shell | Engine / write call | Real register key | Verdict | Entity flavour |
+|---|---|---|---|---|---|---|---|---|
+| 1 | **POD (transporter)** | `/mobile/transporter/pod` (`MobilePODCapturePage`) | YES | Signature canvas + photo input (no QR/voice) | inline `localStorage.setItem(podsKey(session.entity_code), …)` — POD shape matches desktop reader | `erp_pods_${entity}` | **PASS** | session.entity_code (CLEAN — same canonical session contract as B10) |
+| 1b | POD (shared `MobilePODCapture` component) | **not routed** in App.tsx (uses `pod-engine` + `capturePhoto` from `camera-bridge` + OTP/GPS) | n/a | Camera + GPS + OTP | `verifyPOD` + `localStorage.setItem(podsKey(ENTITY), …)` | `erp_pods_DEMO` | **DEAD-CODE** (no `<MobilePODCapture` route or mount found) | Flavour #2 (`DEFAULT_ENTITY_SHORTCODE`) — but unreachable |
+| 2 | **Spares-Issue** | `/operix-go/spares-issue-capture` | YES | Camera (maintainpro flow) | **`createSparesIssue`** from `maintainpro-engine` | maintainpro spares-issue register | **PASS** | Flavour #2 — `const E = 'DEMO'` (L23) |
+| 3 | **PM-Tickoff** | `/operix-go/pm-tickoff-capture` | YES | Camera | **`createPMTickoff`** from `maintainpro-engine` | maintainpro PM-tickoff register | **PASS** | Flavour #2 — `const E = 'DEMO'` (L24) |
+| 4 | **Site-DPR** | `/operix-go/site-dpr` | YES | Camera (inline `capturePhoto`) + GPS (`geolocation-bridge`) + geo-fence check | inline `localStorage.setItem(dprsKey(ENTITY), …)` — DPR shape from `@/types/sitex` matches desktop SiteX reader | `erp_sitex_dprs_${ENTITY}` | **PASS** | Flavour #2 — `DEFAULT_ENTITY_SHORTCODE` (L25) |
+| 5 | **Safety-Incident** | `/operix-go/site-safety` | YES | (header/photo, no QR/voice) | `emitSafetyIncidentEscalate` (`sitex-bridges`) + inline write to `sitexSafetyIncidentsKey(ENTITY)` | `erp_sitex_safety_${ENTITY}` | **PASS** | Flavour #2 — `DEFAULT_ENTITY_SHORTCODE` (L24) |
+| 6 | **FA-Scan** | `/mobile/fa-scan` | YES | Camera **STAGED** ("staged for Phase 5 · use manual entry") + bridge lookups (`findAssetByRFIDTag` · `findPhysicalAssetUnit`) | `handleAction` = `setTimeout(600ms)` toast stub — **no register write** | none | **Wave-2 landing** (shell-only · honest disclosure per ledger rule) | useEntityCode (CLEAN — canonical hook) |
+| 7 | **Asset-Photo** | `/operix-go/asset-photo-capture` | YES | Camera | **`appendEquipmentPhoto`** from `maintainpro-engine` | maintainpro equipment register (photo array) | **PASS** | Flavour #2 — `const E = 'DEMO'` (L18) |
+
+### Engine reuse discipline (named per ledger rule)
+- **maintainpro-engine** consumed by 3 captures (Spares-Issue · PM-Tickoff · Asset-Photo) — `createSparesIssue` · `createPMTickoff` · `appendEquipmentPhoto` are byte-shared with desktop MaintainPro card.
+- **pod-engine** + direct `podsKey` write — transporter route uses inline writer matching POD shape; desktop POD reader picks up the row.
+- **sitex-engine** + `sitex-bridges` — DPR + Safety-Incident write through `dprsKey` / `sitexSafetyIncidentsKey` matching desktop SiteX reader; safety-incident additionally emits `emitSafetyIncidentEscalate` for dashboard alert.
+- **camera-bridge** + **geolocation-bridge** + **offline-queue-engine** = shared peripheral bridges across all 6 active captures.
+- **FA-Scan** does NOT call any write engine — bridge calls are read-only lookups; actions are setTimeout stubs.
+
+### Camera / QR / voice shell audit
+| Flow | Camera | QR | Voice |
+|---|---|---|---|
+| POD (transporter) | YES (file input) | NO | NO; signature canvas instead |
+| Spares-Issue | YES | NO | NO |
+| PM-Tickoff | YES | NO | NO |
+| Site-DPR | YES (inline `capturePhoto`) | NO | NO |
+| Safety-Incident | NO (header-only · photo TODO) | NO | NO |
+| FA-Scan | **STAGED** ("Camera scanning is staged for Phase 5") | STAGED | NO |
+| Asset-Photo | YES | NO | NO |
+
+### Offline-queue fallback
+Same pattern as B14 — all 5 active captures (POD/Spares/PM/DPR/Safety/Asset-Photo) wrap submits with `if (!navigator.onLine) enqueueWrite(...) else <real write>`. Replay handlers per-kind still TODO per `MobileRouter` L243-252. Honest Wave-2 staging · not a fail.
+
+### Entity-resolution roll-up (no NEW flavour in B15)
+- Flavour #2 (hardcoded `DEFAULT_ENTITY_SHORTCODE` / `const E='DEMO'`) — 5 of 7 (Spares · PM · DPR · Safety · Asset-Photo, +1b dead-code POD shared component)
+- Clean canonical (session/hook) — 2 of 7 (POD transporter via `session.entity_code` · FA-Scan via `useEntityCode`)
+- No raw `active_entity_code` reads in B15 set
+- No new flavour. Remediation count unchanged: **6 distinct flavours across 10 cards · ~97 files**.
+
+### B15-F-1 (informational, not graded) · Two POD implementations co-exist
+`MobilePODCapture` (full camera + GPS + OTP via `pod-engine`) is **not routed** in App.tsx — the actually-mounted transporter POD is `MobilePODCapturePage` (signature canvas + inline write). The richer flow is dead-code waiting for a route flip. Calling this out so the next sprint flips one or removes the other.
+
+### Browser click-through
+All 7 page routes hit Operix-Go / mobile shell login wall → **CNR-browser-auth**. Source + engine-import + register-key analysis is dispositive.
+
+### Verdict
+**MIXED-PASS** — 6 of 7 captures PASS (row lands in real desktop register via shared engine — `maintainpro-engine` ×3 · inline `podsKey`/`dprsKey`/`sitexSafetyIncidentsKey` ×3). 1 of 7 (FA-Scan) is **Wave-2 landing** — page opens, bridge lookups work, but camera is staged and actions are setTimeout stubs (no register write). Engine reuse discipline remains the cleanest in the audit; entity-pin caveats apply to 5 of 7 via flavour #2 (already catalogued, no new flavour).
+
+STOP.
+
+### Progress Ledger
+- **DONE**: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] ✅
+- **NEXT**: Batch 16 🔄
+- **REMAINING**: 1
