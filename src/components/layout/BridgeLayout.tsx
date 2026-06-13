@@ -45,10 +45,9 @@ export function BridgeLayout({ children, title, subtitle: _subtitle }: BridgeLay
       {/* Sidebar */}
       <aside
         className={cn(
-          "flex flex-col h-full shrink-0 border-r transition-all duration-300",
+          "flex flex-col h-full shrink-0 border-r border-border bg-card transition-all duration-300",
           collapsed ? "w-[72px]" : "w-[260px]"
         )}
-        style={{ background: "hsl(222 47% 11%)", borderColor: "rgba(255,255,255,0.06)" }}
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-4 py-5">
@@ -57,10 +56,10 @@ export function BridgeLayout({ children, title, subtitle: _subtitle }: BridgeLay
           </div>
           {!collapsed && (
             <div className="animate-fade-in">
-              <p className="text-sm font-semibold text-white tracking-tight">
+              <p className="text-sm font-semibold text-foreground tracking-tight">
                 4DSmartOps
               </p>
-              <p className="text-xs text-white/50">Bridge Console</p>
+              <p className="text-xs text-muted-foreground">Bridge Console</p>
             </div>
           )}
         </div>
@@ -81,8 +80,8 @@ export function BridgeLayout({ children, title, subtitle: _subtitle }: BridgeLay
                 className={cn(
                   "flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm transition-colors",
                   active
-                    ? "bg-white/10 text-white font-medium"
-                    : "text-white/60 hover:bg-white/[0.06] hover:text-white/90"
+                    ? "bg-accent text-foreground font-medium"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
                 )}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
@@ -105,10 +104,10 @@ export function BridgeLayout({ children, title, subtitle: _subtitle }: BridgeLay
         </nav>
 
         {/* Collapse toggle */}
-        <div className="p-3 border-t border-white/[0.06]">
+        <div className="p-3 border-t border-border">
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm text-white/50 hover:bg-white/[0.06] hover:text-white/80 transition-colors"
+            className="flex items-center gap-3 w-full rounded-lg px-3 py-2.5 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
           >
             {collapsed ? (
               <ChevronRight className="h-4 w-4 shrink-0" />
