@@ -32,6 +32,8 @@ import { logAudit } from './audit-trail-engine';
 import { checkWriteAllowed } from './storage-quota-engine';
 // Sprint T-Phase-2.7-c · Q2-d · IRN 24h lock enforcement (D-127 voucher .tsx unchanged)
 import { rejectSaveDueToIRNLock } from './irn-lock-engine';
+// Sprint W1C-5 · Block 4a · audit B-03 HIGH · posted-record immutability (CGST Rule 56(8)).
+import { canMutateInPlace } from './voucher-version-engine';
 // Precision Arc · Stage 3 · Block 1 — taxable_amount_paise on contract (integer by D-228).
 import { dMul, roundTo } from './decimal-helpers';
 // Sprint T-Phase-1.Hardening-B.2A · per-entity FY start-month resolution (Q2 = YES).
