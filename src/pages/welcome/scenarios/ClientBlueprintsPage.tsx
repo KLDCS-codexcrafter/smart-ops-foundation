@@ -406,31 +406,14 @@ export function ClientBlueprintsPagePanel() {
     // Sprint T-Phase-1.2.5h-a · clean FY-scoped doc-sequence keys
     removeFYScopedSequences(entityCode);
 
-    // Also remove vouchers + outstanding scoped to this entity
-    // [JWT] DELETE /api/entity/storage/vouchers?entity=:entityCode
+    // Sprint W1C-5 · Block 4b · audit B9-F1 · route through owning engine helper.
+    // Previously the page called localStorage.setItem('erp_group_vouchers'/'erp_outstanding')
+    // directly — banned by D-127 (page-direct writes to fincore-shaped stores).
+    // [JWT] DELETE /api/entity/storage/legacy-group-stores?entity=:entityCode
     try {
-      const vouchersRaw = localStorage.getItem('erp_group_vouchers');
-      if (vouchersRaw) {
-        const vouchers = JSON.parse(vouchersRaw);
-        if (Array.isArray(vouchers)) {
-          const filtered = vouchers.filter(
-            (v: { entity_id?: string }) => v.entity_id !== entityCode,
-          );
-          localStorage.setItem('erp_group_vouchers', JSON.stringify(filtered));
-        }
-      }
-      const outstandingRaw = localStorage.getItem('erp_outstanding');
-      if (outstandingRaw) {
-        const outstanding = JSON.parse(outstandingRaw);
-        if (Array.isArray(outstanding)) {
-          const filtered = outstanding.filter(
-            (o: { entity_id?: string }) => o.entity_id !== entityCode,
-          );
-          localStorage.setItem('erp_outstanding', JSON.stringify(filtered));
-        }
-      }
+      purgeLegacyGroupStoresForEntity(entityCode);
     } catch {
-      /* ignore parse errors */
+      /* ignore purge errors */
     }
 
     toast.success(`${clientName} demo reset · ${keysToReset.length} entity-scoped keys cleared`); bumpCoverage();
