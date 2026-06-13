@@ -80,6 +80,9 @@ function seedGroupStructure(): void {
     consolidation_method: 'full', effective_from: STRUCTURE_EFFECTIVE_FROM,
   });
   // 3 full + 1 proportional (JV >50%) + 1 equity (associate <50%)
+  upsertGroupStructure({
+    entity_id: 'e-ablsc', parent_entity_id: 'e-abdos',
+    relationship: 'subsidiary', ownership_pct: 100,
     consolidation_method: 'full', effective_from: STRUCTURE_EFFECTIVE_FROM,
   });
   upsertGroupStructure({
