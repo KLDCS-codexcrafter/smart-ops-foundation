@@ -1289,3 +1289,45 @@ export function resolveVars(
     salesperson:  currentUserName,
   };
 }
+
+// ─────────────────────────────────────────────────────────────────────
+// Sprint W1C-5 · Block 4b · audit B9-F1 · legacy unscoped-store purge.
+// Some pages historically wrote to global keys `erp_group_vouchers` and
+// `erp_outstanding` (NO `_${entity}` suffix) before entity scoping landed.
+// This engine no longer reads/writes those keys, but stale rows may still
+// linger from old sessions. Pages MUST route entity-scoped purges through
+// this helper instead of using localStorage.setItem directly.
+// [JWT] DELETE /api/entity/storage/legacy-group-stores?entity=:entityCode
+// ─────────────────────────────────────────────────────────────────────
+export function purgeLegacyGroupStoresForEntity(entityCode: string): {
+  vouchersRemoved: number;
+  outstandingRemoved: number;
+} {
+  let vouchersRemoved = 0;
+  let outstandingRemoved = 0;
+  try {
+    const raw = localStorage.getItem('erp_group_vouchers');
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) {
+        const filtered = arr.filter(
+          (v: { entity_id?: string }) => v.entity_id !== entityCode,
+        );
+        vouchersRemoved = arr.length - filtered.length;
+        localStorage.setItem('erp_group_vouchers', JSON.stringify(filtered));
+      }
+    }
+    const oraw = localStorage.getItem('erp_outstanding');
+    if (oraw) {
+      const arr = JSON.parse(oraw);
+      if (Array.isArray(arr)) {
+        const filtered = arr.filter(
+          (o: { entity_id?: string }) => o.entity_id !== entityCode,
+        );
+        outstandingRemoved = arr.length - filtered.length;
+        localStorage.setItem('erp_outstanding', JSON.stringify(filtered));
+      }
+    }
+  } catch { /* ignore parse errors */ }
+  return { vouchersRemoved, outstandingRemoved };
+}
