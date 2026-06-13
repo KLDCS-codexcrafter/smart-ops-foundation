@@ -59,8 +59,7 @@ const EXEMPTIONS: Array<{ pattern: string; reason: string }> = [
   { pattern: 'value * weight',                          reason: 'oee weighted score · not money' },
   { pattern: 'value * density',                         reason: 'tank-flow mass kg · not money' },
   { pattern: '100 - rate * 200',                        reason: 'transporter scorecard · 0-100 scale' },
-  // comments
-  { pattern: '// Tax reconciliation',                   reason: 'comment line' },
+  // (no comment-line exemption needed · comments stripped by scan)
   // tax-portal staging values pre-existing this sprint (Comply360 GSTR builder)
   { pattern: '+(s.taxable_value * 0.02)',               reason: 'gstr-7 TDS staging · pre-existing rounded via toFixed' },
   { pattern: '+(s.taxable_value * 0.01)',               reason: 'gstr-7/8 TDS/TCS staging · pre-existing' },
