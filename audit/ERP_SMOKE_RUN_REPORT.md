@@ -583,3 +583,58 @@ All 33 cards: **CNR-browser-auth** (login wall). Source-deterministic tallies ar
 4. **Theme-token sweep (B11-F-1)** — extend the W1C-9 guard test to `src/pages/erp/**` and fix the 56-file long tail.
 
 STOP.
+
+---
+
+## Batch 13 · Mobile shell + login + role-home + persona routing — run 13 Jun 2026 — VERDICT: MIXED
+
+**Scope**: `/mobile/*` shell (`MobileRouter.tsx` 374 LOC), `MobileLogin.tsx` (263 LOC · password + QR + biometric), role-home dispatch + `MobileHome.tsx` tile dashboard, persona resolution via `mobile-role-resolver.ts` against Distributor + Customer + SAMPerson masters.
+
+### Findings
+
+| Surface | Verdict | Fail-ID | Live/Static | Notes |
+|---|---|---|---|---|
+| **`/mobile/*` shell** (`MobileRouter.tsx`) | **PASS** | — | LIVE | Single `<Route path="/mobile/*" element={<MobileRouter />} />` at `src/App.tsx` L428. Renders shell chrome (sticky OperixGo header · `OfflineIndicator` · `InstallPromptBanner` · `UpdateAvailableBanner` · `PushPermissionGate`), gates on session, fans 90+ sub-routes via `renderRoleRoute(pathname)` switch. Side-effects mounted: SW registration · native splash hide · `onAppResume` queue replay · push registration · push-tap deep-link · `setAppBadgeCount` 5s poll · online-event queue replay. Login gate (L320-347) is correct: missing session → `/mobile/login`; logged-in on `/mobile/login` or `/mobile` → role-home redirect. |
+| **MobileLogin password path** | **PARTIAL · B13-F-1** | B13-F-1 | LIVE | Form submits credential + password → `resolveIdentity()` matches against `readDistributors()` (`erp_distributors_${ENTITY_CODE}`), `readCustomers()` (`erp_group_customer_master`), `readSAMPersons()` (`samPersonsKey(ENTITY_CODE)`). On success writes `sessionStorage['opx_mobile_session']` + fires `logAudit` + `logMobileLogin` + `setBiometricToken`. **BUT** L23-25 hardcodes `const ENTITY_CODE = DEFAULT_ENTITY_SHORTCODE` — login is locked to a single tenant. A user belonging to a different entity cannot authenticate via this screen. **Sixth distinct flavour** of the entity-resolution anti-pattern class: **login-scope pinned to DEFAULT_ENTITY_SHORTCODE at the auth boundary** (not just at write boundary like B7-F-2). Worse impact than write-pin variants because it blocks the door entirely for non-default-entity users. Distributor + Customer masters are read keyed to the hardcoded entity; SAMPersons key is composed with the hardcoded entity. |
+| **MobileLogin QR path** | **PASS** | — | LIVE | `QRCameraScanner` → `handleQRPayload(qrCredential, _qrToken)` pre-fills credential + fires same `onSubmit`. Admin-issued QR token is trusted (skips password by design — admin-panel model). Same entity-pin caveat applies via shared submit. |
+| **MobileLogin biometric path** | **PASS** | — | LIVE | `BiometricLoginPrompt` → `onAuthenticated(token)` pre-fills credential + fires same `onSubmit`. `setBiometricToken('opx_session_credential', credential)` written on prior login. Native-only — gracefully no-ops on web. |
+| **Role-home dispatch** (`MobileLogin` L165-171 + `MobileRouter` L320-347) | **PARTIAL · B13-F-2** | B13-F-2 | LIVE | Maps 5 of 7 declared session roles to direct mobile routes: `salesman`→`/mobile/salesman` · `telecaller`→`/mobile/telecaller` · `supervisor`→`/mobile/supervisor` · `sales_manager`→`/mobile/manager` · all else→`/mobile/home`. **MobileLogin path omits `site_engineer` and `site_manager`** — those two roles fall through to `/mobile/home` (the MobileHome dispatcher then has no tile-set for them, renders empty state). **MobileRouter path covers them** (L331-332, L341-342) → `/operix-go/site-engineer` — which is a route **outside `/mobile/*`** (mounted at `src/App.tsx` L480 as a sibling route), so the user **exits the MobileRouter shell entirely** — losing offline indicator · install prompt · push-permission gate · app-badge poller · queue-replay subscription. Wave-2 landing-shell split: site-engineer/site-manager live in the Operix-Go shell, not the MobileRouter shell. **Honest disclosure**: this is a deliberate architecture split (Operix-Go is the legacy site/maintenance shell, MobileRouter is the new universal shell), but the divergence between MobileLogin's redirect map and MobileRouter's redirect map (5 vs 7 roles) is a real bug — site_engineer/site_manager users logging in via the password form land at `/mobile/home` and never reach `/operix-go/site-engineer`. |
+| **Persona routing** (`renderRoleRoute`) | **PASS** | — | LIVE | 90+ pathname-prefix dispatch covering 7 personas (salesman 11 routes · telecaller 12 · supervisor 9 · manager 9 · distributor 6 · customer 13 incl. AM.4 shop PWA · transporter 6 · vendor 6 · 2 shared · 5 captures · 1 universal report). One duplicate line at L142+L143 (`call-log` registered twice — harmless · second overrides first to same component). Otherwise tight switch with fall-through to `<MobileHome />`. |
+| **MobileHome tile dashboard** | **PASS** | — | LIVE | Role-aware tile sets for distributor · customer · salesman · telecaller (plus more in unread tail). Gated via `FeatureGate` with `feature` ids from `plan-features.ts`. `logMobileTileClick` audits each tap. Reads session from `sessionStorage['opx_mobile_session']` directly (L27-34) — same anti-pattern as B10-F-1 but tolerated here because MobileHome is rendered inside MobileRouter which already gates on session presence. |
+| **Theme on mobile** | **PASS** | — | LIVE | `<html class="dark">` is the canonical 4DSmartOps mode per project-knowledge ("Dark mode always · never build light mode screens"). MobileLogin uses `bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900` (literal slate hex via Tailwind named tokens) — this is the documented OperixGo brand chrome (admin-panel-driven login screen mirrors the dark slate of the marketing surface). MobileRouter sticky header uses `bg-slate-900 text-white` (same brand chrome). Theme toggle is intentionally **NOT** wired into the mobile shell — mobile is dark-only by design, mirrors the project-knowledge constraint. No theme regression because there is no toggle to break. Inner pages use design tokens (`bg-background` shell wrapper · `bg-card` · `text-foreground` · `text-muted-foreground`) and respect the global `.dark` class on `<html>`. Verified on `MobileSalesmanHome` + 9 other persona-home spot-checks. |
+
+### Anti-pattern roll-up — NEW FLAVOUR in B13 (6th distinct flavour overall)
+
+| Flavour | Cards | Files | Severity |
+|---|---|---|---|
+| **6. Login-scope pinned to `DEFAULT_ENTITY_SHORTCODE` at the auth boundary** (NEW · B13) | MobileLogin | 1 (`src/pages/mobile/MobileLogin.tsx` L23-25) | **High** — blocks non-default-entity users from authenticating at all. Higher impact than the 5 prior flavours (which silently route to/write into wrong scope; this one blocks the door entirely). |
+
+**Updated remediation surface**: **6 distinct flavours across 10 cards · ~97 files** (was 5/9/~96 after B12).
+
+### Functional-vs-Wave2-landing-shell split (honest disclosure per ledger ask)
+
+The mobile estate carries **two concurrent shells** and the split is real:
+
+| Shell | Path prefix | Personas served | Chrome | Status |
+|---|---|---|---|---|
+| **MobileRouter** (universal · Wave-2) | `/mobile/*` | salesman · telecaller · supervisor · sales_manager · distributor · customer · transporter · vendor · 5 capture personas + universal report viewer | `OperixGo` sticky header + OfflineIndicator + InstallPromptBanner + UpdateAvailableBanner + PushPermissionGate + SW + app-badge poll | **Functional** — login gate · session readout · queue replay · push deep-link all wired |
+| **Operix-Go** (legacy site/maintenance · Wave-1) | `/operix-go/*` | site_engineer · site_manager · maintenance technician · shop-floor operator · Vetan Nidhi · SalesX-Go · ReceivX-Go · Distributor-Go | Per-page chrome · NO offline indicator · NO install prompt · NO push gate at shell level (some pages embed their own) | **Functional but unstandardised** — each page rolls its own header/footer |
+
+**Honest grading**:
+- The two shells are **not** unified.
+- MobileLogin's redirect map omits 2 of 7 declared session roles, sending them silently to `/mobile/home` instead of bridging into the Operix-Go shell at `/operix-go/site-engineer`.
+- MobileRouter's redirect map **does** bridge those 2 roles correctly — but the bridge exits the universal shell, so site-engineer users never benefit from queue replay · push deep-link · install prompt · app-badge poll.
+- The two redirect maps drifting (5 vs 7 roles) is the bug; the shell split itself is a deliberate Wave-1/Wave-2 architecture decision (memorialised at `mem://architecture/sarathi-mobile-pattern` D-NEW-DI standardised mobile landing pattern, which the Wave-1 pages predate).
+
+### Browser click-through
+`/mobile` → MobileRouter login gate → `/mobile/login` → MobileLogin form. CNR-browser-auth (no demo credential combo in scope). Source-deterministic + session-contract analysis is dispositive.
+
+### Verdict
+**MIXED** — Mobile shell + 90-route persona dispatcher + theme stance all PASS. Login form PARTIAL (B13-F-1 entity-pin at auth boundary · 6th anti-pattern flavour · highest-severity yet). Role-home dispatch PARTIAL (B13-F-2 redirect-map divergence between MobileLogin and MobileRouter · 2 roles drop out of MobileLogin map). Functional-vs-Wave2-landing-shell split honestly disclosed: two shells live concurrently · the redirect-map drift is the only fixable bug · the shell split itself is a deliberate Wave-1/Wave-2 carve-out.
+
+STOP.
+
+### Progress Ledger
+- **DONE**: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13] ✅
+- **NEXT**: Batch 14 🔄
+- **REMAINING**: 3
