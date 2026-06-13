@@ -3,7 +3,7 @@ HEAD target: `3cfbfc9`
 
 ## LEDGER
 ```
-DONE: [1,2,3,4,5,6,7,8]   NEXT: Batch 9 (EximX + InsightX)   REMAINING: 8
+DONE: [1,2,3,4,5,6,7,8,9]   NEXT: Batch 10   REMAINING: 7
 BATCH ORDER:
   1. Abdos Group Consolidation                                       ✅
   2. Command Center foundation (multi-co/branch on Abdos seed)       ⚠️ STATIC
