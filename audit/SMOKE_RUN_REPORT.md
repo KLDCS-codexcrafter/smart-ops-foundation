@@ -196,10 +196,30 @@ ORDER: 1.Login✓ 2./tower/dashboard✓ 3./bridge/dashboard 4./partner/dashboard
 
 **Surface 3 verdict:** **PASS (rendering & navigation)**. ⚠️ All numeric content on this dashboard is **STATIC demo data** (in-file constants — `COMPANIES`, `REQUESTS`, `ACTIVITY` in `src/pages/bridge/ConsoleDashboard.tsx`); values do not change with underlying sync state because no live data source is wired yet. Honest cockpit visualisation; live wiring is a backend deliverable.
 
+---
+
+## SURFACE 4 · /partner/dashboard — Partner Panel (KLDCS channel partner) (HEAD target 5faeec4)
+**Purpose:** Channel-partner home — customers, deals, commission, targets, renewals, marketing kit.
+
+| Check | Result | Evidence | Data type |
+|---|---|---|---|
+| Page loads behind auth | **PASS** | Direct hit redirected to `/auth/login`; after login `/partner/dashboard` renders fully inside PartnerLayout (orange identity header + 7-link nav + honest banner). | — |
+| 6 KPI tiles render with computed badges | **PASS** | My Customers **12** · Deal Registration **3** · Commission **₹3.6 Cr** · Targets **6/10** · Renewals **3** · Marketing Kit (no badge). Descriptions visible. | **SEEDED / LIVE relative to localStorage** — `getPartnerDashboardCounts()` computes from stored seeded data (`partnerProfileKey`, `partnerCustomersKey`, `partnerDealsKey`, `partnerTargetsKey`). Not hardcoded constants; mutations (e.g., `registerDeal`) would update counts. |
+| Tile navigation | **PASS** | Clicked **My Customers** tile → routed to `/partner/customers` → 12-row customer table renders with search box. | — |
+| Header nav | **PASS** | 7 nav links render: Dashboard · Customers · Deals · Commission · Targets · Renewals · Marketing Kit. | — |
+| Orange identity | **PASS** | Tile icons/badges use `text-orange-600`; header badge has `border-orange-600/40 text-orange-600`; logo box uses `bg-orange-500/15`. | — |
+| Honest banner | **PASS** | Header shows "Tier-L demo · Partner login & live MRR/billing feeds arrive with Wave-2. Counts on this portal are computed from seeded demo data — no faked auth." | — |
+| Theme | **N/A (no toggle)** | PartnerLayout has no theme toggle in header; uses semantic tokens (`bg-background`, `bg-card/60`, `text-muted-foreground`) with zero hardcoded dark class or inline dark style. Follows global theme passively. Recorded, not failed. | — |
+| Known-deferred — partner login + live MRR/billing | **Recorded (Wave-2)** | Per honest banner. Not failed. | — |
+
+**Console:** only the pre-existing React Router v6→v7 future-flag warnings; no errors specific to Partner.
+
+**Surface 4 verdict:** **PASS (rendering & navigation)**. Dashboard counts are computed from seeded localStorage (not static inline constants) and would update if the underlying store mutates; honest Tier-L demo posture clearly stated.
+
 ## PROGRESS LEDGER (updated)
 ```
-DONE: [Login, /tower/dashboard, /bridge/dashboard]   NEXT: /partner/dashboard   REMAINING: 5
-ORDER: 1.Login✓ 2./tower/dashboard✓ 3./bridge/dashboard✓ 4./partner/dashboard 5./customer/dashboard 6./welcome/scenarios 7./welcome/dev-tools 8./build-your-plan
+DONE: [Login, /tower/dashboard, /bridge/dashboard, /partner/dashboard]   NEXT: /customer/dashboard   REMAINING: 4
+ORDER: 1.Login✓ 2./tower/dashboard✓ 3./bridge/dashboard✓ 4./partner/dashboard✓ 5./customer/dashboard 6./welcome/scenarios 7./welcome/dev-tools 8./build-your-plan
 ```
 
-**STOP per batching rule.** Next dispatch: `/partner/dashboard`.
+**STOP per batching rule.** Next dispatch: `/customer/dashboard`.
