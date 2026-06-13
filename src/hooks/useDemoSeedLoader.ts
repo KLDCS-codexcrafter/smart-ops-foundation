@@ -164,7 +164,9 @@ export const DEMO_MODULES: DemoModule[] = [
     sprint: 'Live',
     status: 'complete',
     masterKeys: ['erp_companies', 'erp_subsidiaries', 'erp_branch_offices',
-                 'erp_group_entities', 'erp_parent_company'],
+                 'erp_group_entities', 'erp_parent_company',
+                 // W1C-7a · CC governance keys (per demo entity) for purge tracking.
+                 ...DEMO_ENTITY_CODES.flatMap(e => [comply360ConfigKey(e), integrationsKey(e)])],
     transactionKeys: [],
     loadMasters: loadFoundationMasters,
     loadTransactions: () => {},
