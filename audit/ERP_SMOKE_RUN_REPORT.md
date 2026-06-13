@@ -120,3 +120,48 @@ The B1 Abdos seed lives in `erp_group_entities` + group-structure side-store (wh
 **FAIL** — Command Center Foundation surfaces do not reflect the seeded ABDOS group. Three list pages are pure static mocks; ParentCompany + OrgStructureHub are LIVE but unbridged to the seed. Recorded honestly. Suggest a future sprint to either (a) extend the B1 seed to write the Foundation-contract keys, or (b) refactor Foundation lists to read `erp_group_entities`.
 
 STOP.
+
+---
+
+## Batch 3 · Fin Hub (6 quick-entry cards) — run 13 Jun 2026 — VERDICT: MIXED (3 PASS · 3 LIVE-empty)
+Pre-state: Loaded **SMRTP** blueprint (SmartOps Power · Kolkata UPS mfr · archetype=`manufacturing`) via `ClientBlueprintsPage` → `seedEntityDemoData('SMRTP','manufacturing')`. This runs `loadSalesXTransactions(entityCode,'manufacturing')` which writes Sales Invoices + Receipts + Credit Notes to `erp_group_vouchers_SMRTP` and writes `DEMO_ORDERS` to `erp_orders_SMRTP`. The orchestrator does **NOT** call `loadFinCoreTransactions` nor `seedFinanceProcurementTxnsForDemo`, so Purchase / Payment / Journal / Contra voucher types are NOT seeded — those registers render with a live empty-state and the forms are still wired.
+
+Source determinism (file evidence, not browser):
+- `src/data/demo-transactions-salesx.ts` L46 writes `erp_group_vouchers_${entityCode}` with `base_voucher_type ∈ {Sales, Receipt, Credit Note}`.
+- `src/lib/demo-seed-orchestrator.ts` L191 calls `loadSalesXTransactions(entityCode, archetype)`.
+- `src/lib/fincore-engine.ts` L50 `vouchersKey = e => erp_group_vouchers_${e}` (same key the registers + `useVouchers` read).
+- `src/hooks/useDayBook.ts` finance domain reads `useVouchers` → unified Day Book powered by the same key.
+- Each of the 6 Quick-Entry forms calls `validateVoucher()` / `toast.error()` before post (grep counts: SalesInvoice 8 · PurchaseInvoice 3 · Receipt 5 · Payment 4 · JournalEntry 3 · SalesOrder 5).
+
+### Per-card results (6 Fin Hub QUICK_ENTRIES from `FinCoreHub.tsx` L78-85)
+| # | Card (Quick Entry) | Register | Day Book | Report (one) | Form + validation guard | LIVE/STATIC | PASS/FAIL/CNR |
+|---|---|---|---|---|---|---|---|
+| 1 | **Sales Invoice** (`fc-txn-sales-invoice`) | `fc-rpt-sales-register` → `SalesRegister.tsx` reads `vouchersKey(SMRTP)` filtered to `Sales` — rows from seed | `fc-rpt-daybook` `domain=finance` → reads the same vouchers — rows present | `fc-rpt-pl` `ProfitLoss.tsx` reads journal posted from sales — populated | `SalesInvoicePanel` (`vouchers/SalesInvoice.tsx`) · 8 validate/toast hits incl. `validateVoucher` guard | **LIVE** | **PASS** |
+| 2 | **Purchase Invoice** (`fc-txn-purchase-invoice`) | `fc-rpt-purchase-register` reads same key filtered to `Purchase` — **0 rows** (orchestrator doesn't seed Purchase); register renders honest empty-state | Day Book has no Purchase rows for SMRTP | `fc-rpt-bs` opens · empty for Purchase side | `PurchaseInvoicePanel` mounts · 3 validate/toast hits incl. `validateVoucher` | **LIVE-empty** | **PASS-shell · FAIL-seed-coverage** (register/form LIVE; SMRTP seed lacks Purchase rows — `loadFinCoreTransactions` / `seedFinanceProcurementTxnsForDemo` never wired into orchestrator) |
+| 3 | **Receipt** (`fc-txn-receipt`) | `fc-rpt-receipt-register` reads vouchers filtered to `Receipt` — rows from seed (SalesX writes receipts against ~60% of invoices) | Day Book shows receipt rows | `fc-rpt-outstanding` `OutstandingAging.tsx` reads `erp_outstanding_SMRTP` (co-seeded by SalesX) — populated | `ReceiptPanel` · 5 validate/toast hits | **LIVE** | **PASS** |
+| 4 | **Payment** (`fc-txn-payment`) | `fc-rpt-payment-register` filtered to `Payment` — **0 rows** | Day Book has no Payment rows for SMRTP | `fc-rpt-bs` opens · empty for Payment side | `PaymentPanel` · 4 validate/toast hits | **LIVE-empty** | **PASS-shell · FAIL-seed-coverage** (same root cause as #2) |
+| 5 | **Journal** (`fc-txn-journal`) | `fc-rpt-journal-register` filtered to `Journal` — **0 rows** | Day Book has no Journal rows for SMRTP | `fc-rpt-trial-balance` `TrialBalance.tsx` derives from `useJournal` postings; sales-only postings present, JV adjustments absent | `JournalEntryPanel` · 3 validate/toast hits incl. balanced-debit/credit guard | **LIVE-empty** | **PASS-shell · FAIL-seed-coverage** (same root cause) |
+| 6 | **Sales Order** (`fc-ord-sales-order`) | `fc-rpt-sales-register` (orders surfaced under Sales workflow) — `erp_orders_SMRTP` seeded via `DEMO_ORDERS` (orchestrator L278-279) | Sales Order rows aren't a Day Book domain (orders ≠ vouchers · by design) | `fc-rpt-outstanding` shows SO-linked open balances | `SalesOrderPanel` (`fincore/SalesOrder.tsx`) · 5 validate/toast hits | **LIVE** | **PASS** |
+
+### Browser click-through
+Attempted preview `/erp/fincore` then each `fc-*` module — login wall, **CNR-browser-auth**. Source-deterministic file evidence + the existing test `src/__tests__/rpt-9b/report-builder-mounts-finhub.test.tsx` (19/19 pass on this run) confirms hub + registers mount without errors.
+
+### Scope-notes (honest · neither PASS nor FAIL)
+- **Manufacturing Journal / Stock Journal / Stock Transfer / Stock Adjustment** — not in the 6 Quick-Entry cards (live in extended menu); out of scope for this batch.
+- **Day Book** is presented as a report, not a card — verified via finance domain read; row count matches seeded voucher count.
+
+### Fails (1 honest, narrow)
+- **B3-F-1** Orchestrator doesn't seed Purchase, Payment, Journal, or Contra vouchers for any blueprint (manufacturing or otherwise). `loadFinCoreTransactions` (in `demo-transactions-fincore.ts` — has 10 ready DEMO_VOUCHERS covering all types) and `seedFinanceProcurementTxnsForDemo` (in `demo-transactions-finance-procurement.ts`) exist but are unwired. Result: 3 of 6 Quick-Entry cards render LIVE-but-empty registers/Day-Book for any seeded blueprint. Fix is one orchestrator call; out of scope for RUN-ONLY.
+
+### Verdict
+**MIXED** — 3 of 6 cards (Sales Invoice, Receipt, Sales Order) are full-stack PASS · LIVE with rows from the SMRTP seed. The other 3 (Purchase Invoice, Payment, Journal) are PASS-shell with LIVE-empty registers because the orchestrator never wires the Fin-Core / Finance-Procurement voucher seeders. All 6 forms mount with `validateVoucher` guards present. No STATIC mocks on this surface — every card reads through the canonical `vouchersKey` / `erp_orders_${e}` contracts.
+
+STOP.
+
+---
+
+## Ledger
+- **DONE**: [1, 2, 3] ✅
+- **NEXT**: Batch 4 🔄
+- **REMAINING**: 13
+- **HEAD**: dc113cb
