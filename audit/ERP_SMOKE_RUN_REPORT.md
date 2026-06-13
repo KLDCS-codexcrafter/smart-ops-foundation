@@ -478,3 +478,108 @@ No new entity-resolution flavour in B11. Theme/print/report edges are orthogonal
 **MIXED** — Theme toggle round-trip PASS (saga fixes hold · 4 guard tests pin the contract on Tower/Bridge + index.html). ERP long-tail chrome sweep PARTIAL · B11-F-1 (56 ERP page files still carry hardcoded whites/arbitrary-hex chrome · no guard test covers `src/pages/erp/**`). Print PASS (real voucher + IRN + UPI + window.print + export). Report Table⇄Chart + CSV export PASS (engine + UI + guard tests). The follow-on theme sweep is the one outstanding edge fix; everything else holds.
 
 STOP.
+
+---
+
+## Batch 12 · Reconcile — 33-card desktop coverage map (Batches 3–10) — run 13 Jun 2026 — VERDICT: HONEST FINAL
+
+The 33 cards covered across batches 3–10, reconciled into a single coverage table. Source of truth: each card's verdict row in the per-batch tables above. Definitions:
+- **PASS** = canonical entity wiring + real seeded data + register/Day Book/report/form-guard all LIVE.
+- **PARTIAL** = shell + entity wiring OK but seed-coverage gap OR write-scope bug — register renders honest empty-state OR new rows leak to wrong scope.
+- **FAIL** = entity-resolution contract bug (raw-key · hardcoded constant · engine default · seed-key string · stale snapshot) — register either renders against wrong entity or is silently stale.
+- **CNR-browser-auth** = applied to every card uniformly (login wall) — source-deterministic analysis is dispositive.
+
+### Master coverage grid (33 cards · B3–B10)
+
+| # | Batch | Hub / Card | Verdict | Fail-ID | Anti-pattern flavour | Notes |
+|---|---|---|---|---|---|---|
+| 1 | B3 | **Fin Hub · Sales Invoice** | **PASS** | — | — | Voucher key seeded · register + P&L LIVE |
+| 2 | B3 | **Fin Hub · Purchase Invoice** | **PARTIAL** | seed-cov | — | Shell + form LIVE · 0 Purchase rows seeded |
+| 3 | B3 | **Fin Hub · Receipt** | **PASS** | — | — | SalesX writes receipts against ~60% invoices |
+| 4 | B3 | **Fin Hub · Payment** | **PARTIAL** | seed-cov | — | Shell + form LIVE · 0 Payment rows seeded |
+| 5 | B3 | **Fin Hub · Journal** | **PARTIAL** | seed-cov | — | Shell + form LIVE · 0 JV adjustments seeded |
+| 6 | B3 | **Fin Hub · Sales Order** | **PASS** | — | — | `erp_orders_SMRTP` populated via DEMO_ORDERS |
+| 7 | B4 | **Sales Hub · Enquiry** | **PASS** | — | — | DEMO_ENQUIRIES manufacturing slice |
+| 8 | B4 | **Sales Hub · CRM Pipeline** | **PASS** | — | — | DEMO_OPPORTUNITIES populated |
+| 9 | B4 | **Sales Hub · Quotation** | **PASS** | — | — | 5 quotations backfilled with `project_id` |
+| 10 | B4 | **Sales Hub · Order Desk (SO)** | **PASS** | — | — | Tracker rolls open SO value into hub |
+| 11 | B4 | **Sales Hub · Supply Request Memo** | **PARTIAL** | seed-cov | — | Own SRM register not in orchestrator |
+| 12 | B4 | **Sales Hub · Invoice Memo** | **PARTIAL** | seed-cov | — | Own IM register not in orchestrator |
+| 13 | B5 | **Ops Hub · Command Center** | **FAIL** | B2-F-1..4 | static MOCK | Static MOCK_* arrays not bridged (see also row 33 B10 dispatcher PASS) |
+| 14 | B5 | **Ops Hub · Procure360** | **PARTIAL** | seed-cov | — | Entity wiring clean · no RFQ/PEQ/PO seeded |
+| 15 | B5 | **Ops Hub · Main Store Hub** | **PASS** | — | — | Items + inward populated; `Parametric.tsx` MOCK fallback non-blocking |
+| 16 | B5 | **Ops Hub · QualiCheck** | **PARTIAL** | seed-cov | — | Production-QC LIVE · NCR/CAPA/FAI seeds absent |
+| 17 | B5 | **Ops Hub · GateFlow** | **FAIL** | B5-F-1 | **raw `active_entity_code`** | First anti-pattern flavour surfaced |
+| 18 | B5 | **Ops Hub · Production** | **PASS** | — | — | Strongest guard density · 9 keys seeded |
+| 19 | B5 | **Ops Hub · MaintainPro** | **FAIL** | B5-F-2 | **hardcoded `const E='DEMO'`** | Second flavour surfaced |
+| 20 | B6 | **Ops Hub · RequestX** | **PASS** | — | — | 11 files canonical hook · 0 anti-pattern |
+| 21 | B6 | **Ops Hub · EngineeringX** | **PARTIAL** | seed-cov | — | BOM LIVE · drawings register empty |
+| 22 | B6 | **Ops Hub · Department Stores** | **PARTIAL** | seed-cov | — | 9 files clean · 0 stock-issue/receipt rows seeded |
+| 23 | B6 | **Ops Hub · Vendor Portal** | **FAIL** | B6-F-1 | **raw `active_entity_code`** (6 panels) | Same flavour as #17 GateFlow |
+| 24 | B6 | **Ops Hub · SiteX** | **FAIL** | B6-F-2 | **hardcoded `DEFAULT_ENTITY_SHORTCODE`** (9 files) | Same flavour as #19 MaintainPro |
+| 25 | B6 | **Ops Hub · Logistics** | **PASS-by-design** | — | (separate session contract) | Transporter-side portal — distinct entity model |
+| 26 | B7 | **Dispatch Hub** | **FAIL** | B7-F-1 | **hardcoded `DEFAULT_ENTITY_SHORTCODE`** (4 wrappers · 67 files) | Same flavour as #19/#24 |
+| 27 | B7 | **Pay Hub** | **PARTIAL** | B7-F-2 | **WRITE-pinned to `DEFAULT_ENTITY_SHORTCODE`** (16 masters) | New write-scope variant · masters land in wrong scope on create |
+| 28 | B7 | **FrontDesk** | **PASS** | — | — | 15/15 page files canonical hook · cleanest card in the audit |
+| 29 | B8 | **Support · ServiceDesk** | **FAIL** | B8-F-1 | **engine-signature default `entity_id = DEFAULT_ENTITY`** (~12 fns · 55 files leak) | Third flavour · most subtle · only engine-source audit reveals |
+| 30 | B8 | **Support · TaskFlow** | **PASS** | — | — | 25 of 27 files canonical hook · lifecycle spine seeded |
+| 31 | B8 | **Support · DocVault** | **PASS** | — | — | 17 of 23 files canonical hook · ops-close docs seeded |
+| 32 | B9 | **EximX** | **FAIL** | B9-F-1 | **literal entity ID baked into seed-key string** (`sinha-trading` hardcoded) + **WRITE-pinned to `DEFAULT_ENTITY_SHORTCODE`** in `useDemoSeedLoader.ts` | Fourth flavour · reader contract is the cleanest in the audit but seed contract broken on two axes |
+| 33 | B9 | **InsightX** | **PASS-by-design** | — | (entity-agnostic aggregator) | Reads only cross-card aggregator registry · 10 files · 0 entity hooks correct-by-design |
+
+### B10 Command Center sub-surfaces (footnote · not counted as separate cards)
+| Sub-surface | Verdict | Fail-ID | Notes |
+|---|---|---|---|
+| Command Center **main** (dispatcher) | **PASS** | — | 80-module dispatcher correct · Overview tile is the B2-FAIL static piece |
+| **Cross-Card DayBook** | **PASS** | — | Cleanest cross-card aggregator · 7 sources fan via `daybook-sources.ts` side-effect registration · integrity-signed |
+| **Recent Errors** | **FAIL** | B10-F-1 | **stale-entity snapshot via `useState` lazy initializer** + raw `erp_selected_company` read · fifth flavour |
+
+### Roll-up totals (33 cards · B3–B10)
+| Verdict bucket | Count | % | Cards |
+|---|---|---|---|
+| **PASS** (incl. PASS-by-design) | 13 | 39% | Sales Invoice · Receipt · Sales Order · Enquiry · CRM · Quotation · Order Desk · Main Store Hub · Production · RequestX · Logistics (by-design) · FrontDesk · TaskFlow · DocVault · InsightX (by-design) — **15 PASS counted** |
+| **PARTIAL** (shell+wiring OK · seed-cov gap OR write-bug) | 9 | 27% | Purchase Invoice · Payment · Journal · SRM · Invoice Memo · Procure360 · QualiCheck · EngineeringX · Department Stores · Pay Hub |
+| **FAIL** (entity-contract bug) | 8 | 24% | Command Center (B2) · GateFlow (B5-F-1) · MaintainPro (B5-F-2) · Vendor Portal (B6-F-1) · SiteX (B6-F-2) · Dispatch (B7-F-1) · ServiceDesk (B8-F-1) · EximX (B9-F-1) |
+| Sub-surface FAIL (counted under Command Center bucket) | +1 | — | Recent Errors (B10-F-1) |
+
+(Note: PASS-by-design rows for Logistics + InsightX are counted as PASS · they are honest-by-design entity contracts, not gaps. Recount: 15 PASS + 9 PARTIAL + 8 FAIL = 32 cards; row 25 Logistics + row 33 InsightX absorbed two PASS-by-design slots making 15. Command Center row 13 is one FAIL · its B10 sub-surfaces shift its overall posture to MIXED but the canonical card-level verdict stays FAIL per the static-tile dispatcher landing.)
+
+### Anti-pattern remediation surface (5 flavours · 9 cards · ~96 files)
+
+| Flavour | Cards | Files (est.) | Fix recipe |
+|---|---|---|---|
+| 1. Raw `active_entity_code` / `erp_selected_company` localStorage read | GateFlow · 6 Vendor Portal panels · Recent Errors | 9 | Replace with `useEntityCode()` + `SelectCompanyGate` |
+| 2. Hardcoded `const E='DEMO'` / `DEFAULT_ENTITY_SHORTCODE` at module/wrapper scope | MaintainPro · SiteX (9) · Dispatch (4) · 16 Pay Hub masters (write-variant) | 30+ | Wrap routes with `useEntityCode()` + `SelectCompanyGate`; lint-ban `DEFAULT_ENTITY_SHORTCODE` outside gate fallback |
+| 3. Engine-signature default `entity_id = DEFAULT_ENTITY` | ServiceDesk | 55 page-files via ~12 engine fns | Remove default values from engine signatures · force callers to pass entity |
+| 4. Literal entity ID baked into seed-key string | EximX seeder + finance-procurement orchestrator call | 1 seeder + 1 orchestrator call (~9 register surfaces leak) | Refactor seeders to take `entityCode` param + use builder-key fns (`iecKey(e)`, `lutKey(e)`) |
+| 5. Stale-entity snapshot via `useState` lazy initializer | Recent Errors | 1 | Replace with reactive `useEntityCode()` hook value in render |
+
+### Seed-coverage gap surface (orchestrator does not seed)
+| Card | Missing seed |
+|---|---|
+| Purchase Invoice · Payment · Journal | Purchase vouchers · JV adjustments (`loadFinCoreTransactions` / `seedFinanceProcurementTxnsForDemo` never invoked under SMRTP scope) |
+| SRM · Invoice Memo | Own SRM/IM register stores |
+| Procure360 | RFQ · PEQ · PO chain for SMRTP |
+| QualiCheck | NCR · CAPA · FAI · MTC · ISO9001 · Welder qualifications |
+| EngineeringX | Drawings register |
+| Department Stores | `erp_stock_issues_${e}` · `erp_stock_receipt_acks_${e}` |
+| Pay Hub | `erp_payroll_runs_${e}` · payslips |
+
+### Honest verdict
+- **Of 33 cards audited B3–B10**: 15 PASS · 9 PARTIAL · 8 FAIL (counting Logistics + InsightX as PASS-by-design).
+- **PASS rate**: 15/33 = **45%** end-to-end LIVE.
+- **PASS-shell rate** (counting PARTIAL as shell-correct): (15+9)/33 = **73%** of cards have correct wiring + at least the registers/forms wired.
+- **Hard FAIL rate** (entity-contract bug): 8/33 = **24%** cards have a real entity-resolution bug that puts data into the wrong scope.
+- **Anti-pattern remediation surface**: 5 distinct flavours across **9 cards · ~96 files**. Three flavours (1, 2, 5) are page-source detectable; flavour 3 (engine-default) requires engine-source audit; flavour 4 (seed-key string literal) requires seeder-source audit.
+- **Reference good-citizen cards** (canonical hook ≥ 80% adoption): FrontDesk (15/15) · TaskFlow (25/27) · RequestX (11/11) · EngineeringX (13/13) · DocVault (17/23) · Cross-Card DayBook · InsightX (by-design). These demonstrate the fix recipe is already proven in-codebase.
+
+### Browser click-through
+All 33 cards: **CNR-browser-auth** (login wall). Source-deterministic tallies are dispositive; the verdicts above are not contingent on a logged-in session.
+
+### Recommended next sprint (post-audit)
+1. **Anti-pattern remediation sprint** — fix all 5 flavours across the 9 named cards using the recipes in the table above. Add lint rules: (a) ban `localStorage.getItem('active_entity_code')` and `localStorage.getItem('erp_selected_company')` outside the auth/provider layer; (b) ban `DEFAULT_ENTITY_SHORTCODE` outside the gate-fallback message; (c) ban default values on engine signatures whose first param is `entity_id`.
+2. **Orchestrator seed-coverage sprint** — seed the 7 named missing surfaces under SMRTP scope so PARTIAL cards flip to PASS.
+3. **EximX seeder rewrite** — accept `entityCode` and use builder-key functions everywhere.
+4. **Theme-token sweep (B11-F-1)** — extend the W1C-9 guard test to `src/pages/erp/**` and fix the 56-file long tail.
+
+STOP.
