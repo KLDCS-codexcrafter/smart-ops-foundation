@@ -20,6 +20,12 @@ import { payrollRunsKey } from '@/types/payroll-run';
 import { employeesKey } from '@/types/employee';
 import { attendanceRecordsKey } from '@/types/attendance-entry';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import {
+  seedCCConfigForDemoEntities,
+  DEMO_ENTITY_CODES,
+  comply360ConfigKey,
+  integrationsKey,
+} from '@/lib/cc-config-seed';
 
 // ── DemoModule registry ─────────────────────────────────────────────────
 
@@ -105,6 +111,10 @@ function loadFoundationMasters(): void {
     .filter(p => p.type === 'branch')
     .map(p => ({ ...p }));
   if (branches.length) safeSet('erp_branch_offices', branches);
+
+  // W1C-7a · Activate Command Center governance layer (Compliance Settings,
+  // auto-send rules, Integrations) for every demo entity. Idempotent.
+  seedCCConfigForDemoEntities();
 }
 
 // ── Pay Hub master loader ───────────────────────────────────────────────
@@ -154,7 +164,9 @@ export const DEMO_MODULES: DemoModule[] = [
     sprint: 'Live',
     status: 'complete',
     masterKeys: ['erp_companies', 'erp_subsidiaries', 'erp_branch_offices',
-                 'erp_group_entities', 'erp_parent_company'],
+                 'erp_group_entities', 'erp_parent_company',
+                 // W1C-7a · CC governance keys (per demo entity) for purge tracking.
+                 ...DEMO_ENTITY_CODES.flatMap(e => [comply360ConfigKey(e), integrationsKey(e)])],
     transactionKeys: [],
     loadMasters: loadFoundationMasters,
     loadTransactions: () => {},

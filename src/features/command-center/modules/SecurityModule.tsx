@@ -19,6 +19,8 @@ import {
   LineChart, Line, RadarChart, Radar, PolarGrid, PolarAngleAxis,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
+import { useEntityCode } from "@/hooks/useEntityCode";
+import { loadIntegrationsForEntity } from "@/lib/cc-config-seed";
 
 // ── Types ─────────────────────────────────────────────────────
 type ConsoleTab =
@@ -197,13 +199,16 @@ const SERVICES = [
   { name: "Email Service",  icon: Mail,     status: "healthy" as const },
 ];
 
-const INTEGRATIONS_DATA = [
-  { name: "Tally ERP",          status: "connected",    category: "Accounting",   icon: Database },
-  { name: "GST Portal",         status: "connected",    category: "Compliance",   icon: Shield },
-  { name: "SMTP Email",         status: "connected",    category: "Communication",icon: Mail },
-  { name: "WhatsApp Business",  status: "disconnected", category: "Communication",icon: MessageSquare },
-  { name: "SMS Gateway",        status: "disconnected", category: "Communication",icon: Smartphone },
-];
+// W1C-7a · Integrations are now config-driven via loadIntegrationsForEntity.
+// Icon mapping kept local — the persisted shape (name/category/status) carries
+// no icon ref. Unknown names fall back to Link2.
+const INTEGRATION_ICONS: Record<string, React.ElementType> = {
+  'Tally ERP':          Database,
+  'GST Portal':         Shield,
+  'SMTP Email':         Mail,
+  'WhatsApp Business':  MessageSquare,
+  'SMS Gateway':        Smartphone,
+};
 
 // ── Scope Architecture ────────────────────────────────────────
 type ScopeLevel = 'global' | 'company' | 'user';
@@ -1253,12 +1258,20 @@ function EmailDigestPanel() {
 
 // ── Panel 20: Integrations ────────────────────────────────────
 function IntegrationsPanel() {
+  const { entityCode } = useEntityCode();
+  const integrations = loadIntegrationsForEntity(entityCode);
   return (
     <div className="space-y-5">
       <SectionHeader demo title="Integrations">Connect external services and manage API integrations.</SectionHeader>
       <div className="space-y-3">
-        {INTEGRATIONS_DATA.map(int => {
-          const Icon = int.icon;
+        {integrations.map(int => {
+          const Icon = INTEGRATION_ICONS[int.name] ?? Link2;
+          const isConnected = int.status === 'connected';
+          const label = int.status === 'connected'
+            ? 'connected'
+            : int.status === 'disconnected'
+              ? 'disconnected'
+              : 'not configured';
           return (
             <Card key={int.name} className="bg-card/60 border-border">
               <CardContent className="pt-4 flex items-center gap-4">
@@ -1267,8 +1280,8 @@ function IntegrationsPanel() {
                   <p className="text-sm font-medium text-foreground">{int.name}</p>
                   <p className="text-xs text-muted-foreground">{int.category}</p>
                 </div>
-                <Badge variant="outline" className={cn("text-[10px]", int.status === "connected" ? "text-emerald-400 border-emerald-500/20" : "text-muted-foreground")}>{int.status}</Badge>
-                <Button size="sm" variant="outline" className="text-xs h-7">{int.status === "connected" ? "Manage" : "Connect"}</Button>
+                <Badge variant="outline" className={cn("text-[10px]", isConnected ? "text-emerald-400 border-emerald-500/20" : "text-muted-foreground")}>{label}</Badge>
+                <Button size="sm" variant="outline" className="text-xs h-7">{isConnected ? "Manage" : "Connect"}</Button>
               </CardContent>
             </Card>
           );
