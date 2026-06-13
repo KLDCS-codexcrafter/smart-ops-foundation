@@ -21,6 +21,7 @@ import { ordersKey } from '@/types/order';
 import type { Quotation, QuotationItem } from '@/types/quotation';
 import { quotationsKey } from '@/types/quotation';
 import { generateDocNo, fyForDate } from '@/lib/fincore-engine';
+import { dMul, round2 } from '@/lib/decimal-helpers';
 import {
   getStoreItem, listVariants, listStoreItems,
 } from '@/lib/webstorex-engine';
