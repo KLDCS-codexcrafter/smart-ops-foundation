@@ -1,16 +1,16 @@
 # OPERIX · FULL-ERP SMOKE RUN REPORT
-HEAD target: `505d7eb`
+HEAD target: `ed04e18`
 
 ## LEDGER
 ```
-DONE: [1,2,3,4,5]   NEXT: Batch 6 (Ops Hub B, 6)   REMAINING: 11
+DONE: [1,2,3,4,5,6]   NEXT: Batch 7 (Dispatch + Pay + FrontDesk, 3)   REMAINING: 10
 BATCH ORDER:
   1. Abdos Group Consolidation                                       ✅
   2. Command Center foundation (multi-co/branch on Abdos seed)       ⚠️ STATIC
   3. Fin Hub (6)                                                     ⚠️ MIXED
   4. Sales Hub (6)                                                   ✅
   5. Ops Hub A (7)                                                   ⚠️ MIXED
-  6. Ops Hub B (6)
+  6. Ops Hub B (6)                                                   ⚠️ MIXED
   7. Dispatch + Pay + FrontDesk (3)
   8. Support Hub (3)
   9. EximX + InsightX
