@@ -415,7 +415,7 @@ export function requestQuote(
     if (!item) throw new Error(`Unknown store item: ${cl.storeItemId}`);
     const eff = getEffectivePrice(entityCode, cl.storeItemId, opts.partyId, opts.nowISO);
     const rate = eff.effective;
-    const subTotal = +(cl.qty * rate).toFixed(2);
+    const subTotal = round2(dMul(cl.qty, rate));
     let descrSuffix = '';
     if (cl.variantId) {
       const v = listVariants(entityCode, cl.storeItemId).find((x) => x.id === cl.variantId);
