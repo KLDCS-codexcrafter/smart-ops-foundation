@@ -825,3 +825,106 @@ STOP.
 - **DONE**: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] ✅
 - **NEXT**: Batch 17 (mobile reconcile) 🔄
 - **REMAINING**: 1
+
+---
+
+## BATCH 17 · Mobile reconcile (final batch)
+**HEAD target**: `520dd87` · **Run date**: 13 Jun 2026 · **Scope**: honest mobile coverage map across Batches 13-16.
+
+### Capture coverage map (Batches 14 + 15 combined · 12 mobile capture flows)
+
+| # | Capture | Route | Shared engine | Real register key | Verdict | Entity flavour |
+|---|---|---|---|---|---|---|
+| 1 | Gate-Guard | `/operix-go/gate-guard` | `gateflow-engine` (`createInwardEntry`/`createOutwardEntry`) | `erp_gate_passes_${E}` | **PASS** | #2 |
+| 2 | Inward-Receipt | `/operix-go/inward-receipt` | `inward-receipt-engine` (`createInwardReceipt`) | desktop inward register | **PASS** | #1 raw `active_entity_code` |
+| 3 | QualiCheck | `/operix-go/qualicheck` | `qa-inspection-engine` (`updateInspectionLine` + `completeInspection`) | desktop QA register | **PASS** | #1 raw `active_entity_code` |
+| 4 | Material-Indent | `/operix-go/material-indent` | `request-engine` (`createMaterialIndent`) | RequestX indent register | **PARTIAL** (B14-F-1 · DRAFT-only) | #1 raw `active_entity_code` |
+| 5 | Store-Issue | `/operix-go/store-issue` | `stock-issue-engine` (`createStockIssue` + `postStockIssue`) | `erp_stock_issues_${E}` | **PASS** | #1 raw `active_entity_code` |
+| 6 | POD (transporter) | `/mobile/transporter/pod` | inline `podsKey(session.entity_code)` write — POD shape matches desktop reader | `erp_pods_${E}` | **PASS** | session.entity_code (CLEAN) |
+| 6b | POD (shared component, full camera+GPS+OTP) | **unrouted** | `pod-engine` (`verifyPOD`) + `podsKey` | `erp_pods_DEMO` | **DEAD-CODE** (B15 informational) | #2 (unreachable) |
+| 7 | Spares-Issue | `/operix-go/spares-issue-capture` | `maintainpro-engine` (`createSparesIssue`) | maintainpro spares register | **PASS** | #2 `const E='DEMO'` |
+| 8 | PM-Tickoff | `/operix-go/pm-tickoff-capture` | `maintainpro-engine` (`createPMTickoff`) | maintainpro PM register | **PASS** | #2 `const E='DEMO'` |
+| 9 | Site-DPR | `/operix-go/site-dpr` | inline `dprsKey(ENTITY)` write — DPR shape from `@/types/sitex` | `erp_sitex_dprs_${E}` | **PASS** | #2 `DEFAULT_ENTITY_SHORTCODE` |
+| 10 | Safety-Incident | `/operix-go/site-safety` | `sitex-bridges` (`emitSafetyIncidentEscalate`) + inline `sitexSafetyIncidentsKey` write | `erp_sitex_safety_${E}` | **PASS** | #2 `DEFAULT_ENTITY_SHORTCODE` |
+| 11 | FA-Scan | `/mobile/fa-scan` | bridge lookups only (`findAssetByRFIDTag` · `findPhysicalAssetUnit`) — `handleAction` is setTimeout toast stub | **none** | **Wave-2 landing** (shell-only · camera staged for Phase 5) | useEntityCode (CLEAN) |
+| 12 | Asset-Photo | `/operix-go/asset-photo-capture` | `maintainpro-engine` (`appendEquipmentPhoto`) | maintainpro equipment register | **PASS** | #2 `const E='DEMO'` |
+
+**Capture tally**: **10 of 12 PASS** (row physically lands in real desktop register via shared engine or matching key) · **1 PARTIAL** (Material-Indent DRAFT-only) · **1 Wave-2 landing** (FA-Scan) · **1 DEAD-CODE** (MobilePODCapture rich variant unrouted). **0 FAIL** in the mobile capture surface — engine reuse discipline is the cleanest layer in the audit.
+
+### Persona pages (Batch 16 · 3 of 3)
+
+| Page | Verdict | OfflineIndicator | Notes |
+|---|---|---|---|
+| MobileSiteEngineerPage | **PASS** | YES | `listSites` from `sitex-engine` |
+| MobileMaintenanceTechnicianPage | **PASS** | YES | `listWorkOrders` + `listPMTickoffs` + `listInternalTickets` (5s tick refresh) |
+| MobileShopFloorOperatorPage | **PARTIAL** (B16-F-1) | **NO** | Workflow OK; OfflineIndicator missing from header (UX regression) |
+
+### Shell + PWA (Batch 13 + 16)
+
+| Surface | Verdict | Notes |
+|---|---|---|
+| `/mobile/*` Wave-2 universal shell (`MobileRouter`) | **PASS** | 90+ pathname-prefix routes · 4 banners (OfflineIndicator · UpdateAvailable · InstallPrompt · Push gate) · SW registration · queue replay · app-badge poller · push deep-link |
+| `/operix-go/*` Wave-1 legacy shell | **PARTIAL** | Per-page chrome · functional · no shell-level InstallPromptBanner mount (B16-F-2) |
+| MobileLogin password path | **PARTIAL** (B13-F-1) | Locked to `DEFAULT_ENTITY_SHORTCODE` at the auth boundary — flavour #6, blocks non-default-entity users |
+| Role-home dispatch | **PARTIAL** (B13-F-2) | 5/7 roles map directly; site_engineer/site_manager fall through `/mobile/home` then bridge to Wave-1 (drift between two redirect maps) |
+| QR + biometric login paths | **PASS** | `QRCameraScanner` + `BiometricLoginPrompt` pre-fill credential + fire same `onSubmit` |
+| Theme on mobile | **PASS** | Dark-only by design; persona pages + captures use design tokens (`bg-card`, `text-primary`, `text-muted-foreground`) — no hardcoded hex |
+| OfflineIndicator behaviour | **PASS** (with anti-pattern flag) | 3 branches (Online/Offline/Syncing) bound to SW state + 2s queue poll. Uses hardcoded Tailwind named colors (`bg-emerald-500/10` etc.) — pre-existing project-rule violation, not a fail |
+| InstallPromptBanner behaviour | **PASS** | Standard `beforeinstallprompt` + 7-day dismissal cooldown. Mounted only in `MobileRouter` (B16-F-2 coverage gap on `/operix-go/*`) |
+| PWA SW + manifest | **PASS** (functional) · **NOT skill-conformant** | Hand-written `public/sw.js` · dual registration (`main.tsx` L30 + `service-worker-setup.ts` L45) · only guards `import.meta.env.PROD`. Canonical path is `vite-plugin-pwa` + single guarded wrapper refusing Lovable preview / iframe / `id-preview--*` hosts. Catalogued for the PWA remediation sprint |
+| Offline-queue replay handlers | **Wave-2 landing** | `triggerQueueReplay` exists; per-kind handlers are TODO (`MobileRouter` L243-252 comment) — captures persist to queue offline but do NOT auto-promote on reconnect today |
+
+### Entity-resolution instances on the mobile surface (final tally)
+
+| Flavour | Mobile-surface files | Notes |
+|---|---|---|
+| **#1** raw `active_entity_code` localStorage read | 4 captures (Inward · QC · Indent · Store-Issue) | Already catalogued under desktop flavour #1 |
+| **#2** hardcoded `DEFAULT_ENTITY_SHORTCODE` / `const E='DEMO'` | 7 surfaces (Gate-Guard · Spares · PM · DPR · Safety · Asset-Photo · SiteEngineer + dead-code POD) | Already catalogued under desktop flavour #2 |
+| **#6** Login-scope pinned at auth boundary (NEW in B13) | MobileLogin password path | **NEW** mobile-only flavour — highest severity (blocks door) |
+| **Clean canonical** (`useEntityCode` or `session.entity_code`) | 3 surfaces (ShopFloorOperator · FA-Scan · POD-transporter) | Reference good-citizens on mobile |
+
+**Mobile-surface roll-up**: 11 of 14 mobile surfaces are entity-pinned (78% non-canonical). 3 of 14 use the canonical resolver. The mobile surface is **more** pinned than desktop because the Wave-1 Operix-Go captures predate the canonical hook adoption sprint.
+
+### CNR statement
+All 14+ mobile surfaces are gated behind either `/mobile/login` (Wave-2) or `sessionStorage['opx_mobile_session']` (Wave-1). Every browser click-through across Batches 13-16 hits **CNR-browser-auth**. All verdicts are source-deterministic (engine-import + register-key + shell-mount analysis), which the ledger rule accepts as dispositive.
+
+### Mobile-surface findings ledger (consolidated)
+- **B13-F-1** · MobileLogin pinned to `DEFAULT_ENTITY_SHORTCODE` — flavour #6 NEW · High severity
+- **B13-F-2** · Role-home redirect drift (5/7 roles mapped) · Medium
+- **B14-F-1** · Material-Indent DRAFT-only (no Submit & Post) · Low (row lands)
+- **B15-F-1** · Two POD implementations co-exist (rich camera+GPS+OTP variant unrouted) · informational
+- **B16-F-1** · OfflineIndicator missing on ShopFloorOperator header · Low UX
+- **B16-F-2** · InstallPromptBanner not shell-mounted on `/operix-go/*` · Low UX
+- **PWA skill non-conformance** · hand-written SW + dual registration + weak preview guard · catalogued for remediation
+
+### Mobile-surface remediation backlog (priority-ordered)
+1. **B13-F-1** — replace `ENTITY_CODE = DEFAULT_ENTITY_SHORTCODE` in MobileLogin with session-aware resolution (highest impact: unblocks all non-default-entity tenants)
+2. **PWA skill migration** — adopt `vite-plugin-pwa` + single guarded wrapper; retire hand-written `public/sw.js` + dual registration (preview safety)
+3. **Flavour #1 + #2 sweep on capture surface** — migrate 11 mobile capture/persona files to `useEntityCode` / `session.entity_code`
+4. **B14-F-1** — promote Material-Indent from DRAFT-only to Submit & Post (or document the staging intentionally)
+5. **B15-F-1** — flip one POD route to the rich variant or delete the dead-code variant
+6. **B16-F-2** — mount `<InstallPromptBanner />` in Wave-1 Operix-Go shell
+7. **B16-F-1** — add `<OfflineIndicator />` to ShopFloorOperator header
+8. **B13-F-2** — reconcile MobileLogin role-map vs MobileRouter redirect-map (single source)
+9. **OfflineIndicator color tokens** — replace `bg-emerald-500/10` etc. with semantic tokens (`bg-success/10 text-success`)
+
+---
+
+## SMOKE RUN — FINAL STATEMENT
+
+**Run COMPLETE** across 17 batches over 13 Jun 2026. Coverage:
+- **Desktop** · 33 cards reconciled in Batch 12 → 15 PASS · 9 PARTIAL · 8 FAIL · 1 sub-surface FAIL · 6 entity-resolution flavours across 9 cards · ~96 files
+- **Edge** · Theme/print/report surfaces verified in Batch 11
+- **Mobile** · 12 captures + 3 personas + shell/PWA reconciled in Batch 17 → 10 capture PASS · 1 PARTIAL · 1 Wave-2 · 1 DEAD · 3 persona pages (2 PASS · 1 PARTIAL) · 1 NEW mobile-only flavour (#6) bringing total to **7 distinct flavours across 11 surfaces · ~98 files**
+
+**Browser click-through** across all 17 batches: uniformly CNR-browser-auth (login wall by design). All verdicts source-deterministic.
+
+**Net signal**: The engine layer is honest (shared engines across desktop + mobile, byte-identical register keys); the entity-resolution layer is the dominant remediation surface (78% non-canonical on mobile, ~30% on desktop). One door-blocking bug (B13-F-1 · flavour #6 on MobileLogin) is the single highest-priority fix.
+
+STOP.
+
+### Progress Ledger
+- **DONE**: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17] ✅
+- **NEXT**: —
+- **REMAINING**: 0
+- **STATUS**: ✅ **SMOKE RUN COMPLETE**
