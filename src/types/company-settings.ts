@@ -16,6 +16,12 @@ export interface CompanySettings {
   money_decimal_places: number | null;
   // Stock valuation
   default_costing_method: string;
+  /**
+   * Sprint W1C-5 · Block 3 · audit B-02
+   * When true, stock-issue OUT lines may exceed available qty (override is audit-logged).
+   * Default false (absent) = strict availability guard throws on shortage.
+   */
+  allow_negative_stock?: boolean;
   created_at: string;
   updated_at: string;
 }
