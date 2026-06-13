@@ -32,6 +32,8 @@ import { logAudit } from './audit-trail-engine';
 import { checkWriteAllowed } from './storage-quota-engine';
 // Sprint T-Phase-2.7-c · Q2-d · IRN 24h lock enforcement (D-127 voucher .tsx unchanged)
 import { rejectSaveDueToIRNLock } from './irn-lock-engine';
+// Sprint W1C-5 · Block 4a · audit B-03 HIGH · posted-record immutability (CGST Rule 56(8)).
+import { canMutateInPlace } from './voucher-version-engine';
 // Precision Arc · Stage 3 · Block 1 — taxable_amount_paise on contract (integer by D-228).
 import { dMul, roundTo } from './decimal-helpers';
 // Sprint T-Phase-1.Hardening-B.2A · per-entity FY start-month resolution (Q2 = YES).
@@ -41,6 +43,10 @@ import { VOUCHER_TYPE_SEEDS } from '@/data/voucher-type-seed-data';
 import type { VoucherType, VoucherClass } from '@/types/voucher-type';
 
 // ── Storage key helpers ──────────────────────────────────────────────
+// CANON: group-keyed stores carry entity_id PER RECORD; Wave-2 mapping MUST scope by entity column.
+// Sprint W1C-5 · Block 4b · audit B9-F1 · legacy unscoped keys (erp_group_vouchers,
+// erp_outstanding without `_${e}`) are NOT used by this engine — see
+// purgeLegacyGroupStoresForEntity() for safe pruning by callers (no page-direct setItem).
 export const vouchersKey = (e: string) => `erp_group_vouchers_${e}`;
 export const journalKey = (e: string) => `erp_journal_${e}`;
 export const stockLedgerKey = (e: string) => `erp_stock_ledger_${e}`;
@@ -602,6 +608,17 @@ export function postVoucher(voucher: Voucher, entityCode: string): void {
     if (lockCheck.reject) {
       throw new Error(lockCheck.message ?? 'Voucher locked due to IRN');
     }
+  }
+
+  // Sprint W1C-5 · Block 4a · audit B-03 HIGH · CGST Rule 56(8) immutability.
+  // In-place re-post of an already-posted/cancelled voucher is forbidden — callers
+  // MUST use buildNextVersion() (edit-as-new-version) or cancelVoucher() (soft-delete).
+  if (beforeRecord && !canMutateInPlace(beforeRecord)) {
+    throw new Error(
+      `Voucher ${beforeRecord.voucher_no || beforeRecord.id} is ${beforeRecord.status} ` +
+      `and cannot be mutated in place (CGST Rule 56(8)). ` +
+      `Use buildNextVersion() to edit or cancelVoucher() to reverse.`,
+    );
   }
 
   // Sprint T-Phase-1.2.5h-b2 · Storage quota guard (H-4) — block at >= 95%
@@ -1271,4 +1288,46 @@ export function resolveVars(
     to_godown:    form.to_godown_name    ?? '',
     salesperson:  currentUserName,
   };
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Sprint W1C-5 · Block 4b · audit B9-F1 · legacy unscoped-store purge.
+// Some pages historically wrote to global keys `erp_group_vouchers` and
+// `erp_outstanding` (NO `_${entity}` suffix) before entity scoping landed.
+// This engine no longer reads/writes those keys, but stale rows may still
+// linger from old sessions. Pages MUST route entity-scoped purges through
+// this helper instead of using localStorage.setItem directly.
+// [JWT] DELETE /api/entity/storage/legacy-group-stores?entity=:entityCode
+// ─────────────────────────────────────────────────────────────────────
+export function purgeLegacyGroupStoresForEntity(entityCode: string): {
+  vouchersRemoved: number;
+  outstandingRemoved: number;
+} {
+  let vouchersRemoved = 0;
+  let outstandingRemoved = 0;
+  try {
+    const raw = localStorage.getItem('erp_group_vouchers');
+    if (raw) {
+      const arr = JSON.parse(raw);
+      if (Array.isArray(arr)) {
+        const filtered = arr.filter(
+          (v: { entity_id?: string }) => v.entity_id !== entityCode,
+        );
+        vouchersRemoved = arr.length - filtered.length;
+        localStorage.setItem('erp_group_vouchers', JSON.stringify(filtered));
+      }
+    }
+    const oraw = localStorage.getItem('erp_outstanding');
+    if (oraw) {
+      const arr = JSON.parse(oraw);
+      if (Array.isArray(arr)) {
+        const filtered = arr.filter(
+          (o: { entity_id?: string }) => o.entity_id !== entityCode,
+        );
+        outstandingRemoved = arr.length - filtered.length;
+        localStorage.setItem('erp_outstanding', JSON.stringify(filtered));
+      }
+    }
+  } catch { /* ignore parse errors */ }
+  return { vouchersRemoved, outstandingRemoved };
 }
