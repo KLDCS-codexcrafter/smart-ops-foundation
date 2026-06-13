@@ -104,6 +104,23 @@ export function saveCycleAdjustmentVouchers(
   entityCode: string,
   vouchers: CycleAdjustmentVoucher[],
 ): void {
+  // Sprint W1C-5 · Block 4a · audit B-03 HIGH · CGST Rule 56(8) immutability guard.
+  // Reject in-place mutation of any record that is already posted/cancelled on disk.
+  // Legitimate cancel transitions (status → 'cancelled') from cancelCycleAdjustmentVoucher
+  // are permitted; everything else must use buildNextVersion().
+  const onDisk = loadCycleAdjustmentVouchers(entityCode);
+  const onDiskById = new Map(onDisk.map((v) => [v.id, v]));
+  for (const incoming of vouchers) {
+    const prev = onDiskById.get(incoming.id);
+    if (!prev) continue; // new insert
+    if (!canMutateInPlace(prev) && incoming.status !== 'cancelled') {
+      throw new Error(
+        `Cycle adjustment voucher ${prev.voucher_no || prev.id} is ${prev.status} ` +
+        `and cannot be mutated in place (CGST Rule 56(8)). ` +
+        `Use buildNextVersion() to edit or cancelCycleAdjustmentVoucher() to reverse.`,
+      );
+    }
+  }
   // [JWT] PUT /api/inventory/cycle-adjustment-vouchers?entityCode=...
   localStorage.setItem(cycleAdjustmentVoucherKey(entityCode), JSON.stringify(vouchers));
 }
