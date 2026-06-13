@@ -111,6 +111,10 @@ function loadFoundationMasters(): void {
     .filter(p => p.type === 'branch')
     .map(p => ({ ...p }));
   if (branches.length) safeSet('erp_branch_offices', branches);
+
+  // W1C-7a · Activate Command Center governance layer (Compliance Settings,
+  // auto-send rules, Integrations) for every demo entity. Idempotent.
+  seedCCConfigForDemoEntities();
 }
 
 // ── Pay Hub master loader ───────────────────────────────────────────────
