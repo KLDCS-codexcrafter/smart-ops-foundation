@@ -130,6 +130,17 @@ function createPartyRecord(
   const partyCode = prefix + String(all.length + 1).padStart(6, '0');
   const id = `${type}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const gstin = (draft.gstin ?? '').trim().toUpperCase();
+  // W1C-5 Block 6 · duplicate-GSTIN guard · reject inline create when GSTIN already exists
+  // in either customer or vendor master (PAN-linked uniqueness across both rolodexes).
+  if (gstin) {
+    const otherKey = type === 'customer' ? VENDOR_KEY : CUSTOMER_KEY;
+    const otherRaw = localStorage.getItem(otherKey);
+    const others = otherRaw ? (JSON.parse(otherRaw) as Array<Record<string, unknown>>) : [];
+    const dup = [...all, ...others].some((p) => String((p as { gstin?: string }).gstin ?? '').trim().toUpperCase() === gstin);
+    if (dup) {
+      throw new Error(`Duplicate GSTIN ${gstin} · a party with this GSTIN already exists`);
+    }
+  }
   const pan = gstin.length >= 12 ? gstin.slice(2, 12) : '';
   const record: Record<string, unknown> = {
     id, partyCode, partyName: draft.partyName.trim(), mailingName: draft.partyName.trim(),
