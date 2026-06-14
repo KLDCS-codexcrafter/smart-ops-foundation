@@ -144,6 +144,17 @@ export function seedEntityDemoData(
   if (options?.includeFAUniverse) {
     seedFAUniverse(entityCode);
   }
+  // CL-1 · B3-F1 · Seed finance/procurement TRANSACTIONS for every scenario entity
+  // (not just the DEFAULT-entity hook path in useDemoSeedLoader). Idempotent —
+  // seeder is marker-guarded and prefixes ids with demo-w1c7b- so re-runs are safe.
+  try {
+    // dynamic import keeps module graph lean; failure is tolerated (seed is best-effort).
+     
+    const mod = require('@/data/demo-transactions-finance-procurement') as {
+      seedFinanceProcurementTxnsForDemo: (e: string) => unknown;
+    };
+    mod.seedFinanceProcurementTxnsForDemo(entityCode);
+  } catch { /* seed module not loaded — skip */ }
   // Masters
   const customers = safeSetArray('erp_group_customer_master', customersForArchetype(archetype));
   const vendors = safeSetArray('erp_group_vendor_master', vendorsForArchetype(archetype));
