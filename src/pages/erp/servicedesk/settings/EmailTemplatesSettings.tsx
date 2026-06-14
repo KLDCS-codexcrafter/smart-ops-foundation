@@ -17,11 +17,12 @@ import {
   updateEmailTemplateSettings,
   type EmailTemplate,
 } from '@/lib/cc-compliance-settings';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 const LANGS = ['en', 'hi', 'mr'] as const;
 
 export function EmailTemplatesSettings(): JSX.Element {
+  const { entityCode: E } = useEntityCode();
   const [settings, setSettings] = useState(() => getEmailTemplateSettings(E));
   const [lang, setLang] = useState<(typeof LANGS)[number]>('en');
 
