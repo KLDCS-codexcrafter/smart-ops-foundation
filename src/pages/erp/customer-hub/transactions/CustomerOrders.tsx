@@ -4,6 +4,7 @@
  */
 
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { History, Search, RotateCcw, Printer, AlertCircle, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

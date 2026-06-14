@@ -3,6 +3,7 @@
  * Module id: dh-t-stock-out
  */
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, RefreshCw, X, ArrowRight } from 'lucide-react';

@@ -5,6 +5,7 @@
  * Module id: dh-r-credit-util
  */
 import { useMemo } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck } from 'lucide-react';

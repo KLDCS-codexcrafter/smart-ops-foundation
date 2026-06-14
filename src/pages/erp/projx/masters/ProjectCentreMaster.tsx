@@ -7,6 +7,7 @@
  *  - ProjectCentreMasterPage  — standalone route /erp/projx/masters/project-centres
  */
 import { useMemo, useState, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Button } from '@/components/ui/button';

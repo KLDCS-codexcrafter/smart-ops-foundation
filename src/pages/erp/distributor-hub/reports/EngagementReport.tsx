@@ -5,6 +5,7 @@
  * Module id: dh-r-engagement
  */
 import { useMemo } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, Smile, TrendingUp, LogIn, ShieldCheck } from 'lucide-react';

@@ -14,6 +14,7 @@
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 // TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useMemo, useState, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

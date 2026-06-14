@@ -3,6 +3,7 @@
  * Module id: dh-t-excel-sync
  */
 import { useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import * as XLSX from 'xlsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

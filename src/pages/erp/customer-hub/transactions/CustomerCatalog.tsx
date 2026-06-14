@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { roundTo, dMul } from '@/lib/decimal-helpers';
 import { ShoppingBag, Search, Sparkles, Star, Users, TrendingUp, Plus, Minus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';

@@ -5,6 +5,7 @@
  * Module id: dh-t-ratings
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star } from 'lucide-react';
 import { toast } from 'sonner';

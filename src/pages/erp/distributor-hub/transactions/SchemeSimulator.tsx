@@ -4,6 +4,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,

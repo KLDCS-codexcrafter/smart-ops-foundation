@@ -7,6 +7,7 @@
  *              RAG cards stand on real engine values; integrity badge unchanged.
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ReportChart } from '@/components/operix-core/report-framework';

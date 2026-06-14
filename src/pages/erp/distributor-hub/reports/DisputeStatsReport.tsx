@@ -3,6 +3,7 @@
  * Module id: dh-r-dispute-stats · RPT-12c chart-layer swap · wires db-disputes
  */
 import { useMemo } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck } from 'lucide-react';

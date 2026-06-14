@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   Users, Trophy, AlertTriangle, IndianRupee, Award, Gift,
   Tag, ShoppingBag, Sparkles, BarChart3,

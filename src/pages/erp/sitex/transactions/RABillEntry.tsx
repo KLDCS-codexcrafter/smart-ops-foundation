@@ -4,6 +4,7 @@
  * @sprint      T-Phase-1.A.15a · Q-LOCK-4a · Block B.4
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

@@ -4,6 +4,7 @@
  * @sprint      T-Phase-1.A.15a · Block G.2
  */
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
