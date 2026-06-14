@@ -1,15 +1,16 @@
 # Operix · Cross-Card Journey Test — BASELINE
-**HEAD target: `19153e0`** · RUN-ONLY (no source changed) · One journey per dispatch.
+**HEAD target: `709ccbd`** · RUN-ONLY (no source changed) · One journey per dispatch.
 
 ## LEDGER
 ```
-DONE: [J1, J2, J3, J4]   NEXT: J5   REMAINING: 1
+DONE: [J1, J2, J3, J4, J5]   NEXT: —   REMAINING: 0
+JOURNEY RUN COMPLETE ✅
 JOURNEYS:
   J1 · Order-to-Cash    ✅
   J2 · Procure-to-Pay   ✅
   J3 · Lead-to-Order    ✅
-  J4 · Quality-gate     ✅ this run
-  J5 · Aggregation      ⏳
+  J4 · Quality-gate     ✅
+  J5 · Aggregation      ✅ this run
 ```
 
 ---
@@ -213,3 +214,95 @@ JOURNEYS:
 2. **NCR has no FK back to QA** — add `'qa_inspection'` to `related_voucher_kind` enum and start populating `related_voucher_id` from `completeInspection` on fail.
 3. **QA pass → stock release** is not auto-bridged for incoming GRN — operator-driven via GRN release UI.
 4. **`QaInspectionRecord.grn_id`** is absent — direct GRN→QA queries require the GIT/Bill detour.
+
+---
+
+## J5 · Aggregation (Cross-Card DayBook + InsightX roll-up) — run 2026-06-14 — VERDICT: **PARTIAL**
+
+**Scope:** does `CrossCardDayBookPage` (`/erp/command-center` · RPT-5a · `src/features/command-center/pages/CrossCardDayBookPage.tsx`) + `InsightXOverviewPage` (`src/features/insightx-overview/InsightXOverviewPage.tsx`) actually reflect the footprints written by J1–J4 across cards under one entity?
+
+### Mechanism
+- `CrossCardDayBookPage` calls `getCrossCardDayBook(entityCode, filter)` (`daybook-aggregator.ts:27`) which fans `listDayBookSources()` (`daybook-source-registry.ts:40`).
+- Sources are registered side-effect on app init via `import "@/lib/report-framework/daybook-sources"` in `main.tsx:7`. **7 sources** are registered (`daybook-sources.ts:54-217`).
+- `entityCode` is resolved by `useEntityCode()` (Page L46) — same resolver J1–J4 readers use. When the header dropdown is `'all'`, `entityCode === ''` → most readers short-circuit to `[]`.
+
+### Registered DayBook sources (7) vs J1–J4 footprints
+| Source (cardId · domain) | Loader wrapped | Covers footprints from |
+|---|---|---|
+| `fc-fincore-daybook` · finance | `vouchersKey(entityCode)` → all FinCore vouchers | J1: Sales Invoice, Receipt · J2: PI (after FCPI post), PayOut (Payment voucher) |
+| `ph-payhub-daybook` · people | `payrollRunsKey(entityCode)` | (none of J1–J4) |
+| `sd-service-daybook` · service | `listServiceTickets()` **NO entityCode arg** | (none of J1–J4) — ⚠ entity-leak |
+| `p360-goods-inward` · procure | `listGitStage1(entityCode)` | J2: GIT stage of GRN · J4: GIT side of QA |
+| `mp-maintenance-entry` · maintenance-entry | breakdowns + work orders | (none of J1–J4) |
+| `mp-spares-issue` · maintenance-spares | spares issues | (none of J1–J4) |
+| `ex-custom` · eximx | TT outward payments | (none of J1–J4) |
+
+### J1–J4 footprint coverage in the unified DayBook
+| Journey · record kind | Visible in Cross-Card DayBook? | Why | FLAG |
+|---|---|---|---|
+| J1 · Enquiry | NO | no SalesX source registered | **MANUAL-ONLY** (not aggregated) |
+| J1 · Quotation | NO | no SalesX source registered | **MANUAL-ONLY** |
+| J1 · Sales Order | NO | no SalesX source registered | **MANUAL-ONLY** |
+| J1 · Sales Invoice | YES — via `fc-fincore-daybook` (base_voucher_type='Sales' → module `fc-txn-sales-invoice`) | posts a fincore voucher; aggregator pulls it under `entityCode` | **LINKED** |
+| J1 · Receipt | YES — same source (type='Receipt') | LINKED via finance | **LINKED** |
+| J2 · Purchase Order | NO | no Procure360 PO source registered | **MANUAL-ONLY** (PO never in cross-card feed) |
+| J2 · GRN (Goods Receipt) | PARTIAL — visible only as **GIT stage-1** receipt (`p360-goods-inward`); the post-GIT GRN row itself is not separately surfaced | source wraps `listGitStage1` only | **PARTIAL / ORPHANED-KEY for "GRN proper"** |
+| J2 · Bill (Bill-Passing) | NO direct row; appears only **after FCPI posts a Purchase voucher** (then visible as 'Purchase' under `fc-fincore-daybook`) | no Bill-Passing source registered | **PARTIAL** (downstream-only) |
+| J2 · PayOut (Payment Requisition / Batch) | PARTIAL — only the resulting fincore Payment voucher is surfaced (type='Payment'); the requisition/batch itself is not | requisition has no DayBook source | **PARTIAL** |
+| J3 · Enquiry / Quotation / SO | NO | no SalesX source registered | **MANUAL-ONLY** (J3 invisible end-to-end) |
+| J4 · QA Inspection | NO | no QualiCheck source registered | **MANUAL-ONLY** |
+| J4 · NCR | NO | no NCR source registered | **MANUAL-ONLY** |
+| J4 · GRN incoming (the QA-fed side) | PARTIAL — visible only via `p360-goods-inward` GIT entry | as above | **PARTIAL** |
+
+**Net DayBook coverage of the four journeys:** ~30%. The aggregator faithfully fans every **registered** source under one `entityCode`, but the source registry only spans 7 cards — Procure360 PO, Bill-Passing, SalesX (Enquiry/Quote/SO), QualiCheck, NCR, Dispatch DM, FCPI drafts, PayOut batches **have no `registerDayBookSource(...)` call** in `daybook-sources.ts`. The smoke-PASS for DayBook in earlier runs was for the **mechanism** (registered sources merge correctly + date-sort + filter + integrity hash) — not for journey-footprint completeness.
+
+### Entity behaviour
+- 6 of 7 sources thread `entityCode` correctly into their loader (`vouchersKey(entityCode)` · `payrollRunsKey(entityCode)` · `listGitStage1(entityCode)` · `listBreakdownReports(entityCode)` + `listWorkOrders(entityCode)` · `listSparesIssues(entityCode)` · `loadTTPayments(entityCode)`). For the records that **are** covered (J1 Sales Invoice/Receipt · J2 GIT · J2 Payment), the cross-card feed is **entity-clean** end-to-end.
+- **⚠ `sd-service-daybook` (`daybook-sources.ts:104`) signature is `read: ()` — it ignores `entityCode` and calls `listServiceTickets()` with no entity argument.** Service tickets from **every** entity bleed into the unified feed regardless of the header selection. This is **ORPHANED-ENTITY** (a true cross-tenant leak in the cross-card surface for the service domain). It does not affect J1–J4 footprints (no journey touched service tickets), but it is a real seam.
+- When `entityCode === ''` (header set to 'all'): finance/people/procure/maintenance/eximx loaders all return `[]` (their localStorage keys are entity-scoped) → the cross-card feed is empty **except for service tickets**, which still appear because of the leak above. This is the exact shape of the ORPHANED-ENTITY signature.
+
+### InsightX roll-up coverage of J1–J4
+- `InsightXOverviewPage` reads only `insightx-aggregator-engine` (`InsightXOverviewPage.tsx:23-30`). The engine ships a **75-scenario registry across 11 lenses** (`insightx-aggregator-engine.ts:163-272`), each entry pointing to a `source_engine` module (or `null` = "unbacked / deferred").
+- The page shows **one sample aggregated insight per lens** computed via `aggregateInsight(scenario_id)` (L51-60). For unbacked entries the engine throws (caught → rendered as null). There is **no per-record drill-through** to the J1–J4 voucher rows — InsightX rolls up **aggregate metrics** (e.g. PBT spread, BRSR pulse, spend-by-vendor, IoT signal trend, AR aging buckets), not transaction-feed events.
+- Backed scenarios touching J1–J4 footprints (best-effort, via their `source_engine`):
+  - **`proc-spend-by-vendor` · procurement** → `fpa-budgeting-engine` reads fincore vouchers → reflects J2 PayOut/Bill spend **once posted as Purchase voucher**. **LINKED (aggregate)**.
+  - **CFO / Finance lens scenarios** → fincore-vouchers-backed → reflect J1 Sales/Receipt + J2 PI/Payment in totals. **LINKED (aggregate)**.
+  - **Operations / Plant · Maintenance · ESG · HR · Insurance · AI/Predictive · Cross-Card · Differentiation** lenses — none of their backed source_engines read SalesX/Procure360 PO/QA/NCR registers, so J1 Enquiry/Quote/SO, J2 PO, J3 entire chain, J4 QA/NCR contribute **nothing** to the roll-up. **MANUAL-ONLY** / **DEFERRED** (registry entries exist but `backed=false` → throws, rendered as null sample).
+- **No entity leak observed in InsightX** — all backed source engines are entity-scoped via their own resolvers; the registry samples are computed without an entity filter (purely registry-shape), and per-lens aggregations resolve `entityCode` through standard hooks.
+
+### Per-source verdict matrix
+| Hop | Verdict |
+|---|---|
+| Aggregator mechanism (`getCrossCardDayBook`) | **LINKED** · pure read · merges + sorts + filters correctly |
+| `useEntityCode` threading into sources | **LINKED** for 6/7 sources |
+| `sd-service-daybook` entity scoping | **ORPHANED-ENTITY** · `listServiceTickets()` called without entity → cross-tenant leak |
+| J1 Sales Invoice / Receipt in DayBook | **LINKED** (via fincore vouchers) |
+| J1 Enquiry / Quotation / SO in DayBook | **MANUAL-ONLY** (no SalesX source registered) |
+| J2 PO in DayBook | **MANUAL-ONLY** (no Procure360 PO source) |
+| J2 GRN in DayBook | **PARTIAL** (GIT stage-1 only) |
+| J2 Bill in DayBook | **PARTIAL** (downstream Purchase voucher only) |
+| J2 PayOut in DayBook | **PARTIAL** (downstream Payment voucher only) |
+| J3 entire chain in DayBook | **MANUAL-ONLY** (no SalesX source) |
+| J4 QA Inspection / NCR in DayBook | **MANUAL-ONLY** (no source registered) |
+| InsightX aggregate roll-up over fincore-touching journeys | **LINKED (aggregate-only · no per-record drill)** |
+| InsightX roll-up over PO / SalesX / QA / NCR | **MANUAL-ONLY / DEFERRED** (registry entries unbacked) |
+
+**J5 overall: PARTIAL.** The cross-card DayBook **mechanism** works; the unified feed reflects every journey's footprint that lands as a **fincore voucher** or a **GIT receipt**, under one entity, cleanly. The honest gap is that 5 cards along the J1–J4 chains have **no DayBook source registered** (SalesX, Procure360 PO, Bill-Passing, QualiCheck, NCR, Payment Requisition), so a large share of the journey events never reach the aggregator. InsightX rolls up the fincore-backed slice as aggregate metrics; the non-fincore slice of J1–J4 is deferred. Three real debts for Wave-2 / CL-3:
+
+1. **`sd-service-daybook` is entity-leaky** — `daybook-sources.ts:104` `read: ()` should be `read: (entityCode) => listServiceTickets().filter(t => t.entity_code === entityCode)` (or whatever the ticket model exposes). This is a cross-tenant leak in the unified Day Book today.
+2. **5 missing DayBook sources** — register SalesX (Enquiry/Quote/SO), Procure360 (PO/Bill-Passing/PayOut requisition), QualiCheck (Inspection), NCR. Each is a ~20-line `registerDayBookSource({...})` wrapping the existing loader — the same pattern the 7 current sources follow.
+3. **InsightX has no transaction-feed lens** — the registry is built for KPI/aggregate roll-ups, not for "show me every journey event across cards". The Cross-Card DayBook is the right surface for that; once the 5 missing sources are registered, the journey footprints will flow through both surfaces.
+
+---
+
+## JOURNEY RUN · CLOSE-OUT — 2026-06-14
+
+```
+J1 · Order-to-Cash    PARTIAL  · entity-shaped LINKED end-to-end · SO→Invoice→Receipt clean · campaign/lead invisibles flagged
+J2 · Procure-to-Pay   PARTIAL  · getBillsForPo entity-seam latent · 4 manual state-flips · PayOut↔Bill FK deferred
+J3 · Lead-to-Order    LINKED   · cleanest of the five · two narrow back-write debts
+J4 · Quality-gate     PARTIAL  · QA→Bill direct cascade LINKED · event-bus dispatcher absent · NCR FK absent · GRN state not auto-flipped
+J5 · Aggregation      PARTIAL  · mechanism LINKED · 5 cards unregistered as DayBook sources · service-source entity-leak found
+```
+
+**Net read:** the seams the per-card smoke run could not see are now mapped. The aggregation surface is honest about what it reflects — fincore-and-GIT-backed records flow through cleanly under one entity; SalesX/PO/Bill/QA/NCR rows need source registration before they appear. One genuine ORPHANED-ENTITY leak (service tickets) and four debt classes catalogued for CL-2/CL-3/Wave-2. **JOURNEY BASELINE RUN COMPLETE.**
