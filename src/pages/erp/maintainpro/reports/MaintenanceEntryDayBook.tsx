@@ -6,8 +6,8 @@
 import { useMemo } from 'react';
 import { listBreakdownReports, listWorkOrders } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 interface DayBookRow {
   key: string;
@@ -20,8 +20,9 @@ interface DayBookRow {
 }
 
 export function MaintenanceEntryDayBook(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const rows = useMemo<DayBookRow[]>(() => {
-    const breakdowns: DayBookRow[] = listBreakdownReports(E).map((b) => ({
+    const breakdowns: DayBookRow[] = listBreakdownReports(entityCode).map((b) => ({
       key: `b-${b.id}`,
       occurred_at: b.occurred_at,
       kind: 'Breakdown',
@@ -30,7 +31,7 @@ export function MaintenanceEntryDayBook(): JSX.Element {
       attended_by: b.attended_by_user_id ?? '—',
       corrective_action: b.corrective_action,
     }));
-    const wos: DayBookRow[] = listWorkOrders(E).map((w) => ({
+    const wos: DayBookRow[] = listWorkOrders(entityCode).map((w) => ({
       key: `w-${w.id}`,
       occurred_at: w.created_at,
       kind: 'Work Order',
@@ -40,7 +41,7 @@ export function MaintenanceEntryDayBook(): JSX.Element {
       corrective_action: w.completion_notes,
     }));
     return [...breakdowns, ...wos].sort((a, b) => (a.occurred_at < b.occurred_at ? 1 : -1));
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Maintenance Entry Day Book" ssotBadge="TDL · FR-42">

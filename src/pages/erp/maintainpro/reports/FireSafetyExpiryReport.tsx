@@ -10,19 +10,20 @@ import { MaintainProReportShell } from '@/components/maintainpro/MaintainProRepo
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { ShieldCheck as RPT6cShield } from 'lucide-react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 export function FireSafetyExpiryReport(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const rows = useMemo(() => {
     const now = Date.now();
-    return listFireSafetyEquipment(E).map((f) => {
+    return listFireSafetyEquipment(entityCode).map((f) => {
       const exp = new Date(f.expiry_date).getTime();
       const days = Math.floor((exp - now) / 86400000);
       const bucket = days < 0 ? 'Expired' : days <= 30 ? '0–30 days' : days <= 60 ? '31–60 days' : days <= 90 ? '61–90 days' : '>90 days';
       return { ...f, days, bucket };
     }).sort((a, b) => a.days - b.days);
-  }, []);
+  }, [entityCode]);
 
   const grouped = useMemo(() => {
     const m = new Map<string, typeof rows>();

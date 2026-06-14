@@ -6,12 +6,13 @@
 import { useMemo } from 'react';
 import { listInternalTickets } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 export function AgingTicketsReport(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const rows = useMemo(() => {
-    return listInternalTickets(E)
+    return listInternalTickets(entityCode)
       .filter((t) => t.is_resolution_breached)
       .map((t) => {
         const hoursAge = (Date.now() - new Date(t.created_at).getTime()) / 3600000;
@@ -19,7 +20,7 @@ export function AgingTicketsReport(): JSX.Element {
         return { ...t, hoursOver };
       })
       .sort((a, b) => b.hoursOver - a.hoursOver);
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Aging Tickets Report" ssotBadge="SLA breach tracker">

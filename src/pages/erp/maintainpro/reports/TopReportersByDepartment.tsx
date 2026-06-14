@@ -10,17 +10,18 @@ import { MaintainProReportShell } from '@/components/maintainpro/MaintainProRepo
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { ShieldCheck as RPT6cShield } from 'lucide-react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 export function TopReportersByDepartment(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const rows = useMemo(() => {
     const m = new Map<string, number>();
-    listInternalTickets(E).forEach((t) => {
+    listInternalTickets(entityCode).forEach((t) => {
       m.set(t.originating_department_id, (m.get(t.originating_department_id) ?? 0) + 1);
     });
     return Array.from(m.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Top Reporters by Department" ssotBadge="Resource planning">

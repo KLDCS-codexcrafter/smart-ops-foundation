@@ -1,6 +1,6 @@
 /**
  * @file        src/pages/erp/maintainpro/transactions/CalibrationCertificate.tsx
- * @sprint      T-Phase-1.A.16b · Block E.3
+ * @sprint      T-Phase-1.A.16b · Block entityCode.3
  */
 // TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
@@ -13,17 +13,18 @@ import { createCalibrationCertificate, listCalibrationCertificates } from '@/lib
 import type { CalibrationCertificate as CC } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 interface Props { onNavigate: (m: string) => void }
-const E = 'DEMO';
 
 export function CalibrationCertificate(_props: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [instrumentId, setInstrumentId] = useState('cal_inst_001');
   const [cost, setCost] = useState(2500);
-  const [list, setList] = useState<CC[]>(listCalibrationCertificates(E));
+  const [list, setList] = useState<CC[]>(listCalibrationCertificates(entityCode));
 
   const submit = (): void => {
-    createCalibrationCertificate(E, {
+    createCalibrationCertificate(entityCode, {
       certificate_no: `CERT/26-27/${String(list.length + 1).padStart(4, '0')}`,
       instrument_id: instrumentId,
       calibrated_on: new Date().toISOString().slice(0, 10),
@@ -38,7 +39,7 @@ export function CalibrationCertificate(_props: Props): JSX.Element {
       fincore_voucher_id: null,
       project_id: null,
     });
-    setList(listCalibrationCertificates(E));
+    setList(listCalibrationCertificates(entityCode));
     toast.success('Certificate issued');
   };
 

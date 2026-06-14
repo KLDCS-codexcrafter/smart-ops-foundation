@@ -12,18 +12,19 @@ import { createPMTickoff, listPMTickoffs, listEquipment } from '@/lib/maintainpr
 import type { PMTickoff } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext as _onEnterNext } from '@/lib/keyboard';
+import { useEntityCode } from '@/hooks/useEntityCode';
 void _onEnterNext;
 
 interface Props { onNavigate: (m: string) => void }
-const E = 'DEMO';
 
 export function PMTickoffEntry(_props: Props): JSX.Element {
-  const equipment = listEquipment(E);
-  const [list, setList] = useState<PMTickoff[]>(listPMTickoffs(E));
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
+  const [list, setList] = useState<PMTickoff[]>(listPMTickoffs(entityCode));
 
   const submit = (): void => {
     if (equipment.length === 0) { toast.error('No equipment'); return; }
-    createPMTickoff(E, {
+    createPMTickoff(entityCode, {
       pm_no: `PM/26-27/${String(list.length + 1).padStart(4, '0')}`,
       pm_schedule_template_id: 'tpl_demo',
       equipment_id: equipment[0].id,
@@ -37,7 +38,7 @@ export function PMTickoffEntry(_props: Props): JSX.Element {
       status: 'completed',
       project_id: null,
     });
-    setList(listPMTickoffs(E));
+    setList(listPMTickoffs(entityCode));
     toast.success('PM tick-off recorded');
   };
 

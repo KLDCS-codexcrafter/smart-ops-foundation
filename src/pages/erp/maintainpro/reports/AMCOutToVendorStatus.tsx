@@ -6,13 +6,14 @@
 import { useMemo } from 'react';
 import { listAMCOutToVendor, getAMCRemindersDue } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 export function AMCOutToVendorStatus(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const data = useMemo(() => {
-    const all = listAMCOutToVendor(E);
-    const reminders = getAMCRemindersDue(E);
+    const all = listAMCOutToVendor(entityCode);
+    const reminders = getAMCRemindersDue(entityCode);
     const scorecard = new Map<string, { count: number; totalDays: number; returned: number }>();
     all.forEach((a) => {
       const s = scorecard.get(a.vendor_id) ?? { count: 0, totalDays: 0, returned: 0 };
@@ -24,7 +25,7 @@ export function AMCOutToVendorStatus(): JSX.Element {
       scorecard.set(a.vendor_id, s);
     });
     return { all, reminders, scorecard: Array.from(scorecard.entries()) };
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell

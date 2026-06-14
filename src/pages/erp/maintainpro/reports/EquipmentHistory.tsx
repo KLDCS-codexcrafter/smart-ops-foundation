@@ -9,25 +9,26 @@ import {
   listPMTickoffs, listSparesIssues, listCalibrationCertificates,
 } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 interface TimelineEvent { key: string; at: string; kind: string; detail: string }
 
 export function EquipmentHistory(): JSX.Element {
-  const equipment = useMemo(() => listEquipment(E), []);
+  const { entityCode } = useEntityCode();
+  const equipment = useMemo(() => listEquipment(entityCode), [entityCode]);
   const [selected, setSelected] = useState<string>(equipment[0]?.id ?? '');
 
   const events = useMemo<TimelineEvent[]>(() => {
     if (!selected) return [];
     const ev: TimelineEvent[] = [];
-    listBreakdownReports(E).filter((b) => b.equipment_id === selected).forEach((b) => ev.push({ key: `b-${b.id}`, at: b.occurred_at, kind: 'Breakdown', detail: `${b.severity} · ${b.nature_of_complaint}` }));
-    listWorkOrders(E).filter((w) => w.equipment_id === selected).forEach((w) => ev.push({ key: `w-${w.id}`, at: w.created_at, kind: 'Work Order', detail: `${w.wo_type} · ${w.status}` }));
-    listPMTickoffs(E).filter((p) => p.equipment_id === selected).forEach((p) => ev.push({ key: `p-${p.id}`, at: p.actual_completion_date, kind: 'PM', detail: `${p.duration_minutes}m · ${p.status}` }));
-    listSparesIssues(E).filter((s) => s.consuming_equipment_id === selected).forEach((s) => ev.push({ key: `s-${s.id}`, at: s.issued_at, kind: 'Spare Issue', detail: `qty ${s.qty} · ₹${s.total_cost}` }));
-    listCalibrationCertificates(E).filter((c) => c.instrument_id === selected).forEach((c) => ev.push({ key: `c-${c.id}`, at: c.calibrated_on, kind: 'Calibration', detail: `${c.is_pass ? 'PASS' : 'FAIL'}` }));
+    listBreakdownReports(entityCode).filter((b) => b.equipment_id === selected).forEach((b) => ev.push({ key: `b-${b.id}`, at: b.occurred_at, kind: 'Breakdown', detail: `${b.severity} · ${b.nature_of_complaint}` }));
+    listWorkOrders(entityCode).filter((w) => w.equipment_id === selected).forEach((w) => ev.push({ key: `w-${w.id}`, at: w.created_at, kind: 'Work Order', detail: `${w.wo_type} · ${w.status}` }));
+    listPMTickoffs(entityCode).filter((p) => p.equipment_id === selected).forEach((p) => ev.push({ key: `p-${p.id}`, at: p.actual_completion_date, kind: 'PM', detail: `${p.duration_minutes}m · ${p.status}` }));
+    listSparesIssues(entityCode).filter((s) => s.consuming_equipment_id === selected).forEach((s) => ev.push({ key: `s-${s.id}`, at: s.issued_at, kind: 'Spare Issue', detail: `qty ${s.qty} · ₹${s.total_cost}` }));
+    listCalibrationCertificates(entityCode).filter((c) => c.instrument_id === selected).forEach((c) => ev.push({ key: `c-${c.id}`, at: c.calibrated_on, kind: 'Calibration', detail: `${c.is_pass ? 'PASS' : 'FAIL'}` }));
     return ev.sort((a, b) => (a.at < b.at ? 1 : -1));
-  }, [selected]);
+  }, [selected, entityCode]);
 
   return (
     <MaintainProReportShell

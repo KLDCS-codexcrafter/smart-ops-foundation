@@ -6,8 +6,8 @@
 import { useMemo } from 'react';
 import { listWorkOrders } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 function bucketOf(createdAt: string): string {
   const days = Math.floor((Date.now() - new Date(createdAt).getTime()) / 86400000);
@@ -18,15 +18,16 @@ function bucketOf(createdAt: string): string {
 }
 
 export function OpenWOStatusReport(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const data = useMemo(() => {
-    const open = listWorkOrders(E).filter((w) => ['draft', 'assigned', 'in_progress', 'on_hold'].includes(w.status));
+    const open = listWorkOrders(entityCode).filter((w) => ['draft', 'assigned', 'in_progress', 'on_hold'].includes(w.status));
     const byTech = new Map<string, number>();
     open.forEach((w) => {
       const k = w.assigned_to_user_id ?? 'Unassigned';
       byTech.set(k, (byTech.get(k) ?? 0) + 1);
     });
     return { open, byTech: Array.from(byTech.entries()).sort((a, b) => b[1] - a[1]) };
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Open WO Status Report" ssotBadge="Operational">
