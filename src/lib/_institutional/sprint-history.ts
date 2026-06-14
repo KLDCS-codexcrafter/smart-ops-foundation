@@ -1700,7 +1700,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint CL-FREEZE-FIX T-FREEZE-FIX-TestIsolation · Test-isolation hotfix · ONE-LINE FIX in src/test/setup.ts: global beforeEach + afterEach now clearStorage() (localStorage + sessionStorage, jsdom-guarded) so the ~63 test files that touch storage without self-clearing can no longer leak state into the next test in a shard · root cause = order-dependent flake (different test per shard run; ALL green in isolation) · ZERO product code touched · ZERO new SIBLINGs · ZERO new audit types · clearing twice is a no-op for the 283 self-clearing files · predecessor 0079879 · headSha TBD_AT_BANK (lone open entry)
   {
     sprintNumber: 'FREEZEFIX' as unknown as number, code: 'T-FREEZE-FIX-TestIsolation', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '0079879', loc: 15,
+    headSha: 'cbe2357', predecessorSha: '0079879', loc: 15,
+    newSiblings: [],
+    bankDate: '2026-06-14', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint CL-FEATURES T-CLFEATURES-AccrualEntity-GuardScope-DocDestale · GENUINE FINAL Wave-1 sprint · Block 1 (reachable financial fix): src/features/loan-emi/components/AccrualRunModal.tsx — replaced `const entityCode = DEFAULT_ENTITY_SHORTCODE` inside async commit callback with reactive `const { entityCode } = useEntityCode()` at component TOP LEVEL (standing canon: hooks at top level only); removed now-unused DEFAULT_ENTITY_SHORTCODE import (CL-2b ESLint --max-warnings 0 lesson). Loan accruals now post to the active entity. · Block 2 (close the guard blind-spot — the real lesson): src/__tests__/cl-3e/entity-resolution-final-guard.test.ts — extended ROOTS array to include src/features (previously only src/pages + src/components, which is why the AccrualRunModal straggler survived); updated JSDoc + describe/it strings; guard now repo-wide-complete across all reachable surfaces. · Block 3 (cosmetic doc de-stale, body 0-DIFF): replaced stale `Sprint T-Phase-1.2.5h…` header-line tag with `Anchor: Wave-1 freeze cbe2357 · 187⭐ · 14 June 2026` in 6 docs (AUDIT-TRAIL-COMPLIANCE, CODE-CONVENTIONS, PERFORMANCE-BASELINE, I18N-MIGRATION-GUIDE, accounting-vouchers-forensic-audit, D-127-PATH-CORRECTION). docs/ARCHITECTURE.md intentionally untouched (its mention is a supersession footnote). · TSC 0 · ESLint 0/0 · Vitest cl-3e green (extended guard PASSES with src/features in scope) · ZERO new SIBLINGs · ZERO logic changes beyond the one hook swap · predecessor cbe2357 · headSha TBD_AT_BANK (lone open entry)
+  {
+    sprintNumber: 'CLFEATURES' as unknown as number, code: 'T-CLFEATURES-AccrualEntity-GuardScope-DocDestale', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'cbe2357', loc: 25,
     newSiblings: [],
     bankDate: '2026-06-14', provenance: 'CONFIRMED',
   },
