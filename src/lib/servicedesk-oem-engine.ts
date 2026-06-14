@@ -158,7 +158,7 @@ export function markOEMClaimApproved(
 }
 
 export function markOEMClaimPaid(
-  id: string, actor: string, paid_amount_paise: number, entity_id: string = DEFAULT_ENTITY,
+  id: string, actor: string, paid_amount_paise: number, entity_id: string,
 ): OEMClaimPacket {
   return transitionOEMClaim(id, 'paid', actor,
     { paid_at: nowIso(), paid_amount_paise }, undefined, entity_id);
