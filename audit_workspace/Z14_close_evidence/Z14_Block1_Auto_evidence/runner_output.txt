@@ -1,7 +1,7 @@
-Z14 smoke: 15/16 pass · 1 fail
+Z14 smoke: 16/16 pass · 0 fail
   [PASS] z2a-smoke · All 14 voucher types validate correctly
   [PASS] z2a-trial-balance · Trial balance Dr - Cr === 0 (Decimal.equals)
-  [FAIL] z2b-tds · TDS on ₹100k @ 10% === ₹10,000.00 exactly
+  [PASS] z2b-tds · TDS on ₹100k @ 10% === ₹10,000.00 exactly
   [PASS] z2c-a-commission · Commission ₹5k · TDS ₹250 · Net ₹4,750 (Decimal.equals)
   [PASS] z3-mock-auth · Mock auth switch updates active user
   [PASS] z3-actor-thread · Voucher created_by === accountant1

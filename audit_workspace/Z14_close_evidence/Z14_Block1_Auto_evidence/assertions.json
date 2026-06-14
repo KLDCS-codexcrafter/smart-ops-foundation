@@ -1,9 +1,9 @@
 {
   "sprint": "T-H1.5-Z-Z14-Block1-Auto",
-  "timestamp": "2026-06-14T10:53:32.104Z",
+  "timestamp": "2026-06-14T10:56:31.116Z",
   "totalAssertions": 16,
-  "pass": 15,
-  "fail": 1,
+  "pass": 16,
+  "fail": 0,
   "results": [
     {
       "id": "z2a-smoke",
@@ -85,7 +85,7 @@
           }
         ]
       },
-      "timestamp": "2026-06-14T10:53:32.036Z"
+      "timestamp": "2026-06-14T10:56:31.083Z"
     },
     {
       "id": "z2a-trial-balance",
@@ -98,20 +98,20 @@
         "diff": "0",
         "journalLineCount": 6
       },
-      "timestamp": "2026-06-14T10:53:32.049Z"
+      "timestamp": "2026-06-14T10:56:31.092Z"
     },
     {
       "id": "z2b-tds",
       "description": "TDS on ₹100k @ 10% === ₹10,000.00 exactly",
-      "pass": false,
+      "pass": true,
       "expected": "10000",
       "actual": {
-        "computedTDS": 0,
-        "rate": 0,
-        "applicable": false,
-        "decimalString": "0"
+        "computedTDS": 10000,
+        "rate": 10,
+        "applicable": true,
+        "decimalString": "10000"
       },
-      "timestamp": "2026-06-14T10:53:32.055Z"
+      "timestamp": "2026-06-14T10:56:31.100Z"
     },
     {
       "id": "z2c-a-commission",
@@ -131,7 +131,7 @@
           "net": 4750
         }
       },
-      "timestamp": "2026-06-14T10:53:32.080Z"
+      "timestamp": "2026-06-14T10:56:31.101Z"
     },
     {
       "id": "z3-mock-auth",
@@ -150,7 +150,7 @@
           "role": "accountant"
         }
       },
-      "timestamp": "2026-06-14T10:53:32.084Z"
+      "timestamp": "2026-06-14T10:56:31.104Z"
     },
     {
       "id": "z3-actor-thread",
@@ -161,7 +161,7 @@
         "stored_created_by": "accountant1",
         "voucher_no": "SMK/ACT1"
       },
-      "timestamp": "2026-06-14T10:53:32.087Z"
+      "timestamp": "2026-06-14T10:56:31.107Z"
     },
     {
       "id": "z3-period-lock-set",
@@ -171,11 +171,11 @@
       "actual": {
         "config": {
           "lockedThrough": "2026-03-31",
-          "lastModifiedAt": "2026-06-14T10:53:32.088Z",
+          "lastModifiedAt": "2026-06-14T10:56:31.109Z",
           "lastModifiedBy": "admin1"
         }
       },
-      "timestamp": "2026-06-14T10:53:32.089Z"
+      "timestamp": "2026-06-14T10:56:31.109Z"
     },
     {
       "id": "z3-period-lock-reject",
@@ -189,7 +189,7 @@
         ],
         "isPeriodLocked": true
       },
-      "timestamp": "2026-06-14T10:53:32.090Z"
+      "timestamp": "2026-06-14T10:56:31.110Z"
     },
     {
       "id": "z3-period-lock-accept",
@@ -201,7 +201,7 @@
         "errors": [],
         "isPeriodLocked": false
       },
-      "timestamp": "2026-06-14T10:53:32.091Z"
+      "timestamp": "2026-06-14T10:56:31.111Z"
     },
     {
       "id": "z9-customer-roundtrip",
@@ -224,7 +224,7 @@
           }
         ]
       },
-      "timestamp": "2026-06-14T10:53:32.092Z"
+      "timestamp": "2026-06-14T10:56:31.112Z"
     },
     {
       "id": "z9-vendor-excel",
@@ -247,7 +247,7 @@
         "recordCount": 2,
         "recordKeyParity": true
       },
-      "timestamp": "2026-06-14T10:53:32.093Z"
+      "timestamp": "2026-06-14T10:56:31.113Z"
     },
     {
       "id": "z9-logistic-template",
@@ -265,7 +265,7 @@
           "Logistic Name"
         ]
       },
-      "timestamp": "2026-06-14T10:53:32.094Z"
+      "timestamp": "2026-06-14T10:56:31.113Z"
     },
     {
       "id": "z9-scheme-error",
@@ -283,7 +283,7 @@
         "codeErrorFound": true,
         "errorLine": 2
       },
-      "timestamp": "2026-06-14T10:53:32.099Z"
+      "timestamp": "2026-06-14T10:56:31.114Z"
     },
     {
       "id": "z10-cash-roundtrip",
@@ -296,7 +296,7 @@
         "importedCount": 1,
         "updatedCount": 0
       },
-      "timestamp": "2026-06-14T10:53:32.100Z"
+      "timestamp": "2026-06-14T10:56:31.115Z"
     },
     {
       "id": "z10-bank-template",
@@ -313,7 +313,7 @@
         ],
         "hasBankFields": true
       },
-      "timestamp": "2026-06-14T10:53:32.102Z"
+      "timestamp": "2026-06-14T10:56:31.115Z"
     },
     {
       "id": "z10-asset-error",
@@ -329,7 +329,7 @@
           }
         ]
       },
-      "timestamp": "2026-06-14T10:53:32.103Z"
+      "timestamp": "2026-06-14T10:56:31.116Z"
     }
   ],
   "bonusEvidence": {
