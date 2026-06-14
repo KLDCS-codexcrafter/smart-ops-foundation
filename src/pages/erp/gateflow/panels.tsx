@@ -77,7 +77,7 @@ function statusVariant(s: GatePassStatus): 'default' | 'secondary' | 'destructiv
 interface WelcomeProps { onNavigate: (m: GateFlowModule) => void }
 
 export function GateFlowWelcome({ onNavigate }: WelcomeProps): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<GatePass[]>([]);
 
   const refresh = useCallback((): void => {
