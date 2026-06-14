@@ -20,6 +20,7 @@ import {
   markOEMClaimPaid,
   markOEMClaimRejected,
 } from '@/lib/servicedesk-oem-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { OEMClaimPacket } from '@/types/oem-claim';
 
 interface Props {
