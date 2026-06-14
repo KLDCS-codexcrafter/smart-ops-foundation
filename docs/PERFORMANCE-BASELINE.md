@@ -1,6 +1,6 @@
 # Operix Phase 1 · Performance Baseline
 
-Sprint T-Phase-1.2.5h-c2 · Card #2.5 final · captured at sprint close
+Anchor: Wave-1 freeze cbe2357 · 187⭐ · 14 June 2026
 
 ## Bundle Size (Production Build)
 

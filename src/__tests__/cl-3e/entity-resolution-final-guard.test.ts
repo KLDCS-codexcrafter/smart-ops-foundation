@@ -1,10 +1,11 @@
 /**
- * @sprint  T-CL3e-RawKey-Final-EntityResolution
+ * @sprint  T-CL3e-RawKey-Final-EntityResolution (scope-extended in CL-FEATURES)
  * @purpose REPO-WIDE entity-resolution completeness proof — scans
- *          src/pages + src/components recursively and asserts ZERO
- *          occurrences of every known hardcoded-entity variant. After
- *          CL-3e the entire entity-resolution debt (engine-strip +
- *          const-sweep + raw-key) is closed.
+ *          src/pages + src/components + src/features recursively and
+ *          asserts ZERO occurrences of every known hardcoded-entity
+ *          variant. After CL-3e + CL-FEATURES the entire
+ *          entity-resolution debt (engine-strip + const-sweep + raw-key)
+ *          is closed across all reachable surfaces.
  *
  *  No CL-3d-style blind-spot: ALL variants enumerated.
  *  Allow-list is intentionally empty — assertion is toEqual([]).
@@ -16,6 +17,7 @@ import { join } from 'node:path';
 const ROOTS = [
   join(process.cwd(), 'src/pages'),
   join(process.cwd(), 'src/components'),
+  join(process.cwd(), 'src/features'),
 ];
 
 const FORBIDDEN: RegExp[] = [
@@ -36,7 +38,7 @@ function walk(dir: string, out: string[] = []): string[] {
 }
 
 describe('CL-3e · repo-wide entity-resolution completeness guard', () => {
-  it('zero hardcoded entity reads across src/pages + src/components', () => {
+  it('zero hardcoded entity reads across src/pages + src/components + src/features', () => {
     const offenders: string[] = [];
     for (const root of ROOTS) {
       for (const f of walk(root)) {

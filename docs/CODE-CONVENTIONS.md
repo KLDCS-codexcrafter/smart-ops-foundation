@@ -1,6 +1,6 @@
 # Operix Code Conventions
 
-Sprint T-Phase-1.2.5h-c2 · Card #2.5 final · production-grade close
+Anchor: Wave-1 freeze cbe2357 · 187⭐ · 14 June 2026
 
 This document captures the engineering conventions established across Phase 1
 so new code follows the same patterns the audit toolchain expects.

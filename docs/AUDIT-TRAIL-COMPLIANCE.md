@@ -1,6 +1,6 @@
 # Audit Trail Compliance · Operix ERP
 
-Sprint T-Phase-1.2.5h-b1 · Card #2.5
+Anchor: Wave-1 freeze cbe2357 · 187⭐ · 14 June 2026
 
 ## Regulatory Coverage
 

@@ -1,4 +1,4 @@
-# D-127 Path Correction · Sprint T-Phase-1.2.5h-a
+# D-127 Path Correction · Anchor: Wave-1 freeze cbe2357 · 187⭐ · 14 June 2026
 
 ## Issue
 D-127 was originally written referencing `src/pages/erp/finecore/transactions/`

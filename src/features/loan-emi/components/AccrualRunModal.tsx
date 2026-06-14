@@ -20,7 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   planMonthlyAccrual, commitMonthlyAccrual,
   type AccrualPlanItem,
@@ -47,6 +47,7 @@ export function AccrualRunModal({ open, onClose, ledgerId }: Props) {
   const [asOfDate, setAsOfDate] = useState(todayIso());
   const [committing, setCommitting] = useState(false);
   const [refreshTick, setRefreshTick] = useState(0);
+  const { entityCode } = useEntityCode();
 
   useEffect(() => {
     if (open) {
@@ -78,7 +79,6 @@ export function AccrualRunModal({ open, onClose, ledgerId }: Props) {
   const commit = async () => {
     setCommitting(true);
     try {
-      const entityCode = DEFAULT_ENTITY_SHORTCODE;
       if (tab === 'monthly') {
         const r = commitMonthlyAccrual(asOfDate, entityCode);
         if (r.errors.length > 0) {
