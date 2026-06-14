@@ -4,6 +4,7 @@
  */
 // TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useMemo, useState, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +23,6 @@ import {
   computeScheduleStatus, INVOICE_SCHEDULE_STATUS_LABELS, INVOICE_SCHEDULE_STATUS_COLORS,
 } from '@/types/projx/project-invoice-schedule';
 import type { ProjectInvoiceSchedule } from '@/types/projx/project-invoice-schedule';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { logAudit } from '@/lib/audit-trail-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
@@ -44,7 +44,7 @@ const BLANK: FormState = {
 };
 
 export function InvoiceSchedulingPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { schedules, createSchedule, updateSchedule, deleteSchedule, markInvoiced } = useProjectInvoiceSchedule(entityCode);
   const { milestones } = useProjectMilestones(entityCode);

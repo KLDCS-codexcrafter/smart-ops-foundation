@@ -1662,6 +1662,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-14', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint CL-3b T-CL3b-MidClusters-HookSweep · CLEANUP ARC sprint 3b · hardcode→hook sweep · 4 mid clusters (customer-hub 12 + projx 11 + sitex 9 + distributor-hub 8 = 40 files) · removed module-scope `const ENTITY/entityCode/entity = DEFAULT_ENTITY_SHORTCODE` and replaced with `const { entityCode } = useEntityCode()` at component TOP LEVEL (sitex uses alias `{ entityCode: entity }`) · threaded `entityCode: string` through module-scope helpers that reference the entity (loadCustomers/loadOrders/readList/readSnapshots/etc.) and updated call sites · converted module-scope const data (SampleKits DEMO_TEMPLATES → buildDemoTemplates(entityCode), VoiceComplaintCapture COMPLAINTS_KEY/DISPUTES_KEY → key factories) · removed duplicate `entityCode` from useCardEntitlement() destructures (CustomerHubWelcome, SchemeSimulator) · added entityCode to useMemo/useEffect dep arrays · 4 NEW GUARD TESTS (one per cluster): src/__tests__/cl-3b/{customer-hub,projx,sitex,distributor-hub}-entity-hook-guard.test.ts mirror CL-3a guard, ROOT pointed at each cluster dir, assert offenders.toEqual([]) · TSC 0 · ESLint 0/0 (repo-wide) · Vitest 4/4 PASS guards · ZERO new SIBLINGs · NON-GOAL: vendor-portal/payout/distributor/masters/salesx/fincore/components → CL-3c/d · predecessor 4e2596d · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'CL3b' as unknown as number, code: 'T-CL3b-MidClusters-HookSweep', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '4e2596d', loc: 181,
+    newSiblings: [],
+    bankDate: '2026-06-14', provenance: 'CONFIRMED',
+  },
 ];
 
 

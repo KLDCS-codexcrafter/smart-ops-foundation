@@ -3,6 +3,7 @@
  * Highlights healthiest and weakest projects by margin %.
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -14,7 +15,6 @@ import { useTimeEntries } from '@/hooks/useTimeEntries';
 import { useProjectResources } from '@/hooks/useProjectResources';
 import { computeProjectPnL } from '@/lib/projx-engine';
 import { PROJECT_STATUS_COLORS, PROJECT_STATUS_LABELS } from '@/types/projx/project';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
@@ -22,7 +22,7 @@ const fmtINR = (n: number) =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
 export function ProjectMarginReportPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { milestones } = useProjectMilestones(entityCode);
   const { entries } = useTimeEntries(entityCode);

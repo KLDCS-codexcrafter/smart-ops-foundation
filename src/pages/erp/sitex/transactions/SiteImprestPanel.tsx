@@ -4,6 +4,7 @@
  * @sprint      T-Phase-1.A.15a · Q-LOCK-2a · Block A.3
  */
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -15,13 +16,12 @@ import {
   listImprestTransactions, createImprest, computeImprestHealthMetrics,
 } from '@/lib/sitex-imprest-engine';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import type { SiteImprest } from '@/types/sitex';
 
 interface Props { onNavigate: (m: string) => void }
 
 export function SiteImprestPanel({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
   const [imprest, setImprest] = useState<SiteImprest | null>(null);

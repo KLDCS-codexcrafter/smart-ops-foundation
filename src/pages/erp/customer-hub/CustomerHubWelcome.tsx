@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   Users, Trophy, AlertTriangle, IndianRupee, Award, Gift,
   Tag, ShoppingBag, Sparkles, BarChart3,
@@ -20,8 +21,6 @@ import type { CLVResult } from '@/types/customer-clv';
 import type { CustomerLoyaltyState, LoyaltyTier } from '@/types/customer-loyalty';
 import { loyaltyStateKey } from '@/types/customer-loyalty';
 import type { CustomerHubModule } from './CustomerHubSidebar';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface CustomerLite {
   id: string;
   legalName?: string;
@@ -37,8 +36,6 @@ interface OrderLite {
   total_paise?: number;
 }
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function loadCustomers(): CustomerLite[] {
   try {
     // [JWT] GET /api/customer-master
@@ -48,19 +45,19 @@ function loadCustomers(): CustomerLite[] {
   return [];
 }
 
-function loadOrders(): OrderLite[] {
+function loadOrders(entityCode: string): OrderLite[] {
   try {
     // [JWT] GET /api/orders
-    const raw = localStorage.getItem(`erp_orders_${ENTITY}`);
+    const raw = localStorage.getItem(`erp_orders_${entityCode}`);
     if (raw) return JSON.parse(raw) as OrderLite[];
   } catch { /* ignore */ }
   return [];
 }
 
-function loadLoyaltyStates(): CustomerLoyaltyState[] {
+function loadLoyaltyStates(entityCode: string): CustomerLoyaltyState[] {
   try {
     // [JWT] GET /api/loyalty/states
-    const raw = localStorage.getItem(loyaltyStateKey(ENTITY));
+    const raw = localStorage.getItem(loyaltyStateKey(entityCode));
     if (raw) return JSON.parse(raw) as CustomerLoyaltyState[];
   } catch { /* ignore */ }
   return [];
@@ -88,12 +85,13 @@ interface CustomerHubWelcomePanelProps {
 }
 
 export function CustomerHubWelcomePanel({ onModuleChange }: CustomerHubWelcomePanelProps = {}) {
-  const { entityCode, userId } = useCardEntitlement();
+  const { entityCode } = useEntityCode();
+  const { userId } = useCardEntitlement();
   const [now] = useState<Date>(() => new Date());
 
   const customers = useMemo(() => loadCustomers(), []);
-  const orders    = useMemo(() => loadOrders(), []);
-  const loyalty   = useMemo(() => loadLoyaltyStates(), []);
+  const orders    = useMemo(() => loadOrders(entityCode), [entityCode]);
+  const loyalty   = useMemo(() => loadLoyaltyStates(entityCode), [entityCode]);
 
   // CLV per customer
   const clvResults = useMemo<CLVResult[]>(() => {

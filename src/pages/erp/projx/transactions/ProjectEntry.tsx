@@ -14,6 +14,7 @@
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 // TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useMemo, useState, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -48,7 +49,6 @@ import type { Project, ProjectStatus, ProjectType } from '@/types/projx/project'
 import { computeProjectPnLStub } from '@/lib/projx-engine';
 import { logConversionEvent } from '@/lib/salesx-conversion-engine';
 import { isPeriodLocked } from '@/lib/period-lock-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import type { CreateProjectInput } from '@/hooks/useProjects';
 import { useT } from '@/lib/i18n-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
@@ -105,7 +105,7 @@ const BLANK: FormState = {
 export function ProjectEntryPanel() {
   const t = useT();
   const navigate = useNavigate();
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects, createProject, updateProject, transitionStatus, softDelete } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
   const { quotations } = useQuotations(entityCode);

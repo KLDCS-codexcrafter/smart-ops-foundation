@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Trophy, Crown, TrendingUp, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,11 +14,8 @@ import { formatINR } from '@/lib/india-validations';
 import { computeCLV } from '@/lib/customer-clv-engine';
 import type { CLVResult } from '@/types/customer-clv';
 import { logAudit } from '@/lib/card-audit-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
-
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 interface CustomerLite { id: string; legalName?: string; partyName?: string; city?: string }
 interface OrderLite {
@@ -38,10 +36,10 @@ function loadCustomers(): CustomerLite[] {
   return [];
 }
 
-function loadOrders(): OrderLite[] {
+function loadOrders(entityCode: string): OrderLite[] {
   const keys = [
-    `erp_customer_orders_${ENTITY}`,
-    `erp_distributor_orders_${ENTITY}`,
+    `erp_customer_orders_${entityCode}`,
+    `erp_distributor_orders_${entityCode}`,
   ];
   const out: OrderLite[] = [];
   for (const k of keys) {
@@ -67,6 +65,7 @@ const TIER_COLOR: Record<CLVResult['clv_rank_tier'], string> = {
 };
 
 export function CLVRankingsReportPanel() {
+  const { entityCode } = useEntityCode();
   const [customers, setCustomers] = useState<CustomerLite[]>([]);
   const [orders, setOrders] = useState<OrderLite[]>([]);
   const [search, setSearch] = useState('');
@@ -74,15 +73,15 @@ export function CLVRankingsReportPanel() {
 
   useEffect(() => {
     setCustomers(loadCustomers());
-    setOrders(loadOrders());
+    setOrders(loadOrders(entityCode));
     // [JWT] GET /api/customers/clv-rankings
     logAudit({
-      entityCode: ENTITY, userId: 'system', userName: 'system',
+      entityCode: entityCode, userId: 'system', userName: 'system',
       cardId: 'customer-hub', moduleId: 'ch-r-clv',
       action: 'report_run', refType: 'report', refId: 'clv_rankings',
       refLabel: 'CLV Rankings',
     });
-  }, []);
+  }, [entityCode]);
 
   const ranked = useMemo(() => {
     return customers.map(c => {

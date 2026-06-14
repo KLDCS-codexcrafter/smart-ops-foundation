@@ -3,6 +3,7 @@
  * Module id: dh-t-stock-out
  */
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, RefreshCw, X, ArrowRight } from 'lucide-react';
@@ -13,7 +14,6 @@ import {
 } from '@/types/stock-out';
 import { computeStockOutAlerts, seedDemoStockLevels } from '@/lib/stock-out-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
@@ -23,19 +23,17 @@ const SEVERITY_COLOURS: Record<StockOutSeverity, string> = {
   info:     'bg-slate-500/15 text-slate-600 border-slate-400/30',
 };
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
-function readSnapshots(): StockLevelSnapshot[] {
+function readSnapshots(entityCode: string): StockLevelSnapshot[] {
   try {
     // [JWT] GET /api/distributor/stock-levels
-    const raw = localStorage.getItem(stockLevelsKey(ENTITY));
+    const raw = localStorage.getItem(stockLevelsKey(entityCode));
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
 
-function readDismissals(): Record<string, string> {
+function readDismissals(entityCode: string): Record<string, string> {
   try {
-    const raw = localStorage.getItem(stockOutAlertsKey(ENTITY));
+    const raw = localStorage.getItem(stockOutAlertsKey(entityCode));
     if (!raw) return {};
     const list = JSON.parse(raw) as { id: string; dismissed_at: string | null }[];
     return list.reduce<Record<string, string>>((acc, a) => {
@@ -45,38 +43,39 @@ function readDismissals(): Record<string, string> {
   } catch { return {}; }
 }
 
-function writeDismissal(alertId: string): void {
+function writeDismissal(entityCode: string, alertId: string): void {
   try {
-    const raw = localStorage.getItem(stockOutAlertsKey(ENTITY));
+    const raw = localStorage.getItem(stockOutAlertsKey(entityCode));
     const list: { id: string; dismissed_at: string | null }[] = raw ? JSON.parse(raw) : [];
     const idx = list.findIndex(a => a.id === alertId);
     const stamp = new Date().toISOString();
     if (idx >= 0) list[idx].dismissed_at = stamp;
     else list.push({ id: alertId, dismissed_at: stamp });
     // [JWT] POST /api/stock/alerts/dismiss
-    localStorage.setItem(stockOutAlertsKey(ENTITY), JSON.stringify(list));
+    localStorage.setItem(stockOutAlertsKey(entityCode), JSON.stringify(list));
   } catch { /* ignore */ }
 }
 
 export function StockOutWarningsPanel() {
+  const { entityCode } = useEntityCode();
   const [rev, setRev] = useState(0);
-  const [dismissed, setDismissed] = useState<Record<string, string>>(() => readDismissals());
+  const [dismissed, setDismissed] = useState<Record<string, string>>(() => readDismissals(entityCode));
 
   useEffect(() => {
-    let snaps = readSnapshots();
+    let snaps = readSnapshots(entityCode);
     if (snaps.length === 0) {
-      snaps = seedDemoStockLevels(ENTITY);
-      try { localStorage.setItem(stockLevelsKey(ENTITY), JSON.stringify(snaps)); }
+      snaps = seedDemoStockLevels(entityCode);
+      try { localStorage.setItem(stockLevelsKey(entityCode), JSON.stringify(snaps)); }
       catch { /* ignore */ }
       setRev(r => r + 1);
     }
-  }, []);
+  }, [entityCode]);
 
   const alerts: StockOutAlert[] = useMemo(() => {
     void rev;
-    const snaps = readSnapshots();
+    const snaps = readSnapshots(entityCode);
     return computeStockOutAlerts(snaps);
-  }, [rev]);
+  }, [rev, entityCode]);
 
   const visible = alerts.filter(a => !dismissed[a.id]);
 
@@ -88,7 +87,7 @@ export function StockOutWarningsPanel() {
 
   const handleAccept = (alert: StockOutAlert, fromName: string, qty: number) => {
     toast.success('Transfer request sent');
-    recordActivity(ENTITY, 'tenant-admin', {
+    recordActivity(entityCode, 'tenant-admin', {
       card_id: 'distributor-hub',
       kind: 'voucher',
       ref_id: alert.id,
@@ -99,7 +98,7 @@ export function StockOutWarningsPanel() {
   };
 
   const handleDismiss = (id: string) => {
-    writeDismissal(id);
+    writeDismissal(entityCode, id);
     setDismissed(prev => ({ ...prev, [id]: new Date().toISOString() }));
   };
 

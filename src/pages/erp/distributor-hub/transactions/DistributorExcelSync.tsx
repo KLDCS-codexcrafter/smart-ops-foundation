@@ -3,6 +3,7 @@
  * Module id: dh-t-excel-sync
  */
 import { useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import * as XLSX from 'xlsx';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,35 +15,33 @@ import {
 import { Download, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { distributorsKey, type Distributor } from '@/types/distributor';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   distributorsToRows, mergeDistributorRows, type ExcelScope, type ExcelRow,
 } from '@/lib/distributor-excel-engine';
 // TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
-function readDistributors(): Distributor[] {
+function readDistributors(entityCode: string): Distributor[] {
   try {
     // [JWT] GET /api/distributors
-    const raw = localStorage.getItem(distributorsKey(ENTITY));
+    const raw = localStorage.getItem(distributorsKey(entityCode));
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
 
-function writeDistributors(list: Distributor[]): void {
+function writeDistributors(entityCode: string, list: Distributor[]): void {
   try {
     // [JWT] PUT /api/distributors/bulk
-    localStorage.setItem(distributorsKey(ENTITY), JSON.stringify(list));
+    localStorage.setItem(distributorsKey(entityCode), JSON.stringify(list));
   } catch { /* ignore */ }
 }
 
 export function DistributorExcelSyncPanel() {
+  const { entityCode } = useEntityCode();
   const [scope, setScope] = useState<ExcelScope>('distributors');
 
   const handleExport = () => {
-    const list = readDistributors();
+    const list = readDistributors(entityCode);
     const rows = distributorsToRows(list);
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
@@ -59,7 +58,7 @@ export function DistributorExcelSyncPanel() {
       const wb = XLSX.read(buf, { type: 'array' });
       const ws = wb.Sheets[wb.SheetNames[0]];
       const rows = XLSX.utils.sheet_to_json(ws) as ExcelRow[];
-      const existing = readDistributors();
+      const existing = readDistributors(entityCode);
       const result = mergeDistributorRows(rows, existing);
       const next = [...existing];
       result.updated.forEach(u => {
@@ -67,7 +66,7 @@ export function DistributorExcelSyncPanel() {
         if (idx >= 0) next[idx] = u;
       });
       next.push(...result.added);
-      writeDistributors(next);
+      writeDistributors(entityCode, next);
       toast.success(
         `Imported: ${result.added.length} added, ${result.updated.length} updated, ${result.skipped.length} skipped`,
       );

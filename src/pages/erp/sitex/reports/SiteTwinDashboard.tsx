@@ -7,6 +7,7 @@
  *              RAG cards stand on real engine values; integrity badge unchanged.
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ReportChart } from '@/components/operix-core/report-framework';
@@ -15,8 +16,6 @@ import { Activity, AlertTriangle, Wallet, FlaskConical, Package, PiggyBank, Shie
 import { listSites } from '@/lib/sitex-engine';
 import { computeSiteHealthScore } from '@/lib/site-health-score-engine';
 import { computeImprestHealthMetrics } from '@/lib/sitex-imprest-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface Props { onNavigate: (m: string) => void }
 
 interface RAGCardSpec {
@@ -33,7 +32,7 @@ const ragClass = (rag: 'green' | 'amber' | 'red'): string =>
     : 'bg-destructive/10 text-destructive border-destructive/30';
 
 export function SiteTwinDashboard({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
 

@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Mic, MicOff, Send, Loader2, AlertCircle, Type } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -16,14 +17,12 @@ import {
   isSpeechRecognitionSupported, transcribeVoice,
 } from '@/lib/voice-to-order-engine';
 import { logAudit } from '@/lib/card-audit-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   customerOrdersKey, type CustomerOrder,
 } from '@/types/customer-order';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-const COMPLAINTS_KEY = `erp_customer_complaints_${ENTITY}`;
-const DISPUTES_KEY   = `erp_invoice_disputes_${ENTITY}`;
+const complaintsKey = (e: string) => `erp_customer_complaints_${e}`;
+const disputesKey = (e: string) => `erp_invoice_disputes_${e}`;
 const CONTEXT_KEY    = 'erp_complaint_context';
 
 type ComplaintCategory = 'dispute' | 'return' | 'refund' | 'delivery' | 'quality' | 'general';
@@ -98,6 +97,7 @@ function getCustomerId(): string {
 }
 
 export function VoiceComplaintCapturePanel() {
+  const { entityCode } = useEntityCode();
   const customerId = getCustomerId();
   const supported = isSpeechRecognitionSupported();
   const [textMode, setTextMode] = useState(!supported);
@@ -120,11 +120,11 @@ export function VoiceComplaintCapturePanel() {
   }, []);
 
   const recentOrders = useMemo(
-    () => ls<CustomerOrder>(customerOrdersKey(ENTITY))
+    () => ls<CustomerOrder>(customerOrdersKey(entityCode))
       .filter(o => o.customer_id === customerId)
       .sort((a, b) => (b.placed_at ?? '').localeCompare(a.placed_at ?? ''))
       .slice(0, 10),
-    [customerId],
+    [customerId, entityCode],
   );
 
   const detected = transcript.trim().length >= 5 ? categorizeComplaint(transcript) : null;
@@ -159,13 +159,13 @@ export function VoiceComplaintCapturePanel() {
         created_at: now,
         resolution: null,
       };
-      const all = ls<ComplaintRecord>(COMPLAINTS_KEY);
+      const all = ls<ComplaintRecord>(complaintsKey(entityCode));
       all.push(record);
-      setLs(COMPLAINTS_KEY, all);
+      setLs(complaintsKey(entityCode), all);
 
       // If dispute, also append to invoice disputes (Sprint 11a workflow)
       if (cat.category === 'dispute') {
-        const disputes = ls<unknown>(DISPUTES_KEY);
+        const disputes = ls<unknown>(disputesKey(entityCode));
         disputes.push({
           id: `dsp-${Date.now()}`,
           customer_id: customerId,
@@ -174,11 +174,11 @@ export function VoiceComplaintCapturePanel() {
           status: 'open',
           created_at: now,
         });
-        setLs(DISPUTES_KEY, disputes);
+        setLs(disputesKey(entityCode), disputes);
       }
 
       logAudit({
-        entityCode: ENTITY,
+        entityCode: entityCode,
         userId: customerId,
         userName: customerId,
         cardId: 'customer-hub',

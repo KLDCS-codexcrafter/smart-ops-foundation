@@ -7,6 +7,7 @@
  *  - ProjectCentreMasterPage  — standalone route /erp/projx/masters/project-centres
  */
 import { useMemo, useState, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { ERPHeader } from '@/components/layout/ERPHeader';
 import { Button } from '@/components/ui/button';
@@ -36,7 +37,6 @@ import { useOrgStructure } from '@/hooks/useOrgStructure';
 import type { ProjectCentre, ProjectCentreCategory } from '@/types/projx/project-centre';
 import { PROJECT_CENTRE_CATEGORY_LABELS, projectCentresKey, PROJECT_CENTRE_SEQ_KEY } from '@/types/projx/project-centre';
 import { DEMO_PROJECT_CENTRES } from '@/data/demo-projects';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { logAudit } from '@/lib/audit-trail-engine';
 
 interface FormState {
@@ -71,7 +71,7 @@ function loadCustomers(): CustomerLite[] {
 }
 
 export function ProjectCentreMasterPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { centres, createProjectCentre, updateProjectCentre, deleteProjectCentre, toggleActive, refresh } =
     useProjectCentres(entityCode);
   const { divisions, departments } = useOrgStructure();

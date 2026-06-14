@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { AlertTriangle, Activity, Mail, Gift, ShieldCheck } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -13,11 +14,8 @@ import { computeChurn, highestChurnRisk } from '@/lib/customer-churn-engine';
 import type { ChurnResult, ChurnRiskTier } from '@/lib/customer-churn-engine';
 import { logAudit } from '@/lib/card-audit-engine';
 import { toast } from 'sonner';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
-
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 interface CustomerLite { id: string; legalName?: string; partyName?: string; city?: string }
 interface OrderLite {
@@ -39,9 +37,9 @@ function loadCustomers(): CustomerLite[] {
   return [];
 }
 
-function loadOrders(): OrderLite[] {
+function loadOrders(entityCode: string): OrderLite[] {
   const out: OrderLite[] = [];
-  for (const k of [`erp_customer_orders_${ENTITY}`, `erp_distributor_orders_${ENTITY}`]) {
+  for (const k of [`erp_customer_orders_${entityCode}`, `erp_distributor_orders_${entityCode}`]) {
     try {
       const raw = localStorage.getItem(k);
       if (raw) out.push(...(JSON.parse(raw) as OrderLite[]));
@@ -63,6 +61,7 @@ const TIER_LABEL: Record<ChurnRiskTier, string> = {
 };
 
 export function ChurnRiskReportPanel() {
+  const { entityCode } = useEntityCode();
   const [customers, setCustomers] = useState<CustomerLite[]>([]);
   const [orders, setOrders] = useState<OrderLite[]>([]);
   const [complaints, setComplaints] = useState<ComplaintLite[]>([]);
@@ -70,17 +69,17 @@ export function ChurnRiskReportPanel() {
 
   useEffect(() => {
     setCustomers(loadCustomers());
-    setOrders(loadOrders());
-    setComplaints(ls<ComplaintLite>(`erp_customer_complaints_${ENTITY}`));
-    setRatings(ls<RatingLite>(`erp_item_ratings_${ENTITY}`));
+    setOrders(loadOrders(entityCode));
+    setComplaints(ls<ComplaintLite>(`erp_customer_complaints_${entityCode}`));
+    setRatings(ls<RatingLite>(`erp_item_ratings_${entityCode}`));
     // [JWT] GET /api/customers/churn-risk
     logAudit({
-      entityCode: ENTITY, userId: 'system', userName: 'system',
+      entityCode: entityCode, userId: 'system', userName: 'system',
       cardId: 'customer-hub', moduleId: 'ch-r-churn',
       action: 'report_run', refType: 'report', refId: 'churn_risk',
       refLabel: 'Churn Risk',
     });
-  }, []);
+  }, [entityCode]);
 
   const results = useMemo(() => {
     return customers.map(c => {
@@ -124,7 +123,7 @@ export function ChurnRiskReportPanel() {
   function nudgeAction(r: ChurnResult & { name: string }, kind: 'email' | 'reward') {
     // [JWT] POST /api/customers/{id}/nudge
     logAudit({
-      entityCode: ENTITY, userId: 'system', userName: 'system',
+      entityCode: entityCode, userId: 'system', userName: 'system',
       cardId: 'customer-hub', moduleId: 'ch-r-churn',
       action: 'master_save',
       refType: 'churn_nudge', refId: r.customer_id,

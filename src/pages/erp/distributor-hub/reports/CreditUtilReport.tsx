@@ -5,6 +5,7 @@
  * Module id: dh-r-credit-util
  */
 import { useMemo } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck } from 'lucide-react';
@@ -12,11 +13,8 @@ import { distributorsKey, type Distributor } from '@/types/distributor';
 import { ratingsKey, type RatingEntry } from '@/types/distributor-rating';
 import { computeComposite } from '@/lib/distributor-rating-engine';
 import { formatINR } from '@/lib/india-validations';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
-
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 function readList<T>(key: string): T[] {
   try {
@@ -26,10 +24,11 @@ function readList<T>(key: string): T[] {
 }
 
 export function CreditUtilReportPanel() {
+  const { entityCode } = useEntityCode();
   const rows = useMemo(() => {
     // [JWT] GET /api/reports/distributor-credit-util
-    const list = readList<Distributor>(distributorsKey(ENTITY));
-    const ratings = readList<RatingEntry>(ratingsKey(ENTITY));
+    const list = readList<Distributor>(distributorsKey(entityCode));
+    const ratings = readList<RatingEntry>(ratingsKey(entityCode));
     return list.map(d => {
       const lim = d.credit_limit_paise ?? 0;
       const out = d.outstanding_paise ?? 0;
@@ -37,7 +36,7 @@ export function CreditUtilReportPanel() {
       const score = computeComposite(d.id, ratings);
       return { d, util, score };
     }).sort((a, b) => b.util - a.util);
-  }, []);
+  }, [entityCode]);
 
   const overall = rows.reduce((acc, r) => ({
     totalLim: acc.totalLim + (r.d.credit_limit_paise ?? 0),

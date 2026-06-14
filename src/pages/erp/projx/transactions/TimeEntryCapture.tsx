@@ -3,6 +3,7 @@
  * Sprint T-Phase-1.1.2-b
  */
 import { useMemo, useState, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -25,7 +26,6 @@ import {
 import type { TimeEntry } from '@/types/projx/time-entry';
 import { dMul, round2 } from '@/lib/decimal-helpers';
 import { isPeriodLocked, periodLockMessage } from '@/lib/period-lock-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
 const fmtINR = (n: number) => `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
@@ -50,7 +50,7 @@ const BLANK: FormState = {
 };
 
 export function TimeEntryCapturePanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { entries, createTimeEntry, updateTimeEntry, submitTimeEntry } = useTimeEntries(entityCode);
   const { milestones } = useProjectMilestones(entityCode);

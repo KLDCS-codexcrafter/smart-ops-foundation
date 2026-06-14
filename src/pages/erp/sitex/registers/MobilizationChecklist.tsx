@@ -4,6 +4,7 @@
  * @sprint      T-Phase-1.A.15a · OOB #13 · Block C.2
  */
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -12,12 +13,10 @@ import {
   listSites, generateMobilizationChecklist, isReadyToTransitionFromMobilizing,
   type MobilizationChecklistItem,
 } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface Props { onNavigate: (m: string) => void }
 
 export function MobilizationChecklist({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
   const [items, setItems] = useState<MobilizationChecklistItem[]>([]);

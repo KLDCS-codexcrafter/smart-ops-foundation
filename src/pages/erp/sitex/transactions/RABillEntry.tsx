@@ -4,6 +4,7 @@
  * @sprint      T-Phase-1.A.15a · Q-LOCK-4a · Block B.4
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,12 +14,10 @@ import {
   submitForApproval,
 } from '@/lib/sitex-ra-bill-engine';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface Props { onNavigate: (m: string) => void }
 
 export function RABillEntry({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
   const [vendorName, setVendorName] = useState<string>('');

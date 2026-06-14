@@ -3,27 +3,26 @@
  * Module id: dh-r-dispute-stats · RPT-12c chart-layer swap · wires db-disputes
  */
 import { useMemo } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck } from 'lucide-react';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   disputesKey, DISPUTE_REASON_LABELS,
   type InvoiceDispute,
 } from '@/types/invoice-dispute';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 const RESOLVED_STATUSES = new Set(['credit_noted', 'rejected', 'partial']);
 
 export function DisputeStatsReportPanel() {
+  const { entityCode } = useEntityCode();
   const stats = useMemo(() => {
     let disputes: InvoiceDispute[] = [];
     try {
       // [JWT] GET /api/reports/distributor-disputes
-      const raw = localStorage.getItem(disputesKey(ENTITY));
+      const raw = localStorage.getItem(disputesKey(entityCode));
       disputes = raw ? JSON.parse(raw) : [];
     } catch { /* ignore */ }
 
@@ -47,7 +46,7 @@ export function DisputeStatsReportPanel() {
         0) / resolvedWithDates.length * 10) / 10;
 
     return { total: disputes.length, open, resolved, avgDays, reasonSeries };
-  }, []);
+  }, [entityCode]);
 
   const hash = useMemo(() => signReport(stats.reasonSeries), [stats.reasonSeries]);
   const short = hash.replace('fnv1a:', '').slice(0, 10);

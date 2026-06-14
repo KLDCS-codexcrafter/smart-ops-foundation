@@ -3,6 +3,7 @@
  * Sprint T-Phase-1.1.2-b
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -10,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Activity, Download, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useProjectResources } from '@/hooks/useProjectResources';
 import { useProjects } from '@/hooks/useProjects';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
@@ -19,7 +19,7 @@ const fmtINR = (n: number) =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
 export function ResourceUtilizationReportPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { resources } = useProjectResources(entityCode);
   const { projects } = useProjects(entityCode);
   const [search, setSearch] = useState('');

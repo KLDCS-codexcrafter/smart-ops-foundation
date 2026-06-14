@@ -5,6 +5,7 @@
  * Module id: dh-r-engagement
  */
 import { useMemo } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download, Smile, TrendingUp, LogIn, ShieldCheck } from 'lucide-react';
@@ -14,10 +15,6 @@ import { Badge } from '@/components/ui/badge';
 import { distributorsKey, type Distributor } from '@/types/distributor';
 import { distributorOrdersKey, type DistributorOrder } from '@/types/distributor-order';
 import { ratingsKey, type RatingEntry } from '@/types/distributor-rating';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function readList<T>(key: string): T[] {
   try {
     const raw = localStorage.getItem(key);
@@ -26,11 +23,12 @@ function readList<T>(key: string): T[] {
 }
 
 export function EngagementReportPanel() {
+  const { entityCode } = useEntityCode();
   const data = useMemo(() => {
     // [JWT] GET /api/reports/distributor-engagement?days=30
-    const distributors = readList<Distributor>(distributorsKey(ENTITY));
-    const orders = readList<DistributorOrder>(distributorOrdersKey(ENTITY));
-    const ratings = readList<RatingEntry>(ratingsKey(ENTITY));
+    const distributors = readList<Distributor>(distributorsKey(entityCode));
+    const orders = readList<DistributorOrder>(distributorOrdersKey(entityCode));
+    const ratings = readList<RatingEntry>(ratingsKey(entityCode));
 
     const now = Date.now();
     const cutoff = now - 30 * 86_400_000;
@@ -63,7 +61,7 @@ export function EngagementReportPanel() {
       npsProxy: nps,
       series,
     };
-  }, []);
+  }, [entityCode]);
 
   const exportCSV = () => {
     const rows = [

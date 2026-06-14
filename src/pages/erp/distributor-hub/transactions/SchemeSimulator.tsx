@@ -4,6 +4,7 @@
  */
 
 import { useState, useMemo, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Select, SelectTrigger, SelectValue, SelectContent, SelectItem,
@@ -18,11 +19,8 @@ import { simulateSchemeImpact } from '@/lib/scheme-impact-engine';
 import { formatINR } from '@/lib/india-validations';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
-
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 function readList<T>(key: string): T[] {
   try {
@@ -33,12 +31,13 @@ function readList<T>(key: string): T[] {
 }
 
 export function SchemeSimulatorPanel() {
+  const { entityCode } = useEntityCode();
   const [selectedId, setSelectedId] = useState<string>('');
-  const { entityCode, userId } = useCardEntitlement();
+  const { userId } = useCardEntitlement();
 
-  const schemes = useMemo(() => readList<Scheme>(schemesKey(ENTITY)), []);
-  const distributors = useMemo(() => readList<Distributor>(distributorsKey(ENTITY)), []);
-  const orders = useMemo(() => readList<DistributorOrder>(distributorOrdersKey(ENTITY)), []);
+  const schemes = useMemo(() => readList<Scheme>(schemesKey(entityCode)), [entityCode]);
+  const distributors = useMemo(() => readList<Distributor>(distributorsKey(entityCode)), [entityCode]);
+  const orders = useMemo(() => readList<DistributorOrder>(distributorOrdersKey(entityCode)), [entityCode]);
 
   const summary = useMemo(() => {
     const scheme = schemes.find(s => s.id === selectedId);

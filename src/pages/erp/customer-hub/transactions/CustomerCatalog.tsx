@@ -5,6 +5,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { roundTo, dMul } from '@/lib/decimal-helpers';
 import { ShoppingBag, Search, Sparkles, Star, Users, TrendingUp, Plus, Minus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -20,7 +21,6 @@ import { formatINR } from '@/lib/india-validations';
 import { signalsForItem, type SocialProofSignal } from '@/lib/social-proof-engine';
 import { recommendForCart } from '@/lib/customer-recommendation-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   customerCartKey, customerCartActivityKey, customerOrdersKey,
   type CustomerCart, type CustomerCartLine, type CustomerOrder,
@@ -36,7 +36,6 @@ interface CatalogItem {
   uom: string;
 }
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 const CATALOG_KEY = 'erp_inventory_items';
 
 // ---------- Demo seed: 12 FMCG items ----------
@@ -82,28 +81,28 @@ function getCustomerId(): string {
   } catch { return 'cust-demo'; }
 }
 
-function loadCart(custId: string): CustomerCart {
-  const all = ls<CustomerCart>(customerCartKey(ENTITY));
+function loadCart(entityCode: string, custId: string): CustomerCart {
+  const all = ls<CustomerCart>(customerCartKey(entityCode));
   return all.find(c => c.customer_id === custId) ?? {
-    id: custId, customer_id: custId, entity_code: ENTITY,
+    id: custId, customer_id: custId, entity_code: entityCode,
     lines: [], subtotal_paise: 0,
     created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
   };
 }
 
-function saveCart(cart: CustomerCart): void {
-  const all = ls<CustomerCart>(customerCartKey(ENTITY));
+function saveCart(entityCode: string, cart: CustomerCart): void {
+  const all = ls<CustomerCart>(customerCartKey(entityCode));
   const idx = all.findIndex(c => c.customer_id === cart.customer_id);
   if (idx >= 0) all[idx] = cart; else all.push(cart);
   try {
     // [JWT] PUT /api/customer/cart
-    localStorage.setItem(customerCartKey(ENTITY), JSON.stringify(all));
+    localStorage.setItem(customerCartKey(entityCode), JSON.stringify(all));
     // Track activity for abandonment watcher
-    const act = ls<{ customer_id: string; updated_at: string }>(customerCartActivityKey(ENTITY));
+    const act = ls<{ customer_id: string; updated_at: string }>(customerCartActivityKey(entityCode));
     const ai = act.findIndex(a => a.customer_id === cart.customer_id);
     const next = { customer_id: cart.customer_id, updated_at: new Date().toISOString() };
     if (ai >= 0) act[ai] = next; else act.push(next);
-    localStorage.setItem(customerCartActivityKey(ENTITY), JSON.stringify(act));
+    localStorage.setItem(customerCartActivityKey(entityCode), JSON.stringify(act));
   } catch { /* ignore */ }
 }
 
@@ -114,9 +113,10 @@ function itemMatchesScheme(item: CatalogItem, s: Scheme): boolean {
 }
 
 export function CustomerCatalogPanel() {
+  const { entityCode } = useEntityCode();
   const [items] = useState<CatalogItem[]>(() => loadCatalog());
   const customerId = getCustomerId();
-  const [cart, setCart] = useState<CustomerCart>(() => loadCart(customerId));
+  const [cart, setCart] = useState<CustomerCart>(() => loadCart(entityCode, customerId));
   const [search, setSearch] = useState('');
   const [selectedCats, setSelectedCats] = useState<string[]>([]);
   const [schemesOnly, setSchemesOnly] = useState(false);
@@ -130,13 +130,13 @@ export function CustomerCatalogPanel() {
     }
   }, []);
 
-  const allSchemes: Scheme[] = useMemo(() => ls<Scheme>(schemesKey(ENTITY)).filter(s => s.status === 'active'), []);
+  const allSchemes: Scheme[] = useMemo(() => ls<Scheme>(schemesKey(entityCode)).filter(s => s.status === 'active'), [entityCode]);
   const customerSchemes = useMemo(
     () => allSchemes.filter(s => s.scope.audience === 'customer' || s.scope.audience === 'both'),
     [allSchemes],
   );
 
-  const allOrders = useMemo(() => ls<CustomerOrder>(customerOrdersKey(ENTITY)), []);
+  const allOrders = useMemo(() => ls<CustomerOrder>(customerOrdersKey(entityCode)), [entityCode]);
   const proofOrders = useMemo(
     () => allOrders.flatMap(o => o.lines.map(l => ({
       item_id: l.item_id, qty: l.qty, placed_at: o.placed_at ?? o.created_at,
@@ -191,7 +191,7 @@ export function CustomerCatalogPanel() {
     const subtotal_paise = lines.reduce((s, l) => s + l.line_total_paise, 0);
     const next: CustomerCart = { ...cart, lines, subtotal_paise, updated_at: new Date().toISOString() };
     setCart(next);
-    saveCart(next);
+    saveCart(entityCode, next);
   };
 
   const cartCount = cart.lines.reduce((s, l) => s + l.qty, 0);

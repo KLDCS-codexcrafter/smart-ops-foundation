@@ -5,6 +5,7 @@
 // i18n: Sprint T-Phase-1.2.5h-c2-fix · minimum-viable migration
 // TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useMemo, useState, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,7 +25,6 @@ import {
 } from '@/types/projx/project-milestone';
 import type { ProjectMilestone, MilestoneStatus } from '@/types/projx/project-milestone';
 import { isPeriodLocked } from '@/lib/period-lock-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { useT } from '@/lib/i18n-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
@@ -52,7 +52,7 @@ const BLANK: FormState = {
 
 export function MilestoneTrackerPanel() {
   const t = useT();
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { milestones, createMilestone, updateMilestone, deleteMilestone } = useProjectMilestones(entityCode);
 

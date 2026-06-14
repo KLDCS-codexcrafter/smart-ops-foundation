@@ -5,11 +5,11 @@
  * @[JWT]       Phase 2 real weather API
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from 'lucide-react';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // RPT-6c imports
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
@@ -26,7 +26,7 @@ function riskFor(w: string): 'low' | 'medium' | 'high' {
 }
 
 export function LookAheadPlan({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
 

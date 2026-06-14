@@ -4,6 +4,7 @@
  */
 // TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useMemo, useState, useEffect } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -19,7 +20,6 @@ import { useProjects } from '@/hooks/useProjects';
 import { useProjectResources } from '@/hooks/useProjectResources';
 import { useSAMPersons } from '@/hooks/useSAMPersons';
 import type { ProjectResource } from '@/types/projx/project-resource';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { logAudit } from '@/lib/audit-trail-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
@@ -44,7 +44,7 @@ const BLANK: FormState = {
 };
 
 export function ResourceAllocationPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { resources, createResource, updateResource, deleteResource, checkOverlap } = useProjectResources(entityCode);
   const { persons } = useSAMPersons(entityCode);

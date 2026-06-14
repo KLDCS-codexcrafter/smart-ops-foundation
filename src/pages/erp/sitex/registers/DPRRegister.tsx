@@ -4,6 +4,7 @@
  * @sprint      T-Phase-1.A.15a · Block E.2
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { FileText, AlertTriangle } from 'lucide-react';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { dprsKey, type DPR } from '@/types/sitex';
 // RPT-6c imports
 import { ReportChart } from '@/components/operix-core/report-framework';
@@ -30,7 +30,7 @@ function haversineMeters(lat1: number, lon1: number, lat2: number, lon2: number)
 }
 
 export function DPRRegister({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
   const [workCompleted, setWorkCompleted] = useState('');

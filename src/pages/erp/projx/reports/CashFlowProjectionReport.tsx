@@ -5,6 +5,7 @@
  * [JWT] Reads from /api/projx/invoice-schedules + /api/projx/projects (via hooks)
  */
 import { useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -27,8 +28,6 @@ import {
 } from '@/types/projx/project-invoice-schedule';
 import type { Project } from '@/types/projx/project';
 import { dAdd, round2 } from '@/lib/decimal-helpers';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 type MonthKey = string;
 
 interface MonthlyProjectCell {
@@ -110,7 +109,7 @@ interface DrillDown {
 }
 
 export function CashFlowProjectionReportPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { schedules, markInvoiced } = useProjectInvoiceSchedule(entityCode);
 

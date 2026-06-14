@@ -4,6 +4,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Award, Gift, Flame, Lock, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -31,10 +32,6 @@ import {
   customerOrdersKey, type CustomerOrder,
 } from '@/types/customer-order';
 import { logAudit } from '@/lib/card-audit-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 const DEMO_REWARDS: LoyaltyReward[] = [
   { id: 'rw-100',  code: 'V100', title: '₹100 off voucher',     description: 'Apply on next order',  points_cost: 1000, reward_type: 'discount_voucher', value_paise: 10000, min_tier: 'bronze',   max_redeems_per_customer: null, active: true },
   { id: 'rw-500',  code: 'V500', title: '₹500 off voucher',     description: 'Apply on next order',  points_cost: 4500, reward_type: 'discount_voucher', value_paise: 50000, min_tier: 'silver',   max_redeems_per_customer: null, active: true },
@@ -63,6 +60,7 @@ function getCustomerId(): string {
 }
 
 export function CustomerRewardsPanel() {
+  const { entityCode } = useEntityCode();
   const customerId = getCustomerId();
   const [state, setState] = useState<CustomerLoyaltyState | null>(null);
   const [rewards, setRewards] = useState<LoyaltyReward[]>([]);
@@ -73,17 +71,17 @@ export function CustomerRewardsPanel() {
   // Hydrate
   useEffect(() => {
     // Seed rewards if empty
-    let allRewards = ls<LoyaltyReward>(loyaltyRewardsKey(ENTITY));
+    let allRewards = ls<LoyaltyReward>(loyaltyRewardsKey(entityCode));
     if (allRewards.length === 0) {
       allRewards = DEMO_REWARDS;
-      setLs(loyaltyRewardsKey(ENTITY), allRewards);
+      setLs(loyaltyRewardsKey(entityCode), allRewards);
     }
     setRewards(allRewards);
 
-    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(ENTITY));
-    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(ENTITY));
+    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(entityCode));
+    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(entityCode));
     const prev = states.find(s => s.customer_id === customerId) ?? null;
-    setState(rebuildState(customerId, ENTITY, ledger, prev));
+    setState(rebuildState(customerId, entityCode, ledger, prev));
 
     // Redemption counts per reward
     const counts = new Map<string, number>();
@@ -95,18 +93,18 @@ export function CustomerRewardsPanel() {
     setRedemptionCounts(counts);
 
     // Streak from orders
-    const orders = ls<CustomerOrder>(customerOrdersKey(ENTITY))
+    const orders = ls<CustomerOrder>(customerOrdersKey(entityCode))
       .filter(o => o.customer_id === customerId && o.placed_at)
       .map(o => ({ placed_at: o.placed_at as string }));
-    const streakStates = ls<CustomerStreakState>(customerStreakKey(ENTITY));
+    const streakStates = ls<CustomerStreakState>(customerStreakKey(entityCode));
     const prevStreak = streakStates.find(s => s.customer_id === customerId) ?? null;
-    const fresh = computeStreak(customerId, ENTITY, orders, prevStreak);
+    const fresh = computeStreak(customerId, entityCode, orders, prevStreak);
     setStreak(fresh);
     // Persist updated streak
     const idx = streakStates.findIndex(s => s.customer_id === customerId);
     if (idx >= 0) streakStates[idx] = fresh; else streakStates.push(fresh);
-    setLs(customerStreakKey(ENTITY), streakStates);
-  }, [customerId]);
+    setLs(customerStreakKey(entityCode), streakStates);
+  }, [customerId, entityCode]);
 
   const eligible = useMemo(
     () => state ? eligibleRewards(state, rewards, redemptionCounts) : [],
@@ -129,11 +127,11 @@ export function CustomerRewardsPanel() {
   const milestoneNext = streak ? nextMilestone(streak) : null;
 
   const doRedeem = (r: LoyaltyReward) => {
-    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(ENTITY));
+    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(entityCode));
     const now = new Date().toISOString();
     ledger.push({
       id: `lle-${Date.now()}`,
-      entity_id: ENTITY, customer_id: customerId,
+      entity_id: entityCode, customer_id: customerId,
       action: 'redeem_reward',
       points_delta: -r.points_cost,
       ref_type: 'reward', ref_id: r.id,
@@ -141,15 +139,15 @@ export function CustomerRewardsPanel() {
       created_at: now,
       expires_at: null,
     });
-    setLs(loyaltyLedgerKey(ENTITY), ledger);
+    setLs(loyaltyLedgerKey(entityCode), ledger);
 
-    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(ENTITY));
+    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(entityCode));
     const prev = states.find(s => s.customer_id === customerId) ?? null;
-    const fresh = rebuildState(customerId, ENTITY, ledger, prev);
+    const fresh = rebuildState(customerId, entityCode, ledger, prev);
     setState(fresh);
     const sIdx = states.findIndex(s => s.customer_id === customerId);
     if (sIdx >= 0) states[sIdx] = fresh; else states.push(fresh);
-    setLs(loyaltyStateKey(ENTITY), states);
+    setLs(loyaltyStateKey(entityCode), states);
 
     // Bump redemption count
     setRedemptionCounts(prev => {
@@ -159,7 +157,7 @@ export function CustomerRewardsPanel() {
     });
 
     logAudit({
-      entityCode: ENTITY,
+      entityCode: entityCode,
       userId: customerId,
       userName: customerId,
       cardId: 'customer-hub',

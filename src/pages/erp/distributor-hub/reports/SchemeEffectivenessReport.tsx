@@ -4,6 +4,7 @@
  */
 
 import { useMemo } from 'react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -13,10 +14,6 @@ import { ReportChart } from '@/components/operix-core/report-framework';
 import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
 import { schemesKey, appliedSchemesKey, type Scheme, type AppliedScheme } from '@/types/scheme';
 import { formatINR } from '@/lib/india-validations';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 interface AppliedRecord {
   order_id: string;
   order_date: string;
@@ -35,8 +32,9 @@ function readList<T>(key: string): T[] {
 }
 
 export function SchemeEffectivenessReportPanel() {
-  const schemes = useMemo(() => readList<Scheme>(schemesKey(ENTITY)), []);
-  const applied = useMemo(() => readList<AppliedRecord>(appliedSchemesKey(ENTITY)), []);
+  const { entityCode } = useEntityCode();
+  const schemes = useMemo(() => readList<Scheme>(schemesKey(entityCode)), [entityCode]);
+  const applied = useMemo(() => readList<AppliedRecord>(appliedSchemesKey(entityCode)), [entityCode]);
 
   const activeCount = schemes.filter(s => s.status === 'active').length;
   const totalDiscount = applied.reduce((t, a) => t + a.discount_paise, 0);
