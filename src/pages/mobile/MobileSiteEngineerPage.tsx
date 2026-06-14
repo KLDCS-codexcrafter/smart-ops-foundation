@@ -17,7 +17,6 @@ import type { SiteMaster } from '@/types/sitex';
 
 export default function MobileSiteEngineerPage(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [sites, setSites] = useState<SiteMaster[]>([]);
   const [selectedSite, setSelectedSite] = useState<SiteMaster | null>(null);
