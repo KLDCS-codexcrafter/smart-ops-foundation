@@ -202,7 +202,6 @@ export function RCMComplianceReportPanel({ entityCode }: RCMComplianceReportPane
 }
 
 export default function RCMComplianceReport() {
-  // [JWT] GET /api/auth/active-entity
-  const entityCode = localStorage.getItem('active_entity_code') || 'ENT001';
+  const { entityCode } = useEntityCode();
   return <RCMComplianceReportPanel entityCode={entityCode} />;
 }
