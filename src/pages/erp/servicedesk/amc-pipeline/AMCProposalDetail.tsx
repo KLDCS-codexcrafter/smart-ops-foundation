@@ -43,7 +43,6 @@ export function AMCProposalDetail({ proposalId, onBack }: Props): JSX.Element {
     const found = listAMCProposals(entity).find((p) => p.id === proposalId) ?? null;
     setProposal(found);
   };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(refresh, [proposalId, entity]);
 
   if (!proposal) {
