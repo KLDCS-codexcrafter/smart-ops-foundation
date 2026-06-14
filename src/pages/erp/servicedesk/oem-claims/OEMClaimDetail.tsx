@@ -33,6 +33,7 @@ function fmtParise(p: number): string {
 }
 
 export function OEMClaimDetail({ claimId, onBack }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [claim, setClaim] = useState<OEMClaimPacket | null>(null);
   const [oemClaimNo, setOemClaimNo] = useState('');
   const [approvedAmt, setApprovedAmt] = useState<string>('');
@@ -40,10 +41,10 @@ export function OEMClaimDetail({ claimId, onBack }: Props): JSX.Element {
   const [rejectReason, setRejectReason] = useState('');
 
   useEffect(() => {
-    const c = getOEMClaim(claimId);
+    const c = getOEMClaim(claimId, entityCode);
     setClaim(c);
     if (c) setApprovedAmt(String(c.total_claim_value_paise / 100));
-  }, [claimId]);
+  }, [claimId, entityCode]);
 
   if (!claim) {
     return (
@@ -56,7 +57,7 @@ export function OEMClaimDetail({ claimId, onBack }: Props): JSX.Element {
     );
   }
 
-  const reload = (): void => setClaim(getOEMClaim(claimId));
+  const reload = (): void => setClaim(getOEMClaim(claimId, entityCode));
 
   const onSubmit = (): void => {
     if (!oemClaimNo) { toast.error('OEM claim no required'); return; }
