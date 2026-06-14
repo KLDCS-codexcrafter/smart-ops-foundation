@@ -65,11 +65,9 @@ import type { CoARegisterRow } from '@/lib/qa-coa-print-engine';
 import type { QaPendingAlert } from '@/lib/oob/qa-pending-inspection-alerts';
 import type { QaPlan } from '@/types/qa-plan';
 import type { QaSpec } from '@/types/qa-spec';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
-  catch { return 'DEMO'; }
-}
+// getActiveEntityCode removed — Sprint T-CL3e · panels use useEntityCode() hook
 
 function fmtDate(iso?: string | null): string {
   if (!iso) return '—';
@@ -83,7 +81,7 @@ function fmtDate(iso?: string | null): string {
 // ── 1) CLOSURE LOG ───────────────────────────────────────────────────
 
 export function ClosureLogPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<QaClosureLogEntry[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const refresh = useCallback((): void => {
@@ -162,7 +160,7 @@ export function ClosureLogPanel(): JSX.Element {
 // ── 2) VENDOR SCORECARD ──────────────────────────────────────────────
 
 export function VendorScorecardPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<VendorScorecardMetrics[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const refresh = useCallback((): void => {
@@ -244,7 +242,7 @@ export function VendorScorecardPanel(): JSX.Element {
 // ── 3) COA REGISTER ──────────────────────────────────────────────────
 
 export function CoARegisterPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [generated, setGenerated] = useState<CoARegisterRow[]>([]);
   const [pending, setPending] = useState<{ id: string; qa_no: string; item_name: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -358,7 +356,7 @@ export function CoARegisterPanel(): JSX.Element {
 // ── 4) PENDING ALERTS ────────────────────────────────────────────────
 
 export function PendingAlertsPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [threshold, setThreshold] = useState<number>(DEFAULT_PENDING_THRESHOLD_HOURS);
   const [list, setList] = useState<QaPendingAlert[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -437,7 +435,7 @@ export function PendingAlertsPanel(): JSX.Element {
 // ── 5) BULK PLAN ASSIGNMENT ──────────────────────────────────────────
 
 export function BulkPlanAssignmentPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [plans, setPlans] = useState<QaPlan[]>([]);
   const [specs, setSpecs] = useState<QaSpec[]>([]);
   const [selectedPlanIds, setSelectedPlanIds] = useState<Set<string>>(new Set());

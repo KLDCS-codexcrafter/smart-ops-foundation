@@ -69,10 +69,7 @@ import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverla
 // HELPERS
 // ============================================================
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
-  catch { return 'DEMO'; }
-}
+// getActiveEntityCode removed — Sprint T-CL3e · panels use useEntityCode() hook
 function getCurrentUserId(): string {
   try {
     const raw = localStorage.getItem('4ds_login_credential');
@@ -131,7 +128,7 @@ interface WeighDialogProps {
 }
 
 function WeighDialog({ open, onOpenChange, mode, ticketId, onDone }: WeighDialogProps): JSX.Element {
-  const entity = getActiveEntityCode();
+  const { entityCode: entity } = useEntityCode();
   const user = getCurrentUserId();
   const [gross, setGross] = useState('');
   const [tare, setTare] = useState('');
@@ -225,7 +222,7 @@ export function VehicleOutwardPanel(): JSX.Element {
 function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): JSX.Element {
   // FR-50 Multi-Entity 6-point · canonical hook
   const { entityCode } = useEntityCode();
-  const entity = entityCode || getActiveEntityCode();
+  const entity = entityCode;
   const cu = useCurrentUser();
   const user = cu?.id ?? getCurrentUserId();
   const [list, setList] = useState<GatePass[]>([]);
@@ -415,7 +412,7 @@ function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): 
 // ============================================================
 
 export function VehicleMasterPanel(): JSX.Element {
-  const entity = getActiveEntityCode();
+  const { entityCode: entity } = useEntityCode();
   const user = getCurrentUserId();
   const [list, setList] = useState<VehicleMaster[]>([]);
   const [open, setOpen] = useState(false);
@@ -558,7 +555,7 @@ export function VehicleMasterPanel(): JSX.Element {
 // ============================================================
 
 export function DriverMasterPanel(): JSX.Element {
-  const entity = getActiveEntityCode();
+  const { entityCode: entity } = useEntityCode();
   const user = getCurrentUserId();
   const [list, setList] = useState<DriverMaster[]>([]);
   const [open, setOpen] = useState(false);
@@ -682,7 +679,7 @@ export function DriverMasterPanel(): JSX.Element {
 // ============================================================
 
 export function WeighbridgeTicketRegisterPanel(): JSX.Element {
-  const entity = getActiveEntityCode();
+  const { entityCode: entity } = useEntityCode();
   const [list, setList] = useState<WeighbridgeTicket[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | WeighbridgeTicketStatus>('all');

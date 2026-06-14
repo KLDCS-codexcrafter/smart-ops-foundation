@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { VendorPortalModule } from './VendorPortalSidebar.types';
 
 interface VendorPortalWelcomeProps {
@@ -46,12 +46,7 @@ export function VendorPortalWelcome({ onNavigate }: VendorPortalWelcomeProps): J
   const userName = useMemo(() => getUserName(), []);
   const greeting = useMemo(() => getGreeting(), []);
 
-  const entityCode = useMemo(() => {
-    try {
-      const raw = localStorage.getItem('active_entity_code');
-      return raw ?? DEFAULT_ENTITY_SHORTCODE;
-    } catch { return DEFAULT_ENTITY_SHORTCODE; }
-  }, []);
+  const { entityCode } = useEntityCode();
 
   // [JWT] GET /api/parties?entity={entityCode}&type=vendor
   const partiesRaw = useMemo(() => ls<{ id: string; party_type: string; status: string }>(`erp_parties_${entityCode}`), [entityCode]);

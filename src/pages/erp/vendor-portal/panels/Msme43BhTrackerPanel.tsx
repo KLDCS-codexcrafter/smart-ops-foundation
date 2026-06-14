@@ -26,7 +26,7 @@ import {
   compute43BhSummary, getMSMEBreaches, disallowedAmountForFY,
   type MSMEBreach,
 } from '@/lib/msme-43bh-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 // RPT-6c imports
 import { TableChartToggle } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
@@ -79,11 +79,7 @@ function getCurrentFy(): string {
 }
 
 export function Msme43BhTrackerPanel(): JSX.Element {
-  const entityCode = useMemo(() => {
-    try {
-      return localStorage.getItem('active_entity_code') ?? DEFAULT_ENTITY_SHORTCODE;
-    } catch { return DEFAULT_ENTITY_SHORTCODE; }
-  }, []);
+  const { entityCode } = useEntityCode();
 
   const summary = useMemo(() => compute43BhSummary(entityCode), [entityCode]);
   const breaches = useMemo(() => getMSMEBreaches(entityCode), [entityCode]);

@@ -12,7 +12,7 @@ import {
   MessageSquare, Search, MailOpen, CheckCheck, ChevronRight, X, Bot, Activity,
 } from 'lucide-react';
 import { communicationLogKey, type CommunicationLogEntry } from '@/lib/vendor-rfq-notify';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 interface AdminThread {
   thread_key: string;
@@ -72,11 +72,7 @@ function timeAgo(iso: string): string {
 }
 
 export function VendorCommunicationLogAdminPanel(): JSX.Element {
-  const entityCode = useMemo(() => {
-    try {
-      return localStorage.getItem('active_entity_code') ?? DEFAULT_ENTITY_SHORTCODE;
-    } catch { return DEFAULT_ENTITY_SHORTCODE; }
-  }, []);
+  const { entityCode } = useEntityCode();
 
   const [readKeysSession, setReadKeysSession] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState('');

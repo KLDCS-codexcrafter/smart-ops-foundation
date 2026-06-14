@@ -50,11 +50,7 @@ import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverla
 // HELPERS
 // ============================================================
 
-function getActiveEntityCode(): string {
-  try {
-    return localStorage.getItem('active_entity_code') ?? 'DEMO';
-  } catch { return 'DEMO'; }
-}
+// getActiveEntityCode removed — Sprint T-CL3e · panels use useEntityCode() hook
 
 // getCurrentUserId removed — Sprint T-Phase-1.A.1.a · QueuePanel uses useCurrentUser hook (FR-50)
 
@@ -81,7 +77,7 @@ function statusVariant(s: GatePassStatus): 'default' | 'secondary' | 'destructiv
 interface WelcomeProps { onNavigate: (m: GateFlowModule) => void }
 
 export function GateFlowWelcome({ onNavigate }: WelcomeProps): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<GatePass[]>([]);
 
   const refresh = useCallback((): void => {
@@ -545,7 +541,7 @@ function CreateDialogContent({ direction, entityCode, userId, onCreated }: Creat
 // ============================================================
 
 export function GatePassRegisterPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<GatePass[]>([]);
   const [search, setSearch] = useState('');
   const [dirFilter, setDirFilter] = useState<'all' | GatePassDirection>('all');

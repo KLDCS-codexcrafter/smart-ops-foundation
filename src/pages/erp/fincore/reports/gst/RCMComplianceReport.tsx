@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { TableChartToggle } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useDrillDown } from '@/hooks/useDrillDown';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   rcmComplianceLogKey,
   RCM_SEVERITY_LABELS,
@@ -201,7 +202,6 @@ export function RCMComplianceReportPanel({ entityCode }: RCMComplianceReportPane
 }
 
 export default function RCMComplianceReport() {
-  // [JWT] GET /api/auth/active-entity
-  const entityCode = localStorage.getItem('active_entity_code') || 'ENT001';
+  const { entityCode } = useEntityCode();
   return <RCMComplianceReportPanel entityCode={entityCode} />;
 }
