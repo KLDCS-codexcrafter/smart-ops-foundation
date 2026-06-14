@@ -1676,6 +1676,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-14', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint CL-3e T-CL3e-RawKey-Final-EntityResolution · CLEANUP ARC sprint 3e (FINAL entity-resolution sprint) · closes Mechanism 1 (raw-key readers) · 11 non-mobile files reading localStorage.getItem('active_entity_code') (a key with 0 writers → always falls back to DEMO/DEFAULT) + 1 customer/Statement.tsx straggler converted · S1 helper-style (4 files: gateflow/panels.tsx, gateflow/vehicle-panels.tsx, qualicheck/panels.tsx, qualicheck/operational-panels.tsx): module-scope `function getActiveEntityCode()` deleted, each exported component got its OWN `const { entityCode } = useEntityCode()` at top level (vehicle-panels.tsx WeighDialog/VehicleMasterPanel/DriverMasterPanel/WeighbridgeTicketRegisterPanel use `{ entityCode: entity }` alias to minimise diff; VehicleQueuePanel simplified to `const entity = entityCode`) · S2 inline-style (7 files: VendorPortalWelcome + 5 vendor-portal panels Msme43BhTracker/VendorActivityMonitor/VendorBroadcastConsole/VendorCommunicationLogAdmin/VendorScoring + fincore/RCMComplianceReport): stale-capture `useMemo(() => getItem(...) ?? DEFAULT_ENTITY_SHORTCODE, [])` lazy-initializer replaced with reactive `const { entityCode } = useEntityCode()`; RCMComplianceReport default export (GST compliance report — wrong entity = wrong GST data) verified · customer/Statement.tsx:61 `const entityCode = DEFAULT_ENTITY_SHORTCODE` → hook · removed every now-unused DEFAULT_ENTITY_SHORTCODE import · COMPREHENSIVE GUARD src/__tests__/cl-3e/entity-resolution-final-guard.test.ts scans src/pages + src/components recursively, asserts 0 occurrences of ALL 5 variants (getItem('active_entity_code'), function getActiveEntityCode, const E='DEMO', const ENTITY='DEMO', =DEFAULT_ENTITY_SHORTCODE;) — repo-wide entity-resolution completeness proof, no CL-3d-style blind spot · behavioural test src/__tests__/cl-3e/entity-resolution-behavioural.test.ts (gateflow + 6 vendor-portal/customer files) · TSC 0 · ESLint 0/0 (repo-wide) · Vitest 6/6 PASS (1 guard + 5 behavioural) · ZERO new SIBLINGs · NON-GOALS (deferred to founder design call): Class B state-propagation across J1/J2/J4 chains, Class C dormant QA event bus J4 · predecessor b779305 · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'CL3e' as unknown as number, code: 'T-CL3e-RawKey-Final-EntityResolution', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: 'b779305', loc: 130,
+    newSiblings: [],
+    bankDate: '2026-06-14', provenance: 'CONFIRMED',
+  },
 ];
 
 
