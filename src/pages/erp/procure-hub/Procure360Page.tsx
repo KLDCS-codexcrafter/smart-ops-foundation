@@ -17,7 +17,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
 import { rememberModule } from '@/lib/breadcrumb-memory';
-import { mountQaBridge } from '@/lib/bill-passing-qa-bridge';
+
 import { GuidedTourOverlay } from '@/components/layout/GuidedTourOverlay';
 import { journalKey } from '@/lib/fincore-engine';
 import type { BreadcrumbEntry } from '@/components/layout/ERPHeader';
@@ -363,11 +363,9 @@ export default function Procure360Page(): JSX.Element {
     window.history.replaceState(null, '', window.location.pathname + hash);
   }, [activeModule]);
 
-  // T-Phase-1.A.3.b-T1 · D-NEW-AJ · mount inbound QA bridge listener
-  useEffect(() => {
-    const unsub = mountQaBridge();
-    return unsub;
-  }, []);
+  // CL-FINAL Class-C · removed dead inbound QA bridge mount (0 dispatchers).
+  // Live QA outcome → vendor scoring flow now runs exclusively via the
+  // `qa.outcome.applied` channel (qualicheck-bridges → procure360-vendor-scoring-listener).
 
   function handleNavigate(module: Procure360Module) {
     setActiveModule(module);
