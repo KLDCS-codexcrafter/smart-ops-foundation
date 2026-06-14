@@ -19,7 +19,7 @@ import { AlertTriangle, CheckCircle2, XCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { formatINR } from '@/lib/india-validations';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { dMul, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import {
   disputesKey, DISPUTE_REASON_LABELS, DISPUTE_STATUS_COLOURS, DISPUTE_STATUS_LABELS,
@@ -50,7 +50,9 @@ function setLs<T>(k: string, v: T[]): void {
 
 interface PanelProps { entityCode?: string; }
 
-export function DistributorDisputeQueuePanel({ entityCode = DEFAULT_ENTITY_SHORTCODE }: PanelProps) {
+export function DistributorDisputeQueuePanel({ entityCode: entityCodeProp }: PanelProps = {}) {
+  const { entityCode: entityCodeHook } = useEntityCode();
+  const entityCode = entityCodeProp ?? entityCodeHook;
   const [disputes, setDisputes] = useState<InvoiceDispute[]>(
     () => ls<InvoiceDispute>(disputesKey(entityCode)),
   );
@@ -290,5 +292,5 @@ export function DistributorDisputeQueuePanel({ entityCode = DEFAULT_ENTITY_SHORT
 }
 
 export default function DistributorDisputeQueue() {
-  return <DistributorDisputeQueuePanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
+  return <DistributorDisputeQueuePanel />;
 }

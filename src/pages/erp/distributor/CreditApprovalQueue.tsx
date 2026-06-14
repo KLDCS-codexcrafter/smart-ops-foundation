@@ -19,7 +19,7 @@ import { CheckCircle2, XCircle, IndianRupee, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { onEnterNext, useCtrlS } from '@/lib/keyboard';
 import { formatINR } from '@/lib/india-validations';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { dMul, roundTo, resolveMoneyPrecision } from '@/lib/decimal-helpers';
 import {
   creditRequestsKey, CREDIT_REQUEST_STATUS_COLOURS,
@@ -42,7 +42,9 @@ function setLs<T>(k: string, v: T[]): void {
 
 interface PanelProps { entityCode?: string; }
 
-export function CreditApprovalQueuePanel({ entityCode = DEFAULT_ENTITY_SHORTCODE }: PanelProps) {
+export function CreditApprovalQueuePanel({ entityCode: entityCodeProp }: PanelProps = {}) {
+  const { entityCode: entityCodeHook } = useEntityCode();
+  const entityCode = entityCodeProp ?? entityCodeHook;
   const [requests, setRequests] = useState<CreditIncreaseRequest[]>(
     () => ls<CreditIncreaseRequest>(creditRequestsKey(entityCode)),
   );
@@ -263,5 +265,5 @@ export function CreditApprovalQueuePanel({ entityCode = DEFAULT_ENTITY_SHORTCODE
 }
 
 export default function CreditApprovalQueue() {
-  return <CreditApprovalQueuePanel entityCode={DEFAULT_ENTITY_SHORTCODE} />;
+  return <CreditApprovalQueuePanel />;
 }
