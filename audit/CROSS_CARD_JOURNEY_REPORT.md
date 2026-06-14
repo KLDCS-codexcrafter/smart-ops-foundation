@@ -159,3 +159,57 @@ JOURNEYS:
 **J3 overall: LINKED.** The Lead-to-Order lineage is the cleanest of the three journeys audited so far — entity threading is single-source, both forward (`enquiry_id`, `quotation_no` ref) and reverse (`quotation_ids[]`, `so_id`/`so_no`) links land in the same scenario entity, state auto-propagates on the live operator path, and every conversion writes a deterministic audit-log row to `erp_salesx_conversion_log_${entity}`. Two narrow debts for follow-up (neither is an entity-seam break, so both are CL-3-or-Wave-2 scope):
 1. **`Order.quotation_id` not wired** in `handleConvertToSO` — wire it next to `ref_no` for FK-strength forward traversal.
 2. **`Enquiry.status → 'sold'`** not auto-flipped on downstream SO creation — currently operator-driven; trivial back-write in `handleConvertToSO` or in `useOrders.createOrder` post-hook for SO-from-quote path.
+
+---
+
+## J4 · Quality-gate — run 2026-06-14 — VERDICT: **PARTIAL**
+
+**Scenario seeded:** GRN (`git_id` on `QaInspectionRecord`), Bill, and QA inspection all under one `entityCode`. The QA cascade chain reads `entityCode` consistently — `completeInspection(... entityCode, byUserId, ...)` (`qa-inspection-engine.ts`) calls `getBillPassing(cur.bill_id, entityCode)` (L225) and `transitionBillPassingStatus(... entityCode ...)` (L229/L237) using the same value passed in by the caller. No DEFAULT/SMRT fallback observed on the QA→Bill cascade.
+
+### Schema-level link surface
+- `QaInspectionRecord` (`src/types/qa-inspection.ts:38-78`) carries `bill_id`, `bill_no`, `git_id` (nullable), `po_id`, `po_no` · **no `grn_id` / `grn_no` first-class field.** GRN→QA traversal goes via `git_id` (Goods-In-Transit staging) OR transitively via `QA.bill_id → Bill.po_id → POs ← GRN.po_id`.
+- `NonConformanceReport` (`src/types/ncr.ts:33-58`) carries `related_voucher_id` + `related_voucher_kind: 'grn' | 'production_confirmation' | 'sales_invoice' | null` — **no `'qa_inspection'` kind** and no `qa_inspection_id` field. NCR↔QA linkage is by FK absence (string note in `description` only).
+
+### Per-hop matrix
+| Hop (A→B) | B sees A? | Ref resolves? | State propagates? | Entity A / Entity B | FLAG |
+|---|---|---|---|---|---|
+| **GRN → QA Inspection (incoming)** | PARTIAL — `QaInspectionRecord.git_id` (nullable) carries the GIT id (intermediate staging that owns `po_id`, `src/types/git.ts:37`). Direct GRN→QA visibility requires going through GIT → matching back to GRN by `po_id` + lines. No GRN picker on QA entry that I observed | PARTIAL — when `git_id` is set, it resolves; when null, QA hangs off bill/po only. `grn_id` does not exist on the QA row → no direct id-based GRN→QA join | N/A — QA is created independently from the GRN row; GRN status is not auto-flipped to `qa_pending` on QA creation, nor to `released` on QA pass (the bill cascade handles bill state, not GRN state) | A=scenario / B=scenario (entity threaded through bill/git lookups) | **ORPHANED-KEY** for direct GRN↔QA (no `grn_id` field) · **LINKED** for indirect GRN→GIT→QA → MANUAL-ONLY for GRN state propagation |
+| **QA finalization → CustomEvent bus** | **NO** — the listener `mountQaBridge` (`bill-passing-qa-bridge.ts:118-126`) is mounted in `Procure360Page.tsx:368` and listens on channel `QA_FINALIZED_EVENT = 'qa:inspection-finalized'` (L82), **but `grep -rn 'qa:inspection-finalized' src/` returns ZERO dispatchers**. The intended cross-card bus is silent. Separately, `qualicheck-bridges.ts:244` dispatches on a different channel `CH_OUTCOME = 'qa.outcome.applied'` for which the bill bridge has no listener — the two halves are **wired to different channel names**. | **NO** — the event-bus pathway does not deliver | N/A — the in-process direct cascade (next row) is what actually runs | A=B (would be entity-consistent if the dispatcher existed) | **MANUAL-ONLY / DEFERRED-by-design via direct call** · the CustomEvent bus described in the prompt is **a documented seam that has no active producer**; current behaviour relies on the in-process direct call instead |
+| **QA pass → Bill status (direct in-process cascade)** | YES — `completeInspection` (L223-242) calls `getBillPassing(cur.bill_id, entityCode)` and, if status was `awaiting_qa`, transitions to `matched_clean` or `matched_with_variance` depending on line match status | YES — direct id lookup under the same entityCode | YES — bill status auto-flips · audit row appended (`appendAuditEntry`, L213) | A=scenario / B=scenario | **LINKED** (in-process direct call, not via the bus) |
+| **QA fail → Bill status** | YES — same cascade (L236-240) flips bill to `qa_failed` with reason `QA failed via ${qa_no}` | YES — direct id lookup | YES | A=B | **LINKED** (direct call) |
+| **QA pass → Stock movement (release inwards)** | NO — `completeInspection` does NOT post any stock-journal/release on PASS. `findQuarantineGodown` exists (L444-460) and `applyFailRouting` handles only `production_order_id` quarantine (L400 early-return when no PO link). For an incoming-GRN flow, the stock release is the existing GRN release path, not auto-triggered by QA pass | N/A | NO state propagation from QA→Stock | A=scenario / B=scenario | **MANUAL-ONLY** · pass→stock is operator-driven via the GRN release UI; no auto-stock-journal on QA pass for incoming inspections |
+| **QA fail → NCR auto-raise** | **NO** — `raiseNcr` exists in `ncr-engine.ts:59` but **no caller invokes it from `completeInspection`** (rg confirms zero callers of `raiseNcr` from any QA path). On fail, the QA engine cascades to bill (`qa_failed`) and to production order quarantine (`applyFailRouting`, L392-435 · PO-only, GRN-side returns early at L400) — but does not raise an NCR row | NCR type lacks `qa_inspection_id` field and `related_voucher_kind` enum lacks `'qa_inspection'` (`src/types/ncr.ts:44`) — even if a caller existed, the linkage would degrade to free-text `description` | NO state propagation QA→NCR | A=scenario / B=scenario (would-be) | **ORPHANED-KEY** (no FK field on NCR) · **MANUAL-ONLY** (no auto-raise from QA fail) |
+
+### ENTITY-SEAM NOTES
+- The QA→Bill in-process cascade is entity-clean: caller-supplied `entityCode` flows through `getBillPassing(billId, entityCode)` and `transitionBillPassingStatus(..., entityCode, ...)`. If the QA inspection was created under scenario entity X, the bill it cascades to is also read under X by the same caller-threaded value — no seam.
+- **The dormant `qa:inspection-finalized` channel would have been the prime ORPHANED-ENTITY suspect if it were active**, because `mountQaBridge` is a global window-level listener while the bill is scoped per-entity via `detail.entityCode` in the payload. Since no producer exists, this is moot in the baseline — but it's a Wave-2 design trap: the moment someone wires a dispatcher, the producer MUST pass the correct `entityCode` in `detail` or the bill lookup silently returns `null` (`bill-passing-qa-bridge.ts:90`).
+
+### ORPHANED-KEY (non-entity)
+- **`QaInspectionRecord` has no `grn_id` / `grn_no` field** — GRN↔QA join is via `git_id` (when populated) or via the bill/po transitive chain. Direct "show me all QA inspections for this GRN" is unindexed.
+- **`NonConformanceReport` cannot reference a QA inspection by id** — `related_voucher_kind` enum is `'grn' | 'production_confirmation' | 'sales_invoice'`; there is no `'qa_inspection'` variant and no `qa_inspection_id` field. QA-driven NCRs (when raised) lose the QA id at the type boundary.
+
+### MANUAL-ONLY (no auto-link / no state back-write)
+- GRN.status not flipped on QA finalization (bill cascade is wired, GRN cascade is not).
+- QA pass → stock release: no auto stock-journal; operator-driven via GRN release.
+- QA fail → NCR auto-raise: no caller of `raiseNcr` from QA finalization path.
+- `qa:inspection-finalized` CustomEvent: listener mounted, **no producer in the codebase** (the bus is a designed-but-dormant seam).
+
+### DEFERRED-BY-DESIGN
+- The dual-channel split (`qa:inspection-finalized` listened-but-not-dispatched · `qa.outcome.applied` dispatched-but-not-listened-by-bill-bridge) is consistent with Phase-1 wave separation between the in-process direct cascade (live today) and the future event-bus cross-card pattern (Wave-2). Both halves coexist in the codebase by design — record, do not fail.
+- `git_id` as the GRN-side handle on QA (rather than `grn_id`) reflects the GIT-first staging architecture; promotion to a first-class `grn_id` is Wave-2.
+
+### SUMMARY
+| Hop | Verdict |
+|---|---|
+| GRN → QA (direct) | ORPHANED-KEY · no `grn_id` field on QA row |
+| GRN → QA (via GIT/Bill chain) | LINKED (transitively) · MANUAL (no GRN state flip) |
+| QA → Bill (event bus) | NO PRODUCER · channel name mismatch with `qualicheck-bridges` |
+| QA → Bill (direct in-process) | LINKED (cascade in `completeInspection`) |
+| QA pass → Stock | MANUAL-ONLY (no auto-stock-journal) |
+| QA fail → NCR | ORPHANED-KEY (no FK on NCR) · MANUAL-ONLY (no auto-raise) |
+
+**J4 overall: PARTIAL.** The QA→Bill in-process cascade is **clean and entity-safe** under direct call — this is the part of the quality-gate that actually works end-to-end today. Four debts isolated for Wave-2 / CL-3:
+1. **`qa:inspection-finalized` channel has no dispatcher** — wire `qualicheck-bridges` to also emit `QA_FINALIZED_EVENT` (or migrate the bill bridge to listen on `qa.outcome.applied`). Until then, the documented event-bus seam is dead code on the producer side.
+2. **NCR has no FK back to QA** — add `'qa_inspection'` to `related_voucher_kind` enum and start populating `related_voucher_id` from `completeInspection` on fail.
+3. **QA pass → stock release** is not auto-bridged for incoming GRN — operator-driven via GRN release UI.
+4. **`QaInspectionRecord.grn_id`** is absent — direct GRN→QA queries require the GIT/Bill detour.
