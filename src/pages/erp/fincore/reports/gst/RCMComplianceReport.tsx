@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { TableChartToggle } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { useDrillDown } from '@/hooks/useDrillDown';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   rcmComplianceLogKey,
   RCM_SEVERITY_LABELS,
