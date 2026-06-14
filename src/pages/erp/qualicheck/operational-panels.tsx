@@ -65,11 +65,9 @@ import type { CoARegisterRow } from '@/lib/qa-coa-print-engine';
 import type { QaPendingAlert } from '@/lib/oob/qa-pending-inspection-alerts';
 import type { QaPlan } from '@/types/qa-plan';
 import type { QaSpec } from '@/types/qa-spec';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
-  catch { return 'DEMO'; }
-}
+// getActiveEntityCode removed — Sprint T-CL3e · panels use useEntityCode() hook
 
 function fmtDate(iso?: string | null): string {
   if (!iso) return '—';
