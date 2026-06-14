@@ -16,7 +16,7 @@ import {
   type BroadcastSegment, type VendorBroadcast,
 } from '@/lib/vendor-broadcast-engine';
 import type { VendorPortalNotificationType, NotificationPriority } from '@/types/vendor-portal-accounts';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 const NOTIFICATION_TYPES: { value: VendorPortalNotificationType; label: string }[] = [
   { value: 'system', label: 'System Announcement' },
@@ -48,11 +48,7 @@ function timeAgo(iso: string): string {
 }
 
 export function VendorBroadcastConsolePanel(): JSX.Element {
-  const entityCode = useMemo(() => {
-    try {
-      return localStorage.getItem('active_entity_code') ?? DEFAULT_ENTITY_SHORTCODE;
-    } catch { return DEFAULT_ENTITY_SHORTCODE; }
-  }, []);
+  const { entityCode } = useEntityCode();
 
   const [title, setTitle] = useState('');
   const [message, setMessage] = useState('');

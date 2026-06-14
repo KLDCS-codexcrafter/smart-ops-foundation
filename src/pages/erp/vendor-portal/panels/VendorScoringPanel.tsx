@@ -19,7 +19,7 @@ import {
   getTopVendorsByScore,
   type VendorScore, type ScoreFactorName,
 } from '@/lib/vendor-scoring-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 const FACTOR_LABELS: Record<ScoreFactorName, string> = {
   price: 'Price',
@@ -42,11 +42,7 @@ function trendIcon(_score: number): JSX.Element {
 }
 
 export function VendorScoringPanel(): JSX.Element {
-  const entityCode = useMemo(() => {
-    try {
-      return localStorage.getItem('active_entity_code') ?? DEFAULT_ENTITY_SHORTCODE;
-    } catch { return DEFAULT_ENTITY_SHORTCODE; }
-  }, []);
+  const { entityCode } = useEntityCode();
 
   const topVendors = useMemo(() => getTopVendorsByScore(entityCode, 10), [entityCode]);
   const [selectedVendor, setSelectedVendor] = useState<VendorScore | null>(null);

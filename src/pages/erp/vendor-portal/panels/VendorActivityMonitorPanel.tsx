@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { getOnboardingState } from '@/lib/vendor-onboarding-engine';
 import { getTopVendorsByScore } from '@/lib/vendor-scoring-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 type ActivityKind = 'onboarding' | 'communication' | 'scoring' | 'agreement';
 
@@ -154,11 +154,7 @@ function timeAgo(iso: string): string {
 }
 
 export function VendorActivityMonitorPanel(): JSX.Element {
-  const entityCode = useMemo(() => {
-    try {
-      return localStorage.getItem('active_entity_code') ?? DEFAULT_ENTITY_SHORTCODE;
-    } catch { return DEFAULT_ENTITY_SHORTCODE; }
-  }, []);
+  const { entityCode } = useEntityCode();
 
   const [kindFilter, setKindFilter] = useState<ActivityKind | 'all'>('all');
   const [refreshCounter, setRefreshCounter] = useState(0);
