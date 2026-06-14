@@ -1,5 +1,5 @@
 # Forensic Audit · `src/pages/erp/accounting/vouchers/`
-## Sprint T-Phase-1.2.5h-a · Q2-c Lock
+## Anchor: Wave-1 freeze cbe2357 · 187⭐ · 14 June 2026
 
 ## Method
 Reviewed every `.tsx` file currently present in
