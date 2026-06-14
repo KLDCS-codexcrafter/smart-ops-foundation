@@ -28,7 +28,6 @@ export function AMCApplicabilityDecision(): JSX.Element {
   const [reason, setReason] = useState('');
 
   const refresh = (): void => setList(getAMCsAwaitingApplicabilityDecision(entity));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(refresh, [entity]);
 
   const onSave = (): void => {

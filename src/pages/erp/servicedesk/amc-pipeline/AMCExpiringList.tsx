@@ -37,7 +37,6 @@ export function AMCExpiringList(): JSX.Element {
   const [templateId, setTemplateId] = useState('default');
 
   const refresh = (): void => setList(getAMCsExpiringInDays(90, entity));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(refresh, [entity]);
 
   const sorted = useMemo(
