@@ -151,7 +151,7 @@ export function submitOEMClaimToProcure360(
 }
 
 export function markOEMClaimApproved(
-  id: string, actor: string, approved_amount_paise: number, entity_id: string = DEFAULT_ENTITY,
+  id: string, actor: string, approved_amount_paise: number, entity_id: string,
 ): OEMClaimPacket {
   return transitionOEMClaim(id, 'approved', actor,
     { approved_at: nowIso(), paid_amount_paise: approved_amount_paise }, undefined, entity_id);
