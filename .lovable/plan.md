@@ -1,122 +1,114 @@
-# Plan · Fresh `/erp/dashboard` Feature Comparison — Document 1 of 4
 
-This is **fresh first-time work**. No reference to the May-15 audits, no `_v2` suffix, no "refresh" framing. Built from current HEAD.
+# Plan · Top-1% Read-Only Audit of 4DSmartOps (3 reports)
 
-## Hard scope (Document 1 only)
+Per the three attached prompts, this is a **diagnosis-only** engagement. No source code, tests, configs, sprint-history, mem, or sibling-registers will be modified. Backend is intentionally not built (Phase 1 = localStorage with `[JWT]` markers) — this fact will be stated up-front in every report so findings are calibrated to that reality, not penalised for it.
 
-- **One deliverable, then stop.** I do not start Documents 2/3/4 until you say "continue".
-- **Read-only output.** Single new file under `docs/audits/`. Zero diff on `src/`, `tests/`, configs, `package.json`, sprint-history, sibling-register, mem.
+## Hard scope rules (locked)
 
-## Deliverable
+- **Zero diff on `src/`, `tests/`, configs, `package.json`, sprint-history, sibling-register, mem, `audit_workspace/Z*` evidence.** Only new files under `docs/audits/` are written.
+- **No re-running of test suites, builds, Playwright, or Lovable Cloud activation.** All findings come from static reading + greps + dependency inspection.
+- **Honesty contract:** every claim cites a file path + line range (or a grep command + match count). Anything I cannot verify is tagged `UNVERIFIED — evidence not found on HEAD`. Backend-dependent findings tagged `N/A — Phase 1 localStorage, [JWT] marker present at <path>`.
+- **No invented scores.** Where the prompts demand a numeric score (e.g. "/10"), the score is derived from a published rubric included in the same doc (counted evidence rows → band), never pulled from thin air.
 
-```text
-docs/audits/operix-erp-dashboard-feature-comparison-2026-06-10-IST.md
+## Deliverables (three docs, in this order)
+
+```
+docs/audits/360_full_audit_2026-06-14-IST.md          ← Doc 1 (general 360°)
+docs/audits/erp_logic_audit_2026-06-14-IST.md         ← Doc 2 (ERP business logic)
+docs/audits/pwa_capacitor_audit_2026-06-14-IST.md     ← Doc 3 (PWA + Capacitor + offline)
 ```
 
-(Fresh filename — no version suffix, no "v2", no reference to a prior doc.)
+Each doc follows the **exact section structure of its source prompt** — Doc 1 follows the 12 audit dimensions + 8-part output format; Doc 2 follows the 20 logic areas + sections A–J + Top-50 lists + Maturity Score; Doc 3 follows Sections 1–14.
 
-## Verified facts I will lock in the doc header
+## Tool-budget discipline
 
-| Fact | Value | Source |
+Heavy phases are delegated to **read-only background subagents** (one per doc) so the main context stays small. Each subagent gets a tight system prompt + the exact prompt text from its source DOCX + scoped file lists. The main thread only assembles the final markdown files from subagent outputs.
+
+| Phase | Tool | Budget |
 |---|---|---|
-| Current `/erp/dashboard` card count | **33** | `grep -c "status: 'active'" src/components/operix-core/applications.ts` → 33 |
-| Coming-soon cards | **0** | same file, no `coming_soon` matches |
-| TallyPrime GA version benchmarked | **7.0** | `help.tallysolutions.com/release-notes-tallyprime-7-0/`, `tallysolutions.com/download/` |
-| TallyPrime 7.1 | **Beta only** (roadmap signal, not GA) | `tallysolutions.com/download-tallyprime-7-1-beta/` |
+| Repo cartography (one pass, cached) | `code--exec` grep/wc/ls | ~6 calls |
+| Doc 1 evidence sweep | `acp_subagent--spawn_agent` (1) | 1 spawn |
+| Doc 2 evidence sweep (ERP logic) | `acp_subagent--spawn_agent` (1) | 1 spawn |
+| Doc 3 evidence sweep (PWA/Capacitor) | `acp_subagent--spawn_agent` (1) | 1 spawn |
+| Dependency CVE pulse | `code--dependency_scan` | 1 call |
+| Security posture | `security--get_scan_results` | 1 call |
+| Assembly + file writes | `code--write` × 3 | 3 calls |
+| Verification (`git status` clean, only 3 new files) | `code--exec` | 1 call |
 
-## Competitor matrix (9 columns)
+Hard ceiling: **~20 tool calls total** across the entire audit. If a subagent comes back partial, I report what is verified + list what could not be verified — I do **not** burn extra calls re-running.
 
-| # | Vendor | Edition |
-|---|---|---|
-| 1 | TallyPrime | 7.0 GA (7.1 Beta noted in margin) |
-| 2 | SAP S/4HANA | Public Cloud 2025 |
-| 3 | Oracle Fusion Cloud ERP | (Financials, SCM, PPM, HCM, EPM) |
-| 4 | Oracle NetSuite | 2025.1 |
-| 5 | Microsoft Dynamics 365 | F&O + Business Central |
-| 6 | Odoo | 17 Enterprise |
-| 7 | Zoho One | (Books, Inventory, CRM, People, Projects, Desk) |
-| 8 | Marg | ERP 9+ |
-| 9 | Busy | 21 |
+## Per-doc method (identical shape, different lens)
 
-Oracle is two distinct columns (Fusion ≠ NetSuite) per your instruction.
+### 1. Cartography pack (built once, reused by all 3 subagents)
 
-## The 33-card spine (enumerated fresh from `applications.ts`)
+A single bash batch produces a `audit_workspace/_cartography_2026-06-14/` JSON manifest (NOT committed to src/) containing:
 
-Ops Hub (12): command-center, procure360, inventory-hub (renamed "Main Store Hub"), qualicheck, gateflow, production, maintainpro, requestx, engineeringx, store-hub, vendor-portal, sitex, logistics
-Sales Hub (5): salesx, distributor-hub, customer-hub, projx, webstorex, ecomx
-Fin Hub (6): fincore, comply360, payout, receivx, bill-passing, fpa-planning
-International Trade (1): eximx
-Pay Hub (1): peoplepay
-Dispatch Hub (1): dispatch-hub
-FrontDesk Hub (1): frontdesk
-Support Hub (3): servicedesk, taskflow, docvault
-InsightX (1): insightx
+- top-level dir tree (depth 3)
+- file count by extension
+- LOC totals (`cloc`-style via `wc -l`)
+- `package.json` deps + devDeps
+- presence/absence of: `capacitor.config.ts`, `public/sw.js`, `public/manifest.webmanifest`, `vite.config.ts`, edge-functions dir, Supabase config
+- counts of `[JWT]` markers, `localStorage.` calls, `console.log` in src, `any` type usage, `// eslint-disable` directives
+- list of `src/__tests__/` files + total test count
+- routing surface (`src/App.tsx` + `src/pages/**` page count)
 
-(Recount happens in Step 1 below — final categorization is whatever applications.ts says verbatim.)
+This single artifact answers ~70% of the audit questions without re-reading files. **Not committed — lives in `audit_workspace/` which is already git-ignored from product code.**
 
-## Document 1 structure
+### 2. Subagent dispatch (3 parallel)
 
-```
-0. Header
-   - Generated date · IST
-   - Source of truth: src/components/operix-core/applications.ts (HEAD commit SHA)
-   - 9 competitor versions with citations
-   - Method statement (honest, no assumptions)
+Each subagent receives:
+- the verbatim prompt from its source DOCX (already parsed)
+- the cartography manifest
+- a fixed list of "first-look" files (e.g. Doc 3 gets `capacitor.config.ts`, `public/sw.js`, `vite.config.ts`, `src/main.tsx`, manifest)
+- the **honesty rules** above
+- output schema matching the prompt's required format
 
-1. Inventory of /erp/dashboard cards
-   1.1 Active cards table (id · name · category · route · sidebar-config file)
-       — Built by reading applications.ts top-to-bottom, no May-15 carry-over.
-       — Each row links to its actual page file path verified on HEAD.
-   1.2 Coming-soon cards — explicitly stated as 0; no separate table.
-   1.3 Total: 33 cards.
+Subagents return structured markdown ready to drop into the final files.
 
-2. Functional comparison matrix (one row per card, nine competitor columns)
-   - Each cell is the competitor's named module (e.g. "SAP MM-PUR", "NetSuite Procurement",
-     "Fusion Procurement Cloud", "Tally Vouchers > Purchase Order", "Marg PO Module").
-   - Legend: ✅ named-module / ◐ partial via add-on (name the add-on) / ✖ not offered.
-   - No naked checkmarks. Every cell carries the module name or "—".
+### 3. Assembly
 
-3. Card-level verdict
-   For each of the 33 cards:
-   - One-line "Operix ships:" (verified from page/component file path).
-   - One-line "Closest peer in each of the 8 vendors" (named module).
-   - One-line "Operix differentiator" or "Operix gap" (honest, qualitative — no invented scores).
-   - UNVERIFIED tag if the page file can't be located on HEAD.
+Main thread:
+1. Writes the three `.md` files under `docs/audits/`.
+2. Each doc opens with a **Facts Locked** header: HEAD SHA, file count, LOC, dep count, backend status (`Phase 1 · localStorage with [JWT] markers · no Lovable Cloud / Supabase activation on HEAD`).
+3. Each doc closes with a **Method Appendix** listing every grep command run, every file path cited, and an explicit **"Did NOT do"** block (no test re-run, no build, no browser exec, no code edits).
+4. `git status` proves only the 3 new files exist.
 
-4. Cross-suite advantages (qualitative bullets, no fabricated scoring)
-5. Cross-suite gaps (qualitative bullets)
-6. Module-by-module coverage summary (count of ✅ / ◐ / ✖ per competitor)
-7. Recommendations — **deferred to Document 2 (Enhancement Roadmap)**. This doc only states facts.
+## Structure of each report (mirrors the source prompts exactly)
 
-8. Method appendix
-   - Exact commands run (grep / file reads).
-   - Source URLs for each competitor's module names (release notes pages).
-   - Explicit "Did NOT do" list (no Playwright re-run, no live browser CRUD, no scoring rubric invention).
-```
+### Doc 1 · 360° Audit (12 dimensions → 8-part output)
+1. Executive Summary (health /10, prod-readiness /10, key risks)
+2. Critical Findings (Issue / Impact / Area / Risk / Recommendation)
+3. High / Medium / Low Findings
+4. System Strengths
+5. Risk Heatmap (Arch · Security · Performance · Data · UX · Compliance)
+6. Future Risk Predictions
+7. Production Readiness Verdict (❌ / ⚠️ / ✅) — **expected verdict: ⚠️ Conditionally Ready** given Phase-1 backend
+8. Strategic Recommendations
 
-## Step-by-step execution
+### Doc 2 · ERP Logic Audit (20 logic areas → 12-field finding schema)
+- A–J area-by-area findings (Master · Voucher · Inventory · Accounting · Manufacturing · Workflow · Security · API · Automation · Reporting)
+- Advanced section (concurrency, multi-branch, DR, AI-readiness)
+- Final deliverables: Top-50 Critical Risks · Top-50 Automation Opportunities · Top-50 Enterprise Improvements · ERP Maturity Score 0–100 (with rubric)
 
-1. Read `src/components/operix-core/applications.ts` end-to-end; emit the 33-row inventory.
-2. For each card, verify its primary page/shell file exists (`src/pages/erp/<slug>/<Pascal>Page.tsx` or `src/apps/erp/configs/<slug>-shell-config.ts`). Mark UNVERIFIED if missing.
-3. For each competitor, source module names from official release-note URLs (TallyHelp 7.0, SAP S/4HANA Cloud 2025 What's New, NetSuite 2025.1 release notes, Oracle Fusion Cloud applications module catalog, Microsoft Learn for D365 F&O + BC, Odoo 17 apps page, Zoho One apps page, Marg & Busy product pages).
-4. Build matrix tables in the order above.
-5. Write the markdown file. No other path is touched.
-6. Run `git status` to prove only `docs/audits/operix-erp-dashboard-feature-comparison-2026-06-10-IST.md` is new.
-7. Report file path + final line count + section anchors. **Stop. Wait for "continue".**
+### Doc 3 · PWA + Capacitor Audit (Sections 1–14)
+- Section 1: ten dimension scores /10 + maturity classification
+- Sections 2–12: Frontend · Capacitor · Backend (will be marked **N/A — backend not built, see [JWT] markers**) · DB (N/A) · Security · Performance · DevOps · QA · Offline/Sync · Code Quality · Enterprise Readiness
+- Sections 13–14: Final issue list + Go/No-Go verdict + 30/90-day roadmaps
 
-## Honesty rules (enforced inline)
+## Explicit out-of-scope
 
-- Every Operix capability claim is followed by the verifying file path.
-- Every competitor module claim is followed by a named module + source URL footnoted once per section.
-- Any card whose page file is missing on HEAD is marked `UNVERIFIED — registry entry only`.
-- No 1-10 scoring. No fabricated percentages. No "we beat X" without naming the specific competitor module that is weaker.
-- Numbers come from `grep` / `wc`, never from memory.
+- No code edits, file deletions, renames in `src/`, `tests/`, `audit_workspace/Z*`, configs, `package.json`, mem, sprint-history, sibling-register.
+- No test execution. No build. No `bun add`/`bun remove`. No Lovable Cloud activation. No Supabase. No image generation. No browser actions in the preview.
+- No publishing. No sprint self-seed. No `bankDate` row.
+- No comparison to competitor matrices (that's the separate `.lovable/plan.md` Document-1 work — untouched).
+- No Documents 2/3/4 from the `.lovable/plan.md` competitor comparison stream — completely separate stream.
 
-## Explicit out-of-scope for this plan
+## Acceptance criteria
 
-- No Documents 2, 3, or 4. They get their own plans after you approve Document 1.
-- No code changes anywhere in the repo.
-- No Playwright execution.
-- No sprint-history / sibling-register / memory writes.
-- No commit ceremony beyond the docs file landing on HEAD.
-- No reference to or comparison with the May-15 audits.
+- `git status` shows exactly **3 new files** under `docs/audits/` and **0 modified files** anywhere else.
+- Each doc opens with HEAD SHA, file/LOC counts, backend status; closes with method appendix + "Did NOT do" block.
+- Every Critical/High finding cites at least one `src/...:line` reference OR is tagged `UNVERIFIED`.
+- Tool-call total ≤ 20.
+- No edits to `src/`, tests, configs, `package.json`, mem, sprint-history, sibling-register, `audit_workspace/Z*`.
+
+**Stop after the three files land.** No follow-up sprints, no remediation PRs — those would be a separate engagement the user has to commission explicitly.
