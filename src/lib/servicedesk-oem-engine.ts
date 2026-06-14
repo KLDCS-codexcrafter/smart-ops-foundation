@@ -129,7 +129,7 @@ export function submitOEMClaimToProcure360(
   id: string,
   actor: string,
   oem_claim_no: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): OEMClaimPacket {
   const claim = transitionOEMClaim(
     id, 'submitted', actor,
