@@ -99,14 +99,14 @@ export function CustomerSegmentMasterPanel() {
 
   // Initial load + seed
   useEffect(() => {
-    let list = readSegments();
+    let list = readSegments(entityCode);
     if (list.length === 0) {
-      list = seedDemoSegments();
-      writeSegments(list);
+      list = seedDemoSegments(entityCode);
+      writeSegments(entityCode, list);
     }
     setSegments(list);
     setSelectedId(list[0]?.id ?? null);
-  }, []);
+  }, [entityCode]);
 
   // Sync draft with selection
   useEffect(() => {
@@ -125,12 +125,12 @@ export function CustomerSegmentMasterPanel() {
   }, [segments, search]);
 
   const handleAdd = useCallback(() => {
-    const seg = blankSegment();
+    const seg = blankSegment(entityCode);
     const next = [seg, ...segments];
     setSegments(next);
-    writeSegments(next);
+    writeSegments(entityCode, next);
     setSelectedId(seg.id);
-  }, [segments]);
+  }, [segments, entityCode]);
 
   const handleSave = useCallback(() => {
     if (!draft) return;
@@ -145,7 +145,7 @@ export function CustomerSegmentMasterPanel() {
     };
     const next = segments.map(s => s.id === updated.id ? updated : s);
     setSegments(next);
-    writeSegments(next);
+    writeSegments(entityCode, next);
 
     logAudit({
       entityCode, userId, userName: userId,
@@ -164,10 +164,10 @@ export function CustomerSegmentMasterPanel() {
     if (!draft) return;
     const next = segments.filter(s => s.id !== draft.id);
     setSegments(next);
-    writeSegments(next);
+    writeSegments(entityCode, next);
     setSelectedId(next[0]?.id ?? null);
     toast.success(`Removed ${draft.code}`);
-  }, [draft, segments]);
+  }, [draft, segments, entityCode]);
 
   return (
     <div className="space-y-4">
