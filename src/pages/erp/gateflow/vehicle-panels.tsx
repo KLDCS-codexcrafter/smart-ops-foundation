@@ -412,7 +412,7 @@ function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): 
 // ============================================================
 
 export function VehicleMasterPanel(): JSX.Element {
-  const entity = getActiveEntityCode();
+  const { entityCode: entity } = useEntityCode();
   const user = getCurrentUserId();
   const [list, setList] = useState<VehicleMaster[]>([]);
   const [open, setOpen] = useState(false);
