@@ -11,12 +11,12 @@ import { AlertTriangle, CheckCircle2, Settings } from 'lucide-react';
 import {
   listAlerts, updateAlertStatus, listThresholds, updateThreshold,
 } from '@/lib/vendor-risk-compliance-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { VendorRiskAlert } from '@/types/vendor-risk-alert';
 import type { VendorRiskThreshold } from '@/types/vendor-risk-threshold';
 
 export function VendorRiskMonitorPanel(): JSX.Element {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const [alerts, setAlerts] = useState<VendorRiskAlert[]>([]);
   const [thresholds, setThresholds] = useState<VendorRiskThreshold[]>([]);
   const [showSettings, setShowSettings] = useState(false);

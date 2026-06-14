@@ -14,10 +14,10 @@ import {
   getCommissionRateSettings,
   updateCommissionRateSettings,
 } from '@/lib/cc-compliance-settings';
-
-const E = 'DEMO';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function CommissionRatesSettings(): JSX.Element {
+  const { entityCode: E } = useEntityCode();
   const [settings, setSettings] = useState(() => getCommissionRateSettings(E));
 
   function save(): void {

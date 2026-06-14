@@ -8,11 +8,11 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { ListChecks } from 'lucide-react';
 import { listChecklists } from '@/lib/vendor-risk-compliance-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { VendorComplianceChecklist } from '@/types/vendor-compliance-checklist';
 
 export function VendorComplianceChecklistsPanel(): JSX.Element {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const [lists, setLists] = useState<VendorComplianceChecklist[]>([]);
   useEffect(() => { setLists(listChecklists(entityCode)); }, [entityCode]);
 

@@ -27,12 +27,12 @@ import {
   listRequisitions, approveDeptLevel, approveAccountsLevel,
   rejectRequisition, holdRequisition, resumeRequisition,
 } from '@/lib/payment-requisition-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 type ActionKind = 'approve' | 'reject' | 'hold';
 
 export default function RequisitionInbox() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const [refreshTick, setRefreshTick] = useState(0);
   const [tab, setTab] = useState<'dept' | 'accounts'>('dept');
   const [selected, setSelected] = useState<PaymentRequisition | null>(null);

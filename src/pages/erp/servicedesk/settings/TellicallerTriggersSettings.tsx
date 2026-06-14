@@ -14,10 +14,10 @@ import {
   getTellicallerTriggerSettings,
   updateTellicallerTriggerSettings,
 } from '@/lib/cc-compliance-settings';
-
-const E = 'DEMO';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function TellicallerTriggersSettings(): JSX.Element {
+  const { entityCode: E } = useEntityCode();
   const [settings, setSettings] = useState(() => getTellicallerTriggerSettings(E));
 
   function save(): void {

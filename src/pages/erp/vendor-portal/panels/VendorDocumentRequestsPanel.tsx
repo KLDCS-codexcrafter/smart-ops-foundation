@@ -10,11 +10,11 @@ import { FileQuestion, Bell } from 'lucide-react';
 import {
   listDocumentRequests, recordDocumentRequestReminder, updateDocumentRequestStatus,
 } from '@/lib/vendor-risk-compliance-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { VendorDocumentRequest } from '@/types/vendor-document-request';
 
 export function VendorDocumentRequestsPanel(): JSX.Element {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const [reqs, setReqs] = useState<VendorDocumentRequest[]>([]);
   useEffect(() => { setReqs(listDocumentRequests(entityCode)); }, [entityCode]);
 

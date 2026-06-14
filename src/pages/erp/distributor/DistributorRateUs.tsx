@@ -10,12 +10,10 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Star, Send } from 'lucide-react';
 import { toast } from 'sonner';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   ratingsKey, type RatingEntry, type RatingDimension,
 } from '@/types/distributor-rating';
-
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 const DIMENSIONS: { id: RatingDimension; label: string }[] = [
   { id: 'fulfilment_speed', label: 'How fast do we ship your orders?' },
@@ -31,6 +29,7 @@ const EMPTY_DRAFT: DraftMap = {
 };
 
 export default function DistributorRateUs() {
+  const { entityCode: ENTITY } = useEntityCode();
   const distributorId = 'd-sharma'; // in real use, from session
   const [draft, setDraft] = useState<DraftMap>(EMPTY_DRAFT);
   const [comment, setComment] = useState('');

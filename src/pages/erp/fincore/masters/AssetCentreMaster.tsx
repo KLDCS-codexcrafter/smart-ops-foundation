@@ -36,7 +36,7 @@ import { useOrgStructure } from '@/hooks/useOrgStructure';
 import type { AssetCentre, AssetCentreCategory } from '@/types/fincore/asset-centre';
 import { ASSET_CENTRE_CATEGORY_LABELS, assetCentresKey, ASSET_CENTRE_SEQ_KEY } from '@/types/fincore/asset-centre';
 import { DEMO_ASSET_CENTRES } from '@/data/demo-asset-centres';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { logAudit } from '@/lib/audit-trail-engine'; // P8.3 · Block 2b · fincore_settings_event
 
 interface FormState {
@@ -61,7 +61,7 @@ const BLANK: FormState = {
 };
 
 export function AssetCentreMasterPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { centres, createAssetCentre, updateAssetCentre, deleteAssetCentre, toggleActive, refresh } =
     useAssetCentres(entityCode);
   const { divisions, departments } = useOrgStructure();
@@ -149,7 +149,7 @@ export function AssetCentreMasterPanel() {
     } else {
       const created = createAssetCentre(form);
       logAudit({
-        entityCode: String(created.code || entityCode || DEFAULT_ENTITY_SHORTCODE),
+        entityCode: String(created.code || entityCode || ''),
         action: 'create',
         entityType: 'fincore_settings_event',
         recordId: created.id,

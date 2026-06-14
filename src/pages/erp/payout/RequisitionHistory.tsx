@@ -17,7 +17,7 @@ import {
   type PaymentRequisition, type RequisitionStatus, type PaymentRequestType,
 } from '@/types/payment-requisition';
 import { listRequisitions } from '@/lib/payment-requisition-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 // RPT-2c · additive chart wrap
 import { TableChartToggle } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
@@ -28,7 +28,7 @@ const STATUS_OPTIONS: Array<RequisitionStatus | 'all'> = [
 ];
 
 export default function RequisitionHistory() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const [tick, setTick] = useState(0);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<RequisitionStatus | 'all'>('all');

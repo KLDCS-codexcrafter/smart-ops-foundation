@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Banknote } from 'lucide-react';
 import { listPaymentBatches } from '@/lib/vendor-risk-compliance-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { VendorPaymentBatch } from '@/types/vendor-payment-batch';
 
 function paiseToINR(p: number): string {
@@ -15,7 +15,7 @@ function paiseToINR(p: number): string {
 }
 
 export function VendorPaymentBatchesPanel(): JSX.Element {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const [batches, setBatches] = useState<VendorPaymentBatch[]>([]);
   useEffect(() => { setBatches(listPaymentBatches(entityCode)); }, [entityCode]);
 

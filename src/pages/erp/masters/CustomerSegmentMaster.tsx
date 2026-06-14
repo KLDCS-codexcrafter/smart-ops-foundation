@@ -18,9 +18,8 @@ import { Badge } from '@/components/ui/badge';
 import { customerSegmentsKey } from '@/types/customer-loyalty';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
+
 
 export interface CustomerSegment {
   id: string;
@@ -35,45 +34,46 @@ export interface CustomerSegment {
   updated_at: string;
 }
 
-function readSegments(): CustomerSegment[] {
+
+function readSegments(entityCode: string): CustomerSegment[] {
   try {
     // [JWT] GET /api/customer-segments
-    const raw = localStorage.getItem(customerSegmentsKey(ENTITY));
+    const raw = localStorage.getItem(customerSegmentsKey(entityCode));
     if (raw) return JSON.parse(raw) as CustomerSegment[];
   } catch { /* ignore */ }
   return [];
 }
 
-function writeSegments(list: CustomerSegment[]): void {
+function writeSegments(entityCode: string, list: CustomerSegment[]): void {
   try {
     // [JWT] POST/PUT /api/customer-segments
-    localStorage.setItem(customerSegmentsKey(ENTITY), JSON.stringify(list));
+    localStorage.setItem(customerSegmentsKey(entityCode), JSON.stringify(list));
   } catch { /* ignore */ }
 }
 
-function seedDemoSegments(): CustomerSegment[] {
+function seedDemoSegments(entityCode: string): CustomerSegment[] {
   const now = new Date().toISOString();
   return [
     {
-      id: 'seg-vip-kolkata', entity_id: ENTITY, code: 'VIP_KOLKATA',
+      id: 'seg-vip-kolkata', entity_id: entityCode, code: 'VIP_KOLKATA',
       name: 'Kolkata VIPs', description: 'Kolkata customers in CLV vip / growth tier.',
       manual_customer_ids: [], auto_rule: 'city=Kolkata AND clv_tier IN (vip,growth)',
       active: true, created_at: now, updated_at: now,
     },
     {
-      id: 'seg-festival', entity_id: ENTITY, code: 'FESTIVAL_BUYERS',
+      id: 'seg-festival', entity_id: entityCode, code: 'FESTIVAL_BUYERS',
       name: 'Festival Buyers', description: 'Customers who purchased in any Indian festival month (Oct/Nov).',
       manual_customer_ids: [], auto_rule: 'placed_at.month IN (10,11)',
       active: true, created_at: now, updated_at: now,
     },
     {
-      id: 'seg-new-30d', entity_id: ENTITY, code: 'NEW_30D',
+      id: 'seg-new-30d', entity_id: entityCode, code: 'NEW_30D',
       name: 'New Customers (30d)', description: 'First order placed within the last 30 days.',
       manual_customer_ids: [], auto_rule: 'days_since_first_order <= 30',
       active: true, created_at: now, updated_at: now,
     },
     {
-      id: 'seg-at-risk', entity_id: ENTITY, code: 'AT_RISK',
+      id: 'seg-at-risk', entity_id: entityCode, code: 'AT_RISK',
       name: 'At Risk', description: 'No order in 90+ days, was previously active.',
       manual_customer_ids: [], auto_rule: 'days_since_last_order >= 90 AND historical_orders >= 3',
       active: true, created_at: now, updated_at: now,
@@ -81,10 +81,10 @@ function seedDemoSegments(): CustomerSegment[] {
   ];
 }
 
-const blankSegment = (): CustomerSegment => {
+const blankSegment = (entityCode: string): CustomerSegment => {
   const now = new Date().toISOString();
   return {
-    id: `seg-${Date.now()}`, entity_id: ENTITY, code: '', name: '',
+    id: `seg-${Date.now()}`, entity_id: entityCode, code: '', name: '',
     description: '', manual_customer_ids: [], auto_rule: '',
     active: true, created_at: now, updated_at: now,
   };
@@ -99,14 +99,14 @@ export function CustomerSegmentMasterPanel() {
 
   // Initial load + seed
   useEffect(() => {
-    let list = readSegments();
+    let list = readSegments(entityCode);
     if (list.length === 0) {
-      list = seedDemoSegments();
-      writeSegments(list);
+      list = seedDemoSegments(entityCode);
+      writeSegments(entityCode, list);
     }
     setSegments(list);
     setSelectedId(list[0]?.id ?? null);
-  }, []);
+  }, [entityCode]);
 
   // Sync draft with selection
   useEffect(() => {
@@ -125,12 +125,12 @@ export function CustomerSegmentMasterPanel() {
   }, [segments, search]);
 
   const handleAdd = useCallback(() => {
-    const seg = blankSegment();
+    const seg = blankSegment(entityCode);
     const next = [seg, ...segments];
     setSegments(next);
-    writeSegments(next);
+    writeSegments(entityCode, next);
     setSelectedId(seg.id);
-  }, [segments]);
+  }, [segments, entityCode]);
 
   const handleSave = useCallback(() => {
     if (!draft) return;
@@ -145,7 +145,7 @@ export function CustomerSegmentMasterPanel() {
     };
     const next = segments.map(s => s.id === updated.id ? updated : s);
     setSegments(next);
-    writeSegments(next);
+    writeSegments(entityCode, next);
 
     logAudit({
       entityCode, userId, userName: userId,
@@ -164,10 +164,10 @@ export function CustomerSegmentMasterPanel() {
     if (!draft) return;
     const next = segments.filter(s => s.id !== draft.id);
     setSegments(next);
-    writeSegments(next);
+    writeSegments(entityCode, next);
     setSelectedId(next[0]?.id ?? null);
     toast.success(`Removed ${draft.code}`);
-  }, [draft, segments]);
+  }, [draft, segments, entityCode]);
 
   return (
     <div className="space-y-4">

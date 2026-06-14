@@ -29,11 +29,9 @@ import {
 import { seedDemoSchemes } from '@/lib/scheme-seed';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
 import type { ImportSchema } from '@/lib/master-import-engine';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 const SCHEME_TYPES: { value: SchemeType; label: string }[] = [
   { value: 'buy_n_get_m',   label: 'Buy N Get M Free' },
@@ -49,73 +47,75 @@ const STATUSES: SchemeStatus[] = ['draft', 'active', 'paused', 'expired'];
 const AUDIENCES: SchemeAudience[] = ['distributor', 'customer', 'both'];
 const TIERS: Array<'gold' | 'silver' | 'bronze'> = ['gold', 'silver', 'bronze'];
 
-function readSchemes(): Scheme[] {
+function readSchemes(entityCode: string): Scheme[] {
   try {
     // [JWT] GET /api/schemes
-    const raw = localStorage.getItem(schemesKey(ENTITY));
+    const raw = localStorage.getItem(schemesKey(entityCode));
     if (raw) return JSON.parse(raw) as Scheme[];
   } catch { /* ignore */ }
   return [];
 }
 
-function writeSchemes(list: Scheme[]): void {
+function writeSchemes(entityCode: string, list: Scheme[]): void {
   try {
     // [JWT] POST/PUT/DELETE /api/schemes
-    localStorage.setItem(schemesKey(ENTITY), JSON.stringify(list));
+    localStorage.setItem(schemesKey(entityCode), JSON.stringify(list));
   } catch { toast.error('Failed to save schemes'); }
 }
 
 // ─── Z9 — Master Import/Export Schema (inline · self-documenting) ────
 // Only headers/metadata are import/exportable. Payload + scope (typed unions)
 // stay out of CSV scope; they are managed in the in-app dialog.
-const SCHEME_IMPORT_SCHEMA: ImportSchema<Scheme> = {
-  entityName: 'Scheme',
-  storageKey: schemesKey(ENTITY),
-  primaryKey: 'code',
-  columns: [
-    { header: 'Scheme Code', field: 'code', required: true, type: 'string' },
-    { header: 'Scheme Name', field: 'name', required: true, type: 'string' },
-    { header: 'Scheme Type', field: 'type', required: true, type: 'string' },
-    { header: 'Description', field: 'description', required: false, type: 'string' },
-    { header: 'Status', field: 'status', required: false, type: 'string' },
-    { header: 'Valid From', field: 'valid_from', required: true, type: 'date' },
-    { header: 'Valid Until', field: 'valid_until', required: false, type: 'date' },
-    { header: 'Priority', field: 'priority', required: false, type: 'number' },
-    { header: 'Stackable', field: 'stackable', required: false, type: 'boolean' },
-  ],
-  rowToRecord: (row) => {
-    const code = String(row['Scheme Code'] ?? '').trim();
-    const type = (String(row['Scheme Type'] ?? 'flat_percent').trim() || 'flat_percent') as SchemeType;
-    const stackRaw = String(row['Stackable'] ?? '').toLowerCase();
-    const stackable = stackRaw === 'true' || stackRaw === 'yes' || stackRaw === '1';
-    const validUntil = String(row['Valid Until'] ?? '').trim();
-    const now = new Date().toISOString();
-    return {
-      id: `scm-imp-${code}-${Date.now().toString(36)}`,
-      entity_id: ENTITY,
-      code,
-      name: String(row['Scheme Name'] ?? ''),
-      description: String(row['Description'] ?? ''),
-      type,
-      status: (String(row['Status'] ?? 'draft').trim() || 'draft') as SchemeStatus,
-      valid_from: String(row['Valid From'] ?? '').trim(),
-      valid_until: validUntil === '' ? null : validUntil,
-      scope: { audience: 'distributor' },
-      payload: emptyPayload(type),
-      priority: Number(row['Priority'] ?? 5) || 5,
-      stackable,
-      max_uses_per_customer: null,
-      created_at: now,
-      updated_at: now,
-      created_by: 'import',
-    };
-  },
-  validateRow: (rec, line) => {
-    const errs: string[] = [];
-    if (!rec.code) errs.push(`Line ${line}: Scheme Code is empty`);
-    return errs;
-  },
-};
+function buildSchemeImportSchema(entityCode: string): ImportSchema<Scheme> {
+  return {
+    entityName: 'Scheme',
+    storageKey: schemesKey(entityCode),
+    primaryKey: 'code',
+    columns: [
+      { header: 'Scheme Code', field: 'code', required: true, type: 'string' },
+      { header: 'Scheme Name', field: 'name', required: true, type: 'string' },
+      { header: 'Scheme Type', field: 'type', required: true, type: 'string' },
+      { header: 'Description', field: 'description', required: false, type: 'string' },
+      { header: 'Status', field: 'status', required: false, type: 'string' },
+      { header: 'Valid From', field: 'valid_from', required: true, type: 'date' },
+      { header: 'Valid Until', field: 'valid_until', required: false, type: 'date' },
+      { header: 'Priority', field: 'priority', required: false, type: 'number' },
+      { header: 'Stackable', field: 'stackable', required: false, type: 'boolean' },
+    ],
+    rowToRecord: (row) => {
+      const code = String(row['Scheme Code'] ?? '').trim();
+      const type = (String(row['Scheme Type'] ?? 'flat_percent').trim() || 'flat_percent') as SchemeType;
+      const stackRaw = String(row['Stackable'] ?? '').toLowerCase();
+      const stackable = stackRaw === 'true' || stackRaw === 'yes' || stackRaw === '1';
+      const validUntil = String(row['Valid Until'] ?? '').trim();
+      const now = new Date().toISOString();
+      return {
+        id: `scm-imp-${code}-${Date.now().toString(36)}`,
+        entity_id: entityCode,
+        code,
+        name: String(row['Scheme Name'] ?? ''),
+        description: String(row['Description'] ?? ''),
+        type,
+        status: (String(row['Status'] ?? 'draft').trim() || 'draft') as SchemeStatus,
+        valid_from: String(row['Valid From'] ?? '').trim(),
+        valid_until: validUntil === '' ? null : validUntil,
+        scope: { audience: 'distributor' },
+        payload: emptyPayload(type),
+        priority: Number(row['Priority'] ?? 5) || 5,
+        stackable,
+        max_uses_per_customer: null,
+        created_at: now,
+        updated_at: now,
+        created_by: 'import',
+      };
+    },
+    validateRow: (rec, line) => {
+      const errs: string[] = [];
+      if (!rec.code) errs.push(`Line ${line}: Scheme Code is empty`);
+      return errs;
+    },
+  };
+}
 
 
 function emptyPayload(t: SchemeType): Scheme['payload'] {
@@ -132,11 +132,11 @@ function emptyPayload(t: SchemeType): Scheme['payload'] {
   }
 }
 
-function blankScheme(): Scheme {
+function blankScheme(entityCode: string): Scheme {
   const now = new Date().toISOString();
   return {
     id: `scm-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-    entity_id: ENTITY,
+    entity_id: entityCode,
     code: '', name: '', description: '',
     type: 'flat_percent', status: 'draft',
     valid_from: now.slice(0, 10), valid_until: null,
@@ -155,19 +155,21 @@ export function SchemeMasterPanel() {
   const [typeFilter, setTypeFilter] = useState<'all' | SchemeType>('all');
   const { entityCode, userId } = useCardEntitlement();
 
+  const schemeImportSchema = useMemo(() => buildSchemeImportSchema(entityCode), [entityCode]);
+
   // First-run seed
   useEffect(() => {
-    const existing = readSchemes();
+    const existing = readSchemes(entityCode);
     if (existing.length === 0) {
-      const seeded = seedDemoSchemes(ENTITY);
-      writeSchemes(seeded);
+      const seeded = seedDemoSchemes(entityCode);
+      writeSchemes(entityCode, seeded);
       setList(seeded);
       setSelectedId(seeded[0]?.id ?? null);
     } else {
       setList(existing);
       setSelectedId(existing[0]?.id ?? null);
     }
-  }, []);
+  }, [entityCode]);
 
   const filtered = useMemo(() => {
     return list.filter(s => {
@@ -189,7 +191,7 @@ export function SchemeMasterPanel() {
     if (!selected.code || !selected.name) { toast.error('Code & Name required'); return; }
     const next = list.map(s => s.id === selected.id
       ? { ...selected, updated_at: new Date().toISOString() } : s);
-    writeSchemes(next);
+    writeSchemes(entityCode, next);
     setList(next);
     logAudit({
       entityCode, userId, userName: userId,
@@ -204,10 +206,10 @@ export function SchemeMasterPanel() {
   };
 
   const handleNew = () => {
-    const fresh = blankScheme();
+    const fresh = blankScheme(entityCode);
     const next = [...list, fresh];
     setList(next);
-    writeSchemes(next);
+    writeSchemes(entityCode, next);
     setSelectedId(fresh.id);
   };
 
@@ -216,7 +218,7 @@ export function SchemeMasterPanel() {
     if (!window.confirm(`Delete scheme "${selected.code}"?`)) return;
     const next = list.filter(s => s.id !== selected.id);
     setList(next);
-    writeSchemes(next);
+    writeSchemes(entityCode, next);
     setSelectedId(next[0]?.id ?? null);
     toast.success('Scheme deleted');
   };
@@ -234,7 +236,7 @@ export function SchemeMasterPanel() {
     };
     const next = [...list, dup];
     setList(next);
-    writeSchemes(next);
+    writeSchemes(entityCode, next);
     setSelectedId(dup.id);
     toast.success('Scheme duplicated');
   };
@@ -254,9 +256,9 @@ export function SchemeMasterPanel() {
         </div>
         <div className="flex gap-2">
           <MasterImportExportButtons
-            schema={SCHEME_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+            schema={schemeImportSchema as unknown as ImportSchema<Record<string, unknown>>}
             records={list as unknown as Array<Record<string, unknown>>}
-            onImported={() => setList(readSchemes())}
+            onImported={() => setList(readSchemes(entityCode))}
           />
           <Button onClick={handleNew} variant="outline" size="sm">
             <Plus className="h-3.5 w-3.5 mr-1" /> New Scheme

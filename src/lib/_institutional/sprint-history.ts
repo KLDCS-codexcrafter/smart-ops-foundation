@@ -1669,6 +1669,13 @@ export const SPRINTS: SprintEntry[] = [
     newSiblings: [],
     bankDate: '2026-06-14', provenance: 'CONFIRMED',
   },
+  // 🆕 Sprint CL-3c T-CL3c-ConstHardcode-Remainder · CLEANUP ARC sprint 3c · closes const-hardcode mechanism · 7 small clusters (vendor-portal 6 + distributor 4 + payout 3 + servicedesk/settings 3 + masters 2 + fincore 1 + salesx 1 = 20 files) · removed module-scope `const E = 'DEMO'` / `const ENTITY = DEFAULT_ENTITY_SHORTCODE` / `const entityCode = DEFAULT_ENTITY_SHORTCODE` · replaced with `const { entityCode } = useEntityCode()` at component TOP LEVEL · for distributor panels with default-param wrappers (CreditApprovalQueue/DistributorDisputeQueue/DistributorHierarchyMaster) + salesx ProformaInvoicePrintPanel: prop made truly optional + hook fallback inside component, outer default export drops the literal · servicedesk/settings (CommissionRates/EmailTemplates/TellicallerTriggers) const E renamed via `const { entityCode: E } = useEntityCode()` to minimise diff · masters/SchemeMaster: threaded entityCode through readSchemes/writeSchemes/blankScheme + refactored module-scope SCHEME_IMPORT_SCHEMA into buildSchemeImportSchema(entityCode) factory wrapped in useMemo · masters/CustomerSegmentMaster: threaded entityCode through readSegments/writeSegments/seedDemoSegments/blankSegment · fincore/AssetCentreMaster (financial — entity correctness verified): hook swap + removed DEFAULT_ENTITY_SHORTCODE fallback in logAudit (entity is always resolved) · DistributorRateUs: hook aliased `{ entityCode: ENTITY }` to minimise diff · removed every now-unused DEFAULT_ENTITY_SHORTCODE import (ESLint --max-warnings 0 lesson from CL-2b) · 7 NEW GUARD TESTS (one per cluster): src/__tests__/cl-3c/{vendor-portal,distributor,payout,servicedesk-settings,masters,fincore,salesx}-entity-hook-guard.test.ts mirror CL-3a/3b guard, ROOT pointed at each cluster dir, assert offenders.toEqual([]) · TSC 0 · ESLint 0/0 (repo-wide) · Vitest 7/7 PASS guards · ZERO new SIBLINGs · NON-GOAL (deferred): components(16)+mobile(15) = CL-3d, the 23 raw getItem('active_entity_code') readers = CL-3e · predecessor 90cc909 · headSha TBD_AT_BANK
+  {
+    sprintNumber: 'CL3c' as unknown as number, code: 'T-CL3c-ConstHardcode-Remainder', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '90cc909', loc: 220,
+    newSiblings: [],
+    bankDate: '2026-06-14', provenance: 'CONFIRMED',
+  },
 ];
 
 
