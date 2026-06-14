@@ -12,6 +12,8 @@ const ROOTS = [
 ];
 const FORBIDDEN = [
   /=\s*DEFAULT_ENTITY_SHORTCODE\s*;?$/m,
+  /const\s+E\s*=\s*'DEMO'/,
+  /const\s+ENTITY\s*=\s*'DEMO'/,
   /function\s+getActiveEntityCode\s*\(/,
   /getItem\(\s*['"]active_entity_code['"]\s*\)/,
 ];
