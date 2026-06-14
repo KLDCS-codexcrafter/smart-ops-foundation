@@ -13,8 +13,8 @@ import {
   listEquipment,
   createWorkOrder,
   listWorkOrders,
-  createBreakdownReport,
-  listBreakdownReports,
+  createPMTickoff,
+  listPMTickoffs,
 } from '@/lib/maintainpro-engine';
 
 const X = 'OPRX';
@@ -45,6 +45,29 @@ function eqBase(code: string): Parameters<typeof createEquipment>[1] {
   } as Parameters<typeof createEquipment>[1];
 }
 
+function woBase(equipment_id: string, wo_no: string): Parameters<typeof createWorkOrder>[1] {
+  return {
+    wo_no, wo_type: 'breakdown',
+    source_breakdown_id: null, source_pm_schedule_id: null,
+    equipment_id, assigned_to_user_id: 'u1', assigned_at: null,
+    estimated_minutes: 60, actual_minutes: null,
+    status: 'draft', started_at: null, paused_at: null, resumed_at: null,
+    completed_at: null, activities_planned: [], parts_used: [],
+    completion_notes: '', followup_required: false, project_id: null,
+    created_by_user_id: 'u1',
+  } as Parameters<typeof createWorkOrder>[1];
+}
+
+function pmBase(equipment_id: string, pm_no: string): Parameters<typeof createPMTickoff>[1] {
+  return {
+    pm_no, pm_schedule_template_id: 'tpl', equipment_id,
+    scheduled_date: '2026-06-01', actual_completion_date: '2026-06-01',
+    performed_by_user_id: 'u1', duration_minutes: 30,
+    activities_completed: [], parts_used: [], next_due_date: null,
+    status: 'completed', project_id: null,
+  } as Parameters<typeof createPMTickoff>[1];
+}
+
 describe('CL-3a · MaintainPro entity-scoped reads (post hook sweep)', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -68,46 +91,20 @@ describe('CL-3a · MaintainPro entity-scoped reads (post hook sweep)', () => {
   it('listWorkOrders(X) does not leak Y rows', () => {
     const eX = createEquipment(X, eqBase('EQ-X-WO'));
     const eY = createEquipment(Y, eqBase('EQ-Y-WO'));
-    createWorkOrder(X, {
-      wo_no: 'WO-X-1', wo_type: 'corrective', equipment_id: eX.id,
-      raised_by_user_id: 'u1', assigned_to_user_id: 'u1',
-      scheduled_start: '2026-06-01', scheduled_end: '2026-06-02',
-      actual_start: null, actual_end: null, status: 'planned',
-      parts_planned: [], labour_hours_planned: 1,
-      project_id: null, breakdown_report_id: null,
-    });
-    createWorkOrder(Y, {
-      wo_no: 'WO-Y-1', wo_type: 'corrective', equipment_id: eY.id,
-      raised_by_user_id: 'u1', assigned_to_user_id: 'u1',
-      scheduled_start: '2026-06-01', scheduled_end: '2026-06-02',
-      actual_start: null, actual_end: null, status: 'planned',
-      parts_planned: [], labour_hours_planned: 1,
-      project_id: null, breakdown_report_id: null,
-    });
+    createWorkOrder(X, woBase(eX.id, 'WO-X-1'));
+    createWorkOrder(Y, woBase(eY.id, 'WO-Y-1'));
+
     expect(listWorkOrders(X).map(w => w.wo_no)).toEqual(['WO-X-1']);
     expect(listWorkOrders(Y).map(w => w.wo_no)).toEqual(['WO-Y-1']);
   });
 
-  it('listBreakdownReports(X) is isolated from Y', () => {
-    const eX = createEquipment(X, eqBase('EQ-X-BD'));
-    const eY = createEquipment(Y, eqBase('EQ-Y-BD'));
-    createBreakdownReport(X, {
-      breakdown_no: 'BD-X-1', equipment_id: eX.id,
-      reported_at: new Date().toISOString(), reported_by_user_id: 'u1',
-      severity: 'minor', symptoms_description: 'x', impact_on_production: 'low',
-      cause_category: 'mechanical', root_cause: '', corrective_action: '',
-      preventive_action: '', work_order_id: null, project_id: null,
-      mttr_minutes: null, downtime_minutes: null, status: 'open',
-    });
-    createBreakdownReport(Y, {
-      breakdown_no: 'BD-Y-1', equipment_id: eY.id,
-      reported_at: new Date().toISOString(), reported_by_user_id: 'u1',
-      severity: 'minor', symptoms_description: 'y', impact_on_production: 'low',
-      cause_category: 'mechanical', root_cause: '', corrective_action: '',
-      preventive_action: '', work_order_id: null, project_id: null,
-      mttr_minutes: null, downtime_minutes: null, status: 'open',
-    });
-    expect(listBreakdownReports(X).map(b => b.breakdown_no)).toEqual(['BD-X-1']);
-    expect(listBreakdownReports(Y).map(b => b.breakdown_no)).toEqual(['BD-Y-1']);
+  it('listPMTickoffs(X) is isolated from Y', () => {
+    const eX = createEquipment(X, eqBase('EQ-X-PM'));
+    const eY = createEquipment(Y, eqBase('EQ-Y-PM'));
+    createPMTickoff(X, pmBase(eX.id, 'PM-X-1'));
+    createPMTickoff(Y, pmBase(eY.id, 'PM-Y-1'));
+
+    expect(listPMTickoffs(X).map(t => t.pm_no)).toEqual(['PM-X-1']);
+    expect(listPMTickoffs(Y).map(t => t.pm_no)).toEqual(['PM-Y-1']);
   });
 });
