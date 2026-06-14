@@ -11,6 +11,7 @@ import { useCardEntitlement } from '@/hooks/useCardEntitlement';
 import { useNavigate } from 'react-router-dom';
 import { EximXWelcome } from './EximXWelcome';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { EximXModule } from './EximX.types';
 // RPT-9b · User Report Builder · embedded mount (FinCore reference pattern)
 import { ReportBuilder } from '@/components/operix-core/report-framework';
@@ -19,8 +20,10 @@ export default function EximXPage(): JSX.Element {
   const [active, setActive] = useState<EximXModule>('welcome');
   const { entitlements, profile } = useCardEntitlement();
   const navigate = useNavigate();
+  const { entityCode } = useEntityCode();
 
-  useEffect(() => { seedSinhaEximX(); }, []);
+  // CL-1 · Mech4 — seed under the active scenario entity (not hard-coded sinha-trading).
+  useEffect(() => { seedSinhaEximX(entityCode || 'sinha-trading'); }, [entityCode]);
 
   const handleModuleChange = (moduleId: string): void => {
     if (moduleId === 'eximx-export') { navigate('/erp/eximx/export'); return; }
