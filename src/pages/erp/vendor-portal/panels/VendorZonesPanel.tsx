@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert, RefreshCw } from 'lucide-react';
 import { listZones, recomputeAllZones } from '@/lib/vendor-risk-compliance-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { VendorZone, VendorZoneColor } from '@/types/vendor-zone';
 
 const ZONE_STYLES: Record<VendorZoneColor, string> = {
@@ -21,7 +21,7 @@ const ZONE_STYLES: Record<VendorZoneColor, string> = {
 };
 
 export function VendorZonesPanel(): JSX.Element {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const [zones, setZones] = useState<VendorZone[]>([]);
 
   useEffect(() => { setZones(listZones(entityCode)); }, [entityCode]);

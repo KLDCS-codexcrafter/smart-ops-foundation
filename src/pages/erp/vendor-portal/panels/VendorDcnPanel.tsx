@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { FileMinus2 } from 'lucide-react';
 import { listDcns } from '@/lib/vendor-risk-compliance-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { VendorDcn } from '@/types/vendor-dcn';
 
 function paiseToINR(p: number): string {
@@ -15,7 +15,7 @@ function paiseToINR(p: number): string {
 }
 
 export function VendorDcnPanel(): JSX.Element {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const [dcns, setDcns] = useState<VendorDcn[]>([]);
   useEffect(() => { setDcns(listDcns(entityCode)); }, [entityCode]);
 

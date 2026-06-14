@@ -31,7 +31,7 @@ import {
   type PaymentRequestType, type PaymentTypeCategory,
 } from '@/types/payment-requisition';
 import { createRequisition, ROUTING_RULES } from '@/lib/payment-requisition-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { DEPARTMENTS_KEY } from '@/types/org-structure';
 import type { Department } from '@/types/org-structure';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
@@ -82,7 +82,7 @@ const BLANK: FormState = {
 export default function PaymentRequisitionEntry() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const departments = useMemo(() => loadDepartments(), []);
 
   const initialType = (params.get('type') as PaymentRequestType | null);
