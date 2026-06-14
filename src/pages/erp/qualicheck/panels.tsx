@@ -26,13 +26,11 @@ import type { QaInspectionRecord, QaInspectionStatus } from '@/types/qa-inspecti
 import type { QaPlan } from '@/types/qa-plan';
 import type { QaSpec } from '@/types/qa-spec';
 import type { QualiCheckModule } from './QualiCheckSidebar.types';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 // ── Helpers ──────────────────────────────────────────────────────────
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
-  catch { return 'DEMO'; }
-}
+// getActiveEntityCode removed — Sprint T-CL3e · panels use useEntityCode() hook
 
 function fmtDate(iso?: string | null): string {
   if (!iso) return '—';
