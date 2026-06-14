@@ -58,7 +58,7 @@ export default function Statement() {
   const [toDate, setToDate] = useState("");
 
   const customerId = 'demo-customer-1'; // [JWT] derived from customer auth context
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;             // [JWT] derived from customer's entity assignment
+  const { entityCode } = useEntityCode();             // [JWT] derived from customer's entity assignment
   const customerName = 'Demo Customer';
 
   const [payOpen, setPayOpen] = useState(false);
