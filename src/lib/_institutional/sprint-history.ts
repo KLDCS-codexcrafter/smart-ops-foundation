@@ -1644,7 +1644,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint CL-2 T-CL2-EngineStrip-Safe-Bleed · CLEANUP ARC sprint 2 of 3 · LEAN · proves engine-signature-strip pattern on SMALL/SAFE engines + fixes J5 cross-tenant bleed · Block 1 daybook-sources.ts:104 sd-service-daybook read:() → read:(entityCode) calling listServiceTickets({entity_id: entityCode}) — mirrors the 6 other sources' signature · two-tenant isolation test asserts A's read returns ONLY A's tickets (B's rows don't bleed) · Block 2 servicedesk-oem-engine 5 = DEFAULT_ENTITY defaults stripped (submitOEMClaimToProcure360 · markOEMClaimApproved · markOEMClaimPaid · markOEMClaimRejected · getOEMClaim) → entity_id now required · 2 callers fixed (OEMClaimDetail.tsx adds useEntityCode() at component top-level threading entityCode through getOEMClaim/reload; test already threads ENTITY) · Block 3 qr-login-engine generateDemoQR 1 = DEFAULT_ENTITY_SHORTCODE default stripped (0 callers → no cascade) · EXPLICIT NON-GOALS held 0-DIFF: servicedesk-engine.ts (75 defaults/40 callers · CL-2b) + 101 page hardcodes (CL-3) · ZERO new SIBLINGs · predecessor 95c1990 · headSha TBD_AT_BANK
   {
     sprintNumber: 'CL2' as unknown as number, code: 'T-CL2-EngineStrip-Safe-Bleed', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '95c1990', loc: 60,
+    headSha: 'e57f94d', predecessorSha: '95c1990', loc: 60,
     newSiblings: [],
     bankDate: '2026-06-14', provenance: 'CONFIRMED',
   },
