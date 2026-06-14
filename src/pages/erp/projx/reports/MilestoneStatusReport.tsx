@@ -15,7 +15,6 @@ import {
   MILESTONE_STATUS_LABELS, MILESTONE_STATUS_COLORS,
 } from '@/types/projx/project-milestone';
 import type { MilestoneStatus } from '@/types/projx/project-milestone';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 

@@ -20,7 +20,6 @@ import { formatINR } from '@/lib/india-validations';
 import { signalsForItem, type SocialProofSignal } from '@/lib/social-proof-engine';
 import { recommendForCart } from '@/lib/customer-recommendation-engine';
 import { schemesKey, type Scheme } from '@/types/scheme';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   customerCartKey, customerCartActivityKey, customerOrdersKey,
   type CustomerCart, type CustomerCartLine, type CustomerOrder,
@@ -81,7 +80,7 @@ function getCustomerId(): string {
   } catch { return 'cust-demo'; }
 }
 
-function loadCart(custId: string): CustomerCart {
+function loadCart(entityCode: string, custId: string): CustomerCart {
   const all = ls<CustomerCart>(customerCartKey(entityCode));
   return all.find(c => c.customer_id === custId) ?? {
     id: custId, customer_id: custId, entity_code: entityCode,
@@ -90,7 +89,7 @@ function loadCart(custId: string): CustomerCart {
   };
 }
 
-function saveCart(cart: CustomerCart): void {
+function saveCart(entityCode: string, cart: CustomerCart): void {
   const all = ls<CustomerCart>(customerCartKey(entityCode));
   const idx = all.findIndex(c => c.customer_id === cart.customer_id);
   if (idx >= 0) all[idx] = cart; else all.push(cart);
@@ -116,7 +115,7 @@ export function CustomerCatalogPanel() {
   const { entityCode } = useEntityCode();
   const [items] = useState<CatalogItem[]>(() => loadCatalog());
   const customerId = getCustomerId();
-  const [cart, setCart] = useState<CustomerCart>(() => loadCart(customerId));
+  const [cart, setCart] = useState<CustomerCart>(() => loadCart(entityCode, customerId));
   const [search, setSearch] = useState('');
   const [selectedCats, setSelectedCats] = useState<string[]>([]);
   const [schemesOnly, setSchemesOnly] = useState(false);
@@ -191,7 +190,7 @@ export function CustomerCatalogPanel() {
     const subtotal_paise = lines.reduce((s, l) => s + l.line_total_paise, 0);
     const next: CustomerCart = { ...cart, lines, subtotal_paise, updated_at: new Date().toISOString() };
     setCart(next);
-    saveCart(next);
+    saveCart(entityCode, next);
   };
 
   const cartCount = cart.lines.reduce((s, l) => s + l.qty, 0);

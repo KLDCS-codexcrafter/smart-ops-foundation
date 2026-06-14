@@ -20,8 +20,6 @@ import type { CLVResult } from '@/types/customer-clv';
 import type { CustomerLoyaltyState, LoyaltyTier } from '@/types/customer-loyalty';
 import { loyaltyStateKey } from '@/types/customer-loyalty';
 import type { CustomerHubModule } from './CustomerHubSidebar';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface CustomerLite {
   id: string;
   legalName?: string;
@@ -46,7 +44,7 @@ function loadCustomers(): CustomerLite[] {
   return [];
 }
 
-function loadOrders(): OrderLite[] {
+function loadOrders(entityCode: string): OrderLite[] {
   try {
     // [JWT] GET /api/orders
     const raw = localStorage.getItem(`erp_orders_${entityCode}`);
@@ -55,7 +53,7 @@ function loadOrders(): OrderLite[] {
   return [];
 }
 
-function loadLoyaltyStates(): CustomerLoyaltyState[] {
+function loadLoyaltyStates(entityCode: string): CustomerLoyaltyState[] {
   try {
     // [JWT] GET /api/loyalty/states
     const raw = localStorage.getItem(loyaltyStateKey(entityCode));
@@ -91,8 +89,8 @@ export function CustomerHubWelcomePanel({ onModuleChange }: CustomerHubWelcomePa
   const [now] = useState<Date>(() => new Date());
 
   const customers = useMemo(() => loadCustomers(), []);
-  const orders    = useMemo(() => loadOrders(), []);
-  const loyalty   = useMemo(() => loadLoyaltyStates(), []);
+  const orders    = useMemo(() => loadOrders(entityCode), []);
+  const loyalty   = useMemo(() => loadLoyaltyStates(entityCode), []);
 
   // CLV per customer
   const clvResults = useMemo<CLVResult[]>(() => {

@@ -10,8 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Signature } from 'lucide-react';
 import { createSignoff, listSignoffs } from '@/lib/sitex-signoff-engine';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface Props { onNavigate: (m: string) => void }
 
 export function CustomerSignoffPanel({ onNavigate: _onNavigate }: Props): JSX.Element {

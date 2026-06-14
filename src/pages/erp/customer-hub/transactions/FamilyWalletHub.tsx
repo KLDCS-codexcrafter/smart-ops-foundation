@@ -36,8 +36,6 @@ import {
 } from '@/types/customer-loyalty';
 import { rebuildState } from '@/lib/loyalty-engine';
 import { logAudit } from '@/lib/card-audit-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface CustomerLite {
   id: string;
   legalName?: string;
@@ -73,7 +71,7 @@ function customerLabel(c: CustomerLite): string {
 }
 
 /** Seed 1 demo link + 1 demo transfer on first run. */
-function seedDemoIfEmpty(currentId: string, currentName: string): void {
+function seedDemoIfEmpty(entityCode: string, currentId: string, currentName: string): void {
   const existing = ls<FamilyLink>(familyLinksKey(entityCode));
   if (existing.length > 0) return;
 
@@ -136,7 +134,7 @@ export function FamilyWalletHubPanel() {
 
   // Seed + hydrate loyalty
   useEffect(() => {
-    seedDemoIfEmpty(currentId, currentName);
+    seedDemoIfEmpty(entityCode, currentId, currentName);
     setLinks(ls<FamilyLink>(familyLinksKey(entityCode)));
     setTransfers(ls<FamilyTransfer>(familyTransfersKey(entityCode)));
     const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(entityCode));

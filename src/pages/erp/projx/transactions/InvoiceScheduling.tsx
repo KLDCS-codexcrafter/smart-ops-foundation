@@ -22,7 +22,6 @@ import {
   computeScheduleStatus, INVOICE_SCHEDULE_STATUS_LABELS, INVOICE_SCHEDULE_STATUS_COLORS,
 } from '@/types/projx/project-invoice-schedule';
 import type { ProjectInvoiceSchedule } from '@/types/projx/project-invoice-schedule';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { logAudit } from '@/lib/audit-trail-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';

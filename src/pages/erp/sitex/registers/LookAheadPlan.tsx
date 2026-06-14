@@ -9,7 +9,6 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from 'lucide-react';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // RPT-6c imports
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';

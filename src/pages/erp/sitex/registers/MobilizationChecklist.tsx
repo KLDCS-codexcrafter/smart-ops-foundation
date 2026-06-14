@@ -12,8 +12,6 @@ import {
   listSites, generateMobilizationChecklist, isReadyToTransitionFromMobilizing,
   type MobilizationChecklistItem,
 } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface Props { onNavigate: (m: string) => void }
 
 export function MobilizationChecklist({ onNavigate: _onNavigate }: Props): JSX.Element {

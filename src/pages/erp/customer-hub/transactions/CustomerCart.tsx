@@ -33,7 +33,6 @@ import {
 } from '@/lib/loyalty-engine';
 import { logAudit } from '@/lib/card-audit-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { fyForDate } from '@/lib/fincore-engine';
 // Precision Arc · Stage 3B · Block 4c — C4 integer-paise (redeem cap; floor preserved, inner arithmetic decimal-safe).
 import { dSub, dMul } from '@/lib/decimal-helpers';
@@ -56,7 +55,7 @@ function getCustomerId(): string {
   } catch { return 'cust-demo'; }
 }
 
-function loadCart(custId: string): CustomerCart {
+function loadCart(entityCode: string, custId: string): CustomerCart {
   const all = ls<CustomerCart>(customerCartKey(entityCode));
   return all.find(c => c.customer_id === custId) ?? {
     id: custId, customer_id: custId, entity_code: entityCode,
@@ -65,7 +64,7 @@ function loadCart(custId: string): CustomerCart {
   };
 }
 
-function saveCart(cart: CustomerCart): void {
+function saveCart(entityCode: string, cart: CustomerCart): void {
   const all = ls<CustomerCart>(customerCartKey(entityCode));
   const idx = all.findIndex(c => c.customer_id === cart.customer_id);
   if (idx >= 0) all[idx] = cart; else all.push(cart);
@@ -78,7 +77,7 @@ function saveCart(cart: CustomerCart): void {
   setLs(customerCartActivityKey(entityCode), act);
 }
 
-function nextOrderNo(): string {
+function nextOrderNo(entityCode: string): string {
   const year = new Date().getFullYear();
   const all = ls<CustomerOrder>(customerOrdersKey(entityCode));
   const yearOrders = all.filter(o => o.order_no.startsWith(`ORD/${year}/`));
@@ -89,7 +88,7 @@ function nextOrderNo(): string {
 export function CustomerCartPanel() {
   const { entityCode } = useEntityCode();
   const customerId = getCustomerId();
-  const [cart, setCart] = useState<CustomerCart>(() => loadCart(customerId));
+  const [cart, setCart] = useState<CustomerCart>(() => loadCart(entityCode, customerId));
   const [redeemPoints, setRedeemPoints] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [loyaltyState, setLoyaltyState] = useState<CustomerLoyaltyState | null>(null);
@@ -166,14 +165,14 @@ export function CustomerCartPanel() {
       updated_at: new Date().toISOString(),
     };
     setCart(next);
-    saveCart(next);
+    saveCart(entityCode, next);
   };
 
   const clearCart = () => {
     if (!confirm('Clear all items from cart?')) return;
     const next: CustomerCart = { ...cart, lines: [], subtotal_paise: 0, updated_at: new Date().toISOString() };
     setCart(next);
-    saveCart(next);
+    saveCart(entityCode, next);
     setRedeemPoints(0);
   };
 
@@ -181,7 +180,7 @@ export function CustomerCartPanel() {
     if (cart.lines.length === 0) return;
     setSubmitting(true);
     try {
-      const orderNo = nextOrderNo();
+      const orderNo = nextOrderNo(entityCode);
       const now = new Date().toISOString();
       const order: CustomerOrder = {
         id: `ord-${Date.now()}`,
@@ -276,7 +275,7 @@ export function CustomerCartPanel() {
 
       // Clear cart
       const cleared: CustomerCart = { ...cart, lines: [], subtotal_paise: 0, updated_at: now };
-      saveCart(cleared);
+      saveCart(entityCode, cleared);
       setCart(cleared);
       setRedeemPoints(0);
 

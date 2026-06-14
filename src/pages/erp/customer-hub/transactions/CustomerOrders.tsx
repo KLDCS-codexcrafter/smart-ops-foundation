@@ -12,7 +12,6 @@ import { ConsumerAppShell } from '@/components/shared/ConsumerAppShell';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { formatINR, formatIndianDate } from '@/lib/india-validations';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   customerOrdersKey, customerCartKey,
   type CustomerOrder, type CustomerOrderStatus, type CustomerCart, type CustomerCartLine,

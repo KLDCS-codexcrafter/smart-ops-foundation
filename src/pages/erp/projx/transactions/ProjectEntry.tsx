@@ -48,7 +48,6 @@ import type { Project, ProjectStatus, ProjectType } from '@/types/projx/project'
 import { computeProjectPnLStub } from '@/lib/projx-engine';
 import { logConversionEvent } from '@/lib/salesx-conversion-engine';
 import { isPeriodLocked } from '@/lib/period-lock-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import type { CreateProjectInput } from '@/hooks/useProjects';
 import { useT } from '@/lib/i18n-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';

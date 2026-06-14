@@ -13,7 +13,6 @@ import { computeChurn, highestChurnRisk } from '@/lib/customer-churn-engine';
 import type { ChurnResult, ChurnRiskTier } from '@/lib/customer-churn-engine';
 import { logAudit } from '@/lib/card-audit-engine';
 import { toast } from 'sonner';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
@@ -37,7 +36,7 @@ function loadCustomers(): CustomerLite[] {
   return [];
 }
 
-function loadOrders(): OrderLite[] {
+function loadOrders(entityCode: string): OrderLite[] {
   const out: OrderLite[] = [];
   for (const k of [`erp_customer_orders_${entityCode}`, `erp_distributor_orders_${entityCode}`]) {
     try {
@@ -69,7 +68,7 @@ export function ChurnRiskReportPanel() {
 
   useEffect(() => {
     setCustomers(loadCustomers());
-    setOrders(loadOrders());
+    setOrders(loadOrders(entityCode));
     setComplaints(ls<ComplaintLite>(`erp_customer_complaints_${entityCode}`));
     setRatings(ls<RatingLite>(`erp_item_ratings_${entityCode}`));
     // [JWT] GET /api/customers/churn-risk

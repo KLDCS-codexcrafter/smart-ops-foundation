@@ -13,8 +13,6 @@ import { ReportChart } from '@/components/operix-core/report-framework';
 import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
 import { schemesKey, appliedSchemesKey, type Scheme, type AppliedScheme } from '@/types/scheme';
 import { formatINR } from '@/lib/india-validations';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface AppliedRecord {
   order_id: string;
   order_date: string;

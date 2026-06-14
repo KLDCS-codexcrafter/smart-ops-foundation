@@ -15,7 +15,6 @@ import {
   listImprestTransactions, createImprest, computeImprestHealthMetrics,
 } from '@/lib/sitex-imprest-engine';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import type { SiteImprest } from '@/types/sitex';
 
 interface Props { onNavigate: (m: string) => void }

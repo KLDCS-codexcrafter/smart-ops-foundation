@@ -13,7 +13,6 @@ import {
 } from '@/types/stock-out';
 import { computeStockOutAlerts, seedDemoStockLevels } from '@/lib/stock-out-engine';
 import { recordActivity } from '@/lib/cross-card-activity-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
@@ -23,7 +22,7 @@ const SEVERITY_COLOURS: Record<StockOutSeverity, string> = {
   info:     'bg-slate-500/15 text-slate-600 border-slate-400/30',
 };
 
-function readSnapshots(): StockLevelSnapshot[] {
+function readSnapshots(entityCode: string): StockLevelSnapshot[] {
   try {
     // [JWT] GET /api/distributor/stock-levels
     const raw = localStorage.getItem(stockLevelsKey(entityCode));
@@ -31,7 +30,7 @@ function readSnapshots(): StockLevelSnapshot[] {
   } catch { return []; }
 }
 
-function readDismissals(): Record<string, string> {
+function readDismissals(entityCode: string): Record<string, string> {
   try {
     const raw = localStorage.getItem(stockOutAlertsKey(entityCode));
     if (!raw) return {};
@@ -43,7 +42,7 @@ function readDismissals(): Record<string, string> {
   } catch { return {}; }
 }
 
-function writeDismissal(alertId: string): void {
+function writeDismissal(entityCode: string, alertId: string): void {
   try {
     const raw = localStorage.getItem(stockOutAlertsKey(entityCode));
     const list: { id: string; dismissed_at: string | null }[] = raw ? JSON.parse(raw) : [];
@@ -59,10 +58,10 @@ function writeDismissal(alertId: string): void {
 export function StockOutWarningsPanel() {
   const { entityCode } = useEntityCode();
   const [rev, setRev] = useState(0);
-  const [dismissed, setDismissed] = useState<Record<string, string>>(() => readDismissals());
+  const [dismissed, setDismissed] = useState<Record<string, string>>(() => readDismissals(entityCode));
 
   useEffect(() => {
-    let snaps = readSnapshots();
+    let snaps = readSnapshots(entityCode);
     if (snaps.length === 0) {
       snaps = seedDemoStockLevels(entityCode);
       try { localStorage.setItem(stockLevelsKey(entityCode), JSON.stringify(snaps)); }
@@ -73,7 +72,7 @@ export function StockOutWarningsPanel() {
 
   const alerts: StockOutAlert[] = useMemo(() => {
     void rev;
-    const snaps = readSnapshots();
+    const snaps = readSnapshots(entityCode);
     return computeStockOutAlerts(snaps);
   }, [rev]);
 
@@ -98,7 +97,7 @@ export function StockOutWarningsPanel() {
   };
 
   const handleDismiss = (id: string) => {
-    writeDismissal(id);
+    writeDismissal(entityCode, id);
     setDismissed(prev => ({ ...prev, [id]: new Date().toISOString() }));
   };
 

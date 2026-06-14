@@ -15,8 +15,6 @@ import { Activity, AlertTriangle, Wallet, FlaskConical, Package, PiggyBank, Shie
 import { listSites } from '@/lib/sitex-engine';
 import { computeSiteHealthScore } from '@/lib/site-health-score-engine';
 import { computeImprestHealthMetrics } from '@/lib/sitex-imprest-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface Props { onNavigate: (m: string) => void }
 
 interface RAGCardSpec {

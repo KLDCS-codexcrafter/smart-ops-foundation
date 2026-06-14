@@ -14,7 +14,6 @@ import {
 } from '@/types/distributor-rating';
 import { computeComposite, recommendedCreditLimit } from '@/lib/distributor-rating-engine';
 import { formatINR } from '@/lib/india-validations';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 

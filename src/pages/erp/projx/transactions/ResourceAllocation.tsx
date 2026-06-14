@@ -19,7 +19,6 @@ import { useProjects } from '@/hooks/useProjects';
 import { useProjectResources } from '@/hooks/useProjectResources';
 import { useSAMPersons } from '@/hooks/useSAMPersons';
 import type { ProjectResource } from '@/types/projx/project-resource';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { logAudit } from '@/lib/audit-trail-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';

@@ -13,8 +13,6 @@ import {
   submitForApproval,
 } from '@/lib/sitex-ra-bill-engine';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface Props { onNavigate: (m: string) => void }
 
 export function RABillEntry({ onNavigate: _onNavigate }: Props): JSX.Element {

@@ -8,7 +8,6 @@ import { Badge } from '@/components/ui/badge';
 import { ShieldCheck } from 'lucide-react';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import {
   disputesKey, DISPUTE_REASON_LABELS,
   type InvoiceDispute,

@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { signalsForCatalog, type SocialProofSignal } from '@/lib/social-proof-engine';
 import { logAudit } from '@/lib/card-audit-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 

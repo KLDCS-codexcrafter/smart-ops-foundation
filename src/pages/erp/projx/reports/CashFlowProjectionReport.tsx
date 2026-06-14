@@ -27,8 +27,6 @@ import {
 } from '@/types/projx/project-invoice-schedule';
 import type { Project } from '@/types/projx/project';
 import { dAdd, round2 } from '@/lib/decimal-helpers';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 type MonthKey = string;
 
 interface MonthlyProjectCell {

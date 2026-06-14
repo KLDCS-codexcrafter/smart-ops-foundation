@@ -14,8 +14,6 @@ import {
   type CustomerLoyaltyState, type LoyaltyLedgerEntry, type LoyaltyTier,
 } from '@/types/customer-loyalty';
 import { logAudit } from '@/lib/card-audit-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 interface CustomerLite { id: string; legalName?: string; partyName?: string }
 
 function ls<T>(k: string): T[] {

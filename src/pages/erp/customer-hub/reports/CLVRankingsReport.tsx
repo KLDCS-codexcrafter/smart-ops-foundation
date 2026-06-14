@@ -13,7 +13,6 @@ import { formatINR } from '@/lib/india-validations';
 import { computeCLV } from '@/lib/customer-clv-engine';
 import type { CLVResult } from '@/types/customer-clv';
 import { logAudit } from '@/lib/card-audit-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
@@ -36,7 +35,7 @@ function loadCustomers(): CustomerLite[] {
   return [];
 }
 
-function loadOrders(): OrderLite[] {
+function loadOrders(entityCode: string): OrderLite[] {
   const keys = [
     `erp_customer_orders_${entityCode}`,
     `erp_distributor_orders_${entityCode}`,
@@ -73,7 +72,7 @@ export function CLVRankingsReportPanel() {
 
   useEffect(() => {
     setCustomers(loadCustomers());
-    setOrders(loadOrders());
+    setOrders(loadOrders(entityCode));
     // [JWT] GET /api/customers/clv-rankings
     logAudit({
       entityCode: entityCode, userId: 'system', userName: 'system',

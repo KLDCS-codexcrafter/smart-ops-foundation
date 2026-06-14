@@ -14,7 +14,6 @@ import { useTimeEntries } from '@/hooks/useTimeEntries';
 import { useProjectResources } from '@/hooks/useProjectResources';
 import { computeProjectPnL } from '@/lib/projx-engine';
 import { PROJECT_STATUS_COLORS, PROJECT_STATUS_LABELS } from '@/types/projx/project';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 

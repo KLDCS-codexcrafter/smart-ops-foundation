@@ -11,7 +11,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { FileText, AlertTriangle } from 'lucide-react';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { dprsKey, type DPR } from '@/types/sitex';
 // RPT-6c imports
 import { ReportChart } from '@/components/operix-core/report-framework';

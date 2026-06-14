@@ -18,7 +18,6 @@ import { simulateSchemeImpact } from '@/lib/scheme-impact-engine';
 import { formatINR } from '@/lib/india-validations';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
@@ -33,7 +32,7 @@ function readList<T>(key: string): T[] {
 export function SchemeSimulatorPanel() {
   const { entityCode } = useEntityCode();
   const [selectedId, setSelectedId] = useState<string>('');
-  const { entityCode, userId } = useCardEntitlement();
+  const { userId } = useCardEntitlement();
 
   const schemes = useMemo(() => readList<Scheme>(schemesKey(entityCode)), []);
   const distributors = useMemo(() => readList<Distributor>(distributorsKey(entityCode)), []);

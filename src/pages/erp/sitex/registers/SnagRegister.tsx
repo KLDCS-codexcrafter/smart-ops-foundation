@@ -12,7 +12,6 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle } from 'lucide-react';
 import { listSites } from '@/lib/sitex-engine';
 import { emitSnagRaisedSevere } from '@/lib/sitex-bridges';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { snagsKey, type Snag } from '@/types/sitex';
 // RPT-6c imports
 import { ReportChart } from '@/components/operix-core/report-framework';

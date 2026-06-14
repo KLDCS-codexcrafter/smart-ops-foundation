@@ -14,8 +14,6 @@ import { Badge } from '@/components/ui/badge';
 import { distributorsKey, type Distributor } from '@/types/distributor';
 import { distributorOrdersKey, type DistributorOrder } from '@/types/distributor-order';
 import { ratingsKey, type RatingEntry } from '@/types/distributor-rating';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
-
 function readList<T>(key: string): T[] {
   try {
     const raw = localStorage.getItem(key);

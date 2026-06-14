@@ -24,7 +24,6 @@ import {
 } from '@/types/projx/project-milestone';
 import type { ProjectMilestone, MilestoneStatus } from '@/types/projx/project-milestone';
 import { isPeriodLocked } from '@/lib/period-lock-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { useT } from '@/lib/i18n-engine';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
