@@ -25,6 +25,8 @@ import { DIVISION_CATEGORY_LABELS } from '@/types/org-structure';
 import type { DivisionCategory } from '@/types/org-structure';
 import { cn } from '@/lib/utils';
 import { onEnterNext } from '@/lib/keyboard';
+import { loadEntities } from '@/data/mock-entities';
+import { listGroupStructure } from '@/lib/intercompany-group-structure-engine';
 
 // ── Blanks ───────────────────────────────────────────────────────────
 
