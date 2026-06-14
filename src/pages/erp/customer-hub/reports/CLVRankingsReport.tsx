@@ -81,7 +81,7 @@ export function CLVRankingsReportPanel() {
       action: 'report_run', refType: 'report', refId: 'clv_rankings',
       refLabel: 'CLV Rankings',
     });
-  }, []);
+  }, [entityCode]);
 
   const ranked = useMemo(() => {
     return customers.map(c => {

@@ -79,7 +79,7 @@ export function ChurnRiskReportPanel() {
       action: 'report_run', refType: 'report', refId: 'churn_risk',
       refLabel: 'Churn Risk',
     });
-  }, []);
+  }, [entityCode]);
 
   const results = useMemo(() => {
     return customers.map(c => {

@@ -93,7 +93,7 @@ export function CustomerOrdersPanel() {
     const all = ls<CustomerOrder>(customerOrdersKey(entityCode))
       .filter(o => o.customer_id === customerId);
     return all.sort((a, b) => (b.placed_at ?? b.created_at).localeCompare(a.placed_at ?? a.created_at));
-  }, [customerId]);
+  }, [customerId, entityCode]);
 
   const filtered = useMemo(() => {
     let list = orders;

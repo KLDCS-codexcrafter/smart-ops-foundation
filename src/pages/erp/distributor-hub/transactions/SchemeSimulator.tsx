@@ -35,9 +35,9 @@ export function SchemeSimulatorPanel() {
   const [selectedId, setSelectedId] = useState<string>('');
   const { userId } = useCardEntitlement();
 
-  const schemes = useMemo(() => readList<Scheme>(schemesKey(entityCode)), []);
-  const distributors = useMemo(() => readList<Distributor>(distributorsKey(entityCode)), []);
-  const orders = useMemo(() => readList<DistributorOrder>(distributorOrdersKey(entityCode)), []);
+  const schemes = useMemo(() => readList<Scheme>(schemesKey(entityCode)), [entityCode]);
+  const distributors = useMemo(() => readList<Distributor>(distributorsKey(entityCode)), [entityCode]);
+  const orders = useMemo(() => readList<DistributorOrder>(distributorOrdersKey(entityCode)), [entityCode]);
 
   const summary = useMemo(() => {
     const scheme = schemes.find(s => s.id === selectedId);

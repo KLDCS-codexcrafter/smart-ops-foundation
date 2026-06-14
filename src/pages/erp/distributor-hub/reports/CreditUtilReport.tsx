@@ -36,7 +36,7 @@ export function CreditUtilReportPanel() {
       const score = computeComposite(d.id, ratings);
       return { d, util, score };
     }).sort((a, b) => b.util - a.util);
-  }, []);
+  }, [entityCode]);
 
   const overall = rows.reduce((acc, r) => ({
     totalLim: acc.totalLim + (r.d.credit_limit_paise ?? 0),

@@ -46,7 +46,7 @@ export function DisputeStatsReportPanel() {
         0) / resolvedWithDates.length * 10) / 10;
 
     return { total: disputes.length, open, resolved, avgDays, reasonSeries };
-  }, []);
+  }, [entityCode]);
 
   const hash = useMemo(() => signReport(stats.reasonSeries), [stats.reasonSeries]);
   const short = hash.replace('fnv1a:', '').slice(0, 10);

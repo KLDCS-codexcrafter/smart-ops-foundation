@@ -33,8 +33,8 @@ function readList<T>(key: string): T[] {
 
 export function SchemeEffectivenessReportPanel() {
   const { entityCode } = useEntityCode();
-  const schemes = useMemo(() => readList<Scheme>(schemesKey(entityCode)), []);
-  const applied = useMemo(() => readList<AppliedRecord>(appliedSchemesKey(entityCode)), []);
+  const schemes = useMemo(() => readList<Scheme>(schemesKey(entityCode)), [entityCode]);
+  const applied = useMemo(() => readList<AppliedRecord>(appliedSchemesKey(entityCode)), [entityCode]);
 
   const activeCount = schemes.filter(s => s.status === 'active').length;
   const totalDiscount = applied.reduce((t, a) => t + a.discount_paise, 0);

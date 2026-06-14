@@ -90,8 +90,8 @@ export function CustomerHubWelcomePanel({ onModuleChange }: CustomerHubWelcomePa
   const [now] = useState<Date>(() => new Date());
 
   const customers = useMemo(() => loadCustomers(), []);
-  const orders    = useMemo(() => loadOrders(entityCode), []);
-  const loyalty   = useMemo(() => loadLoyaltyStates(entityCode), []);
+  const orders    = useMemo(() => loadOrders(entityCode), [entityCode]);
+  const loyalty   = useMemo(() => loadLoyaltyStates(entityCode), [entityCode]);
 
   // CLV per customer
   const clvResults = useMemo<CLVResult[]>(() => {

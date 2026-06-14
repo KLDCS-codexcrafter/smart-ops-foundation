@@ -35,7 +35,7 @@ export function DistributorRatingHubPanel() {
       const raw = localStorage.getItem(distributorsKey(entityCode));
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  }, [rev]);
+  }, [rev, entityCode]);
 
   const ratings = useMemo<RatingEntry[]>(() => {
     void rev;
@@ -44,7 +44,7 @@ export function DistributorRatingHubPanel() {
       const raw = localStorage.getItem(ratingsKey(entityCode));
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
-  }, [rev]);
+  }, [rev, entityCode]);
 
   const submitRating = (distributorId: string, dim: RatingDimension, stars: number) => {
     const entry: RatingEntry = {

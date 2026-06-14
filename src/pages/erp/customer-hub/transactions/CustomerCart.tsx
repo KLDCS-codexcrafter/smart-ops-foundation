@@ -101,7 +101,7 @@ export function CustomerCartPanel() {
     const prev = states.find(s => s.customer_id === customerId) ?? null;
     const fresh = rebuildState(customerId, entityCode, ledger, prev);
     setLoyaltyState(fresh);
-  }, [customerId]);
+  }, [customerId, entityCode]);
 
   // Cleanup-1a: `cart.id` rotates when a fresh cart is created after order
   // placement; we re-read active schemes then so a newly-launched campaign

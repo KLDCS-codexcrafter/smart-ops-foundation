@@ -69,13 +69,13 @@ export function StockOutWarningsPanel() {
       catch { /* ignore */ }
       setRev(r => r + 1);
     }
-  }, []);
+  }, [entityCode]);
 
   const alerts: StockOutAlert[] = useMemo(() => {
     void rev;
     const snaps = readSnapshots(entityCode);
     return computeStockOutAlerts(snaps);
-  }, [rev]);
+  }, [rev, entityCode]);
 
   const visible = alerts.filter(a => !dismissed[a.id]);
 

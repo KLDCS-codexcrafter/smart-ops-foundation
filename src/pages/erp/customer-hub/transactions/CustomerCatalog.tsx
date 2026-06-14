@@ -130,13 +130,13 @@ export function CustomerCatalogPanel() {
     }
   }, []);
 
-  const allSchemes: Scheme[] = useMemo(() => ls<Scheme>(schemesKey(entityCode)).filter(s => s.status === 'active'), []);
+  const allSchemes: Scheme[] = useMemo(() => ls<Scheme>(schemesKey(entityCode)).filter(s => s.status === 'active'), [entityCode]);
   const customerSchemes = useMemo(
     () => allSchemes.filter(s => s.scope.audience === 'customer' || s.scope.audience === 'both'),
     [allSchemes],
   );
 
-  const allOrders = useMemo(() => ls<CustomerOrder>(customerOrdersKey(entityCode)), []);
+  const allOrders = useMemo(() => ls<CustomerOrder>(customerOrdersKey(entityCode)), [entityCode]);
   const proofOrders = useMemo(
     () => allOrders.flatMap(o => o.lines.map(l => ({
       item_id: l.item_id, qty: l.qty, placed_at: o.placed_at ?? o.created_at,

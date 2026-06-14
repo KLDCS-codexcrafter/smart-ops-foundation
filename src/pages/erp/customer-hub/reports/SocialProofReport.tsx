@@ -74,7 +74,7 @@ export function SocialProofReportPanel() {
       action: 'report_run', refType: 'report', refId: 'social_proof',
       refLabel: 'Social Proof Dashboard',
     });
-  }, []);
+  }, [entityCode]);
 
   const flatOrders = useMemo(() => {
     const out: { item_id: string; qty: number; placed_at: string; city?: string }[] = [];

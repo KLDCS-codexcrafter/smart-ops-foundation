@@ -61,7 +61,7 @@ export function EngagementReportPanel() {
       npsProxy: nps,
       series,
     };
-  }, []);
+  }, [entityCode]);
 
   const exportCSV = () => {
     const rows = [

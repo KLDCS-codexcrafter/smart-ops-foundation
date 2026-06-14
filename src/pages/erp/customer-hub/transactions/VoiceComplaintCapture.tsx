@@ -124,7 +124,7 @@ export function VoiceComplaintCapturePanel() {
       .filter(o => o.customer_id === customerId)
       .sort((a, b) => (b.placed_at ?? '').localeCompare(a.placed_at ?? ''))
       .slice(0, 10),
-    [customerId],
+    [customerId, entityCode],
   );
 
   const detected = transcript.trim().length >= 5 ? categorizeComplaint(transcript) : null;

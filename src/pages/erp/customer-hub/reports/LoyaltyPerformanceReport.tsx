@@ -54,7 +54,7 @@ export function LoyaltyPerformanceReportPanel() {
       action: 'report_run', refType: 'report', refId: 'loyalty_performance',
       refLabel: 'Loyalty Performance',
     });
-  }, []);
+  }, [entityCode]);
 
   const tierData = useMemo(() => {
     const counts: Record<LoyaltyTier, number> = { bronze: 0, silver: 0, gold: 0, platinum: 0 };

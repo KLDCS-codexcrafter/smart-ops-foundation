@@ -142,7 +142,7 @@ export function FamilyWalletHubPanel() {
     const states = ls<CustomerLoyaltyState>(loyaltyStateKey(entityCode));
     const prev = states.find(s => s.customer_id === currentId) ?? null;
     setLoyaltyState(rebuildState(currentId, entityCode, ledger, prev));
-  }, [currentId, currentName]);
+  }, [currentId, currentName, entityCode]);
 
   const myActiveLinks = useMemo(
     () => links.filter(l =>

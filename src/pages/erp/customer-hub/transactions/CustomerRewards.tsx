@@ -104,7 +104,7 @@ export function CustomerRewardsPanel() {
     const idx = streakStates.findIndex(s => s.customer_id === customerId);
     if (idx >= 0) streakStates[idx] = fresh; else streakStates.push(fresh);
     setLs(customerStreakKey(entityCode), streakStates);
-  }, [customerId]);
+  }, [customerId, entityCode]);
 
   const eligible = useMemo(
     () => state ? eligibleRewards(state, rewards, redemptionCounts) : [],
