@@ -1595,7 +1595,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint W1C-9 T-W1C9-Entry-Page-Polish · Wave-1 Close Arc · entry-page polish · presentation-only · ZERO logic/data changes · (1) tower/Dashboard.tsx converted 11 hardcoded chrome colors to semantic theme tokens so it renders in BOTH light + dark — bg-[#1E3A5F]→bg-card · border-slate-700→border-border · hover:bg-[#24466d]→hover:bg-accent · hover:border-cyan-500→hover:border-primary · SVG stroke #334155→hsl(var(--border)) · text-slate-*/text-white→text-foreground/text-muted-foreground · bg-slate-700→bg-secondary · status badges via success/warning/destructive token tints (gauge stroke hex + bannerStats status accents intentionally kept as DATA with explanatory comments) · (2) Welcome.tsx Client Blueprints card description corrected from "Seven design-partner client scenarios" to "Eight design-partner client scenarios" + appended SigmaFlow Control with a sync comment pointing to the CLIENT_SCENARIOS roster · ZERO new SIBLINGs · bannerStats/services/recentActivity arrays stay honest-static (commented as static platform-admin landing data) · single new test file tower-theme-tokens.test asserting zero bg-[#/border-slate/text-slate/text-white chrome remains + token vocabulary present + Welcome copy reflects 8 + roster count = 8 · tight scope: entry pages only — the 33 ERP cards untouched · headSha TBD_AT_BANK
   {
     sprintNumber: 'W1C9' as unknown as number, code: 'T-W1C9-Entry-Page-Polish', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '8caee7d', loc: 60,
+    headSha: '4af52d2', predecessorSha: '8caee7d', loc: 60,
     newSiblings: [],
     bankDate: '2026-06-13', provenance: 'CONFIRMED',
   },
