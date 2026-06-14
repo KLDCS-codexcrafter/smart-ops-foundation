@@ -215,8 +215,8 @@ export function transitionProposalStatus(
   proposal_id: string,
   new_status: AMCProposalStatus,
   transitioned_by: string,
-  reason?: string,
   entity_id: string,
+  reason?: string,
 ): AMCProposal {
   const list = readJson<AMCProposal>(amcProposalKey(entity_id));
   const idx = list.findIndex((p) => p.id === proposal_id);
