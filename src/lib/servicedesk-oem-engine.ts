@@ -170,7 +170,7 @@ export function markOEMClaimRejected(
   return transitionOEMClaim(id, 'rejected', actor, { rejection_reason: reason }, reason, entity_id);
 }
 
-export function getOEMClaim(id: string, entity_id: string = DEFAULT_ENTITY): OEMClaimPacket | null {
+export function getOEMClaim(id: string, entity_id: string): OEMClaimPacket | null {
   return readJson<OEMClaimPacket>(oemClaimKey(entity_id)).find((c) => c.id === id) ?? null;
 }
 
