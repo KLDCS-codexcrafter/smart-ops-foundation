@@ -123,6 +123,7 @@ Every cross-module read uses entity-scoped storage keys (Bucket B/C) so single-e
 
 ## Companion Documents
 - **`Operix_Architecture_of_Record.md`** (repo root) — top-level onboarding charter (start here).
+- **`docs/handbook/00_Operix_Developer_Handbook_CORE.md`** — developer handbook core + 34 card deep-dives (new developers: start here).
 - **`docs/CODE-CONVENTIONS.md`** — engine/hook/page separation, file headers, money math, D-decision discipline.
 - **`docs/AUDIT-TRAIL-COMPLIANCE.md`** — MCA Rule 3(1) regulatory coverage detail.
 - **`docs/PERFORMANCE-BASELINE.md`** — bundle/perf baseline.

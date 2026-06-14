@@ -14,6 +14,8 @@ Operix is a multi-company Indian ERP (33 functional cards) built as a React + Ty
 1. [`Operix_Architecture_of_Record_v1.md`](./Operix_Architecture_of_Record_v1.md) — the permanent project charter. Read this first.
 2. [`Operix_4DSmartOps_Vision_and_Reference_Compendium_v1.md`](./Operix_4DSmartOps_Vision_and_Reference_Compendium_v1.md) — vision, brand, and origins compendium.
 
+> **New developers:** start with [`docs/handbook/00_Operix_Developer_Handbook_CORE.md`](./docs/handbook/00_Operix_Developer_Handbook_CORE.md) — the developer handbook core, then walk the 34 card deep-dives in `docs/handbook/`.
+
 ## Run it
 
 ```
