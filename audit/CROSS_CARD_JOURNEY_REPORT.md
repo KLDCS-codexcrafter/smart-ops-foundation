@@ -60,3 +60,61 @@ JOURNEYS:
 2. Seeded SRM rows with `sales_order_id=null` (ORPHANED-KEY in demo data only).
 3. No state-back-propagation across the four hops (MANUAL-ONLY).
 4. IM ↔ Outstanding/Receipt not bridged (DEFERRED-by-design).
+
+---
+
+## J2 · Procure-to-Pay — run 2026-06-14 — VERDICT: **PARTIAL**
+
+**Scenario seeded:** `seedFinanceProcurementTxnsForDemo(entityCode)` (`demo-transactions-finance-procurement.ts:406`) writes PO, GRN, BillPassing, VendorPaymentBatch all under one caller-supplied `entityCode` (typically the active scenario entity, e.g. `'SMRT'`, `'SINHA'`). Seed builds cross-refs by `po_id` (L119, L201, L294) — all within the same entity.
+
+**Reader resolvers found (J2 surface):**
+- `BillPassingPiStatusPanel` (`procure-hub/panels.tsx:2765`) — `const { entityCode } = useEntityCode()`; calls `getBillsForPo(p.id, entityCode)` with the resolved scenario entity (clean).
+- `bill-passing-engine.getBillsForPo(poId, entityCode)` (L84) — reads `billPassingKey(entityCode)` and filters by `b.po_id === poId` (no cross-entity scan).
+- `grn-po-linkage-engine` — side-store overlay at `erp_grn_po_links_${e}` (does NOT mutate the GRN row). Header docstring (L14): "Phase 2 promotes linkage to first-class GRN.po_id field with type extension".
+- `GRN.po_id` (`src/types/git.ts:54`) — already first-class on the GRN type (`po_id: string | null`), so the "Phase-2 first-class" promise is actually **already on the type**; the side-store engine is an additive audit overlay, not the primary link.
+- `VendorPaymentBatchLine` (`src/types/vendor-payment-batch.ts:18-22`) — carries `{ payment_requisition_id, party_id, amount_paise }` only · **no `bill_passing_id` field**.
+- `PaymentRequisition` (grep) — no `bill_passing_id` / `source_bill_id` field. Bill → Payment linkage is by **party_id + amount**, not by document id.
+
+### Per-hop matrix
+| Hop (A→B) | B sees A? | Ref resolves? | State propagates? | Entity A / Entity B | FLAG |
+|---|---|---|---|---|---|
+| **PO → GRN** | YES — GRN type carries `po_id: string \| null` (`git.ts:54`); seed populates `po_id: id('po-1')` (`demo-transactions-finance-procurement.ts:119,201`) | YES — id is the actual seeded PO id under the same entity | NO — PO.status is not auto-flipped to `grn_received`/`partially_received` on GRN save (no back-write seen in seed or engine path observed here) | A=scenario / B=scenario (single-pass orchestrator) | **LINKED** (ref) · **MANUAL-ONLY** (state) |
+| **GRN → PO (audit overlay)** | YES — `getLinksForPo(poId, entityCode)` (`grn-po-linkage-engine.ts:75`) | YES — overlay row carries `linked_po_id` + `linked_po_no` | N/A — side-store · advisory only | A=B (same entityCode param) | **LINKED** · **DEFERRED-by-design** for the "first-class field promotion" note (note now moot: GRN.po_id already first-class on the type) |
+| **GRN → Bill Passing** | YES — `BillPassingPiStatusPanel` iterates POs and resolves bills via `getBillsForPo` | YES — bill carries `po_id` (seed L294); engine filters `b.po_id === poId` exact-match | NO — GRN status not back-written on bill creation | A=B (same `useEntityCode()` resolver) | **LINKED** (ref) · **MANUAL-ONLY** (state) |
+| **PO → Bill (getBillsForPo)** | YES — `getBillsForPo(p.id, entityCode)` invoked from panel | YES under scenario-clean path — both PO and Bill are written by the **same** orchestrator call under the **same** `entityCode`, and the panel reads via `useEntityCode()`. **Seam risk**: if any caller of `getBillsForPo` passes an entityCode that does NOT match the PO's seed entity (e.g. hardcoded `'DEMO'`/`DEFAULT_ENTITY_SHORTCODE` in some downstream report), `read(entityCode)` opens the wrong `billPassingKey` bucket and returns `[]` — classic **ORPHANED-ENTITY**. Sole production caller observed (`panels.tsx:2771`) is clean | YES — Bill.status (`pending_match` → `matched_with_variance` → `approved_for_fcpi` → `fcpi_drafted`) is updated by `finance-pi-bridge` (L349) | A=scenario / B=scenario (panel) | **LINKED** in observed call path · **ORPHANED-ENTITY-RISK** is the prime seam the prompt flagged (entityCode is a parameter — any non-scenario passer breaks it silently with `[]`) |
+| **Bill → FCPI Draft** | YES — `listFcpiDraftsForBill(billId, entityCode)` (`finance-pi-bridge.ts:241`) | YES — FCPI draft carries `source_bill_id` + `source_bill_no` (L311-312) and back-links each line via `source_bill_line_id` (L289) | YES — bill transitions to `fcpi_drafted` on draft creation (L349) | A=B (same entityCode plumbed through bridge) | **LINKED** (full id + line-level refs · bidirectional state) |
+| **FCPI → FinCore PI Voucher → Outstanding** | YES (via fincore-engine `postVoucher` writing `outstandingKey(entityCode)`, `fincore-engine.ts:714-776` for `base_voucher_type ∈ {Purchase}`) | YES — outstanding entry stamped under the same entityCode | YES — outstanding balance created | A=B | **LINKED** |
+| **Outstanding → PayOut (VendorPaymentBatch)** | YES — batch UI reads vendor outstandings under entityCode | **NO id linkage** — `VendorPaymentBatchLine` carries only `{payment_requisition_id, party_id, amount_paise}`; there is no `bill_passing_id` / `source_bill_id` / `voucher_id` field. Settlement is by `party_id + amount`, not by source-document id | PARTIAL — Payment voucher posted via FinCore reduces party outstanding; PO/Bill themselves carry no `paid_at` / `payment_batch_id` back-link | A=B (entity consistent) | **MANUAL-ONLY** · the Bill ↔ PayOut tie is by party-balance arithmetic, not by document FK. PO.status never auto-flips to `paid`. |
+
+### ENTITY-SEAM NOTES
+- **`getBillsForPo(poId, entityCode)` is a parameter-driven entity reader** — exactly the seam the prompt called out. In this baseline run the **only** production caller (`BillPassingPiStatusPanel`) resolves entityCode via `useEntityCode()` so PO-entity == Bill-query-entity by construction → **LINKED**. The ORPHANED-ENTITY exposure is latent: any future caller that passes `DEFAULT_ENTITY_SHORTCODE` or a hardcoded `'DEMO'`/`'SMRT'` while the active scenario is e.g. `'SINHA'` will silently return `[]` (no error, no warning · the function does not assert membership).
+- **Seed-time consistency:** orchestrator writes PO+GRN+Bill+PayoutBatch under one entityCode in a single pass — no cross-entity references possible from seed data alone. ORPHANED-ENTITY breakage in J2 is a **read-time** failure mode (a downstream report/aggregator passing the wrong entityCode), not a write-time one.
+
+### ORPHANED-KEY (non-entity)
+- None observed on the live PO→GRN→Bill→FCPI chain. All four hops carry first-class id references that resolve against the same-entity bucket.
+
+### MANUAL-ONLY (no auto-link / no state back-write)
+- `PO.status` → never auto-flipped on GRN save, on bill approval, or on payment release.
+- `GRN.status` → never auto-flipped on bill creation.
+- `BillPassing` ↔ `VendorPaymentBatch` → no FK; settlement reconciled by party_id + amount arithmetic only.
+- `PaymentRequisition.bill_passing_id` → field does not exist; PayOut cannot resolve back to its source bill by id.
+
+### DEFERRED-BY-DESIGN
+- `grn-po-linkage-engine` header (L14): "Phase 2 promotes linkage to first-class GRN.po_id field with type extension." Inspection shows `GRN.po_id` is **already** first-class on the type — the side-store engine is now an additive audit overlay rather than a stand-in. The DEFERRED note in the header is **stale**, not a defect; record as Phase-2-already-shipped, no action.
+- Bill→PayOut document-id linkage (`bill_passing_id` on `PaymentRequisition` / `VendorPaymentBatchLine`) is Wave-2 by design — current flow uses party-balance settlement, which is the canonical Tally pattern.
+
+### SUMMARY
+| Hop | Verdict |
+|---|---|
+| PO → GRN | LINKED (ref) · MANUAL (state) |
+| GRN → PO overlay | LINKED · DEFERRED-note-stale |
+| GRN → Bill | LINKED (ref) · MANUAL (state) |
+| PO → Bill (`getBillsForPo`) | LINKED in only observed caller · **ORPHANED-ENTITY-RISK** latent (entityCode param has no membership assertion) |
+| Bill → FCPI | LINKED (bidirectional, line-level) |
+| FCPI → Outstanding | LINKED (FinCore postVoucher) |
+| Outstanding → PayOut | MANUAL-ONLY (party-balance, no doc-id FK) |
+
+**J2 overall: PARTIAL.** The data-FK spine PO→GRN→Bill→FCPI→Outstanding is **clean** end-to-end under a single scenario entity, with the FCPI bridge being the model of full bidirectional id linkage. Three classes of debt quantified for CL-2/CL-3 / Wave-2:
+1. **`getBillsForPo` entity-param seam** — latent ORPHANED-ENTITY risk; no caller-side assertion that `entityCode` matches PO seed entity. Recommend: log a `console.warn` (or eventBus emit) when `read(entityCode).length === 0` AND the panel's `pos` is non-empty — turns silent `[]` into actionable signal.
+2. **State propagation** — PO/GRN/Bill statuses never auto-flip on downstream events (4 manual seams). Tally-canonical but operator-burden.
+3. **PayOut ↔ Bill document-id linkage** — DEFERRED-by-design; current party-balance settlement is correct for Tally parity but precludes per-bill aging closure reports.
