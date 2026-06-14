@@ -1616,7 +1616,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Hotfix T-BridgeLayout-Theme-Tokens · consistency fix mirroring T-TowerLayout-Forced-Dark-Fix — BridgeLayout.tsx sidebar still hardcoded inline style background hsl(222 47% 11%) + borderColor rgba(255,255,255,0.06) + a text-white/*+bg-white/*+border-white/* palette (~6 hits) so Bridge stayed dark while Tower (just fixed) followed the global toggle. Fix removes the inline dark style and converts all white-on-dark chrome to the same semantic token vocabulary TowerLayout now uses for the equivalent rail elements (bg-card border-border for rail, text-foreground/text-muted-foreground for type, bg-accent text-foreground for active nav, hover:bg-accent hover:text-foreground for hover, border-border for the collapse divider). Login is intentionally a gradient-hero panel — confirmed UNTOUCHED. ZERO new SIBLINGs · ZERO logic changes (nav/routing/collapse untouched) · touch BridgeLayout.tsx + guard test bridge-layout-theme.test asserting no inline hsl(222, no text-white/bg-white/border-white chrome, no inline style background + token vocabulary present · predecessor 5296b08
   {
     sprintNumber: 'BRGFIX' as unknown as number, code: 'T-BridgeLayout-Theme-Tokens', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '5296b08', loc: 20,
+    headSha: '0cfb411', predecessorSha: '5296b08', loc: 20,
     newSiblings: [],
     bankDate: '2026-06-13', provenance: 'CONFIRMED',
   },
