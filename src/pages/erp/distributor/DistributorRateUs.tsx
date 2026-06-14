@@ -29,6 +29,7 @@ const EMPTY_DRAFT: DraftMap = {
 };
 
 export default function DistributorRateUs() {
+  const { entityCode: ENTITY } = useEntityCode();
   const distributorId = 'd-sharma'; // in real use, from session
   const [draft, setDraft] = useState<DraftMap>(EMPTY_DRAFT);
   const [comment, setComment] = useState('');
