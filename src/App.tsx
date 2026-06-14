@@ -19,6 +19,14 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ERPCompanyProvider } from '@/components/layout/ERPCompanyProvider';
 import { FactoryProvider } from '@/contexts/FactoryContext';
+// CL-1 · B16-F2 — InstallPromptBanner mounted on Wave-1 /operix-go/* shell.
+import { InstallPromptBanner } from '@/components/mobile/InstallPromptBanner';
+
+function OperixGoChrome(): JSX.Element | null {
+  const location = useLocation();
+  if (!location.pathname.startsWith('/operix-go')) return null;
+  return <InstallPromptBanner />;
+}
 
 const DevNavPanel = import.meta.env.DEV
   ? React.lazy(() => import('@/components/dev/DevNavPanel').then(m => ({ default: m.DevNavPanel })))
@@ -421,6 +429,7 @@ const App = () => (
           <ERPCompanyProvider>
           <FactoryProvider>
           <Suspense fallback={<div className="flex items-center justify-center h-screen"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>}>
+            <OperixGoChrome />
             <Routes>
               <Route path="/" element={<Navigate to="/auth/login" replace />} />
               <Route path="/auth/login" element={<Login />} />

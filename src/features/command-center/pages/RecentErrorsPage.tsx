@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { readErrorLog, clearErrorLog } from '@/lib/error-engine';
 import type { ErrorCategory, ErrorSeverity, ErrorLogEntry } from '@/types/error-log';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import { toast } from 'sonner';
 
 const CATEGORIES: ErrorCategory[] = [
@@ -35,15 +36,11 @@ const SEVERITY_CLASS: Record<ErrorSeverity, string> = {
   critical: 'bg-destructive/20 text-destructive border-destructive/50',
 };
 
-function getActiveEntity(): string {
-  try {
-    const raw = localStorage.getItem('erp_selected_company');
-    return raw && raw !== 'all' ? raw : 'system';
-  } catch { return 'system'; }
-}
-
 export default function RecentErrorsPage() {
-  const [entityCode] = useState<string>(() => getActiveEntity());
+  // CL-1 · Mech5 — replace stale lazy-capture (getActiveEntity()) with reactive
+  // canonical useEntityCode() so the page updates on company switch.
+  const { entityCode: resolved } = useEntityCode();
+  const entityCode = resolved || 'system';
   const [severity, setSeverity] = useState<string>('all');
   const [category, setCategory] = useState<string>('all');
   const [window, setWindow] = useState<'24h' | 'all'>('all');

@@ -25,6 +25,8 @@ import { DIVISION_CATEGORY_LABELS } from '@/types/org-structure';
 import type { DivisionCategory } from '@/types/org-structure';
 import { cn } from '@/lib/utils';
 import { onEnterNext } from '@/lib/keyboard';
+import { loadEntities } from '@/data/mock-entities';
+import { listGroupStructure } from '@/lib/intercompany-group-structure-engine';
 
 // ── Blanks ───────────────────────────────────────────────────────────
 
@@ -588,6 +590,20 @@ export function OrgStructurePanel() {
   );
 }
 
+// CL-1 · B2-F1 · Foundation bridge — augment to read loadEntities()/listGroupStructure()
+// so the org tree surface reflects the seeded group (additive · OrgStructurePanel 0-DIFF).
+function SeededGroupBanner() {
+  const entities = loadEntities();
+  const nodes = listGroupStructure();
+  if (entities.length <= 1 && nodes.length === 0) return null;
+  return (
+    <div className="mb-4 rounded-lg border border-border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+      Seeded group · <span className="font-mono text-foreground">{entities.length}</span> entit{entities.length === 1 ? 'y' : 'ies'}
+      {' · '}<span className="font-mono text-foreground">{nodes.length}</span> group-structure node{nodes.length === 1 ? '' : 's'}
+    </div>
+  );
+}
+
 export default function OrgStructure() {
   return (
     <SidebarProvider>
@@ -598,6 +614,7 @@ export default function OrgStructure() {
             { label: 'Organisation Structure' },
           ]} />
           <main className="flex-1 p-6">
+            <SeededGroupBanner />
             <OrgStructurePanel />
           </main>
         </div>

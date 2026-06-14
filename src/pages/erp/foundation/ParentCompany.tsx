@@ -44,6 +44,9 @@ import {
 } from '@/types/manufacturing-mode';
 import { applyManufacturingModeToEntity } from '@/lib/entity-setup-service';
 import { logAudit } from '@/lib/audit-trail-engine';
+// CL-1 · B2-F1 · Foundation bridge — additive fallback reads from seeded group.
+import { loadEntities } from '@/data/mock-entities';
+import { listGroupStructure } from '@/lib/intercompany-group-structure-engine';
 
 // ── Interfaces ───────────────────────────────────────────────────────────────
 interface GSTReg {
@@ -224,7 +227,18 @@ export default function ParentCompany() {
       const full = lsObj<Record<string, unknown>>('erp_parent_company', {});
       if (full.gstRegs) setGstRegs(full.gstRegs as GSTReg[]);
       if (full.lutBonds) setLutBonds(full.lutBonds as LUTBond[]);
+      return;
     }
+    // CL-1 · B2-F1 · Fallback: hydrate from seeded group when erp_parent_company
+    // is empty so a freshly-seeded group surfaces in this form (additive · non-breaking).
+    const entities = loadEntities();
+    const parent = entities.find(e => e.type === 'parent');
+    if (parent) {
+      setForm(f => ({ ...f, legalEntityName: parent.name, shortCode: parent.shortCode ?? f.shortCode }));
+    }
+    // Touch listGroupStructure so the augment is wired (relationship rows surface
+    // through Subsidiary/Company list; ParentCompany only needs the parent name).
+    void listGroupStructure();
   }, []);  
 
   // Auto-suggest short code
