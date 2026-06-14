@@ -57,10 +57,15 @@ export const SINHA_LUT: LUT = {
   updated_at: '2025-04-08T09:00:00Z',
 };
 
-/** Seed Sinha entity if no IEC/LUT exists · per FR-20 inline seedIfEmpty pattern */
-export const seedSinhaEximX = (): void => {
-  const iecKey = `erp_sinha-trading_iec`;
-  const lutKey = `erp_sinha-trading_lut`;
+/**
+ * CL-1 · Mech4 · EximX write-side parameterized.
+ * Seed Sinha entity if no IEC/LUT exists · per FR-20 inline seedIfEmpty pattern.
+ * Keys are canonical `erp_${entityCode}_iec` / `erp_${entityCode}_lut` — no
+ * literal `sinha-trading`. Defaults to legacy 'sinha-trading' for back-compat.
+ */
+export const seedSinhaEximX = (entityCode: string = 'sinha-trading'): void => {
+  const iecKey = `erp_${entityCode}_iec`;
+  const lutKey = `erp_${entityCode}_lut`;
   if (!localStorage.getItem(iecKey)) localStorage.setItem(iecKey, JSON.stringify([SINHA_IEC]));
   if (!localStorage.getItem(lutKey)) localStorage.setItem(lutKey, JSON.stringify([SINHA_LUT]));
 };
