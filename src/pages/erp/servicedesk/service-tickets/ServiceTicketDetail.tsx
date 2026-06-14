@@ -42,6 +42,7 @@ import {
 import type { ServiceTicket } from '@/types/service-ticket';
 import type { RepairRouteType } from '@/types/repair-route';
 import { CustomerOutDialog } from './CustomerOutDialog';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 interface Props {
   ticketId: string;
