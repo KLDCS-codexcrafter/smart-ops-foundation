@@ -35,7 +35,7 @@
 // uniform while preserving clarity per assertion. This file is a harness, not
 // production code · risk is contained.
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, beforeEach } from 'vitest';
 import Decimal from 'decimal.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
