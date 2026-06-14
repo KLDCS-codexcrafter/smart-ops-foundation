@@ -1,13 +1,13 @@
 # Operix · Cross-Card Journey Test — BASELINE
-**HEAD target: `066eca4`** · RUN-ONLY (no source changed) · One journey per dispatch.
+**HEAD target: `d8c7b98`** · RUN-ONLY (no source changed) · One journey per dispatch.
 
 ## LEDGER
 ```
-DONE: [J1, J2]   NEXT: J3   REMAINING: 3
+DONE: [J1, J2, J3]   NEXT: J4   REMAINING: 2
 JOURNEYS:
   J1 · Order-to-Cash    ✅
-  J2 · Procure-to-Pay   ✅ this run
-  J3 · Lead-to-Order    ⏳
+  J2 · Procure-to-Pay   ✅
+  J3 · Lead-to-Order    ✅ this run
   J4 · Quality-gate     ⏳
   J5 · Aggregation      ⏳
 ```
@@ -118,3 +118,44 @@ JOURNEYS:
 1. **`getBillsForPo` entity-param seam** — latent ORPHANED-ENTITY risk; no caller-side assertion that `entityCode` matches PO seed entity. Recommend: log a `console.warn` (or eventBus emit) when `read(entityCode).length === 0` AND the panel's `pos` is non-empty — turns silent `[]` into actionable signal.
 2. **State propagation** — PO/GRN/Bill statuses never auto-flip on downstream events (4 manual seams). Tally-canonical but operator-burden.
 3. **PayOut ↔ Bill document-id linkage** — DEFERRED-by-design; current party-balance settlement is correct for Tally parity but precludes per-bill aging closure reports.
+
+---
+
+## J3 · Lead-to-Order — run 2026-06-14 — VERDICT: **LINKED**
+
+**Scenario seeded:** All three records (Enquiry, Quotation, Order) are written under a single `entityCode` plumbed through `useEnquiries(entityCode)`, `useQuotations(entityCode)`, and `useOrders(entityCode)`. The transaction panels (`EnquiryCapture`, `QuotationEntry`, `OrderDeskPanel`) resolve `entityCode` from the ERP shell context (scenario-aware). No hardcoded fallback observed on the J3 surface.
+
+**Naming note:** the prompt refers to `parent_enquiry_id` on Quotation; the actual field is **`enquiry_id`** (`src/types/quotation.ts:71`, `enquiry_id: string | null`). Semantically identical · noted as a naming variance, not a defect.
+
+### Per-hop matrix
+| Hop (A→B) | B sees A? | Ref resolves? | State propagates? | Entity A / Entity B | FLAG |
+|---|---|---|---|---|---|
+| **Enquiry → Quotation** | YES — `QuotationEntry` form has an Enquiry picker (`QuotationEntry.tsx:735-738`) that lists enquiries from `useEnquiries(entityCode)` | YES — Quotation stamps both `enquiry_id` and `enquiry_no` (mapper at `salesx-conversion-engine.ts:73-74`; form picker also sets both at L738). Reverse direction: Enquiry stamps `quotation_ids: string[]` array (`useEnquiries.ts:177`) | **YES** — `useEnquiries.createQuotationFromEnquiry` (L173-183) appends the new quotation id to `enquiry.quotation_ids[]`, flips `enquiry.status = 'quote'`, sets `enquiry.converted_at = now` (preserves prior value if already set). Conversion is also logged via `logConversionEvent('enquiry_to_quotation', …)` to `erp_salesx_conversion_log_${entity}` | A=scenario / B=scenario (single `entityCode` param threaded through both hooks) | **LINKED** (bidirectional id refs · state-propagates · audit-logged) |
+| **Quotation → Sales Order** | YES — `QuotationEntry` exposes a "Convert to SO" button (L622-632) when `quotation_stage ∈ {'confirmed','proforma'}` and `!so_id`; SO created via `useOrders.createOrder` with `base_voucher_type: 'Sales Order'` (L338-351) | YES — SO carries `ref_no: q.quotation_no` (L344) and `narration: 'Converted from Quotation …'` (L349). Order type also defines `quotation_id?: string \| null` (`src/types/order.ts:47`), but the createOrder call observed here does NOT populate it — `quotation_id` is **left undefined** on the SO row; the ref-back uses `ref_no = quotation_no` (string) instead. Reverse direction is fully wired: `markConvertedToSO(q.id, so.id, so.order_no)` stamps `quotation.so_id`, `quotation.so_no`, `quotation.so_converted_at` (`useQuotations.ts:114-116`) | **YES** — `quotation.quotation_stage` flips to `'sales_order'` (L356); `so_id/so_no/so_converted_at` stamped; quote-level stock reservations released and order-level reservations created (`releaseQuoteReservations` / `createOrderReservations` L362-369); conversion logged via `logConversionEvent('quotation_to_sales_order', …)` (L373) | A=scenario / B=scenario (SO `entity_id = entityCode`, L340) | **LINKED (reverse + state)** · **ORPHANED-KEY (forward, partial)** — `Order.quotation_id` exists on the type but is not populated; forward Quote→SO traversal must go through `ref_no === quotation_no` string match (works, but is string-vs-id and unindexed) |
+| **Enquiry → SO (transitive)** | YES via the chain — Enquiry → Quotation (`enquiry_id`) → SO (`Quotation.so_id`). Resolves end-to-end | YES under the chain · no direct Enquiry→SO FK on the SO row (by design — the canonical lineage is via the intermediate Quotation) | YES — Enquiry stays in `status='quote'`; no further auto-flip to `status='sold'` observed on SO conversion (the engine's `canConvertEnquiryToQuotation` (L112) gates *against* `'sold'` / `'lost'` but no writer flips Enquiry to `'sold'` on SO creation) | A=scenario / B=scenario | **PARTIAL** · transitive linkage is sound; the final Enquiry→`sold` state-propagation step on SO creation is **MANUAL-ONLY** (operator-set) |
+
+### ENTITY-SEAM NOTES
+- All three hops share `entityCode` via a single resolver path (panel → hook). No `DEFAULT_ENTITY_SHORTCODE` fallback, no hardcoded `'SMRT'`, no `getActiveEntity()` lazy-capture observed on J3 surface. ORPHANED-ENTITY risk in J3 is **the lowest of the three journeys audited so far**.
+- The `salesx-conversion-engine` is pure (no localStorage I/O · D-194 Phase-1/2 boundary L14-17) and accepts `entityCode` from the caller for the audit log only — so it cannot introduce a cross-entity bug.
+
+### ORPHANED-KEY (non-entity)
+- **`Order.quotation_id` not populated on convert** — the field exists on the Order type (`order.ts:47`) but `handleConvertToSO` (`QuotationEntry.tsx:338-351`) does not set it. Forward Quote→SO lookup must use `ref_no === quotation_no` (string match). Reverse Quote.so_id is set, so the "is this quote converted?" gate works. The forward seam ("which SO came from this quote?") works by string match on quotation_no, which is unique within entity — functional but FK-weak.
+- **Naming variance** — prompt's `parent_enquiry_id` is actually `enquiry_id` on Quotation. No code defect.
+
+### MANUAL-ONLY (no auto-link / no state back-write)
+- Enquiry.status → never auto-flipped to `'sold'` on SO creation. `'quote'` is the terminal auto-state; `'sold'` requires manual operator action (Enquiry status dropdown). The `canConvertEnquiryToQuotation` gate blocks re-quoting an already-sold enquiry but no writer sets that state.
+
+### DEFERRED-BY-DESIGN
+- `Quotation.proforma_*` / `so_*` triplets are the canonical lineage carriers; `Order.quotation_id` field appears to be a Phase-2 first-class field waiting to be wired by the SO converter. Recording, not failing.
+
+### SUMMARY
+| Hop | Verdict |
+|---|---|
+| Enquiry → Quotation | LINKED (bidirectional · state-propagates · audit-logged) |
+| Quotation → SO (reverse) | LINKED (Quotation.so_id stamped, stage flipped, reservations rotated, log written) |
+| Quotation → SO (forward FK) | ORPHANED-KEY (partial) · `Order.quotation_id` defined but not populated; falls back to `ref_no === quotation_no` string match |
+| Enquiry → SO (transitive) | LINKED via chain · Enquiry→`sold` state-flip is MANUAL-ONLY |
+
+**J3 overall: LINKED.** The Lead-to-Order lineage is the cleanest of the three journeys audited so far — entity threading is single-source, both forward (`enquiry_id`, `quotation_no` ref) and reverse (`quotation_ids[]`, `so_id`/`so_no`) links land in the same scenario entity, state auto-propagates on the live operator path, and every conversion writes a deterministic audit-log row to `erp_salesx_conversion_log_${entity}`. Two narrow debts for follow-up (neither is an entity-seam break, so both are CL-3-or-Wave-2 scope):
+1. **`Order.quotation_id` not wired** in `handleConvertToSO` — wire it next to `ref_no` for FK-strength forward traversal.
+2. **`Enquiry.status → 'sold'`** not auto-flipped on downstream SO creation — currently operator-driven; trivial back-write in `handleConvertToSO` or in `useOrders.createOrder` post-hook for SO-from-quote path.
