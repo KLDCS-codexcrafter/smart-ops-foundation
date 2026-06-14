@@ -53,7 +53,7 @@ function statusVariant(s: QaInspectionStatus): 'default' | 'secondary' | 'destru
 interface WelcomeProps { onNavigate: (m: QualiCheckModule) => void }
 
 export function QualiCheckWelcome({ onNavigate }: WelcomeProps): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [loading, setLoading] = useState(true);
   const [inspections, setInspections] = useState<QaInspectionRecord[]>([]);
   const [plans, setPlans] = useState<QaPlan[]>([]);
@@ -189,7 +189,7 @@ export function QualiCheckWelcome({ onNavigate }: WelcomeProps): JSX.Element {
 // ── 2) PENDING INSPECTIONS ───────────────────────────────────────────
 
 export function PendingInspectionsPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<QaInspectionRecord[]>([]);
 
   const refresh = useCallback((): void => {
@@ -259,7 +259,7 @@ export function PendingInspectionsPanel(): JSX.Element {
 // ── 3) QUALITY PLANS ─────────────────────────────────────────────────
 
 export function QualityPlansPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<QaPlan[]>([]);
   const [filter, setFilter] = useState('');
 
@@ -349,7 +349,7 @@ export function QualityPlansPanel(): JSX.Element {
 // ── 4) QUALITY SPECS ─────────────────────────────────────────────────
 
 export function QualitySpecsPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<QaSpec[]>([]);
 
   const refresh = useCallback((): void => {
@@ -418,7 +418,7 @@ export function QualitySpecsPanel(): JSX.Element {
 // ── 5) INSPECTION REGISTER ───────────────────────────────────────────
 
 export function InspectionRegisterPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<QaInspectionRecord[]>([]);
   const [filter, setFilter] = useState('');
 
