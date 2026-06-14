@@ -87,7 +87,7 @@ interface CustomerHubWelcomePanelProps {
 
 export function CustomerHubWelcomePanel({ onModuleChange }: CustomerHubWelcomePanelProps = {}) {
   const { entityCode } = useEntityCode();
-  const { entityCode, userId } = useCardEntitlement();
+  const { userId } = useCardEntitlement();
   const [now] = useState<Date>(() => new Date());
 
   const customers = useMemo(() => loadCustomers(), []);
