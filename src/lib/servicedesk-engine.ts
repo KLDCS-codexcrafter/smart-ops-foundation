@@ -167,8 +167,8 @@ export function decideAMCApplicability(
   amc_record_id: string,
   applicable: boolean,
   decided_by: string,
-  reason?: string,
   entity_id: string,
+  reason?: string,
 ): AMCRecord {
   const list = readJson<AMCRecord>(amcRecordKey(entity_id));
   const idx = list.findIndex((r) => r.id === amc_record_id);
