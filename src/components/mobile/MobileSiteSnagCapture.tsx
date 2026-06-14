@@ -18,12 +18,13 @@ import { toast } from 'sonner';
 import { listSites } from '@/lib/sitex-engine';
 import { emitSnagRaisedSevere } from '@/lib/sitex-bridges';
 import { enqueueWrite } from '@/lib/offline-queue-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+
 import { snagsKey, type Snag, type SiteMaster } from '@/types/sitex';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
+import { useEntityCode } from '@/hooks/useEntityCode';
 export default function MobileSiteSnagCapture(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [sites, setSites] = useState<SiteMaster[]>([]);
@@ -35,8 +36,8 @@ export default function MobileSiteSnagCapture(): JSX.Element {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    setSites(listSites(ENTITY).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
-  }, []);
+    setSites(listSites(entityCode).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
+  }, [entityCode]);
 
   const site = sites.find((s) => s.id === siteId) ?? null;
 
@@ -81,11 +82,11 @@ export default function MobileSiteSnagCapture(): JSX.Element {
       escalated = true;
     }
     if (!navigator.onLine) {
-      enqueueWrite(ENTITY, 'complaint_submit', { kind: 'sitex_snag', payload: snag });
+      enqueueWrite(entityCode, 'complaint_submit', { kind: 'sitex_snag', payload: snag });
       toast.success('Queued · will sync when online');
     } else {
       // [JWT] POST /api/sitex/snags
-      const key = snagsKey(ENTITY);
+      const key = snagsKey(entityCode);
       const all = JSON.parse(localStorage.getItem(key) ?? '[]') as Snag[];
       all.push(snag);
       localStorage.setItem(key, JSON.stringify(all));

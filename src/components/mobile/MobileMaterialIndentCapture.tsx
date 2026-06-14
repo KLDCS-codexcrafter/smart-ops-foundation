@@ -20,6 +20,7 @@ import { enqueueWrite } from '@/lib/offline-queue-engine';
 import { createMaterialIndent, type CreateMaterialIndentInput } from '@/lib/request-engine';
 import type { IndentCategory, Priority, MaterialIndentLine } from '@/types/material-indent';
 
+import { useEntityCode } from '@/hooks/useEntityCode';
 type Step = 1 | 2 | 3;
 
 interface LineDraft {
@@ -65,10 +66,6 @@ const PRIORITIES: { value: Priority; label: string }[] = [
   { value: 'critical_shutdown', label: 'Critical Shutdown' },
 ];
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
-}
-
 function canProceed(s: FormState, step: Step): boolean {
   if (step === 1) return s.department_name.trim().length > 0;
   if (step === 2) return s.lines.length > 0 && s.lines.every(l => l.item_name.trim().length > 0 && l.qty > 0 && l.estimated_rate >= 0);
@@ -82,11 +79,10 @@ function totalValue(lines: LineDraft[]): number {
 interface Props { onClose: () => void }
 
 export default function MobileMaterialIndentCapture({ onClose }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [step, setStep] = useState<Step>(1);
   const [s, setS] = useState<FormState>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
-  const ENTITY = getActiveEntityCode();
-
   const addLine = (): void => setS(prev => ({ ...prev, lines: [...prev.lines, { ...EMPTY_LINE }] }));
   const removeLine = (i: number): void => setS(prev => ({ ...prev, lines: prev.lines.filter((_, idx) => idx !== i) }));
   const updateLine = (i: number, patch: Partial<LineDraft>): void => setS(prev => ({
@@ -125,7 +121,7 @@ export default function MobileMaterialIndentCapture({ onClose }: Props): JSX.Ele
         cascade_reason: null,
       }));
       const input: CreateMaterialIndentInput = {
-        entity_id: ENTITY,
+        entity_id: entityCode,
         voucher_type_id: 'vt-material-indent',
         date: today,
         branch_id: 'branch-default',
@@ -148,8 +144,8 @@ export default function MobileMaterialIndentCapture({ onClose }: Props): JSX.Ele
         created_by: 'mobile-staff',
         updated_by: 'mobile-staff',
       };
-      const indent = createMaterialIndent(input, ENTITY);
-      enqueueWrite(ENTITY, 'rating_submit', { kind: 'material_indent', id: indent.id, voucher_no: indent.voucher_no });
+      const indent = createMaterialIndent(input, entityCode);
+      enqueueWrite(entityCode, 'rating_submit', { kind: 'material_indent', id: indent.id, voucher_no: indent.voucher_no });
       toast.success(`Indent ${indent.voucher_no} saved as DRAFT`);
       setS(EMPTY_FORM); setStep(1); onClose();
     } catch (e) {

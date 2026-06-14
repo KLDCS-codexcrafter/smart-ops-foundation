@@ -4,41 +4,42 @@
  *
  * Pattern note: NO [tick, setTick] + useMemo · uses [list, setList] + refresh() pattern.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, DoorOpen, Plus, LogIn, LogOut, Activity } from 'lucide-react';
 import MobileGateGuardCapture from '@/components/mobile/MobileGateGuardCapture';
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listInwardQueue, listOutwardQueue, listGatePasses,
 } from '@/lib/gateflow-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
+
 
 export default function MobileGateGuardPage() {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [showCapture, setShowCapture] = useState(false);
   const [inward, setInward] = useState<number>(0);
   const [outward, setOutward] = useState<number>(0);
   const [today, setToday] = useState<number>(0);
 
-  const refresh = () => {
-    setInward(listInwardQueue(ENTITY).length);
-    setOutward(listOutwardQueue(ENTITY).length);
+  const refresh = useCallback(() => {
+    setInward(listInwardQueue(entityCode).length);
+    setOutward(listOutwardQueue(entityCode).length);
     const todayStr = new Date().toISOString().slice(0, 10);
     setToday(
-      listGatePasses(ENTITY).filter((gp) => gp.entry_time.slice(0, 10) === todayStr).length,
+      listGatePasses(entityCode).filter((gp) => gp.entry_time.slice(0, 10) === todayStr).length,
     );
-  };
+  }, [entityCode]);
 
   useEffect(() => {
     refresh();
     const i = setInterval(refresh, 5000);
     return () => clearInterval(i);
-  }, []);
+  }, [refresh]);
 
   if (showCapture) {
     return (

@@ -14,24 +14,20 @@ import MobileInwardReceiptCapture from '@/components/mobile/MobileInwardReceiptC
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { listInwardReceipts, listQuarantineQueue } from '@/lib/inward-receipt-engine';
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
-  catch { return 'DEMO'; }
-}
-
+import { useEntityCode } from '@/hooks/useEntityCode';
 export default function MobileInwardReceiptPage(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
-  const ENTITY = getActiveEntityCode();
   const [showCapture, setShowCapture] = useState(false);
   const [today, setToday] = useState<number>(0);
   const [quarantine, setQuarantine] = useState<number>(0);
   const [released, setReleased] = useState<number>(0);
 
   const refresh = (): void => {
-    const all = listInwardReceipts(ENTITY);
+    const all = listInwardReceipts(entityCode);
     const todayStr = new Date().toISOString().slice(0, 10);
     setToday(all.filter(r => (r.arrival_date ?? '').slice(0, 10) === todayStr).length);
-    setQuarantine(listQuarantineQueue(ENTITY).length);
+    setQuarantine(listQuarantineQueue(entityCode).length);
     setReleased(
       all.filter(r => r.status === 'released' && (r.released_at ?? '').slice(0, 10) === todayStr).length,
     );

@@ -15,19 +15,16 @@ import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { listPendingMirrors, type PendingMirror } from '@/lib/approval-rail-engine';
 import '@/lib/approval-adapters';
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
-}
-
+import { useEntityCode } from '@/hooks/useEntityCode';
 export default function MobileApprovalInboxPage(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
-  const ENTITY = getActiveEntityCode();
   const [showCapture, setShowCapture] = useState(false);
   const [pending, setPending] = useState<PendingMirror[]>([]);
 
   const refresh = useCallback((): void => {
-    setPending(listPendingMirrors(ENTITY));
-  }, [ENTITY]);
+    setPending(listPendingMirrors(entityCode));
+  }, [entityCode]);
 
   useEffect(() => { refresh(); }, [showCapture, refresh]);
 

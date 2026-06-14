@@ -20,15 +20,15 @@ import { QRCameraScanner } from '@/components/mobile/QRCameraScanner';
 import { BiometricLoginPrompt } from '@/components/mobile/BiometricLoginPrompt';
 import { setBiometricToken } from '@/lib/biometric-bridge';
 import { logMobileLogin } from '@/lib/mobile-audit';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const ENTITY_CODE = DEFAULT_ENTITY_SHORTCODE;
 const DEFAULT_PLAN = 'growth' as const;
 
-function readDistributors(): Distributor[] {
+
+function readDistributors(entityCode: string): Distributor[] {
   try {
     // [JWT] GET /api/distributors?entityCode=SMRT
-    const raw = localStorage.getItem(`erp_distributors_${ENTITY_CODE}`);
+    const raw = localStorage.getItem(`erp_distributors_${entityCode}`);
     return raw ? (JSON.parse(raw) as Distributor[]) : [];
   } catch {
     return [];
@@ -64,10 +64,10 @@ function readCustomers(): CustomerLite[] {
   }
 }
 
-function readSAMPersons(): SAMPerson[] {
+function readSAMPersons(entityCode: string): SAMPerson[] {
   try {
     // [JWT] GET /api/salesx/sam-persons?entityCode=SMRT
-    const raw = localStorage.getItem(samPersonsKey(ENTITY_CODE));
+    const raw = localStorage.getItem(samPersonsKey(entityCode));
     return raw ? (JSON.parse(raw) as SAMPerson[]) : [];
   } catch {
     return [];
@@ -87,6 +87,7 @@ const ROLE_TO_CARD_ID: Record<ResolvedRole, CardId> = {
 };
 
 export default function MobileLogin() {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [credential, setCredential] = useState('');
   const [password, setPassword] = useState('');
@@ -106,10 +107,10 @@ export default function MobileLogin() {
     const identity = resolveIdentity(
       credential,
       password,
-      readDistributors(),
+      readDistributors(entityCode),
       readCustomers(),
-      readSAMPersons(),
-      ENTITY_CODE,
+      readSAMPersons(entityCode),
+      entityCode,
       DEFAULT_PLAN,
     );
 
@@ -136,7 +137,7 @@ export default function MobileLogin() {
     }
 
     logAudit({
-      entityCode: ENTITY_CODE,
+      entityCode: entityCode,
       userId: identity.user_id ?? 'mobile-user',
       userName: identity.display_name,
       cardId: ROLE_TO_CARD_ID[identity.role],

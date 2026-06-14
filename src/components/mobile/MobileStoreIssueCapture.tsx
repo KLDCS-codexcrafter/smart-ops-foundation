@@ -35,6 +35,7 @@ import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { enqueueWrite } from '@/lib/offline-queue-engine';
 import { createStockIssue, postStockIssue } from '@/lib/stock-issue-engine';
 
+import { useEntityCode } from '@/hooks/useEntityCode';
 type Step = 1 | 2 | 3 | 4;
 
 interface LineDraft {
@@ -62,10 +63,6 @@ const EMPTY_FORM: FormState = {
   lines: [{ ...EMPTY_LINE }], photos: [], notes: '',
 };
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
-}
-
 function canProceed(s: FormState, step: Step): boolean {
   if (step === 1) return s.department_name.trim().length > 0 && s.recipient_name.trim().length > 0 && s.purpose.trim().length > 0;
   if (step === 2) return s.lines.length > 0 && s.lines.every(l => l.item_name.trim().length > 0 && l.qty > 0);
@@ -75,11 +72,10 @@ function canProceed(s: FormState, step: Step): boolean {
 interface Props { onClose: () => void }
 
 export default function MobileStoreIssueCapture({ onClose }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [step, setStep] = useState<Step>(1);
   const [s, setS] = useState<FormState>(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
-  const ENTITY = getActiveEntityCode();
-
   const addLine = (): void => setS(prev => ({ ...prev, lines: [...prev.lines, { ...EMPTY_LINE }] }));
   const removeLine = (i: number): void => setS(prev => ({ ...prev, lines: prev.lines.filter((_, idx) => idx !== i) }));
   const updateLine = (i: number, patch: Partial<LineDraft>): void => setS(prev => ({
@@ -97,7 +93,7 @@ export default function MobileStoreIssueCapture({ onClose }: Props): JSX.Element
     try {
       // [JWT] POST /api/store-hub/stock-issues
       const payload = {
-        entity_id: ENTITY,
+        entity_id: entityCode,
         department_id: s.department_id || s.department_name.toLowerCase().replace(/\s+/g, '-'),
         department_name: s.department_name,
         recipient_id: null,
@@ -117,11 +113,11 @@ export default function MobileStoreIssueCapture({ onClose }: Props): JSX.Element
         reference_no: `MOBILE:${Date.now()}`,
       };
       if (!navigator.onLine) {
-        enqueueWrite(ENTITY, 'rating_submit', { kind: 'stock_issue', input: payload });
+        enqueueWrite(entityCode, 'rating_submit', { kind: 'stock_issue', input: payload });
         toast.success('Stock Issue queued — will sync when online');
       } else {
-        const issue = await createStockIssue(payload, ENTITY, 'mobile-stores-mgr');
-        await postStockIssue(issue.id, ENTITY, 'mobile-stores-mgr');
+        const issue = await createStockIssue(payload, entityCode, 'mobile-stores-mgr');
+        await postStockIssue(issue.id, entityCode, 'mobile-stores-mgr');
         toast.success(`Stock Issue ${issue.issue_no} posted`);
       }
       setS(EMPTY_FORM); setStep(1); onClose();

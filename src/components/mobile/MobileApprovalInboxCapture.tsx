@@ -26,12 +26,9 @@ import {
 // Self-registers all adapters on import (registerAllApprovalAdapters auto-fires).
 import '@/lib/approval-adapters';
 
+import { useEntityCode } from '@/hooks/useEntityCode';
 type Step = 1 | 2;
 type Action = 'approve' | 'reject';
-
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
-}
 
 function getApproverName(): string {
   try {
@@ -47,6 +44,7 @@ function getApproverName(): string {
 interface Props { onClose: () => void }
 
 export default function MobileApprovalInboxCapture({ onClose }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [step, setStep] = useState<Step>(1);
   const [queue, setQueue] = useState<PendingMirror[]>([]);
   const [picked, setPicked] = useState<PendingMirror | null>(null);
@@ -54,12 +52,10 @@ export default function MobileApprovalInboxCapture({ onClose }: Props): JSX.Elem
   const [remarks, setRemarks] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [filterType, setFilterType] = useState<string>('__all__');
-  const ENTITY = getActiveEntityCode();
-
   useEffect(() => {
     // [JWT] GET /api/approval-rail/pending?entityCode=... — today: listPendingMirrors
-    setQueue(listPendingMirrors(ENTITY));
-  }, [ENTITY]);
+    setQueue(listPendingMirrors(entityCode));
+  }, [entityCode]);
 
   const types = useMemo(() => {
     const set = new Set<string>();
@@ -83,7 +79,7 @@ export default function MobileApprovalInboxCapture({ onClose }: Props): JSX.Elem
       // [JWT] PATCH /api/approval-rail/tasks/:id — today: decideApproval (B.1 rail)
       const by = getApproverName();
       const result = decideApproval(
-        ENTITY,
+        entityCode,
         picked.task.id,
         action === 'approve' ? 'approved' : 'rejected',
         by,
@@ -92,13 +88,13 @@ export default function MobileApprovalInboxCapture({ onClose }: Props): JSX.Elem
       if (!result.ok) {
         toast.error(result.reason ?? 'Decision refused by rail');
       } else {
-        enqueueWrite(ENTITY, 'rating_submit', {
+        enqueueWrite(entityCode, 'rating_submit', {
           kind: `approval_${picked.meta.object_type}_${action}`,
           id: picked.meta.source_record_id,
         });
         toast.success(`${picked.meta.source_record_no} ${action === 'approve' ? 'approved' : 'rejected'}`);
         setPicked(null); setAction(null); setRemarks(''); setStep(1);
-        setQueue(listPendingMirrors(ENTITY));
+        setQueue(listPendingMirrors(entityCode));
         onClose();
       }
     } catch (e) {

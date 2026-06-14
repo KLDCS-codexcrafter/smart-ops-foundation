@@ -11,24 +11,21 @@ import MobileReceiptAckCapture from '@/components/mobile/MobileReceiptAckCapture
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { listReceiptAcks, listReleasedReceiptsAwaitingStock } from '@/lib/stock-receipt-ack-engine';
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
-}
-
+import { useEntityCode } from '@/hooks/useEntityCode';
 export default function MobileReceiptAckPage(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
-  const ENTITY = getActiveEntityCode();
   const [showCapture, setShowCapture] = useState(false);
   const [ackedToday, setAckedToday] = useState(0);
   const [drafts, setDrafts] = useState(0);
   const [pending, setPending] = useState(0);
 
   const refresh = (): void => {
-    const list = listReceiptAcks(ENTITY);
+    const list = listReceiptAcks(entityCode);
     const today = new Date().toISOString().slice(0, 10);
     setAckedToday(list.filter(a => a.status === 'acknowledged' && (a.posted_at ?? '').slice(0, 10) === today).length);
     setDrafts(list.filter(a => a.status === 'draft').length);
-    setPending(listReleasedReceiptsAwaitingStock(ENTITY).length);
+    setPending(listReleasedReceiptsAwaitingStock(entityCode).length);
   };
 
   useEffect(() => { refresh(); }, [showCapture]); // eslint-disable-line react-hooks/exhaustive-deps

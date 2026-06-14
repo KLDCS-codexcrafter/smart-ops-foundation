@@ -38,16 +38,17 @@ import { enqueueWrite } from '@/lib/offline-queue-engine';
 import { findByVehicleNo } from '@/lib/vehicle-master-engine';
 import { getDriver } from '@/lib/driver-master-engine';
 import { createInwardEntry, createOutwardEntry } from '@/lib/gateflow-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+
 import type { LinkedVoucherType } from '@/types/gate-pass';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   canProceed, EMPTY_FORM_STATE, type FormState, type Step,
 } from '@/lib/mobile-gate-guard-validation';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 const EMPTY = EMPTY_FORM_STATE;
 
 export default function MobileGateGuardCapture() {
+  const { entityCode } = useEntityCode();
   const [step, setStep] = useState<Step>(1);
   const [s, setS] = useState<FormState>(EMPTY);
   const [submitting, setSubmitting] = useState(false);
@@ -62,11 +63,11 @@ export default function MobileGateGuardCapture() {
   const autoFillVehicle = (vNo: string) => {
     const norm = vNo.trim().toUpperCase();
     update({ vehicleNo: norm });
-    const v = findByVehicleNo(norm, ENTITY);
+    const v = findByVehicleNo(norm, entityCode);
     if (v) {
       update({ vehicleType: v.vehicle_type });
       if (v.default_driver_id) {
-        const d = getDriver(v.default_driver_id, ENTITY);
+        const d = getDriver(v.default_driver_id, entityCode);
         if (d) {
           update({
             driverName: d.driver_name,
@@ -126,13 +127,13 @@ export default function MobileGateGuardCapture() {
       };
       if (!navigator.onLine) {
         // [JWT] Offline queue · matches MobilePODCapture pattern
-        enqueueWrite(ENTITY, 'rating_submit', { kind: 'gate_pass', direction: s.direction, input });
+        enqueueWrite(entityCode, 'rating_submit', { kind: 'gate_pass', direction: s.direction, input });
         toast.success('Gate pass queued — will sync when online');
       } else {
         if (s.direction === 'inward') {
-          await createInwardEntry(input, ENTITY, 'mobile-guard');
+          await createInwardEntry(input, entityCode, 'mobile-guard');
         } else {
-          await createOutwardEntry(input, ENTITY, 'mobile-guard');
+          await createOutwardEntry(input, entityCode, 'mobile-guard');
         }
         toast.success(`Gate pass created · ${s.direction}`);
       }

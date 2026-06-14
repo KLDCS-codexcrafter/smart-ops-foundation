@@ -43,18 +43,14 @@ import {
 import { getQaSpec, interpretParameter } from '@/lib/qa-spec-engine';
 import type { QaInspectionRecord } from '@/types/qa-inspection';
 import type { QaSpec, QaSpecParameter } from '@/types/qa-spec';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   canProceedQa, EMPTY_QA_FORM_STATE,
   type QaCaptureFormState, type QaStep,
 } from '@/lib/mobile-qa-capture-validation';
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
-  catch { return 'DEMO'; }
-}
-
 export default function MobileQualiCheckCapture(): JSX.Element {
-  const ENTITY = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [step, setStep] = useState<QaStep>(1);
   const [s, setS] = useState<QaCaptureFormState>(EMPTY_QA_FORM_STATE);
   const [pending, setPending] = useState<QaInspectionRecord[]>([]);
@@ -62,8 +58,8 @@ export default function MobileQualiCheckCapture(): JSX.Element {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    setPending(listPendingQa(ENTITY));
-  }, [ENTITY]);
+    setPending(listPendingQa(entityCode));
+  }, [entityCode]);
 
   const update = (patch: Partial<QaCaptureFormState>): void =>
     setS(prev => ({ ...prev, ...patch }));
@@ -79,7 +75,7 @@ export default function MobileQualiCheckCapture(): JSX.Element {
       failure_reason: '', parameter_values: {}, photo_urls: [],
     });
     if (q.spec_id) {
-      const sp = getQaSpec(q.spec_id, ENTITY);
+      const sp = getQaSpec(q.spec_id, entityCode);
       setSpec(sp);
     } else {
       setSpec(null);
@@ -116,21 +112,21 @@ export default function MobileQualiCheckCapture(): JSX.Element {
       };
       if (!navigator.onLine) {
         // [JWT] Offline queue · matches MobileGateGuardCapture pattern
-        enqueueWrite(ENTITY, 'rating_submit', { kind: 'qa_inspection', input: payload });
+        enqueueWrite(entityCode, 'rating_submit', { kind: 'qa_inspection', input: payload });
         toast.success('Inspection queued — will sync when online');
       } else {
         await updateInspectionLine(
           s.qa_id, s.line_id,
           s.qty_passed, s.qty_failed,
           s.qty_failed > 0 ? s.failure_reason : null,
-          ENTITY, 'mobile-inspector',
+          entityCode, 'mobile-inspector',
         );
-        await completeInspection(s.qa_id, ENTITY, 'mobile-inspector');
+        await completeInspection(s.qa_id, entityCode, 'mobile-inspector');
         toast.success(`Inspection ${s.qa_no} submitted`);
       }
       setS(EMPTY_QA_FORM_STATE);
       setSpec(null);
-      setPending(listPendingQa(ENTITY));
+      setPending(listPendingQa(entityCode));
       setStep(1);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Submit failed');

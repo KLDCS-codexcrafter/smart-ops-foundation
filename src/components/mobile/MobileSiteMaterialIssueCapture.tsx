@@ -15,12 +15,13 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { listSites } from '@/lib/sitex-engine';
 import { enqueueWrite, getQueueSize } from '@/lib/offline-queue-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+
 import { sitexMaterialIssuesKey, type SiteMaterialIssue, type SiteMaster } from '@/types/sitex';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
+import { useEntityCode } from '@/hooks/useEntityCode';
 export default function MobileSiteMaterialIssueCapture(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [sites, setSites] = useState<SiteMaster[]>([]);
@@ -34,7 +35,7 @@ export default function MobileSiteMaterialIssueCapture(): JSX.Element {
   const [queueSize, setQueueSize] = useState(0);
 
   useEffect(() => {
-    setSites(listSites(ENTITY).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
+    setSites(listSites(entityCode).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
     const on = (): void => setIsOnline(true);
     const off = (): void => setIsOnline(false);
     window.addEventListener('online', on);
@@ -44,7 +45,7 @@ export default function MobileSiteMaterialIssueCapture(): JSX.Element {
       window.removeEventListener('online', on);
       window.removeEventListener('offline', off);
     };
-  }, []);
+  }, [entityCode]);
 
   const site = sites.find((s) => s.id === siteId) ?? null;
 
@@ -73,12 +74,12 @@ export default function MobileSiteMaterialIssueCapture(): JSX.Element {
       created_at: new Date().toISOString(),
     };
     if (!isOnline) {
-      enqueueWrite(ENTITY, 'order_place', { kind: 'sitex_material_issue', payload: issue });
+      enqueueWrite(entityCode, 'order_place', { kind: 'sitex_material_issue', payload: issue });
       setQueueSize(getQueueSize());
       toast.success('Queued · will sync when online');
     } else {
       // [JWT] POST /api/sitex/material-issues
-      const key = sitexMaterialIssuesKey(ENTITY);
+      const key = sitexMaterialIssuesKey(entityCode);
       const all = JSON.parse(localStorage.getItem(key) ?? '[]') as SiteMaterialIssue[];
       all.push(issue);
       localStorage.setItem(key, JSON.stringify(all));
