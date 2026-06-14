@@ -1602,7 +1602,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Hotfix T-W1C9fix-Theme-HTML-Class · root cause of "toggle doesn't switch to light" — index.html line 2 hardcoded `class="dark"` on <html>, defeating ThemeProvider.toggleTheme(). Fix removes the baked-in class so ThemeProvider.getInitialTheme() (saved pref → system prefers-color-scheme) controls the initial theme and the toggle reaches both light + dark. ZERO new SIBLINGs · ZERO logic changes · touch index.html (one line) + guard test theme-html-no-forced-dark.test asserting <html> has no class="dark" and ThemeProvider retains both classList.add("dark")/remove("dark") · predecessor 4af52d2
   {
     sprintNumber: 'W1C9fix' as unknown as number, code: 'T-W1C9fix-Theme-HTML-Class', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: '4af52d2', loc: 2,
+    headSha: '931ba7f', predecessorSha: '4af52d2', loc: 2,
     newSiblings: [],
     bankDate: '2026-06-13', provenance: 'CONFIRMED',
   },
