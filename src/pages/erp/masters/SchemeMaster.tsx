@@ -155,19 +155,21 @@ export function SchemeMasterPanel() {
   const [typeFilter, setTypeFilter] = useState<'all' | SchemeType>('all');
   const { entityCode, userId } = useCardEntitlement();
 
+  const schemeImportSchema = useMemo(() => buildSchemeImportSchema(entityCode), [entityCode]);
+
   // First-run seed
   useEffect(() => {
-    const existing = readSchemes();
+    const existing = readSchemes(entityCode);
     if (existing.length === 0) {
-      const seeded = seedDemoSchemes(ENTITY);
-      writeSchemes(seeded);
+      const seeded = seedDemoSchemes(entityCode);
+      writeSchemes(entityCode, seeded);
       setList(seeded);
       setSelectedId(seeded[0]?.id ?? null);
     } else {
       setList(existing);
       setSelectedId(existing[0]?.id ?? null);
     }
-  }, []);
+  }, [entityCode]);
 
   const filtered = useMemo(() => {
     return list.filter(s => {
@@ -189,7 +191,7 @@ export function SchemeMasterPanel() {
     if (!selected.code || !selected.name) { toast.error('Code & Name required'); return; }
     const next = list.map(s => s.id === selected.id
       ? { ...selected, updated_at: new Date().toISOString() } : s);
-    writeSchemes(next);
+    writeSchemes(entityCode, next);
     setList(next);
     logAudit({
       entityCode, userId, userName: userId,
@@ -204,10 +206,10 @@ export function SchemeMasterPanel() {
   };
 
   const handleNew = () => {
-    const fresh = blankScheme();
+    const fresh = blankScheme(entityCode);
     const next = [...list, fresh];
     setList(next);
-    writeSchemes(next);
+    writeSchemes(entityCode, next);
     setSelectedId(fresh.id);
   };
 
@@ -216,7 +218,7 @@ export function SchemeMasterPanel() {
     if (!window.confirm(`Delete scheme "${selected.code}"?`)) return;
     const next = list.filter(s => s.id !== selected.id);
     setList(next);
-    writeSchemes(next);
+    writeSchemes(entityCode, next);
     setSelectedId(next[0]?.id ?? null);
     toast.success('Scheme deleted');
   };
@@ -234,7 +236,7 @@ export function SchemeMasterPanel() {
     };
     const next = [...list, dup];
     setList(next);
-    writeSchemes(next);
+    writeSchemes(entityCode, next);
     setSelectedId(dup.id);
     toast.success('Scheme duplicated');
   };
@@ -254,9 +256,9 @@ export function SchemeMasterPanel() {
         </div>
         <div className="flex gap-2">
           <MasterImportExportButtons
-            schema={SCHEME_IMPORT_SCHEMA as unknown as ImportSchema<Record<string, unknown>>}
+            schema={schemeImportSchema as unknown as ImportSchema<Record<string, unknown>>}
             records={list as unknown as Array<Record<string, unknown>>}
-            onImported={() => setList(readSchemes())}
+            onImported={() => setList(readSchemes(entityCode))}
           />
           <Button onClick={handleNew} variant="outline" size="sm">
             <Plus className="h-3.5 w-3.5 mr-1" /> New Scheme
