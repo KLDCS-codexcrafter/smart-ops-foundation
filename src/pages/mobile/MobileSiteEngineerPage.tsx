@@ -4,34 +4,34 @@
  * @sprint      T-Phase-1.A.14 SiteX Foundation · Q-LOCK-11a · Block F.1 · NEW canonical · web+mobile parallel
  * @decisions   D-NEW-CV POSSIBLE Mobile catalog incremental pattern · D-NEW-CT 17th canonical
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useState , useCallback} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ArrowLeft, MapPin, FileText, AlertTriangle, Shield, Package, Activity } from 'lucide-react';
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { listSites } from '@/lib/sitex-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { SiteMaster } from '@/types/sitex';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 export default function MobileSiteEngineerPage(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [sites, setSites] = useState<SiteMaster[]>([]);
   const [selectedSite, setSelectedSite] = useState<SiteMaster | null>(null);
 
-  const refresh = (): void => {
-    const all = listSites(ENTITY).filter((s) => s.status === 'active' || s.status === 'mobilizing' || s.status === 'planned');
+  const refresh = useCallback((): void => {
+    const all = listSites(entityCode).filter((s) => s.status === 'active' || s.status === 'mobilizing' || s.status === 'planned');
     setSites(all);
     setSelectedSite((prev) => prev ?? (all.length > 0 ? all[0] : null));
-  };
+  }, [entityCode]);
 
   useEffect(() => {
     refresh();
     const i = setInterval(refresh, 5000);
     return () => clearInterval(i);
-  }, []);
+  }, [refresh]);
 
   return (
     <div className="min-h-screen bg-background p-4 max-w-md mx-auto space-y-4">
