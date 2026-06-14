@@ -69,10 +69,7 @@ import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverla
 // HELPERS
 // ============================================================
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
-  catch { return 'DEMO'; }
-}
+// getActiveEntityCode removed — Sprint T-CL3e · panels use useEntityCode() hook
 function getCurrentUserId(): string {
   try {
     const raw = localStorage.getItem('4ds_login_credential');
