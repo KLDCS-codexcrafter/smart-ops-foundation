@@ -541,7 +541,7 @@ function CreateDialogContent({ direction, entityCode, userId, onCreated }: Creat
 // ============================================================
 
 export function GatePassRegisterPanel(): JSX.Element {
-  const entityCode = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [list, setList] = useState<GatePass[]>([]);
   const [search, setSearch] = useState('');
   const [dirFilter, setDirFilter] = useState<'all' | GatePassDirection>('all');
