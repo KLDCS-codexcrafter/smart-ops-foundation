@@ -1,4 +1,4 @@
-# i18n Migration Guide
+# i18n Migration Guide · Anchor: Wave-1 freeze cbe2357 · 187⭐ · 14 June 2026
 
 ## Migration Status (post-1.2.5h-c2-fix)
 
