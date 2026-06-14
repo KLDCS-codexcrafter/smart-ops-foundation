@@ -101,14 +101,16 @@ Operix is multi-company, so every read/write is scoped to the *active* entity. T
 
 ---
 
-## 5 · HOW TO MAKE A CHANGE (conventions that keep this codebase consistent)
-A future developer or AI should follow these — they are the rules the existing 187⭐ of work obeys:
-1. **Logic goes in an engine** (`src/lib/<domain>-engine.ts`), not in the page. Pages call engines.
+## 5 · HOW TO MAKE A CHANGE (conventions)
+The full engineering conventions live in **`docs/CODE-CONVENTIONS.md`** (file headers, engine/hook/page separation, money math, D-decision discipline) and the internal data flows + invariants in **`docs/ARCHITECTURE.md`**. Read both before changing code. In short, the rules the existing 187⭐ of work obeys:
+1. **Logic goes in an engine** (`src/lib/<domain>-engine.ts`), not in the page. Pages call engines (D-216: pure engines never persist).
 2. **Always resolve entity via `useEntityCode()`** — never hardcode an entity code, never read a raw localStorage key for it. Call the hook **at component top level** (never inside JSX/callbacks/IIFEs).
-3. **Mark every backend touch with a `[JWT]` seam comment** naming the future API — don't silently couple to localStorage.
-4. **No synthetic/placeholder data on rendered surfaces** — real reads or an honest empty state only.
-5. **Tests assert behaviour, not brittle exact counts** — prefer `toBeGreaterThanOrEqual` over `toBe(N)`; the global test setup already clears storage between tests.
-6. **Gates before done:** TSC 0 · ESLint repo-wide `--max-warnings 0` · Vitest green · build PASS (with the `NODE_OPTIONS` memory flag).
+3. **Mark every backend touch with a `[JWT]` seam comment** naming the future API (D-194) — don't silently couple to localStorage.
+4. **Voucher form pages are zero-touch** (`src/pages/erp/accounting/vouchers/`, D-127) — changes need explicit justification.
+5. **No synthetic/placeholder data on rendered surfaces** — real reads or an honest empty state only.
+6. **Money math** uses the decimal helpers (`dMul`/`dAdd`/`round2`…), never `Math.round` on currency.
+7. **Tests assert behaviour, not brittle exact counts** — prefer `toBeGreaterThanOrEqual` over `toBe(N)`; the global test setup already clears storage between tests.
+8. **Gates before done:** TSC 0 · ESLint repo-wide `--max-warnings 0` · Vitest green · build PASS (with the `NODE_OPTIONS` memory flag).
 
 ---
 
@@ -141,8 +143,16 @@ Explicitly NOT certified by the Wave-1 freeze; all must close before real custom
 
 ---
 
-## 9 · COMPANION DOCUMENTS (in the repo)
+## 9 · COMPANION DOCUMENTS
+**At repo root:**
 - **`Operix_Wave1_Freeze_Record_v1`** — the official Wave-1 close-out: the 7/7 gate, deferral-decisions, carried-forward gates. *Read for current state.*
 - **`Operix_4DSmartOps_Vision_and_Reference_Compendium_v1`** — vision (4DSmartOps), brand (Prudent360), and the 30 origin reference sources (25 years of Tally/TDL lineage). *Read for the "why" and the history.*
+
+**In `docs/`:**
+- **`ARCHITECTURE.md`** — deep technical reference: invariants (D-127/128/194/216), Mermaid data-flow diagrams, Bucket A/B/C key-scoping, FK patterns. *Read for internals.*
+- **`CODE-CONVENTIONS.md`** — engineering conventions the audit toolchain expects.
+- **`AUDIT-TRAIL-COMPLIANCE.md`** · **`PERFORMANCE-BASELINE.md`** — regulatory and performance detail.
+- **`D-226` / `D-228`** — Universal Transaction Standard + Header decisions.
+- **`docs/audits/`** — the independent audit reports + the consolidated Wave-2 gate punch-list.
 
 *Operix Architecture of Record · Wave-1 freeze `cbe2357` · 187⭐ · code-verified · drafted by Claude (independent architect/auditor), committed to the repository on behalf of the Operix Founder · to be updated at the Wave-2 boundary.*
