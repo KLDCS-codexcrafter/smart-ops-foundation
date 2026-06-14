@@ -158,7 +158,7 @@ export function consumeReceiptForAMCPayment(event: ReceiptForAMCPaymentEvent): A
       event.amc_record_id,
       { billed_to_date_paise: event.paid_amount_paise },
       'system_bridge',
-      event.entity_id ?? 'OPRX',
+      'OPRX',
     );
   } catch {
     return null;
