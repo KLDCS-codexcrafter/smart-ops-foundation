@@ -16,7 +16,7 @@ interface TimelineEvent { key: string; at: string; kind: string; detail: string 
 
 export function EquipmentHistory(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const equipment = useMemo(() => listEquipment(entityCode), []);
+  const equipment = useMemo(() => listEquipment(entityCode), [entityCode]);
   const [selected, setSelected] = useState<string>(equipment[0]?.id ?? '');
 
   const events = useMemo<TimelineEvent[]>(() => {

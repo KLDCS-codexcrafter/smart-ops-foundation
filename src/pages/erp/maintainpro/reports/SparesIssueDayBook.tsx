@@ -11,7 +11,7 @@ import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function SparesIssueDayBook(): JSX.Element {
   const { entityCode } = useEntityCode();
-  const rows = useMemo(() => listSparesIssues(entityCode).sort((a, b) => (a.issued_at < b.issued_at ? 1 : -1)), []);
+  const rows = useMemo(() => listSparesIssues(entityCode).sort((a, b) => (a.issued_at < b.issued_at ? 1 : -1)), [entityCode]);
 
   return (
     <MaintainProReportShell title="Spares Issue Day Book" ssotBadge="TDL · FR-42">
