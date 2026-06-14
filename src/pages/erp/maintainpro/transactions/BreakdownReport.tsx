@@ -24,23 +24,24 @@ import { onEnterNext } from '@/lib/keyboard';
 // RPT-6c imports
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
+import { useEntityCode } from '@/hooks/useEntityCode';
 void onEnterNext;
 
 interface Props { onNavigate: (m: string) => void }
 
-const E = 'DEMO';
 
 export function BreakdownReport(_props: Props): JSX.Element {
-  const equipment = listEquipment(E);
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
   const [equipmentId, setEquipmentId] = useState(equipment[0]?.id ?? '');
   const [complaint, setComplaint] = useState('');
   const [severity, setSeverity] = useState<BD['severity']>('medium');
-  const [list, setList] = useState<BD[]>(listBreakdownReports(E));
+  const [list, setList] = useState<BD[]>(listBreakdownReports(entityCode));
   const [last, setLast] = useState<BD | null>(null);
 
   const submit = (): void => {
     if (!equipmentId || !complaint) { toast.error('Equipment + complaint required'); return; }
-    const bd = createBreakdownReport(E, {
+    const bd = createBreakdownReport(entityCode, {
       breakdown_no: `BD/26-27/${String(list.length + 1).padStart(4, '0')}`,
       equipment_id: equipmentId,
       reported_by_user_id: 'demo_user',
@@ -57,7 +58,7 @@ export function BreakdownReport(_props: Props): JSX.Element {
       triggered_work_order_id: null,
       project_id: null,
     });
-    setList(listBreakdownReports(E));
+    setList(listBreakdownReports(entityCode));
     setLast(bd);
     setComplaint('');
     toast.success(`Breakdown ${bd.breakdown_no} logged`);

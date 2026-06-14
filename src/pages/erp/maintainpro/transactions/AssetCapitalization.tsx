@@ -10,12 +10,13 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { listAssetCapitalizations } from '@/lib/maintainpro-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 interface Props { onNavigate: (m: string) => void }
-const E = 'DEMO';
 
 export function AssetCapitalization(_props: Props): JSX.Element {
-  const list = listAssetCapitalizations(E);
+  const { entityCode } = useEntityCode();
+  const list = listAssetCapitalizations(entityCode);
   return (
     <div className="p-6 space-y-4">
       <h1 className="text-2xl font-bold">Asset Capitalization</h1>

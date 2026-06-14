@@ -11,8 +11,8 @@ import { MaintainProReportShell } from '@/components/maintainpro/MaintainProRepo
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 import { ShieldCheck as RPT6cShield } from 'lucide-react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 const CATS: TicketCategory[] = ['electrical', 'mechanical', 'pneumatic', 'hydraulic', 'safety', 'calibration', 'housekeeping'];
 const SEVS: TicketSeverity[] = ['critical', 'high', 'medium', 'low'];
 
@@ -24,8 +24,9 @@ function sevColor(s: TicketSeverity): string {
 }
 
 export function OpenTicketsLive(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const grid = useMemo(() => {
-    const open = listInternalTickets(E).filter((t) => t.status !== 'closed');
+    const open = listInternalTickets(entityCode).filter((t) => t.status !== 'closed');
     const counts: Record<string, number> = {};
     open.forEach((t) => {
       const k = `${t.category}|${t.severity}`;

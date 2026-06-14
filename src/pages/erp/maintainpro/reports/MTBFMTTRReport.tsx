@@ -6,12 +6,13 @@
 import { useMemo } from 'react';
 import { listEquipment } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 export function MTBFMTTRReport(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const rows = useMemo(() => {
-    return listEquipment(E).map((eq) => {
+    return listEquipment(entityCode).map((eq) => {
       const bcount = eq.breakdown_count_12m || 0;
       const mtbfDays = bcount === 0 ? null : (eq.uptime_pct_12m * 365) / 100 / bcount;
       const mttrMin = bcount === 0 ? null : eq.total_breakdown_minutes_12m / bcount;

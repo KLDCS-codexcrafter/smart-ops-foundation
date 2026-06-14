@@ -6,12 +6,13 @@
 import { useMemo } from 'react';
 import { listEquipment, computeEquipmentEnergyConsumption } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 export function EnergyESGDashboard(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const data = useMemo(() => {
-    const eq = listEquipment(E);
+    const eq = listEquipment(entityCode);
     const byCat = new Map<string, number>();
     let total = 0;
     eq.forEach((e) => {

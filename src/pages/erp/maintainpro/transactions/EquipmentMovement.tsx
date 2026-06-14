@@ -1,6 +1,6 @@
 /**
  * @file        src/pages/erp/maintainpro/transactions/EquipmentMovement.tsx
- * @sprint      T-Phase-1.A.16b · Block E.2
+ * @sprint      T-Phase-1.A.16b · Block entityCode.2
  */
 // TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
@@ -13,20 +13,21 @@ import { createEquipmentMovement, listEquipmentMovements, listEquipment } from '
 import type { EquipmentMovement as EM } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 interface Props { onNavigate: (m: string) => void }
-const E = 'DEMO';
 
 export function EquipmentMovement(_props: Props): JSX.Element {
-  const equipment = listEquipment(E);
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
   const [equipmentId, setEquipmentId] = useState(equipment[0]?.id ?? '');
   const [src, setSrc] = useState('Plant 1');
   const [dest, setDest] = useState('Workshop');
-  const [list, setList] = useState<EM[]>(listEquipmentMovements(E));
+  const [list, setList] = useState<EM[]>(listEquipmentMovements(entityCode));
 
   const submit = (): void => {
     if (!equipmentId) { toast.error('Equipment required'); return; }
-    createEquipmentMovement(E, {
+    createEquipmentMovement(entityCode, {
       movement_no: `EM/26-27/${String(list.length + 1).padStart(4, '0')}`,
       equipment_id: equipmentId,
       source_location: src,
@@ -40,7 +41,7 @@ export function EquipmentMovement(_props: Props): JSX.Element {
       authorized_by_user_id: 'demo_user',
       project_id: null,
     });
-    setList(listEquipmentMovements(E));
+    setList(listEquipmentMovements(entityCode));
     toast.success('Movement recorded');
   };
 

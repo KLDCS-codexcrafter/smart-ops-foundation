@@ -7,8 +7,8 @@ import { useMemo } from 'react';
 import { listInternalTickets } from '@/lib/maintainpro-engine';
 import { SLA_MATRIX, type TicketCategory, type TicketSeverity } from '@/types/maintainpro';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 const CATS: TicketCategory[] = ['electrical', 'mechanical', 'pneumatic', 'hydraulic', 'safety', 'calibration', 'housekeeping'];
 const SEVS: TicketSeverity[] = ['critical', 'high', 'medium', 'low'];
 
@@ -19,8 +19,9 @@ function cellBg(pct: number): string {
 }
 
 export function SLAPerformanceReport(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const cells = useMemo(() => {
-    const closed = listInternalTickets(E).filter((t) => t.status === 'closed' && t.resolved_at);
+    const closed = listInternalTickets(entityCode).filter((t) => t.status === 'closed' && t.resolved_at);
     const map: Record<string, { total: number; met: number }> = {};
     closed.forEach((t) => {
       const k = `${t.category}|${t.severity}`;

@@ -6,13 +6,14 @@
 import { useMemo } from 'react';
 import { listEquipment, listPMTickoffs } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 export function PMComplianceReport(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const summary = useMemo(() => {
-    const eq = listEquipment(E);
-    const ticks = listPMTickoffs(E);
+    const eq = listEquipment(entityCode);
+    const ticks = listPMTickoffs(entityCode);
     const total = ticks.length;
     const onTime = ticks.filter((t) => t.status === 'completed' && t.actual_completion_date <= t.scheduled_date).length;
     const pct = total === 0 ? 0 : Math.round((onTime / total) * 100);

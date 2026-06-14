@@ -1,6 +1,6 @@
 /**
  * @file        src/pages/erp/maintainpro/transactions/AMCOutToVendor.tsx
- * @sprint      T-Phase-1.A.16b · Block E.4 · OOB-M2 reminder cycle
+ * @sprint      T-Phase-1.A.16b · Block entityCode.4 · OOB-M2 reminder cycle
  */
 // TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
@@ -14,21 +14,22 @@ import { createAMCOutToVendor, listAMCOutToVendor, getAMCRemindersDue, listEquip
 import type { AMCOutToVendor as AMC } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 interface Props { onNavigate: (m: string) => void }
-const E = 'DEMO';
 
 export function AMCOutToVendor(_props: Props): JSX.Element {
-  const equipment = listEquipment(E);
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
   const [equipmentId, setEquipmentId] = useState(equipment[0]?.id ?? '');
   const [vendorId, setVendorId] = useState('vendor_001');
   const [expReturn, setExpReturn] = useState(new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10));
-  const [list, setList] = useState<AMC[]>(listAMCOutToVendor(E));
-  const reminders = getAMCRemindersDue(E);
+  const [list, setList] = useState<AMC[]>(listAMCOutToVendor(entityCode));
+  const reminders = getAMCRemindersDue(entityCode);
 
   const submit = (): void => {
     if (!equipmentId) { toast.error('Equipment required'); return; }
-    createAMCOutToVendor(E, {
+    createAMCOutToVendor(entityCode, {
       rma_no: `RMA/26-27/${String(list.length + 1).padStart(4, '0')}`,
       equipment_id: equipmentId,
       parts_sent: [],
@@ -48,7 +49,7 @@ export function AMCOutToVendor(_props: Props): JSX.Element {
       originating_department_id: 'maintenance',
       created_by_user_id: 'demo_user',
     });
-    setList(listAMCOutToVendor(E));
+    setList(listAMCOutToVendor(entityCode));
     toast.success('AMC RMA created');
   };
 

@@ -6,11 +6,12 @@
 import { useMemo } from 'react';
 import { listSparesIssues } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 
 export function SparesIssueDayBook(): JSX.Element {
-  const rows = useMemo(() => listSparesIssues(E).sort((a, b) => (a.issued_at < b.issued_at ? 1 : -1)), []);
+  const { entityCode } = useEntityCode();
+  const rows = useMemo(() => listSparesIssues(entityCode).sort((a, b) => (a.issued_at < b.issued_at ? 1 : -1)), []);
 
   return (
     <MaintainProReportShell title="Spares Issue Day Book" ssotBadge="TDL · FR-42">

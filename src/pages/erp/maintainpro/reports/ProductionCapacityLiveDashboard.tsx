@@ -1,15 +1,15 @@
 /**
  * @file        src/pages/erp/maintainpro/reports/ProductionCapacityLiveDashboard.tsx
  * @purpose     Real-time live dashboard · Andon-style capacity gauge · auto-refresh 30s · D-NEW-DD POSSIBLE 27th canonical · widget A.16b preserved
- * @sprint      T-Phase-1.A.16c · Block E.1 · Q-LOCK-6 · NEW
+ * @sprint      T-Phase-1.A.16c · Block entityCode.1 · Q-LOCK-6 · NEW
  * @decisions   D-NEW-DD Production Capacity Live Dashboard POSSIBLE 27th canonical
  */
 import { useEffect, useMemo, useState } from 'react';
 import { listEquipment, listBreakdownReports } from '@/lib/maintainpro-engine';
 import { MaintainProReportShell } from '@/components/maintainpro/MaintainProReportShell';
 import { Activity, AlertTriangle } from 'lucide-react';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 const REFRESH_MS = 30_000;
 
 function capacityImpactOf(severity: string): number {
@@ -22,6 +22,7 @@ function capacityImpactOf(severity: string): number {
 type GroupBy = 'site' | 'department' | 'class';
 
 export function ProductionCapacityLiveDashboard(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [tick, setTick] = useState(0);
   const [groupBy, setGroupBy] = useState<GroupBy>('class');
 
@@ -32,8 +33,8 @@ export function ProductionCapacityLiveDashboard(): JSX.Element {
   }, []);
 
   const view = useMemo(() => {
-    const equipment = listEquipment(E);
-    const recent = listBreakdownReports(E).filter((b) => {
+    const equipment = listEquipment(entityCode);
+    const recent = listBreakdownReports(entityCode).filter((b) => {
       const ageMs = Date.now() - new Date(b.occurred_at).getTime();
       return ageMs <= 24 * 3600 * 1000 && b.status !== 'closed' && b.status !== 'resolved';
     });

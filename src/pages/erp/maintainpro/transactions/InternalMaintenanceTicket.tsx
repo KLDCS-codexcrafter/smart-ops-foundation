@@ -22,10 +22,10 @@ import type { InternalMaintenanceTicket as Tkt, TicketCategory, TicketSeverity, 
 import { SLA_MATRIX } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
+import { useEntityCode } from '@/hooks/useEntityCode';
 void onEnterNext;
 
 interface Props { onNavigate: (m: string) => void }
-const E = 'DEMO';
 
 const CATEGORIES: TicketCategory[] = ['electrical', 'mechanical', 'pneumatic', 'hydraulic', 'safety', 'calibration', 'housekeeping'];
 const SEVERITIES: TicketSeverity[] = ['low', 'medium', 'high', 'critical'];
@@ -38,16 +38,17 @@ function levelBadge(level: 0 | 1 | 2 | 3): JSX.Element {
 }
 
 export function InternalMaintenanceTicket(_props: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [category, setCategory] = useState<TicketCategory>('electrical');
   const [severity, setSeverity] = useState<TicketSeverity>('medium');
   const [symptom, setSymptom] = useState('');
-  const [list, setList] = useState<Tkt[]>(listInternalTickets(E));
+  const [list, setList] = useState<Tkt[]>(listInternalTickets(entityCode));
 
-  const refresh = (): void => setList(listInternalTickets(E));
+  const refresh = (): void => setList(listInternalTickets(entityCode));
 
   const create = (): void => {
     if (!symptom) { toast.error('Symptom required'); return; }
-    createInternalTicket(E, {
+    createInternalTicket(entityCode, {
       ticket_no: `TKT/26-27/${String(list.length + 1).padStart(4, '0')}`,
       originating_department_id: 'production',
       originating_user_id: 'demo_user',
@@ -74,12 +75,12 @@ export function InternalMaintenanceTicket(_props: Props): JSX.Element {
   };
 
   const transition = (id: string, status: TicketStatus): void => {
-    transitionTicketStatus(E, id, status, 'demo_user');
+    transitionTicketStatus(entityCode, id, status, 'demo_user');
     refresh();
   };
 
   const runEscalation = (): void => {
-    const updated = evaluateTicketEscalations(E);
+    const updated = evaluateTicketEscalations(entityCode);
     refresh();
     toast.info(`${updated.length} ticket(s) escalated`);
   };

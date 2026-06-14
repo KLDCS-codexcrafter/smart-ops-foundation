@@ -14,20 +14,21 @@ import { createWorkOrder, listWorkOrders, updateWorkOrderStatus, listEquipment }
 import type { WorkOrder, WorkOrderStatus, WorkOrderType } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 interface Props { onNavigate: (m: string) => void }
-const E = 'DEMO';
 
 export function WorkOrderEntry(_props: Props): JSX.Element {
-  const equipment = listEquipment(E);
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
   const [equipmentId, setEquipmentId] = useState(equipment[0]?.id ?? '');
   const [woType, setWoType] = useState<WorkOrderType>('breakdown');
   const [est, setEst] = useState(60);
-  const [list, setList] = useState<WorkOrder[]>(listWorkOrders(E));
+  const [list, setList] = useState<WorkOrder[]>(listWorkOrders(entityCode));
 
   const submit = (): void => {
     if (!equipmentId) { toast.error('Equipment required'); return; }
-    createWorkOrder(E, {
+    createWorkOrder(entityCode, {
       wo_no: `WO/26-27/${String(list.length + 1).padStart(4, '0')}`,
       wo_type: woType,
       source_breakdown_id: null,
@@ -49,13 +50,13 @@ export function WorkOrderEntry(_props: Props): JSX.Element {
       project_id: null,
       created_by_user_id: 'demo_user',
     });
-    setList(listWorkOrders(E));
+    setList(listWorkOrders(entityCode));
     toast.success('Work order created');
   };
 
   const advance = (woId: string, status: WorkOrderStatus): void => {
-    updateWorkOrderStatus(E, woId, status);
-    setList(listWorkOrders(E));
+    updateWorkOrderStatus(entityCode, woId, status);
+    setList(listWorkOrders(entityCode));
   };
 
   return (

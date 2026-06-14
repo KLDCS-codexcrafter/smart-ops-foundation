@@ -1,6 +1,6 @@
 /**
  * @file        src/pages/erp/maintainpro/transactions/SparesIssueEntry.tsx
- * @sprint      T-Phase-1.A.16b · Block E.1 · OOB-M7 velocity reorder
+ * @sprint      T-Phase-1.A.16b · Block entityCode.1 · OOB-M7 velocity reorder
  */
 // TXUI-4 · canonical shell adoption · presentation-only · logic 0-DIFF
 import { useState } from 'react';
@@ -14,20 +14,21 @@ import { createSparesIssue, listSparesIssues, listEquipment } from '@/lib/mainta
 import type { SparesIssue } from '@/types/maintainpro';
 import { TallyVoucherHeader } from '@/components/fincore/TallyVoucherHeader';
 import { onEnterNext } from '@/lib/keyboard';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 interface Props { onNavigate: (m: string) => void }
-const E = 'DEMO';
 
 export function SparesIssueEntry(_props: Props): JSX.Element {
-  const equipment = listEquipment(E);
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
   const [spareId, setSpareId] = useState('spare-001');
   const [qty, setQty] = useState(1);
-  const [list, setList] = useState<SparesIssue[]>(listSparesIssues(E));
+  const [list, setList] = useState<SparesIssue[]>(listSparesIssues(entityCode));
   const [last, setLast] = useState<SparesIssue | null>(null);
 
   const submit = (): void => {
     if (equipment.length === 0) { toast.error('No equipment'); return; }
-    const issue = createSparesIssue(E, {
+    const issue = createSparesIssue(entityCode, {
       issue_no: `SI/26-27/${String(list.length + 1).padStart(4, '0')}`,
       spare_id: spareId,
       qty,
@@ -41,7 +42,7 @@ export function SparesIssueEntry(_props: Props): JSX.Element {
       project_id: null,
       issued_at: new Date().toISOString(),
     });
-    setList(listSparesIssues(E));
+    setList(listSparesIssues(entityCode));
     setLast(issue);
     toast.success(`Spare issued: ${issue.issue_no}`);
   };
