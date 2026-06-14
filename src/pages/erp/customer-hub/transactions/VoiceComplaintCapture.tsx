@@ -21,8 +21,8 @@ import {
   customerOrdersKey, type CustomerOrder,
 } from '@/types/customer-order';
 
-const COMPLAINTS_KEY = `erp_customer_complaints_${entityCode}`;
-const DISPUTES_KEY   = `erp_invoice_disputes_${entityCode}`;
+const complaintsKey = (e: string) => `erp_customer_complaints_${e}`;
+const disputesKey = (e: string) => `erp_invoice_disputes_${e}`;
 const CONTEXT_KEY    = 'erp_complaint_context';
 
 type ComplaintCategory = 'dispute' | 'return' | 'refund' | 'delivery' | 'quality' | 'general';
@@ -159,13 +159,13 @@ export function VoiceComplaintCapturePanel() {
         created_at: now,
         resolution: null,
       };
-      const all = ls<ComplaintRecord>(COMPLAINTS_KEY);
+      const all = ls<ComplaintRecord>(complaintsKey(entityCode));
       all.push(record);
-      setLs(COMPLAINTS_KEY, all);
+      setLs(complaintsKey(entityCode), all);
 
       // If dispute, also append to invoice disputes (Sprint 11a workflow)
       if (cat.category === 'dispute') {
-        const disputes = ls<unknown>(DISPUTES_KEY);
+        const disputes = ls<unknown>(disputesKey(entityCode));
         disputes.push({
           id: `dsp-${Date.now()}`,
           customer_id: customerId,
@@ -174,7 +174,7 @@ export function VoiceComplaintCapturePanel() {
           status: 'open',
           created_at: now,
         });
-        setLs(DISPUTES_KEY, disputes);
+        setLs(disputesKey(entityCode), disputes);
       }
 
       logAudit({

@@ -51,7 +51,7 @@ function getCurrentCustomerName(id: string): string {
   } catch { return id; }
 }
 
-const DEMO_TEMPLATES: SampleKitTemplate[] = [
+function buildDemoTemplates(entityCode: string): SampleKitTemplate[] { return [
   {
     id: 'skt-essentials',
     entity_id: entityCode,
@@ -87,7 +87,7 @@ const DEMO_TEMPLATES: SampleKitTemplate[] = [
     min_clv_tier: 'vip',
     active: true,
   },
-];
+]; }
 
 function statusBadgeClass(s: SampleKitStatus): string {
   switch (s) {
@@ -118,9 +118,9 @@ export function SampleKitsPanel() {
   useEffect(() => {
     let nextTemplates = templates;
     if (templates.length === 0) {
-      nextTemplates = DEMO_TEMPLATES;
-      setLs(sampleKitTemplatesKey(entityCode), DEMO_TEMPLATES);
-      setTemplates(DEMO_TEMPLATES);
+      nextTemplates = buildDemoTemplates(entityCode);
+      setLs(sampleKitTemplatesKey(entityCode), buildDemoTemplates(entityCode));
+      setTemplates(buildDemoTemplates(entityCode));
     }
     const expired = findExpiredRequests(requests);
     if (expired.length > 0) {
