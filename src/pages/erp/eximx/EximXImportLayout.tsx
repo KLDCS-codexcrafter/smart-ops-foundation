@@ -31,6 +31,7 @@ import { AEOTierMaster } from './masters/AEOTierMaster';
 import { UnifiedComplianceLayout } from './compliance/UnifiedComplianceLayout';
 import { UnifiedAtlasLayout } from './atlas/UnifiedAtlasLayout';
 import { seedSinhaEximX } from '@/data/sinha-eximx-seed';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { EximXImportModule } from './EximX.types';
 
 const config: ShellConfig & { title: string } = {
@@ -88,7 +89,10 @@ export default function EximXImportLayout(): JSX.Element {
   const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => { seedSinhaEximX(); }, []);
+  const { entityCode } = useEntityCode();
+  // CL-1 · Mech4 — seed under active scenario entity.
+  useEffect(() => { seedSinhaEximX(entityCode || 'sinha-trading'); }, [entityCode]);
+
 
   const orderSub = parseOrdersSubpath(location.pathname);
   const shipmentSub = parseShipmentsSubpath(location.pathname);
