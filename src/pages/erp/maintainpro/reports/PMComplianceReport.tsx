@@ -18,7 +18,7 @@ export function PMComplianceReport(): JSX.Element {
     const onTime = ticks.filter((t) => t.status === 'completed' && t.actual_completion_date <= t.scheduled_date).length;
     const pct = total === 0 ? 0 : Math.round((onTime / total) * 100);
     return { eq, ticks, total, onTime, pct };
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell

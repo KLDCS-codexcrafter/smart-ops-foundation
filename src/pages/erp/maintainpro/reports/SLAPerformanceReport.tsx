@@ -32,7 +32,7 @@ export function SLAPerformanceReport(): JSX.Element {
       map[k] = cell;
     });
     return map;
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="SLA Performance Report" ssotBadge="28-cell heatmap">

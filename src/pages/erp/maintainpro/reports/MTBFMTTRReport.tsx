@@ -18,7 +18,7 @@ export function MTBFMTTRReport(): JSX.Element {
       const mttrMin = bcount === 0 ? null : eq.total_breakdown_minutes_12m / bcount;
       return { ...eq, mtbfDays, mttrMin };
     }).sort((a, b) => (a.mttrMin ?? 0) - (b.mttrMin ?? 0));
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="MTBF / MTTR Report" ssotBadge="12-month rolling">

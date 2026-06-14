@@ -28,7 +28,7 @@ export function EquipmentHistory(): JSX.Element {
     listSparesIssues(entityCode).filter((s) => s.consuming_equipment_id === selected).forEach((s) => ev.push({ key: `s-${s.id}`, at: s.issued_at, kind: 'Spare Issue', detail: `qty ${s.qty} · ₹${s.total_cost}` }));
     listCalibrationCertificates(entityCode).filter((c) => c.instrument_id === selected).forEach((c) => ev.push({ key: `c-${c.id}`, at: c.calibrated_on, kind: 'Calibration', detail: `${c.is_pass ? 'PASS' : 'FAIL'}` }));
     return ev.sort((a, b) => (a.at < b.at ? 1 : -1));
-  }, [selected]);
+  }, [selected, entityCode]);
 
   return (
     <MaintainProReportShell

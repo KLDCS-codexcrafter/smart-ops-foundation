@@ -27,7 +27,7 @@ export function OpenWOStatusReport(): JSX.Element {
       byTech.set(k, (byTech.get(k) ?? 0) + 1);
     });
     return { open, byTech: Array.from(byTech.entries()).sort((a, b) => b[1] - a[1]) };
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Open WO Status Report" ssotBadge="Operational">

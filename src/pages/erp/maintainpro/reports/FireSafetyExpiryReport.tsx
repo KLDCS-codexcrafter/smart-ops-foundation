@@ -23,7 +23,7 @@ export function FireSafetyExpiryReport(): JSX.Element {
       const bucket = days < 0 ? 'Expired' : days <= 30 ? '0–30 days' : days <= 60 ? '31–60 days' : days <= 90 ? '61–90 days' : '>90 days';
       return { ...f, days, bucket };
     }).sort((a, b) => a.days - b.days);
-  }, []);
+  }, [entityCode]);
 
   const grouped = useMemo(() => {
     const m = new Map<string, typeof rows>();

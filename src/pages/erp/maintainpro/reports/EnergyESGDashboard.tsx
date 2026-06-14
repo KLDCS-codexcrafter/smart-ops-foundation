@@ -22,7 +22,7 @@ export function EnergyESGDashboard(): JSX.Element {
       byCat.set(e.category, (byCat.get(e.category) ?? 0) + kwh);
     });
     return { total, byCat: Array.from(byCat.entries()).sort((a, b) => b[1] - a[1]), eq };
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell

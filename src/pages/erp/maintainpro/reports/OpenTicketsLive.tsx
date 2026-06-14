@@ -33,7 +33,7 @@ export function OpenTicketsLive(): JSX.Element {
       counts[k] = (counts[k] ?? 0) + 1;
     });
     return { open, counts };
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Open Tickets · Live" ssotBadge="SLA · A.16b deferred">

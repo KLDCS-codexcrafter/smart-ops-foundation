@@ -21,7 +21,7 @@ export function TopReportersByDepartment(): JSX.Element {
       m.set(t.originating_department_id, (m.get(t.originating_department_id) ?? 0) + 1);
     });
     return Array.from(m.entries()).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Top Reporters by Department" ssotBadge="Resource planning">

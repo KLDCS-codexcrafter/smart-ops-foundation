@@ -41,7 +41,7 @@ export function MaintenanceEntryDayBook(): JSX.Element {
       corrective_action: w.completion_notes,
     }));
     return [...breakdowns, ...wos].sort((a, b) => (a.occurred_at < b.occurred_at ? 1 : -1));
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Maintenance Entry Day Book" ssotBadge="TDL · FR-42">

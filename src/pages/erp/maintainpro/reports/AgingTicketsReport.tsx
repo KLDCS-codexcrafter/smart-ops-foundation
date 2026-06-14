@@ -20,7 +20,7 @@ export function AgingTicketsReport(): JSX.Element {
         return { ...t, hoursOver };
       })
       .sort((a, b) => b.hoursOver - a.hoursOver);
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Aging Tickets Report" ssotBadge="SLA breach tracker">

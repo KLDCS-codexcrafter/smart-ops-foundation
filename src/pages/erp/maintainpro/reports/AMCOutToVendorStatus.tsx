@@ -25,7 +25,7 @@ export function AMCOutToVendorStatus(): JSX.Element {
       scorecard.set(a.vendor_id, s);
     });
     return { all, reminders, scorecard: Array.from(scorecard.entries()) };
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell

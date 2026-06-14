@@ -19,7 +19,7 @@ export function CalibrationStatusReport(): JSX.Element {
       const bucket = days < 0 ? 'Overdue' : days <= 30 ? '0–30 days' : days <= 60 ? '31–60 days' : days <= 90 ? '61–90 days' : '>90 days';
       return { ...c, days, bucket, quarantined: isCalibrationInstrumentQuarantined(entityCode, c.id) };
     }).sort((a, b) => a.days - b.days);
-  }, []);
+  }, [entityCode]);
 
   return (
     <MaintainProReportShell title="Calibration Status Report" ssotBadge="TDL · FR-42">
