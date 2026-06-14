@@ -45,7 +45,7 @@ export default function MobileSiteSafetyIncidentCapture(): JSX.Element {
 
   useEffect(() => {
     setSites(listSites(entityCode).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
-  }, []);
+  }, [entityCode]);
 
   const severity = SEVERITY_MAP[incidentType];
   const site = sites.find((s) => s.id === siteId) ?? null;

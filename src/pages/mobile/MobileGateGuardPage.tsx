@@ -4,7 +4,7 @@
  *
  * Pattern note: NO [tick, setTick] + useMemo · uses [list, setList] + refresh() pattern.
  */
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -26,20 +26,20 @@ export default function MobileGateGuardPage() {
   const [outward, setOutward] = useState<number>(0);
   const [today, setToday] = useState<number>(0);
 
-  const refresh = () => {
+  const refresh = useCallback(() => {
     setInward(listInwardQueue(entityCode).length);
     setOutward(listOutwardQueue(entityCode).length);
     const todayStr = new Date().toISOString().slice(0, 10);
     setToday(
       listGatePasses(entityCode).filter((gp) => gp.entry_time.slice(0, 10) === todayStr).length,
     );
-  };
+  }, [entityCode]);
 
   useEffect(() => {
     refresh();
     const i = setInterval(refresh, 5000);
     return () => clearInterval(i);
-  }, []);
+  }, [refresh]);
 
   if (showCapture) {
     return (

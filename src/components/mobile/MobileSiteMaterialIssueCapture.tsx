@@ -45,7 +45,7 @@ export default function MobileSiteMaterialIssueCapture(): JSX.Element {
       window.removeEventListener('online', on);
       window.removeEventListener('offline', off);
     };
-  }, []);
+  }, [entityCode]);
 
   const site = sites.find((s) => s.id === siteId) ?? null;
 

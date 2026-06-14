@@ -52,7 +52,7 @@ export default function MobileSiteDPRCapture(): JSX.Element {
 
   useEffect(() => {
     setSites(listSites(entityCode).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
-  }, []);
+  }, [entityCode]);
 
   const site = sites.find((s) => s.id === siteId) ?? null;
 
