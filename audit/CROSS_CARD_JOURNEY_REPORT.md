@@ -1,12 +1,12 @@
 # Operix · Cross-Card Journey Test — BASELINE
-**HEAD target: `c3b8236`** · RUN-ONLY (no source changed) · One journey per dispatch.
+**HEAD target: `066eca4`** · RUN-ONLY (no source changed) · One journey per dispatch.
 
 ## LEDGER
 ```
-DONE: [J1]   NEXT: J2   REMAINING: 4
+DONE: [J1, J2]   NEXT: J3   REMAINING: 3
 JOURNEYS:
-  J1 · Order-to-Cash    ✅ this run
-  J2 · Procure-to-Pay   ⏳
+  J1 · Order-to-Cash    ✅
+  J2 · Procure-to-Pay   ✅ this run
   J3 · Lead-to-Order    ⏳
   J4 · Quality-gate     ⏳
   J5 · Aggregation      ⏳
