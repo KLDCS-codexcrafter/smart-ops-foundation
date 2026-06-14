@@ -16,21 +16,25 @@ import {
   getAMCsAwaitingApplicabilityDecision,
   decideAMCApplicability,
 } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { AMCRecord } from '@/types/servicedesk';
 
 export function AMCApplicabilityDecision(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [list, setList] = useState<AMCRecord[]>([]);
   const [open, setOpen] = useState<AMCRecord | null>(null);
   const [applicable, setApplicable] = useState<'yes' | 'no'>('yes');
   const [reason, setReason] = useState('');
 
-  const refresh = (): void => setList(getAMCsAwaitingApplicabilityDecision());
-  useEffect(refresh, []);
+  const refresh = (): void => setList(getAMCsAwaitingApplicabilityDecision(entity));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(refresh, [entity]);
 
   const onSave = (): void => {
     if (!open) return;
     try {
-      decideAMCApplicability(open.id, applicable === 'yes', 'current_user', reason);
+      decideAMCApplicability(open.id, applicable === 'yes', 'current_user', entity, reason);
       toast.success(`AMC ${applicable === 'yes' ? 'applicable' : 'not applicable'} · saved`);
       setOpen(null);
       setReason('');

@@ -31,7 +31,7 @@ describe('Settings UI 4 pages · helper consumption', () => {
   });
 
   it('CallTypeMaster surfaces active call types from engine', () => {
-    const cts = listActiveCallTypes();
+    const cts = listActiveCallTypes('OPRX');
     expect(Array.isArray(cts)).toBe(true);
     expect(cts.every((c) => c.is_active)).toBe(true);
   });

@@ -51,7 +51,7 @@ describe('Installation Verification', () => {
   });
   it('throws when marking complete without all 7 checks', () => {
     const v = createInstallationVerification(baseIV);
-    expect(() => markVerificationComplete(v.id, 'verifier1')).toThrow();
+    expect(() => markVerificationComplete(v.id, 'verifier1', 'OPRX')).toThrow();
   });
   it('marks verified when all 7 pass', () => {
     const allTrue = {
@@ -65,14 +65,14 @@ describe('Installation Verification', () => {
       customer_acknowledgement: true,
     };
     const v = createInstallationVerification(allTrue);
-    const done = markVerificationComplete(v.id, 'verifier1');
+    const done = markVerificationComplete(v.id, 'verifier1', 'OPRX');
     expect(done.status).toBe('verified');
     expect(done.verified_by).toBe('verifier1');
     expect(done.verified_at).not.toBeNull();
   });
   it('isAMCKickoffBlocked true when no verified', () => {
     createInstallationVerification(baseIV);
-    expect(isAMCKickoffBlocked('amc-iv-1')).toBe(true);
+    expect(isAMCKickoffBlocked('amc-iv-1', 'OPRX')).toBe(true);
   });
   it('isAMCKickoffBlocked false when at least one verified', () => {
     const allTrue = {
@@ -86,7 +86,7 @@ describe('Installation Verification', () => {
       customer_acknowledgement: true,
     };
     const v = createInstallationVerification(allTrue);
-    markVerificationComplete(v.id, 'u');
-    expect(isAMCKickoffBlocked('amc-iv-1')).toBe(false);
+    markVerificationComplete(v.id, 'u', 'OPRX');
+    expect(isAMCKickoffBlocked('amc-iv-1', 'OPRX')).toBe(false);
   });
 });

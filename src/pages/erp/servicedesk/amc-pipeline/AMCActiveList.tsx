@@ -8,11 +8,14 @@ import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { getAMCsByLifecycleStage } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { AMCRecord } from '@/types/servicedesk';
 
 export function AMCActiveList(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [list, setList] = useState<AMCRecord[]>([]);
-  useEffect(() => setList(getAMCsByLifecycleStage('active')), []);
+  useEffect(() => setList(getAMCsByLifecycleStage('active', entity)), [entity]);
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-4">
       <h1 className="text-2xl font-bold">Active AMCs</h1>

@@ -69,7 +69,7 @@ describe('servicedesk-engine · AMC Record CRUD', () => {
   it('creates and retrieves an AMC record', () => {
     const rec = createAMCRecord(baseAMCInput());
     expect(rec.id).toMatch(/^amc_/);
-    expect(getAMCRecord(rec.id)).toEqual(rec);
+    expect(getAMCRecord(rec.id, ENTITY)).toEqual(rec);
   });
   it('lists AMCs and filters by status', () => {
     createAMCRecord(baseAMCInput());
@@ -79,18 +79,18 @@ describe('servicedesk-engine · AMC Record CRUD', () => {
   });
   it('updates an AMC record with audit trail append', () => {
     const rec = createAMCRecord(baseAMCInput());
-    const next = updateAMCRecord(rec.id, { status: 'active' }, 'auditor');
+    const next = updateAMCRecord(rec.id, { status: 'active' }, 'auditor', ENTITY);
     expect(next.status).toBe('active');
     expect(next.audit_trail.length).toBeGreaterThan(rec.audit_trail.length);
   });
   it('deletes an AMC record', () => {
     const rec = createAMCRecord(baseAMCInput());
-    expect(deleteAMCRecord(rec.id, 'auditor')).toBe(true);
-    expect(getAMCRecord(rec.id)).toBeNull();
+    expect(deleteAMCRecord(rec.id, 'auditor', ENTITY)).toBe(true);
+    expect(getAMCRecord(rec.id, ENTITY)).toBeNull();
   });
   it('deleteAMCRecord audit-logs deletion with deleted_by (T2 AC-T2-2)', () => {
     const rec = createAMCRecord(baseAMCInput());
-    deleteAMCRecord(rec.id, 'auditor');
+    deleteAMCRecord(rec.id, 'auditor', ENTITY);
     const delLog = JSON.parse(localStorage.getItem(`servicedesk_v1_amc_deleted_${ENTITY}`) ?? '[]');
     expect(delLog.length).toBe(1);
     expect(delLog[0].id).toBe(rec.id);
@@ -103,13 +103,13 @@ describe('servicedesk-engine · AMC Record CRUD', () => {
 describe('servicedesk-engine · AMC Applicability Decision', () => {
   it('flips status to proposal_draft when applicable=true', () => {
     const rec = createAMCRecord(baseAMCInput());
-    const next = decideAMCApplicability(rec.id, true, 'auditor', 'eligible');
+    const next = decideAMCApplicability(rec.id, true, 'auditor', ENTITY, 'eligible');
     expect(next.amc_applicable).toBe(true);
     expect(next.status).toBe('proposal_draft');
   });
   it('flips status to not_applicable when applicable=false', () => {
     const rec = createAMCRecord(baseAMCInput());
-    const next = decideAMCApplicability(rec.id, false, 'auditor', 'out of scope');
+    const next = decideAMCApplicability(rec.id, false, 'auditor', ENTITY, 'out of scope');
     expect(next.status).toBe('not_applicable');
   });
 });
@@ -141,11 +141,11 @@ describe('servicedesk-engine · AMC Proposal lifecycle', () => {
       created_by: 'test',
     };
     const p = createAMCProposal(baseProp);
-    const sent = transitionProposalStatus(p.id, 'sent', 'actor-1');
+    const sent = transitionProposalStatus(p.id, 'sent', 'actor-1', ENTITY);
     expect(sent.status).toBe('sent');
     expect(sent.sent_at).toBeTruthy();
     expect(sent.audit_trail[sent.audit_trail.length - 1].by).toBe('actor-1');
-    const acc = transitionProposalStatus(p.id, 'accepted', 'actor-2');
+    const acc = transitionProposalStatus(p.id, 'accepted', 'actor-2', ENTITY);
     expect(acc.accepted_at).toBeTruthy();
     expect(acc.audit_trail[acc.audit_trail.length - 1].by).toBe('actor-2');
   });
@@ -176,7 +176,7 @@ describe('servicedesk-engine · Service Engineer Profile', () => {
   });
   it('updates engineer location', () => {
     const eng = createServiceEngineerProfile(baseEng);
-    const next = updateServiceEngineerLocation(eng.id, 19.07, 72.87);
+    const next = updateServiceEngineerLocation(eng.id, 19.07, 72.87, ENTITY);
     expect(next.current_lat).toBe(19.07);
     expect(next.current_lng).toBe(72.87);
   });
@@ -184,18 +184,18 @@ describe('servicedesk-engine · Service Engineer Profile', () => {
 
 describe('servicedesk-engine · Call Type configuration', () => {
   it('returns standard call types', () => {
-    const ct = getCallTypeConfiguration('INSTALL');
+    const ct = getCallTypeConfiguration('INSTALL', ENTITY);
     expect(ct?.display_name).toBe('Installation');
   });
   it('lists active call types', () => {
-    expect(listActiveCallTypes().length).toBeGreaterThan(0);
+    expect(listActiveCallTypes(ENTITY).length).toBeGreaterThan(0);
   });
 });
 
 describe('servicedesk-engine · Risk Engine', () => {
   it('computes risk score from 5 factors', () => {
     const rec = createAMCRecord(baseAMCInput({ status: 'active' }));
-    const r = computeAMCRiskScore(rec.id);
+    const r = computeAMCRiskScore(rec.id, ENTITY);
     expect(r.risk_score).toBeGreaterThanOrEqual(0);
     expect(['low', 'medium', 'high']).toContain(r.risk_bucket);
     expect(r.factor_breakdown.payment_history).toBeDefined();
@@ -205,21 +205,21 @@ describe('servicedesk-engine · Risk Engine', () => {
 describe('servicedesk-engine · Cross-card queries', () => {
   it('finds AMCs by customer + invoice + expiry window', () => {
     const rec = createAMCRecord(baseAMCInput({ sales_invoice_id: 'INV-1', contract_end: new Date(Date.now() + 5 * 86400000).toISOString() }));
-    expect(getAMCsByCustomer(rec.customer_id).length).toBe(1);
-    expect(getAMCsByInvoice('INV-1').length).toBe(1);
-    expect(getAMCsExpiringInDays(30).length).toBe(1);
+    expect(getAMCsByCustomer(rec.customer_id, ENTITY).length).toBe(1);
+    expect(getAMCsByInvoice('INV-1', ENTITY).length).toBe(1);
+    expect(getAMCsExpiringInDays(30, ENTITY).length).toBe(1);
   });
 });
 
 describe('servicedesk-engine · OTP gate', () => {
   it('generates and verifies OTP', () => {
-    const { otp } = generateOTPForTicketClose('T-1');
+    const { otp } = generateOTPForTicketClose('T-1', ENTITY);
     expect(otp).toMatch(/^\d{6}$/);
-    expect(verifyOTPForTicketClose('T-1', otp)).toBe(true);
+    expect(verifyOTPForTicketClose('T-1', otp, ENTITY)).toBe(true);
   });
   it('rejects wrong OTP', () => {
-    generateOTPForTicketClose('T-2');
-    expect(verifyOTPForTicketClose('T-2', '000000')).toBe(false);
+    generateOTPForTicketClose('T-2', ENTITY);
+    expect(verifyOTPForTicketClose('T-2', '000000', ENTITY)).toBe(false);
   });
   it('captures HappyCode feedback honoring entity_id (T2 AC-T2-5)', () => {
     const fb = captureHappyCodeFeedback({
@@ -243,16 +243,16 @@ describe('servicedesk-engine · OTP gate', () => {
   });
   it('OTP expiry is 15 minutes per v5 §3 / v4 §3.1 (T2 AC-T2-6)', () => {
     const before = Date.now();
-    const { expires_at } = generateOTPForTicketClose('T-EXPIRE-1');
+    const { expires_at } = generateOTPForTicketClose('T-EXPIRE-1', ENTITY);
     const actual = new Date(expires_at).getTime();
     expect(actual).toBeGreaterThanOrEqual(before + 14 * 60 * 1000);
     expect(actual).toBeLessThanOrEqual(before + 16 * 60 * 1000);
   });
   it('OTP rejected after expiry', () => {
     vi.useFakeTimers();
-    const { otp } = generateOTPForTicketClose('T-EXP-2');
+    const { otp } = generateOTPForTicketClose('T-EXP-2', ENTITY);
     vi.advanceTimersByTime(16 * 60 * 1000);
-    expect(verifyOTPForTicketClose('T-EXP-2', otp)).toBe(false);
+    expect(verifyOTPForTicketClose('T-EXP-2', otp, ENTITY)).toBe(false);
     vi.useRealTimers();
   });
 });

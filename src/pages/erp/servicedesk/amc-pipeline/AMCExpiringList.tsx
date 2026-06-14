@@ -22,19 +22,23 @@ import {
   emitRenewalEmailToTemplateEngine,
   emitTellicallerWorkItem,
 } from '@/lib/servicedesk-bridges';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { AMCRecord } from '@/types/servicedesk';
 
 type Stage = 'first' | 'second' | 'third' | 'final';
 
 export function AMCExpiringList(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [list, setList] = useState<AMCRecord[]>([]);
   const [open, setOpen] = useState<AMCRecord | null>(null);
   const [history, setHistory] = useState<AMCRecord | null>(null);
   const [stage, setStage] = useState<Stage>('first');
   const [templateId, setTemplateId] = useState('default');
 
-  const refresh = (): void => setList(getAMCsExpiringInDays(90));
-  useEffect(refresh, []);
+  const refresh = (): void => setList(getAMCsExpiringInDays(90, entity));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(refresh, [entity]);
 
   const sorted = useMemo(
     () =>
@@ -48,7 +52,7 @@ export function AMCExpiringList(): JSX.Element {
 
   const onFire = (): void => {
     if (!open) return;
-    fireRenewalCascadeStage(open.id, stage, 'current_user', templateId);
+    fireRenewalCascadeStage(open.id, stage, 'current_user', templateId, entity);
     emitRenewalEmailToTemplateEngine({
       amc_record_id: open.id,
       customer_id: open.customer_id,
@@ -92,7 +96,7 @@ export function AMCExpiringList(): JSX.Element {
             </thead>
             <tbody>
               {sorted.map((r) => {
-                const s = getCascadeStageForAMC(r.id);
+                const s = getCascadeStageForAMC(r.id, entity);
                 return (
                   <tr key={r.id} className="border-t">
                     <td className="px-4 py-2 font-mono text-xs">{r.amc_code || r.id.slice(0, 12)}</td>
@@ -145,10 +149,10 @@ export function AMCExpiringList(): JSX.Element {
         <DialogContent>
           <DialogHeader><DialogTitle>Cascade history</DialogTitle></DialogHeader>
           <ul className="text-xs space-y-1 font-mono max-h-80 overflow-auto">
-            {history && listCascadeFiresForAMC(history.id).map((f) => (
+            {history && listCascadeFiresForAMC(history.id, entity).map((f) => (
               <li key={f.id}>{f.fired_at} · {f.stage} · {f.fired_by}</li>
             ))}
-            {history && listCascadeFiresForAMC(history.id).length === 0 && (
+            {history && listCascadeFiresForAMC(history.id, entity).length === 0 && (
               <li className="text-muted-foreground">No cascades fired yet.</li>
             )}
           </ul>

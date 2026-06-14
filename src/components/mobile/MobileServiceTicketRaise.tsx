@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, ArrowRight, Camera, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { listActiveCallTypes } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 type Channel = 'whatsapp' | 'email' | 'phone' | 'walkin' | 'web' | 'auto_pms';
 
@@ -22,13 +23,14 @@ interface Props {
 }
 
 export function MobileServiceTicketRaise({ onClose }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [step, setStep] = useState(1);
   const [customerId, setCustomerId] = useState('');
   const [callTypeCode, setCallTypeCode] = useState('');
   const [channel, setChannel] = useState<Channel>('phone');
   const [description, setDescription] = useState('');
   const [photoCaptured, setPhotoCaptured] = useState(false);
-  const callTypes = listActiveCallTypes();
+  const callTypes = listActiveCallTypes(entityCode || 'OPRX');
 
   const next = (): void => setStep((s) => Math.min(5, s + 1));
   const prev = (): void => setStep((s) => Math.max(1, s - 1));

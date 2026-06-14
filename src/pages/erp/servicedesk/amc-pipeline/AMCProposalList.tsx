@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { listAMCProposals } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { AMCProposal, AMCProposalStatus } from '@/types/servicedesk';
 
 const STATUS_COLOR: Record<AMCProposalStatus, string> = {
@@ -24,10 +25,12 @@ interface Props {
 }
 
 export function AMCProposalList({ onOpen }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [filter, setFilter] = useState<AMCProposalStatus | 'all'>('all');
   const [list, setList] = useState<AMCProposal[]>([]);
 
-  useEffect(() => setList(listAMCProposals()), []);
+  useEffect(() => setList(listAMCProposals(entity)), [entity]);
 
   const filtered = useMemo(
     () =>

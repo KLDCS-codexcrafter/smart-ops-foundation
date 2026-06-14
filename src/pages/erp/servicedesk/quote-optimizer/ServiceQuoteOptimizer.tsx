@@ -12,16 +12,19 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { suggestServiceQuote, type QuoteSuggestion } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 type Severity = 'low' | 'medium' | 'high' | 'critical';
 
 export function ServiceQuoteOptimizer(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [callType, setCallType] = useState('REPAIR');
   const [severity, setSeverity] = useState<Severity>('medium');
   const [suggestion, setSuggestion] = useState<QuoteSuggestion | null>(null);
 
   const optimize = (): void => {
-    setSuggestion(suggestServiceQuote(callType, severity));
+    setSuggestion(suggestServiceQuote(callType, severity, entity));
   };
 
   return (

@@ -9,9 +9,11 @@ import { Card } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { listActiveCallTypes } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function CallTypeMasterSettings(): JSX.Element {
-  const [callTypes] = useState(() => listActiveCallTypes());
+  const { entityCode } = useEntityCode();
+  const [callTypes] = useState(() => listActiveCallTypes(entityCode || 'OPRX'));
 
   return (
     <div className="p-6 space-y-4 max-w-4xl">

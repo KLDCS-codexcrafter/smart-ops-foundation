@@ -10,9 +10,11 @@ import { ShieldCheck } from 'lucide-react';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { getKpi, defaultChartConfig, signReport } from '@/lib/report-framework';
 import { computeCustomerPnL } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function CustomerPnLReport(): JSX.Element {
-  const rows = computeCustomerPnL().sort((a, b) => b.margin_paise - a.margin_paise);
+  const { entityCode } = useEntityCode();
+  const rows = computeCustomerPnL(entityCode || 'OPRX').sort((a, b) => b.margin_paise - a.margin_paise);
   const top10 = rows.slice(0, 10);
   const bottom10 = rows.slice(-10).reverse();
 

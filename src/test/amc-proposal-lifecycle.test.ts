@@ -36,45 +36,45 @@ describe('AMC proposal lifecycle', () => {
   it('saves draft', () => {
     const p = createAMCProposal(baseProp);
     expect(p.status).toBe('draft');
-    expect(listAMCProposals()).toHaveLength(1);
+    expect(listAMCProposals('OPRX')).toHaveLength(1);
   });
   it('draft → sent', () => {
     const p = createAMCProposal(baseProp);
-    const next = transitionProposalStatus(p.id, 'sent', 'user1');
+    const next = transitionProposalStatus(p.id, 'sent', 'user1', 'OPRX');
     expect(next.status).toBe('sent');
     expect(next.sent_at).not.toBeNull();
   });
   it('sent → negotiating', () => {
     const p = createAMCProposal(baseProp);
-    transitionProposalStatus(p.id, 'sent', 'user1');
-    const n = transitionProposalStatus(p.id, 'negotiating', 'user2');
+    transitionProposalStatus(p.id, 'sent', 'user1', 'OPRX');
+    const n = transitionProposalStatus(p.id, 'negotiating', 'user2', 'OPRX');
     expect(n.status).toBe('negotiating');
   });
   it('sent → accepted', () => {
     const p = createAMCProposal(baseProp);
-    transitionProposalStatus(p.id, 'sent', 'u');
-    const n = transitionProposalStatus(p.id, 'accepted', 'u');
+    transitionProposalStatus(p.id, 'sent', 'u', 'OPRX');
+    const n = transitionProposalStatus(p.id, 'accepted', 'u', 'OPRX');
     expect(n.accepted_at).not.toBeNull();
   });
   it('sent → rejected captures reason', () => {
     const p = createAMCProposal(baseProp);
-    transitionProposalStatus(p.id, 'sent', 'u');
-    const n = transitionProposalStatus(p.id, 'rejected', 'u', 'price too high');
+    transitionProposalStatus(p.id, 'sent', 'u', 'OPRX');
+    const n = transitionProposalStatus(p.id, 'rejected', 'u', 'OPRX', 'price too high');
     expect(n.rejection_reason).toBe('price too high');
     expect(n.rejected_at).not.toBeNull();
   });
   it('negotiating → accepted', () => {
     const p = createAMCProposal(baseProp);
-    transitionProposalStatus(p.id, 'sent', 'u');
-    transitionProposalStatus(p.id, 'negotiating', 'u');
-    const n = transitionProposalStatus(p.id, 'accepted', 'u');
+    transitionProposalStatus(p.id, 'sent', 'u', 'OPRX');
+    transitionProposalStatus(p.id, 'negotiating', 'u', 'OPRX');
+    const n = transitionProposalStatus(p.id, 'accepted', 'u', 'OPRX');
     expect(n.status).toBe('accepted');
   });
   it('audit_trail captures actor for every transition', () => {
     const p = createAMCProposal(baseProp);
-    transitionProposalStatus(p.id, 'sent', 'actor1');
-    transitionProposalStatus(p.id, 'accepted', 'actor2');
-    const got = listAMCProposals().find((x) => x.id === p.id);
+    transitionProposalStatus(p.id, 'sent', 'actor1', 'OPRX');
+    transitionProposalStatus(p.id, 'accepted', 'actor2', 'OPRX');
+    const got = listAMCProposals('OPRX').find((x) => x.id === p.id);
     expect(got?.audit_trail.some((a) => a.by === 'actor1' && a.action === 'transition_to_sent')).toBe(true);
     expect(got?.audit_trail.some((a) => a.by === 'actor2' && a.action === 'transition_to_accepted')).toBe(true);
   });

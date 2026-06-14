@@ -6,9 +6,11 @@
  */
 import { Card } from '@/components/ui/card';
 import { aggregateVoiceOfCustomerKeywords } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function VoiceOfCustomerAggregation(): JSX.Element {
-  const keywords = aggregateVoiceOfCustomerKeywords();
+  const { entityCode } = useEntityCode();
+  const keywords = aggregateVoiceOfCustomerKeywords(entityCode || 'OPRX');
   const max = keywords[0]?.count ?? 1;
 
   return (

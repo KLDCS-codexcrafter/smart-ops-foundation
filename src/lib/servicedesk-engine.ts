@@ -97,7 +97,7 @@ export function listAMCRecords(filters?: {
   });
 }
 
-export function getAMCRecord(id: string, entity_id: string = DEFAULT_ENTITY): AMCRecord | null {
+export function getAMCRecord(id: string, entity_id: string): AMCRecord | null {
   return readJson<AMCRecord>(amcRecordKey(entity_id)).find((r) => r.id === id) ?? null;
 }
 
@@ -122,7 +122,7 @@ export function updateAMCRecord(
   id: string,
   updates: Partial<AMCRecord>,
   updated_by: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): AMCRecord {
   const list = readJson<AMCRecord>(amcRecordKey(entity_id));
   const idx = list.findIndex((r) => r.id === id);
@@ -143,7 +143,7 @@ export function updateAMCRecord(
 export function deleteAMCRecord(
   id: string,
   deleted_by: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): boolean {
   const list = readJson<AMCRecord>(amcRecordKey(entity_id));
   const target = list.find((r) => r.id === id);
@@ -167,8 +167,8 @@ export function decideAMCApplicability(
   amc_record_id: string,
   applicable: boolean,
   decided_by: string,
+  entity_id: string,
   reason?: string,
-  entity_id: string = DEFAULT_ENTITY,
 ): AMCRecord {
   const list = readJson<AMCRecord>(amcRecordKey(entity_id));
   const idx = list.findIndex((r) => r.id === amc_record_id);
@@ -215,8 +215,8 @@ export function transitionProposalStatus(
   proposal_id: string,
   new_status: AMCProposalStatus,
   transitioned_by: string,
+  entity_id: string,
   reason?: string,
-  entity_id: string = DEFAULT_ENTITY,
 ): AMCProposal {
   const list = readJson<AMCProposal>(amcProposalKey(entity_id));
   const idx = list.findIndex((p) => p.id === proposal_id);
@@ -241,7 +241,7 @@ export function transitionProposalStatus(
   return next;
 }
 
-export function listAMCProposals(entity_id: string = DEFAULT_ENTITY): AMCProposal[] {
+export function listAMCProposals(entity_id: string): AMCProposal[] {
   return readJson<AMCProposal>(amcProposalKey(entity_id));
 }
 
@@ -267,7 +267,7 @@ export function createServiceEngineerProfile(
 
 export function getServiceEngineerProfile(
   id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): ServiceEngineerProfile | null {
   return (
     readJson<ServiceEngineerProfile>(serviceEngineerProfileKey(entity_id)).find(
@@ -294,7 +294,7 @@ export function updateServiceEngineerLocation(
   id: string,
   lat: number,
   lng: number,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): ServiceEngineerProfile {
   const list = readJson<ServiceEngineerProfile>(serviceEngineerProfileKey(entity_id));
   const idx = list.findIndex((p) => p.id === id);
@@ -330,7 +330,7 @@ function readCallTypes(entity: string): CallTypeConfiguration[] {
 
 export function getCallTypeConfiguration(
   call_type_code: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CallTypeConfigurationReplica | null {
   const ct = readCallTypes(entity_id).find((c) => c.call_type_code === call_type_code);
   if (!ct) return null;
@@ -347,7 +347,7 @@ export function getCallTypeConfiguration(
 }
 
 export function listActiveCallTypes(
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CallTypeConfigurationReplica[] {
   return readCallTypes(entity_id)
     .filter((c) => c.is_active)
@@ -369,7 +369,7 @@ export function listActiveCallTypes(
 
 export function computeAMCRiskScore(
   amc_record_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): {
   risk_score: number;
   risk_bucket: 'low' | 'medium' | 'high';
@@ -445,14 +445,14 @@ function daysUntil(iso: string): number {
 
 export function getAMCsByCustomer(
   customer_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): AMCRecord[] {
   return listAMCRecords({ entity_id, customer_id });
 }
 
 export function getAMCsByInvoice(
   sales_invoice_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): AMCRecord[] {
   return readJson<AMCRecord>(amcRecordKey(entity_id)).filter(
     (r) => r.sales_invoice_id === sales_invoice_id,
@@ -461,7 +461,7 @@ export function getAMCsByInvoice(
 
 export function getAMCsExpiringInDays(
   days: number,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): AMCRecord[] {
   return readJson<AMCRecord>(amcRecordKey(entity_id)).filter((r) => {
     if (!r.contract_end) return false;
@@ -485,7 +485,7 @@ const OTP_EXPIRY_MINUTES = 15;  // v5 §3 / v4 §3.1 spec lock
 
 export function generateOTPForTicketClose(
   ticket_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): { otp: string; expires_at: string } {
   const otp = String(Math.floor(100000 + Math.random() * 900000));
   const expires_at = new Date(Date.now() + OTP_EXPIRY_MINUTES * 60 * 1000).toISOString();
@@ -500,7 +500,7 @@ export function generateOTPForTicketClose(
 export function verifyOTPForTicketClose(
   ticket_id: string,
   otp_input: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): boolean {
   const list = readJson<TicketOTPEntry>(ticketOTPKey(entity_id));
   const idx = list.findIndex((e) => e.ticket_id === ticket_id);
@@ -568,14 +568,14 @@ export function captureHappyCodeFeedback(input: HappyCodeFeedbackInput): HappyCo
 // A.1 · Lifecycle stage filter
 export function getAMCsByLifecycleStage(
   stage: AMCLifecycleStage,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): AMCRecord[] {
   return readJson<AMCRecord>(amcRecordKey(entity_id)).filter((r) => r.lifecycle_stage === stage);
 }
 
 // A.2 · Applicability decision pending
 export function getAMCsAwaitingApplicabilityDecision(
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): AMCRecord[] {
   return readJson<AMCRecord>(amcRecordKey(entity_id)).filter((r) => r.amc_applicable === null);
 }
@@ -599,7 +599,7 @@ export function fireRenewalCascadeStage(
   stage: CascadeFireRecord['stage'],
   fired_by: string,
   template_id: string | null = null,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CascadeFireRecord {
   const fire: CascadeFireRecord = {
     id: newId('cascade'),
@@ -619,7 +619,7 @@ export function fireRenewalCascadeStage(
 
 export function listCascadeFiresForAMC(
   amc_record_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CascadeFireRecord[] {
   return readJson<CascadeFireRecord>(cascadeFireKey(entity_id)).filter(
     (f) => f.amc_record_id === amc_record_id,
@@ -630,7 +630,7 @@ import { getRenewalCascadeSettings } from './cc-compliance-settings';
 
 export function getCascadeStageForAMC(
   amc_record_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): 'first' | 'second' | 'third' | 'final' | null {
   const amc = getAMCRecord(amc_record_id, entity_id);
   if (!amc?.contract_end) return null;
@@ -663,7 +663,7 @@ export function createInstallationVerification(
 
 export function getInstallationVerification(
   id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): InstallationVerification | null {
   return (
     readJson<InstallationVerification>(installationVerificationKey(entity_id)).find(
@@ -688,7 +688,7 @@ export function listInstallationVerifications(filters?: {
 export function markVerificationComplete(
   id: string,
   verified_by: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): InstallationVerification {
   const list = readJson<InstallationVerification>(installationVerificationKey(entity_id));
   const idx = list.findIndex((v) => v.id === id);
@@ -722,7 +722,7 @@ export function markVerificationComplete(
 
 export function isAMCKickoffBlocked(
   amc_record_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): boolean {
   const verifications = listInstallationVerifications({ entity_id, amc_record_id });
   return !verifications.some((v) => v.status === 'verified');
@@ -730,7 +730,7 @@ export function isAMCKickoffBlocked(
 
 // A.5 · Risk re-compute on settings update
 export function recomputeAllAMCRiskScores(
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
   triggered_by: string = 'system',
 ): { recomputed: number; ids: string[] } {
   const list = readJson<AMCRecord>(amcRecordKey(entity_id));
@@ -822,7 +822,7 @@ export function raiseServiceTicket(
   return ticket;
 }
 
-export function getServiceTicket(id: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket | null {
+export function getServiceTicket(id: string, entity_id: string): ServiceTicket | null {
   return readJson<ServiceTicket>(serviceTicketKey(entity_id)).find((t) => t.id === id) ?? null;
 }
 
@@ -851,7 +851,7 @@ function transitionTicketState(
   actor: string,
   patch: Partial<ServiceTicket>,
   reason: string | undefined,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): ServiceTicket {
   const list = readJson<ServiceTicket>(serviceTicketKey(entity_id));
   const idx = list.findIndex((t) => t.id === ticket_id);
@@ -869,7 +869,7 @@ function transitionTicketState(
   return next;
 }
 
-export function acknowledgeTicket(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+export function acknowledgeTicket(id: string, actor: string, entity_id: string): ServiceTicket {
   return transitionTicketState(id, 'acknowledged', actor, { acked_at: nowIso() }, undefined, entity_id);
 }
 
@@ -877,20 +877,20 @@ export function assignTicketToEngineer(
   id: string,
   engineer_id: string,
   actor: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): ServiceTicket {
   return transitionTicketState(id, 'assigned', actor, { assigned_engineer_id: engineer_id }, undefined, entity_id);
 }
 
-export function startTicketWork(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+export function startTicketWork(id: string, actor: string, entity_id: string): ServiceTicket {
   return transitionTicketState(id, 'in_progress', actor, { started_at: nowIso() }, undefined, entity_id);
 }
 
-export function putTicketOnHold(id: string, actor: string, reason: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+export function putTicketOnHold(id: string, actor: string, reason: string, entity_id: string): ServiceTicket {
   return transitionTicketState(id, 'on_hold', actor, { on_hold_since: nowIso() }, reason, entity_id);
 }
 
-export function markTicketResolved(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+export function markTicketResolved(id: string, actor: string, entity_id: string): ServiceTicket {
   return transitionTicketState(id, 'resolved', actor, { resolved_at: nowIso() }, undefined, entity_id);
 }
 
@@ -899,7 +899,7 @@ export function closeTicket(
   id: string,
   actor: string,
   otp_verified: boolean,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): ServiceTicket {
   if (!otp_verified) {
     throw new Error('HappyCode Ch1 OTP verification required before close · per v5 §3 / v4 §3.1 spec lock');
@@ -914,7 +914,7 @@ export function closeTicket(
   );
 }
 
-export function reopenTicket(id: string, actor: string, reason: string, entity_id: string = DEFAULT_ENTITY): ServiceTicket {
+export function reopenTicket(id: string, actor: string, reason: string, entity_id: string): ServiceTicket {
   const list = readJson<ServiceTicket>(serviceTicketKey(entity_id));
   const idx = list.findIndex((t) => t.id === id);
   if (idx === -1) throw new Error(`ServiceTicket ${id} not found`);
@@ -961,7 +961,7 @@ export function createRepairRoute(
   return route;
 }
 
-export function markRouteInRepair(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): RepairRoute {
+export function markRouteInRepair(id: string, actor: string, entity_id: string): RepairRoute {
   const list = readJson<RepairRoute>(repairRouteKey(entity_id));
   const idx = list.findIndex((r) => r.id === id);
   if (idx === -1) throw new Error(`RepairRoute ${id} not found`);
@@ -980,7 +980,7 @@ export function markReturnedFromRepair(
   id: string,
   actor: string,
   final_cost_paise: number,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): RepairRoute {
   const list = readJson<RepairRoute>(repairRouteKey(entity_id));
   const idx = list.findIndex((r) => r.id === id);
@@ -1006,7 +1006,7 @@ export function markRouteRejected(
   id: string,
   actor: string,
   reason: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): RepairRoute {
   const list = readJson<RepairRoute>(repairRouteKey(entity_id));
   const idx = list.findIndex((r) => r.id === id);
@@ -1025,7 +1025,7 @@ export function markRouteRejected(
 
 export function listRoutesForTicket(
   ticket_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): RepairRoute[] {
   return readJson<RepairRoute>(repairRouteKey(entity_id)).filter((r) => r.ticket_id === ticket_id);
 }
@@ -1083,7 +1083,7 @@ export function returnStandbyLoan(
   actor: string,
   damage: boolean,
   damage_charge_paise: number,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): StandbyLoan {
   const list = readJson<StandbyLoan>(standbyLoanKey(entity_id));
   const idx = list.findIndex((l) => l.id === id);
@@ -1107,18 +1107,18 @@ export function returnStandbyLoan(
   return list[idx];
 }
 
-export function listOverdueStandbyLoans(entity_id: string = DEFAULT_ENTITY): StandbyLoan[] {
+export function listOverdueStandbyLoans(entity_id: string): StandbyLoan[] {
   const now = Date.now();
   return readJson<StandbyLoan>(standbyLoanKey(entity_id)).filter(
     (l) => l.status === 'out' && new Date(l.expected_return_date).getTime() < now,
   );
 }
 
-export function listStandbyLoansForTicket(ticket_id: string, entity_id: string = DEFAULT_ENTITY): StandbyLoan[] {
+export function listStandbyLoansForTicket(ticket_id: string, entity_id: string): StandbyLoan[] {
   return readJson<StandbyLoan>(standbyLoanKey(entity_id)).filter((l) => l.ticket_id === ticket_id);
 }
 
-export function listStandbyLoans(entity_id: string = DEFAULT_ENTITY): StandbyLoan[] {
+export function listStandbyLoans(entity_id: string): StandbyLoan[] {
   return readJson<StandbyLoan>(standbyLoanKey(entity_id));
 }
 
@@ -1185,11 +1185,11 @@ export function createCustomerOutVoucher(
   return voucher;
 }
 
-export function listCustomerInVouchers(entity_id: string = DEFAULT_ENTITY): CustomerInVoucher[] {
+export function listCustomerInVouchers(entity_id: string): CustomerInVoucher[] {
   return readJson<CustomerInVoucher>(customerInVoucherKey(entity_id));
 }
 
-export function listCustomerOutVouchers(entity_id: string = DEFAULT_ENTITY): CustomerOutVoucher[] {
+export function listCustomerOutVouchers(entity_id: string): CustomerOutVoucher[] {
   return readJson<CustomerOutVoucher>(customerOutVoucherKey(entity_id));
 }
 
@@ -1212,12 +1212,12 @@ export function createSparesIssue(
 
 export function listSparesForTicket(
   ticket_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): SparesIssueRecord[] {
   return readJson<SparesIssueRecord>(sparesIssueKey(entity_id)).filter((s) => s.ticket_id === ticket_id);
 }
 
-export function listAllSparesIssues(entity_id: string = DEFAULT_ENTITY): SparesIssueRecord[] {
+export function listAllSparesIssues(entity_id: string): SparesIssueRecord[] {
   return readJson<SparesIssueRecord>(sparesIssueKey(entity_id));
 }
 
@@ -1244,7 +1244,7 @@ function decodeChannel2Token(token: string): { fid: string; exp: string } | null
 
 export function triggerChannel2EmailRequest(
   feedback_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): { token: string; expires_at: string } {
   const list = readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity_id));
   const idx = list.findIndex((f) => f.id === feedback_id);
@@ -1274,7 +1274,7 @@ export function submitChannel2Feedback(
   token: string,
   nps_score: number,
   comment: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): HappyCodeFeedback {
   const verified = verifyChannel2JWT(token);
   if ('error' in verified) throw new Error(`Channel 2 JWT ${verified.error}`);
@@ -1306,7 +1306,7 @@ export function captureChannel3VerbalFeedback(
   nps_score: number,
   happiness_score: number,
   comment: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): HappyCodeFeedback {
   const list = readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity_id));
   const idx = list.findIndex((f) => f.id === feedback_id);
@@ -1341,7 +1341,7 @@ export interface TicketVariance {
 export function computeTicketVariance(
   ticket_id: string,
   estimated: { timeline_days: number; cost_paise: number; route_type: string; spares_qty: number },
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): TicketVariance | null {
   const ticket = getServiceTicket(ticket_id, entity_id);
   if (!ticket || !ticket.closed_at) return null;
@@ -1379,7 +1379,7 @@ export interface AMCProfitability {
 
 export function computeAMCProfitability(
   amc_record_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): AMCProfitability | null {
   const amc = getAMCRecord(amc_record_id, entity_id);
   if (!amc) return null;
@@ -1415,7 +1415,7 @@ export function listHappyCodeFeedback(filters?: {
 
 export function getHappyCodeFeedback(
   feedback_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): HappyCodeFeedback | null {
   return readJson<HappyCodeFeedback>(happyCodeFeedbackKey(entity_id)).find((f) => f.id === feedback_id) ?? null;
 }
@@ -1453,7 +1453,7 @@ export function assignCustomerServiceTier(
 
 export function getActiveCustomerTier(
   customer_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CustomerServiceTier | null {
   const list = readJson<CustomerServiceTier>(customerServiceTierKey(entity_id))
     .filter((t) => t.customer_id === customer_id)
@@ -1478,7 +1478,7 @@ export function getTierBenefits(tier: ServiceTierLevel): typeof TIER_BENEFITS[Se
 export function applyTierToSLAHours(
   base_hours: number,
   customer_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): number {
   const tier = getActiveCustomerTier(customer_id, entity_id);
   if (!tier) return base_hours;
@@ -1514,7 +1514,7 @@ export function fireReminderNow(
   reminder_id: string,
   actor: string,
   channel: ReminderChannel,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CustomerReminder {
   const list = readJson<CustomerReminder>(customerReminderKey(entity_id));
   const idx = list.findIndex((r) => r.id === reminder_id);
@@ -1547,7 +1547,7 @@ export function snoozeReminder(
   reminder_id: string,
   actor: string,
   snooze_until_iso: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CustomerReminder {
   const list = readJson<CustomerReminder>(customerReminderKey(entity_id));
   const idx = list.findIndex((r) => r.id === reminder_id);
@@ -1568,7 +1568,7 @@ export function dismissReminder(
   reminder_id: string,
   actor: string,
   reason: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CustomerReminder {
   const list = readJson<CustomerReminder>(customerReminderKey(entity_id));
   const idx = list.findIndex((r) => r.id === reminder_id);
@@ -1586,7 +1586,7 @@ export function dismissReminder(
 
 export function listUpcomingReminders(
   days_ahead: number = 30,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CustomerReminder[] {
   const cutoff = new Date(Date.now() + days_ahead * 86400 * 1000).toISOString();
   return readJson<CustomerReminder>(customerReminderKey(entity_id)).filter(
@@ -1596,7 +1596,7 @@ export function listUpcomingReminders(
 
 export function listAllRemindersForCustomer(
   customer_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): CustomerReminder[] {
   return readJson<CustomerReminder>(customerReminderKey(entity_id))
     .filter((r) => r.customer_id === customer_id)
@@ -1623,7 +1623,7 @@ export function recordServiceAvailed(
   amc_record_id: string,
   ticket_id: string,
   spares_value_paise: number,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): ServiceAvailedRecord {
   const amc = getAMCRecord(amc_record_id, entity_id);
   if (!amc) throw new Error(`AMCRecord ${amc_record_id} not found`);
@@ -1650,7 +1650,7 @@ export function recordServiceAvailed(
 
 export function listServiceAvailedForAMC(
   amc_record_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): ServiceAvailedRecord[] {
   return readJson<ServiceAvailedRecord>(serviceAvailedKey(entity_id))
     .filter((r) => r.amc_record_id === amc_record_id);
@@ -1658,7 +1658,7 @@ export function listServiceAvailedForAMC(
 
 export function computeRemainingServices(
   amc_record_id: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): { included: number; availed: number; remaining: number } {
   const amc = getAMCRecord(amc_record_id, entity_id);
   if (!amc) return { included: 0, availed: 0, remaining: 0 };
@@ -1726,7 +1726,7 @@ export function listAvailableEngineers(filters?: {
 
 export function matchEngineerToTicket(
   required_skills: string[],
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): EngineerMarketplaceProfile[] {
   return listAvailableEngineers({ entity_id })
     .filter((e) => required_skills.some((s) => e.skill_tags.includes(s)))
@@ -1757,7 +1757,7 @@ export function createRefurbishedUnit(
 }
 
 function transitionRefurb(
-  id: string, to: RefurbStatus, actor: string, patch: Partial<RefurbishedUnit>, entity_id: string = DEFAULT_ENTITY,
+  id: string, to: RefurbStatus, actor: string, patch: Partial<RefurbishedUnit>, entity_id: string,
 ): RefurbishedUnit {
   const list = readJson<RefurbishedUnit>(refurbishedUnitKey(entity_id));
   const idx = list.findIndex((u) => u.id === id);
@@ -1774,15 +1774,15 @@ function transitionRefurb(
   return list[idx];
 }
 
-export function markRefurbReady(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): RefurbishedUnit {
+export function markRefurbReady(id: string, actor: string, entity_id: string): RefurbishedUnit {
   return transitionRefurb(id, 'ready', actor, {}, entity_id);
 }
 
-export function markRefurbSold(id: string, actor: string, customer_id: string, entity_id: string = DEFAULT_ENTITY): RefurbishedUnit {
+export function markRefurbSold(id: string, actor: string, customer_id: string, entity_id: string): RefurbishedUnit {
   return transitionRefurb(id, 'sold', actor, { sold_at: nowIso(), sold_to_customer_id: customer_id }, entity_id);
 }
 
-export function markRefurbRecycled(id: string, actor: string, entity_id: string = DEFAULT_ENTITY): RefurbishedUnit {
+export function markRefurbRecycled(id: string, actor: string, entity_id: string): RefurbishedUnit {
   return transitionRefurb(id, 'recycled', actor, { recycled_at: nowIso() }, entity_id);
 }
 
@@ -1801,7 +1801,7 @@ export function listRefurbishedUnits(filters?: {
 }
 
 export function computeRefurbMarginByGrade(
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): Record<RefurbGrade, { count: number; total_margin: number }> {
   const list = readJson<RefurbishedUnit>(refurbishedUnitKey(entity_id)).filter((u) => u.status === 'sold');
   const result: Record<RefurbGrade, { count: number; total_margin: number }> = {
@@ -1825,7 +1825,7 @@ const SEEDED_FT_ENTRIES: Omit<FutureTaskEntry, 'id' | 'created_at' | 'updated_at
   { ft_code: 'FT-SDESK-005', title: 'NLP for Voice-of-Customer', description: 'Upgrade S35 keyword-frequency to real NLP (sentiment + topic extraction + trend detection)', status: 'planned', priority: 'p2', target_phase: 'phase_2', estimated_loc: 500, unblock_dependencies: [], parent_card_id: 'servicedesk' },
 ];
 
-export function seedFutureTaskRegister(entity_id: string = DEFAULT_ENTITY): FutureTaskEntry[] {
+export function seedFutureTaskRegister(entity_id: string): FutureTaskEntry[] {
   // [JWT] POST /api/servicedesk/future-task-register/seed
   const existing = readJson<FutureTaskEntry>(futureTaskKey(entity_id));
   if (existing.length > 0) return existing;
@@ -1849,7 +1849,7 @@ export function listFutureTasks(filters?: { entity_id?: string; status?: FTStatu
 }
 
 export function updateFutureTaskStatus(
-  id: string, status: FTStatus, actor: string, entity_id: string = DEFAULT_ENTITY,
+  id: string, status: FTStatus, actor: string, entity_id: string,
 ): FutureTaskEntry {
   const list = readJson<FutureTaskEntry>(futureTaskKey(entity_id));
   const idx = list.findIndex((t) => t.id === id);
@@ -1868,7 +1868,7 @@ export function updateFutureTaskStatus(
 // --- B.4 S30 / S31 / S32 helpers ---
 export function listSparesByTier(
   tier: 'A' | 'B' | 'C',
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): _SparesIssueRecord[] {
   return readJson<_SparesIssueRecord>(_sparesIssueKeyC1f(entity_id))
     .filter((s) => {
@@ -1884,7 +1884,7 @@ export interface EngineerBurnoutFlag {
   computed_at: string;
 }
 
-export function detectEngineerBurnout(entity_id: string = DEFAULT_ENTITY): EngineerBurnoutFlag[] {
+export function detectEngineerBurnout(entity_id: string): EngineerBurnoutFlag[] {
   const oneWeekAgo = new Date(Date.now() - 7 * 86400 * 1000).toISOString();
   const tickets = listServiceTickets({ entity_id }).filter(
     (t) => t.created_at >= oneWeekAgo && t.assigned_engineer_id,
@@ -1915,7 +1915,7 @@ export interface QuoteSuggestion {
 export function suggestServiceQuote(
   call_type: string,
   severity: 'low' | 'medium' | 'high' | 'critical',
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): QuoteSuggestion {
   const matrix = getSLAMatrixSettings(entity_id);
   const sevMap = { low: 'sev4_low', medium: 'sev3_medium', high: 'sev2_high', critical: 'sev1_critical' } as const;
@@ -1945,7 +1945,7 @@ const STOP_WORDS = new Set([
 export interface KeywordFrequency { keyword: string; count: number }
 
 export function aggregateVoiceOfCustomerKeywords(
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
   topK: number = 50,
 ): KeywordFrequency[] {
   const feedback = listHappyCodeFeedback({ entity_id });
@@ -1980,7 +1980,7 @@ export interface CustomerPnLRow {
   margin_pct: number;
 }
 
-export function computeCustomerPnL(entity_id: string = DEFAULT_ENTITY): CustomerPnLRow[] {
+export function computeCustomerPnL(entity_id: string): CustomerPnLRow[] {
   const amcs = listAMCRecords({ entity_id });
   const map = new Map<string, CustomerPnLRow>();
   for (const amc of amcs) {

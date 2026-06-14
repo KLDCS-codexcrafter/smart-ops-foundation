@@ -8,12 +8,14 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ShieldCheck, ShieldAlert } from 'lucide-react';
 import { listAllSparesIssues } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 // S34 Spare QR Authenticity · derive from spare_id prefix (OEM- = genuine, others = unverified)
 const isGenuineSpare = (spareId: string): boolean => /^OEM-/i.test(spareId);
 
 export function SparesIssuedFromField(): JSX.Element {
-  const spares = listAllSparesIssues();
+  const { entityCode } = useEntityCode();
+  const spares = listAllSparesIssues(entityCode || 'OPRX');
 
   return (
     <div className="p-6 space-y-4">
