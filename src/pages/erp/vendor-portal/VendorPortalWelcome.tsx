@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { VendorPortalModule } from './VendorPortalSidebar.types';
 
 interface VendorPortalWelcomeProps {
