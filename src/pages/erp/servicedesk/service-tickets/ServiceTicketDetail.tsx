@@ -102,27 +102,27 @@ export function ServiceTicketDetail({ ticketId, onBack, autoOpenOTP }: Props): J
     );
   }
 
-  const handleAck = (): void => { acknowledgeTicket(ticket.id, ACTOR); toast.success('Acknowledged'); refresh(); };
+  const handleAck = (): void => { acknowledgeTicket(ticket.id, ACTOR, ticket.entity_id); toast.success('Acknowledged'); refresh(); };
   const handleAssign = (): void => {
     if (!engineerId.trim()) return;
-    assignTicketToEngineer(ticket.id, engineerId.trim(), ACTOR);
+    assignTicketToEngineer(ticket.id, engineerId.trim(), ACTOR, ticket.entity_id);
     setAssignOpen(false); setEngineerId(''); toast.success('Assigned'); refresh();
   };
-  const handleStart = (): void => { startTicketWork(ticket.id, ACTOR); toast.success('Work started'); refresh(); };
+  const handleStart = (): void => { startTicketWork(ticket.id, ACTOR, ticket.entity_id); toast.success('Work started'); refresh(); };
   const handleHold = (): void => {
-    putTicketOnHold(ticket.id, ACTOR, holdReason);
+    putTicketOnHold(ticket.id, ACTOR, holdReason, ticket.entity_id);
     setHoldOpen(false); setHoldReason(''); toast.success('On hold'); refresh();
   };
-  const handleResolve = (): void => { markTicketResolved(ticket.id, ACTOR); toast.success('Resolved'); refresh(); };
+  const handleResolve = (): void => { markTicketResolved(ticket.id, ACTOR, ticket.entity_id); toast.success('Resolved'); refresh(); };
   const handleOpenOTP = (): void => {
-    const { otp } = generateOTPForTicketClose(ticket.id);
+    const { otp } = generateOTPForTicketClose(ticket.id, ticket.entity_id);
     setOtpGenerated(otp); setOtpOpen(true);
   };
   const handleClose = (): void => {
-    const verified = verifyOTPForTicketClose(ticket.id, otpValue);
+    const verified = verifyOTPForTicketClose(ticket.id, otpValue, ticket.entity_id);
     if (!verified) { toast.error('Invalid OTP'); return; }
     try {
-      closeTicket(ticket.id, ACTOR, true);
+      closeTicket(ticket.id, ACTOR, true, ticket.entity_id);
       toast.success('Ticket closed');
       setOtpOpen(false); setOtpValue(''); setOtpGenerated(null); refresh();
     } catch (err) {
@@ -130,7 +130,7 @@ export function ServiceTicketDetail({ ticketId, onBack, autoOpenOTP }: Props): J
     }
   };
   const handleReopen = (): void => {
-    reopenTicket(ticket.id, ACTOR, reopenReason);
+    reopenTicket(ticket.id, ACTOR, reopenReason, ticket.entity_id);
     setReopenOpen(false); setReopenReason(''); toast.success('Reopened'); refresh();
   };
 
