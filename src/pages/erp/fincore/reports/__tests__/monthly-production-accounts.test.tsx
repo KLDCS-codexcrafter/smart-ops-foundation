@@ -2,20 +2,27 @@
  * @file monthly-production-accounts.test.tsx
  * @sprint RPT-1b · MonthlyProductionAccounts wrap
  */
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import MonthlyProductionAccounts from '../MonthlyProductionAccounts';
+import { setLocale } from '@/lib/i18n-engine';
 
 vi.mock('@/hooks/useEntityCode', () => ({
   useEntityCode: () => ({ entityCode: 'E1' }),
 }));
 
 function setup() {
+  // CL-FREEZE-FIX · self-seed: reset i18n singleton (module state survives
+  // localStorage.clear) so a prior test that flipped locale to 'hi' cannot
+  // bleed the Hindi title into this English-asserting test.
+  setLocale('en');
   localStorage.setItem(
     'erp_companies',
     JSON.stringify([{ entityCode: 'E1', legalEntityName: 'Acme Mfg', businessActivity: 'Manufacturing' }]),
   );
 }
+
+beforeEach(() => { setup(); });
 
 describe('RPT-1b · MonthlyProductionAccounts', () => {
   it('renders title', () => {
