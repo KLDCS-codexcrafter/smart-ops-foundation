@@ -18,6 +18,7 @@ import {
   isAMCKickoffBlocked,
   createInstallationVerification,
 } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { InstallationVerification } from '@/types/servicedesk';
 
 interface Props {
@@ -36,16 +37,18 @@ const CHECKLIST_FIELDS: { key: keyof InstallationVerification; label: string }[]
 ];
 
 export function InstallationVerificationDetail({ verificationId, onBack }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [iv, setIv] = useState<InstallationVerification | null>(null);
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
     if (verificationId) {
-      const found = getInstallationVerification(verificationId);
+      const found = getInstallationVerification(verificationId, entity);
       setIv(found);
       setNotes(found?.notes ?? '');
     }
-  }, [verificationId]);
+  }, [verificationId, entity]);
 
   if (!iv) {
     return (
@@ -94,13 +97,13 @@ export function InstallationVerificationDetail({ verificationId, onBack }: Props
   };
 
   const allChecked = CHECKLIST_FIELDS.every((f) => iv[f.key] === true);
-  const blocked = isAMCKickoffBlocked(iv.amc_record_id);
+  const blocked = isAMCKickoffBlocked(iv.amc_record_id, entity);
 
   const onMark = (): void => {
     try {
       // Persist current flag state by re-creating then marking — Phase 1 simplification
       // In Phase 2 there's an updateInstallationVerification; here we directly mark complete
-      markVerificationComplete(iv.id, 'current_user');
+      markVerificationComplete(iv.id, 'current_user', entity);
       toast.success('Verification marked complete');
       setIv({ ...iv, status: 'verified', verified_by: 'current_user', verified_at: new Date().toISOString() });
     } catch (e) {

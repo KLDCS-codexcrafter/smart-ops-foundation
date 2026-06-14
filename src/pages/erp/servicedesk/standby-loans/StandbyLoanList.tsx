@@ -21,6 +21,7 @@ import {
   listOverdueStandbyLoans,
   returnStandbyLoan,
 } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { StandbyLoanStatus } from '@/types/standby-loan';
 
 const ACTOR = 'desk_user';
@@ -32,6 +33,8 @@ function daysOverdue(expected: string): number {
 }
 
 export function StandbyLoanList(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [statusFilter, setStatusFilter] = useState<StandbyLoanStatus | 'all'>('all');
   const [refresh, setRefresh] = useState(0);
   const [returnOpen, setReturnOpen] = useState(false);
@@ -40,19 +43,19 @@ export function StandbyLoanList(): JSX.Element {
   const [damageCharge, setDamageCharge] = useState('0');
 
   const loans = useMemo(
-    () => listStandbyLoans().filter((l) => statusFilter === 'all' || l.status === statusFilter),
+    () => listStandbyLoans(entity).filter((l) => statusFilter === 'all' || l.status === statusFilter),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [statusFilter, refresh],
+    [statusFilter, refresh, entity],
   );
   const overdueCount = useMemo(
-    () => listOverdueStandbyLoans().length,
+    () => listOverdueStandbyLoans(entity).length,
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [refresh],
+    [refresh, entity],
   );
 
   const handleReturn = (): void => {
     if (!returnId) return;
-    returnStandbyLoan(returnId, ACTOR, damage, roundTo(dMul(Number(damageCharge), 100), 0));
+    returnStandbyLoan(returnId, ACTOR, damage, roundTo(dMul(Number(damageCharge), 100), 0), entity);
     setReturnOpen(false); setReturnId(null); setDamage(false); setDamageCharge('0');
     toast.success('Loan returned'); setRefresh((r) => r + 1);
   };

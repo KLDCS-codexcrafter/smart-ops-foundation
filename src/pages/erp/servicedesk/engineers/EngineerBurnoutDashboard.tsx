@@ -11,9 +11,11 @@ import { ShieldCheck } from 'lucide-react';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { defaultChartConfig, signReport } from '@/lib/report-framework';
 import { detectEngineerBurnout } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function EngineerBurnoutDashboard(): JSX.Element {
-  const flags = detectEngineerBurnout().sort((a, b) => b.tickets_this_week - a.tickets_this_week);
+  const { entityCode } = useEntityCode();
+  const flags = detectEngineerBurnout(entityCode || 'OPRX').sort((a, b) => b.tickets_this_week - a.tickets_this_week);
   const chart = useMemo(
     () => flags.map((f) => ({ name: f.engineer_id.slice(0, 12), tickets: f.tickets_this_week })),
     [flags],

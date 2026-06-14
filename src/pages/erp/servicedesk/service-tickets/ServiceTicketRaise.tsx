@@ -45,7 +45,7 @@ export function ServiceTicketRaise({ onDone }: Props): JSX.Element {
   const [warranty, setWarranty] = useState<WarrantyStatus>('out_of_warranty');
   const [conditionNotes, setConditionNotes] = useState('');
 
-  const callTypes = listActiveCallTypes();
+  const callTypes = listActiveCallTypes(ENTITY);
 
   const next = (): void => setStep((s) => Math.min(5, s + 1));
   const prev = (): void => setStep((s) => Math.max(1, s - 1));

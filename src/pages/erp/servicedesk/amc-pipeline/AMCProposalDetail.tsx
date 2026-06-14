@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { listAMCProposals, transitionProposalStatus } from '@/lib/servicedesk-engine';
 import { emitRenewalEmailToTemplateEngine } from '@/lib/servicedesk-bridges';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { AMCProposal, AMCProposalStatus } from '@/types/servicedesk';
 
 const ALLOWED: Record<AMCProposalStatus, AMCProposalStatus[]> = {
@@ -31,16 +32,19 @@ interface Props {
 }
 
 export function AMCProposalDetail({ proposalId, onBack }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [proposal, setProposal] = useState<AMCProposal | null>(null);
   const [target, setTarget] = useState<AMCProposalStatus | null>(null);
   const [actor, setActor] = useState('current_user');
   const [reason, setReason] = useState('');
 
   const refresh = (): void => {
-    const found = listAMCProposals().find((p) => p.id === proposalId) ?? null;
+    const found = listAMCProposals(entity).find((p) => p.id === proposalId) ?? null;
     setProposal(found);
   };
-  useEffect(refresh, [proposalId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(refresh, [proposalId, entity]);
 
   if (!proposal) {
     return (
@@ -56,7 +60,7 @@ export function AMCProposalDetail({ proposalId, onBack }: Props): JSX.Element {
   const onConfirm = (): void => {
     if (!target) return;
     try {
-      transitionProposalStatus(proposal.id, target, actor.trim() || 'current_user', reason);
+      transitionProposalStatus(proposal.id, target, actor.trim() || 'current_user', entity, reason);
       toast.success(`Transitioned to ${target}`);
       setTarget(null);
       setReason('');

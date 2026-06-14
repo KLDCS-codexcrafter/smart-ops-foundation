@@ -269,10 +269,10 @@ const servicedeskProposalAdapter: ApprovalAdapter = {
         amount: typeof p.proposed_value_paise === 'number' ? p.proposed_value_paise / 100 : undefined,
       })),
   approve: (entityCode, recordId, by) => {
-    try { transitionProposalStatus(recordId, 'accepted', by, undefined, entityCode); return true; } catch { return false; }
+    try { transitionProposalStatus(recordId, 'accepted', by, entityCode); return true; } catch { return false; }
   },
   reject: (entityCode, recordId, by, reason) => {
-    try { transitionProposalStatus(recordId, 'rejected', by, reason, entityCode); return true; } catch { return false; }
+    try { transitionProposalStatus(recordId, 'rejected', by, entityCode, reason); return true; } catch { return false; }
   },
   recordRoute: (id) => `/erp/servicedesk/proposal/${id}`,
 };

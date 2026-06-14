@@ -14,6 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, ArrowRight, Camera, Check, Lock, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { generateOTPForTicketClose, verifyOTPForTicketClose } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 interface Props {
   ticketId: string;
@@ -21,6 +22,8 @@ interface Props {
 }
 
 export function MobileServiceCompletion({ ticketId, onClose }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [step, setStep] = useState(1);
   const [summary, setSummary] = useState('');
   const [sparesUsed, setSparesUsed] = useState('');
@@ -33,13 +36,13 @@ export function MobileServiceCompletion({ ticketId, onClose }: Props): JSX.Eleme
   const prev = (): void => setStep((s) => Math.max(1, s - 1));
 
   const handleGenerateOTP = (): void => {
-    const { otp } = generateOTPForTicketClose(ticketId);
+    const { otp } = generateOTPForTicketClose(ticketId, entity);
     setOtpGenerated(otp);
     toast.info(`OTP sent to customer · demo OTP: ${otp}`);
   };
 
   const handleVerifyOTP = (): void => {
-    if (verifyOTPForTicketClose(ticketId, otpInput)) {
+    if (verifyOTPForTicketClose(ticketId, otpInput, entity)) {
       setOtpVerified(true);
       toast.success('OTP verified');
     } else {

@@ -9,11 +9,14 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { getAMCsByLifecycleStage } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { AMCRecord } from '@/types/servicedesk';
 
 export function AMCLapsedList(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [list, setList] = useState<AMCRecord[]>([]);
-  useEffect(() => setList(getAMCsByLifecycleStage('lapsed')), []);
+  useEffect(() => setList(getAMCsByLifecycleStage('lapsed', entity)), [entity]);
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-4">
       <h1 className="text-2xl font-bold">Lapsed AMCs</h1>

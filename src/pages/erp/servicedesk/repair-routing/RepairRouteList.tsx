@@ -21,6 +21,7 @@ import {
   markReturnedFromRepair,
   markRouteRejected,
 } from '@/lib/servicedesk-engine';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import type { RepairRouteType, RepairRouteStatus } from '@/types/repair-route';
 
 const ACTOR = 'desk_user';
@@ -29,6 +30,8 @@ const ROUTES: RepairRouteType[] = ['in_house', 'manufacturer', 'third_party', 's
 const STATUSES: RepairRouteStatus[] = ['routed', 'in_repair', 'returned', 'rejected'];
 
 export function RepairRouteList(): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [routeFilter, setRouteFilter] = useState<RepairRouteType | 'all'>('all');
   const [statusFilter, setStatusFilter] = useState<RepairRouteStatus | 'all'>('all');
   const [refresh, setRefresh] = useState(0);
@@ -42,26 +45,27 @@ export function RepairRouteList(): JSX.Element {
 
   const routes = useMemo(
     () => listRepairRoutes({
+      entity_id: entity,
       route_type: routeFilter === 'all' ? undefined : routeFilter,
       status: statusFilter === 'all' ? undefined : statusFilter,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [routeFilter, statusFilter, refresh],
+    [routeFilter, statusFilter, refresh, entity],
   );
 
   const bump = (): void => setRefresh((r) => r + 1);
 
   const handleInRepair = (id: string): void => {
-    markRouteInRepair(id, ACTOR); toast.success('Marked in repair'); bump();
+    markRouteInRepair(id, ACTOR, entity); toast.success('Marked in repair'); bump();
   };
   const handleReturn = (): void => {
     if (!returnId) return;
-    markReturnedFromRepair(returnId, ACTOR, roundTo(dMul(Number(returnCost), 100), 0));
+    markReturnedFromRepair(returnId, ACTOR, roundTo(dMul(Number(returnCost), 100), 0), entity);
     setReturnOpen(false); setReturnId(null); setReturnCost('0'); toast.success('Marked returned'); bump();
   };
   const handleReject = (): void => {
     if (!rejectId) return;
-    markRouteRejected(rejectId, ACTOR, rejectReason);
+    markRouteRejected(rejectId, ACTOR, rejectReason, entity);
     setRejectOpen(false); setRejectId(null); setRejectReason(''); toast.success('Marked rejected'); bump();
   };
 
