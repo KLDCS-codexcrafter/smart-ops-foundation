@@ -25,10 +25,15 @@ function seedClaim(entity: string): string {
     branch_id: 'br-1',
     ticket_id: 'st-001',
     oem_name: 'ACME',
+    spare_id: 'sp-1',
+    spare_name: 'Widget',
+    qty: 1,
+    unit_cost_paise: 1_000_000,
     total_claim_value_paise: 1_000_000,
+    warranty_period_status: 'in_warranty',
+    notes: '',
     created_by: 'tester',
-    line_items: [],
-  } as Parameters<typeof createOEMClaim>[0]);
+  });
   return c.id;
 }
 
