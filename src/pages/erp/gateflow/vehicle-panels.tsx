@@ -679,7 +679,7 @@ export function DriverMasterPanel(): JSX.Element {
 // ============================================================
 
 export function WeighbridgeTicketRegisterPanel(): JSX.Element {
-  const entity = getActiveEntityCode();
+  const { entityCode: entity } = useEntityCode();
   const [list, setList] = useState<WeighbridgeTicket[]>([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | WeighbridgeTicketStatus>('all');
