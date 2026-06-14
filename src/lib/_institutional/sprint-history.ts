@@ -1693,7 +1693,14 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint CL-FINAL T-CLFINAL-ClassC-JourneyRerun · CLEANUP ARC FINALE · Part 1 Class-C dead-code removal (bill-passing-qa-bridge: mountQaBridge + applyQaOutcome + QA_FINALIZED_EVENT deleted · 0 dispatchers / 0 real callers · notifyQaHandoff KEPT live · Procure360Page useEffect + import removed) + doc scrub pointing ncr-engine + qualicheck-bridges + NcrCloseDialog at the LIVE qa.outcome.applied channel (carries quality_score_delta) · Part 2 5-journey re-run baseline appended to audit/CROSS_CARD_JOURNEY_RERUN.md (J1 non-SMRT registers read scenario entity · J5 A/B tenant isolation proven via CL-2 daybook-service-isolation.test green) · Hotfix · backfilled 14 stale TBD_AT_BANK headSha rows (M1/W1C9/W1C9fix/TWRFIX/BRGFIX/W1C10/B1/CL1/CL2/CL2b/CL3a/CL3b/CL3c/CL3e) using next-sprint predecessorSha rule so sha-backfill-enforcement guard is GREEN (≤1 TBD) · ZERO new SIBLINGs · predecessor f02c23f · headSha TBD_AT_BANK (lone open entry)
   {
     sprintNumber: 'CLFINAL' as unknown as number, code: 'T-CLFINAL-ClassC-JourneyRerun', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'f02c23f', loc: 40,
+    headSha: '0079879', predecessorSha: 'f02c23f', loc: 40,
+    newSiblings: [],
+    bankDate: '2026-06-14', provenance: 'CONFIRMED',
+  },
+  // 🆕 Sprint CL-FREEZE-FIX T-FREEZE-FIX-TestIsolation · Test-isolation hotfix · ONE-LINE FIX in src/test/setup.ts: global beforeEach + afterEach now clearStorage() (localStorage + sessionStorage, jsdom-guarded) so the ~63 test files that touch storage without self-clearing can no longer leak state into the next test in a shard · root cause = order-dependent flake (different test per shard run; ALL green in isolation) · ZERO product code touched · ZERO new SIBLINGs · ZERO new audit types · clearing twice is a no-op for the 283 self-clearing files · predecessor 0079879 · headSha TBD_AT_BANK (lone open entry)
+  {
+    sprintNumber: 'FREEZEFIX' as unknown as number, code: 'T-FREEZE-FIX-TestIsolation', composite: false, grade: 'A',
+    headSha: 'TBD_AT_BANK', predecessorSha: '0079879', loc: 15,
     newSiblings: [],
     bankDate: '2026-06-14', provenance: 'CONFIRMED',
   },
