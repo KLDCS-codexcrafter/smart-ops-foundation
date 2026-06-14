@@ -555,7 +555,7 @@ export function VehicleMasterPanel(): JSX.Element {
 // ============================================================
 
 export function DriverMasterPanel(): JSX.Element {
-  const entity = getActiveEntityCode();
+  const { entityCode: entity } = useEntityCode();
   const user = getCurrentUserId();
   const [list, setList] = useState<DriverMaster[]>([]);
   const [open, setOpen] = useState(false);
