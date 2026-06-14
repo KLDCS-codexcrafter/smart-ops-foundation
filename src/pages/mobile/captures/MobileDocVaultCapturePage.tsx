@@ -15,12 +15,13 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { createDocument } from '@/lib/docvault-engine';
 import { CameraCapture } from '@/components/mobile/CameraCapture';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 const USER = 'mobile_user';
 
 export default function MobileDocVaultCapturePage(): JSX.Element {
   const navigate = useNavigate();
+  const { entityCode } = useEntityCode();
   const [title, setTitle] = useState('');
   const [docType, setDocType] = useState('invoice');
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -32,7 +33,7 @@ export default function MobileDocVaultCapturePage(): JSX.Element {
     }
     try {
       const docInput = {
-        entity_id: E,
+        entity_id: entityCode,
         document_type: docType,
         title,
         tags: {},
@@ -46,7 +47,7 @@ export default function MobileDocVaultCapturePage(): JSX.Element {
         uploaded_by: USER,
       };
       const doc = createDocument(
-        E,
+        entityCode,
         docInput as unknown as Parameters<typeof createDocument>[1],
         versionInput as unknown as Parameters<typeof createDocument>[2],
         USER,

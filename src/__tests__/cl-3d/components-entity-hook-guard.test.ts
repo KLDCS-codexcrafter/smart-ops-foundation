@@ -10,6 +10,8 @@ const ROOT = join(process.cwd(), 'src/components');
 // Block 1 scope: P1 const-hardcode only. P2 helper guarded in Block 3 combined guard.
 const FORBIDDEN = [
   /=\s*DEFAULT_ENTITY_SHORTCODE\s*;?$/m,
+  /const\s+E\s*=\s*'DEMO'/,
+  /const\s+ENTITY\s*=\s*'DEMO'/,
 ];
 function walk(dir: string, out: string[] = []): string[] {
   for (const e of readdirSync(dir)) {

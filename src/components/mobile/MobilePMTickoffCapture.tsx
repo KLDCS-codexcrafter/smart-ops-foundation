@@ -20,13 +20,13 @@ import {
   createPMTickoff,
   appendEquipmentPhoto,
 } from '@/lib/maintainpro-engine';
-
-const E = 'DEMO';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export default function MobilePMTickoffCapture(): JSX.Element {
   const navigate = useNavigate();
-  const equipment = listEquipment(E);
-  const templates = listPMScheduleTemplates(E);
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
+  const templates = listPMScheduleTemplates(entityCode);
 
   const [templateId, setTemplateId] = useState('');
   const [equipmentId, setEquipmentId] = useState('');
@@ -47,7 +47,7 @@ export default function MobilePMTickoffCapture(): JSX.Element {
   function handleSubmit(): void {
     if (!templateId || !equipmentId) return;
     setSubmitting(true);
-    createPMTickoff(E, {
+    createPMTickoff(entityCode, {
       pm_no: `PM/MOB/${Date.now()}`,
       pm_schedule_template_id: templateId,
       equipment_id: equipmentId,
@@ -62,7 +62,7 @@ export default function MobilePMTickoffCapture(): JSX.Element {
       project_id: null,
     });
     if (photoUrl) {
-      appendEquipmentPhoto(E, equipmentId, photoUrl, 'post_maintenance', 'mobile_tech');
+      appendEquipmentPhoto(entityCode, equipmentId, photoUrl, 'post_maintenance', 'mobile_tech');
     }
     void notes;
     void gps;

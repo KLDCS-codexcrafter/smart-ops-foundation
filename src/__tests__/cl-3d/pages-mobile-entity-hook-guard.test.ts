@@ -9,6 +9,8 @@ import { join } from 'node:path';
 const ROOT = join(process.cwd(), 'src/pages/mobile');
 const FORBIDDEN = [
   /=\s*DEFAULT_ENTITY_SHORTCODE\s*;?$/m,
+  /const\s+E\s*=\s*'DEMO'/,
+  /const\s+ENTITY\s*=\s*'DEMO'/,
 ];
 function walk(dir: string, out: string[] = []): string[] {
   for (const e of readdirSync(dir)) {

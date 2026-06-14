@@ -14,27 +14,28 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { listPendingMirrors, decideApproval } from '@/lib/approval-rail-engine';
 import { CameraCapture } from '@/components/mobile/CameraCapture';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 const APPROVER = 'mobile_approver';
 
 export default function MobileProcureApprovePage(): JSX.Element {
   const navigate = useNavigate();
+  const { entityCode } = useEntityCode();
   const [tick, setTick] = useState(0);
 
   const mirrors = useMemo(
     () =>
-      listPendingMirrors(E).filter((m) => {
+      listPendingMirrors(entityCode).filter((m) => {
         const src = String(m.meta.source_card ?? '').toLowerCase();
         return src.includes('procure') || src.includes('purchase') || src.includes('bill');
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tick],
+    [tick, entityCode],
   );
 
   function handleDecision(taskId: string, decision: 'approved' | 'rejected'): void {
     const res = decideApproval(
-      E,
+      entityCode,
       taskId,
       decision,
       APPROVER,

@@ -19,13 +19,13 @@ import {
   createSparesIssue,
   appendEquipmentPhoto,
 } from '@/lib/maintainpro-engine';
-
-const E = 'DEMO';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export default function MobileSparesIssueCapture(): JSX.Element {
   const navigate = useNavigate();
-  const equipment = listEquipment(E);
-  const spares = listSpareParts(E);
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
+  const spares = listSpareParts(entityCode);
 
   const [spareId, setSpareId] = useState('');
   const [equipmentId, setEquipmentId] = useState('');
@@ -47,7 +47,7 @@ export default function MobileSparesIssueCapture(): JSX.Element {
   function handleSubmit(): void {
     if (!spareId || !equipmentId) return;
     setSubmitting(true);
-    const issue = createSparesIssue(E, {
+    const issue = createSparesIssue(entityCode, {
       issue_no: `SI/MOB/${Date.now()}`,
       spare_id: spareId,
       qty,
@@ -66,7 +66,7 @@ export default function MobileSparesIssueCapture(): JSX.Element {
       toast.warning('OOB-M7: Velocity spike detected for this spare');
     }
     if (photoUrl) {
-      appendEquipmentPhoto(E, equipmentId, photoUrl, 'general', 'mobile_tech');
+      appendEquipmentPhoto(entityCode, equipmentId, photoUrl, 'general', 'mobile_tech');
     }
     void gps;
     setSubmitting(false);

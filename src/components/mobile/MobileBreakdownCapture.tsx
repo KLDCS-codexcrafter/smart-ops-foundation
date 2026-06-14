@@ -18,12 +18,12 @@ import {
   createBreakdownReport,
   appendEquipmentPhoto,
 } from '@/lib/maintainpro-engine';
-
-const E = 'DEMO';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export default function MobileBreakdownCapture(): JSX.Element {
   const navigate = useNavigate();
-  const equipment = listEquipment(E);
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
 
   const [equipmentId, setEquipmentId] = useState('');
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -45,7 +45,7 @@ export default function MobileBreakdownCapture(): JSX.Element {
   function handleSubmit(): void {
     if (!equipmentId || !complaint) return;
     setSubmitting(true);
-    createBreakdownReport(E, {
+    createBreakdownReport(entityCode, {
       breakdown_no: `BD/MOB/${Date.now()}`,
       equipment_id: equipmentId,
       reported_by_user_id: 'mobile_tech',
@@ -63,7 +63,7 @@ export default function MobileBreakdownCapture(): JSX.Element {
       project_id: null,
     });
     if (photoUrl) {
-      appendEquipmentPhoto(E, equipmentId, photoUrl, 'pre_maintenance', 'mobile_tech');
+      appendEquipmentPhoto(entityCode, equipmentId, photoUrl, 'pre_maintenance', 'mobile_tech');
     }
     setSubmitting(false);
     toast.success('Breakdown reported');

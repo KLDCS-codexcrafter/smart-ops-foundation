@@ -8,18 +8,18 @@ import { useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Activity } from 'lucide-react';
 import { listEquipment } from '@/lib/maintainpro-engine';
-
-const E = 'DEMO';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export function MaintenancePulseWidget(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const { downCount, total, availablePct, status } = useMemo(() => {
-    const all = listEquipment(E);
+    const all = listEquipment(entityCode);
     const down = all.filter((eq) => eq.operational_status === 'breakdown' || eq.operational_status === 'under_maintenance');
     const tot = all.length;
     const pct = tot === 0 ? 100 : Math.round(((tot - down.length) / tot) * 100);
     const stat: 'green' | 'amber' | 'red' = pct >= 90 ? 'green' : pct >= 70 ? 'amber' : 'red';
     return { downCount: down.length, total: tot, availablePct: pct, status: stat };
-  }, []);
+  }, [entityCode]);
 
   const pulseClass = status === 'green' ? 'bg-success' : status === 'amber' ? 'bg-warning' : 'bg-destructive';
 
