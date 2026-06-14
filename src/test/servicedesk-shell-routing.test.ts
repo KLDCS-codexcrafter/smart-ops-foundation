@@ -13,8 +13,8 @@ describe('ServiceDesk Shell routing · 12th card on Shell', () => {
     expect(servicedeskShellConfig.product.code).toBe('SD');
     expect(servicedeskShellConfig.routing.landingRoute).toBe('/erp/servicedesk');
   });
-  it('sidebar has 12 groups + welcome item (10 from C.1e + Marketplace+Refurb + Phase 2 Preview at C.1f)', () => {
-    expect(servicedeskSidebarItems.length).toBe(13);
+  it('sidebar has 12 groups + welcome item + report-builder (10 from C.1e + Marketplace+Refurb + Phase 2 Preview at C.1f + sd-rpt-report-builder)', () => {
+    expect(servicedeskSidebarItems.length).toBe(14);
     expect(servicedeskSidebarItems[0].id).toBe('welcome');
   });
   it('FR-74 keyboard namespace "d" registered on welcome', () => {

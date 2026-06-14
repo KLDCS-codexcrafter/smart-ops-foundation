@@ -35,7 +35,7 @@
 // uniform while preserving clarity per assertion. This file is a harness, not
 // production code · risk is contained.
 
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import Decimal from 'decimal.js';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -215,7 +215,9 @@ function resetEntityStorage() {
 // ──────────────────────────────────────────────────────────────────────
 
 describe('Z14 Block 1 Auto · Phase 1 close smoke harness', () => {
-  beforeAll(() => {
+  // CL-FREEZE-FIX · global beforeEach now clears localStorage between tests,
+  // so the TDS-section seed must re-run before EVERY it (was beforeAll).
+  beforeEach(() => {
     // Seed TDS sections (mirrors SmokeTestRunner Z2b seed)
     const tdsSections: TDSSection[] = [
       {
