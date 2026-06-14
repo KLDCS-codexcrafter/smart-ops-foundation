@@ -16,8 +16,6 @@ import { distributorOrdersKey, type DistributorOrder } from '@/types/distributor
 import { ratingsKey, type RatingEntry } from '@/types/distributor-rating';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function readList<T>(key: string): T[] {
   try {
     const raw = localStorage.getItem(key);
@@ -26,11 +24,12 @@ function readList<T>(key: string): T[] {
 }
 
 export function EngagementReportPanel() {
+  const { entityCode } = useEntityCode();
   const data = useMemo(() => {
     // [JWT] GET /api/reports/distributor-engagement?days=30
-    const distributors = readList<Distributor>(distributorsKey(ENTITY));
-    const orders = readList<DistributorOrder>(distributorOrdersKey(ENTITY));
-    const ratings = readList<RatingEntry>(ratingsKey(ENTITY));
+    const distributors = readList<Distributor>(distributorsKey(entityCode));
+    const orders = readList<DistributorOrder>(distributorOrdersKey(entityCode));
+    const ratings = readList<RatingEntry>(ratingsKey(entityCode));
 
     const now = Date.now();
     const cutoff = now - 30 * 86_400_000;

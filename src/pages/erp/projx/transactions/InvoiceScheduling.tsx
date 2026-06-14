@@ -44,7 +44,7 @@ const BLANK: FormState = {
 };
 
 export function InvoiceSchedulingPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { schedules, createSchedule, updateSchedule, deleteSchedule, markInvoiced } = useProjectInvoiceSchedule(entityCode);
   const { milestones } = useProjectMilestones(entityCode);

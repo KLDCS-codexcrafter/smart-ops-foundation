@@ -44,7 +44,7 @@ const BLANK: FormState = {
 };
 
 export function ResourceAllocationPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { resources, createResource, updateResource, deleteResource, checkOverlap } = useProjectResources(entityCode);
   const { persons } = useSAMPersons(entityCode);

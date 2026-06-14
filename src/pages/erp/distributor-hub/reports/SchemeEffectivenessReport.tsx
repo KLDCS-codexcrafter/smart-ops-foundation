@@ -15,8 +15,6 @@ import { schemesKey, appliedSchemesKey, type Scheme, type AppliedScheme } from '
 import { formatINR } from '@/lib/india-validations';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 interface AppliedRecord {
   order_id: string;
   order_date: string;
@@ -35,8 +33,9 @@ function readList<T>(key: string): T[] {
 }
 
 export function SchemeEffectivenessReportPanel() {
-  const schemes = useMemo(() => readList<Scheme>(schemesKey(ENTITY)), []);
-  const applied = useMemo(() => readList<AppliedRecord>(appliedSchemesKey(ENTITY)), []);
+  const { entityCode } = useEntityCode();
+  const schemes = useMemo(() => readList<Scheme>(schemesKey(entityCode)), []);
+  const applied = useMemo(() => readList<AppliedRecord>(appliedSchemesKey(entityCode)), []);
 
   const activeCount = schemes.filter(s => s.status === 'active').length;
   const totalDiscount = applied.reduce((t, a) => t + a.discount_paise, 0);

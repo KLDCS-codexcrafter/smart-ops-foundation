@@ -22,7 +22,7 @@ import { ShieldCheck as RPT6cShield } from 'lucide-react';
 interface Props { onNavigate: (m: string) => void }
 
 export function SnagRegister({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
   const [severity, setSeverity] = useState<Snag['severity']>('low');

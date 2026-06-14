@@ -110,7 +110,7 @@ interface DrillDown {
 }
 
 export function CashFlowProjectionReportPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { schedules, markInvoiced } = useProjectInvoiceSchedule(entityCode);
 

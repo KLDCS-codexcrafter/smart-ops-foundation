@@ -18,7 +18,6 @@ import {
   type CustomerOrder, type CustomerOrderStatus, type CustomerCart, type CustomerCartLine,
 } from '@/types/customer-order';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 const STATUS_FILTERS: { id: 'all' | CustomerOrderStatus; label: string }[] = [
   { id: 'all',       label: 'All' },
   { id: 'placed',    label: 'Placed' },
@@ -85,12 +84,13 @@ function printReceipt(order: CustomerOrder): void {
 }
 
 export function CustomerOrdersPanel() {
+  const { entityCode } = useEntityCode();
   const customerId = getCustomerId();
   const [filter, setFilter] = useState<'all' | CustomerOrderStatus>('all');
   const [search, setSearch] = useState('');
 
   const orders = useMemo(() => {
-    const all = ls<CustomerOrder>(customerOrdersKey(ENTITY))
+    const all = ls<CustomerOrder>(customerOrdersKey(entityCode))
       .filter(o => o.customer_id === customerId);
     return all.sort((a, b) => (b.placed_at ?? b.created_at).localeCompare(a.placed_at ?? a.created_at));
   }, [customerId]);
@@ -106,10 +106,10 @@ export function CustomerOrdersPanel() {
   }, [orders, filter, search]);
 
   const handleReorder = (order: CustomerOrder) => {
-    const all = ls<CustomerCart>(customerCartKey(ENTITY));
+    const all = ls<CustomerCart>(customerCartKey(entityCode));
     const idx = all.findIndex(c => c.customer_id === customerId);
     const cart: CustomerCart = idx >= 0 ? all[idx] : {
-      id: customerId, customer_id: customerId, entity_code: ENTITY,
+      id: customerId, customer_id: customerId, entity_code: entityCode,
       lines: [], subtotal_paise: 0,
       created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
     };
@@ -133,7 +133,7 @@ export function CustomerOrdersPanel() {
       updated_at: new Date().toISOString(),
     };
     if (idx >= 0) all[idx] = next; else all.push(next);
-    setLs(customerCartKey(ENTITY), all);
+    setLs(customerCartKey(entityCode), all);
     toast.success(`Added ${order.lines.length} item(s) to cart`);
     window.location.hash = 'ch-t-cart';
   };

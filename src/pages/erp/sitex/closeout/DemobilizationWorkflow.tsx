@@ -18,7 +18,7 @@ import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 interface Props { onNavigate: (m: string) => void }
 
 export function DemobilizationWorkflow({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
   const [tasks, setTasks] = useState<DemobilizationTask[]>([]);

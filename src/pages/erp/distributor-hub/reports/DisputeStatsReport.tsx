@@ -14,16 +14,15 @@ import {
   type InvoiceDispute,
 } from '@/types/invoice-dispute';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 const RESOLVED_STATUSES = new Set(['credit_noted', 'rejected', 'partial']);
 
 export function DisputeStatsReportPanel() {
+  const { entityCode } = useEntityCode();
   const stats = useMemo(() => {
     let disputes: InvoiceDispute[] = [];
     try {
       // [JWT] GET /api/reports/distributor-disputes
-      const raw = localStorage.getItem(disputesKey(ENTITY));
+      const raw = localStorage.getItem(disputesKey(entityCode));
       disputes = raw ? JSON.parse(raw) : [];
     } catch { /* ignore */ }
 

@@ -17,8 +17,6 @@ import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 interface CustomerLite { id: string; legalName?: string; partyName?: string; city?: string }
 interface OrderLite {
   customer_id?: string; placed_at?: string;
@@ -40,8 +38,8 @@ function loadCustomers(): CustomerLite[] {
 
 function loadOrders(): OrderLite[] {
   const keys = [
-    `erp_customer_orders_${ENTITY}`,
-    `erp_distributor_orders_${ENTITY}`,
+    `erp_customer_orders_${entityCode}`,
+    `erp_distributor_orders_${entityCode}`,
   ];
   const out: OrderLite[] = [];
   for (const k of keys) {
@@ -67,6 +65,7 @@ const TIER_COLOR: Record<CLVResult['clv_rank_tier'], string> = {
 };
 
 export function CLVRankingsReportPanel() {
+  const { entityCode } = useEntityCode();
   const [customers, setCustomers] = useState<CustomerLite[]>([]);
   const [orders, setOrders] = useState<OrderLite[]>([]);
   const [search, setSearch] = useState('');
@@ -77,7 +76,7 @@ export function CLVRankingsReportPanel() {
     setOrders(loadOrders());
     // [JWT] GET /api/customers/clv-rankings
     logAudit({
-      entityCode: ENTITY, userId: 'system', userName: 'system',
+      entityCode: entityCode, userId: 'system', userName: 'system',
       cardId: 'customer-hub', moduleId: 'ch-r-clv',
       action: 'report_run', refType: 'report', refId: 'clv_rankings',
       refLabel: 'CLV Rankings',

@@ -71,7 +71,7 @@ function loadCustomers(): CustomerLite[] {
 }
 
 export function ProjectCentreMasterPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { centres, createProjectCentre, updateProjectCentre, deleteProjectCentre, toggleActive, refresh } =
     useProjectCentres(entityCode);
   const { divisions, departments } = useOrgStructure();

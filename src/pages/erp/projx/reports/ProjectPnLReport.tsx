@@ -23,7 +23,7 @@ const fmtINR = (n: number) =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
 export function ProjectPnLReportPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { milestones } = useProjectMilestones(entityCode);
   const { entries } = useTimeEntries(entityCode);

@@ -37,8 +37,6 @@ interface OrderLite {
   total_paise?: number;
 }
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function loadCustomers(): CustomerLite[] {
   try {
     // [JWT] GET /api/customer-master
@@ -51,7 +49,7 @@ function loadCustomers(): CustomerLite[] {
 function loadOrders(): OrderLite[] {
   try {
     // [JWT] GET /api/orders
-    const raw = localStorage.getItem(`erp_orders_${ENTITY}`);
+    const raw = localStorage.getItem(`erp_orders_${entityCode}`);
     if (raw) return JSON.parse(raw) as OrderLite[];
   } catch { /* ignore */ }
   return [];
@@ -60,7 +58,7 @@ function loadOrders(): OrderLite[] {
 function loadLoyaltyStates(): CustomerLoyaltyState[] {
   try {
     // [JWT] GET /api/loyalty/states
-    const raw = localStorage.getItem(loyaltyStateKey(ENTITY));
+    const raw = localStorage.getItem(loyaltyStateKey(entityCode));
     if (raw) return JSON.parse(raw) as CustomerLoyaltyState[];
   } catch { /* ignore */ }
   return [];
@@ -88,6 +86,7 @@ interface CustomerHubWelcomePanelProps {
 }
 
 export function CustomerHubWelcomePanel({ onModuleChange }: CustomerHubWelcomePanelProps = {}) {
+  const { entityCode } = useEntityCode();
   const { entityCode, userId } = useCardEntitlement();
   const [now] = useState<Date>(() => new Date());
 

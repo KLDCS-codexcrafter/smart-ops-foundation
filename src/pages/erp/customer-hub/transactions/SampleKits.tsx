@@ -26,8 +26,6 @@ import {
 import { logAudit } from '@/lib/card-audit-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function ls<T>(k: string): T[] {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T[]) : []; } catch { return []; }
 }
@@ -57,7 +55,7 @@ function getCurrentCustomerName(id: string): string {
 const DEMO_TEMPLATES: SampleKitTemplate[] = [
   {
     id: 'skt-essentials',
-    entity_id: ENTITY,
+    entity_id: entityCode,
     code: 'KIT-ESS',
     name: 'Essentials Kit',
     description: 'Pantry basics — rice, atta, oil, sugar. Try our staples.',
@@ -68,7 +66,7 @@ const DEMO_TEMPLATES: SampleKitTemplate[] = [
   },
   {
     id: 'skt-premium',
-    entity_id: ENTITY,
+    entity_id: entityCode,
     code: 'KIT-PREM',
     name: 'Premium Tasting Kit',
     description: 'Curated premium SKUs across categories. Standard tier and above.',
@@ -80,7 +78,7 @@ const DEMO_TEMPLATES: SampleKitTemplate[] = [
   },
   {
     id: 'skt-vip',
-    entity_id: ENTITY,
+    entity_id: entityCode,
     code: 'KIT-VIP',
     name: 'VIP Tasting Experience',
     description: 'Full premium catalog sampler — exclusive to VIP customers.',
@@ -105,14 +103,15 @@ function statusBadgeClass(s: SampleKitStatus): string {
 }
 
 export function SampleKitsPanel() {
+  const { entityCode } = useEntityCode();
   const customerId = getCurrentCustomerId();
   const customerName = useMemo(() => getCurrentCustomerName(customerId), [customerId]);
 
   const [templates, setTemplates] = useState<SampleKitTemplate[]>(
-    () => ls<SampleKitTemplate>(sampleKitTemplatesKey(ENTITY)),
+    () => ls<SampleKitTemplate>(sampleKitTemplatesKey(entityCode)),
   );
   const [requests, setRequests] = useState<SampleKitRequest[]>(
-    () => ls<SampleKitRequest>(sampleKitRequestsKey(ENTITY)),
+    () => ls<SampleKitRequest>(sampleKitRequestsKey(entityCode)),
   );
   const [tab, setTab] = useState<'browse' | 'mine'>('browse');
 
@@ -121,7 +120,7 @@ export function SampleKitsPanel() {
     let nextTemplates = templates;
     if (templates.length === 0) {
       nextTemplates = DEMO_TEMPLATES;
-      setLs(sampleKitTemplatesKey(ENTITY), DEMO_TEMPLATES);
+      setLs(sampleKitTemplatesKey(entityCode), DEMO_TEMPLATES);
       setTemplates(DEMO_TEMPLATES);
     }
     const expired = findExpiredRequests(requests);
@@ -134,7 +133,7 @@ export function SampleKitsPanel() {
         return transitionStatus(r, 'converted', tpl);
       });
       setRequests(next);
-      setLs(sampleKitRequestsKey(ENTITY), next);
+      setLs(sampleKitRequestsKey(entityCode), next);
       toast.message(`${expired.length} kit(s) auto-converted (return window expired)`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -156,12 +155,12 @@ export function SampleKitsPanel() {
       toast.error(elig.reason ?? 'Not eligible');
       return;
     }
-    const req = createRequest(template, customerId, customerName, ENTITY);
+    const req = createRequest(template, customerId, customerName, entityCode);
     const next = [...requests, req];
     setRequests(next);
-    setLs(sampleKitRequestsKey(ENTITY), next);
+    setLs(sampleKitRequestsKey(entityCode), next);
     logAudit({
-      entityCode: ENTITY, userId: customerId, userName: customerName,
+      entityCode: entityCode, userId: customerId, userName: customerName,
       cardId: 'customer-hub', moduleId: 'ch-t-sample-kits',
       action: 'voucher_post',
       refType: 'sample_kit_request', refId: req.id,
@@ -177,9 +176,9 @@ export function SampleKitsPanel() {
     const updated = transitionStatus(req, to, tpl);
     const next = requests.map(r => r.id === req.id ? updated : r);
     setRequests(next);
-    setLs(sampleKitRequestsKey(ENTITY), next);
+    setLs(sampleKitRequestsKey(entityCode), next);
     logAudit({
-      entityCode: ENTITY, userId: customerId, userName: customerName,
+      entityCode: entityCode, userId: customerId, userName: customerName,
       cardId: 'customer-hub', moduleId: 'ch-t-sample-kits',
       action: 'voucher_post',
       refType: 'sample_kit_request', refId: req.id,

@@ -21,12 +21,10 @@ import {
 // TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function readDistributors(): Distributor[] {
   try {
     // [JWT] GET /api/distributors
-    const raw = localStorage.getItem(distributorsKey(ENTITY));
+    const raw = localStorage.getItem(distributorsKey(entityCode));
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
@@ -34,11 +32,12 @@ function readDistributors(): Distributor[] {
 function writeDistributors(list: Distributor[]): void {
   try {
     // [JWT] PUT /api/distributors/bulk
-    localStorage.setItem(distributorsKey(ENTITY), JSON.stringify(list));
+    localStorage.setItem(distributorsKey(entityCode), JSON.stringify(list));
   } catch { /* ignore */ }
 }
 
 export function DistributorExcelSyncPanel() {
+  const { entityCode } = useEntityCode();
   const [scope, setScope] = useState<ExcelScope>('distributors');
 
   const handleExport = () => {

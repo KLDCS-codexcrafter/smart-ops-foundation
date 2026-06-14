@@ -38,8 +38,6 @@ import { rebuildState } from '@/lib/loyalty-engine';
 import { logAudit } from '@/lib/card-audit-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 interface CustomerLite {
   id: string;
   legalName?: string;
@@ -76,7 +74,7 @@ function customerLabel(c: CustomerLite): string {
 
 /** Seed 1 demo link + 1 demo transfer on first run. */
 function seedDemoIfEmpty(currentId: string, currentName: string): void {
-  const existing = ls<FamilyLink>(familyLinksKey(ENTITY));
+  const existing = ls<FamilyLink>(familyLinksKey(entityCode));
   if (existing.length > 0) return;
 
   const now = new Date().toISOString();
@@ -84,7 +82,7 @@ function seedDemoIfEmpty(currentId: string, currentName: string): void {
 
   const demoLink: FamilyLink = {
     id: 'fl-demo-001',
-    entity_id: ENTITY,
+    entity_id: entityCode,
     primary_customer_id: currentId,
     linked_customer_id: 'cust-sharma-family',
     linked_name: 'Sharma Family Member',
@@ -94,11 +92,11 @@ function seedDemoIfEmpty(currentId: string, currentName: string): void {
     ended_at: null,
     created_by: currentName,
   };
-  setLs(familyLinksKey(ENTITY), [demoLink]);
+  setLs(familyLinksKey(entityCode), [demoLink]);
 
   const demoTransfer: FamilyTransfer = {
     id: 'ft-demo-001',
-    entity_id: ENTITY,
+    entity_id: entityCode,
     from_customer_id: currentId,
     from_name: currentName,
     to_customer_id: 'cust-sharma-family',
@@ -110,12 +108,13 @@ function seedDemoIfEmpty(currentId: string, currentName: string): void {
     undo_until: undoUntil,
     undone_at: null,
   };
-  setLs(familyTransfersKey(ENTITY), [demoTransfer]);
+  setLs(familyTransfersKey(entityCode), [demoTransfer]);
 }
 
 const RELATIONSHIPS = ['spouse', 'child', 'parent', 'sibling', 'other'] as const;
 
 export function FamilyWalletHubPanel() {
+  const { entityCode } = useEntityCode();
   const currentId = getCurrentCustomerId();
   const customers = useMemo(() => loadCustomers(), []);
   const currentName = useMemo(() => {
@@ -123,8 +122,8 @@ export function FamilyWalletHubPanel() {
     return c ? customerLabel(c) : currentId;
   }, [customers, currentId]);
 
-  const [links, setLinks] = useState<FamilyLink[]>(() => ls<FamilyLink>(familyLinksKey(ENTITY)));
-  const [transfers, setTransfers] = useState<FamilyTransfer[]>(() => ls<FamilyTransfer>(familyTransfersKey(ENTITY)));
+  const [links, setLinks] = useState<FamilyLink[]>(() => ls<FamilyLink>(familyLinksKey(entityCode)));
+  const [transfers, setTransfers] = useState<FamilyTransfer[]>(() => ls<FamilyTransfer>(familyTransfersKey(entityCode)));
   const [loyaltyState, setLoyaltyState] = useState<CustomerLoyaltyState | null>(null);
 
   const [linkDialogOpen, setLinkDialogOpen] = useState(false);
@@ -138,12 +137,12 @@ export function FamilyWalletHubPanel() {
   // Seed + hydrate loyalty
   useEffect(() => {
     seedDemoIfEmpty(currentId, currentName);
-    setLinks(ls<FamilyLink>(familyLinksKey(ENTITY)));
-    setTransfers(ls<FamilyTransfer>(familyTransfersKey(ENTITY)));
-    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(ENTITY));
-    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(ENTITY));
+    setLinks(ls<FamilyLink>(familyLinksKey(entityCode)));
+    setTransfers(ls<FamilyTransfer>(familyTransfersKey(entityCode)));
+    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(entityCode));
+    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(entityCode));
     const prev = states.find(s => s.customer_id === currentId) ?? null;
-    setLoyaltyState(rebuildState(currentId, ENTITY, ledger, prev));
+    setLoyaltyState(rebuildState(currentId, entityCode, ledger, prev));
   }, [currentId, currentName]);
 
   const myActiveLinks = useMemo(
@@ -179,16 +178,16 @@ export function FamilyWalletHubPanel() {
     }
     const target = customers.find(c => c.id === linkPick);
     if (!target) return;
-    const result = attemptLink(currentId, linkPick, customerLabel(target), linkRel, ENTITY, links, currentName);
+    const result = attemptLink(currentId, linkPick, customerLabel(target), linkRel, entityCode, links, currentName);
     if (result.ok === false) {
       toast.error(result.reason);
       return;
     }
     const next = [...links, result.link];
     setLinks(next);
-    setLs(familyLinksKey(ENTITY), next);
+    setLs(familyLinksKey(entityCode), next);
     logAudit({
-      entityCode: ENTITY, userId: currentId, userName: currentName,
+      entityCode: entityCode, userId: currentId, userName: currentName,
       cardId: 'customer-hub', moduleId: 'ch-t-family-wallet',
       action: 'master_save',
       refType: 'family_link', refId: result.link.id,
@@ -204,9 +203,9 @@ export function FamilyWalletHubPanel() {
     const next = links.map(l =>
       l.id === linkId ? { ...l, status: 'ended' as const, ended_at: new Date().toISOString() } : l);
     setLinks(next);
-    setLs(familyLinksKey(ENTITY), next);
+    setLs(familyLinksKey(entityCode), next);
     logAudit({
-      entityCode: ENTITY, userId: currentId, userName: currentName,
+      entityCode: entityCode, userId: currentId, userName: currentName,
       cardId: 'customer-hub', moduleId: 'ch-t-family-wallet',
       action: 'master_save',
       refType: 'family_link', refId: linkId,
@@ -235,7 +234,7 @@ export function FamilyWalletHubPanel() {
       currentId, currentName, balance,
       transferTo, recipientName,
       transferPoints, transferMsg.slice(0, 140),
-      ENTITY, links,
+      entityCode, links,
     );
     if (result.ok === false) {
       toast.error(result.reason);
@@ -244,27 +243,27 @@ export function FamilyWalletHubPanel() {
 
     const nextTransfers = [...transfers, result.transfer];
     setTransfers(nextTransfers);
-    setLs(familyTransfersKey(ENTITY), nextTransfers);
+    setLs(familyTransfersKey(entityCode), nextTransfers);
 
-    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(ENTITY));
+    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(entityCode));
     ledger.push(result.fromLedger, result.toLedger);
-    setLs(loyaltyLedgerKey(ENTITY), ledger);
+    setLs(loyaltyLedgerKey(entityCode), ledger);
 
     // Rebuild both customers' loyalty states
-    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(ENTITY));
+    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(entityCode));
     const updateFor = (cid: string) => {
       const prev = states.find(s => s.customer_id === cid) ?? null;
-      const fresh = rebuildState(cid, ENTITY, ledger, prev);
+      const fresh = rebuildState(cid, entityCode, ledger, prev);
       const idx = states.findIndex(s => s.customer_id === cid);
       if (idx >= 0) states[idx] = fresh; else states.push(fresh);
       if (cid === currentId) setLoyaltyState(fresh);
     };
     updateFor(currentId);
     updateFor(transferTo);
-    setLs(loyaltyStateKey(ENTITY), states);
+    setLs(loyaltyStateKey(entityCode), states);
 
     logAudit({
-      entityCode: ENTITY, userId: currentId, userName: currentName,
+      entityCode: entityCode, userId: currentId, userName: currentName,
       cardId: 'customer-hub', moduleId: 'ch-t-family-wallet',
       action: 'voucher_post',
       refType: 'family_transfer', refId: result.transfer.id,
@@ -283,26 +282,26 @@ export function FamilyWalletHubPanel() {
     }
     const nextTransfers = transfers.map(t => t.id === transferId ? result.reversedTransfer : t);
     setTransfers(nextTransfers);
-    setLs(familyTransfersKey(ENTITY), nextTransfers);
+    setLs(familyTransfersKey(entityCode), nextTransfers);
 
-    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(ENTITY));
+    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(entityCode));
     ledger.push(result.reversalFrom, result.reversalTo);
-    setLs(loyaltyLedgerKey(ENTITY), ledger);
+    setLs(loyaltyLedgerKey(entityCode), ledger);
 
-    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(ENTITY));
+    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(entityCode));
     const updateFor = (cid: string) => {
       const prev = states.find(s => s.customer_id === cid) ?? null;
-      const fresh = rebuildState(cid, ENTITY, ledger, prev);
+      const fresh = rebuildState(cid, entityCode, ledger, prev);
       const idx = states.findIndex(s => s.customer_id === cid);
       if (idx >= 0) states[idx] = fresh; else states.push(fresh);
       if (cid === currentId) setLoyaltyState(fresh);
     };
     updateFor(result.reversedTransfer.from_customer_id);
     updateFor(result.reversedTransfer.to_customer_id);
-    setLs(loyaltyStateKey(ENTITY), states);
+    setLs(loyaltyStateKey(entityCode), states);
 
     logAudit({
-      entityCode: ENTITY, userId: currentId, userName: currentName,
+      entityCode: entityCode, userId: currentId, userName: currentName,
       cardId: 'customer-hub', moduleId: 'ch-t-family-wallet',
       action: 'voucher_cancel',
       refType: 'family_transfer_undo', refId: transferId,

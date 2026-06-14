@@ -52,7 +52,7 @@ const BLANK: FormState = {
 
 export function MilestoneTrackerPanel() {
   const t = useT();
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { milestones, createMilestone, updateMilestone, deleteMilestone } = useProjectMilestones(entityCode);
 

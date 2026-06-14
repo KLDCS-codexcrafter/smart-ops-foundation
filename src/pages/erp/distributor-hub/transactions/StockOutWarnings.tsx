@@ -23,19 +23,17 @@ const SEVERITY_COLOURS: Record<StockOutSeverity, string> = {
   info:     'bg-slate-500/15 text-slate-600 border-slate-400/30',
 };
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function readSnapshots(): StockLevelSnapshot[] {
   try {
     // [JWT] GET /api/distributor/stock-levels
-    const raw = localStorage.getItem(stockLevelsKey(ENTITY));
+    const raw = localStorage.getItem(stockLevelsKey(entityCode));
     return raw ? JSON.parse(raw) : [];
   } catch { return []; }
 }
 
 function readDismissals(): Record<string, string> {
   try {
-    const raw = localStorage.getItem(stockOutAlertsKey(ENTITY));
+    const raw = localStorage.getItem(stockOutAlertsKey(entityCode));
     if (!raw) return {};
     const list = JSON.parse(raw) as { id: string; dismissed_at: string | null }[];
     return list.reduce<Record<string, string>>((acc, a) => {
@@ -47,26 +45,27 @@ function readDismissals(): Record<string, string> {
 
 function writeDismissal(alertId: string): void {
   try {
-    const raw = localStorage.getItem(stockOutAlertsKey(ENTITY));
+    const raw = localStorage.getItem(stockOutAlertsKey(entityCode));
     const list: { id: string; dismissed_at: string | null }[] = raw ? JSON.parse(raw) : [];
     const idx = list.findIndex(a => a.id === alertId);
     const stamp = new Date().toISOString();
     if (idx >= 0) list[idx].dismissed_at = stamp;
     else list.push({ id: alertId, dismissed_at: stamp });
     // [JWT] POST /api/stock/alerts/dismiss
-    localStorage.setItem(stockOutAlertsKey(ENTITY), JSON.stringify(list));
+    localStorage.setItem(stockOutAlertsKey(entityCode), JSON.stringify(list));
   } catch { /* ignore */ }
 }
 
 export function StockOutWarningsPanel() {
+  const { entityCode } = useEntityCode();
   const [rev, setRev] = useState(0);
   const [dismissed, setDismissed] = useState<Record<string, string>>(() => readDismissals());
 
   useEffect(() => {
     let snaps = readSnapshots();
     if (snaps.length === 0) {
-      snaps = seedDemoStockLevels(ENTITY);
-      try { localStorage.setItem(stockLevelsKey(ENTITY), JSON.stringify(snaps)); }
+      snaps = seedDemoStockLevels(entityCode);
+      try { localStorage.setItem(stockLevelsKey(entityCode), JSON.stringify(snaps)); }
       catch { /* ignore */ }
       setRev(r => r + 1);
     }
@@ -88,7 +87,7 @@ export function StockOutWarningsPanel() {
 
   const handleAccept = (alert: StockOutAlert, fromName: string, qty: number) => {
     toast.success('Transfer request sent');
-    recordActivity(ENTITY, 'tenant-admin', {
+    recordActivity(entityCode, 'tenant-admin', {
       card_id: 'distributor-hub',
       kind: 'voucher',
       ref_id: alert.id,

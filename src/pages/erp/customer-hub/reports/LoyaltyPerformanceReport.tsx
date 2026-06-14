@@ -16,8 +16,6 @@ import {
 import { logAudit } from '@/lib/card-audit-engine';
 import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 interface CustomerLite { id: string; legalName?: string; partyName?: string }
 
 function ls<T>(k: string): T[] {
@@ -41,17 +39,18 @@ const TIER_COLORS: Record<LoyaltyTier, string> = {
 };
 
 export function LoyaltyPerformanceReportPanel() {
+  const { entityCode } = useEntityCode();
   const [states, setStates] = useState<CustomerLoyaltyState[]>([]);
   const [ledger, setLedger] = useState<LoyaltyLedgerEntry[]>([]);
   const [customers, setCustomers] = useState<CustomerLite[]>([]);
 
   useEffect(() => {
-    setStates(ls<CustomerLoyaltyState>(loyaltyStateKey(ENTITY)));
-    setLedger(ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(ENTITY)));
+    setStates(ls<CustomerLoyaltyState>(loyaltyStateKey(entityCode)));
+    setLedger(ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(entityCode)));
     setCustomers(loadCustomers());
     // [JWT] GET /api/loyalty/performance
     logAudit({
-      entityCode: ENTITY, userId: 'system', userName: 'system',
+      entityCode: entityCode, userId: 'system', userName: 'system',
       cardId: 'customer-hub', moduleId: 'ch-r-loyalty',
       action: 'report_run', refType: 'report', refId: 'loyalty_performance',
       refLabel: 'Loyalty Performance',

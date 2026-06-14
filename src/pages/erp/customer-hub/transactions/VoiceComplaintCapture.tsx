@@ -21,9 +21,8 @@ import {
   customerOrdersKey, type CustomerOrder,
 } from '@/types/customer-order';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-const COMPLAINTS_KEY = `erp_customer_complaints_${ENTITY}`;
-const DISPUTES_KEY   = `erp_invoice_disputes_${ENTITY}`;
+const COMPLAINTS_KEY = `erp_customer_complaints_${entityCode}`;
+const DISPUTES_KEY   = `erp_invoice_disputes_${entityCode}`;
 const CONTEXT_KEY    = 'erp_complaint_context';
 
 type ComplaintCategory = 'dispute' | 'return' | 'refund' | 'delivery' | 'quality' | 'general';
@@ -98,6 +97,7 @@ function getCustomerId(): string {
 }
 
 export function VoiceComplaintCapturePanel() {
+  const { entityCode } = useEntityCode();
   const customerId = getCustomerId();
   const supported = isSpeechRecognitionSupported();
   const [textMode, setTextMode] = useState(!supported);
@@ -120,7 +120,7 @@ export function VoiceComplaintCapturePanel() {
   }, []);
 
   const recentOrders = useMemo(
-    () => ls<CustomerOrder>(customerOrdersKey(ENTITY))
+    () => ls<CustomerOrder>(customerOrdersKey(entityCode))
       .filter(o => o.customer_id === customerId)
       .sort((a, b) => (b.placed_at ?? '').localeCompare(a.placed_at ?? ''))
       .slice(0, 10),
@@ -178,7 +178,7 @@ export function VoiceComplaintCapturePanel() {
       }
 
       logAudit({
-        entityCode: ENTITY,
+        entityCode: entityCode,
         userId: customerId,
         userName: customerId,
         cardId: 'customer-hub',

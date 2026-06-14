@@ -21,7 +21,7 @@ import type { SiteImprest } from '@/types/sitex';
 interface Props { onNavigate: (m: string) => void }
 
 export function SiteImprestPanel({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
   const [imprest, setImprest] = useState<SiteImprest | null>(null);

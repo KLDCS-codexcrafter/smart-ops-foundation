@@ -19,7 +19,7 @@ const fmtINR = (n: number) =>
   `₹${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(n)}`;
 
 export function ResourceUtilizationReportPanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { resources } = useProjectResources(entityCode);
   const { projects } = useProjects(entityCode);
   const [search, setSearch] = useState('');

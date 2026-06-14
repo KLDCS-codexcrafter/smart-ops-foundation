@@ -18,8 +18,6 @@ import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 const DIMENSIONS: { id: RatingDimension; label: string }[] = [
   { id: 'payment_reliability', label: 'Payment reliability (×2 weight)' },
   { id: 'order_volume',        label: 'Order volume / activity' },
@@ -27,13 +25,14 @@ const DIMENSIONS: { id: RatingDimension; label: string }[] = [
 ];
 
 export function DistributorRatingHubPanel() {
+  const { entityCode } = useEntityCode();
   const [rev, setRev] = useState(0);
 
   const distributors = useMemo<Distributor[]>(() => {
     void rev;
     try {
       // [JWT] GET /api/distributors
-      const raw = localStorage.getItem(distributorsKey(ENTITY));
+      const raw = localStorage.getItem(distributorsKey(entityCode));
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   }, [rev]);
@@ -42,7 +41,7 @@ export function DistributorRatingHubPanel() {
     void rev;
     try {
       // [JWT] GET /api/distributor/ratings
-      const raw = localStorage.getItem(ratingsKey(ENTITY));
+      const raw = localStorage.getItem(ratingsKey(entityCode));
       return raw ? JSON.parse(raw) : [];
     } catch { return []; }
   }, [rev]);
@@ -50,7 +49,7 @@ export function DistributorRatingHubPanel() {
   const submitRating = (distributorId: string, dim: RatingDimension, stars: number) => {
     const entry: RatingEntry = {
       id: `rat-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      entity_id: ENTITY,
+      entity_id: entityCode,
       distributor_id: distributorId,
       direction: 'tenant_to_distributor',
       dimension: dim,
@@ -62,7 +61,7 @@ export function DistributorRatingHubPanel() {
     try {
       // [JWT] POST /api/distributor/ratings
       const next = [...ratings, entry];
-      localStorage.setItem(ratingsKey(ENTITY), JSON.stringify(next));
+      localStorage.setItem(ratingsKey(entityCode), JSON.stringify(next));
       setRev(r => r + 1);
       toast.success(`Rated ${stars} stars`);
     } catch {

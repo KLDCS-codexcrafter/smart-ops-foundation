@@ -22,8 +22,6 @@ import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 // TXUI-5.1 · universal floor adoption · presentation-only · logic 0-DIFF
 import { PageFloorShell } from '@/components/shared/PageFloorShell';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function readList<T>(key: string): T[] {
   try {
     // [JWT] GET /api/{key}
@@ -33,12 +31,13 @@ function readList<T>(key: string): T[] {
 }
 
 export function SchemeSimulatorPanel() {
+  const { entityCode } = useEntityCode();
   const [selectedId, setSelectedId] = useState<string>('');
   const { entityCode, userId } = useCardEntitlement();
 
-  const schemes = useMemo(() => readList<Scheme>(schemesKey(ENTITY)), []);
-  const distributors = useMemo(() => readList<Distributor>(distributorsKey(ENTITY)), []);
-  const orders = useMemo(() => readList<DistributorOrder>(distributorOrdersKey(ENTITY)), []);
+  const schemes = useMemo(() => readList<Scheme>(schemesKey(entityCode)), []);
+  const distributors = useMemo(() => readList<Distributor>(distributorsKey(entityCode)), []);
+  const orders = useMemo(() => readList<DistributorOrder>(distributorOrdersKey(entityCode)), []);
 
   const summary = useMemo(() => {
     const scheme = schemes.find(s => s.id === selectedId);

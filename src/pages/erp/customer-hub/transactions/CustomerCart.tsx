@@ -38,7 +38,6 @@ import { fyForDate } from '@/lib/fincore-engine';
 // Precision Arc · Stage 3B · Block 4c — C4 integer-paise (redeem cap; floor preserved, inner arithmetic decimal-safe).
 import { dSub, dMul } from '@/lib/decimal-helpers';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 const MAX_REDEEM_PCT = 0.3;   // anti-abuse: cap loyalty discount at 30% of subtotal
 
 function ls<T>(k: string): T[] {
@@ -58,36 +57,37 @@ function getCustomerId(): string {
 }
 
 function loadCart(custId: string): CustomerCart {
-  const all = ls<CustomerCart>(customerCartKey(ENTITY));
+  const all = ls<CustomerCart>(customerCartKey(entityCode));
   return all.find(c => c.customer_id === custId) ?? {
-    id: custId, customer_id: custId, entity_code: ENTITY,
+    id: custId, customer_id: custId, entity_code: entityCode,
     lines: [], subtotal_paise: 0,
     created_at: new Date().toISOString(), updated_at: new Date().toISOString(),
   };
 }
 
 function saveCart(cart: CustomerCart): void {
-  const all = ls<CustomerCart>(customerCartKey(ENTITY));
+  const all = ls<CustomerCart>(customerCartKey(entityCode));
   const idx = all.findIndex(c => c.customer_id === cart.customer_id);
   if (idx >= 0) all[idx] = cart; else all.push(cart);
-  setLs(customerCartKey(ENTITY), all);
+  setLs(customerCartKey(entityCode), all);
   // touch activity
-  const act = ls<{ customer_id: string; updated_at: string }>(customerCartActivityKey(ENTITY));
+  const act = ls<{ customer_id: string; updated_at: string }>(customerCartActivityKey(entityCode));
   const ai = act.findIndex(a => a.customer_id === cart.customer_id);
   const next = { customer_id: cart.customer_id, updated_at: new Date().toISOString() };
   if (ai >= 0) act[ai] = next; else act.push(next);
-  setLs(customerCartActivityKey(ENTITY), act);
+  setLs(customerCartActivityKey(entityCode), act);
 }
 
 function nextOrderNo(): string {
   const year = new Date().getFullYear();
-  const all = ls<CustomerOrder>(customerOrdersKey(ENTITY));
+  const all = ls<CustomerOrder>(customerOrdersKey(entityCode));
   const yearOrders = all.filter(o => o.order_no.startsWith(`ORD/${year}/`));
   const nextN = (yearOrders.length + 1).toString().padStart(4, '0');
   return `ORD/${year}/${nextN}`;
 }
 
 export function CustomerCartPanel() {
+  const { entityCode } = useEntityCode();
   const customerId = getCustomerId();
   const [cart, setCart] = useState<CustomerCart>(() => loadCart(customerId));
   const [redeemPoints, setRedeemPoints] = useState(0);
@@ -96,10 +96,10 @@ export function CustomerCartPanel() {
 
   // Hydrate loyalty state from ledger
   useEffect(() => {
-    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(ENTITY));
-    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(ENTITY));
+    const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(entityCode));
+    const states = ls<CustomerLoyaltyState>(loyaltyStateKey(entityCode));
     const prev = states.find(s => s.customer_id === customerId) ?? null;
-    const fresh = rebuildState(customerId, ENTITY, ledger, prev);
+    const fresh = rebuildState(customerId, entityCode, ledger, prev);
     setLoyaltyState(fresh);
   }, [customerId]);
 
@@ -107,7 +107,7 @@ export function CustomerCartPanel() {
   // placement; we re-read active schemes then so a newly-launched campaign
   // applies to the next cart immediately.
   const allSchemes = useMemo<Scheme[]>(
-    () => ls<Scheme>(schemesKey(ENTITY)).filter(s => s.status === 'active'),
+    () => ls<Scheme>(schemesKey(entityCode)).filter(s => s.status === 'active'),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [cart.id],
   );
@@ -188,7 +188,7 @@ export function CustomerCartPanel() {
         order_no: orderNo,
         customer_id: customerId,
         customer_name: customerId,
-        entity_code: ENTITY,
+        entity_code: entityCode,
         status: 'placed',
         lines: cart.lines,
         subtotal_paise: subtotal,
@@ -206,13 +206,13 @@ export function CustomerCartPanel() {
       // Sprint T-Phase-1.Hardening-B.2C-ii-c · stamp fiscal_year_id from placed_at + entity_code (web placeOrder path).
       order.fiscal_year_id = `FY-20${fyForDate(order.placed_at!, order.entity_code)}`;
 
-      const orders = ls<CustomerOrder>(customerOrdersKey(ENTITY));
+      const orders = ls<CustomerOrder>(customerOrdersKey(entityCode));
       orders.push(order);
-      setLs(customerOrdersKey(ENTITY), orders);
+      setLs(customerOrdersKey(entityCode), orders);
 
       // Persist applied schemes for SchemeEffectivenessReport
       if (appliedSchemes.length > 0) {
-        const appliedKey = appliedSchemesKey(ENTITY);
+        const appliedKey = appliedSchemesKey(entityCode);
         const history = ls<unknown>(appliedKey);
         history.push({
           order_id: order.id,
@@ -228,11 +228,11 @@ export function CustomerCartPanel() {
       }
 
       // Loyalty ledger entries
-      const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(ENTITY));
+      const ledger = ls<LoyaltyLedgerEntry>(loyaltyLedgerKey(entityCode));
       if (effectiveRedeemPoints > 0) {
         ledger.push({
           id: `lle-${Date.now()}-r`,
-          entity_id: ENTITY, customer_id: customerId,
+          entity_id: entityCode, customer_id: customerId,
           action: 'redeem_discount',
           points_delta: -effectiveRedeemPoints,
           ref_type: 'order', ref_id: order.id,
@@ -245,7 +245,7 @@ export function CustomerCartPanel() {
         const expires = new Date(); expires.setMonth(expires.getMonth() + 12);
         ledger.push({
           id: `lle-${Date.now()}-e`,
-          entity_id: ENTITY, customer_id: customerId,
+          entity_id: entityCode, customer_id: customerId,
           action: 'earn_purchase',
           points_delta: pointsToEarn,
           ref_type: 'order', ref_id: order.id,
@@ -254,19 +254,19 @@ export function CustomerCartPanel() {
           expires_at: expires.toISOString(),
         });
       }
-      setLs(loyaltyLedgerKey(ENTITY), ledger);
+      setLs(loyaltyLedgerKey(entityCode), ledger);
 
       // G1: Recompute streak state when an order is placed
       try {
-        const allOrders = ls<CustomerOrder>(customerOrdersKey(ENTITY));
+        const allOrders = ls<CustomerOrder>(customerOrdersKey(entityCode));
         const myOrders = allOrders.filter(o => o.customer_id === customerId && o.placed_at);
         const streakLite = myOrders.map(o => ({ placed_at: o.placed_at as string }));
-        const existingStreaks = ls<CustomerStreakState>(customerStreakKey(ENTITY));
+        const existingStreaks = ls<CustomerStreakState>(customerStreakKey(entityCode));
         const mine = existingStreaks.find(s => s.customer_id === customerId) ?? null;
-        const updated = computeStreak(customerId, ENTITY, streakLite, mine);
+        const updated = computeStreak(customerId, entityCode, streakLite, mine);
         const next = existingStreaks.filter(s => s.customer_id !== customerId);
         next.push(updated);
-        setLs(customerStreakKey(ENTITY), next);
+        setLs(customerStreakKey(entityCode), next);
         const prevCount = mine?.active_milestones.length ?? 0;
         if (updated.active_milestones.length > prevCount) {
           const newOnes = updated.active_milestones.slice(prevCount);
@@ -282,7 +282,7 @@ export function CustomerCartPanel() {
 
       // Audit + activity
       logAudit({
-        entityCode: ENTITY,
+        entityCode: entityCode,
         userId: customerId,
         userName: customerId,
         cardId: 'customer-hub',
@@ -292,7 +292,7 @@ export function CustomerCartPanel() {
         refId: order.id,
         refLabel: `${orderNo} · ${appliedSchemes.length} scheme(s) · ${formatINR(netPayable)}`,
       });
-      recordActivity(ENTITY, customerId, {
+      recordActivity(entityCode, customerId, {
         card_id: 'customer-hub',
         kind: 'voucher',
         ref_id: order.id,

@@ -26,7 +26,7 @@ function riskFor(w: string): 'low' | 'medium' | 'high' {
 }
 
 export function LookAheadPlan({ onNavigate: _onNavigate }: Props): JSX.Element {
-  const entity = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode: entity } = useEntityCode();
   const sites = useMemo(() => listSites(entity), [entity]);
   const [siteId, setSiteId] = useState<string>(sites[0]?.id ?? '');
 

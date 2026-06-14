@@ -15,8 +15,6 @@ import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 interface ItemLite { id: string; name?: string; itemName?: string; category?: string }
 interface OrderRowLite {
   placed_at?: string; city?: string;
@@ -52,6 +50,7 @@ const KIND_LABEL: Record<SocialProofSignal['kind'], string> = {
 };
 
 export function SocialProofReportPanel() {
+  const { entityCode } = useEntityCode();
   const [items, setItems] = useState<ItemLite[]>([]);
   const [orderRows, setOrderRows] = useState<OrderRowLite[]>([]);
   const [ratings, setRatings] = useState<RatingLite[]>([]);
@@ -60,17 +59,17 @@ export function SocialProofReportPanel() {
   useEffect(() => {
     setItems(loadItems());
     const all: OrderRowLite[] = [];
-    for (const k of [`erp_customer_orders_${ENTITY}`, `erp_distributor_orders_${ENTITY}`]) {
+    for (const k of [`erp_customer_orders_${entityCode}`, `erp_distributor_orders_${entityCode}`]) {
       try {
         const raw = localStorage.getItem(k);
         if (raw) all.push(...(JSON.parse(raw) as OrderRowLite[]));
       } catch { /* ignore */ }
     }
     setOrderRows(all);
-    setRatings(ls<RatingLite>(`erp_item_ratings_${ENTITY}`));
+    setRatings(ls<RatingLite>(`erp_item_ratings_${entityCode}`));
     // [JWT] GET /api/social-proof/admin
     logAudit({
-      entityCode: ENTITY, userId: 'system', userName: 'system',
+      entityCode: entityCode, userId: 'system', userName: 'system',
       cardId: 'customer-hub', moduleId: 'ch-r-social-proof',
       action: 'report_run', refType: 'report', refId: 'social_proof',
       refLabel: 'Social Proof Dashboard',

@@ -50,7 +50,7 @@ const BLANK: FormState = {
 };
 
 export function TimeEntryCapturePanel() {
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects } = useProjects(entityCode);
   const { entries, createTimeEntry, updateTimeEntry, submitTimeEntry } = useTimeEntries(entityCode);
   const { milestones } = useProjectMilestones(entityCode);

@@ -105,7 +105,7 @@ const BLANK: FormState = {
 export function ProjectEntryPanel() {
   const t = useT();
   const navigate = useNavigate();
-  const entityCode = DEFAULT_ENTITY_SHORTCODE;
+  const { entityCode } = useEntityCode();
   const { projects, createProject, updateProject, transitionStatus, softDelete } = useProjects(entityCode);
   const { centres } = useProjectCentres(entityCode);
   const { quotations } = useQuotations(entityCode);

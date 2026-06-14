@@ -16,8 +16,6 @@ import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { ReportChart } from '@/components/operix-core/report-framework';
 import { signReport, getKpi, defaultChartConfig } from '@/lib/report-framework';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
-
 function readList<T>(key: string): T[] {
   try {
     const raw = localStorage.getItem(key);
@@ -26,10 +24,11 @@ function readList<T>(key: string): T[] {
 }
 
 export function CreditUtilReportPanel() {
+  const { entityCode } = useEntityCode();
   const rows = useMemo(() => {
     // [JWT] GET /api/reports/distributor-credit-util
-    const list = readList<Distributor>(distributorsKey(ENTITY));
-    const ratings = readList<RatingEntry>(ratingsKey(ENTITY));
+    const list = readList<Distributor>(distributorsKey(entityCode));
+    const ratings = readList<RatingEntry>(ratingsKey(entityCode));
     return list.map(d => {
       const lim = d.credit_limit_paise ?? 0;
       const out = d.outstanding_paise ?? 0;
