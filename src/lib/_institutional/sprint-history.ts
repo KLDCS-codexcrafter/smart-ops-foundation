@@ -1658,7 +1658,7 @@ export const SPRINTS: SprintEntry[] = [
   // 🆕 Sprint CL-3a T-CL3a-Maintainpro-HookSweep · CLEANUP ARC sprint 3a · hardcode→hook sweep · MAINTAINPRO cluster (24 files in src/pages/erp/maintainpro/{reports,transactions}/*.tsx) · removed module-scope `const E = 'DEMO'` and replaced with `const { entityCode } = useEntityCode()` at component TOP LEVEL (canon: hooks at top level only, never in callbacks/useMemo/IIFE) · every `E` reference rewritten to `entityCode` · entityCode added to useMemo dependency arrays for reactive entity-switch · NEW GUARD TEST maintainpro-entity-hook-guard.test.ts: directory scan asserts ZERO `const E = 'DEMO'` / `const ENTITY = 'DEMO'` / `= DEFAULT_ENTITY_SHORTCODE` literals remain (build-time completeness proof mirroring Tower/Bridge theme guards) · BEHAVIOURAL TEST maintainpro-entity-scope.test.ts: seed X=OPRX + Y=SMRT, assert listEquipment/listWorkOrders/listPMTickoffs(X) returns ONLY X data · TSC 0 · ESLint 0/0 (repo-wide --no-cache) · Vitest 4/4 PASS · ZERO new SIBLINGs · NON-GOAL: customer-hub/projx/sitex/distributor-hub/vendor-portal/payout/distributor/masters/salesx/fincore/components clusters → CL-3b/c/d · predecessor c7f7204 · headSha TBD_AT_BANK
   {
     sprintNumber: 'CL3a' as unknown as number, code: 'T-CL3a-Maintainpro-HookSweep', composite: false, grade: 'A',
-    headSha: 'TBD_AT_BANK', predecessorSha: 'c7f7204', loc: 180,
+    headSha: '4e2596d', predecessorSha: 'c7f7204', loc: 180,
     newSiblings: [],
     bankDate: '2026-06-14', provenance: 'CONFIRMED',
   },
