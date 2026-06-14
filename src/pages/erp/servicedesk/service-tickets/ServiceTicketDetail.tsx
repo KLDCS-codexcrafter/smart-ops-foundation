@@ -52,11 +52,13 @@ interface Props {
 const ACTOR = 'desk_user';
 
 export function ServiceTicketDetail({ ticketId, onBack, autoOpenOTP }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
+  const entity = entityCode || 'OPRX';
   const [refreshKey, setRefreshKey] = useState(0);
   const ticket: ServiceTicket | null = useMemo(
-    () => getServiceTicket(ticketId),
+    () => getServiceTicket(ticketId, entity),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ticketId, refreshKey],
+    [ticketId, refreshKey, entity],
   );
   const refresh = (): void => setRefreshKey((k) => k + 1);
 
