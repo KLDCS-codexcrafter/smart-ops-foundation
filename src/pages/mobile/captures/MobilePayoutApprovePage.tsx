@@ -18,26 +18,26 @@ import {
   approveAccountsLevel,
   rejectRequisition,
 } from '@/lib/payment-requisition-engine';
-
-const E = 'DEMO';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export default function MobilePayoutApprovePage(): JSX.Element {
   const navigate = useNavigate();
+  const { entityCode } = useEntityCode();
   const [tick, setTick] = useState(0);
   const requisitions = useMemo(
     () =>
-      listRequisitions(E).filter(
+      listRequisitions(entityCode).filter(
         (r) => r.status === 'pending_dept_head' || r.status === 'pending_accounts',
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tick],
+    [tick, entityCode],
   );
 
   function handleApprove(id: string, status: string): void {
     const res =
       status === 'pending_dept_head'
-        ? approveDeptLevel(E, id, 'Mobile approve')
-        : approveAccountsLevel(E, id, 'Mobile approve');
+        ? approveDeptLevel(entityCode, id, 'Mobile approve')
+        : approveAccountsLevel(entityCode, id, 'Mobile approve');
     if (res.ok) {
       toast.success('Approved · SoD routing honored');
       setTick((t) => t + 1);
@@ -47,7 +47,7 @@ export default function MobilePayoutApprovePage(): JSX.Element {
   }
 
   function handleReject(id: string): void {
-    const res = rejectRequisition(E, id, 'Mobile reject');
+    const res = rejectRequisition(entityCode, id, 'Mobile reject');
     if (res.ok) {
       toast.success('Rejected');
       setTick((t) => t + 1);

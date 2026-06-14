@@ -14,8 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { listEquipment, appendEquipmentPhoto } from '@/lib/maintainpro-engine';
-
-const E = 'DEMO';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 type PhotoContext = 'pre_maintenance' | 'post_maintenance' | 'warranty_claim' | 'audit' | 'general';
 
@@ -23,7 +22,8 @@ const CONTEXTS: PhotoContext[] = ['pre_maintenance', 'post_maintenance', 'warran
 
 export default function MobileAssetPhotoCapture(): JSX.Element {
   const navigate = useNavigate();
-  const equipment = listEquipment(E);
+  const { entityCode } = useEntityCode();
+  const equipment = listEquipment(entityCode);
 
   const [equipmentId, setEquipmentId] = useState('');
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
@@ -43,7 +43,7 @@ export default function MobileAssetPhotoCapture(): JSX.Element {
   function handleSubmit(): void {
     if (!equipmentId || !photoUrl) return;
     setSubmitting(true);
-    appendEquipmentPhoto(E, equipmentId, photoUrl, context, 'mobile_tech');
+    appendEquipmentPhoto(entityCode, equipmentId, photoUrl, context, 'mobile_tech');
     void notes;
     void gps;
     setSubmitting(false);

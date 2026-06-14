@@ -16,12 +16,13 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { createMaterialIndent, submitIndent } from '@/lib/request-engine';
 import { VoiceNote } from '@/components/mobile/VoiceNote';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 const USER = 'mobile_user';
 
 export default function MobileRequestXIndentPage(): JSX.Element {
   const navigate = useNavigate();
+  const { entityCode } = useEntityCode();
   const [itemName, setItemName] = useState('');
   const [qty, setQty] = useState(1);
   const [rate, setRate] = useState(10000);
@@ -33,7 +34,7 @@ export default function MobileRequestXIndentPage(): JSX.Element {
     setSubmitting(true);
     try {
       const input = {
-        entity_id: E,
+        entity_id: entityCode,
         voucher_type_id: 'MI',
         date: new Date().toISOString(),
         branch_id: 'main',
@@ -83,9 +84,9 @@ export default function MobileRequestXIndentPage(): JSX.Element {
       };
       const indent = createMaterialIndent(
         input as unknown as Parameters<typeof createMaterialIndent>[0],
-        E,
+        entityCode,
       );
-      submitIndent(indent.id, 'material', E, USER);
+      submitIndent(indent.id, 'material', entityCode, USER);
       toast.success(`Indent ${indent.voucher_no} submitted`);
       navigate('/operix-go');
     } catch (err) {

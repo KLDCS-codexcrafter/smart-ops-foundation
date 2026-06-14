@@ -11,11 +11,11 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Wrench, ClipboardCheck, Package, Camera, Activity, Calendar, AlertCircle } from 'lucide-react';
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { listWorkOrders, listPMTickoffs, listInternalTickets } from '@/lib/maintainpro-engine';
-
-const E = 'DEMO';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
 export default function MobileMaintenanceTechnicianPage(): JSX.Element {
   const navigate = useNavigate();
+  const { entityCode } = useEntityCode();
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
@@ -26,11 +26,11 @@ export default function MobileMaintenanceTechnicianPage(): JSX.Element {
   const counts = useMemo(() => {
     void tick;
     return {
-      activeWO: listWorkOrders(E).filter((w) => ['assigned', 'in_progress'].includes(w.status)).length,
-      todayPM: listPMTickoffs(E).filter((p) => p.scheduled_date.slice(0, 10) === new Date().toISOString().slice(0, 10)).length,
-      openTickets: listInternalTickets(E).filter((t) => t.status !== 'closed').length,
+      activeWO: listWorkOrders(entityCode).filter((w) => ['assigned', 'in_progress'].includes(w.status)).length,
+      todayPM: listPMTickoffs(entityCode).filter((p) => p.scheduled_date.slice(0, 10) === new Date().toISOString().slice(0, 10)).length,
+      openTickets: listInternalTickets(entityCode).filter((t) => t.status !== 'closed').length,
     };
-  }, [tick]);
+  }, [tick, entityCode]);
 
   return (
     <div className="min-h-screen bg-background p-4 max-w-md mx-auto space-y-4">

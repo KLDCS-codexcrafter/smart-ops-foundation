@@ -19,21 +19,22 @@ import {
   checkInVisitor,
 } from '@/lib/frontdesk-engine';
 import { CameraCapture } from '@/components/mobile/CameraCapture';
+import { useEntityCode } from '@/hooks/useEntityCode';
 
-const E = 'DEMO';
 const HOST = 'mobile_host';
 
 export default function MobileFrontDeskCheckInPage(): JSX.Element {
   const navigate = useNavigate();
+  const { entityCode } = useEntityCode();
   const [tick, setTick] = useState(0);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   const planned = useMemo(
-    () => listVisitors(E, 'planned').slice(0, 5),
+    () => listVisitors(entityCode, 'planned').slice(0, 5),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tick],
+    [tick, entityCode],
   );
 
   function handleCheckIn(): void {
@@ -57,8 +58,8 @@ export default function MobileFrontDeskCheckInPage(): JSX.Element {
         parkingNote: null,
         itemsCarried: [],
       };
-      const v = createPlannedVisitor(E, HOST, visitorInput as unknown as Parameters<typeof createPlannedVisitor>[2]);
-      checkInVisitor(E, HOST, { ...visitorInput, plannedVisitorId: v.id } as unknown as Parameters<typeof checkInVisitor>[2]);
+      const v = createPlannedVisitor(entityCode, HOST, visitorInput as unknown as Parameters<typeof createPlannedVisitor>[2]);
+      checkInVisitor(entityCode, HOST, { ...visitorInput, plannedVisitorId: v.id } as unknown as Parameters<typeof checkInVisitor>[2]);
       toast.success(`Checked in · ${v.name}`);
       setTick((t) => t + 1);
       setName('');
