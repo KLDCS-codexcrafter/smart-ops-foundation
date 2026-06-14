@@ -29,11 +29,9 @@ import {
 import { seedDemoSchemes } from '@/lib/scheme-seed';
 import { logAudit } from '@/lib/card-audit-engine';
 import { useCardEntitlement } from '@/hooks/useCardEntitlement';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 import { MasterImportExportButtons } from '@/components/masters/MasterImportExportButtons';
 import type { ImportSchema } from '@/lib/master-import-engine';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
 const SCHEME_TYPES: { value: SchemeType; label: string }[] = [
   { value: 'buy_n_get_m',   label: 'Buy N Get M Free' },
