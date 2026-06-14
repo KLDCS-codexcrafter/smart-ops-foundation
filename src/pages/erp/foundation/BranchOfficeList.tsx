@@ -1,18 +1,16 @@
+/**
+ * BranchOfficeList.tsx — CL-1 · B2-F1 · Foundation bridge.
+ * Reads real seeded group via loadEntities() instead of MOCK_BRANCHES.
+ * Honest empty-state when no branch entities are seeded.
+ */
+import { useMemo } from 'react';
 import { FoundationListPage, ListColumn } from '@/components/foundation/FoundationListPage';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { loadEntities } from '@/data/mock-entities';
 
 const BRANCH_TYPE_COLORS: Record<string, string> = {
-  'Service Centre': 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-  'Retail Store': 'bg-purple-500/10 text-purple-600 border-purple-500/20',
-  'Sales Office': 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-  'Collection Centre': 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-  'Branch Office': 'bg-slate-500/10 text-slate-600 border-slate-500/20',
-  'Regional Office': 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20',
-  'Liaison Office': 'bg-pink-500/10 text-pink-600 border-pink-500/20',
-  'Project Site Office': 'bg-orange-500/10 text-orange-600 border-orange-500/20',
-  'Support Office': 'bg-teal-500/10 text-teal-600 border-teal-500/20',
-  'Delivery Point': 'bg-cyan-500/10 text-cyan-600 border-cyan-500/20',
+  'Branch Office': 'bg-muted/60 text-foreground border-border',
 };
 
 interface BranchRow {
@@ -20,18 +18,22 @@ interface BranchRow {
   parentCompany: string; branchHead: string; status: string; city: string; state: string;
 }
 
-// [JWT] Replace with API call GET /api/foundation/branch-offices
-const MOCK_BRANCHES: BranchRow[] = [
-  { id: 'b1', code: 'BR001', name: 'Mumbai Service Centre', branchType: 'Service Centre',
-    parentCompany: 'SmartOps Industries Pvt Ltd', branchHead: 'Ravi Kumar',
-    status: 'Active', city: 'Mumbai', state: 'Maharashtra' },
-  { id: 'b2', code: 'BR002', name: 'Delhi Sales Office', branchType: 'Sales Office',
-    parentCompany: 'SmartOps Industries Pvt Ltd', branchHead: 'Priya Sharma',
-    status: 'Active', city: 'New Delhi', state: 'Delhi' },
-  { id: 'b3', code: 'BR003', name: 'Bengaluru Collection Centre', branchType: 'Collection Centre',
-    parentCompany: 'SmartOps North India Pvt Ltd', branchHead: 'Suresh Patel',
-    status: 'Inactive', city: 'Bengaluru', state: 'Karnataka' },
-];
+function loadBranchRows(): BranchRow[] {
+  const entities = loadEntities();
+  // [JWT] GET /api/foundation/branch-offices
+  return entities
+    .filter(e => e.type === 'branch')
+    .map(e => ({
+      id: e.id,
+      code: e.shortCode ? `${e.shortCode}-BR` : `BR-${e.id}`,
+      name: e.name,
+      branchType: 'Branch Office',
+      parentCompany: entities.find(p => p.type === 'parent')?.name ?? '—',
+      branchHead: '—',
+      status: 'Active',
+      city: '—', state: '—',
+    }));
+}
 
 const COLUMNS: ListColumn<BranchRow>[] = [
   { key: 'code', label: 'Code', sortable: true },
@@ -46,6 +48,7 @@ const COLUMNS: ListColumn<BranchRow>[] = [
 ];
 
 export default function BranchOfficeList() {
+  const data = useMemo(() => loadBranchRows(), []);
   return (
     <FoundationListPage<BranchRow>
       title="Branch Offices"
@@ -59,7 +62,7 @@ export default function BranchOfficeList() {
       createHref="/erp/foundation/branch-offices/create"
       createLabel="Add Branch Office"
       columns={COLUMNS}
-      data={MOCK_BRANCHES}
+      data={data}
       searchKeys={['name', 'code', 'city', 'branchType', 'branchHead']}
     />
   );

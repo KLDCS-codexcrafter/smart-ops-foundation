@@ -1,23 +1,45 @@
+/**
+ * CompanyList.tsx — CL-1 · B2-F1 · Foundation bridge.
+ * Reads real seeded group via loadEntities() ⨝ listGroupStructure() instead of
+ * MOCK_COMPANIES. Honest empty-state when no group is seeded.
+ */
+import { useMemo } from 'react';
 import { FoundationListPage, ListColumn } from '@/components/foundation/FoundationListPage';
 import { Badge } from '@/components/ui/badge';
+import { loadEntities } from '@/data/mock-entities';
+import { listGroupStructure } from '@/lib/intercompany-group-structure-engine';
 
 interface CompanyRow {
   id: string; code: string; shortCode: string; name: string;
   parentCompany: string; status: string; city: string; state: string; createdAt: string;
 }
 
-// [JWT] Replace with API call GET /api/foundation/companies
-const MOCK_COMPANIES: CompanyRow[] = [
-  { id: 'c1', code: 'SHTR001', shortCode: 'SHTR', name: 'Sharma Traders Pvt Ltd',
-    parentCompany: 'SmartOps Industries Pvt Ltd', status: 'Active',
-    city: 'Mumbai', state: 'Maharashtra', createdAt: '01 Apr 2025' },
-  { id: 'c2', code: 'SMTN001', shortCode: 'SMTN', name: 'SmartOps North India Pvt Ltd',
-    parentCompany: 'SmartOps Industries Pvt Ltd', status: 'Active',
-    city: 'New Delhi', state: 'Delhi', createdAt: '15 Jun 2025' },
-  { id: 'c3', code: 'SMEP001', shortCode: 'SMEP', name: 'SmartOps East Projects Ltd',
-    parentCompany: 'SmartOps Industries Pvt Ltd', status: 'Under Formation',
-    city: 'Kolkata', state: 'West Bengal', createdAt: '01 Jan 2026' },
-];
+function loadCompanyRows(): CompanyRow[] {
+  const entities = loadEntities();
+  const nodes = listGroupStructure();
+  const byEntity = new Map(nodes.map(n => [n.entity_id, n]));
+  // Parent + standalone companies = entities whose node is missing or relationship=parent
+  const parentOrCompany = entities.filter(e => {
+    const n = byEntity.get(e.id);
+    return e.type === 'parent' || !n || n.relationship === 'parent';
+  });
+  // [JWT] GET /api/foundation/companies
+  return parentOrCompany.map(e => {
+    const n = byEntity.get(e.id);
+    return {
+      id: e.id,
+      code: e.shortCode ? `${e.shortCode}001` : e.id.toUpperCase(),
+      shortCode: e.shortCode ?? '',
+      name: e.name,
+      parentCompany: n?.parent_entity_id
+        ? (entities.find(p => p.id === n.parent_entity_id)?.name ?? '—')
+        : '—',
+      status: 'Active',
+      city: '—', state: '—',
+      createdAt: '—',
+    };
+  });
+}
 
 const COLUMNS: ListColumn<CompanyRow>[] = [
   { key: 'code', label: 'Code', sortable: true },
@@ -30,6 +52,7 @@ const COLUMNS: ListColumn<CompanyRow>[] = [
 ];
 
 export default function CompanyList() {
+  const data = useMemo(() => loadCompanyRows(), []);
   return (
     <FoundationListPage<CompanyRow>
       title="Companies"
@@ -43,7 +66,7 @@ export default function CompanyList() {
       createHref="/erp/foundation/companies/create"
       createLabel="Add Company"
       columns={COLUMNS}
-      data={MOCK_COMPANIES}
+      data={data}
       searchKeys={['name', 'code', 'shortCode', 'city']}
     />
   );
