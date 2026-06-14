@@ -165,7 +165,7 @@ export function markOEMClaimPaid(
 }
 
 export function markOEMClaimRejected(
-  id: string, actor: string, reason: string, entity_id: string = DEFAULT_ENTITY,
+  id: string, actor: string, reason: string, entity_id: string,
 ): OEMClaimPacket {
   return transitionOEMClaim(id, 'rejected', actor, { rejection_reason: reason }, reason, entity_id);
 }
