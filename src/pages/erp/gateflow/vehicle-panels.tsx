@@ -128,7 +128,7 @@ interface WeighDialogProps {
 }
 
 function WeighDialog({ open, onOpenChange, mode, ticketId, onDone }: WeighDialogProps): JSX.Element {
-  const entity = getActiveEntityCode();
+  const { entityCode: entity } = useEntityCode();
   const user = getCurrentUserId();
   const [gross, setGross] = useState('');
   const [tare, setTare] = useState('');
