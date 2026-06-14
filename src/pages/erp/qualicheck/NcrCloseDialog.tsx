@@ -1,12 +1,12 @@
 /**
  * @file src/pages/erp/qualicheck/NcrCloseDialog.tsx
- * @purpose Modal to close an NCR with outcome + emit applyQaOutcome to Procure360
+ * @purpose Modal to close an NCR with outcome + emit qa.outcome.applied to Procure360 vendor scoring
  * @who Quality Inspector · QA Manager
  * @when 2026-05-08
  * @sprint T-Phase-1.A.5.a-bis-QualiCheck-NCR-Foundation
  * @iso 25010 Reliability + Operability
  * @whom QA Manager
- * @decisions D-NEW-AX (close emits applyQaOutcome · severity-based delta -2/-5/-10)
+ * @decisions D-NEW-AX (close emits qa.outcome.applied LIVE channel · severity-based quality_score_delta -2/-5/-10 → Procure360 vendor scoring)
  * @disciplines FR-19 (Sibling · zero Procure360 touches) · FR-21
  * @reuses ncr-engine.closeNcr · qualicheck-bridges.emitQaOutcomeForVendor
  * @[JWT] writes via ncr-engine · POST /api/qualicheck/ncrs/:id/close

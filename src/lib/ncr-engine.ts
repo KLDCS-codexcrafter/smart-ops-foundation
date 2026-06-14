@@ -7,7 +7,7 @@
  * @sprint T-Phase-1.A.5.a-bis-QualiCheck-NCR-Foundation
  * @iso 25010 Maintainability + Reliability + Performance Efficiency
  * @whom Quality Inspector · QA Manager
- * @decisions D-NEW-AV (NCR engine NEW) · D-NEW-AX (close emits applyQaOutcome)
+ * @decisions D-NEW-AV (NCR engine NEW) · D-NEW-AX (close emits qa.outcome.applied · LIVE channel · carries severity-based quality_score_delta to Procure360 vendor scoring)
  * @disciplines FR-19 (Sibling · consume-only on qa-plan + qa-spec) ·
  *              FR-21 (Banned patterns · 0 any · 0 console.log · 0 float-money · 0 TODO) ·
  *              FR-22 (ActivityItemKind · 'voucher' citation per A.3 Supplement 2) ·
