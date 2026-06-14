@@ -6,7 +6,6 @@
  */
 import { describe, it, expect, beforeEach } from 'vitest';
 import {
-  createServiceTicket as _ct, // alias if exported differently — fallback below
   raiseServiceTicket,
   getServiceTicket,
   listServiceTickets,
@@ -32,7 +31,7 @@ const ticketBase = (entity_id: string, customer_id: string) => ({
   sla_response_due_at: null,
   sla_resolution_due_at: null,
   flash_timer_minutes_remaining: 240,
-  escalation_level: 0,
+  escalation_level: 0 as const,
   assigned_engineer_id: null,
   repair_route_id: null,
   standby_loan_id: null,
