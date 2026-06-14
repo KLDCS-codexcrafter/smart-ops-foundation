@@ -222,7 +222,7 @@ export function VehicleOutwardPanel(): JSX.Element {
 function VehicleQueuePanel({ direction }: { direction: 'inward' | 'outward' }): JSX.Element {
   // FR-50 Multi-Entity 6-point · canonical hook
   const { entityCode } = useEntityCode();
-  const entity = entityCode || getActiveEntityCode();
+  const entity = entityCode;
   const cu = useCurrentUser();
   const user = cu?.id ?? getCurrentUserId();
   const [list, setList] = useState<GatePass[]>([]);
