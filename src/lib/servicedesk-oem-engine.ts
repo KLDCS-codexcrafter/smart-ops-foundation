@@ -129,7 +129,7 @@ export function submitOEMClaimToProcure360(
   id: string,
   actor: string,
   oem_claim_no: string,
-  entity_id: string = DEFAULT_ENTITY,
+  entity_id: string,
 ): OEMClaimPacket {
   const claim = transitionOEMClaim(
     id, 'submitted', actor,
@@ -151,26 +151,26 @@ export function submitOEMClaimToProcure360(
 }
 
 export function markOEMClaimApproved(
-  id: string, actor: string, approved_amount_paise: number, entity_id: string = DEFAULT_ENTITY,
+  id: string, actor: string, approved_amount_paise: number, entity_id: string,
 ): OEMClaimPacket {
   return transitionOEMClaim(id, 'approved', actor,
     { approved_at: nowIso(), paid_amount_paise: approved_amount_paise }, undefined, entity_id);
 }
 
 export function markOEMClaimPaid(
-  id: string, actor: string, paid_amount_paise: number, entity_id: string = DEFAULT_ENTITY,
+  id: string, actor: string, paid_amount_paise: number, entity_id: string,
 ): OEMClaimPacket {
   return transitionOEMClaim(id, 'paid', actor,
     { paid_at: nowIso(), paid_amount_paise }, undefined, entity_id);
 }
 
 export function markOEMClaimRejected(
-  id: string, actor: string, reason: string, entity_id: string = DEFAULT_ENTITY,
+  id: string, actor: string, reason: string, entity_id: string,
 ): OEMClaimPacket {
   return transitionOEMClaim(id, 'rejected', actor, { rejection_reason: reason }, reason, entity_id);
 }
 
-export function getOEMClaim(id: string, entity_id: string = DEFAULT_ENTITY): OEMClaimPacket | null {
+export function getOEMClaim(id: string, entity_id: string): OEMClaimPacket | null {
   return readJson<OEMClaimPacket>(oemClaimKey(entity_id)).find((c) => c.id === id) ?? null;
 }
 

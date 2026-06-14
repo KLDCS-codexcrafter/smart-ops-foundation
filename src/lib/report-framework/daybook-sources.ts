@@ -101,9 +101,9 @@ export function registerAllDayBookSources(): void {
     cardId: 'sd-service-daybook',
     domain: 'service',
     label: 'Service Day Book',
-    read: (): DayBookEntry[] => {
+    read: (entityCode): DayBookEntry[] => {
       const out: DayBookEntry[] = [];
-      for (const t of listServiceTickets()) {
+      for (const t of listServiceTickets({ entity_id: entityCode })) {
         if (t.raised_at) out.push({
           id: `${t.id}-raised`, date: t.raised_at.slice(0, 10), time: t.raised_at.slice(11, 16),
           type: 'Ticket Raised', reference: t.ticket_no ?? t.id, party: t.customer_id ?? '',
