@@ -51,7 +51,7 @@ describe('AMC applicability decision', () => {
   });
   it('flips to proposal_draft when applicable', () => {
     const r = createAMCRecord(baseInput);
-    const next = decideAMCApplicability(r.id, true, 'user1', 'fits criteria');
+    const next = decideAMCApplicability(r.id, true, 'user1', 'OPRX', 'fits criteria');
     expect(next.status).toBe('proposal_draft');
     expect(next.lifecycle_stage).toBe('proposal');
     expect(next.amc_applicable).toBe(true);
@@ -59,24 +59,24 @@ describe('AMC applicability decision', () => {
   });
   it('flips to not_applicable when no', () => {
     const r = createAMCRecord(baseInput);
-    const next = decideAMCApplicability(r.id, false, 'user1', 'CAPEX out of scope');
+    const next = decideAMCApplicability(r.id, false, 'user1', 'OPRX', 'CAPEX out of scope');
     expect(next.status).toBe('not_applicable');
     expect(next.lifecycle_stage).toBe('lapsed');
   });
   it('captures decided_by + reason in audit_trail', () => {
     const r = createAMCRecord(baseInput);
-    decideAMCApplicability(r.id, true, 'user1', 'reason X');
-    const got = getAMCRecord(r.id);
+    decideAMCApplicability(r.id, true, 'user1', 'OPRX', 'reason X');
+    const got = getAMCRecord(r.id, 'OPRX');
     expect(got?.audit_trail.some((a) => a.action === 'applicability_decided' && a.by === 'user1')).toBe(true);
   });
   it('excludes decided AMCs from pending list', () => {
     const r = createAMCRecord(baseInput);
-    decideAMCApplicability(r.id, true, 'u', '');
+    decideAMCApplicability(r.id, true, 'u', 'OPRX', '');
     expect(getAMCsAwaitingApplicabilityDecision('OPRX')).toHaveLength(0);
   });
   it('persists across reads', () => {
     const r = createAMCRecord(baseInput);
-    decideAMCApplicability(r.id, true, 'u', 'r');
-    expect(getAMCRecord(r.id)?.amc_applicable).toBe(true);
+    decideAMCApplicability(r.id, true, 'u', 'OPRX', 'r');
+    expect(getAMCRecord(r.id, 'OPRX')?.amc_applicable).toBe(true);
   });
 });

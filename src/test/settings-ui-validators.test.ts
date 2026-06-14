@@ -50,7 +50,7 @@ describe('Settings validators + recompute', () => {
     });
     const result = recomputeAllAMCRiskScores('OPRX', 'sysuser');
     expect(result.recomputed).toBe(1);
-    const got = getAMCRecord(r.id);
+    const got = getAMCRecord(r.id, 'OPRX');
     expect(got?.audit_trail.some((a) => a.action === 'risk_recomputed_from_settings' && a.by === 'sysuser')).toBe(true);
   });
 });

@@ -30,34 +30,34 @@ beforeEach(() => localStorage.clear());
 describe('Renewal cascade', () => {
   it('returns first at 89 days', () => {
     const a = mkAmc(isoDaysFromNow(89));
-    expect(getCascadeStageForAMC(a.id)).toBe('first');
+    expect(getCascadeStageForAMC(a.id, 'OPRX')).toBe('first');
   });
   it('returns second at 59', () => {
     const a = mkAmc(isoDaysFromNow(59));
-    expect(getCascadeStageForAMC(a.id)).toBe('second');
+    expect(getCascadeStageForAMC(a.id, 'OPRX')).toBe('second');
   });
   it('returns third at 29', () => {
     const a = mkAmc(isoDaysFromNow(29));
-    expect(getCascadeStageForAMC(a.id)).toBe('third');
+    expect(getCascadeStageForAMC(a.id, 'OPRX')).toBe('third');
   });
   it('returns final at 6', () => {
     const a = mkAmc(isoDaysFromNow(6));
-    expect(getCascadeStageForAMC(a.id)).toBe('final');
+    expect(getCascadeStageForAMC(a.id, 'OPRX')).toBe('final');
   });
   it('returns null at 100 days', () => {
     const a = mkAmc(isoDaysFromNow(100));
-    expect(getCascadeStageForAMC(a.id)).toBeNull();
+    expect(getCascadeStageForAMC(a.id, 'OPRX')).toBeNull();
   });
   it('fireRenewalCascadeStage creates record', () => {
     const a = mkAmc(isoDaysFromNow(50));
-    const f = fireRenewalCascadeStage(a.id, 'second', 'user');
+    const f = fireRenewalCascadeStage(a.id, 'second', 'user', null, 'OPRX');
     expect(f.stage).toBe('second');
-    expect(listCascadeFiresForAMC(a.id)).toHaveLength(1);
+    expect(listCascadeFiresForAMC(a.id, 'OPRX')).toHaveLength(1);
   });
   it('cascade history is append-only', () => {
     const a = mkAmc(isoDaysFromNow(50));
-    fireRenewalCascadeStage(a.id, 'first', 'u');
-    fireRenewalCascadeStage(a.id, 'second', 'u');
-    expect(listCascadeFiresForAMC(a.id)).toHaveLength(2);
+    fireRenewalCascadeStage(a.id, 'first', 'u', null, 'OPRX');
+    fireRenewalCascadeStage(a.id, 'second', 'u', null, 'OPRX');
+    expect(listCascadeFiresForAMC(a.id, 'OPRX')).toHaveLength(2);
   });
 });
