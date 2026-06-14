@@ -21,6 +21,9 @@
  * T-Phase-1.2.2: DEMO_BOM_HAPPY_PATH seeded · erp_bom_{entityCode}
  */
 import { DEMO_BOM_HAPPY_PATH, DEMO_BOM_VALVE_MFG } from '@/data/demo-bom-data';
+// CL-1 · B3-F1 — static import so the scenario seed path always wires the
+// finance/procurement transaction seeder (not just useDemoSeedLoader's DEFAULT path).
+import { seedFinanceProcurementTxnsForDemo } from '@/data/demo-transactions-finance-procurement';
 import { applyManufacturingModeToEntity } from '@/lib/entity-setup-service';
 import {
   customersForArchetype, vendorsForArchetype, type DemoArchetype,
@@ -146,15 +149,10 @@ export function seedEntityDemoData(
   }
   // CL-1 · B3-F1 · Seed finance/procurement TRANSACTIONS for every scenario entity
   // (not just the DEFAULT-entity hook path in useDemoSeedLoader). Idempotent —
-  // seeder is marker-guarded and prefixes ids with demo-w1c7b- so re-runs are safe.
+  // seeder writes are safeSet-guarded and row ids are prefixed demo-w1c7b-.
   try {
-    // dynamic import keeps module graph lean; failure is tolerated (seed is best-effort).
-     
-    const mod = require('@/data/demo-transactions-finance-procurement') as {
-      seedFinanceProcurementTxnsForDemo: (e: string) => unknown;
-    };
-    mod.seedFinanceProcurementTxnsForDemo(entityCode);
-  } catch { /* seed module not loaded — skip */ }
+    seedFinanceProcurementTxnsForDemo(entityCode);
+  } catch { /* best-effort — never blocks the main seed path */ }
   // Masters
   const customers = safeSetArray('erp_group_customer_master', customersForArchetype(archetype));
   const vendors = safeSetArray('erp_group_vendor_master', vendorsForArchetype(archetype));
