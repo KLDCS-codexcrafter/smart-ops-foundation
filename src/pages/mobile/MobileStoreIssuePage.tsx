@@ -15,20 +15,17 @@ import { listStockIssues } from '@/lib/stock-issue-engine';
 import { enqueueWrite } from '@/lib/offline-queue-engine';
 import { toast } from 'sonner';
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
-}
-
+import { useEntityCode } from '@/hooks/useEntityCode';
 export default function MobileStoreIssuePage(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
-  const ENTITY = getActiveEntityCode();
   const [showCapture, setShowCapture] = useState(false);
   const [issuedToday, setIssuedToday] = useState(0);
   const [drafts, setDrafts] = useState(0);
   const [cancelled, setCancelled] = useState(0);
 
   const refresh = (): void => {
-    const list = listStockIssues(ENTITY);
+    const list = listStockIssues(entityCode);
     const today = new Date().toISOString().slice(0, 10);
     setIssuedToday(list.filter(i => i.status === 'issued' && (i.posted_at ?? '').slice(0, 10) === today).length);
     setDrafts(list.filter(i => i.status === 'draft').length);
@@ -78,7 +75,7 @@ export default function MobileStoreIssuePage(): JSX.Element {
         onClick={() => {
           // Sprint T-Phase-3.PROD-3 · ST5 · Q-LOCK-6 · offline guard before launching capture flow
           if (typeof navigator !== 'undefined' && navigator.onLine === false) {
-            const queued = enqueueWrite(ENTITY, 'store_issue', { intent: 'new_capture_offline', queued_at: new Date().toISOString() });
+            const queued = enqueueWrite(entityCode, 'store_issue', { intent: 'new_capture_offline', queued_at: new Date().toISOString() });
             toast.info(`Offline · capture will sync when online (${queued.id})`);
           }
           setShowCapture(true);

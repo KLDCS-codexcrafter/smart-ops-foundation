@@ -36,15 +36,11 @@ import { enqueueWrite } from '@/lib/offline-queue-engine';
 import { createInwardReceipt } from '@/lib/inward-receipt-engine';
 import { listInwardQueue } from '@/lib/gateflow-engine';
 import type { GatePass } from '@/types/gate-pass';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   canProceedInward, EMPTY_INWARD_FORM_STATE,
   type InwardCaptureFormState, type InwardCaptureLine, type InwardStep,
 } from '@/lib/mobile-inward-capture-validation';
-
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
-  catch { return 'DEMO'; }
-}
 
 const EMPTY_LINE: InwardCaptureLine = {
   item_id: '', item_code: '', item_name: '', uom: 'NOS',
@@ -52,15 +48,15 @@ const EMPTY_LINE: InwardCaptureLine = {
 };
 
 export default function MobileInwardReceiptCapture(): JSX.Element {
-  const ENTITY = getActiveEntityCode();
+  const { entityCode } = useEntityCode();
   const [step, setStep] = useState<InwardStep>(1);
   const [s, setS] = useState<InwardCaptureFormState>(EMPTY_INWARD_FORM_STATE);
   const [gatePasses, setGatePasses] = useState<GatePass[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    setGatePasses(listInwardQueue(ENTITY));
-  }, [ENTITY]);
+    setGatePasses(listInwardQueue(entityCode));
+  }, [entityCode]);
 
   const update = (patch: Partial<InwardCaptureFormState>): void =>
     setS(prev => ({ ...prev, ...patch }));
@@ -110,7 +106,7 @@ export default function MobileInwardReceiptCapture(): JSX.Element {
     setSubmitting(true);
     try {
       const payload = {
-        entity_id: ENTITY,
+        entity_id: entityCode,
         vendor_id: s.vendor_id || `walkin-${Date.now()}`,
         vendor_name: s.vendor_name,
         gate_entry_id: s.gate_pass_id,
@@ -132,10 +128,10 @@ export default function MobileInwardReceiptCapture(): JSX.Element {
       };
       if (!navigator.onLine) {
         // [JWT] Offline queue · matches MobileGateGuardCapture / MobileQualiCheckCapture pattern
-        enqueueWrite(ENTITY, 'rating_submit', { kind: 'inward_receipt', input: payload });
+        enqueueWrite(entityCode, 'rating_submit', { kind: 'inward_receipt', input: payload });
         toast.success('Inward receipt queued — will sync when online');
       } else {
-        const ir = await createInwardReceipt(payload, ENTITY, 'mobile-warehouse');
+        const ir = await createInwardReceipt(payload, entityCode, 'mobile-warehouse');
         toast.success(`Inward Receipt ${ir.receipt_no} created · ${ir.status}`);
       }
       setS(EMPTY_INWARD_FORM_STATE);

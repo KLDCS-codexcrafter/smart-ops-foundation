@@ -18,11 +18,11 @@ import { toast } from 'sonner';
 import { listSites } from '@/lib/sitex-engine';
 import { emitSafetyIncidentEscalate } from '@/lib/sitex-bridges';
 import { enqueueWrite } from '@/lib/offline-queue-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+
 import { sitexSafetyIncidentsKey, type SafetyIncident, type SiteMaster } from '@/types/sitex';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
+import { useEntityCode } from '@/hooks/useEntityCode';
 const SEVERITY_MAP: Record<SafetyIncident['incident_type'], SafetyIncident['severity']> = {
   near_miss: 'low',
   minor_injury: 'medium',
@@ -33,6 +33,7 @@ const SEVERITY_MAP: Record<SafetyIncident['incident_type'], SafetyIncident['seve
 };
 
 export default function MobileSiteSafetyIncidentCapture(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [sites, setSites] = useState<SiteMaster[]>([]);
@@ -43,7 +44,7 @@ export default function MobileSiteSafetyIncidentCapture(): JSX.Element {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    setSites(listSites(ENTITY).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
+    setSites(listSites(entityCode).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
   }, []);
 
   const severity = SEVERITY_MAP[incidentType];
@@ -89,11 +90,11 @@ export default function MobileSiteSafetyIncidentCapture(): JSX.Element {
       escalated = true;
     }
     if (!navigator.onLine) {
-      enqueueWrite(ENTITY, 'complaint_submit', { kind: 'sitex_safety', payload: incident });
+      enqueueWrite(entityCode, 'complaint_submit', { kind: 'sitex_safety', payload: incident });
       toast.success('Queued · will sync when online');
     } else {
       // [JWT] POST /api/sitex/safety-incidents
-      const key = sitexSafetyIncidentsKey(ENTITY);
+      const key = sitexSafetyIncidentsKey(entityCode);
       const all = JSON.parse(localStorage.getItem(key) ?? '[]') as SafetyIncident[];
       all.push(incident);
       localStorage.setItem(key, JSON.stringify(all));

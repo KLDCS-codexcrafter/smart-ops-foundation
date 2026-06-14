@@ -17,14 +17,10 @@ import { getPendingInspectionAlerts } from '@/lib/oob/qa-pending-inspection-aler
 import type { QaInspectionRecord } from '@/types/qa-inspection';
 import MobileQCEntryPage from './MobileQCEntryPage';
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; }
-  catch { return 'DEMO'; }
-}
-
+import { useEntityCode } from '@/hooks/useEntityCode';
 export default function MobileQualiCheckPage(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
-  const ENTITY = getActiveEntityCode();
   const [activeTab, setActiveTab] = useState<'vendor' | 'production'>('vendor');
   const [activeInspectionId, setActiveInspectionId] = useState<string | null>(null);
   const [showCapture, setShowCapture] = useState(false);
@@ -34,11 +30,11 @@ export default function MobileQualiCheckPage(): JSX.Element {
   const [productionPending, setProductionPending] = useState<QaInspectionRecord[]>([]);
 
   const refresh = (): void => {
-    setPending(listPendingQa(ENTITY).length);
-    const alerts = getPendingInspectionAlerts(ENTITY);
+    setPending(listPendingQa(entityCode).length);
+    const alerts = getPendingInspectionAlerts(entityCode);
     setCritical(alerts.filter(a => a.severity === 'critical' || a.severity === 'escalated').length);
     const todayStr = new Date().toISOString().slice(0, 10);
-    const all = listQaInspections(ENTITY);
+    const all = listQaInspections(entityCode);
     setToday(all.filter(q => (q.inspection_date ?? '').slice(0, 10) === todayStr).length);
     setProductionPending(
       all.filter(r =>
@@ -61,7 +57,7 @@ export default function MobileQualiCheckPage(): JSX.Element {
       <MobileQCEntryPage
         inspectionId={activeInspectionId}
         onBack={() => { setActiveInspectionId(null); refresh(); }}
-        entityCode={ENTITY}
+        entityCode={entityCode}
         userId="mobile-user"
       />
     );

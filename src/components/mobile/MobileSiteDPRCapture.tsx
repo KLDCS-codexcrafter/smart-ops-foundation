@@ -19,11 +19,11 @@ import { toast } from 'sonner';
 import { listSites } from '@/lib/sitex-engine';
 import { getCurrentLocation } from '@/lib/geolocation-bridge';
 import { enqueueWrite } from '@/lib/offline-queue-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
+
 import { dprsKey, type DPR, type SiteMaster } from '@/types/sitex';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
 
+import { useEntityCode } from '@/hooks/useEntityCode';
 function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371000;
   const toRad = (d: number): number => (d * Math.PI) / 180;
@@ -34,6 +34,7 @@ function haversineMeters(lat1: number, lng1: number, lat2: number, lng2: number)
 }
 
 export default function MobileSiteDPRCapture(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [sites, setSites] = useState<SiteMaster[]>([]);
@@ -50,7 +51,7 @@ export default function MobileSiteDPRCapture(): JSX.Element {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    setSites(listSites(ENTITY).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
+    setSites(listSites(entityCode).filter((s) => s.status === 'active' || s.status === 'mobilizing'));
   }, []);
 
   const site = sites.find((s) => s.id === siteId) ?? null;
@@ -111,11 +112,11 @@ export default function MobileSiteDPRCapture(): JSX.Element {
     };
     try {
       if (!navigator.onLine) {
-        enqueueWrite(ENTITY, 'order_place', { kind: 'sitex_dpr', payload: dpr });
+        enqueueWrite(entityCode, 'order_place', { kind: 'sitex_dpr', payload: dpr });
         toast.success('Queued · will sync when online');
       } else {
         // [JWT] POST /api/sitex/dpr
-        const key = dprsKey(ENTITY);
+        const key = dprsKey(entityCode);
         const all = JSON.parse(localStorage.getItem(key) ?? '[]') as DPR[];
         all.push(dpr);
         localStorage.setItem(key, JSON.stringify(all));

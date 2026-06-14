@@ -12,10 +12,7 @@ import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { materialIndentsKey } from '@/types/material-indent';
 import type { MaterialIndent } from '@/types/material-indent';
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
-}
-
+import { useEntityCode } from '@/hooks/useEntityCode';
 function readIndents(entityCode: string): MaterialIndent[] {
   try {
     const raw = localStorage.getItem(materialIndentsKey(entityCode));
@@ -24,20 +21,20 @@ function readIndents(entityCode: string): MaterialIndent[] {
 }
 
 export default function MobileMaterialIndentPage(): JSX.Element {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
-  const ENTITY = getActiveEntityCode();
   const [showCapture, setShowCapture] = useState(false);
   const [submittedToday, setSubmittedToday] = useState(0);
   const [drafts, setDrafts] = useState(0);
   const [pendingMine, setPendingMine] = useState(0);
 
   const refresh = useCallback((): void => {
-    const list = readIndents(ENTITY);
+    const list = readIndents(entityCode);
     const today = new Date().toISOString().slice(0, 10);
     setSubmittedToday(list.filter(i => i.status === 'submitted' && (i.created_at ?? '').slice(0, 10) === today).length);
     setDrafts(list.filter(i => i.status === 'draft').length);
     setPendingMine(list.filter(i => i.status === 'pending_hod' || i.status === 'pending_purchase' || i.status === 'pending_finance').length);
-  }, [ENTITY]);
+  }, [entityCode]);
 
   useEffect(() => { refresh(); }, [showCapture, refresh]);
 

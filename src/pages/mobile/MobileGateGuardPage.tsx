@@ -11,14 +11,15 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, DoorOpen, Plus, LogIn, LogOut, Activity } from 'lucide-react';
 import MobileGateGuardCapture from '@/components/mobile/MobileGateGuardCapture';
 import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
+import { useEntityCode } from '@/hooks/useEntityCode';
 import {
   listInwardQueue, listOutwardQueue, listGatePasses,
 } from '@/lib/gateflow-engine';
-import { DEFAULT_ENTITY_SHORTCODE } from '@/lib/default-entity';
 
-const ENTITY = DEFAULT_ENTITY_SHORTCODE;
+
 
 export default function MobileGateGuardPage() {
+  const { entityCode } = useEntityCode();
   const navigate = useNavigate();
   const [showCapture, setShowCapture] = useState(false);
   const [inward, setInward] = useState<number>(0);
@@ -26,11 +27,11 @@ export default function MobileGateGuardPage() {
   const [today, setToday] = useState<number>(0);
 
   const refresh = () => {
-    setInward(listInwardQueue(ENTITY).length);
-    setOutward(listOutwardQueue(ENTITY).length);
+    setInward(listInwardQueue(entityCode).length);
+    setOutward(listOutwardQueue(entityCode).length);
     const todayStr = new Date().toISOString().slice(0, 10);
     setToday(
-      listGatePasses(ENTITY).filter((gp) => gp.entry_time.slice(0, 10) === todayStr).length,
+      listGatePasses(entityCode).filter((gp) => gp.entry_time.slice(0, 10) === todayStr).length,
     );
   };
 

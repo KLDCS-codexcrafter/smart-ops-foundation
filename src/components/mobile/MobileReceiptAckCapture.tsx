@@ -19,6 +19,7 @@ import { enqueueWrite } from '@/lib/offline-queue-engine';
 import { createReceiptAck, postReceiptAck, listReleasedReceiptsAwaitingStock } from '@/lib/stock-receipt-ack-engine';
 import type { InwardReceipt } from '@/types/inward-receipt';
 
+import { useEntityCode } from '@/hooks/useEntityCode';
 type Step = 1 | 2 | 3 | 4;
 
 interface AckLineDraft {
@@ -36,10 +37,6 @@ interface FormState {
 
 const EMPTY_FORM: FormState = { ir: null, lines: [], photos: [], notes: '' };
 
-function getActiveEntityCode(): string {
-  try { return localStorage.getItem('active_entity_code') ?? 'DEMO'; } catch { return 'DEMO'; }
-}
-
 function canProceed(s: FormState, step: Step): boolean {
   if (step === 1) return s.ir !== null;
   if (step === 2) return s.lines.length > 0 && s.lines.every(l => l.qty_acknowledged >= 0);
@@ -49,13 +46,12 @@ function canProceed(s: FormState, step: Step): boolean {
 interface Props { onClose: () => void }
 
 export default function MobileReceiptAckCapture({ onClose }: Props): JSX.Element {
+  const { entityCode } = useEntityCode();
   const [step, setStep] = useState<Step>(1);
   const [s, setS] = useState<FormState>(EMPTY_FORM);
   const [queue, setQueue] = useState<InwardReceipt[]>([]);
   const [submitting, setSubmitting] = useState(false);
-  const ENTITY = getActiveEntityCode();
-
-  useEffect(() => { setQueue(listReleasedReceiptsAwaitingStock(ENTITY)); }, [ENTITY]);
+  useEffect(() => { setQueue(listReleasedReceiptsAwaitingStock(entityCode)); }, [entityCode]);
 
   const pickIR = (ir: InwardReceipt): void => {
     const lines: AckLineDraft[] = ir.lines.map(l => ({
@@ -87,7 +83,7 @@ export default function MobileReceiptAckCapture({ onClose }: Props): JSX.Element
     try {
       // [JWT] POST /api/store-hub/receipt-acks
       const payload = {
-        entity_id: ENTITY,
+        entity_id: entityCode,
         inward_receipt_id: s.ir.id,
         inward_receipt_no: s.ir.receipt_no,
         vendor_id: s.ir.vendor_id ?? null,
@@ -108,11 +104,11 @@ export default function MobileReceiptAckCapture({ onClose }: Props): JSX.Element
         reference_no: `MOBILE:${Date.now()}`,
       };
       if (!navigator.onLine) {
-        enqueueWrite(ENTITY, 'rating_submit', { kind: 'stock_receipt_ack', input: payload });
+        enqueueWrite(entityCode, 'rating_submit', { kind: 'stock_receipt_ack', input: payload });
         toast.success('Receipt Ack queued — will sync when online');
       } else {
-        const ack = await createReceiptAck(payload, ENTITY, 'mobile-stores-mgr');
-        await postReceiptAck(ack.id, ENTITY, 'mobile-stores-mgr');
+        const ack = await createReceiptAck(payload, entityCode, 'mobile-stores-mgr');
+        await postReceiptAck(ack.id, entityCode, 'mobile-stores-mgr');
         toast.success(`Receipt Ack ${ack.ack_no} posted`);
       }
       setS(EMPTY_FORM); setStep(1); onClose();
