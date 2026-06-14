@@ -11,6 +11,7 @@ import { useJobCards } from '@/hooks/useJobCards';
 
 import { useEntityCode } from '@/hooks/useEntityCode';
 import { listMachinesByHealth } from '@/lib/iot-machine-bridge';
+import { OfflineIndicator } from '@/components/mobile/OfflineIndicator';
 import { useMemo } from 'react';
 
 // AM.2c · honest banner — IoT-driven live OEE / machine-health arrives with Wave-2
@@ -45,7 +46,9 @@ export default function MobileShopFloorOperatorPage(): JSX.Element {
         <Button variant="ghost" size="sm" onClick={() => navigate('/operix-go')}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="text-lg font-semibold">Shop Floor Operator</h1>
+        <h1 className="text-lg font-semibold flex-1">Shop Floor Operator</h1>
+        {/* CL-1 · B16-F1 — mirror SiteEngineer / MaintenanceTech offline-first chip. */}
+        <OfflineIndicator />
       </header>
 
       <Card className="p-4 space-y-2">
