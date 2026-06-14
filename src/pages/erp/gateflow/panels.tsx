@@ -50,11 +50,7 @@ import { KeyboardShortcutOverlay } from '@/components/uth/KeyboardShortcutOverla
 // HELPERS
 // ============================================================
 
-function getActiveEntityCode(): string {
-  try {
-    return localStorage.getItem('active_entity_code') ?? 'DEMO';
-  } catch { return 'DEMO'; }
-}
+// getActiveEntityCode removed — Sprint T-CL3e · panels use useEntityCode() hook
 
 // getCurrentUserId removed — Sprint T-Phase-1.A.1.a · QueuePanel uses useCurrentUser hook (FR-50)
 
