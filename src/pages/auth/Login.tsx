@@ -81,10 +81,13 @@ const mockResetPassword = async (_password: string) => {
 
 const routeByRole: Record<string, string> = {
   super_admin: "/welcome",
-  partner_admin: "/welcome",
-  customer_user: "/welcome",
-  operator: "/welcome",
   tenant_admin: "/welcome",
+  bridge_ops: "/bridge/dashboard",
+  partner_admin: "/partner/dashboard",
+  partner: "/partner/dashboard",
+  customer_user: "/customer/dashboard",
+  customer: "/customer/dashboard",
+  operator: "/welcome",
 };
 
 // ── Helpers ──
@@ -353,8 +356,11 @@ export default function Login() {
     }
 
     setLoginSuccess(true);
-    // [JWT] POST /api/auth/login
+    // [JWT] POST /api/auth/login — server will return role claim in JWT.
     localStorage.setItem("4ds_token", "mock-jwt-token-xyz");
+    // Persist inferred persona role so ProtectedRoute can gate panels by role
+    // (Phase-1 client-side enforcement; server-side check follows in Phase 2).
+    localStorage.setItem("4ds_role", result.role);
     toast.success("Welcome to 4DSmartOps");
     setTimeout(() => {
       navigate(routeByRole[result.role] ?? "/erp/dashboard", { replace: true });
