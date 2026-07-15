@@ -48,10 +48,23 @@ const newPasswordSchema = z.object({
 
 // ── Mock auth ──
 // [JWT] Replace this with: POST /api/auth/login
-const mockLogin = async (_credential: string, password: string) => {
+// Persona inference — Phase-1 mock only. Real role claims arrive from the
+// backend JWT in Phase 2. Until then, derive a persona from the credential so
+// partner/customer logins cannot reach Tower/Bridge/ERP admin surfaces.
+// [JWT] Replace with server-issued role claim from POST /api/auth/login.
+const inferMockRole = (credential: string): "super_admin" | "tenant_admin" | "bridge_ops" | "partner" | "customer" => {
+  const c = credential.toLowerCase();
+  if (c.includes("partner") || c.endsWith("@partner.4dsmartops.in")) return "partner";
+  if (c.includes("customer") || c.includes("client")) return "customer";
+  if (c.includes("bridge") || c.includes("ops@")) return "bridge_ops";
+  if (c.includes("tower") || c.includes("superadmin") || c.includes("root@")) return "super_admin";
+  return "tenant_admin";
+};
+
+const mockLogin = async (credential: string, password: string) => {
   await new Promise((r) => setTimeout(r, 1200));
   if (password.length < 6) return { error: "Invalid credentials" };
-  return { role: "tenant_admin" };
+  return { role: inferMockRole(credential) };
 };
 
 // [JWT] Replace this with: POST /api/auth/forgot-password
@@ -68,10 +81,13 @@ const mockResetPassword = async (_password: string) => {
 
 const routeByRole: Record<string, string> = {
   super_admin: "/welcome",
-  partner_admin: "/welcome",
-  customer_user: "/welcome",
-  operator: "/welcome",
   tenant_admin: "/welcome",
+  bridge_ops: "/bridge/dashboard",
+  partner_admin: "/partner/dashboard",
+  partner: "/partner/dashboard",
+  customer_user: "/customer/dashboard",
+  customer: "/customer/dashboard",
+  operator: "/welcome",
 };
 
 // ── Helpers ──
@@ -340,8 +356,11 @@ export default function Login() {
     }
 
     setLoginSuccess(true);
-    // [JWT] POST /api/auth/login
+    // [JWT] POST /api/auth/login — server will return role claim in JWT.
     localStorage.setItem("4ds_token", "mock-jwt-token-xyz");
+    // Persist inferred persona role so ProtectedRoute can gate panels by role
+    // (Phase-1 client-side enforcement; server-side check follows in Phase 2).
+    localStorage.setItem("4ds_role", result.role);
     toast.success("Welcome to 4DSmartOps");
     setTimeout(() => {
       navigate(routeByRole[result.role] ?? "/erp/dashboard", { replace: true });
