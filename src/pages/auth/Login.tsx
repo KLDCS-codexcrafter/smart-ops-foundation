@@ -48,10 +48,23 @@ const newPasswordSchema = z.object({
 
 // ── Mock auth ──
 // [JWT] Replace this with: POST /api/auth/login
-const mockLogin = async (_credential: string, password: string) => {
+// Persona inference — Phase-1 mock only. Real role claims arrive from the
+// backend JWT in Phase 2. Until then, derive a persona from the credential so
+// partner/customer logins cannot reach Tower/Bridge/ERP admin surfaces.
+// [JWT] Replace with server-issued role claim from POST /api/auth/login.
+const inferMockRole = (credential: string): "super_admin" | "tenant_admin" | "bridge_ops" | "partner" | "customer" => {
+  const c = credential.toLowerCase();
+  if (c.includes("partner") || c.endsWith("@partner.4dsmartops.in")) return "partner";
+  if (c.includes("customer") || c.includes("client")) return "customer";
+  if (c.includes("bridge") || c.includes("ops@")) return "bridge_ops";
+  if (c.includes("tower") || c.includes("superadmin") || c.includes("root@")) return "super_admin";
+  return "tenant_admin";
+};
+
+const mockLogin = async (credential: string, password: string) => {
   await new Promise((r) => setTimeout(r, 1200));
   if (password.length < 6) return { error: "Invalid credentials" };
-  return { role: "tenant_admin" };
+  return { role: inferMockRole(credential) };
 };
 
 // [JWT] Replace this with: POST /api/auth/forgot-password
