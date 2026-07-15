@@ -47,6 +47,7 @@ export async function mockLogout(): Promise<void> {
     setTimeout(() => {
       // [JWT] DELETE /api/auth/token
       localStorage.removeItem("4ds_token");
+      localStorage.removeItem("4ds_role");
       resolve();
     }, 300);
   });
